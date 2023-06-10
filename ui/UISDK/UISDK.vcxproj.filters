@@ -1,0 +1,1543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="09. Other">
+      <UniqueIdentifier>{eb245cf8-fe0f-49d1-a1f6-5fbbc81cdd8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Inc">
+      <UniqueIdentifier>{9693da0b-fb46-403c-aed4-26b1f002de03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Inc\01. Base">
+      <UniqueIdentifier>{96ea3588-39f9-428b-a223-24ea1d660221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Inc\02. Interface">
+      <UniqueIdentifier>{069d6cae-2ac9-4f12-b04b-dd26b3dae532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. UnitTest">
+      <UniqueIdentifier>{cc7903eb-18ea-47c5-9d5b-784dacda0eac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Inc\03. Util">
+      <UniqueIdentifier>{7b6a9b53-b247-4aa0-b9ea-da1a077b6f4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. 3rd">
+      <UniqueIdentifier>{c3024e51-b596-496c-ac4b-c7f158e7c277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. 3rd\pugixml">
+      <UniqueIdentifier>{61b73983-c5ed-47d7-99bb-16b5fac3bc25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. 3rd\zip">
+      <UniqueIdentifier>{ba185005-eba4-4e50-9e7d-cbd278e556e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src">
+      <UniqueIdentifier>{759cf730-ad24-4a23-9203-a8198bff65a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类">
+      <UniqueIdentifier>{08bac359-5ffd-408a-9a44-7f58ea0331f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\01. message">
+      <UniqueIdentifier>{66345248-2eb0-4104-9f1e-dcb58c1502bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\02. object">
+      <UniqueIdentifier>{5eca9192-8996-4f15-8ff9-9c2879e68f32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\03. application">
+      <UniqueIdentifier>{4291d0e0-455e-4535-9bfc-ca4dd9cbce80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute">
+      <UniqueIdentifier>{bf1c197b-28ec-4086-afcf-3a9554c87a0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\01. string">
+      <UniqueIdentifier>{53d3f8a2-c26f-42a7-b85f-649d26dab3a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\02. bool">
+      <UniqueIdentifier>{e37470f2-6b02-4488-9cb2-53103e0b92ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\03. rect">
+      <UniqueIdentifier>{a67aa991-be78-42f0-bd69-acd76467d24d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\04. long">
+      <UniqueIdentifier>{121ccec9-7aff-4e76-ae72-4e92447a078b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\05. renderbase">
+      <UniqueIdentifier>{b98cee52-8e9a-46de-a374-5037f2e8f5e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\06. flags">
+      <UniqueIdentifier>{96ace6e5-562c-4902-bded-9ca33d8baa19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\07. stringselect">
+      <UniqueIdentifier>{68a38f88-67aa-440b-b85a-d6faca8b27f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\08. enum">
+      <UniqueIdentifier>{403cbefa-6108-402d-8b0f-329f15aa927e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\09. 9region">
+      <UniqueIdentifier>{2adc0da4-ec26-4552-ac9e-7ef62d7a9e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\10. size">
+      <UniqueIdentifier>{0359e29c-ab79-4bd4-a20b-4ca4f562f993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\11. color">
+      <UniqueIdentifier>{43e9f708-305b-4f9e-b802-a2e6b70193b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\05. accessible">
+      <UniqueIdentifier>{ea107db3-6702-4a73-af18-024a2124880c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象">
+      <UniqueIdentifier>{874f1704-dab1-45b3-833d-36fee23cdc6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\01. control">
+      <UniqueIdentifier>{0bd3914a-3a76-4c82-88e4-c646357b6e92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\02. panel">
+      <UniqueIdentifier>{3513c21b-00d6-499a-9a05-01c164998130}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window">
+      <UniqueIdentifier>{5d014ac2-1854-4444-ad52-38c29553373b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode">
+      <UniqueIdentifier>{3043d7df-f836-443e-8292-62a0e04fa980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\aero">
+      <UniqueIdentifier>{f3cdd0e9-989a-4e14-b50e-1c4211352fef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\layered">
+      <UniqueIdentifier>{1b6b81d0-ff07-4588-a819-74cc2249d1b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\alpha">
+      <UniqueIdentifier>{16b30d9f-de64-454f-ba65-84213efa3552}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\anti">
+      <UniqueIdentifier>{f75438cb-85b5-414f-b590-134a9a0a15bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\color">
+      <UniqueIdentifier>{7f731c95-d9b7-4fdd-a4f4-76db03bd8cf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\03. window\transmode\glow">
+      <UniqueIdentifier>{373e228c-5ed3-4d18-984d-7cd2200516e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\04. hwndhost">
+      <UniqueIdentifier>{4581af53-b494-42c9-9f81-e7a094766c02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl">
+      <UniqueIdentifier>{35ebd210-40d1-47b2-9b84-270cf8545556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\01. listitem">
+      <UniqueIdentifier>{a956bd0d-2e23-4439-bf30-9b038bfb4c09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\02. layout">
+      <UniqueIdentifier>{474de2ed-72c7-4fe7-8b1a-febbda73242e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\03. rootpanel">
+      <UniqueIdentifier>{2c3939dc-8385-48b7-80cc-e40712232efe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\04. mk">
+      <UniqueIdentifier>{cc781df9-ce5f-4e23-9774-b9457e5830e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\05. float">
+      <UniqueIdentifier>{dc9a6aa1-6098-4387-b7c4-aade83b61624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\06. customitem">
+      <UniqueIdentifier>{afcf1f3b-760e-4f71-a857-a354536d2a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\07. tooltip">
+      <UniqueIdentifier>{29ba4b9d-ac09-420c-937e-5bf121042a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\06. scrollbar">
+      <UniqueIdentifier>{8975bda5-792d-4f4d-a702-ad209cdb91c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源">
+      <UniqueIdentifier>{5043a1da-b650-43d9-826a-bbaca849b403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\01. color">
+      <UniqueIdentifier>{c71546f2-6770-41a8-9854-f45e812892e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\02. image">
+      <UniqueIdentifier>{bdcf9bc1-d71b-4ca5-8612-5bcaa7f9f6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\03. font">
+      <UniqueIdentifier>{94f02754-2d79-4028-ab07-7cd43f71f2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\04. style">
+      <UniqueIdentifier>{77be0508-6bb9-425c-aa20-58caa4c74efa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\05. layout">
+      <UniqueIdentifier>{639f80ee-4c3f-4761-bca1-8bc307e83d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\03. 皮肤资源\06. i18n">
+      <UniqueIdentifier>{03719755-ea8f-431d-983c-0a359210d67d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器">
+      <UniqueIdentifier>{e36cb810-b7d0-495e-b54b-c40f7f541ce9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\datasource">
+      <UniqueIdentifier>{6e823d8f-dbb7-4a91-b567-7e3e80447a84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\datasource\file">
+      <UniqueIdentifier>{864907c2-3168-4ed7-8647-da368383e5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\datasource\zip">
+      <UniqueIdentifier>{c627ff06-1bb1-416f-8961-b44d0aee81b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\mapattr">
+      <UniqueIdentifier>{a3d08f30-7f72-44af-8940-821595dbbb7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\streambuffer">
+      <UniqueIdentifier>{5f3032d6-1304-4436-9593-374d5bd050cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\xml">
+      <UniqueIdentifier>{17363d4c-869e-408a-a207-37ec6a05eaae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\04. 皮肤解析器\xml\pugixml">
+      <UniqueIdentifier>{68e7e7b1-35ee-4eac-8652-baa933f096ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\05. 图形渲染">
+      <UniqueIdentifier>{7563cdce-2d2b-47d4-80a2-165675ef40ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\05. 图形渲染\01. gdi">
+      <UniqueIdentifier>{99b2e17d-ba99-491a-ba97-0a85ec76bf10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\06. 特效">
+      <UniqueIdentifier>{6b2b2295-cf95-4379-96cb-71b314e67fc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\06. 特效\01. CacheBitmap">
+      <UniqueIdentifier>{5fd88894-ad70-4e1d-9d75-c8aba466db5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\06. 特效\02. blur">
+      <UniqueIdentifier>{6379aa12-6262-48f0-83d0-9a8515db4af9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\06. 特效\02. blur\gaussblur">
+      <UniqueIdentifier>{9efa9890-b949-446c-aa18-a25b30550b3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\06. 特效\02. blur\shadowblur">
+      <UniqueIdentifier>{60540daa-2162-46dc-9da3-36f5e45f16aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\07. 分层">
+      <UniqueIdentifier>{ebaa3b9d-dc96-4495-9fd8-706cce9ff28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\08. 渲染基类">
+      <UniqueIdentifier>{45f21b79-e8d6-4e8d-a4e0-f9e0f0a1f616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\08. 渲染基类\renderbase">
+      <UniqueIdentifier>{f9bf5004-8b04-4433-942d-ed2a569b5a35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\08. 渲染基类\renderbase\color">
+      <UniqueIdentifier>{8cbb425c-5268-431e-958c-487a816cd067}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\08. 渲染基类\renderbase\image">
+      <UniqueIdentifier>{23c61289-32c5-4578-9f5e-37bbfcc62372}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\08. 渲染基类\textrender">
+      <UniqueIdentifier>{e43dd919-e6fe-4bc5-9968-1e9dec4fb9cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类">
+      <UniqueIdentifier>{857eb260-c7e5-4134-a831-c597c30f5dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\topwindow">
+      <UniqueIdentifier>{b22670ed-5e67-445a-851b-816b6a726e6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\tooltip">
+      <UniqueIdentifier>{a714aeab-9675-42b2-a0e1-13b6c4a2807e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\version">
+      <UniqueIdentifier>{54d30673-c858-47d4-97a1-e60e03b9cfa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\timer">
+      <UniqueIdentifier>{1cef505d-8205-42ac-8736-775716fe9191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\mk">
+      <UniqueIdentifier>{baf2e81d-cb0a-444e-94a3-175e0ac152bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\layout">
+      <UniqueIdentifier>{f826a919-e1ca-4b40-b226-321d544f34be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\msg">
+      <UniqueIdentifier>{c7daa28f-2737-400b-8c61-5ba7e2ddd68f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\09. 辅助类\dragdrop">
+      <UniqueIdentifier>{79d54644-0283-46aa-8ebb-6f2b26b36173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具">
+      <UniqueIdentifier>{b08605d2-35b7-4732-ab40-51c7cb19d13f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\01. Log">
+      <UniqueIdentifier>{04d43bb1-efc1-4928-8b16-c10c266ca8fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\02. DataStruct">
+      <UniqueIdentifier>{254f688b-fcca-4192-9325-15ef83dc8962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\03. Image">
+      <UniqueIdentifier>{d9ad5495-bca1-4496-bfa8-128f6204244f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\04. DPI">
+      <UniqueIdentifier>{fd0bfb7e-63c6-415d-813e-5eab6d8d873b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\05. RectArray">
+      <UniqueIdentifier>{996c2129-0b4f-4a9e-ac00-7387b6e0d754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\06. Timeout">
+      <UniqueIdentifier>{4928b374-39d4-49bc-b77e-39811de1a815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\07. Dwm">
+      <UniqueIdentifier>{b173c786-840d-487b-a2c4-4a1b930bac60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\08. Gif">
+      <UniqueIdentifier>{380a41da-d75a-44a8-b5e7-d31b49816610}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\09. Gesture">
+      <UniqueIdentifier>{148e6ed5-ff6b-4a14-951a-a759cf5fee58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\10. math">
+      <UniqueIdentifier>{9bd1deb8-6165-4a6b-9725-833dea21f3c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\11. 动画">
+      <UniqueIdentifier>{52374c8d-829d-4027-880a-870650cef116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\11. 动画\src">
+      <UniqueIdentifier>{8749a6fa-4b90-4a63-803b-3638fad92516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\11. 动画\src\ease">
+      <UniqueIdentifier>{0fe8c9dd-e9c8-4a3c-9490-1f8a95775e73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\11. 动画\src\wrap">
+      <UniqueIdentifier>{dbbb1d62-3c8f-4d2b-a38e-0a8f606ba57f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\10. 工具\11. roundrect">
+      <UniqueIdentifier>{afbdd100-a77d-4ce9-8230-54d7bfa8fc95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\07. scrollpanel">
+      <UniqueIdentifier>{0a9d3d44-a426-4ab3-a2bd-488da39c47d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\08. animate">
+      <UniqueIdentifier>{b62a6476-dd1b-4984-a6c7-93539aefb86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\01. UI对象基类\04. attribute\x64">
+      <UniqueIdentifier>{b4845433-0a6d-40c8-b12d-cae4d04e5d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Src\02. UI对象\05. listctrl\09. reuse">
+      <UniqueIdentifier>{c201ea21-c509-4d99-9843-9ca7ceb0020a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Other/stdafx.h">
+      <Filter>09. Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Other/targetver.h">
+      <Filter>09. Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Other/UISDK.h">
+      <Filter>09. Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Base\uidefine.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Message\message.h">
+      <Filter>02. Src\01. UI对象基类\01. message</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\imessage.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\inc.h">
+      <Filter>01. Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Base\uimsg.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\private_inc.h">
+      <Filter>01. Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Base\uiapi.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Base\uicreator.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iskinres.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Object\objtree.h">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Object\object.h">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iobject.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\color.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\util.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\imapattr.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\xml\xmlwrap.h">
+      <Filter>02. Src\04. 皮肤解析器\xml</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\xml\pugixmlwrap\pugixmlwrap.h">
+      <Filter>02. Src\04. 皮肤解析器\xml\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ixmlwrap.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\mapattr\mapattr.h">
+      <Filter>02. Src\04. 皮肤解析器\mapattr</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\struct.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iuires.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\DataStruct\list.h">
+      <Filter>02. Src\10. 工具\02. DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Base\xmldefine.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Atl\image.h">
+      <Filter>02. Src\10. 工具\03. Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\iimage.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\colorres.h">
+      <Filter>02. Src\03. 皮肤资源\01. color</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\colormanager.h">
+      <Filter>02. Src\03. 皮肤资源\01. color</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\skinres.h">
+      <Filter>02. Src\03. 皮肤资源</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\skinmanager.h">
+      <Filter>02. Src\03. 皮肤资源</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\imagemanager.h">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\imageres.h">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\renderlibrary.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\gdi\gdipen.h">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\gdi\gdirender.h">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\gdi\gdibitmap.h">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\gdi\gdibrush.h">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\gdi\gdifont.h">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\renderresourceimpl.h">
+      <Filter>02. Src\05. 图形渲染</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\DPI\dpihelper.h">
+      <Filter>02. Src\10. 工具\04. DPI</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\RectArray\rectarray.h">
+      <Filter>02. Src\10. 工具\05. RectArray</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderlibrary\renderbuffer.h">
+      <Filter>02. Src\05. 图形渲染</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iskindatasource.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\fontmanager.h">
+      <Filter>02. Src\03. 皮肤资源\03. font</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\fontres.h">
+      <Filter>02. Src\03. 皮肤资源\03. font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\pugixml\pugixml.hpp">
+      <Filter>07. 3rd\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\pugixml\pugiconfig.hpp">
+      <Filter>07. 3rd\pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIEffect\CacheBitmap\cachebitmap.h">
+      <Filter>02. Src\06. 特效\01. CacheBitmap</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\stylemanager.h">
+      <Filter>02. Src\03. 皮肤资源\04. style</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\styleres.h">
+      <Filter>02. Src\03. 皮肤资源\04. style</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\layoutmanager.h">
+      <Filter>02. Src\03. 皮肤资源\05. layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\DataStruct\tree.h">
+      <Filter>02. Src\10. 工具\02. DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\skinparseengine.h">
+      <Filter>02. Src\04. 皮肤解析器</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iuieditor.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Application\uiapplication.h">
+      <Filter>02. Src\01. UI对象基类\03. application</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iuiapplication.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\version\versionhelper.h">
+      <Filter>02. Src\09. 辅助类\version</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\topwindow\topwindowmanager.h">
+      <Filter>02. Src\09. 辅助类\topwindow</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\tooltip\tooltipmanager.h">
+      <Filter>02. Src\09. 辅助类\tooltip</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\timer\timermanager.h">
+      <Filter>02. Src\09. 辅助类\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\msg\msghelper.h">
+      <Filter>02. Src\09. 辅助类\msg</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\gridlayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\layout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\layout_factory.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\averagelayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\canvaslayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\cardlayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\mousekeyboard\mkmgr.h">
+      <Filter>02. Src\09. 辅助类\mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\mousekeyboard\mousemanager.h">
+      <Filter>02. Src\09. 辅助类\mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iuiinterface.h">
+      <Filter>01. Inc\01. Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Control\control.h">
+      <Filter>02. Src\02. UI对象\01. control</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\HwndHost\HwndHost.h">
+      <Filter>02. Src\02. UI对象\04. hwndhost</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\HwndHost\hwndhost_desc.h">
+      <Filter>02. Src\02. UI对象\04. hwndhost</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Panel\panel.h">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Panel\panel_desc.h">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\window.h">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\window_desc.h">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\windowbase.h">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\customwindow.h">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ilayout.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Object\object_layer.h">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ipanel.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\icontrol.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iwindow.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iobjectdescription.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\hardware_compositor.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\hardware_layer.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\layer.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\software_compositor.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\software_layer.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\compositor.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\irenderlayer.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\Timeout\timeout.h">
+      <Filter>02. Src\10. 工具\06. Timeout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\renderbase\renderbase.h">
+      <Filter>02. Src\08. 渲染基类\renderbase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\renderbase\renderbase_factory.h">
+      <Filter>02. Src\08. 渲染基类\renderbase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\colorrender\colorrender.h">
+      <Filter>02. Src\08. 渲染基类\renderbase\color</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\imagerender\imagerender.h">
+      <Filter>02. Src\08. 渲染基类\renderbase\image</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\textrenderbase\textrender_factory.h">
+      <Filter>02. Src\08. 渲染基类\textrender</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Renderbase\textrenderbase\textrender.h">
+      <Filter>02. Src\08. 渲染基类\textrender</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\itextrenderbase.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\irenderbase.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\icolorrender.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iimagerender.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iattribute.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\9region_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\09. 9region</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\attribute_alias.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\attributebase.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\bool_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\02. bool</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\chararray_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\01. string</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\enum_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\08. enum</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\flags_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\06. flags</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\long_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\04. long</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\rect_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\03. rect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\renderbase_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\05. renderbase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\size_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\10. size</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\string_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\01. string</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\stringselect_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\07. stringselect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\textrenderbase_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\05. renderbase</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\windowrender.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\icustomwindow.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iwndtransmode.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\DWM\dwmhelper.h">
+      <Filter>02. Src\10. 工具\07. Dwm</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ihwndhost.h">
+      <Filter>01. Inc\02. Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\datasource\skindatasource.h">
+      <Filter>02. Src\04. 皮肤解析器\datasource</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\datasource\File\filedatasource.h">
+      <Filter>02. Src\04. 皮肤解析器\datasource\file</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\datasource\File\filebufferreader.h">
+      <Filter>02. Src\04. 皮肤解析器\datasource\file</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\datasource\Zip\bytebufferreader.h">
+      <Filter>02. Src\04. 皮肤解析器\datasource\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SkinParse\datasource\Zip\zipdatasource.h">
+      <Filter>02. Src\04. 皮肤解析器\datasource\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\dragdrop\dropsource.h">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\dragdrop\oledataobject.h">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\dragdrop\windowdragdropmgr.h">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\dragdrop\dragfeedback.h">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\dragdrop.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\gifres.h">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\Gif\GifImage.h">
+      <Filter>02. Src\10. 工具\08. Gif</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\Gif\giftimermanager.h">
+      <Filter>02. Src\10. 工具\08. Gif</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\igifimage.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\cursorres.h">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\Gesture\gesturehelper.h">
+      <Filter>02. Src\10. 工具\09. Gesture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\zip\zip.h">
+      <Filter>07. 3rd\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\zip\ziputil.h">
+      <Filter>07. 3rd\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rd\zip\unzip.h">
+      <Filter>07. 3rd\zip</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\uicursor.h">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\wndtransmodebase.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\layered\layeredwrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\layered</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\aero\aerowrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\aero</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\alpha\alphawrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\alpha</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\anti\antiwrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\anti</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\color\colorwrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\color</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Accessible\object_accessible.h">
+      <Filter>02. Src\01. UI对象基类\05. accessible</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Accessible\accessibleimpl.h">
+      <Filter>02. Src\01. UI对象基类\05. accessible</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Accessible\iuiaccessible.h">
+      <Filter>02. Src\01. UI对象基类\05. accessible</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIEffect\blur\webkit\shadowblur.h">
+      <Filter>02. Src\06. 特效\02. blur\shadowblur</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIEffect\blur\agg\gaussblur_float_2_int.h">
+      <Filter>02. Src\06. 特效\02. blur\gaussblur</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIEffect\blur\agg\gaussblur.h">
+      <Filter>02. Src\06. 特效\02. blur\gaussblur</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\signalslot.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\i18nmanager.h">
+      <Filter>02. Src\03. 皮肤资源\06. i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Resource\i18nres.h">
+      <Filter>02. Src\03. 皮肤资源\06. i18n</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\bindable.h">
+      <Filter>01. Inc\03. Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\horzlayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Helper\layout\vertlayout.h">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\wndtransmode\glow\glowwrap.h">
+      <Filter>02. Src\02. UI对象\03. window\transmode\glow</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ianimate.h">
+      <Filter>02. Src\11. 动画</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\timeline.h">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\animatemgr.h">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\movealgo.h">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\storyboard.h">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\ease\easing.h">
+      <Filter>02. Src\11. 动画\src\ease</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\ease\beziertiming.h">
+      <Filter>02. Src\11. 动画\src\ease</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Animate\wrap\animate.h">
+      <Filter>02. Src\11. 动画\src\wrap</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\listctrlbase.h">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\ListItemBase\listitembase.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\01. listitem</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\ListItemLayout\listitemlayout.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\02. layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\03. rootpanel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\MouseKeyboard\listctrl_inner_drag.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\MouseKeyboard\listctrlmkmgr.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\MouseKeyboard\menumkmgr.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\float\float_item_mgr.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\05. float</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\CustomItem\custom_listitem.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\06. customitem</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\ListItemTooltip\listitemtooltip.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\07. tooltip</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ilistitembase.h">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\ilistctrlbase.h">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iscrollbarmanager.h">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ScrollBar\smoothscroll.h">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ScrollBar\scrollbarmanager.h">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\color_attribute.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\11. color</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Layer\transform3d.h">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\math\matrix.h">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\math\math.h">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\math\quad.h">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\math\point.h">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\math\rect.h">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Object\object_desc.h">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Window\sync_window.h">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Util\RoundRect\roundrect.h">
+      <Filter>02. Src\10. 工具\11. roundrect</Filter>
+    </ClInclude>
+    <ClInclude Include="Other/resource.h">
+      <Filter>09. Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Panel\round_panel.h">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Panel\ScrollPanel\scrollpanel.h">
+      <Filter>02. Src\02. UI对象\07. scrollpanel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\Panel\ScrollPanel\scrollpanel_desc.h">
+      <Filter>02. Src\02. UI对象\07. scrollpanel</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Interface\iscrollpanel.h">
+      <Filter>02. Src\02. UI对象\07. scrollpanel</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\animate_callback\listctrl_animate.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\animate_callback\listitem_move.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\animate_callback\listitem_animate.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\animate_callback\animate_wrap.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\ListItemBase\listitem_layer.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\01. listitem</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\Util\log.h">
+      <Filter>02. Src\10. 工具\01. Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Base\Attribute\attributex64.h">
+      <Filter>02. Src\01. UI对象基类\04. attribute\x64</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\UIObject\ListCtrl\Reuse\listctrl_reuse.h">
+      <Filter>02. Src\02. UI对象\05. listctrl\09. reuse</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Other/dllmain.cpp">
+      <Filter>09. Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Other/stdafx.cpp">
+      <Filter>09. Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Other/UISDK.cpp">
+      <Filter>09. Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Message\message.cpp">
+      <Filter>02. Src\01. UI对象基类\01. message</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Message\imessage.cpp">
+      <Filter>02. Src\01. UI对象基类\01. message</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Log\log.cpp">
+      <Filter>02. Src\10. 工具\01. Log</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTest\message_unittest.cpp">
+      <Filter>08. UnitTest</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\objtree.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\iobject.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\color.cpp">
+      <Filter>02. Src\10. 工具</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\util.cpp">
+      <Filter>02. Src\10. 工具</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\xml\ixmlwrap.cpp">
+      <Filter>02. Src\04. 皮肤解析器\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\xml\xmlwrap.cpp">
+      <Filter>02. Src\04. 皮肤解析器\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\xml\pugixmlwrap\pugixmlwrap.cpp">
+      <Filter>02. Src\04. 皮肤解析器\xml\pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\mapattr\mapattr.cpp">
+      <Filter>02. Src\04. 皮肤解析器\mapattr</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\struct.cpp">
+      <Filter>02. Src\10. 工具</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\iuires.cpp">
+      <Filter>02. Src\03. 皮肤资源</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Atl\image.cpp">
+      <Filter>02. Src\10. 工具\03. Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Atl\iimage.cpp">
+      <Filter>02. Src\10. 工具\03. Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\colormanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\01. color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\colorres.cpp">
+      <Filter>02. Src\03. 皮肤资源\01. color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\skinres.cpp">
+      <Filter>02. Src\03. 皮肤资源</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\skinmanager.cpp">
+      <Filter>02. Src\03. 皮肤资源</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\imagemanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\imageres.cpp">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\gdi\gdipen.cpp">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\gdi\gdirender.cpp">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\gdi\gdibitmap.cpp">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\gdi\gdibrush.cpp">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\gdi\gdifont.cpp">
+      <Filter>02. Src\05. 图形渲染\01. gdi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\DPI\dpihelper.cpp">
+      <Filter>02. Src\10. 工具\04. DPI</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\RectArray\rectarray.cpp">
+      <Filter>02. Src\10. 工具\05. RectArray</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\renderbuffer.cpp">
+      <Filter>02. Src\05. 图形渲染</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\fontres.cpp">
+      <Filter>02. Src\03. 皮肤资源\03. font</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\fontmanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\03. font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\pugixml\pugixml.cpp">
+      <Filter>07. 3rd\pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIEffect\CacheBitmap\cachebitmap.cpp">
+      <Filter>02. Src\06. 特效\01. CacheBitmap</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\styleres.cpp">
+      <Filter>02. Src\03. 皮肤资源\04. style</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\stylemanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\04. style</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\layoutmanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\05. layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\uiapi.cpp">
+      <Filter>02. Src\10. 工具</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\skinparseengine.cpp">
+      <Filter>02. Src\04. 皮肤解析器</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Application\iuiapplication.cpp">
+      <Filter>02. Src\01. UI对象基类\03. application</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Application\uiapplication.cpp">
+      <Filter>02. Src\01. UI对象基类\03. application</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\version\versionhelper.cpp">
+      <Filter>02. Src\09. 辅助类\version</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\topwindow\topwindowmanager.cpp">
+      <Filter>02. Src\09. 辅助类\topwindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\tooltip\tooltipmanager.cpp">
+      <Filter>02. Src\09. 辅助类\tooltip</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\timer\timermanager.cpp">
+      <Filter>02. Src\09. 辅助类\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\msg\msghelper.cpp">
+      <Filter>02. Src\09. 辅助类\msg</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\layout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\layout_factory.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\averagelayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\canvaslayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\cardlayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\gridlayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\mousekeyboard\mkmgr.cpp">
+      <Filter>02. Src\09. 辅助类\mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\mousekeyboard\mousemanager.cpp">
+      <Filter>02. Src\09. 辅助类\mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Control\icontrol.cpp">
+      <Filter>02. Src\02. UI对象\01. control</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Control\control.cpp">
+      <Filter>02. Src\02. UI对象\01. control</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\HwndHost\IHwndHost.cpp">
+      <Filter>02. Src\02. UI对象\04. hwndhost</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\HwndHost\HwndHost.cpp">
+      <Filter>02. Src\02. UI对象\04. hwndhost</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Panel\ipanel.cpp">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Panel\panel.cpp">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\icustomwindow.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\iwindow.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\window.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\windowbase.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\customwindow.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object_rect.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object_attrib.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object_layer.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object_render.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\hardware_layer.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\layer.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\software_compositor.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\software_layer.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\compositor.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\hardware_compositor.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\ilayer.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Timeout\timeout.cpp">
+      <Filter>02. Src\10. 工具\06. Timeout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\renderbase\renderbase_factory.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\renderbase\irenderbase.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\renderbase\renderbase.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\colorrender\icolorrender.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase\color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\colorrender\colorrender.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase\color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\imagerender\imagerender.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase\image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\imagerender\iimagerender.cpp">
+      <Filter>02. Src\08. 渲染基类\renderbase\image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\textrenderbase\textrender_factory.cpp">
+      <Filter>02. Src\08. 渲染基类\textrender</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\textrenderbase\itextrenderbase.cpp">
+      <Filter>02. Src\08. 渲染基类\textrender</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderbase\textrenderbase\textrender.cpp">
+      <Filter>02. Src\08. 渲染基类\textrender</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\9region_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\09. 9region</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\attribute_alias.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\attribute_wrap.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\bool_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\02. bool</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\chararray_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\01. string</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\enum_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\08. enum</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\flags_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\06. flags</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\long_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\04. long</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\rect_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\03. rect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\renderbase_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\05. renderbase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\size_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\10. size</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\string_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\01. string</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\stringselect_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\07. stringselect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\textrenderbase_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\05. renderbase</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\windowrender.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\DWM\dwmhelper.cpp">
+      <Filter>02. Src\10. 工具\07. Dwm</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\datasource\skindatasource.cpp">
+      <Filter>02. Src\04. 皮肤解析器\datasource</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\datasource\File\filedatasource.cpp">
+      <Filter>02. Src\04. 皮肤解析器\datasource\file</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\datasource\File\filebufferreader.cpp">
+      <Filter>02. Src\04. 皮肤解析器\datasource\file</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\datasource\Zip\zipdatasource.cpp">
+      <Filter>02. Src\04. 皮肤解析器\datasource\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SkinParse\datasource\Zip\bytebufferreader.cpp">
+      <Filter>02. Src\04. 皮肤解析器\datasource\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Renderlibrary\renderlibrary.cpp">
+      <Filter>02. Src\05. 图形渲染</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\dragdrop\oledataobject.cpp">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\dragdrop\windowdragdropmgr.cpp">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\dragdrop\dragfeedback.cpp">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\dragdrop\dropsource.cpp">
+      <Filter>02. Src\09. 辅助类\dragdrop</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\gifres.cpp">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Gif\igifimage.cpp">
+      <Filter>02. Src\10. 工具\08. Gif</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Gif\GifImage.cpp">
+      <Filter>02. Src\10. 工具\08. Gif</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Gif\giftimermanager.cpp">
+      <Filter>02. Src\10. 工具\08. Gif</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\cursorres.cpp">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\Gesture\gesturehelper.cpp">
+      <Filter>02. Src\10. 工具\09. Gesture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\zip\ziputil.cpp">
+      <Filter>07. 3rd\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\zip\unzip.cpp">
+      <Filter>07. 3rd\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rd\zip\zip.cpp">
+      <Filter>07. 3rd\zip</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\uicursor.cpp">
+      <Filter>02. Src\03. 皮肤资源\02. image</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\iwndtransmode.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\wndtransmodebase.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\layered\layeredwrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\layered</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\aero\aerowrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\aero</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\alpha\alphawrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\alpha</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\anti\antiwrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\anti</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\color\colorwrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\iuiinterface.cpp">
+      <Filter>02. Src\09. 辅助类</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Accessible\object_accessible.cpp">
+      <Filter>02. Src\01. UI对象基类\05. accessible</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Accessible\accessibleimpl.cpp">
+      <Filter>02. Src\01. UI对象基类\05. accessible</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIEffect\blur\webkit\shadowblur.cpp">
+      <Filter>02. Src\06. 特效\02. blur\shadowblur</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\i18nmanager.cpp">
+      <Filter>02. Src\03. 皮肤资源\06. i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Resource\i18nres.cpp">
+      <Filter>02. Src\03. 皮肤资源\06. i18n</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\vertlayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Helper\layout\horzlayout.cpp">
+      <Filter>02. Src\09. 辅助类\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\wndtransmode\glow\glowwrap.cpp">
+      <Filter>02. Src\02. UI对象\03. window\transmode\glow</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\timeline.cpp">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\animatemgr.cpp">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\ianimate.cpp">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\storyboard.cpp">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\ease\beziertiming.cpp">
+      <Filter>02. Src\11. 动画\src\ease</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\ease\easing.cpp">
+      <Filter>02. Src\11. 动画\src\ease</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\wrap\animate.cpp">
+      <Filter>02. Src\11. 动画\src\wrap</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\listctrlbase_customitem.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\listctrlbase_dragdrop.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\listctrlbase_util.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ilistctrlbase.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\listctrlbase.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemBase\listitembase.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\01. listitem</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemBase\ilistitembase.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\01. listitem</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemLayout\listitemlayout.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\02. layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\03. rootpanel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\MouseKeyboard\listctrl_inner_drag.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\MouseKeyboard\listctrlmkmgr.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\MouseKeyboard\menumkmgr.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\04. mk</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\float\float_item_mgr.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\05. float</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\CustomItem\custom_listitem.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\06. customitem</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemTooltip\listitemtooltip.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\07. tooltip</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ScrollBar\smoothscroll.cpp">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ScrollBar\iscrollbarmanager.cpp">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ScrollBar\scrollbarmanager.cpp">
+      <Filter>02. Src\02. UI对象\06. scrollbar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\color_attribute.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute\11. color</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Animate\VSync.cpp">
+      <Filter>02. Src\11. 动画\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Layer\transform3d.cpp">
+      <Filter>02. Src\07. 分层</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\math\matrix.cpp">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\math\math.cpp">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\math\quad.cpp">
+      <Filter>02. Src\10. 工具\10. math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Attribute\attributebase.cpp">
+      <Filter>02. Src\01. UI对象基类\04. attribute</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Window\sync_window.cpp">
+      <Filter>02. Src\02. UI对象\03. window</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Util\RoundRect\roundrect.cpp">
+      <Filter>02. Src\10. 工具\11. roundrect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Panel\round_panel.cpp">
+      <Filter>02. Src\02. UI对象\02. panel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Panel\ScrollPanel\scrollpanel.cpp">
+      <Filter>02. Src\02. UI对象\07. scrollpanel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\Panel\ScrollPanel\iscrollpanel.cpp">
+      <Filter>02. Src\02. UI对象\07. scrollpanel</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Base\Object\object_animate.cpp">
+      <Filter>02. Src\01. UI对象基类\02. object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\animate_callback\listctrl_animate.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\animate_callback\listitem_move.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\animate_callback\listitem_animate.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\animate_callback\animate_wrap.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\08. animate</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\ListItemBase\listitem_layer.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\01. listitem</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\UIObject\ListCtrl\Reuse\listctrl_reuse.cpp">
+      <Filter>02. Src\02. UI对象\05. listctrl\09. reuse</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Other\UISDK.rc">
+      <Filter>09. Other</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Src\Base\Attribute\attributex64.asm">
+      <Filter>02. Src\01. UI对象基类\04. attribute\x64</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<skin>
+	<layout />
+  
+	<image>
+		<imagelist id="button.bkg" path="button.png" count="5" dpiadapt="0"/>
+    <image id="icon" path="icon.png"/>
+	</image>
+  
+	<font>
+		<item id="default" facename="宋体" size="9" />
+    <item id="default_bold" facename="微软雅黑" size="9" bold="1"/>
+	</font>
+  
+	<color>
+		<item id="white">255,255,255,255</item>
+		<item id="black">0,0,0,255</item>
+	</color>
+  
+  <style>
+    <Button 
+      transparent="1" 
+      bkgnd.render.type="theme.button"
+      bkgnd.render.theme.disable="1"
+      textrender.align="center|vcenter"
+      width="150"
+      height="50"/>
+
+    <class id="image_button"
+      bkgnd.render.type="imagelist"
+      bkgnd.render.image="button.bkg"
+      bkgnd.render.image.9region="5"
+      bkgnd.render.image.drawtype="stretch"/>
+
+    <id id="id_button" textrender.font="default_bold"/>
+    
+  </style>
+	<include>wnd.xml</include>
+</skin>

@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Other">
+      <UniqueIdentifier>{3e97f3f2-0acc-4dd1-ad33-0e69e64132fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inc">
+      <UniqueIdentifier>{f29b8b5b-8d99-4067-a5e6-44348b38c383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{088849de-3fc0-4297-bf9b-8cd1bacf9133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\d3d10">
+      <UniqueIdentifier>{7be64c16-46f9-4fb5-98df-8480d2538f7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\d3d10\common">
+      <UniqueIdentifier>{61481fd4-d5fc-422f-bc09-079f672d7256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{1ad7f85c-8b6e-4dd2-a3dc-23ecf523362b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Other/stdafx.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Other/targetver.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Other/UICompositor.h">
+      <Filter>Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Inc\inc.h">
+      <Filter>Inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\gpu_compositor.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\gpu_layer.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\hard3dtransform.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\texture_tile.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\texture_tile_array.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\common_def.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\d3d10\d3dapp.h">
+      <Filter>Src\d3d10</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\d3d10\common\Inputs.h">
+      <Filter>Src\d3d10\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\d3d10\common\RenderStates.h">
+      <Filter>Src\d3d10\common</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\d3d10\common\Effects.h">
+      <Filter>Src\d3d10\common</Filter>
+    </ClInclude>
+    <ClInclude Include="math\rect.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\size.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\color.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\matrix.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\point.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\quad.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Src\d3d10\common\Font.h">
+      <Filter>Src\d3d10\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Other/dllmain.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Other/stdafx.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Other/UICompositor.cpp">
+      <Filter>Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\gpu_layer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\hard3dtransform.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\ihardwarecompositor.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\texture_tile.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\texture_tile_array.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\gpu_compositor.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\d3d10\d3dapp.cpp">
+      <Filter>Src\d3d10</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\d3d10\common\Inputs.cpp">
+      <Filter>Src\d3d10\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\d3d10\common\RenderStates.cpp">
+      <Filter>Src\d3d10\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\d3d10\common\Effects.cpp">
+      <Filter>Src\d3d10\common</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\d3d10\common\Font.cpp">
+      <Filter>Src\d3d10\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Src\d3d10\d3d10.fx">
+      <Filter>Src\d3d10</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UICompositor.rc" />
+  </ItemGroup>
+</Project>
