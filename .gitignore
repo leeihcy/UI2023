@@ -1,5 +1,7 @@
 */.vs/
+.vscode/
 *.user
 .DS_Store
 Bin/
 Build/
+out/

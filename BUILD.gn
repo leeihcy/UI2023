@@ -1,0 +1,9 @@
+import("//build/config/common.gni")
+
+group("gn_all") {
+    deps = [
+        "//ui/sdk"
+    ]
+}
+
+ 
