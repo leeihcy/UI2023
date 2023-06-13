@@ -1,5 +1,6 @@
 #include "signalslot.h"
 
+#include <assert.h>
 #include <functional>
 
 static void slot1() {
@@ -22,10 +23,19 @@ static void test1() {
     sig2_1.connect(slot2, 5);
     sig2_1.emit(6);
     sig2_1.emit(7);
+
+	ui::signal<int(int,int)> sig3;
+	sig3.connect([](int a, int b) { return a+b; });
+    assert(7 == sig3.emit(3,4));
 }
 
+static void test2() {
+	ui::function_traits<int(int,int)>::return_type a = 0;
+    printf("%d\n", a);	
+}
 void signalslot_unittest() {
     test1();
+	test2();
 }
 
 int main() {

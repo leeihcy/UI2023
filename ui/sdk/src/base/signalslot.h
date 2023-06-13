@@ -23,7 +23,24 @@ namespace ui
 #define SLOT_FLAG_ORDER_LATE    0x80
 #define SLOT_FLAG_ORDER_MASK    0xF0
 
+	template<typename> struct function_traits;
 
+	template<typename Return, typename... Args>
+    struct function_traits<Return(Args...)> {
+		static constexpr bool is_void = false;
+		static constexpr bool is_method = false;
+		using return_type = Return;
+	};
+	template<typename... Args>
+    struct function_traits<void(Args...)> {
+		static constexpr bool is_void = true;
+		static constexpr bool is_method = false;
+		using return_type = void;
+	};
+	template<typename Return, typename Class, typename... Args>
+	struct function_traits<Return (Class::*)(Args...)> {
+		using return_type = Return;
+	};
 
 	template <typename Function, typename... BoundArgs>
 	class slot
@@ -67,6 +84,40 @@ namespace ui
 		std::tuple<BoundArgs...> m_bound_args;
 	};
 
+    template<bool has_return_type, typename Function>	
+	struct emitor;
+
+	template<typename Function>
+	struct emitor<true, Function> {
+		using ReturnType = typename function_traits<Function>::return_type;
+
+		template<typename... UnboundArgs>
+		ReturnType operator()(UnboundArgs... args) {
+         	/*auto iter = m_connections.begin();
+			decltype(iter) iterNext;
+            
+            ReturnType ret;
+			for (; iter != m_connections.end();)
+			{
+				// 避免在回调中移除自己
+				iterNext = iter;
+				++iterNext;
+
+				ret = (*iter).invoke(args...);
+
+				iter = iterNext;
+			}
+			return ret;*/
+			return 1;
+		}
+	};
+	template<typename Function>
+	struct emitor<false, Function> {
+		template<typename... UnboundArgs>
+		void operator()(UnboundArgs... args) {
+
+		}
+	};
 
 	// 信号、事件封装。
 	// 为了使代码更简洁，暂不去支持返回值模板。所有的回调函数都用void返回值
@@ -74,29 +125,27 @@ namespace ui
 	template <typename Function, typename... BoundArgs>
 	class signal
 	{
+		using ReturnType = typename function_traits<Function>::return_type;
 	public:
 		~signal()
 		{
 			disconnect_all();
 		}
 		// 提交
-		template<typename... UnboundArgs>
-		void emit(UnboundArgs... args)
+		//template<typename ReturnTypeT=ReturnType, typename... UnboundArgs>
+		template< typename... UnboundArgs>
+	    ReturnType emit(UnboundArgs... args) 
 		{
-			auto iter = m_connections.begin();
-			decltype(iter) iterNext;
+			constexpr bool is_void=function_traits<Function>::is_void;
 
-			for (; iter != m_connections.end();)
-			{
-				// 避免在回调中移除自己
-				iterNext = iter;
-				++iterNext;
-
-				(*iter).invoke(args...);
-
-				iter = iterNext;
-			}
+			// 当ReturnType是void时，可以直接return void
+			return emitor<!is_void, Function>()(args...);
 		}
+
+		//template<typename... UnboundArgs>
+		//void emit(UnboundArgs... args) {
+
+		//}
 
 		// callback，在每次通过后，判断是否需要执行下一个连接。
 		// callback 返回false，立即中断执行，返回true继续执行下一个连接
