@@ -1,10 +1,18 @@
 #ifndef SIGNALSLOT_H
 #define SIGNALSLOT_H
 
-#include <functional>
+// #include <functional>
 #include <list>
+#include <utility>
+#include <type_traits>
+
+#include "signalslot_internal.h"
 
 // 信号/槽 实现
+// 1. 不使用new/delete，只用栈对象。
+// 2. 兼容普通函数与成员函数
+// 3. 兼容函数指针与函数类型
+//
 // TODO: 1. 支持回调顺序
 // TODO: 2. 统一全都支持多对多，不再区分单一连接或者无返回值模式
 // TODO: 3. 多于多个slot且带返回值的模式，需要提供一个result combiner进行返回值的统一处理。
@@ -13,77 +21,59 @@
 
 namespace ui
 {
-// 默认是一个function
-#define SLOT_FLAG_METHOD   0x1
+    template <typename>
+    class invoke_base;
 
-// 执行顺序
-#define SLOT_FLAG_ORDER_EARLY   0x10
-#define SLOT_FLAG_ORDER_BEFORE  0x20
-#define SLOT_FLAG_ORDER_AFTER   0x40
-#define SLOT_FLAG_ORDER_LATE    0x80
-#define SLOT_FLAG_ORDER_MASK    0xF0
+    // template <typename Return, typename... Args>
+    // class invoke_base<Return(Args...)> {
+    // public:
+    //     virtual Return invoke(Args... args) = 0;
+    // };
 
-	template<typename> struct function_traits;
+    template <
+        typename Functor,
+        typename... BoundArgs>
+    class slot 
+    // : 
+    //     public invoke_base<
+    //         bind_args_helper<Functor, BoundArgs>::unbound_functor>
+    {
+        using Return = typename functor_traits<Functor>::return_type;
+	
+    public:
+        // 为了能够使用构造函数的模板参数推导，这里的参数要与类的模板形参保持一致
+        slot(Functor f, BoundArgs... bound_args) : 
+            m_functor(f), m_bound_args(bound_args...)
+        {
+        }
 
-	template<typename Return, typename... Args>
-    struct function_traits<Return(Args...)> {
-		static constexpr bool is_void = false;
-		static constexpr bool is_method = false;
-		using return_type = Return;
-	};
-	template<typename... Args>
-    struct function_traits<void(Args...)> {
-		static constexpr bool is_void = true;
-		static constexpr bool is_method = false;
-		using return_type = void;
-	};
-	template<typename Return, typename Class, typename... Args>
-	struct function_traits<Return (Class::*)(Args...)> {
-		using return_type = Return;
-	};
+        // Return invoke(bind_args_helper<Functor, BoundArgs>::unbound_args::types... unbound_args) override
+        template<typename... UnboundArgs>
+        Return invoke(UnboundArgs... unbound_args) 
+        {
+            constexpr size_t num_bound_args = std::tuple_size<decltype(m_bound_args)>::value;
+            return _invoke(std::make_index_sequence<num_bound_args>(), unbound_args...); 
+        }
 
-	template <typename Function, typename... BoundArgs>
-	class slot
-	{
-	public:
-		// 函数类型不能作为参数，这里将被转换成函数指针
-		slot(Function f, BoundArgs... bound_args) : 
-			m_func(f), 
-			m_bound_args(bound_args...)
-		{
-		}
-		bool equal(Function f)
-		{
-			// if (m_flags & SLOT_FLAG_METHOD)
-			//	return f == m_func && 
-			// return f == m_func;
-			return false;
-		}
-		
-		template<typename... Args>
-		auto invoke(Args... args)
-		{
-		    // Class *m_this;
-			// return (m_this->*m_func)(args...);
-			constexpr size_t num_bound_args = std::tuple_size<decltype(m_bound_args)>::value;
-			return invoke2(std::make_index_sequence<num_bound_args>(), args...);
-		}
+    private:
+        template <size_t... N, typename... Args>
+        auto _invoke(std::index_sequence<N...>, Args... args)
+        {
+            return functor_traits<Functor>::Invoke(
+                m_functor, std::get<N>(m_bound_args)..., args...);
+        }
 
-		template<typename... Args, size_t... N>
-		auto invoke2(std::index_sequence<N...>, Args... args) {
-			return m_func(std::get<N>(m_bound_args)..., args...);
-		}
+    private:
+        int m_flags = 0;
 
-	private:
-	    int m_flags = 0;
+        // 无论模板传入的是函数类型，还是函数指针，都统一转换成函数指针。
+        typename functor_traits<Functor>::Functor m_functor;
 
-		// 直接使用函数类型会报错，改为函数指针。
-		Function* m_func;
+        // 如果是method，则第一个参数是pthis
+        std::tuple<BoundArgs...> m_bound_args;
+    };
 
-		// 如果是method，则第一个参数是pthis
-		std::tuple<BoundArgs...> m_bound_args;
-	};
-
+#if 0
     template<bool has_return_type, typename Function>	
 	struct emitor;
 
@@ -108,6 +98,7 @@ namespace ui
 				iter = iterNext;
 			}
 			return ret;*/
+            std::thread t;
 			return 1;
 		}
 	};
@@ -119,168 +110,42 @@ namespace ui
 		}
 	};
 
-	// 信号、事件封装。
+	
+#endif
+
+#if 0
+    // 信号、事件封装。
 	// 为了使代码更简洁，暂不去支持返回值模板。所有的回调函数都用void返回值
 	// 支持多连接的版本multi connections
-	template <typename Function, typename... BoundArgs>
+	template <typename FunctionWithUnboundArgs>
 	class signal
 	{
-		using ReturnType = typename function_traits<Function>::return_type;
+		using Return = typename function_traits<FunctionWithUnboundArgs>::return_type;
 	public:
 		~signal()
 		{
-			disconnect_all();
 		}
+
+		template<typename Functor, typename... BoundArgs>
+		void connect(Functor f, BoundArgs... bound_args)
+		{
+			m_connections.push_back(slot<Functor, BoundArgs...>(f, bound_args...));						
+		}
+
 		// 提交
-		//template<typename ReturnTypeT=ReturnType, typename... UnboundArgs>
-		template< typename... UnboundArgs>
-	    ReturnType emit(UnboundArgs... args) 
-		{
-			constexpr bool is_void=function_traits<Function>::is_void;
+		// template< typename... UnboundArgs>
+	    // Return emit(UnboundArgs... args) 
+		// {
+		// 	constexpr bool is_void=function_traits<Function>::is_void;
 
-			// 当ReturnType是void时，可以直接return void
-			return emitor<!is_void, Function>()(args...);
-		}
-
-		//template<typename... UnboundArgs>
-		//void emit(UnboundArgs... args) {
-
-		//}
-
-		// callback，在每次通过后，判断是否需要执行下一个连接。
-		// callback 返回false，立即中断执行，返回true继续执行下一个连接
-/*		void emit_foreach(std::function<bool()> callback, Args... args)
-		{
-			auto iter = m_connections.begin();
-			decltype(iter) iterNext;
-
-			for (; iter != m_connections.end();)
-			{
-				// 避免在回调中移除自己
-				iterNext = iter;
-				++iterNext;
-
-				(*iter)->invoke(args...);
-				bool bContinue = callback();
-				if (!bContinue)
-					return;
-
-				iter = iterNext;
-			}
-		}
-*/
-		/* 暂不去考虑返回值
-		Return emit_return_last(Args... args)
-		{
-			Return ret;
-			for (auto i : m_connections)
-			{
-				ret = i->invoke(args...);
-			}
-
-			return ret;
-		}
-		*/
-
-		// 连接一个成员函数
-		/*template <typename Class>
-		void connect(Class *pThis, Return (Class::*pFunc)(Args...))
-		{
-			slot_base<Return, Args...> *p = new method_slot<Return, Class, Args...>(pThis, pFunc);
-			m_connections.push_back(p);
-		}*/
-
-		void connect(Function f, BoundArgs... bound_args)
-		{
-			m_connections.push_back(slot<Function, BoundArgs...>(f, bound_args...));						
-		}
-
-		// 连接一个全局函数
-		/*void connect(Return (*pFunc)(Args...))
-		{
-			slot_base<Return, Args...> *p = new function_slot<Return, Args...>(pFunc);
-			m_connections.push_back(p);
-		}*/
-
-
-
-		// 断开一个成员函数
-		/*template <typename Class>
-		void disconnect(Class *pThis, Return (Class::*pFunc)(Args...))
-		{
-			auto iter = m_connections.begin();
-			for (; iter != m_connections.end(); ++iter)
-			{
-				auto slot = *iter;
-				if (slot->type() != slot_method)
-					continue;
-
-				if (static_cast<method_slot<Return, Class, Args...> *>(slot)
-						->equal(pThis, pFunc))
-				{
-					(*iter)->release();
-					m_connections.erase(iter);
-					break;
-				}
-			}
-		}
-
-		// 断开一个对象下的所有连接
-		template <typename Class>
-		void disconnect(Class *pThis)
-		{
-			auto iter = m_connections.begin();
-			for (; iter != m_connections.end();)
-			{
-				auto slot = *iter;
-				if (slot->type() == slot_method)
-				{
-					if (static_cast<method_slot<Return, Class, Args...> *>(slot)
-							->equal(pThis))
-					{
-						delete (*iter);
-						iter = m_connections.erase(iter);
-						continue;
-					}
-				}
-
-				++iter;
-			}
-		}
-
-		// 断开一个全局函数
-		void disconnect(Return (*pFunc)(Args...))
-		{
-			auto iter = m_connections.begin();
-			for (; iter != m_connections.end(); ++iter)
-			{
-				auto slot = *iter;
-				if (slot->type() != slot_function)
-					continue;
-
-				if (static_cast<function_slot<Return, Args...> *>(slot)
-						->equal(pFunc))
-				{
-					delete (*iter);
-					m_connections.erase(iter);
-					break;
-				}
-			}
-		}
-*/
-		void disconnect_all()
-		{
-//			for (auto i : m_connections)
-//			{
-//				delete i;
-//			}
-//			m_connections.clear();
-		}
+		// 	// 当ReturnType是void时，可以直接return void
+		// 	return emitor<!is_void, Function>()(args...);
+		// }
 
 	protected:
 		std::list<slot<Function, BoundArgs...> > m_connections;
 	};
-
+    #endif
 }
 
 #endif
