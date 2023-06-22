@@ -36,53 +36,52 @@ void test_slot_function() {
     // 简单函数类型：void()
     { 
         slot<void()> s1(foo);
-        s1.invoke();
+        s1.emit();
         assert(FETCH(0) == 1);
     }
-
 
     // 带参数，带返回值函数类型：int(int, int)
     {
         slot<int(int, int)> s2(add);
-        assert(7 == s2.invoke(3, 4));
+        assert(7 == s2.emit(3, 4));
     }
 
     // 绑定1个参数
     {
         slot<int(int, int), int> s3(add, 3);
-        assert(7 == s3.invoke(4));
+        assert(7 == s3.emit(4));
     }
-    
+
     // 绑定2个参数
     {
         slot<int(int, int), int, int> s4(add, 3, 4);
-        assert(7 == s4.invoke());
+        assert(7 == s4.emit());
     }
 
     // 兼容函数指针
     {
         slot<void(*)()> s1(foo);
-        s1.invoke();
+        s1.emit();
         assert(FETCH(0) == 1);
 
         slot<int(*)(int,int)> s2(add);
-        assert(7 == s2.invoke(3, 4));
+        assert(7 == s2.emit(3, 4));
 
         slot<int(*)(int,int), int> s3(add, 3);
-        assert(7 == s3.invoke(4));
+        assert(7 == s3.emit(4));
 
         slot<int(*)(int,int), int, int> s4(add, 3, 4);
-        assert(7 == s4.invoke());
+        assert(7 == s4.emit());
     }
 
     // 直接推导模板
     {
-        slot(foo).invoke();
+        slot(foo).emit();
         assert(FETCH(0) == 1);
 
-        assert(7 == slot(add).invoke(3, 4));
-        assert(7 == slot(add, 3).invoke(4));
-        assert(7 == slot(add, 3, 4).invoke());
+        assert(7 == slot(add).emit(3, 4));
+        assert(7 == slot(add, 3).emit(4));
+        assert(7 == slot(add, 3, 4).emit());
     }
 }
 
@@ -93,45 +92,64 @@ void test_slot_method() {
 
     // 成员函数指针
     slot<int(Math::*)(int,int), Math*> s1(&Math::add, &math);
-    assert(7 == s1.invoke(3, 4));
+    assert(7 == s1.emit(3, 4));
 
     // 参数绑定
     {
         slot<int(Math::*)(int,int)> s1(&Math::add);
-        assert(7 == s1.invoke(&math, 3, 4));
+        assert(7 == s1.emit(&math, 3, 4));
 
         slot<int(Math::*)(int,int), Math*, int> s2(&Math::add, &math, 3);
-        assert(7 == s2.invoke(4));
+        assert(7 == s2.emit(4));
 
         slot<int(Math::*)(int,int), Math*, int, int> s3(&Math::add, &math, 3, 4);
-        assert(7 == s3.invoke());
+        assert(7 == s3.emit());
     }
 
     // 静态成员函数
     {
         slot<void(*)()> s1(&Math::foo);
-        s1.invoke();
+        s1.emit();
         assert(FETCH(0) == 2);
 
         slot<void()> s2(&Math::foo);
-        s2.invoke();
+        s2.emit();
         assert(FETCH(0) == 2);
 
-        slot(&Math::foo).invoke();
+        slot(&Math::foo).emit();
         assert(FETCH(0) == 2);
     }
 
     // 自动推导
-    assert(7 == slot(&Math::add).invoke(&math, 3, 4));
-    assert(7 == slot(&Math::add, &math).invoke(3, 4));
-    assert(7 == slot(&Math::add, &math, 3).invoke(4));
-    assert(7 == slot(&Math::add, &math, 3, 4).invoke());
+    assert(7 == slot(&Math::add).emit(&math, 3, 4));
+    assert(7 == slot(&Math::add, &math).emit(3, 4));
+    assert(7 == slot(&Math::add, &math, 3).emit(4));
+    assert(7 == slot(&Math::add, &math, 3, 4).emit());
 
     // TODO: 与普通函数统一
     // {
     //     slot<int(int,int), Math*> s1(&Math::add, &math);
-    //     assert(7 == s1.invoke(3, 4));
+    //     assert(7 == s1.emit(3, 4));
     // }
+}
+
+void test_slot_base()
+{
+    Math math;
+
+    slot<int(int, int)> s1(&add);
+    slot<int(Math::*)(int,int), Math*> s2(&Math::add, &math);
+
+    assert(7 == s1.emit(3,4));
+    assert(7 == s2.emit(3,4));
+
+    // 两个slot其实可以共用一个基类。
+    slot_base<int(int,int)>* sb[2];
+    sb[0] = static_cast<slot_base<int(int,int)>*>(&s1);
+    sb[1] = static_cast<slot_base<int(int,int)>*>(&s2);
+    for (int i = 0; i < 2; i++) {
+        assert(7 == sb[i]->emit(3,4));
+    }
 }
 
 void test_signal() {
@@ -143,6 +161,8 @@ void test_signal() {
 void signalslot_unittest() {
     test_slot_function();
     test_slot_method();
+
+    test_slot_base();
 
     test_signal();
 }

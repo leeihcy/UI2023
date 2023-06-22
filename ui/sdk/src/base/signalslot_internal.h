@@ -50,9 +50,9 @@ namespace ui
 
 
     // ------------------------------------------------------
+#if 1
     template<typename... args>
     struct type_list {
-        // using types = args...;
     };
 
     template<size_t num, typename>
@@ -62,16 +62,15 @@ namespace ui
     struct type_list_drop<N, type_list<T, otherargs...> > 
     : public type_list_drop<N-1, type_list<otherargs...> > {};
 
-    template<typename... args>
-    struct type_list_drop<0, type_list<args...>> {
-        using type = type_list<args...>;
+    template<typename T, typename... otherargs>
+    struct type_list_drop<0, type_list<T, otherargs...>> {
+        using type = type_list<T, otherargs...>;
     };
-
-    // template<>
-    // struct type_list_drop<0, type_list<>> {
-    //     using value = type_list<>
-    // }
-
+    template<>
+    struct type_list_drop<0, type_list<>> {
+        using type = type_list<>;
+    };
+#endif 
     // ------------------------------------------------------
     // 获取函数指针的各种属性
     template <typename>
@@ -88,7 +87,7 @@ namespace ui
         using args_list = type_list<Args...>;
 
         template <typename Functor>
-        static Return Invoke(Functor functor, Args... args) {
+        static Return Run(Functor functor, Args... args) {
             return functor(args...);
         }
     };
@@ -104,8 +103,7 @@ namespace ui
         using Functor = Return (*)(Args...);
         using args_list = type_list<Args...>;
 
-        template <typename Functor>
-        static Return Invoke(Functor functor, Args... args) {
+        static Return Run(Functor functor, Args... args) {
             return functor(args...);
         }
     };
@@ -120,8 +118,8 @@ namespace ui
         using Functor = void (*)(Args...);
         using args_list = type_list<Args...>;
 
-        template <typename Functor>
-        static void Invoke(Functor functor, Args... args) {
+        // template <typename Functor>
+        static void Run(Functor functor, Args... args) {
             functor(args...);
         }
     };
@@ -137,8 +135,8 @@ namespace ui
         using Functor = void (*)(Args...);
         using args_list = type_list<Args...>;
 
-        template <typename Functor>
-        static void Invoke(Functor functor, Args... args) {
+        // template <typename Functor>
+        static void Run(Functor functor, Args... args) {
             functor(args...);
         }
     };
@@ -155,7 +153,7 @@ namespace ui
         using args_list = type_list<Args...>;
 
         template <typename Method>
-        static Return Invoke(Method method, Class* pthis, Args... args) {
+        static Return Run(Method method, Class* pthis, Args... args) {
             return (pthis->*method)(args...);
         }
     };
@@ -170,7 +168,7 @@ namespace ui
         using args_list = type_list<Args...>;
 
         template <typename Method>
-        static void Invoke(Method method, Class* pthis, Args... args) {
+        static void Runq(Method method, Class* pthis, Args... args) {
             (pthis->*method)(args...);
         }
     };
@@ -188,16 +186,36 @@ namespace ui
     };
 
     // 参数绑定的一些处理
-    template<typename Functor, typename... BoundArgs>
-    struct bind_args_helper {
+    template<typename, typename...>
+    struct bind_args_helper;
+
+    template<typename Return, typename... Args, typename... BoundArgs>
+    struct bind_args_helper<Return(*)(Args...), BoundArgs...> {
         static constexpr size_t bounds_count = sizeof...(BoundArgs);
 
-        using return_type = typename functor_traits<Functor>::return_type;
-        using args = typename functor_traits<Functor>::args_list;
-        using unbound_args = typename type_list_drop<bounds_count, args>::type;
-        using unbound_functor = typename type_list_unref<return_type, unbound_args>::Functor;
+        using unbound_args = typename type_list_drop<bounds_count, type_list<Args...>>::type;
+        using unbound_functor = typename type_list_unref<Return, unbound_args>::Functor;
+        using unbound_function = typename type_list_unref<Return, unbound_args>::Function;
     };
 
+    template<typename Return, typename... Args, typename... BoundArgs>
+    struct bind_args_helper<Return(Args...), BoundArgs...> {
+        static constexpr size_t bounds_count = sizeof...(BoundArgs);
+
+        using unbound_args = typename type_list_drop<bounds_count, type_list<Args...>>::type;
+        using unbound_functor = typename type_list_unref<Return, unbound_args>::Functor;
+        using unbound_function = typename type_list_unref<Return, unbound_args>::Function;
+    };
+
+    template<typename Return, typename Class, typename... Args, typename... BoundArgs>
+    struct bind_args_helper<Return(Class::*)(Args...), BoundArgs...> {
+        static constexpr size_t bounds_count = sizeof...(BoundArgs);
+
+        using unbound_args = typename type_list_drop<bounds_count, type_list<Class*, Args...>>::type;
+        using unbound_functor = typename type_list_unref<Return, unbound_args>::Functor;
+        using unbound_function = typename type_list_unref<Return, unbound_args>::Function;
+
+    };
 }
 
 #endif
