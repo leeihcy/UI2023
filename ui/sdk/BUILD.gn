@@ -11,17 +11,16 @@ executable("unittest") {
         "-ldl"
     ]
 
-if (is_debug) {
-    cflags += [
-        "-g",
-    ]
-}
+    if (is_debug) {
+        cflags += [
+            "-g",
+        ]
+    }
 
-print(cflags)
-
+    print(cflags)
 
     sources = [
-        "src/base/signalslot_unittest.cpp"
+        "src/base/signalslot/signalslot_unittest.cpp"
     ]
 } 
 

@@ -1,4 +1,4 @@
-#include "signalslot.h"
+#include "signal.h"
 
 #include <assert.h>
 #include <functional>
@@ -14,19 +14,31 @@ int FETCH(int index) {
 
 static void foo() {
     // printf("this is foo\n");
-    STACK[0] = 1;
+    STACK[0] = STACK[0] + 1;
 }
 static int add(int a, int b) {
-    // printf("this is add: %d, %d\n", a, b);
     return a+b;
 }
+static int sub(int a, int b) {
+    return a-b;
+}
+static int multiply(int a, int b) {
+    return a*b;
+}
+static int divide(int a, int b) {
+    return a/b;
+}
+
 class Math {
 public:
 	int add(int a, int b) {
 		return a+b;
 	}
-    static void foo() {
-        STACK[0] = 2;
+    void foo() {
+        STACK[0] = STACK[0] + 1;
+    }
+    static void bar() {
+        STACK[0] = STACK[0] + 2;
     }
 };
 
@@ -108,15 +120,15 @@ void test_slot_method() {
 
     // 静态成员函数
     {
-        slot<void(*)()> s1(&Math::foo);
+        slot<void(*)()> s1(&Math::bar);
         s1.emit();
         assert(FETCH(0) == 2);
 
-        slot<void()> s2(&Math::foo);
+        slot<void()> s2(&Math::bar);
         s2.emit();
         assert(FETCH(0) == 2);
 
-        slot(&Math::foo).emit();
+        slot(&Math::bar).emit();
         assert(FETCH(0) == 2);
     }
 
@@ -152,10 +164,120 @@ void test_slot_base()
     }
 }
 
-void test_signal() {
-    //  signal<void()> s;
-    //  s.connect(&foo);
-    //s.emit();
+void test_signal_void() {
+    Math math;
+
+    // void() 
+    {
+        ui::signal<void()> s;
+        s.connect(&foo);
+        s.emit();
+        assert(FETCH(0) == 1);
+    }
+
+    // 多个void ()
+    {
+        ui::signal<void()> s;
+        s.connect(&foo);
+        s.connect(&foo);
+        s.connect(&foo);
+        s.emit();
+        assert(FETCH(0) == 3);
+    }
+
+    // 成员函数
+    {
+        ui::signal<void()> s;
+        s.connect(&Math::foo, &math);
+        s.emit();
+        assert(FETCH(0) == 1);
+
+        ui::signal<void(Math*)> s2;
+        s2.connect(&Math::foo);
+        s2.emit(&math);
+        assert(FETCH(0) == 1);
+    }
+    {
+        ui::signal<void()> s;
+        s.connect(&Math::foo, &math);
+        s.connect(&Math::foo, &math);
+        s.connect(&Math::foo, &math);
+        s.emit();
+        assert(FETCH(0) == 3);
+    }
+
+    // 静态成员函数
+    {
+        ui::signal<void()> s;
+        s.connect(&Math::bar);
+        s.emit();
+        assert(FETCH(0) == 2);
+    }
+
+    // 同时连接function与method
+    {
+        ui::signal<void()> s;
+        s.connect(&Math::foo, &math);
+        s.connect(&foo);
+        s.emit();
+        assert(FETCH(0) == 2);
+    }
+
+    // 空
+    {
+        ui::signal<void()> s;
+        s.emit();
+    }
+}
+
+struct ResultCombinerMax {
+    void feed(int return_value) {
+      m_value = std::max(m_value, return_value);
+    }
+    int m_value = 0;
+};
+
+void test_signal_return()
+{
+    Math math;
+
+    // 单个 int(int,int)
+    {
+        ui::signal<int(int,int)> s;
+        s.connect(&add);
+        assert(7 == s.emit(3, 4));
+
+        ui::signal<int(int,int)> s2;
+        s2.connect(&Math::add, &math);
+        assert(7 == s2.emit(3, 4));
+    }
+
+    // 多个 int(int,int)，结果取最后一个。
+    {
+        ui::signal<int(int,int)> s;
+        s.connect(&add);
+        s.connect(&sub);
+        assert(-1 == s.emit(3, 4));
+
+        ui::signal<int(int,int)> s2;
+        s2.connect(&sub);
+        s2.connect(&Math::add, &math);
+        s2.connect(&multiply);
+        assert(12 == s2.emit(3, 4));
+    }
+
+    // 自定义 result combiner
+    {
+        ui::signal<int(int,int)> s2;
+        s2.connect(&multiply);
+        s2.connect(&add);
+        s2.connect(&divide);
+        s2.connect(&sub);
+
+        ResultCombinerMax combiner;
+        s2.emit_with_combiner(&combiner, 3, 4);
+        assert(combiner.m_value == 12);
+    }
 }
 
 void signalslot_unittest() {
@@ -164,7 +286,8 @@ void signalslot_unittest() {
 
     test_slot_base();
 
-    test_signal();
+    test_signal_void();
+    test_signal_return();
 }
 
 int main() {

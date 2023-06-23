@@ -1,5 +1,5 @@
-#ifndef SIGNALSLOT_INTERNAL_H
-#define SIGNALSLOT_INTERNAL_H
+#ifndef _SIGNALSLOT_INTERNAL_H_
+#define _SIGNALSLOT_INTERNAL_H_
 namespace ui
 {
 
@@ -168,7 +168,7 @@ namespace ui
         using args_list = type_list<Args...>;
 
         template <typename Method>
-        static void Runq(Method method, Class* pthis, Args... args) {
+        static void Run(Method method, Class* pthis, Args... args) {
             (pthis->*method)(args...);
         }
     };
