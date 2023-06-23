@@ -5,20 +5,32 @@
 #include <type_traits>
 #include <tuple>
 
-#include "slot_internal.h"
+#include "slot_functor.h"
 
-// 信号/槽 实现
+// 术语：
+// slot:     一个回调函数，包含绑定的参数列表
+// signal:   一组同一函数类型的回调函数，相当于slot数组。
+// function: 函数类型 void()
+// functor:  函数指针 void(*)()
+// combiner: 多个返回值的合并处理对象
+// 
+// 实现目标
 // 1. 不使用虚函数
 // 2. 兼容普通函数与成员函数
 // 3. 兼容函数指针与函数类型
 // 4. 多于多个slot且带返回值的模式，提供一个combiner进行返回值的统一处理。
-// 5. signal默认支持多对多，不再区分单一连接或者无返回值模式
+// 5. signal默认支持多个slot
 //
 // TODO: 1. 支持回调顺序
-// TODO: 4. class对象的生命周期处理，已释放的对象，怎么及时断开，weakptr?
+// TODO: 2. class对象的生命周期处理，已释放的对象，怎么及时断开，weakptr?
 
 namespace ui
 {
+    template<typename, typename>
+    struct run_helper;
+    template<typename>
+    class slot_base;
+
     // 无模板参数
     // 将信息隐藏在子类型中，在实际使用中，通过强制类型转换为slot_data_impl进行调用。
     struct slot_data {
@@ -35,48 +47,11 @@ namespace ui
         Deletor m_pfn_delete = nullptr;
     };
 
-    // 关键函数：
-    // bound 与 unbound 在这里汇合
-    template<typename , typename>
-    struct run_helper;
-    template<typename SlotDataImpl, typename Return, typename... UnboundArgs>
-    struct run_helper<SlotDataImpl, Return(*)(UnboundArgs...)> {
-        using FunctorTraits = typename SlotDataImpl::FunctorTraits;
-
-        // 作为一个函数地址，被记录在slot_data::m_pfn_run中。
-        // 在slot_base::emit中被调用
-        static Return run(slot_data* base, UnboundArgs... unbound_args) {
-            SlotDataImpl* data = static_cast<SlotDataImpl*>(base);
-
-            constexpr size_t num_bound_args = std::tuple_size<
-                decltype(data->m_bound_args)>::value;
-
-            return run_impl(
-                base, 
-                std::make_index_sequence<num_bound_args>(), 
-                unbound_args...); 
-        }
-
-        template <size_t... N>
-        static Return run_impl(
-            slot_data* base, 
-            std::index_sequence<N...>, 
-            UnboundArgs... unbound_args)
-        {
-            SlotDataImpl* data = static_cast<SlotDataImpl*>(base);
-            return FunctorTraits::Run(
-                data->m_functor,
-                std::get<N>(data->m_bound_args)..., 
-                unbound_args...);
-        }
-    };
-
     template<typename Functor, typename... BoundArgs>
     struct slot_data_impl : public slot_data {
         using FunctorTraits = functor_traits<Functor>;
-        using Return = typename FunctorTraits::return_type;
         using Self = slot_data_impl<Functor, BoundArgs...>;
-        using UnboundFunctor = typename bind_args_helper<Functor, BoundArgs...>::unbound_functor;
+        using UnboundFunctor = typename functor_bound<Functor, BoundArgs...>::UnboundFunctor;
         using RunHelper = run_helper<Self, UnboundFunctor>;
         
         slot_data_impl(Functor f, BoundArgs... bound_args)
@@ -104,10 +79,6 @@ namespace ui
         // 如果是method，则第一个参数是pthis
         std::tuple<BoundArgs...> m_bound_args;
     };
-
-
-    template<typename>
-    class slot_base;
 
     // 记录最终调用的参数信息，用于保存到signal中
     template <typename Return, typename... UnboundArgs>
@@ -138,17 +109,50 @@ namespace ui
     // 然后将数据交给slot_base，变成unbound形式
     template <typename Functor, typename... BoundArgs>
     class slot : public slot_base<
-            typename bind_args_helper<Functor, BoundArgs...>::unbound_function>
+            typename functor_bound<Functor, BoundArgs...>::UnboundFunction>
     {
     public:
-        using Return = typename functor_traits<Functor>::return_type;
         using SlotBase = slot_base<
-            typename bind_args_helper<Functor, BoundArgs...>::unbound_function>;
+            typename functor_bound<Functor, BoundArgs...>::UnboundFunction>;
 
         // 为了能够使用构造函数的模板参数推导，这里的参数要与类的模板形参保持一致
         slot(Functor f, BoundArgs... bound_args) : 
             SlotBase(slot_data_impl<Functor, BoundArgs...>::create(f, bound_args...))
         { }
+    };
+
+    // 关键函数：
+    // bound 与 unbound 在这里汇合
+    template<typename SlotDataImpl, typename Return, typename... UnboundArgs>
+    struct run_helper<SlotDataImpl, Return(*)(UnboundArgs...)> {
+        using FunctorTraits = typename SlotDataImpl::FunctorTraits;
+
+        // 作为一个函数地址，被记录在slot_data::m_pfn_run中。
+        // 在slot_base::emit中被调用
+        static Return run(slot_data* base, UnboundArgs... unbound_args) {
+            SlotDataImpl* data = static_cast<SlotDataImpl*>(base);
+
+            constexpr size_t num_bound_args = std::tuple_size<
+                decltype(data->m_bound_args)>::value;
+
+            return run_impl(
+                base, 
+                std::make_index_sequence<num_bound_args>(), 
+                unbound_args...); 
+        }
+
+        template <size_t... N>
+        static Return run_impl(
+            slot_data* base, 
+            std::index_sequence<N...>, 
+            UnboundArgs... unbound_args)
+        {
+            SlotDataImpl* data = static_cast<SlotDataImpl*>(base);
+            return FunctorTraits::Run(
+                data->m_functor,
+                std::get<N>(data->m_bound_args)..., 
+                unbound_args...);
+        }
     };
 }
 

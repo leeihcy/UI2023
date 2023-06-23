@@ -2,26 +2,15 @@
 #define _SIGNALSLOT_SIGNAL_H_
 
 #include <vector>
-#include <optional>
 #include "slot.h"
 
 namespace ui
 {
-
-    template<typename Return>
-    struct combiner_last {
-        void hit(Return temp) {
-            m_value = temp;
-        }
-
-        // c++17
-        // 有可能是empty signal，return可以是空值。
-        std::optional<Return> m_value;
-    };
-
-
     template<typename>	
 	struct emitor;
+    template <typename>
+	class signal;
+
 
 	template<typename Return, typename... Args>
 	struct emitor<Return(Args...)> {
@@ -40,11 +29,8 @@ namespace ui
 
         // 由combiner收集调用结果
         template<typename Combiner>
-        static void emit_with_combiner(
-            Combiner* combiner,
-            slot_base<Return(Args...)>** s, 
-            int count, 
-            Args... args) 
+        static void emit_with_combiner(Combiner* combiner,
+            slot_base<Return(Args...)>** s, int count, Args... args) 
         {
             if (!combiner) {
                 return;
@@ -56,10 +42,7 @@ namespace ui
 	};
 	template<typename... Args>
 	struct emitor<void(Args...)> {
-		static void emit(
-            slot_base<void(Args...)>** s, 
-            int count, 
-            Args... args) 
+		static void emit(slot_base<void(Args...)>** s, int count, Args... args) 
         {
             for (int i = 0; i < count; i++) {
                 s[i]->emit(args...);
@@ -67,19 +50,13 @@ namespace ui
 		}
 	};
 
-
-
     // signal
-    template <typename>
-	class signal;
-
 	template <
         typename Return, 
         typename... UnboundArgs>
 	class signal<Return(UnboundArgs...)>
 	{
         using SlotBase = slot_base<Return(UnboundArgs...)>;
-
 	public:
 		~signal()
 		{
@@ -103,7 +80,16 @@ namespace ui
 		}
 
         // 将所有所回值交给外部处理处理，Combiner对象由外部传递，只需要满足
-        // 具备成员函数 void feed(Return) 即可。
+        // 具备成员函数 void feed(Return) 即可。不一定非要是模板类。
+        /*
+            template<typename Return>
+            struct combiner_last {
+                void hit(Return temp) {
+                    m_value = temp;
+                }
+                std::optional<Return> m_value;
+            };
+        */
         template<typename Combiner>
         void emit_with_combiner(Combiner* return_combiner, UnboundArgs... args) 
 		{
@@ -115,7 +101,6 @@ namespace ui
                 m_slots.size(),
                 args...);
 		}
-
 
 	protected:
 		std::vector<SlotBase* > m_slots;
