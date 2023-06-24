@@ -6,7 +6,7 @@ namespace ui
 class UIApplication
 {
 public:
-    void  UIApplication::MsgHandleLoop(bool* pbQuitLoopRef);
+    void  MsgHandleLoop(bool* pbQuitLoopRef);
     
 };
 } // namespace ui

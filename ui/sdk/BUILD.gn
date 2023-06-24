@@ -9,7 +9,7 @@
 config("unittest_common") {
         cflags = [
         "-std=c++17",
-        "-ldl"
+        # "-ldl"
     ]
     if (is_debug) {
         cflags += ["-g"]
@@ -23,6 +23,16 @@ executable("signalslot_unittest") {
 executable("weakptr_unittest") {
     public_configs = [":unittest_common"]
     sources = ["src/base/weakptr/weakptr_unittest.cpp"]
+}
+executable("message_loop_unittest") {
+    public_configs = [":unittest_common"]
+    libs = ["glib-2.0"]
+    cflags = exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
+    sources = [
+        "src/object/message_loop.cpp",
+        "src/object/message_loop_linux.cpp",
+        "src/object/message_loop_unittest.cpp"
+    ]
 }
 
 # group("samples") {

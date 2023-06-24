@@ -36,7 +36,7 @@ void test_destructor() {
     weakptr<Math> mathptr;
     assert(!mathptr);
 
-    printf("enter-----\n");
+    // printf("enter-----\n");
     {
         Math math;
         mathptr = math.m_weakptr_factory.get();
@@ -48,14 +48,17 @@ void test_destructor() {
         mathptr2->foo();
         weakptr<Math> mathptr3(mathptr);
         mathptr3->foo();
+
+        assert(FETCH(0) == 3);
     }
-    printf("exit-----\n");
+    // printf("exit-----\n");
 
     // 对象释放后可检测出来
     assert(!mathptr);
     if (mathptr) {
         mathptr->foo();
     }
+    assert(FETCH(0) == 0);
 }
 
 void test_slot() {
@@ -87,7 +90,7 @@ void test_slot() {
 }
 
 void weakptr_unittest() {
-    //test_destructor();
+    test_destructor();
     test_slot();
 }
 

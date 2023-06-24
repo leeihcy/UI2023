@@ -36,7 +36,7 @@ namespace ui
 //  WaitMessage();  这里并不会立即返回，xxx消息已被标识为旧消息。除非有一个新的
 //  消息到来才能使WaitMessage返回。
 //
-void  MessageLoop::MsgHandleLoop(bool* pbQuitLoopRef)
+void MessageLoop::Run(bool* quit_ref)
 {
 	DWORD    dwRet = 0;
     DWORD&   nCount = m_WaitForHandlesMgr.m_nHandleCount;
@@ -45,10 +45,10 @@ void  MessageLoop::MsgHandleLoop(bool* pbQuitLoopRef)
 
     // 会传递pbQuitLoopRef参数的，有可能是Modal类型的菜单，这种情况下需要更多的条件判断
     // 因此单独用一个分支来优化
-    if (pbQuitLoopRef)
+    if (quit_ref)
     {
         bool   bExit = false;
-        bool&  bQuitRef = (pbQuitLoopRef==nullptr ? bExit : *pbQuitLoopRef);
+        bool&  bQuitRef = (quit_ref==nullptr ? bExit : *quit_ref);
 	    while (false == bQuitRef)
 	    {
 		    dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
