@@ -1,35 +1,36 @@
 
-executable("sample_01") {
-    # public_configs = [ ":common" ]
-    sources = [
-        "test/sample_01.cpp",
-    ]
-}
-executable("unittest") {
+# executable("sample_01") {
+#     # public_configs = [ ":common" ]
+#     sources = [
+#         "test/sample_01.cpp",
+#     ]
+# }
+
+config("unittest_common") {
         cflags = [
         "-std=c++17",
         "-ldl"
     ]
-
     if (is_debug) {
-        cflags += [
-            "-g",
-        ]
+        cflags += ["-g"]
     }
-
-    print(cflags)
-
-    sources = [
-        "src/base/signalslot/signalslot_unittest.cpp"
-    ]
-} 
-
-group("samples") {
-    print("samples")
-    deps = [
-        ":sample_01"
-    ]
 }
+
+executable("signalslot_unittest") {
+    public_configs = [":unittest_common"]
+    sources = ["src/base/signalslot/signalslot_unittest.cpp"]
+}
+executable("weakptr_unittest") {
+    public_configs = [":unittest_common"]
+    sources = ["src/base/weakptr/weakptr_unittest.cpp"]
+}
+
+# group("samples") {
+#     print("samples")
+#     deps = [
+#         ":sample_01"
+#     ]
+# }
 
 group("sdk") {
     print("sdk")

@@ -12,7 +12,7 @@
 // signal:   一组同一函数类型的回调函数，相当于slot数组。
 // function: 函数类型 void()
 // functor:  函数指针 void(*)()
-// combiner: 多个返回值的合并处理对象
+// combiner: connect多个slot时，多个返回值的合并处理对象
 // 
 // 实现目标
 // 1. 不使用虚函数
@@ -23,6 +23,7 @@
 //
 // TODO: 1. 支持回调顺序
 // TODO: 2. class对象的生命周期处理，已释放的对象，怎么及时断开，weakptr?
+// TODO: 3. 引用类型、&&类型、const类型兼容
 
 namespace ui
 {
