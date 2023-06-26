@@ -80,6 +80,13 @@ public:
         return_combiner, &m_slots[0], m_slots.size(), args...);
   }
 
+  bool empty() {
+    return m_slots.empty();
+  }
+  void clear() {
+    m_slots.clear();
+  }
+
 protected:
   std::vector<SlotBase> m_slots;
 };

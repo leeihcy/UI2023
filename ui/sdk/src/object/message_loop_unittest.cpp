@@ -1,13 +1,26 @@
 #include "message_loop.h"
 using namespace ui;
 
-void task_test(MessageLoop* loop) {
-    loop->Quit();
+void idle_task(MessageLoop* loop) {
+    printf("idle_task\n");
+    // loop->Quit();
+}
+bool timeout_task(MessageLoop* loop) {
+    static int hitcount = 0;
+    hitcount ++;
+
+    printf("timeout_task: %d\n", hitcount);
+    bool continue_ = hitcount < 3;
+    if (!continue_) {
+        loop->Quit();
+    }
+    return continue_;
 }
 
 void test1() {
     MessageLoop loop;
-    loop.AddIdleTask(Slot(task_test, &loop));
+    loop.AddIdleTask(Slot(idle_task, &loop));
+    loop.AddTimeout(1000, Slot(timeout_task, &loop));
     loop.Run();
 }
 

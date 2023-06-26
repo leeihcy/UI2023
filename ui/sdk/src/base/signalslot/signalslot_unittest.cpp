@@ -28,7 +28,6 @@ public:
   static void bar() { STACK[0] = STACK[0] + 2; }
 };
 
-// Slot 功能测试
 void test_slot_function() {
 
   // 简单函数类型：void()
@@ -83,7 +82,6 @@ void test_slot_function() {
   }
 }
 
-// sloto功能测试2
 void test_slot_method() {
 
   Math math;
@@ -129,6 +127,42 @@ void test_slot_method() {
   //     Slot<int(int,int), Math*> s1(&Math::add, &math);
   //     assert(7 == s1.emit(3, 4));
   // }
+}
+
+void test_slot_lambda() {
+  // void()
+  {
+    Slot<void()> s1([]() { 
+        STACK[0] = 3; 
+    });
+    s1.emit();
+    assert(FETCH(0) == 3);
+  }
+
+  // int(int, int)
+  {
+    Slot<int(int, int)> s1([](int a, int b)->int { 
+        return a+b;
+    });
+    assert(7 == s1.emit(3, 4));
+  }
+
+  // bound args
+ {
+    Slot<int(int, int), int> s1([](int a, int b)->int { 
+        return a+b;
+    }, 3);
+    assert(7 == s1.emit(4));
+  }
+
+  // capture
+  {
+    // int c = 5;
+    // Slot<int(int, int)> s1([c](int a, int b)->int { 
+    //     return a+b+c;
+    // });
+    // assert(12 == s1.emit(3, 4));
+  }
 }
 
 void test_slot_base() {
@@ -286,6 +320,7 @@ void test_pass_slot_as_arg() {
 void signalslot_unittest() {
   test_slot_function();
   test_slot_method();
+  test_slot_lambda();
 
   test_slot_base();
 
