@@ -1,0 +1,13 @@
+
+
+executable("hello") {
+    deps = [
+        "//ui/sdk:sdk"
+    ]
+    include_dirs = [
+        "//"
+    ]
+    sources = [
+        "main.cc"
+    ]
+}

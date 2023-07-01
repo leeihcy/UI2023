@@ -1,19 +1,45 @@
+shared_library("uisdk") {
+    cflags = []
+    if (is_debug) {
+      cflags += ["-g"]
+    }
 
-# executable("sample_01") {
-#     # public_configs = [ ":common" ]
-#     sources = [
-#         "test/sample_01.cpp",
-#     ]
-# }
+    include_dirs = [
+        "."
+    ]
+
+    libs = []
+    cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
+    sources = [
+        "src/object/message_loop/message_loop.cpp",
+        "src/object/uiapplication.cpp",
+        "src/object/window/window.cpp",
+    ]
+    if (is_mac || is_linux) {
+        sources += [
+            "src/object/window/window_linux.cpp",
+            "src/object/window/linux/display.cpp",
+            "src/object/message_loop/message_loop_linux.cpp",
+        ]
+        libs += [
+            "glib-2.0",
+            "x11"
+        ]
+    }
+}
+
+group("sdk") {
+    deps = [
+        ":uisdk"
+    ]
+}
+
+#######################################
 
 config("unittest_common") {
-        cflags = [
-        "-std=c++17",
-        # "-ldl"
-    ]
-    if (is_debug) {
-        cflags += ["-g"]
-    }
+  if (is_debug) {
+    cflags = ["-g"]
+  }
 }
 
 executable("signalslot_unittest") {
@@ -30,19 +56,17 @@ executable("message_loop_unittest") {
     cflags = exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
         "src/object/message_loop.cpp",
-        "src/object/message_loop_linux.cpp",
         "src/object/message_loop_unittest.cpp"
     ]
+    if (is_mac || is_linux) {
+        sources += ["src/object/message_loop_linux.cpp"]
+    }
 }
 
-# group("samples") {
-#     print("samples")
-#     deps = [
-#         ":sample_01"
-#     ]
-# }
-
-group("sdk") {
-    print("sdk")
+group("unittest") {
+    deps = [
+        ":signalslot_unittest",
+        ":weakptr_unittest",
+        ":message_loop_unittest"
+    ]
 }
-

@@ -3,6 +3,17 @@
 # found in the LICENSE file.
 
 config("compiler_defaults") {
+  cflags = ["-std=c++17"]
+  
+  if (is_win) {
+    defines = ["OS_WIN"]
+  }
+  else if (is_linux) {
+    defines = ["OS_LINUX"]
+  } else if (is_mac) {
+    defines = ["OS_MAC"]
+  }
+
   if (current_os == "linux") {
     cflags = [
       "-fPIC",

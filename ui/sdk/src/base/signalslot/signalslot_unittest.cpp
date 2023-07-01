@@ -156,13 +156,13 @@ void test_slot_lambda() {
   }
 
   // capture
-  {
-    // int c = 5;
-    // Slot<int(int, int)> s1([c](int a, int b)->int { 
-    //     return a+b+c;
-    // });
-    // assert(12 == s1.emit(3, 4));
-  }
+//   {
+//     int c = 5;
+//     Slot<int(int, int)> s1([c](int a, int b)->int { 
+//         return a+b+c;
+//     });
+//     assert(12 == s1.emit(3, 4));
+//   }
 }
 
 void test_slot_base() {

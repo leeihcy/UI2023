@@ -1,9 +1,19 @@
 import("//build/config/common.gni")
 
-group("gn_all") {
+group("x") {
     deps = [
-        "//ui/sdk"
+        "//ui:ui"
+    ]
+}
+group("unittest") {
+    deps = [
+        "//ui:unittest"
     ]
 }
 
+group("sample") {
+    deps = [
+        "//ui:sample"
+    ]
+}
  

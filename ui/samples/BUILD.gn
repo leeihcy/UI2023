@@ -1,0 +1,10 @@
+import("//build/config/common.gni")
+
+
+group("samples") {
+    deps = [
+        "hello"
+    ]
+}
+
+ 

@@ -24,7 +24,7 @@ namespace {
     struct MacData {
         bool quit_flag = false;
 
-        NSRunLoop;
+        // NSRunLoop;
     };
 }
 

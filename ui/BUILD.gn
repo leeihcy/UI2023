@@ -1,0 +1,24 @@
+import("//build/config/common.gni")
+
+group("ui") {
+    deps = [
+        "sdk:sdk"
+    ]
+}
+
+######################################
+
+group("unittest") {
+    deps = [
+        "sdk:unittest"
+    ]
+}
+
+
+######################################
+
+group("sample") {
+    deps = [
+        "samples"
+    ]
+}
