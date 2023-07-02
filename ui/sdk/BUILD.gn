@@ -5,10 +5,14 @@ shared_library("uisdk") {
     }
 
     include_dirs = [
-        "."
+        "//ui",
+        "//ui/3rd/skia/",
+        "//ui/3rd/skia/include/core/"
     ]
 
-    libs = []
+    lib_dirs = ["../3rd/skia/lib"]
+    libs = ["skia"]
+
     cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
         "src/object/message_loop/message_loop.cpp",
@@ -24,6 +28,15 @@ shared_library("uisdk") {
         libs += [
             "glib-2.0",
             "x11"
+        ]
+    }
+    if (is_mac) {
+        # skia Mac 依赖
+        ldflags = [
+            "-framework", "CoreFoundation",
+            "-framework", "CoreGraphics",
+            "-framework", "CoreText",
+            "-framework", "CoreServices",
         ]
     }
 }

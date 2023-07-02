@@ -11,11 +11,7 @@ struct XEventDispatcher {
 };
 
 
-
 class X11Display {
-  class X11DisplayInternal {
-
-  };
 public:
   ~X11Display();
   
@@ -26,8 +22,10 @@ public:
   int GetScreenHeight();
   unsigned long GetWhite();
   unsigned long GetBlack();
-  Atom &GetWMDelete();
   ::Window GetDefaultRootWindow();
+
+  Atom WM_DELETE();
+  Atom WM_TAKE_FOCUS();
 
   Display *GetDisplay() { return m_display; }
   operator Display *() { return m_display; }
@@ -40,6 +38,7 @@ private:
   static XContext m_context;
   static int m_screen_number;
   static Atom m_wm_delete;
+  static Atom m_wm_take_focus;
 };
 
 } // namespace ui

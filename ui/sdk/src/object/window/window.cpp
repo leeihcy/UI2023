@@ -1,4 +1,5 @@
 #include "window.h"
+#include <SkColorSpace.h>
 #include <assert.h>
 
 #if defined(OS_MAC) || defined(OS_LINUX)
@@ -33,11 +34,42 @@ void Window::Show() {
   }
 }
 
-void Window::onClose() {
-
+void Window::onSize(int width, int height) {
+  if (m_width == width && m_height == height) {
+    return;
+  }
+  m_width = width;
+  m_height = height;
+  
+  SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+                                       kPremul_SkAlphaType, nullptr);
+  SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
+  m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
 }
-void Window::onDestroy() {
-    m_signal_destroy.emit();
+
+void Window::onClose() {}
+void Window::onDestroy() { m_signal_destroy.emit(); }
+
+void Window::onPaint(Rect *dirty) {
+  if (!m_sksurface) {
+    return;
+  }
+
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  on_erase_bkgnd(canvas);
+  on_paint(canvas);
+
+  m_sksurface->flushAndSubmit();
+  swap_buffer();
+}
+
+void Window::on_paint(SkCanvas *canvas) {}
+void Window::on_erase_bkgnd(SkCanvas *canvas) {
+    // canvas->clear(SK_ColorWHITE);
+    canvas->clear(SK_ColorRED);
+}
+void Window::swap_buffer() {
+    m_platform->Submit(m_sksurface);
 }
 
 } // namespace ui

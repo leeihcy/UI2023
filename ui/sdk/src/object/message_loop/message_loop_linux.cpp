@@ -80,8 +80,6 @@ int MessageLoopPlatformLinux::AddTimeout(int elapse, TimeoutSlot &&task) {
 }
 
 void MessageLoopPlatformLinux::processXEvent(const XEvent &event) {
-    printf("processXEvent\n");
-
   XEventDispatcher *dispatcher = m_display.FindDispatcher(event.xany.window);
   if (!dispatcher) {
     return;

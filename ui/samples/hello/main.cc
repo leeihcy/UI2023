@@ -17,7 +17,7 @@ int main() {
     ui::Rect rc = {100, 100, 500, 400};
     window.Create(rc);
     window.Show();
-    window.SignalDestroy().connect(on_window_destroy);
+    window.DestroySignal().connect(on_window_destroy);
 
     uiapp.Run();
     return 0;

@@ -7,7 +7,9 @@ namespace ui {
 Display *X11Display::m_display = nullptr;
 XContext X11Display::m_context = 0;
 int X11Display::m_screen_number = 0;
+
 Atom X11Display::m_wm_delete = 0;
+Atom X11Display::m_wm_take_focus = 0;
 
 X11Display::~X11Display() {
   /*Destroy();
@@ -25,7 +27,9 @@ void X11Display::Init() {
   m_context = XUniqueContext();
 
   m_screen_number = DefaultScreen(m_display);
+
   m_wm_delete = XInternAtom(m_display, "WM_DELETE_WINDOW", True);
+  m_wm_take_focus = XInternAtom(m_display, "WM_TAKE_FOCUS", True);
 }
 
 void X11Display::Destroy() {
@@ -36,7 +40,8 @@ void X11Display::Destroy() {
   m_screen_number = 0;
 }
 
-Atom &X11Display::GetWMDelete() { return m_wm_delete; }
+Atom X11Display::WM_DELETE() { return m_wm_delete; }
+Atom X11Display::WM_TAKE_FOCUS() { return m_wm_take_focus; }
 
 unsigned long X11Display::GetWhite() {
   return WhitePixel(m_display, m_screen_number);

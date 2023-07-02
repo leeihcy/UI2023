@@ -73,7 +73,7 @@ void WindowPlatformLinux::Attach(::Window window) {
   this->m_window = window;
   // s_window_mapper.RegisterWindow(this);
 
-  // this->initGC();
+  this->initGC();
   this->initEvent();
 
   // RECT rc;
@@ -89,6 +89,8 @@ void WindowPlatformLinux::Attach(::Window window) {
 
   m_display.BindXEventDispatcher(window, nullptr);
 
+  XFreeGC(m_display, m_gc);
+  m_gc = 0;
   m_window = 0;
   return window;
 }
@@ -120,7 +122,7 @@ void WindowPlatformLinux::initEvent() {
 
   XSelectInput(m_display, m_window, eventMask);
 
-  Atom protocols[] = {m_display.GetWMDelete(),
+  Atom protocols[] = {m_display.WM_DELETE(),
                       XInternAtom(m_display, "WM_TAKE_FOCUS", false)};
   XSetWMProtocols(m_display, m_window, protocols,
                   sizeof(protocols) / sizeof(Atom));
@@ -128,7 +130,7 @@ void WindowPlatformLinux::initEvent() {
 
 void WindowPlatformLinux::Show() {
   XMapWindow(m_display, m_window);
-//   XFlush(m_display);
+  //   XFlush(m_display);
 }
 
 void WindowPlatformLinux::Hide() { XUnmapWindow(m_display, m_window); }
@@ -366,32 +368,73 @@ void WindowPlatformLinux::CenterWindow() {
   return parent;
 }
 
-// void WindowPlatformLinux::paint() {
-// if (!m_sksurface) {
-//     return;
-// }
+int get_window_depth(Display *display, ::Window window) {
+  XWindowAttributes attr;
+  XGetWindowAttributes(display, window, &attr);
+  return attr.depth;
+}
 
-// SkCanvas *canvas = m_sksurface->getCanvas();
-// on_erase_bkgnd(canvas);
-// on_paint(canvas);
+void WindowPlatformLinux::Submit(sk_sp<SkSurface> sksurface) {
+  if (!m_gc) {
+    return;
+  }
+  SkPixmap pm;
+  if (!sksurface->peekPixels(&pm)) {
+    return;
+  }
 
-// m_sksurface->flushAndSubmit();
-// swapBuffers();
-// }
+  int bitsPerPixel = pm.info().bytesPerPixel() * 8;
+  XImage image;
+  memset(&image, 0, sizeof(image));
+  image.width = pm.width();
+  image.height = pm.height();
+  image.format = ZPixmap;
+  image.data = (char *)pm.addr();
+  image.byte_order = LSBFirst;
+  image.bitmap_unit = bitsPerPixel;
+  image.bitmap_bit_order = LSBFirst;
+  image.bitmap_pad = bitsPerPixel;
+  image.depth = get_window_depth(m_display, m_window);
+  image.bytes_per_line = pm.rowBytes() - pm.width() * pm.info().bytesPerPixel();
+  image.bits_per_pixel = bitsPerPixel;
+  if (!XInitImage(&image)) {
+    return;
+  }
 
-// void WindowPlatformLinux::on_erase_bkgnd(SkCanvas *canvas) {
-// canvas->clear(SK_ColorWHITE);
-// }
+  XPutImage(m_display, m_window, m_gc, &image, 0, 0, 0, 0, pm.width(),
+            pm.height());
+}
 
 void WindowPlatformLinux::OnXEvent(const XEvent &event) {
   if (event.type == ClientMessage) {
     XClientMessageEvent *client_event = (XClientMessageEvent *)&event;
     auto type = client_event->data.l[0];
-    if (type == m_display.GetWMDelete()) {
+    if (type == m_display.WM_DELETE()) {
       m_ui_window->onDestroy();
+    } else if (type == m_display.WM_TAKE_FOCUS()) {
+      // m_ui_window->onFocus();
     }
-    // else if (type == XInternAtom(display, "WM_TAKE_FOCUS", false)) {
-    //   this->on_focus();
+  } else if (event.type == Expose) {
+    // 仅处理最后一个expose事件??
+    if (event.xexpose.count > 0) {
+      return;
+    }
+
+    // Rect dirty = {0, 0, 0, 0};
+    // TODO:
+    m_ui_window->onPaint(nullptr);
+  } else if (event.type == ConfigureNotify) {
+    // x, y 不靠谱，有时一直返回的是0
+    printf("Configure Notify: %d,%d, %d %d\n", event.xconfigure.x,
+           event.xconfigure.y, event.xconfigure.width, event.xconfigure.height);
+    m_ui_window->onSize(event.xconfigure.width, event.xconfigure.height);
+    // if (m_width != event.xconfigure.width ||
+    //     m_height != event.xconfigure.height) {
+    //   m_width = event.xconfigure.width;
+    //   m_height = event.xconfigure.height;
+
+    //   resize(m_width, m_height);
+    //   this->on_size(event.xconfigure.width, event.xconfigure.height);
     // }
   }
 
@@ -407,26 +450,6 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
     // printf("focus in\n");
   } else if (event.type == FocusOut) {
     // printf("focus out\n");
-  } else if (event.type == Expose) {
-    // 仅处理最后一个expose事件。
-    if (event.xexpose.count > 0) {
-      return;
-    }
-
-    this->paint();
-  } else if (event.type == ConfigureNotify) {
-    // x, y 不靠谱，有时一直返回的是0
-    printf("Configure Notify: %d,%d, %d %d\n", event.xconfigure.x,
-           event.xconfigure.y, event.xconfigure.width, event.xconfigure.height);
-
-    if (m_width != event.xconfigure.width ||
-        m_height != event.xconfigure.height) {
-      m_width = event.xconfigure.width;
-      m_height = event.xconfigure.height;
-
-      resize(m_width, m_height);
-      this->on_size(event.xconfigure.width, event.xconfigure.height);
-    }
   } else if (event.type == ConfigureRequest) {
     XConfigureRequestEvent *request_event = (XConfigureRequestEvent *)&event;
 
