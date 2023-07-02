@@ -9,6 +9,7 @@ class UIApplication
 {
 public:  
     void Run();
+    void Quit();
 
 private:
     MessageLoop m_message_loop;

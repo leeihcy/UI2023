@@ -6,11 +6,21 @@
 
 namespace ui {
 
+struct XEventDispatcher {
+    virtual void OnXEvent(const XEvent& event) = 0;
+};
+
+
+
 class X11Display {
+  class X11DisplayInternal {
+
+  };
 public:
   ~X11Display();
-  void Init();
-  void Destroy();
+  
+  static void Init();
+  static void Destroy();
 
   int GetScreenWidth();
   int GetScreenHeight();
@@ -20,12 +30,16 @@ public:
   ::Window GetDefaultRootWindow();
 
   Display *GetDisplay() { return m_display; }
-  operator Display* () { return m_display; }
-  
+  operator Display *() { return m_display; }
+
+  void BindXEventDispatcher(::Window window, XEventDispatcher* dispatcher);
+  XEventDispatcher* FindDispatcher(::Window window);
+
 private:
-  int m_screen_number = 0;
-  Display *m_display = nullptr;
-  Atom m_wm_delete;
+  static Display *m_display;
+  static XContext m_context;
+  static int m_screen_number;
+  static Atom m_wm_delete;
 };
 
 } // namespace ui

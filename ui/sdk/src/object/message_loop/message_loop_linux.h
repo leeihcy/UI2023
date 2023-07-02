@@ -1,8 +1,12 @@
 #ifndef _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_H_
 #define _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_H_
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 #include "glib.h"
 #include "message_loop.h"
 #include "../window/linux/display.h"
+
 
 namespace ui {
 
@@ -14,6 +18,9 @@ public:
   void Run() override;
   void Quit() override;
   int  AddTimeout(int elapse, TimeoutSlot &&task) override;
+
+private:
+  void processXEvent(const XEvent& event);
 
 private:
   MessageLoop* m_message_loop = nullptr;

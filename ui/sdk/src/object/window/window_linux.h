@@ -3,25 +3,50 @@
 #include "window.h"
 #include "linux/display.h"
 
+#include <string>
 
 namespace ui
 {
-
-class WindowPlatformLinux : public WindowPlatform
+class WindowPlatformLinux : public WindowPlatform, public XEventDispatcher
 {
 public:
-    void Initialize() override;
+    void Initialize(ui::Window*) override;
     void Release() override;
 
     void Create(const Rect& rect) override;
+    bool CreateTransparent(const Rect &rect);
+    void Destroy();
+
+    void SetWindowTitle(const char* title);
+    std::string GetWindowTitle();
+    void SetBorderless(bool no_border=true);
+    void SetMinMaxSize(int wMin, int hMin, int wMax, int hMax);
+    void SetWindowRect(int x, int y, int width, int height);
+    void GetClientRect(Rect* prect);
+    void GetWindowRect(Rect* prect);
+    void CenterWindow();
+    ::Window GetParentWindow();
+
     void Attach(::Window window);
+    ::Window Detach();
     
     void Show() override;
     void Hide();
+    void Invalidate();
+
+    // XEventDispatcher
+    void OnXEvent(const XEvent& event) override;
 
 private:
+    void initGC();
+    void initEvent();
+
+private:
+    ui::Window* m_ui_window = nullptr;
+
     X11Display m_display;
     ::Window m_window = 0;
+    GC m_gc = 0;
 };
 
 }
