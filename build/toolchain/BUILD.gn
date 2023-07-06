@@ -21,6 +21,15 @@ toolchain("gcc") {
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
   }
 
+  tool("objcxx") {
+    depfile = "{{output}}.d"
+    command = "g++ -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{cflags_objcc}} -c {{source}} -o {{output}}"
+    depsformat = "gcc"
+    description = "OBJCXX {{output}}"
+    outputs =
+        [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.o" ]
+  }
+
   tool("alink") {
     command = "rm -f {{output}} && ar rcs {{output}} {{inputs}}"
     description = "AR {{target_output_name}}{{output_extension}}"

@@ -19,6 +19,9 @@ public:
   void Quit() override;
   int  AddTimeout(int elapse, TimeoutSlot &&task) override;
 
+public:
+  void processXEvent();
+
 private:
   void processXEvent(const XEvent& event);
 
@@ -28,6 +31,8 @@ private:
 
   GMainLoop *loop = nullptr;
   GMainContext *context = nullptr;
+
+  GSource *m_xevent_source = nullptr;
 
   X11Display  m_display;
 };

@@ -11,6 +11,18 @@ executable("hello") {
         "//ui/3rd/skia/include/core/"
     ]
     sources = [
-        "main.cc"
+        "main.cc",
+        "macos.mm"
     ]
+
+    if (true) {
+        # skia Mac 依赖
+        ldflags = [
+            "-framework", "CoreFoundation",
+            "-framework", "CoreGraphics",
+            "-framework", "CoreText",
+            "-framework", "CoreServices",
+            "-framework", "Cocoa",
+        ]
+    }
 }

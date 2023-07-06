@@ -1,6 +1,9 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_LINUX_DISPLAY_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_LINUX_DISPLAY_H_
 
+/* needed to break into 'Display' struct internals. */
+#define XLIB_ILLEGAL_ACCESS
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -23,6 +26,8 @@ public:
   unsigned long GetWhite();
   unsigned long GetBlack();
   ::Window GetDefaultRootWindow();
+
+  int fd();
 
   Atom WM_DELETE();
   Atom WM_TAKE_FOCUS();

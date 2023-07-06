@@ -1,4 +1,5 @@
 #include "display.h"
+
 #include <X11/Xresource.h> // XUniqueContext
 #include <assert.h>
 
@@ -39,6 +40,8 @@ void X11Display::Destroy() {
   }
   m_screen_number = 0;
 }
+
+int X11Display::fd() { return m_display->fd; }
 
 Atom X11Display::WM_DELETE() { return m_wm_delete; }
 Atom X11Display::WM_TAKE_FOCUS() { return m_wm_take_focus; }
