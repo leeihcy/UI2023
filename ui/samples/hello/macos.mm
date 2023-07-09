@@ -3,6 +3,7 @@
 
 int mac_main()
 {
+#if 0
     // Autorelease Pool:
     // Objects declared in this scope will be automatically
     // released at the end of it, when the pool is "drained".
@@ -39,7 +40,7 @@ int mac_main()
 
     [window setContentView:textView];
     [textView insertText:@"Hello OSX/Cocoa world!"];
-
+  
     // TODO: Create app delegate to handle system events.
     // TODO: Create menus (especially Quit!)
 
@@ -48,6 +49,8 @@ int mac_main()
     [NSApp run];
 
     [pool drain];
-
+#endif
+ [NSApp run];
+ 
     return 0;
 }

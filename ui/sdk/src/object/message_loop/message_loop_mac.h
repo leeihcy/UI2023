@@ -1,5 +1,5 @@
-#ifndef _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_H_
-#define _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_H_
+#ifndef _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_MAC_H_
+#define _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_MAC_H_
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -7,10 +7,11 @@
 #include "message_loop.h"
 #include "../window/linux/display.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 
 namespace ui {
 
-class MessageLoopPlatformLinux : public MessageLoopPlatform {
+class MessageLoopPlatformMac : public MessageLoopPlatform {
 public:
   void Initialize(MessageLoop*) override;
   void Release() override;
@@ -18,23 +19,18 @@ public:
   void Run() override;
   void Quit() override;
   int  AddTimeout(int elapse, TimeoutSlot &&task) override;
+  void OnAddIdleTask() override;
 
 public:
-  void processXEvent();
-
-private:
-  void processXEvent(const XEvent& event);
+  void onIdle();
+  static void onIdleEntry(void* info);
 
 private:
   MessageLoop* m_message_loop = nullptr;
   bool quit_flag = false;
 
-  GMainLoop *loop = nullptr;
-  GMainContext *context = nullptr;
-
-  GSource *m_xevent_source = nullptr;
-public:
-  X11Display  m_display;
+  CFRunLoopSourceRef m_idle_source;
+//   CFRunLoopTimerRef m_timer_source;
 };
 
 } // namespace ui

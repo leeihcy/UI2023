@@ -18,6 +18,7 @@ bool timeout_task(MessageLoop* loop) {
 }
 
 void test1() {
+    printf("program will auto exit at 3 seconds\n");
     MessageLoop loop;
     loop.AddIdleTask(Slot(idle_task, &loop));
     loop.AddTimeout(1000, Slot(timeout_task, &loop));

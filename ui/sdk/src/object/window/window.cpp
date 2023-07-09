@@ -2,7 +2,10 @@
 #include <SkColorSpace.h>
 #include <assert.h>
 
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_MAC)
+//#include "window_mac.h"
+#include "window_linux.h"
+#elif defined(OS_LINUX)
 #include "window_linux.h"
 #endif
 
@@ -19,7 +22,10 @@ Window::~Window() {
 
 void Window::Create(const Rect &rect) {
 #if defined(OS_WIN)
-#elif defined(OS_MAC) || defined(OS_LINUX)
+#elif defined(OS_MAC) 
+//   m_platform = new WindowPlatformMac();
+    m_platform = new WindowPlatformLinux();
+#elif defined(OS_LINUX)
   m_platform = new WindowPlatformLinux();
 #else
   assert(false);

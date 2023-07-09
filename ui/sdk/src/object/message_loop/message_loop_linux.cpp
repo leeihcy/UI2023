@@ -32,13 +32,31 @@ struct XEventSource {
   GSource source;
   MessageLoopPlatformLinux *loop;
 
-  // 计算下一次的超时时间。
-  static gboolean prepare(GSource *source, gint *timeout) { return false; }
+  // prepare在poll所有文件描述符之前调用。
+  // 如果事件源中有事件发生过（无需通过查看poll调用的结果来确定是否有事件发生），就返回TRUE。
+  // prepare可返回一个timeout，该值为poll调用的超时时间（单位为毫秒）。
+  // 如果所有事件源返回的timeout均为-1，则poll的超时时间将为-1，
+  // 否则poll的超时时间为所有事件源返回的timeout值（不包含-1）中的最小值。
+  //
+  // 对于无需poll的事件源（例如：idle事件源），其返回TRUE，表示idle事件已经发生了。
+  // 对于需要poll的事件源（例如：文件事件源），其返回FALSE，
+  // 因为只有在poll文件之后，才能直到文件事件是否发生。
+  static gboolean prepare(GSource *source, gint *timeout) { 
+    *timeout=-1;
+    return false; 
+    }
 
-  // 检查定时器时间是否到了，如果到了就返回true
-  static gboolean check(GSource *source) { return true; }
+  // check在poll所有文件描述符之后调用。如果事件已发生，就返回TRUE。
+  static gboolean check(GSource *source) { 
+    XEventSource *xevent_source = (XEventSource *)source;
+    return XPending(xevent_source->loop->m_display);
+    // return false; 
+  }
 
-  // 调用用户注册的回调函数
+  // 当事件源的prepare或check函数返回TRUE后，说明事件源中有事件发生，
+  // 调用dispatch为事件源分发事件。
+  // 当需要删除事件源时，dispatch函数返回G_SOURCE_REMOVE，
+  // 当需要保留事件源时，dispatch函数返回G_SOURCE_CONTINUE。
   static gboolean dispatch(GSource *source, GSourceFunc callback,
                            gpointer user_data) {
     XEventSource *xevent_source = (XEventSource *)source;
@@ -47,6 +65,8 @@ struct XEventSource {
   }
 
   // finalize
+  // inalize在事件源被销毁前调用。此时，事件源的回调函数已被清除，事件源自身也从GMainContext中删除了，
+  // 事件源将要被销毁。但是，事件源可能还持有一些资源的引用计数，因此，可以在此函数中释放这些引用计数。
   // event source被移除
 
   static GSource *Create(MessageLoopPlatformLinux *data, X11Display &display) {
@@ -59,7 +79,7 @@ struct XEventSource {
     GSource *source = g_source_new(&source_funcs, sizeof(XEventSource));
     ((XEventSource *)source)->loop = data;
 
-    GPollFD display_fd = {display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR, 0};
+    static GPollFD display_fd = {display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR, 0};
     g_source_add_poll(source, &display_fd);
     return source;
   }
@@ -79,8 +99,8 @@ void MessageLoopPlatformLinux::Initialize(MessageLoop *p) {
   m_display.Init();
 
   this->m_xevent_source = XEventSource::Create(this, m_display);
-  g_source_attach(m_xevent_source, this->context);
-  g_source_ref(m_xevent_source);
+  g_source_attach(m_xevent_source, NULL);//this->context);
+//   g_source_ref(m_xevent_source);
 }
 
 void MessageLoopPlatformLinux::Release() {
@@ -109,15 +129,16 @@ void MessageLoopPlatformLinux::processXEvent() {
 }
 
 void MessageLoopPlatformLinux::Run() {
-  while (!this->quit_flag) {
-    g_main_context_iteration(this->context, true);
-    this->m_message_loop->OnIdle();
-  }
+//   while (!this->quit_flag) {
+//     g_main_context_iteration(this->context, true);
+//     this->m_message_loop->OnIdle();
+//   }
+   g_main_loop_run(this->loop);
 }
 void MessageLoopPlatformLinux::Quit() {
-  //  if (this->loop) {
-  //     g_main_loop_quit(this->loop);
-  // }
+   if (this->loop) {
+      g_main_loop_quit(this->loop);
+  }
   this->quit_flag = true;
   g_main_context_wakeup(nullptr);
 }

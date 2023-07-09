@@ -11,7 +11,6 @@ void on_window_destroy(ui::UIApplication* uiapp) {
 
 int mac_main();
 int main() {
-    // mac_main();
     ui::UIApplication uiapp;
     ui::Window window;
 

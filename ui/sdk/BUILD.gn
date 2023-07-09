@@ -1,7 +1,14 @@
+
+use_linux_msgloop = true
+
 shared_library("uisdk") {
     cflags = []
     if (is_debug) {
       cflags += ["-g"]
+    }
+
+    if (use_linux_msgloop) {
+        defines = ["USE_LINUX_MSGLOOP"]
     }
 
     include_dirs = [
@@ -19,7 +26,7 @@ shared_library("uisdk") {
         "src/object/uiapplication.cpp",
         "src/object/window/window.cpp",
     ]
-    if (is_mac || is_linux) {
+    if (is_linux || use_linux_msgloop) {
         sources += [
             "src/object/window/window_linux.cpp",
             "src/object/window/linux/display.cpp",
@@ -30,6 +37,13 @@ shared_library("uisdk") {
             "x11"
         ]
     }
+    if (is_mac && !use_linux_msgloop) {
+        sources += [
+            "src/object/window/window_mac.cpp",
+            "src/object/message_loop/message_loop_mac.mm",
+        ]
+    }
+
     if (is_mac) {
         # skia Mac 依赖
         ldflags = [
@@ -37,6 +51,7 @@ shared_library("uisdk") {
             "-framework", "CoreGraphics",
             "-framework", "CoreText",
             "-framework", "CoreServices",
+            "-framework", "Cocoa",
         ]
     }
 }
@@ -64,15 +79,44 @@ executable("weakptr_unittest") {
     sources = ["src/base/weakptr/weakptr_unittest.cpp"]
 }
 executable("message_loop_unittest") {
+    print ("use_linux_msgloop = ", use_linux_msgloop)
+    if (use_linux_msgloop) {
+        defines = ["USE_LINUX_MSGLOOP"]
+    }
+
     public_configs = [":unittest_common"]
     libs = ["glib-2.0"]
     cflags = exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
-        "src/object/message_loop.cpp",
-        "src/object/message_loop_unittest.cpp"
+        "src/object/message_loop/message_loop.cpp",
+        "src/object/message_loop/message_loop_unittest.cpp"
     ]
-    if (is_mac || is_linux) {
-        sources += ["src/object/message_loop_linux.cpp"]
+    if (is_linux || use_linux_msgloop) {
+        sources += [
+            "src/object/window/linux/display.cpp",
+            "src/object/message_loop/message_loop_linux.cpp"
+            ]
+        libs += [
+            "glib-2.0",
+            "x11"
+        ]
+    }
+    else if (is_mac) {
+        sources += [
+            "src/object/message_loop/message_loop_mac.mm",
+        ]
+    }
+
+
+    if (is_mac) {
+        # skia Mac 依赖
+        ldflags = [
+            "-framework", "CoreFoundation",
+            "-framework", "CoreGraphics",
+            "-framework", "CoreText",
+            "-framework", "CoreServices",
+            "-framework", "Cocoa",
+        ]
     }
 }
 

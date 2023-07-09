@@ -15,6 +15,7 @@ struct MessageLoopPlatform {
   virtual void Run() = 0;
   virtual void Quit() = 0;
   virtual int AddTimeout(int elapse, TimeoutSlot &&task) = 0;
+  virtual void OnAddIdleTask() {}
 };
 
 class MessageLoop {
