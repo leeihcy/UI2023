@@ -17,7 +17,9 @@ public:
 
   void Run() override;
   void Quit() override;
-  int  AddTimeout(int elapse, TimeoutSlot &&task) override;
+
+  void PostTask(PostTaskType &&task) override;
+  int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
 
 public:
   void processXEvent();

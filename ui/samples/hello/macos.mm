@@ -50,7 +50,43 @@ int mac_main()
 
     [pool drain];
 #endif
- [NSApp run];
+
+
+//   [NSAutoreleasePool new];
+  id app = [NSApplication sharedApplication];
+//   [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+//   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+  NSRect frame = NSMakeRect(0, 0, 300, 300);
+//   id window = 
+//     [[[NSWindow alloc] initWithContentRect:frame
+//                                  styleMask:NSTitledWindowMask
+//                                    backing:NSBackingStoreBuffered
+//                                      defer:NO] autorelease];
+
+NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                           NSWindowStyleMaskResizable;
+
+  NSRect windowRect = NSMakeRect(100, 100, 400, 400);
+NSWindow* m_window = [[NSWindow alloc] initWithContentRect:windowRect
+                                         styleMask:windowStyle
+                                           backing:NSBackingStoreBuffered
+                                             defer:NO];
+                                             
+//   [window cascadeTopLeftFromPoint:NSMakePoint(10, 10)];
+//   [window setTitle:@"Hello"];
+//   [window makeKeyAndOrderFront:nil];
+   [m_window makeKeyAndOrderFront:nil];
+  
+//   id button = [[[NSButton alloc] initWithFrame:frame] autorelease];
+//   [button setTarget:app];
+//   [button setAction:@selector(terminate:)];
+//   [button setTitle:@"Quit"];
+//   [[window contentView] addSubview:button];
+  
+//   [app activateIgnoringOtherApps:YES];
+  [app run];
+  return 0;
  
     return 0;
 }

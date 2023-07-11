@@ -3,9 +3,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include "../window/linux/display.h"
 #include "glib.h"
 #include "message_loop.h"
-#include "../window/linux/display.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -13,24 +13,26 @@ namespace ui {
 
 class MessageLoopPlatformMac : public MessageLoopPlatform {
 public:
-  void Initialize(MessageLoop*) override;
+  void Initialize(MessageLoop *) override;
   void Release() override;
 
   void Run() override;
   void Quit() override;
-  int  AddTimeout(int elapse, TimeoutSlot &&task) override;
-  void OnAddIdleTask() override;
+  void PostTask(PostTaskType &&task) override;
+  int ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
 
 public:
   void onIdle();
-  static void onIdleEntry(void* info);
+  static void onIdleEntry(void *info);
 
 private:
-  MessageLoop* m_message_loop = nullptr;
+  MessageLoop *m_message_loop = nullptr;
   bool quit_flag = false;
 
   CFRunLoopSourceRef m_idle_source;
-//   CFRunLoopTimerRef m_timer_source;
+  //   CFRunLoopTimerRef m_timer_source;
+
+  signal<void()> m_idle_tasks;
 };
 
 } // namespace ui

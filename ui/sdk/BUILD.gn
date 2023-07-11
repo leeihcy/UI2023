@@ -1,5 +1,5 @@
 
-use_linux_msgloop = true
+use_linux_msgloop = false
 
 shared_library("uisdk") {
     cflags = []
@@ -39,12 +39,15 @@ shared_library("uisdk") {
     }
     if (is_mac && !use_linux_msgloop) {
         sources += [
-            "src/object/window/window_mac.cpp",
+            "src/object/window/window_mac.mm",
             "src/object/message_loop/message_loop_mac.mm",
         ]
     }
 
     if (is_mac) {
+        sources += [
+            "src/object/mac/application_mac.mm",
+        ]
         # skia Mac 依赖
         ldflags = [
             "-framework", "CoreFoundation",
@@ -109,6 +112,9 @@ executable("message_loop_unittest") {
 
 
     if (is_mac) {
+        sources += [
+            "src/object/mac/application_mac.mm",
+        ]
         # skia Mac 依赖
         ldflags = [
             "-framework", "CoreFoundation",

@@ -8,6 +8,8 @@ namespace ui
 class UIApplication
 {
 public:  
+    UIApplication();
+    
     void Run();
     void Quit();
 

@@ -5,17 +5,19 @@
 
 namespace ui {
 
-using TimeoutSlot = slot<bool()>;
+using ScheduleTaskType = slot<bool()>;
+using PostTaskType = slot<void()>;
+
 class MessageLoop;
 
 struct MessageLoopPlatform {
   virtual ~MessageLoopPlatform(){};
-  virtual void Initialize(MessageLoop*) = 0;
+  virtual void Initialize(MessageLoop *) = 0;
   virtual void Release() = 0;
   virtual void Run() = 0;
   virtual void Quit() = 0;
-  virtual int AddTimeout(int elapse, TimeoutSlot &&task) = 0;
-  virtual void OnAddIdleTask() {}
+  virtual void PostTask(PostTaskType &&task) = 0;
+  virtual int ScheduleTask(ScheduleTaskType &&task, int delay_ms) = 0;
 };
 
 class MessageLoop {
@@ -26,17 +28,11 @@ public:
   void Run();
   void Quit();
 
-  void AddIdleTask(slot<void()> &&task);
-
-  // bool 返回false表示结束运行定时器
-  int AddTimeout(int elapse, TimeoutSlot &&task);
-
-  void OnIdle();
+  void PostTask(PostTaskType &&task);
+  int ScheduleTask(ScheduleTaskType &&task, int delay_ms);
 
 private:
-  // 平台相关函数。
   MessageLoopPlatform *m_platform = nullptr;
-  ui::signal<void()> m_idle_tasks;
 };
 } // namespace ui
 

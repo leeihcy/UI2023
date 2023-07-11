@@ -4,6 +4,12 @@
 
 #include <string>
 
+#if defined(__OBJC__)
+@class NSWindow;
+#else
+class NSWindow;
+#endif
+
 namespace ui {
 class WindowPlatformMac : public WindowPlatform {
 public:
@@ -13,11 +19,13 @@ public:
   void Create(const Rect &rect) override;
   void Destroy();
 
-  void Show() override{}
+  void Show() override;
 
   void Submit(sk_sp<SkSurface> sksurface) override {}
+
 private:
   ui::Window *m_ui_window = nullptr;
+  NSWindow *m_window = nullptr;
 };
 
 } // namespace ui

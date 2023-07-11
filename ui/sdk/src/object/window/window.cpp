@@ -3,8 +3,7 @@
 #include <assert.h>
 
 #if defined(OS_MAC)
-//#include "window_mac.h"
-#include "window_linux.h"
+#include "window_mac.h"
 #elif defined(OS_LINUX)
 #include "window_linux.h"
 #endif
@@ -23,8 +22,7 @@ Window::~Window() {
 void Window::Create(const Rect &rect) {
 #if defined(OS_WIN)
 #elif defined(OS_MAC) 
-//   m_platform = new WindowPlatformMac();
-    m_platform = new WindowPlatformLinux();
+  m_platform = new WindowPlatformMac();
 #elif defined(OS_LINUX)
   m_platform = new WindowPlatformLinux();
 #else

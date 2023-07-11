@@ -27,25 +27,16 @@ MessageLoop::~MessageLoop() {
   }
 }
 
-void MessageLoop::AddIdleTask(slot<void()> &&s) {
-  m_idle_tasks.connect(std::forward<slot<void()>>(s));
-  m_platform->OnAddIdleTask();
+void MessageLoop::PostTask(PostTaskType &&task) {
+  m_platform->PostTask(std::forward<PostTaskType>(task));
 }
+int MessageLoop::ScheduleTask(ScheduleTaskType &&task, int delay_ms) {
 
-int MessageLoop::AddTimeout(int elapse, TimeoutSlot &&task) {
-    return m_platform->AddTimeout(elapse, std::forward<TimeoutSlot>(task));
+  return m_platform->ScheduleTask(std::forward<ScheduleTaskType>(task), delay_ms);
 }
 
 void MessageLoop::Run() { m_platform->Run(); }
 
 void MessageLoop::Quit() { m_platform->Quit(); }
-
-void MessageLoop::OnIdle() {
-  if (m_idle_tasks.empty()) {
-    return;
-  }
-  m_idle_tasks.emit();
-  m_idle_tasks.clear();
-}
 
 } // namespace ui

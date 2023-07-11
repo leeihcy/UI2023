@@ -11,6 +11,9 @@ void on_window_destroy(ui::UIApplication* uiapp) {
 
 int mac_main();
 int main() {
+#if 0
+    mac_main();
+#else
     ui::UIApplication uiapp;
     ui::Window window;
 
@@ -20,5 +23,6 @@ int main() {
     window.DestroySignal().connect(on_window_destroy, &uiapp);
 
     uiapp.Run();
+#endif
     return 0;
 }

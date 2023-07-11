@@ -2,31 +2,6 @@
 #include "glib.h"
 
 namespace ui {
-
-// void  MsgHandleLoop(bool* pbQuitLoopRef)
-// {
-//     XEvent event;
-//     do {
-//         XNextEvent(m_display.GetDisplay(), &event);
-//         LinuxWindow* win = LinuxWindow::FromWindow(event.xany.window);
-//         if (!win) {
-//             printf("Error: no window found\n");
-//             continue;
-//         }
-//         win->OnEvent(event.type, event);
-
-//     } while(m_continue_loop);
-// }
-
-static int on_timer(gpointer pointer) {
-  TimeoutSlot *p = (TimeoutSlot *)pointer;
-  bool continue_run = p->emit();
-  if (!continue_run) {
-    delete p;
-  }
-  return continue_run;
-}
-
 // 将xevent作为一个source接入到g_main_loop当中来。
 struct XEventSource {
   GSource source;
@@ -41,16 +16,16 @@ struct XEventSource {
   // 对于无需poll的事件源（例如：idle事件源），其返回TRUE，表示idle事件已经发生了。
   // 对于需要poll的事件源（例如：文件事件源），其返回FALSE，
   // 因为只有在poll文件之后，才能直到文件事件是否发生。
-  static gboolean prepare(GSource *source, gint *timeout) { 
-    *timeout=-1;
-    return false; 
-    }
+  static gboolean prepare(GSource *source, gint *timeout) {
+    *timeout = -1;
+    return false;
+  }
 
   // check在poll所有文件描述符之后调用。如果事件已发生，就返回TRUE。
-  static gboolean check(GSource *source) { 
+  static gboolean check(GSource *source) {
     XEventSource *xevent_source = (XEventSource *)source;
     return XPending(xevent_source->loop->m_display);
-    // return false; 
+    // return false;
   }
 
   // 当事件源的prepare或check函数返回TRUE后，说明事件源中有事件发生，
@@ -79,7 +54,8 @@ struct XEventSource {
     GSource *source = g_source_new(&source_funcs, sizeof(XEventSource));
     ((XEventSource *)source)->loop = data;
 
-    static GPollFD display_fd = {display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR, 0};
+    static GPollFD display_fd = {display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR,
+                                 0};
     g_source_add_poll(source, &display_fd);
     return source;
   }
@@ -99,8 +75,8 @@ void MessageLoopPlatformLinux::Initialize(MessageLoop *p) {
   m_display.Init();
 
   this->m_xevent_source = XEventSource::Create(this, m_display);
-  g_source_attach(m_xevent_source, NULL);//this->context);
-//   g_source_ref(m_xevent_source);
+  g_source_attach(m_xevent_source, NULL); // this->context);
+  //   g_source_ref(m_xevent_source);
 }
 
 void MessageLoopPlatformLinux::Release() {
@@ -129,24 +105,43 @@ void MessageLoopPlatformLinux::processXEvent() {
 }
 
 void MessageLoopPlatformLinux::Run() {
-//   while (!this->quit_flag) {
-//     g_main_context_iteration(this->context, true);
-//     this->m_message_loop->OnIdle();
-//   }
-   g_main_loop_run(this->loop);
+  //   while (!this->quit_flag) {
+  //     g_main_context_iteration(this->context, true);
+  //     this->m_message_loop->OnIdle();
+  //   }
+  g_main_loop_run(this->loop);
 }
 void MessageLoopPlatformLinux::Quit() {
-   if (this->loop) {
-      g_main_loop_quit(this->loop);
+  if (this->loop) {
+    g_main_loop_quit(this->loop);
   }
   this->quit_flag = true;
   g_main_context_wakeup(nullptr);
 }
 
-int MessageLoopPlatformLinux::AddTimeout(int elapse, TimeoutSlot &&task) {
-  auto *p = new TimeoutSlot(std::forward<TimeoutSlot>(task));
+static int on_idle(gpointer pointer) {
+  PostTaskType *p = (PostTaskType *)pointer;
+  p->emit();
+  delete p;
+  return FALSE;
+}
+void MessageLoopPlatformLinux::PostTask(PostTaskType &&task) {
+  auto *p = new PostTaskType(std::forward<PostTaskType>(task));
+  g_idle_add(on_idle, gpointer(p));
+}
 
-  return g_timeout_add(elapse, on_timer, gpointer(p));
+static int on_timer(gpointer pointer) {
+  ScheduleTaskType *p = (ScheduleTaskType *)pointer;
+  bool continue_run = p->emit();
+  if (!continue_run) {
+    delete p;
+  }
+  return continue_run;
+}
+int MessageLoopPlatformLinux::ScheduleTask(ScheduleTaskType &&task,
+                                            int delay_ms) {
+  auto *p = new ScheduleTaskType(std::forward<ScheduleTaskType>(task));
+  return g_timeout_add(delay_ms, on_timer, gpointer(p));
 }
 
 void MessageLoopPlatformLinux::processXEvent(const XEvent &event) {
