@@ -29,8 +29,6 @@ void ApplicationMac::Init() {
 //                                          keyEquivalent:@"q"] autorelease];
 //   [appMenu addItem:quitMenuItem];
 //   [appMenuItem setSubmenu:appMenu];
-
-  printf("ApplicationMac::Init\n");
 }
 
 }

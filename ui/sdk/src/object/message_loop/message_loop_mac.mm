@@ -1,8 +1,13 @@
 #include "message_loop_mac.h"
-#include "../mac/application_mac.h"
+#include "../application/application_mac.h"
 #import <AppKit/AppKit.h>
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
+
+// 对于 event loop 的具体实现有两个：
+// 1. Foundation 框架中的 NSRunLoop
+// 2. Core Foundation 框架中的 CFRunLoop
+// 其中 NSRunLoop 是对 CFRunLoop 的简单封装
 
 const CFTimeInterval kCFTimeIntervalMax =
     std::numeric_limits<CFTimeInterval>::max();
@@ -40,6 +45,9 @@ void MessageLoopPlatformMac::Release() {
 
 // 只运行CFRunLoopRunInMode，ui不会有响应。得运行NsApp run才行。
 //
+// 主线程得以NSApplication运行，其它线程以NSRunLoop方式运行
+// https://chromium.googlesource.com/chromium/src/base/+/2103662f9a6cb031cd5b01c0fb0ef20caea181c3/message_pump_mac.mm
+//
 /*
 2 com.apple.CoreFoundation 0x9358b37f __CFRunLoopRun + 2079
 3 com.apple.CoreFoundation 0x9358a464 CFRunLoopRunSpecific + 452
@@ -54,44 +62,37 @@ nextEventMatchingMask:untilDate:inMode:dequeue:] + 156 10 com.apple.AppKit
 NSApplicationMain + 574 _start + 208 start + 40
 */
 void MessageLoopPlatformMac::Run() {
-#if 0
-  int result = 0;
-  do {
-    result =
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, kCFTimeIntervalMax, false);
-  } while (result != kCFRunLoopRunStopped && result != kCFRunLoopRunFinished);
-#else
-  printf("NSApp run start\n");
-  [NSApp run];
-  printf("NSApp run finish\n");
-#endif
+
+  if (m_type == MacMessageLoopType::_NSAppRun) {
+    [NSApp run];
+  } else if (m_type == MacMessageLoopType::_CFRunLoop) {
+    int result = 0;
+    do {
+      result =
+          CFRunLoopRunInMode(kCFRunLoopDefaultMode, kCFTimeIntervalMax, false);
+    } while (result != kCFRunLoopRunStopped && result != kCFRunLoopRunFinished);
+  }
 }
 void MessageLoopPlatformMac::Quit() {
-#if 0
-  auto run_loop = CFRunLoopGetCurrent();
-  CFRunLoopStop(run_loop);
-#else
+  if (m_type == MacMessageLoopType::_NSAppRun) {
+    [NSApp stop:nil];
 
-  // PostTask(
-  //     ui::Slot<void()>([](){
-  //     [NSApp stop:nil];
-  //     printf("Quit\n");
-  // }));
-  [NSApp stop:nil];
-
-  // stop 只是加一个标记，将在下一个事件处理完之后退出。
-  // Send a fake event to wake the loop up.
-  [NSApp postEvent:[NSEvent otherEventWithType:NSApplicationDefined
-                                      location:NSMakePoint(0, 0)
-                                 modifierFlags:0
-                                     timestamp:0
-                                  windowNumber:0
-                                       context:NULL
-                                       subtype:0
-                                         data1:0
-                                         data2:0]
-           atStart:NO];
-#endif
+    // stop 只是加一个标记，将在下一个事件处理完之后退出。
+    // Send a fake event to wake the loop up.
+    [NSApp postEvent:[NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                        location:NSMakePoint(0, 0)
+                                   modifierFlags:0
+                                       timestamp:0
+                                    windowNumber:0
+                                         context:NULL
+                                         subtype:0
+                                           data1:0
+                                           data2:0]
+             atStart:NO];
+  } else if (m_type == MacMessageLoopType::_CFRunLoop) {
+    auto run_loop = CFRunLoopGetCurrent();
+    CFRunLoopStop(run_loop);
+  }
 }
 
 struct TimerDataMac {

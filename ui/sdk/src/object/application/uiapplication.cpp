@@ -1,7 +1,7 @@
 #include "uiapplication.h"
 
 #if defined(OS_MAC)
-#include "mac/application_mac.h"
+#include "application_mac.h"
 #endif
 
 namespace ui {

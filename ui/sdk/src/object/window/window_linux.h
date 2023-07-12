@@ -8,10 +8,11 @@
 namespace ui {
 class WindowPlatformLinux : public WindowPlatform, public XEventDispatcher {
 public:
-  void Initialize(ui::Window *) override;
+  WindowPlatformLinux(ui::Window &w);
+  void Initialize() override;
   void Release() override;
 
-  void Create(const Rect &rect) override;
+  bool Create(const Rect &rect) override;
   bool CreateTransparent(const Rect &rect);
   void Destroy();
 
@@ -42,7 +43,7 @@ private:
   void initEvent();
 
 private:
-  ui::Window *m_ui_window = nullptr;
+  ui::Window &m_ui_window;
 
   X11Display m_display;
   ::Window m_window = 0;

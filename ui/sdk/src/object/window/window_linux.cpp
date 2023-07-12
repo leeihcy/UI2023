@@ -3,17 +3,15 @@
 
 namespace ui {
 
-void WindowPlatformLinux::Initialize(ui::Window *ui_window) {
-  m_ui_window = ui_window;
-  m_display.Init();
-}
+WindowPlatformLinux::WindowPlatformLinux(ui::Window &w) : m_ui_window(w) {}
+void WindowPlatformLinux::Initialize() { m_display.Init(); }
 
 void WindowPlatformLinux::Release() {
   Destroy();
   m_display.Destroy();
 }
 
-void WindowPlatformLinux::Create(const Rect &rect) {
+bool WindowPlatformLinux::Create(const Rect &rect) {
   ::Window window = XCreateSimpleWindow(
       m_display, m_display.GetDefaultRootWindow(), rect.x, rect.y, rect.width,
       rect.height, 300, m_display.GetBlack(), m_display.GetWhite());
@@ -29,6 +27,7 @@ void WindowPlatformLinux::Create(const Rect &rect) {
   XSetWMNormalHints(m_display, window, &hints);
 
   Attach(window);
+  return true;
 }
 
 bool WindowPlatformLinux::CreateTransparent(const Rect &rect) {

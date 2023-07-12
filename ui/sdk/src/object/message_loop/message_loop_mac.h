@@ -11,6 +11,15 @@
 
 namespace ui {
 
+enum MacMessageLoopType {
+    // UI主线程
+    _NSAppRun = 0,
+    // 其它线程
+    _CFRunLoop = 1,
+    // 其它线程
+    _NSRunLoop = 2,
+};
+
 class MessageLoopPlatformMac : public MessageLoopPlatform {
 public:
   void Initialize(MessageLoop *) override;
@@ -26,6 +35,8 @@ public:
   static void onIdleEntry(void *info);
 
 private:
+  MacMessageLoopType m_type = MacMessageLoopType::_NSAppRun;
+
   MessageLoop *m_message_loop = nullptr;
   bool quit_flag = false;
 

@@ -11,9 +11,10 @@ class Window;
 
 struct WindowPlatform {
   virtual ~WindowPlatform(){};
-  virtual void Initialize(ui::Window *) = 0;
+  virtual void Initialize() = 0;
   virtual void Release() = 0;
-  virtual void Create(const Rect &rect) = 0;
+  virtual bool Create(const Rect &rect) = 0;
+  virtual void SetTitle(const char* title) = 0;
   virtual void Show() = 0;
   virtual void Submit(sk_sp<SkSurface> sksurface) = 0;
 };
@@ -25,6 +26,7 @@ public:
 
   void OnMessage();
   void Create(const Rect &rect);
+  void SetTitle(const char* title);
   void Show();
 
 public:

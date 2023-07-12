@@ -22,14 +22,19 @@ Window::~Window() {
 void Window::Create(const Rect &rect) {
 #if defined(OS_WIN)
 #elif defined(OS_MAC) 
-  m_platform = new WindowPlatformMac();
+  m_platform = new WindowPlatformMac(*this);
 #elif defined(OS_LINUX)
-  m_platform = new WindowPlatformLinux();
+  m_platform = new WindowPlatformLinux(*this);
 #else
   assert(false);
 #endif
-  m_platform->Initialize(this);
+  m_platform->Initialize();
   m_platform->Create(rect);
+}
+
+void Window::SetTitle(const char* title)
+{
+    m_platform->SetTitle(title);
 }
 
 void Window::Show() {
@@ -44,6 +49,7 @@ void Window::onSize(int width, int height) {
   }
   m_width = width;
   m_height = height;
+  printf("on size: %d %d\n", width, height);
   
   SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
                                        kPremul_SkAlphaType, nullptr);

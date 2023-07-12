@@ -13,19 +13,25 @@ class NSWindow;
 namespace ui {
 class WindowPlatformMac : public WindowPlatform {
 public:
-  void Initialize(ui::Window *) override;
+  WindowPlatformMac(ui::Window& w);
+  void Initialize() override;
   void Release() override;
 
-  void Create(const Rect &rect) override;
+  bool Create(const Rect &rect) override;
   void Destroy();
 
+  void SetTitle(const char* title) override;
   void Show() override;
 
-  void Submit(sk_sp<SkSurface> sksurface) override {}
+  void Submit(sk_sp<SkSurface> sksurface) override;
 
+public:
+  NSWindow* window() { return m_window; }
+  
 private:
-  ui::Window *m_ui_window = nullptr;
   NSWindow *m_window = nullptr;
+public:
+  ui::Window& m_ui_window;
 };
 
 } // namespace ui

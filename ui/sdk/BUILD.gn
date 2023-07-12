@@ -23,7 +23,7 @@ shared_library("uisdk") {
     cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
         "src/object/message_loop/message_loop.cpp",
-        "src/object/uiapplication.cpp",
+        "src/object/application/uiapplication.cpp",
         "src/object/window/window.cpp",
     ]
     if (is_linux || use_linux_msgloop) {
@@ -46,7 +46,7 @@ shared_library("uisdk") {
 
     if (is_mac) {
         sources += [
-            "src/object/mac/application_mac.mm",
+            "src/object/application//application_mac.mm",
         ]
         # skia Mac 依赖
         ldflags = [
@@ -113,7 +113,7 @@ executable("message_loop_unittest") {
 
     if (is_mac) {
         sources += [
-            "src/object/mac/application_mac.mm",
+            "src/object/application/application_mac.mm",
         ]
         # skia Mac 依赖
         ldflags = [
