@@ -15,6 +15,9 @@ executable("hello") {
         "macos.mm"
     ]
 
+    lib_dirs = ["../../3rd/skia/lib"]
+    libs = ["skia"]
+
     if (true) {
         # skia Mac 依赖
         ldflags = [

@@ -56,6 +56,7 @@ bool WindowPlatformMac::Create(const Rect &rect) {
   //   [m_window setContentView:textView];
   //   [textView insertText:@"Hello OSX/Cocoa world!"
   //   replacementRange:NSRange()];
+
   return true;
 }
 
@@ -75,10 +76,26 @@ void WindowPlatformMac::Show() {
   [m_window makeKeyAndOrderFront:NSApp];
 }
 
+void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
+  SkPixmap pm;
+  if (!sksurface->peekPixels(&pm)) {
+    return;
+  }
 
-void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) 
-{
+  CGDataProviderRef ref = CGDataProviderCreateWithData(
+      NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
+  CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
 
+  CGBitmapInfo bitmapInfo = kCGImageAlphaNoneSkipLast;
+  //  bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
+  bitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst;
+
+  CGImageRef image =
+      CGImageCreate(pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace,
+                    bitmapInfo, ref, NULL, true, kCGRenderingIntentDefault);
+
+  CGContext *context = [NSGraphicsContext currentContext].CGContext;
+  CGContextDrawImage(context, CGRectMake(0, 0, pm.width(), pm.height()), image);
 }
 
 } // namespace ui
@@ -92,11 +109,11 @@ void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface)
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
-    NSView* view = m_window->window().contentView;
-    // CGFloat scale = skwindow::GetBackingScaleFactor(view);
-    m_window->m_ui_window.onSize(view.bounds.size.width/* * scale*/, 
-        view.bounds.size.height/* * scale*/);
-    // fWindow->inval();
+  NSView *view = m_window->window().contentView;
+  // CGFloat scale = skwindow::GetBackingScaleFactor(view);
+  m_window->m_ui_window.onSize(view.bounds.size.width /* * scale*/,
+                               view.bounds.size.height /* * scale*/);
+  // fWindow->inval();
 }
 
 - (BOOL)windowShouldClose:(NSWindow *)sender {
@@ -129,6 +146,13 @@ void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface)
 }
 
 - (void)drawRect:(NSRect)rect {
+  // CGContext* context = UIGraphicsGetCurrentContext();
+  // [NSGraphicsContext currentContext].CGContext
+  // CGContextRef myContext = [[NSGraphicsContext currentContext] graphicsPort];
+
+  //  CGContextRef ctx =
+  //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+
   m_window->m_ui_window.onPaint(nullptr);
 }
 

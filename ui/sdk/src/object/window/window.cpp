@@ -66,17 +66,17 @@ void Window::onPaint(Rect *dirty) {
   }
 
   SkCanvas *canvas = m_sksurface->getCanvas();
-  on_erase_bkgnd(canvas);
-  on_paint(canvas);
+  on_erase_bkgnd(*canvas);
+  on_paint(*canvas);
 
   m_sksurface->flushAndSubmit();
   swap_buffer();
 }
 
-void Window::on_paint(SkCanvas *canvas) {}
-void Window::on_erase_bkgnd(SkCanvas *canvas) {
-    // canvas->clear(SK_ColorWHITE);
-    canvas->clear(SK_ColorRED);
+void Window::on_paint(SkCanvas& canvas) {
+    m_signal_paint.emit(canvas);
+}
+void Window::on_erase_bkgnd(SkCanvas& canvas) {
 }
 void Window::swap_buffer() {
     m_platform->Submit(m_sksurface);

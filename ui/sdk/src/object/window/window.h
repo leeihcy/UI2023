@@ -37,10 +37,11 @@ public:
   void onSize(int width, int height);
 
   signal<void()> &DestroySignal() { return m_signal_destroy; }
-
+  signal<void(SkCanvas&)> &PaintSignal() { return m_signal_paint; }
+  
 private:
-  void on_paint(SkCanvas *canvas);
-  void on_erase_bkgnd(SkCanvas *canvas);
+  void on_paint(SkCanvas& canvas);
+  void on_erase_bkgnd(SkCanvas& canvas);
   void swap_buffer();
 
 private:
@@ -54,6 +55,7 @@ private:
 
   // 事件定义
   signal<void()> m_signal_destroy;
+  signal<void(SkCanvas&)> m_signal_paint;
 };
 
 } // namespace ui

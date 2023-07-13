@@ -8,6 +8,12 @@ void on_window_destroy(ui::UIApplication* uiapp) {
     printf("on_window_destroy\n");
     uiapp->Quit();
 }
+void on_window_paint(SkCanvas& canvas) {
+    canvas.clear(SK_ColorRED);
+
+    SkPaint paint;
+    canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10, paint);
+}
 
 int mac_main();
 int main() {
@@ -22,6 +28,7 @@ int main() {
     window.SetTitle("你好Hello!");
     window.Show();
     window.DestroySignal().connect(on_window_destroy, &uiapp);
+    window.PaintSignal().connect(on_window_paint);
 
     uiapp.Run();
 #endif
