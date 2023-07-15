@@ -28,4 +28,10 @@ executable("hello") {
             "-framework", "Cocoa",
         ]
     }
+    cflags = []
+    if (is_debug) {
+      cflags += ["-g"]
+    }
+
+    print("cflags=", cflags)
 }

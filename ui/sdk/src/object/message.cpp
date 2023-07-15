@@ -1,8 +1,7 @@
-#include "stdafx.h"
 #include "message.h"
+#include "util/log.h"
 
-
-namespace UI
+namespace ui
 {
 //
 //	return
@@ -18,12 +17,12 @@ namespace UI
 //         User32._UserSetLaseError(0x57); //0x57 The parameter is incorrect.    
 //         return 0;  
 //     }  
-LONG_PTR UISendMessage(UIMSG* pMsg, int nMsgMapID, BOOL* pbHandled)
+long UISendMessage(UIMSG* pMsg, int nMsgMapID, bool* pbHandled)
 {
 	UIASSERT (pMsg != nullptr);
 	if (nullptr == pMsg)
 	{
-		UI_LOG_ERROR(_T("UISendMessage, pMsg==nullptr! ") );
+		UI_LOG_ERROR(L"UISendMessage, pMsg==nullptr! ");
 		return -1;
 	}
 	
@@ -32,11 +31,11 @@ LONG_PTR UISendMessage(UIMSG* pMsg, int nMsgMapID, BOOL* pbHandled)
 
 	if (nullptr == pMsg->pMsgTo)
 	{
-		UI_LOG_ERROR(_T("UISendMessage, pMessageTo==nullptr!  message=%d"), pMsg->message);
+		UI_LOG_ERROR(L"UISendMessage, pMessageTo==nullptr!  message=%d", pMsg->message);
 		return -1;
 	}
 
-	BOOL bRet = pMsg->pMsgTo->ProcessMessage(pMsg, nMsgMapID, true);
+	bool bRet = pMsg->pMsgTo->ProcessMessage(pMsg, nMsgMapID, true);
 	if (pbHandled) 
 	{
 		*pbHandled = bRet;
@@ -45,14 +44,14 @@ LONG_PTR UISendMessage(UIMSG* pMsg, int nMsgMapID, BOOL* pbHandled)
 	return pMsg->lRet;
 }
 
-LONG_PTR  UISendMessage(IMessage* pMsgTo,  UINT message,
-					WPARAM wParam, LPARAM lParam, 
-					UINT nCode, IMessage* pMsgFrom,
-					int nMsgMapID,BOOL* pbHandled)
+long UISendMessage(IMessage* pMsgTo,  uint message,
+					long wParam, long lParam, 
+					uint nCode, IMessage* pMsgFrom,
+					int nMsgMapID,bool* pbHandled)
 {
 	if (nullptr == pMsgTo)
 	{
-		UI_LOG_FATAL(_T("pObjMsgTo == nullptr"));
+		UI_LOG_FATAL(L"pObjMsgTo == nullptr");
 		return 0;
 	}
 
@@ -65,7 +64,7 @@ LONG_PTR  UISendMessage(IMessage* pMsgTo,  UINT message,
 	msg.wParam  = wParam;
 	msg.lParam  = lParam;
 
-	BOOL bRet = pMsgTo->ProcessMessage(&msg, nMsgMapID, true);
+	bool bRet = pMsgTo->ProcessMessage(&msg, nMsgMapID, true);
 	if (pbHandled) 
 	{
 		*pbHandled = bRet;
@@ -74,7 +73,7 @@ LONG_PTR  UISendMessage(IMessage* pMsgTo,  UINT message,
 	return msg.lRet;
 }
 
-LONG_PTR UISendMessage(Message* pMsgTo, UINT message, WPARAM wParam, LPARAM lParam)
+long UISendMessage(Message* pMsgTo, uint message, long wParam, long lParam)
 {
 	if (nullptr == pMsgTo)
 		return 0;
@@ -84,7 +83,7 @@ LONG_PTR UISendMessage(Message* pMsgTo, UINT message, WPARAM wParam, LPARAM lPar
 
 
 // 不支持跨线程调用
-LONG_PTR  UIPostMessage(HWND hForwardMsgWnd, UIMSG* pMsg, int nMsgMapID)
+long UIPostMessage(HWND hForwardMsgWnd, UIMSG* pMsg, int nMsgMapID)
 {
 	if (!pMsg->pMsgTo)
 		return 0;
@@ -95,33 +94,39 @@ LONG_PTR  UIPostMessage(HWND hForwardMsgWnd, UIMSG* pMsg, int nMsgMapID)
 	pMsg->pMsgTo->AddDelayRef((void**)&pCloneMsg->pMsgTo);
 
 	// -->ForwardPostMessageWindow::ProcessWindowMessage
-	::PostMessage(hForwardMsgWnd, UI_MSG_POSTMESSAGE, (WPARAM)pCloneMsg, (LPARAM)nMsgMapID);
-
+#if defined(OS_WIN)
+	::PostMessage(hForwardMsgWnd, UI_MSG_POSTMESSAGE, (long)pCloneMsg, (long)nMsgMapID);
+#else 
+    UIASSERT(0);
+#endif
 
 	return 0;
 }
 
 // 由于pMsg.pObjTo是一个Message类型，无法获取pUIApp指针，只能再增加一个参数
-LONG_PTR  UIPostMessage(IUIApplication* pUIApp, UIMSG* pMsg, int nMsgMapID)
+long  UIPostMessage(IUIApplication* pUIApp, UIMSG* pMsg, int nMsgMapID)
 {
     if (nullptr == pUIApp)
         return 0;
-
+#if defined(OS_WIN)
     HWND hDestWnd = pUIApp->GetForwardPostMessageWnd();
     if (nullptr == hDestWnd)
         return 0;
 
     return UIPostMessage(hDestWnd, pMsg, nMsgMapID);
+#else
+    // NOT IMPL
+    UIASSERT(false);
+    return 0;
+#endif
 }
 
-
-}
 
 Message::Message(IMessage* pIMessage)
 {
 	m_pCurMsg = nullptr;
     m_pIMessage = pIMessage;
-    m_bCreateIMessage = FALSE;
+    m_bCreateIMessage = false;
 }
 Message::~Message()
 {
@@ -145,7 +150,7 @@ IMessage*  Message::GetIMessage()
 //     {
 //         m_pIMessage = new IMessageInnerProxy;
 //         m_pIMessage->SetMessageImpl(this);
-//         m_bCreateIMessage = TRUE;
+//         m_bCreateIMessage = true;
 //     }
     return m_pIMessage; 
 }
@@ -154,17 +159,17 @@ IMessage*  Message::GetIMessage()
 // 获取当前消息是否已被处理过了
 // remark
 //	  该函数只能在ProcessMessage范围内调用，因为m_pCurMsg只在这段范围内有效
-BOOL Message::IsMsgHandled() const                         
+bool Message::IsMsgHandled() const                         
 {                  
 	UIASSERT(m_pCurMsg);
     if (!m_pCurMsg)
-        return FALSE;
+        return false;
 
 	return this->m_pCurMsg->bHandled;                         
 }   
 
 // 设置当前消息已被被处理过
-void Message::SetMsgHandled(BOOL bHandled)
+void Message::SetMsgHandled(bool bHandled)
 {
     UIASSERT(m_pCurMsg);	
     if (!m_pCurMsg)
@@ -198,11 +203,11 @@ void Message::CopyNotifyTo(IMessage* pObjCopyTo)
 
 // 发送Notify消息到注册过Notify的对象.(修改为只通知给一个人.通知多个人太乱了)
 // 当bPost为true时，才需要pUIApp参数
-LONG_PTR Message::DoNotify(UIMSG* pMsg/*, bool bPost, IUIApplication* pUIApp*/)
+long Message::DoNotify(UIMSG* pMsg/*, bool bPost, IUIApplication* pUIApp*/)
 {
 //	IMessage* pNotifyObj = pMsg->pMsgTo;
 	int    nMsgMapID = 0;
-	LONG_PTR   lRet = 0;     // 如果在UIMSG中指定了pObjMsgTo，则优先发送给该对象，并且nMsgMapID = 0;
+	long   lRet = 0;     // 如果在UIMSG中指定了pObjMsgTo，则优先发送给该对象，并且nMsgMapID = 0;
 
 	if (nullptr == pMsg->pMsgTo)
 	{
@@ -237,14 +242,14 @@ LONG_PTR Message::DoNotify(UIMSG* pMsg/*, bool bPost, IUIApplication* pUIApp*/)
 //	remark
 //		在HOOK过程中，不对 pMsg->pObjMsgTo作修改
 //
-BOOL Message::DoHook( UIMSG* pMsg, int nMsgMapID )
+bool Message::DoHook( UIMSG* pMsg, int nMsgMapID )
 {
-	BOOL  bRet = FALSE;
+	bool  bRet = false;
 
 	if (0 == m_lHookMsgMap.size())
 		return bRet;
 
-	list<MsgHook*>::iterator  iter = m_lHookMsgMap.begin();
+	std::list<MsgHook*>::iterator  iter = m_lHookMsgMap.begin();
 	for (; iter!=m_lHookMsgMap.end(); )
 	{
 		MsgHook* pHook = *iter;
@@ -252,18 +257,18 @@ BOOL Message::DoHook( UIMSG* pMsg, int nMsgMapID )
 
 		if (nMsgMapID == pHook->nMsgMapIDToHook)
 		{
-			if (TRUE == pHook->pObj->ProcessMessage(pMsg, (int)pHook->nMsgMapIDToNotify))
-				return TRUE;
+			if (true == pHook->pObj->ProcessMessage(pMsg, (int)pHook->nMsgMapIDToNotify))
+				return true;
 		}
 	}
 
-	return FALSE;
+	return false;
 }
 
 void Message::AddHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify )
 {
-	list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
-	list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
+	std::list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
+	std::list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
 	for( ; iter!=iterEnd; iter++ )
 	{
 		MsgHook* pHook = *iter;
@@ -284,8 +289,8 @@ void Message::AddHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify
 
 void Message::RemoveHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify )
 {
-	list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
-	list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
+	std::list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
+	std::list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
 	for (; iter!=iterEnd; iter++)
 	{
 		MsgHook* pHook = *iter;
@@ -304,8 +309,8 @@ void Message::RemoveHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNot
 }
 void Message::RemoveHook(IMessage* pObj)
 {
-	list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
-	list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
+	std::list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
+	std::list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
 	for (; iter!=iterEnd;)
 	{
 		MsgHook*  pHook = *iter;
@@ -321,8 +326,8 @@ void Message::RemoveHook(IMessage* pObj)
 
 void Message::ClearHook( )
 {
-	list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
-	list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
+	std::list< MsgHook* >::iterator  iter    = m_lHookMsgMap.begin();
+	std::list< MsgHook* >::iterator  iterEnd = m_lHookMsgMap.end();
 	for (; iter!=iterEnd; iter++)
 	{
 		MsgHook*  pHook = *iter;
@@ -333,7 +338,7 @@ void Message::ClearHook( )
 
 void  Message::AddDelayRef(void** pp)
 {
-    list<void**>::iterator  iter = std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+    std::list<void**>::iterator  iter = std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
     if (iter == m_lDelayRefs.end())
     {
         m_lDelayRefs.push_back(pp);
@@ -341,7 +346,7 @@ void  Message::AddDelayRef(void** pp)
 }
 void  Message::RemoveDelayRef(void** pp)
 {
-    list<void**>::iterator  iter = std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+    std::list<void**>::iterator  iter = std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
     if (iter != m_lDelayRefs.end())
     {
         m_lDelayRefs.erase(iter);
@@ -349,7 +354,7 @@ void  Message::RemoveDelayRef(void** pp)
 }
 void  Message::ResetDelayRef()
 {
-    list<void**>::iterator  iter = m_lDelayRefs.begin();
+    std::list<void**>::iterator  iter = m_lDelayRefs.begin();
     for (; iter != m_lDelayRefs.end(); iter++)
     {
         void** pp = *iter;
@@ -358,15 +363,17 @@ void  Message::ResetDelayRef()
     m_lDelayRefs.clear();
 }
 
- BOOL Message::ProcessMessage(
+ bool Message::ProcessMessage(
         UIMSG* pMsg, int nMsgMapID, bool bDoHook)
  {
-     UI::UIMSG*  pOldMsg  = this->GetCurMsg(); 
-     BOOL bRet = this->virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+     ui::UIMSG*  pOldMsg  = this->GetCurMsg(); 
+     bool bRet = this->virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
      this->SetCurMsg(pOldMsg);    
      return bRet;
  }
- BOOL Message::virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook)
+ bool Message::virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook)
  {
-     return FALSE; 
+     return false; 
  }
+
+}

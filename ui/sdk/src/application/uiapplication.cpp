@@ -6,7 +6,7 @@
 
 namespace ui {
 
-UIApplication::UIApplication() {
+UIApplication::UIApplication(IUIApplication* p) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif

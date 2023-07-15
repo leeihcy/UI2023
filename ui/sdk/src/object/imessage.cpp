@@ -1,7 +1,9 @@
-#include "stdafx.h"
+#include "interface/imessage.h"
+#include "base/uimsg.h"
+#include "base/uiapi.h"
 #include "message.h"
 
-namespace UI
+namespace ui
 {
 
 IMessage::IMessage(E_BOOL_CREATE_IMPL b)
@@ -22,13 +24,13 @@ Message*  IMessage::GetImpl()
 	return m_pImpl;
 }
  
-BOOL  IMessage::ProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) 
+bool  IMessage::ProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) 
 {
-	UI::UIMSG*  pOldMsg = nullptr;
+	ui::UIMSG*  pOldMsg = nullptr;
 	if (m_pImpl)
 		pOldMsg = m_pImpl->GetCurMsg();
 
-    BOOL bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+    bool bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
 
 	if (m_pImpl)
 		m_pImpl->SetCurMsg(pOldMsg);
@@ -41,11 +43,11 @@ void  IMessage::Release()
     this->virtual_delete_this();
 }
 
-BOOL    IMessage::IsMsgHandled()const
+bool    IMessage::IsMsgHandled()const
 {
 	return m_pImpl->IsMsgHandled();
 }
-void    IMessage::SetMsgHandled(BOOL b)
+void    IMessage::SetMsgHandled(bool b)
 {
 	m_pImpl->SetMsgHandled(b);
 }
@@ -57,15 +59,15 @@ void    IMessage::SetCurMsg(UIMSG* p)
 {
 	m_pImpl->SetCurMsg(p);
 }
-BOOL    IMessage::DoHook(UIMSG* pMsg, int nMsgMapID)
+bool    IMessage::DoHook(UIMSG* pMsg, int nMsgMapID)
 {
 	return m_pImpl->DoHook(pMsg, nMsgMapID);
 }
 
 
-BOOL  IMessage::virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook)
+bool  IMessage::virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook)
 {
-    return FALSE;
+    return false;
 }
 
 void  IMessage::virtual_delete_this()
@@ -73,7 +75,7 @@ void  IMessage::virtual_delete_this()
 	delete this;
 }
 
-// BOOL  IMessage::DoHook(UIMSG* pMsg, int nMsgMapID) 
+// bool  IMessage::DoHook(UIMSG* pMsg, int nMsgMapID) 
 // { 
 //     return m_pImpl->DoHook(pMsg, nMsgMapID); 
 // }
@@ -93,7 +95,7 @@ void  IMessage::CopyNotifyTo(IMessage* pObjCopyTo)
 
 	return m_pImpl->CopyNotifyTo(pObjCopyTo);
 }
-LONG_PTR  IMessage::DoNotify(UIMSG* pMsg) 
+long  IMessage::DoNotify(UIMSG* pMsg) 
 {
     return m_pImpl->DoNotify(pMsg); 
 }
@@ -143,9 +145,9 @@ void  IMessage::RemoveDelayRef(void** pp)
         m_pImpl->RemoveDelayRef(pp);
 }
 
-void*  IMessage::QueryInterface(REFIID iid)
+void*  IMessage::QueryInterface(const Guid& iid)
 {
-    return (void*)UISendMessage(this, UI_MSG_QUERYINTERFACE, (WPARAM)&iid);
+    return (void*)UISendMessage(this, UI_MSG_QUERYINTERFACE, (long)&iid);
 }
 
 MessageProxy::MessageProxy(IMessage* p) 
@@ -158,11 +160,11 @@ MessageProxy::~MessageProxy()
 
 }
 
-BOOL    MessageProxy::IsMsgHandled()const   
+bool    MessageProxy::IsMsgHandled()const   
 { 
 	return m_pImpl->IsMsgHandled();
 }
-void    MessageProxy::SetMsgHandled(BOOL b) 
+void    MessageProxy::SetMsgHandled(bool b) 
 {
 	return m_pImpl->SetMsgHandled(b);
 }
@@ -174,7 +176,7 @@ void    MessageProxy::SetCurMsg(UIMSG* p)
 {
 	m_pImpl->SetCurMsg(p);
 }
-BOOL    MessageProxy::DoHook(UIMSG* pMsg, int nMsgMapID)
+bool    MessageProxy::DoHook(UIMSG* pMsg, int nMsgMapID)
 { 
 	return m_pImpl->DoHook(pMsg, nMsgMapID);
 }

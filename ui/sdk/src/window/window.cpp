@@ -10,7 +10,7 @@
 
 namespace ui {
 
-Window::Window() {}
+Window::Window(IWindow* p) : Message(p) {}
 Window::~Window() {
   if (m_platform) {
     m_platform->Release();

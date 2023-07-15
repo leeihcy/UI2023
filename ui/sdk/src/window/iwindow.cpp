@@ -1,11 +1,25 @@
-#include "stdafx.h"
-#include "Inc\Interface\iwindow.h"
-#include "Src\UIObject\Window\windowbase.h"
-#include "Src\UIObject\Window\window.h"
+#include "interface/iwindow.h"
+#include "base/uiapi.h"
+#include "base/uicreator.h"
+#include "base/uidefine.h"
+#include "src/window/window.h"
+
+#if 0
 #include "Src\Resource\skinres.h"
+#endif
 
-using namespace UI;
+using namespace ui;
+UI_IMPLEMENT_INTERFACE(Window, Message)
 
+void IWindow::Create(const Rect &rect) { __pImpl->Create(rect); }
+void IWindow::SetTitle(const char *title) { __pImpl->SetTitle(title); }
+void IWindow::Show() { __pImpl->Show(); }
+
+ui::signal<void()> &IWindow::DestroySignal() { return __pImpl->DestroySignal(); }
+ui::signal<void(SkCanvas &)> &IWindow::PaintSignal() {
+  return __pImpl->PaintSignal();
+}
+#if 0
 UI_IMPLEMENT_INTERFACE(WindowBase, Panel)
 UI_IMPLEMENT_INTERFACE(Window, WindowBase)
 
@@ -220,8 +234,8 @@ void  IWindowBase::UpdateDesktopLayout()
 {
 	__pImpl->UpdateDesktopLayout();
 }
-
-
+#endif
+#if 0
 namespace UI
 {
 	extern "C"
@@ -246,3 +260,4 @@ namespace UI
 		}
 	}
 }
+#endif

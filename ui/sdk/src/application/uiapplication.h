@@ -1,14 +1,15 @@
 #ifndef _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 #define _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 
-#include "../message_loop/message_loop.h"
+#include "interface/iuiapplication.h"
+#include "message_loop/message_loop.h"
 
 namespace ui
 {
 class UIApplication
 {
 public:  
-    UIApplication();
+    UIApplication(IUIApplication* p);
     
     void Run();
     void Quit();

@@ -1,17 +1,60 @@
-#ifndef _UI_COMMON_DEFINE_H
-#define _UI_COMMON_DEFINE_H
+#ifndef _UI_SDK_COMMON_H_
+#define _UI_SDK_COMMON_H_
 #include <string>
 
-
-namespace UI
+namespace ui
 {
-    
+
+using byte = unsigned char;
+using ushort = unsigned short;
+using uint = unsigned int;
+using ulong = unsigned long;
+using wchar = wchar_t;
+
+
+struct Point {
+    int x;
+    int y;
+};
+struct Size
+{
+    int width;
+    int height;
+};
+struct Rect
+{
+    int x;
+    int y;
+    int width;
+    int height;
+};
+struct RectLTRB
+{
+    int left;
+    int top;
+    int right;
+    int bottom;
+};
+
+struct Guid {
+    uint     Data1;
+    ushort   Data2;
+    ushort   Data3;
+    byte     Data4[8];
+};
+
+
+#if defined(OS_WIN)
+#else
+#define HWND long
+#endif
+
 //
-//	release°æ±¾ÏÂ¶ÏÑÔÊä³ö£¬¿ÉÒÔÀûÓÃdebugview.exe¿´µ½¶ÏÑÔ´íÎó
-//  remark: __FILE__ ...ÕâĞ©¶¼ÊÇchar*ÀàĞÍµÄ
+//	releaseç‰ˆæœ¬ä¸‹æ–­è¨€è¾“å‡ºï¼Œå¯ä»¥åˆ©ç”¨debugview.exeçœ‹åˆ°æ–­è¨€é”™è¯¯
+//  remark: __FILE__ ...è¿™äº›éƒ½æ˜¯char*ç±»å‹çš„
 //
 #ifdef ASSERT
-#undef ASSERT  // ±ÜÃâÊ¹ÓÃASSERT£¬ÇëÊ¹ÓÃUIASSERT
+#undef ASSERT  // é¿å…ä½¿ç”¨ASSERTï¼Œè¯·ä½¿ç”¨UIASSERT
 #endif
 
 #ifdef _DEBUG
@@ -29,7 +72,7 @@ namespace UI
 
 
 	
-// ³£ÓÃËõĞ´¶¨Òå
+// å¸¸ç”¨ç¼©å†™å®šä¹‰
 #define SAFE_DELETE(p) \
 	if (p) \
 { \
@@ -68,11 +111,11 @@ namespace UI
 	}\
 }
 
-#ifdef _UNICODE
+// #ifdef _UNICODE
 	typedef std::wstring String;
-#else
-    typedef std::string  String;
-#endif
+// #else
+//     typedef std::string  String;
+// #endif
 
 
 inline int _round(const float& f)
@@ -91,5 +134,4 @@ inline int _round(const double& f)
 }
 
 }
-
 #endif

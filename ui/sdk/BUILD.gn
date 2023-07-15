@@ -12,7 +12,10 @@ shared_library("uisdk") {
     }
 
     include_dirs = [
-        "//ui",
+        "//",
+        "//ui/sdk",
+        "//ui/sdk/include",
+        "//ui/sdk/src",
         "//ui/3rd/skia/",
         "//ui/3rd/skia/include/core/"
     ]
@@ -22,15 +25,20 @@ shared_library("uisdk") {
 
     cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
-        "src/object/message_loop/message_loop.cpp",
-        "src/object/application/uiapplication.cpp",
-        "src/object/window/window.cpp",
+        "src/message_loop/message_loop.cpp",
+        "src/application/uiapplication.cpp",
+        "src/application/iuiapplication.cpp",
+        "src/window/window.cpp",
+        "src/window/iwindow.cpp",
+        "src/object/message.cpp",
+        "src/object/imessage.cpp",
+        "src/util/log/log.cpp",
     ]
     if (is_linux || use_linux_msgloop) {
         sources += [
-            "src/object/window/window_linux.cpp",
-            "src/object/window/linux/display.cpp",
-            "src/object/message_loop/message_loop_linux.cpp",
+            "src/window/window_linux.cpp",
+            "src/window/linux/display.cpp",
+            "src/message_loop/message_loop_linux.cpp",
         ]
         libs += [
             "glib-2.0",
@@ -39,14 +47,14 @@ shared_library("uisdk") {
     }
     if (is_mac && !use_linux_msgloop) {
         sources += [
-            "src/object/window/window_mac.mm",
-            "src/object/message_loop/message_loop_mac.mm",
+            "src/window/window_mac.mm",
+            "src/message_loop/message_loop_mac.mm",
         ]
     }
 
     if (is_mac) {
         sources += [
-            "src/object/application//application_mac.mm",
+            "src/application//application_mac.mm",
         ]
         # skia Mac 依赖
         ldflags = [
@@ -74,15 +82,23 @@ config("unittest_common") {
 }
 
 executable("signalslot_unittest") {
+    include_dirs = [
+        "//ui/sdk/include",
+    ]
     public_configs = [":unittest_common"]
-    sources = ["src/base/signalslot/signalslot_unittest.cpp"]
+    sources = ["include/common/signalslot/signalslot_unittest.cpp"]
 }
 executable("weakptr_unittest") {
+    include_dirs = [
+        "//ui/sdk/include",
+    ]
     public_configs = [":unittest_common"]
-    sources = ["src/base/weakptr/weakptr_unittest.cpp"]
+    sources = ["include/common/weakptr/weakptr_unittest.cpp"]
 }
 executable("message_loop_unittest") {
-    print ("use_linux_msgloop = ", use_linux_msgloop)
+    include_dirs = [
+        "//ui/sdk/include",
+    ]
     if (use_linux_msgloop) {
         defines = ["USE_LINUX_MSGLOOP"]
     }
@@ -91,13 +107,13 @@ executable("message_loop_unittest") {
     libs = ["glib-2.0"]
     cflags = exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
-        "src/object/message_loop/message_loop.cpp",
-        "src/object/message_loop/message_loop_unittest.cpp"
+        "src/message_loop/message_loop.cpp",
+        "src/message_loop/message_loop_unittest.cpp"
     ]
     if (is_linux || use_linux_msgloop) {
         sources += [
-            "src/object/window/linux/display.cpp",
-            "src/object/message_loop/message_loop_linux.cpp"
+            "src/window/linux/display.cpp",
+            "src/message_loop/message_loop_linux.cpp"
             ]
         libs += [
             "glib-2.0",
@@ -106,14 +122,14 @@ executable("message_loop_unittest") {
     }
     else if (is_mac) {
         sources += [
-            "src/object/message_loop/message_loop_mac.mm",
+            "src/message_loop/message_loop_mac.mm",
         ]
     }
 
 
     if (is_mac) {
         sources += [
-            "src/object/application/application_mac.mm",
+            "src/application/application_mac.mm",
         ]
         # skia Mac 依赖
         ldflags = [

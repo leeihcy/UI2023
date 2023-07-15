@@ -1,5 +1,10 @@
-#pragma once
-namespace UI
+#ifndef _UI_SDK_SRC_OBJECT_MESSAGE_H_
+#define _UI_SDK_SRC_OBJECT_MESSAGE_H_
+
+#include "interface/imessage.h"
+#include <list>
+
+namespace ui
 {
 	//
 	// 用于其它对象拦截我的消息
@@ -41,8 +46,8 @@ namespace UI
 
 		IMessage*    GetIMessage();
 
-		BOOL         IsMsgHandled()const;
-		void         SetMsgHandled(BOOL);
+		bool         IsMsgHandled()const;
+		void         SetMsgHandled(bool);
 		UIMSG*       GetCurMsg() { return m_pCurMsg; }
 		void         SetCurMsg(UIMSG* p) { m_pCurMsg = p; }
 
@@ -57,24 +62,26 @@ namespace UI
 		void         ClearHook();
 
 		// 返回TRUE，表示该消息已被处理，FALSE表示该消息没被处理
-		BOOL         ProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
-		virtual BOOL virtualProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
+		bool         ProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
+		virtual bool virtualProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
 
-		BOOL         DoHook(UIMSG* pMsg, int nMsgMapID);
-		LONG_PTR     DoNotify(UIMSG* pMsg);
+		bool         DoHook(UIMSG* pMsg, int nMsgMapID);
+		long         DoNotify(UIMSG* pMsg);
 
 		void         AddDelayRef(void** pp);
 		void         RemoveDelayRef(void** pp);
 		void         ResetDelayRef();
 
 	protected:
-		list<MsgHook*>    m_lHookMsgMap;      // 例如ComboBox要hook Combobox中的下拉按钮的事件
-		MsgNotify         m_objNotify;        // 产生事件时，需要通知的对象
-		list<void**>      m_lDelayRefs;       // 需要延迟调用自己的一些引用，避免自己被销毁之后还调用IMessage的一些函数，如uipostmessage, tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低
+		std::list<MsgHook*>  m_lHookMsgMap;      // 例如ComboBox要hook Combobox中的下拉按钮的事件
+		MsgNotify          m_objNotify;        // 产生事件时，需要通知的对象
+		std::list<void**>  m_lDelayRefs;       // 需要延迟调用自己的一些引用，避免自己被销毁之后还调用IMessage的一些函数，如uipostmessage, tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低
 
 		UIMSG *           m_pCurMsg;          // 记录当前正在处理的消息
 		IMessage*         m_pIMessage;
-		BOOL              m_bCreateIMessage;
+		bool              m_bCreateIMessage;
 	};
 
 }
+
+#endif

@@ -9,7 +9,7 @@
 
 #include "Interface/imessage.h"
 #include "Interface/iobject.h"
-#include "Interface\ipanel.h"
+#include "Interface/ipanel.h"
 #include "Interface/iskinres.h"
 #include "Interface/iuiapplication.h"
 #include "Interface/renderlibrary.h"

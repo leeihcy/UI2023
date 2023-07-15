@@ -1,13 +1,19 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
 
-#include "irenderlayer.h"
-#include "ipanel.h"
+#include "../base/uidefine.h"
+#include "../common/signalslot/signal.h"
+#include "imessage.h"
+#include <SkCanvas.h>
+#include <SkSurface.h>
+// #include "irenderlayer.h"
+// #include "ipanel.h"
 
-namespace UI
+namespace ui
 {
-interface IWindowMouseMgr;
-interface IWindowKeyboardMgr;
+#if 0
+struct IWindowMouseMgr;
+struct IWindowKeyboardMgr;
 
 //
 //  非UI消息，采用::SendMessage发送
@@ -103,7 +109,7 @@ typedef struct tagWindowStyle
 
 // 用于外部业务实现者处理窗口消息。
 // 外部不再要求从IWindowBase派生，只需要实现IWindowMessageCallback接口即可。
-interface IWindowDelegate
+struct IWindowDelegate
 {
     virtual BOOL  OnWindowMessage(UINT, WPARAM, LPARAM, LRESULT& lResult) { return FALSE; }
     virtual BOOL  OnWindowUIMessage(UIMSG* pMsg) { return FALSE; }
@@ -114,7 +120,7 @@ interface IWindowDelegate
 };
 
 class WindowBase;
-interface UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
+struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
  : public IPanel
 {
     HWND  GetHWND();
@@ -172,17 +178,26 @@ interface UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
     UI_DECLARE_INTERFACE(WindowBase);
 };
 
+#endif
+
 
 class Window;
-interface UIAPI_UUID(5C36801E-5929-4512-A998-F9719DCC6903) IWindow
- : public IWindowBase
+struct UIAPI_UUID(5C36801E-5929-4512-A998-F9719DCC6903) IWindow : public IMessage
 {
-    UI_DECLARE_INTERFACE(Window)
+  void Create(const Rect &rect);
+  void SetTitle(const char* title);
+  void Show();
+
+  ui::signal<void()> &DestroySignal();
+  ui::signal<void(SkCanvas&)> &PaintSignal();
+  
+  UI_DECLARE_INTERFACE(Window)
 };
 
+#if 0
 extern "C"
 void UIAPI GetWindowNormalRect(HWND hWnd, LPRECT prc);
-
+#endif
 }
 
 #endif  // _INCLUDED_IWINDOW_

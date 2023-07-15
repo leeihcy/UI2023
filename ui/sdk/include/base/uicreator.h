@@ -1,30 +1,33 @@
 #ifndef _UI_CREATOR_H_
 #define _UI_CREATOR_H_
 
+#include "uidefine.h"
+#include "uimsg.h"
+
 //////////////////////////////////////////////////////////////////////////
 //
-//    ¶ÔÏó´´½¨Õß£¬ÎªÁËÖ§³ÖÔÚ¶ÔÏó´´½¨ºÍÏú»ÙµÄÊ±ºòÄÜµ÷ÓÃĞéº¯Êı£¬ÒªÇóËùÓĞ¶ÔÏó
-//    µ÷ÓÃUICreateInstance½øĞĞ´´½¨£¬½«³õÊ¼»¯´úÂëºÍÊÍ·Å´úÂë·ÅÔÚFinalConstruct
-//    /FinalReleaseÀïÃæ
+//    å¯¹è±¡åˆ›å»ºè€…ï¼Œä¸ºäº†æ”¯æŒåœ¨å¯¹è±¡åˆ›å»ºå’Œé”€æ¯çš„æ—¶å€™èƒ½è°ƒç”¨è™šå‡½æ•°ï¼Œè¦æ±‚æ‰€æœ‰å¯¹è±¡
+//    è°ƒç”¨UICreateInstanceè¿›è¡Œåˆ›å»ºï¼Œå°†åˆå§‹åŒ–ä»£ç å’Œé‡Šæ”¾ä»£ç æ”¾åœ¨FinalConstruct
+//    /FinalReleaseé‡Œé¢
 //
 //////////////////////////////////////////////////////////////////////////
 
-namespace UI
+namespace ui
 {
-interface IUIApplication;
-interface ISkinRes;
+struct IUIApplication;
+struct ISkinRes;
 struct UIMSG;
 
 template<class T>
 class ObjectCreator : public T
 {
 public: 
-	// Í¨ÓÃĞÍ
+	// é€šç”¨å‹
 	static void CreateInstance2(ISkinRes* pSkinRes, void** pp)
 	{
 		*pp = (void*)ObjectCreator<T>::CreateInstance(pSkinRes);
 	}
-	// ×¨ÓÃĞÍ
+	// ä¸“ç”¨å‹
 	static T* CreateInstance(ISkinRes* pSkinRes)
 	{
         if (!pSkinRes)
@@ -37,10 +40,10 @@ public:
 
 		T* p = new ObjectCreator<T>;
 		
-        if (FAILED(UISendMessage(
+        if (0 != (UISendMessage(
                     p,
                     UI_MSG_FINALCONSTRUCT, 
-                    (WPARAM)pSkinRes)))
+                    (long)pSkinRes)))
         {
             p->Release();
             return nullptr;
@@ -48,20 +51,20 @@ public:
 
 		return p;
 	}
-	ObjectCreator() : T(CREATE_IMPL_TRUE)
+	ObjectCreator() : T(E_BOOL_CREATE_IMPL::CREATE_IMPL_TRUE)
 	{
 
 	}
 
-	// È·±£deleteºÍnewÔÚÍ¬Ò»Ä£¿é£¬ÓÉIMessage::Destroy´¥·¢
+	// ç¡®ä¿deleteå’Œnewåœ¨åŒä¸€æ¨¡å—ï¼Œç”±IMessage::Destroyè§¦å‘
 	virtual void virtual_delete_this() override
 	{
 		UISendMessage(this, UI_MSG_FINALRELEASE);
 		delete this;
 	}
 
-	// µ÷ÓÃimessage->virtualProcessMessageÊ±£¬»Øµ½×îÍâ²ã¶ÔÏóÀ´´¦Àí
-	virtual BOOL virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) override
+	// è°ƒç”¨imessage->virtualProcessMessageæ—¶ï¼Œå›åˆ°æœ€å¤–å±‚å¯¹è±¡æ¥å¤„ç†
+	virtual bool virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) override
 	{
 		return T::nvProcessMessage(pMsg, nMsgMapID, bDoHook);
 	}
@@ -73,12 +76,12 @@ template<class T>
 class ObjectNoImplCreator : public T
 {
 public: 
-	// Í¨ÓÃĞÍ
+	// é€šç”¨å‹
 	static void CreateInstance2(ISkinRes* pSkinRes, void** pp)
 	{
 		*pp = (void*)ObjectNoImplCreator<T>::CreateInstance(pSkinRes);
 	}
-	// ×¨ÓÃĞÍ
+	// ä¸“ç”¨å‹
 	static T* CreateInstance(ISkinRes* pSkinRes)
 	{
 		T* p = new ObjectNoImplCreator<T>;
@@ -86,7 +89,7 @@ public:
 		if (FAILED(UISendMessage(
 				p,
 				UI_MSG_FINALCONSTRUCT, 
-				(WPARAM)pSkinRes)))
+				(long)pSkinRes)))
 		{
 			delete p;
 			return nullptr;
@@ -99,7 +102,7 @@ public:
 
 	}
 
-	// È·±£deleteºÍnewÔÚÍ¬Ò»Ä£¿é£¬ÓÉIMessage::Destroy´¥·¢
+	// ç¡®ä¿deleteå’Œnewåœ¨åŒä¸€æ¨¡å—ï¼Œç”±IMessage::Destroyè§¦å‘
 	virtual void virtual_delete_this() override
 	{
 		UISendMessage(this, UI_MSG_FINALRELEASE);

@@ -1,7 +1,6 @@
-#include "stdafx.h"
-#include "Inc/Util/log.h"
+#include "util/log.h"
 
-namespace UI
+namespace ui
 {
 
 String LevelToString(const LOG_LEVEL& l)
@@ -11,26 +10,29 @@ String LevelToString(const LOG_LEVEL& l)
 	switch (l)
 	{
 	case LOG_LEVEL_DEBUG:
-		return String(_T(" [DEBUG]   "));
+		return String(L" [DEBUG]   ");
 
 	case LOG_LEVEL_INFO:
-		return String(_T(" [INFO]    "));
+		return String(L" [INFO]    ");
 
 	case LOG_LEVEL_WARN:
-		return String(_T(" [WARN]    "));
+		return String(L" [WARN]    ");
 
 	case LOG_LEVEL_ERROR:
-		return String(_T(" [ERROR]   "));
+		return String(L" [ERROR]   ");
 
 	case LOG_LEVEL_FATAL:
-		return String(_T(" [FATAL]   "));
+		return String(L" [FATAL]   ");
 
 	default:
-		return String(_T(" [UNKNOWN] "));
+		return String(L" [UNKNOWN] ");
 	}
 }
-
-void  _cdecl UILog(LOG_LEVEL lLevel, LPCTSTR szFile, LPCTSTR szFunction, long lLine, LPCTSTR szFormat, ...)
+void  __cdecl UILog2(LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
+{
+    // TODO:
+}
+void  __cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...)
 {
 #ifdef _DEBUG
 	// level
@@ -67,12 +69,12 @@ void  _cdecl UILog(LOG_LEVEL lLevel, LPCTSTR szFile, LPCTSTR szFunction, long lL
 #endif
 }
 
-void  UIAPI _cdecl UILogA(
+void  UIAPI __cdecl UILogA(
 	LOG_LEVEL lLevel,
-	LPCSTR szFile,
-	LPCSTR szFunction,
+	const char* szFile,
+	const char* szFunction,
 	long lLine,
-	LPCSTR szFormat,
+	const char* szFormat,
 	...)
 {
 	// TODO:

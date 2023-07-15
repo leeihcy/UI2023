@@ -9,7 +9,8 @@ enum LOG_LEVEL
 	LOG_LEVEL_FATAL = 4
 };
 
-void  _cdecl UILog(LOG_LEVEL lLevel, LPCTSTR szFile, LPCTSTR szFunction, long lLine, LPCTSTR szFormat, ...);
+void  _cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...);
+void  _cdecl UILog2(LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const char* szFormat, ...);
 
 #ifdef _UNICODE
 

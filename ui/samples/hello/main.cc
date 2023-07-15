@@ -1,10 +1,10 @@
 #include <iostream>
 using namespace std;
 
-#include "ui/sdk/src/object/application/uiapplication.h"
-#include "ui/sdk/src/object/window/window.h"
+#include "ui/sdk/include/interface/iuiapplication.h"
+#include "ui/sdk/include/interface/iwindow.h"
 
-void on_window_destroy(ui::UIApplication* uiapp) {
+void on_window_destroy(ui::IUIApplication* uiapp) {
     printf("on_window_destroy\n");
     uiapp->Quit();
 }
@@ -20,17 +20,22 @@ int main() {
 #if 0
     mac_main();
 #else
-    ui::UIApplication uiapp;
-    ui::Window window;
+    ui::IUIApplication uiapp;
+
+    ui::ISkinRes* skinres = (ui::ISkinRes*)1;
+    ui::IWindow* pWindow = ui::IWindow::CreateInstance(skinres);
 
     ui::Rect rc = {100, 100, 500, 400};
-    window.Create(rc);
-    window.SetTitle("你好Hello!");
-    window.Show();
-    window.DestroySignal().connect(on_window_destroy, &uiapp);
-    window.PaintSignal().connect(on_window_paint);
+    pWindow->Create(rc);
+    pWindow->SetTitle("你好Hello!");
+    pWindow->Show();
+    pWindow->DestroySignal().connect(on_window_destroy, &uiapp);
+    pWindow->PaintSignal().connect(on_window_paint);
 
     uiapp.Run();
+
+    pWindow->Release();
+
 #endif
     return 0;
 }

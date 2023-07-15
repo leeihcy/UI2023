@@ -1,6 +1,7 @@
-#include "stdafx.h"
-#include "Inc\Interface\iuiapplication.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "interface/iuiapplication.h"
+#include "src/application/uiapplication.h"
+
+#if 0
 #include "Inc\Interface\iobject.h"
 #include "Src\Atl\image.h"
 #include "Src\Helper\timer\timermanager.h"
@@ -10,8 +11,10 @@
 #include "Src\Resource\skinres.h"
 #include "Src\Helper\layout\layout_factory.h"
 #include "Src\Renderbase\renderbase\renderbase_factory.h"
+#endif
 
-using namespace UI;
+using namespace ui;
+
 
 IUIApplication::IUIApplication()
 {
@@ -22,15 +25,25 @@ IUIApplication::~IUIApplication()
     SAFE_DELETE(m_pImpl);
 }
 
+void IUIApplication::Run() {
+    m_pImpl->Run();
+}
+void  IUIApplication::Quit()
+{
+	m_pImpl->Quit();
+}
+
+
 UIApplication*  IUIApplication::GetImpl() 
 { 
 	return m_pImpl;
 }
 
-void  IUIApplication::Release()
-{
-	delete this;
-}
+#if 0
+// void  IUIApplication::Release()
+// {
+// 	delete this;
+// }
 
 ISkinRes*  IUIApplication::LoadSkinRes(LPCTSTR szSkinResPath)
 {
@@ -304,3 +317,4 @@ IWindowBase*  IUIApplication::GetWindowBaseFromHWND(HWND hWnd)
 {
     return m_pImpl->GetTopWindowMgr()->GetWindowBase(hWnd);
 }
+#endif

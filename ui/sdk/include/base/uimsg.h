@@ -3,46 +3,46 @@
 
 
 //
-// ÎªÁË¿ÉÒÔÔÚÏûÏ¢ÏìÓ¦º¯ÊıÖĞÖ±½Ó·ÃÎÊµ±Ç°ÏûÏ¢½á¹¹£¬½«m_pCurMsg×÷Îª³ÉÔ±º¯Êı½øĞĞ·ÃÎÊ»òÉèÖÃ
-// ÎªÁË·ÀÖ¹ÔÚ´¦ÀíÒ»¸öÏûÏ¢AµÄ¹ı³ÌÖĞ£¬±ØĞëÔÙ·¢ËÍÁíÍâÒ»¸öÏûÏ¢B£¬µ¼ÖÂAµÄm_pCurMsg±»B´Û¸Ä£¬
-// ±ØĞëÔÙÔö¼ÓÒ»¸öÁÙÊ±±äÁ¿±£´æµ±Ç°ÏûÏ¢m_pCurMsg£¬ÕâÑùµ±B´¦ÀíÍêºó£¬m_pCurMsg»Ö¸´³ÉA
-// ÎªÁËÊµÏÖ»¹Ô­m_pCurMsg£¬ËùÓĞµÄÏûÏ¢²»ÄÜÖ±½Ó·µ»Ø£¬¶øÊÇ½«m_pCurMsg»¹Ô­Ö®ºóÔÙreturn
+// ä¸ºäº†å¯ä»¥åœ¨æ¶ˆæ¯å“åº”å‡½æ•°ä¸­ç›´æ¥è®¿é—®å½“å‰æ¶ˆæ¯ç»“æ„ï¼Œå°†m_pCurMsgä½œä¸ºæˆå‘˜å‡½æ•°è¿›è¡Œè®¿é—®æˆ–è®¾ç½®
+// ä¸ºäº†é˜²æ­¢åœ¨å¤„ç†ä¸€ä¸ªæ¶ˆæ¯Açš„è¿‡ç¨‹ä¸­ï¼Œå¿…é¡»å†å‘é€å¦å¤–ä¸€ä¸ªæ¶ˆæ¯Bï¼Œå¯¼è‡´Açš„m_pCurMsgè¢«Bç¯¡æ”¹ï¼Œ
+// å¿…é¡»å†å¢åŠ ä¸€ä¸ªä¸´æ—¶å˜é‡ä¿å­˜å½“å‰æ¶ˆæ¯m_pCurMsgï¼Œè¿™æ ·å½“Bå¤„ç†å®Œåï¼Œm_pCurMsgæ¢å¤æˆA
+// ä¸ºäº†å®ç°è¿˜åŸm_pCurMsgï¼Œæ‰€æœ‰çš„æ¶ˆæ¯ä¸èƒ½ç›´æ¥è¿”å›ï¼Œè€Œæ˜¯å°†m_pCurMsgè¿˜åŸä¹‹åå†return
 //
 // fix bug: 20120831
-//    ÎªÁË½â¾öÅÉÉúÀà½«ÏûÏ¢CHAIN¸ø¸¸ÀàÊ±£¬¸¸ÀàÔÚUI_BEGIN_MSG_MAPÓÖ»áÖØĞÂÏìÓ¦Ò»´ÎDoHook£¬
-//    µ¼ÖÂHook·½ÊÕµ½Á½´ÎÏûÏ¢¡£Òò´ËÔö¼ÓÒ»¸öbDoHook²ÎÊı
+//    ä¸ºäº†è§£å†³æ´¾ç”Ÿç±»å°†æ¶ˆæ¯CHAINç»™çˆ¶ç±»æ—¶ï¼Œçˆ¶ç±»åœ¨UI_BEGIN_MSG_MAPåˆä¼šé‡æ–°å“åº”ä¸€æ¬¡DoHookï¼Œ
+//    å¯¼è‡´Hookæ–¹æ”¶åˆ°ä¸¤æ¬¡æ¶ˆæ¯ã€‚å› æ­¤å¢åŠ ä¸€ä¸ªbDoHookå‚æ•°
 //
 // ps: 20130320
-//    ÔÚIxxx²ã´Î£¬Ìá¹©IMessage::virtualProcessMessageĞéº¯ÊıºÍnvProcessMessage·ÇĞéº¯Êı£¬
-//    ÔÚxxx²ã´Î£¬Ò²Ìá¹©virtualProcessMessage(Ö÷ÒªÓÃÓÚ·ÇIMessageÅÉÉúÀà,IMessageInnerProxyµ÷ÓÃ)ºÍnvProcessMessage·ÇĞéº¯Êı
-//    Í¬Ê±Íâ²¿¿Ø¼ş¿ÉÖ±½Ó¼Ì³ĞÓÚMessageProxyÌá¹©ÏûÏ¢Ó³Éä
+//    åœ¨Ixxxå±‚æ¬¡ï¼Œæä¾›IMessage::virtualProcessMessageè™šå‡½æ•°å’ŒnvProcessMessageéè™šå‡½æ•°ï¼Œ
+//    åœ¨xxxå±‚æ¬¡ï¼Œä¹Ÿæä¾›virtualProcessMessage(ä¸»è¦ç”¨äºéIMessageæ´¾ç”Ÿç±»,IMessageInnerProxyè°ƒç”¨)å’ŒnvProcessMessageéè™šå‡½æ•°
+//    åŒæ—¶å¤–éƒ¨æ§ä»¶å¯ç›´æ¥ç»§æ‰¿äºMessageProxyæä¾›æ¶ˆæ¯æ˜ å°„
 //
 
 #define UI_BEGIN_MSG_MAP()                            \
-    virtual BOOL virtualProcessMessage(UI::UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false) \
+    virtual bool virtualProcessMessage(ui::UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false) \
     {                                                 \
         return this->nvProcessMessage(pMsg, nMsgMapID, bDoHook); \
     }                                                 \
-    BOOL nvProcessMessage(UI::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
+    bool nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
     {                                                 \
-        /*È¡³öwParam,lParam£¬ÒÔ±ã¼æÈİWindowÏûÏ¢´¦ÀíÖĞµÄwParam,lParam²ÎÊı*/\
-        WPARAM wParam = pMsg->wParam;                 \
-        LPARAM lParam = pMsg->lParam;                 \
-        UINT   uMsg   = pMsg->message;                \
-        UINT   code   = pMsg->nCode;                  \
-        UI::IMessage* pMsgFrom = pMsg->pMsgFrom;      \
-        LRESULT& lResult = pMsg->lRet; /* ¼æÈİwtl */   \
+        /*å–å‡ºwParam,lParamï¼Œä»¥ä¾¿å…¼å®¹Windowæ¶ˆæ¯å¤„ç†ä¸­çš„wParam,lParamå‚æ•°*/\
+        long wParam = pMsg->wParam;                 \
+        long lParam = pMsg->lParam;                 \
+        unsigned int   uMsg   = pMsg->message;                \
+        unsigned int   code   = pMsg->nCode;                  \
+        ui::IMessage* pMsgFrom = pMsg->pMsgFrom;      \
+        long& lResult = pMsg->lRet; /* å…¼å®¹wtl */   \
                                                       \
-		(code);   /*Î´ÒıÓÃ±äÁ¿ C4189*/                  \
+		(code);   /*æœªå¼•ç”¨å˜é‡ C4189*/                  \
 		(pMsgFrom);                                   \
 		(lResult);                                    \
 		(wParam);(lParam);(uMsg);                     \
                                                       \
         this->SetCurMsg(pMsg);                        \
                                                       \
-        /*ÏûÏ¢HOOK´¦Àí*/                                \
+        /*æ¶ˆæ¯HOOKå¤„ç†*/                                \
         if (bDoHook && this->DoHook(pMsg, nMsgMapID)) \
-            return TRUE;                              \
+            return true;                              \
                                                       \
         switch (nMsgMapID)                            \
         {                                             \
@@ -52,57 +52,57 @@
 #define UI_END_MSG_MAP()                              \
             break;                                    \
         }                                             \
-        return FALSE;                                 \
+        return false;                                 \
     }
 
 #define UI_END_MSG_MAP_CHAIN_PARENT(baseclass)        \
             break;                                    \
         }                                             \
         if (baseclass::nvProcessMessage(pMsg, nMsgMapID, false)) \
-            return TRUE;                              \
-        return FALSE;                                 \
+            return true;                              \
+        return false;                                 \
     }
 
-// Èç¹ûÖ»ÊÇÖ±½Óµ÷ÓÃUICHAIN_MSG_MAP_POINT_MEMBER(static_cast<baseinterface*>(m_pI##classname))ÔòÖ»ÄÜÏìÓ¦nMapIDÎª0µÄÇé¿öÁË
-// Òò´ËÔö¼ÓUI_END_MSG_MAP_CHAIN_PARENT_IxxxºêÓÃÓÚ½«ÏûÏ¢´«¸ø¸¸¶ÔÏó 
+// å¦‚æœåªæ˜¯ç›´æ¥è°ƒç”¨UICHAIN_MSG_MAP_POINT_MEMBER(static_cast<baseinterface*>(m_pI##classname))åˆ™åªèƒ½å“åº”nMapIDä¸º0çš„æƒ…å†µäº†
+// å› æ­¤å¢åŠ UI_END_MSG_MAP_CHAIN_PARENT_Ixxxå®ç”¨äºå°†æ¶ˆæ¯ä¼ ç»™çˆ¶å¯¹è±¡ 
 #define UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(classname, baseinterface) \
             break;                                    \
         }                                             \
         {                                             \
             if (m_pI##classname)                      \
                 if (static_cast<baseinterface*>(m_pI##classname)->nvProcessMessage(pMsg, nMsgMapID, false)) \
-                    return TRUE;                      \
+                    return true;                      \
         }                                             \
-        return FALSE;                                 \
+        return false;                                 \
     }
 
 #define UI_BEGIN_MSG_MAP_Ixxx(iclassname) \
-	static iclassname* CreateInstance(UI::ISkinRes* pSkinRes)        \
-	{ return UI::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes); } \
+	static iclassname* CreateInstance(ui::ISkinRes* pSkinRes)        \
+	{ return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes); } \
     UI_BEGIN_MSG_MAP()
 
 //
-// ÏûÏ¢Á´´«µİ
+// æ¶ˆæ¯é“¾ä¼ é€’
 //
-//	¸ÃºêÓĞ¸öÈ±µã£¬¾ÍÊÇÄÜ½ÓÊÕµ½µ±Ç°µÄ·ÖÖ§ÏûÏ¢£¬²»ÄÜ´«µİÆäËü·ÖÖ§ÏûÏ¢¡£¿ÉÊ¹ÓÃUI_BEGIN_CHAIN_ALL_MSG_MAP¸Ä½øºê
+//	è¯¥å®æœ‰ä¸ªç¼ºç‚¹ï¼Œå°±æ˜¯èƒ½æ¥æ”¶åˆ°å½“å‰çš„åˆ†æ”¯æ¶ˆæ¯ï¼Œä¸èƒ½ä¼ é€’å…¶å®ƒåˆ†æ”¯æ¶ˆæ¯ã€‚å¯ä½¿ç”¨UI_BEGIN_CHAIN_ALL_MSG_MAPæ”¹è¿›å®
 
 #define UICHAIN_MSG_MAP(theChainClass)                \
     if (theChainClass::nvProcessMessage(pMsg, nMsgMapID, false)) \
-        return TRUE;                     
+        return true;                     
 
 #define UICHAIN_MSG_MAP_MEMBER(theChainMember)        \
     if (theChainMember.ProcessMessage(pMsg, nMsgMapID, false)) \
-        return TRUE;
+        return true;
 
 #define UICHAIN_MSG_MAP_POINT_MEMBER(pTheChainMember)  \
     if (pTheChainMember)                               \
         if (pTheChainMember->ProcessMessage(pMsg, nMsgMapID, false)) \
-            return TRUE;                               
+            return true;                               
 
 // 
-//  Ç¿ĞĞ½áÊøµ±Ç°ÏûÏ¢·ÖÖ§£¬¶ø½«ÏûÏ¢È«²¿´«µİ¸øĞèÒªµÄ¶ÔÏó
+//  å¼ºè¡Œç»“æŸå½“å‰æ¶ˆæ¯åˆ†æ”¯ï¼Œè€Œå°†æ¶ˆæ¯å…¨éƒ¨ä¼ é€’ç»™éœ€è¦çš„å¯¹è±¡
 //
-//	TODO: ¸ÃºêÈ±µã£¬Ç¿ĞĞ½áÊøºó£¬²»ÖªµÀÓÃÄÄ¸ö·ÖÖ§ÔÙ½øĞĞ¿ªÊ¼£¬ÕâÀïÄ¬ÈÏÈ¡Îª0¡£½¨Òé½«¸Ãºê·ÅÔÚ×îÇ°Ãæ»òÕß×îºóÃæ
+//	TODO: è¯¥å®ç¼ºç‚¹ï¼Œå¼ºè¡Œç»“æŸåï¼Œä¸çŸ¥é“ç”¨å“ªä¸ªåˆ†æ”¯å†è¿›è¡Œå¼€å§‹ï¼Œè¿™é‡Œé»˜è®¤å–ä¸º0ã€‚å»ºè®®å°†è¯¥å®æ”¾åœ¨æœ€å‰é¢æˆ–è€…æœ€åé¢
 //
 #define UI_BEGIN_CHAIN_ALL_MSG_MAP			          \
             break;                                    \
@@ -122,14 +122,14 @@
     { \
     if (theChainMember) \
         if(theChainMember->ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult)) \
-            return TRUE; \
+            return true; \
     }
 
 #define VIRTUAL_BEGIN_MSG_MAP(theClass) \
         public: \
-        virtual BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0) \
+        virtual bool ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, DWORD dwMsgMapID = 0) \
         { \
-            BOOL bHandled = TRUE; \
+            bool bHandled = true; \
             (hWnd); \
             (uMsg); \
             (wParam); \
@@ -145,24 +145,24 @@
 #define  UI_MSG_NOTIFY  168272329
 
 //
-//  ÔÚUICreateInstanceÊ±µ÷ÓÃ£¬¸ø¶ÔÏóÒ»´ÎÔÚ¹¹ÔìÖĞ³õÊ¼»¯¶ÔÏó²¢·µ»Ø³É¹¦Ê§°ÜµÄ·½·¨
+//  åœ¨UICreateInstanceæ—¶è°ƒç”¨ï¼Œç»™å¯¹è±¡ä¸€æ¬¡åœ¨æ„é€ ä¸­åˆå§‹åŒ–å¯¹è±¡å¹¶è¿”å›æˆåŠŸå¤±è´¥çš„æ–¹æ³•
 //  
 //  message : UI_WM_FINALCONSTRUCT
 //  code : NA
-//  wparam : ISkinRes*,¶ÔÏóËùÊô×ÊÔ´°ü
+//  wparam : ISkinRes*,å¯¹è±¡æ‰€å±èµ„æºåŒ…
 //
 #define UI_MSG_FINALCONSTRUCT  168252120
 // HRESULT  FinalConstruct(ISkinRes* p);
 #define UIMSG_FINALCONSTRUCT(func)                    \
     if (uMsg == UI_MSG_FINALCONSTRUCT)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        lResult = func((UI::ISkinRes*)wParam);        \
+        SetMsgHandled(true);                          \
+        lResult = func((ui::ISkinRes*)wParam);        \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 //
-//  ÔÚ~UIObjCreatorÖĞµ÷ÓÃ£¬¸ø¶ÔÏóÔÚÎö¹¹Ç°µ÷ÓÃĞéº¯ÊıµÄ·½·¨
+//  åœ¨~UIObjCreatorä¸­è°ƒç”¨ï¼Œç»™å¯¹è±¡åœ¨ææ„å‰è°ƒç”¨è™šå‡½æ•°çš„æ–¹æ³•
 //  
 //  message : UI_WM_FINALRELEASE
 //  code : NA
@@ -174,45 +174,45 @@
 #define UIMSG_FINALRELEASE(func)                      \
     if (uMsg == UI_MSG_FINALRELEASE)                  \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func();                                       \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 
 //
-//	µ¯³öÌáÊ¾ÌõÍ¨Öª
+//	å¼¹å‡ºæç¤ºæ¡é€šçŸ¥
 //		message:UI_WM_SHOW_TOOLTIP
 //		code:   0
 //		wparam:  
 //		lParam: 
 //		pMsgFrom: pWindow
 //
-//	Èç¹û¶ÔÏó²»´¦ÀíÕâ¸öÏûÏ¢»ò·µ»ØFALSE£¬Ôò½«µ¯³öÄ¬ÈÏµÄÌáÊ¾Ìõ£¬ÏÔÊ¾tooltipÊôĞÔÄÚÈİ¡£
+//	å¦‚æœå¯¹è±¡ä¸å¤„ç†è¿™ä¸ªæ¶ˆæ¯æˆ–è¿”å›FALSEï¼Œåˆ™å°†å¼¹å‡ºé»˜è®¤çš„æç¤ºæ¡ï¼Œæ˜¾ç¤ºtooltipå±æ€§å†…å®¹ã€‚
 //
 #define  UI_MSG_SHOW_TOOLTIP  149150933
 
 //
-//	µ±itemdata²»Îª¿ÕÊ±£¬Ïò¿Ø¼ş»ñÈ¡itemµÄÌáÊ¾ĞÅÏ¢
+//	å½“itemdataä¸ä¸ºç©ºæ—¶ï¼Œå‘æ§ä»¶è·å–itemçš„æç¤ºä¿¡æ¯
 //		message:UI_WM_GET_TOOLTIPINFO
 //		code:   
 //		wparam:  TOOLTIPITEM*
 //		lParam:  IToolTipUI*
 //		pMsgFrom: 
 //
-//	·µ»Ø0±íÊ¾Ê§°Ü£¬²»ÏÔÊ¾ÌáÊ¾Ìõ¡£·µ»Ø1½«Á¢¼´ÏÔÊ¾ÌáÊ¾Ìõ
+//	è¿”å›0è¡¨ç¤ºå¤±è´¥ï¼Œä¸æ˜¾ç¤ºæç¤ºæ¡ã€‚è¿”å›1å°†ç«‹å³æ˜¾ç¤ºæç¤ºæ¡
 //
 #define UI_MSG_GET_TOOLTIPINFO 149150934
-// BOOL  OnGetToolTipInfo(TOOLTIPITEM* pItem, IToolTipUI* pUI);
+// bool  OnGetToolTipInfo(TOOLTIPITEM* pItem, IToolTipUI* pUI);
 #define UIMSG_GET_TOOLTIPINFO(func)                   \
     if (uMsg == UI_MSG_GET_TOOLTIPINFO)               \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func((TOOLTIPITEM*)wParam, (IToolTipUI*)lParam); \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // wParam: SERIALIZEDATA
@@ -223,14 +223,14 @@
 #define UIMSG_SERIALIZE(func)                         \
 	if (uMsg == UI_MSG_SERIALIZE)                     \
 	{                                                 \
-		SetMsgHandled(TRUE);                          \
+		SetMsgHandled(true);                          \
 		func((SERIALIZEDATA*)wParam);                 \
 		if (IsMsgHandled())                           \
-			return TRUE;                              \
+			return true;                              \
 	}
 
 //
-//  ½Ó¿Ú²éÑ¯
+//  æ¥å£æŸ¥è¯¢
 //
 //  message : UI_WM_QUERYINTERFACE
 //  code : NA
@@ -242,12 +242,12 @@
 #define UIMSG_QUERYINTERFACE(className)               \
     if (uMsg == UI_MSG_QUERYINTERFACE)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         if (IsEqualIID(*(const IID*)wParam, __uuidof(I##className)))  \
         {                                             \
-            SetMsgHandled(TRUE);                      \
-            lResult = (LRESULT)(void*)m_pI##className;\
-            return TRUE;                              \
+            SetMsgHandled(true);                      \
+            lResult = (long)(void*)m_pI##className;\
+            return true;                              \
         }                                             \
     }
 
@@ -255,24 +255,24 @@
 #define UIMSG_QUERYINTERFACE2(className)              \
     if (uMsg == UI_MSG_QUERYINTERFACE)                \
     {                                                 \
-		SetMsgHandled(TRUE);                          \
+		SetMsgHandled(true);                          \
 		lResult = func(*(const IID*)wParam);          \
 		if (IsMsgHandled())                           \
-			return TRUE;                              \
+			return true;                              \
     }
 
 //
-//	²âÊÔÒ»¸ö×ø±êÔÚÖ¸¶¨µÄ¶ÔÏóÉÏÃæµÄÎ»ÖÃ
+//	æµ‹è¯•ä¸€ä¸ªåæ ‡åœ¨æŒ‡å®šçš„å¯¹è±¡ä¸Šé¢çš„ä½ç½®
 //
 //		message: UI_WM_HITTEST
 //		code:
 //		wparam:  [in]  POINT*  ptInParent
-//		lparam:  [out,optional] POINT*  ptInChild (ÀıÈç¼õÈ¥×Ô¼ºµÄ×óÉÏ½ÇÆ«ÒÆ)
+//		lparam:  [out,optional] POINT*  ptInChild (ä¾‹å¦‚å‡å»è‡ªå·±çš„å·¦ä¸Šè§’åç§»)
 //		pMsgFrom: 
 //
 //	Return
 //
-//		HTNOWHERE±íÊ¾²»ÔÚ¸Ã¶ÔÏóÉÏÃæ
+//		HTNOWHEREè¡¨ç¤ºä¸åœ¨è¯¥å¯¹è±¡ä¸Šé¢
 //
 #define UI_MSG_HITTEST  168261616
 // LONG_PTR  OnHitTest(POINT* ptInParent, __out POINT* ptInChild)
@@ -280,74 +280,74 @@
     if (uMsg == UI_MSG_HITTEST)                       \
     {                                                 \
         POINT ptInParent = *(POINT*)wParam;           \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func(&ptInParent, (POINT*)lParam); \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
-//	×æ¡¢¸¸¶ÔÏóÖĞµÄ¿É¼û×´Ì¬·¢ÉúÁË¸Ä±ä£¨Ö÷ÒªÊÇÓÃÓÚÔÚ¸¸¶ÔÏóÒş²ØÊ±£¬ÄÜ×Ô¶¯½«HwndObj¶ÔÏóÒ²Òş²Ø£©
+//	ç¥–ã€çˆ¶å¯¹è±¡ä¸­çš„å¯è§çŠ¶æ€å‘ç”Ÿäº†æ”¹å˜ï¼ˆä¸»è¦æ˜¯ç”¨äºåœ¨çˆ¶å¯¹è±¡éšè—æ—¶ï¼Œèƒ½è‡ªåŠ¨å°†HwndObjå¯¹è±¡ä¹Ÿéšè—ï¼‰
 //		message: UI_WM_PARENT_VISIBLE_CHANGED
 //		code:    
-//		wparam:  BOOL bVisible, (±£³ÖÓëWM_SHOWWINDOWÒ»ÖÂ)
+//		wparam:  bool bVisible, (ä¿æŒä¸WM_SHOWWINDOWä¸€è‡´)
 //		lparam:  Object*
 #define UI_MSG_VISIBLE_CHANGED  168261620
 
-// void  OnVisibleChanged(BOOL bVisible, IObject* pObjChanged)
+// void  OnVisibleChanged(bool bVisible, IObject* pObjChanged)
 #define UIMSG_VISIBLE_CHANGED(func)                   \
     if (uMsg == UI_MSG_VISIBLE_CHANGED)               \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func(wParam?TRUE:FALSE, (UI::IObject*)lParam);\
+        SetMsgHandled(true);                          \
+        func(wParam?true:false, (ui::IObject*)lParam);\
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 //
-//	MouseManagerÍ¨ÖªÒ»¸ö¶ÔÏó£¬ËüµÄµ±Ç°×´Ì¬·¢Éú¸Ä±ä(hover,press...)
-//  ×¨ÃÅÓÃÓÚË¢ĞÂ´¦Àí£¬²»ÒªÔÚÕâ¸öÏûÏ¢ÖĞÌí¼ÓÆäËüÂß¼­´¦Àí£¬ÒòÎª¿ÉÄÜ»á±»HOOKµô£¬µ¼ÖÂ×´Ì¬²»ÕıÈ·
+//	MouseManageré€šçŸ¥ä¸€ä¸ªå¯¹è±¡ï¼Œå®ƒçš„å½“å‰çŠ¶æ€å‘ç”Ÿæ”¹å˜(hover,press...)
+//  ä¸“é—¨ç”¨äºåˆ·æ–°å¤„ç†ï¼Œä¸è¦åœ¨è¿™ä¸ªæ¶ˆæ¯ä¸­æ·»åŠ å…¶å®ƒé€»è¾‘å¤„ç†ï¼Œå› ä¸ºå¯èƒ½ä¼šè¢«HOOKæ‰ï¼Œå¯¼è‡´çŠ¶æ€ä¸æ­£ç¡®
 //
 //    UI_WM_STATECHANGED,
 
 // wParam: nChangeMask
 #define UI_MSG_STATECHANGED 168261626
-// void  OnStateChanged(UINT nMask);
+// void  OnStateChanged(unsigned int nMask);
 #define UIMSG_STATECHANGED(func)                      \
     if (uMsg == UI_MSG_STATECHANGED)                  \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UINT)wParam);                           \
+        SetMsgHandled(true);                          \
+        func((unsigned int)wParam);                           \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void  OnPaint(IRenderTarget* pRenderTarget)
 #define UIMSG_PAINT(func)                             \
     if (uMsg == WM_PAINT)                             \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UI::IRenderTarget*)wParam);             \
+        SetMsgHandled(true);                          \
+        func((ui::IRenderTarget*)wParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// void  OnEraseBkgnd(UI::IRenderTarget* pRenderTarget)
+// void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget)
 //	remark
-//		²ÎÊıHDC£¬ÊÇÒÑ¾­×ö¹ıÁËË«»º³å´¦ÀíÁË£¬¿ÉÒÔÖ±½ÓÊ¹ÓÃ¡£Ô­Ê¼µÄWM_ERASEBKGNDÏûÏ¢ÒÑ±»¹ıÂËÁË
-//		ÕâÀïÈ¥µôÁË·µ»ØÖµ£¬ÒÔ·Àµ÷ÓÃÕß×Ô¼ºÒ²²»ÖªµÀµ½µ×¸Ã·µ»ØÊ²Ã´£¨ÆäÊµÕâÀïµÄ·µ»ØÖµÃ»ÓĞÒâË¼£©
+//		å‚æ•°HDCï¼Œæ˜¯å·²ç»åšè¿‡äº†åŒç¼“å†²å¤„ç†äº†ï¼Œå¯ä»¥ç›´æ¥ä½¿ç”¨ã€‚åŸå§‹çš„WM_ERASEBKGNDæ¶ˆæ¯å·²è¢«è¿‡æ»¤äº†
+//		è¿™é‡Œå»æ‰äº†è¿”å›å€¼ï¼Œä»¥é˜²è°ƒç”¨è€…è‡ªå·±ä¹Ÿä¸çŸ¥é“åˆ°åº•è¯¥è¿”å›ä»€ä¹ˆï¼ˆå…¶å®è¿™é‡Œçš„è¿”å›å€¼æ²¡æœ‰æ„æ€ï¼‰
 #define UIMSG_ERASEBKGND(func)                     \
     if (uMsg == WM_ERASEBKGND)                        \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-		func((UI::IRenderTarget*)wParam);             \
+        SetMsgHandled(true);                          \
+		func((ui::IRenderTarget*)wParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 //
-//  Èç¹ûÕâ¸ö¶ÔÏóÖ§³Ö²¼¾Ö£¬·µ»Ø²¼¾Ö¶ÔÏóÖ¸Õë¡£ÈçOBJ_WINDOW,OBJ_PANEL,OBJ_COMPOUND_CONTROL
+//  å¦‚æœè¿™ä¸ªå¯¹è±¡æ”¯æŒå¸ƒå±€ï¼Œè¿”å›å¸ƒå±€å¯¹è±¡æŒ‡é’ˆã€‚å¦‚OBJ_WINDOW,OBJ_PANEL,OBJ_COMPOUND_CONTROL
 //
 //		message: UI_WM_GETLAYOUT
 //		code:
@@ -360,7 +360,7 @@
 
 
 //
-//	»ñÈ¡µ±Ç°»æÖÆµÄÆ«ÒÆÁ¿£¬ÓÃÓÚOnDraw
+//	è·å–å½“å‰ç»˜åˆ¶çš„åç§»é‡ï¼Œç”¨äºOnDraw
 //
 //		wparam:  [out] int* xOffset
 //		lparam:  [out] int* yOffset 
@@ -372,14 +372,14 @@
 #define UIMSG_GETSCROLLOFFSET(func)                   \
     if (uMsg == UI_MSG_GETSCROLLOFFSET)               \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((int*)wParam, (int*)lParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 //
-//	»ñÈ¡µ±Ç°¹ö¶¯·¶Î§
+//	è·å–å½“å‰æ»šåŠ¨èŒƒå›´
 //
 //		wparam:  [out] int* xRange
 //		lparam:  [out] int* yRange
@@ -391,18 +391,18 @@
 #define UIMSG_GETSCROLLRANGE(func)                    \
     if (uMsg == UI_MSG_GETSCROLLRANGE)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((int*)wParam, (int*)lParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 //
-//  ¸¸¶ÔÏóĞèÒª¼ÆËãËüµÄnon client region(²»°üÀ¨padding,border)ÇøÓòÊ±£¬¸ø
-//  non client child object·¢ËÍ¸ÃÏûÏ¢
+//  çˆ¶å¯¹è±¡éœ€è¦è®¡ç®—å®ƒçš„non client region(ä¸åŒ…æ‹¬padding,border)åŒºåŸŸæ—¶ï¼Œç»™
+//  non client child objectå‘é€è¯¥æ¶ˆæ¯
 //       message: UI_WM_CALC_PARENT_NONCLIENTRECT
-//       wparam:  RECT*  prcNonClient.  ÀıÈç¹ö¶¯ÌõÔÚÓÒ²àÊ±£¬prcNonClient.right+=20;
+//       wparam:  RECT*  prcNonClient.  ä¾‹å¦‚æ»šåŠ¨æ¡åœ¨å³ä¾§æ—¶ï¼ŒprcNonClient.right+=20;
 //
 #define UI_MSG_CALC_PARENT_NONCLIENTRECT 168261659
 
@@ -410,10 +410,10 @@
 #define UIMSG_CALCPARENTNONCLIENTRECT(func)               \
     if (uMsg == UI_MSG_CALC_PARENT_NONCLIENTRECT)         \
     {                                                     \
-        SetMsgHandled(TRUE);                              \
+        SetMsgHandled(true);                              \
         func((CRegion4*)wParam);                          \
         if (IsMsgHandled())                               \
-            return TRUE;                                  \
+            return true;                                  \
     } 
 
 
@@ -421,70 +421,70 @@
 #define UIMSG_PAINT(func)                             \
     if (uMsg == WM_PAINT)                             \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UI::IRenderTarget*)wParam);             \
+        SetMsgHandled(true);                          \
+        func((ui::IRenderTarget*)wParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
-// ¿Ø¼şÔÚ×Ô¼ºµÄ×Ó¶ÔÏó»­ÍêÖ®ºó£¬ÔÙ½ÓÊÜÒ»¸öÏûÏ¢ÓÃÓÚºó´¦Àí
-// ĞèÒª¿Ø¼şÓĞpost_paintÑùÊ½
+// æ§ä»¶åœ¨è‡ªå·±çš„å­å¯¹è±¡ç”»å®Œä¹‹åï¼Œå†æ¥å—ä¸€ä¸ªæ¶ˆæ¯ç”¨äºåå¤„ç†
+// éœ€è¦æ§ä»¶æœ‰post_paintæ ·å¼
 #define UI_MSG_POSTPAINT        147281159
 // void OnPostPaint(IRenderTarget* pRenderTarget)
 #define UIMSG_POSTPAINT(func) \
 	if (uMsg == UI_MSG_POSTPAINT) \
 	{ \
-		SetMsgHandled(TRUE); \
-        func((UI::IRenderTarget*)wParam); \
+		SetMsgHandled(true); \
+        func((ui::IRenderTarget*)wParam); \
 		lResult = 0; \
 		if(IsMsgHandled()) \
-			return TRUE; \
+			return true; \
 	}
 
-// void  OnEraseBkgnd(UI::IRenderTarget* pRenderTarget)
+// void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget)
 #define UIMSG_ERASEBKGND(func)                        \
     if (uMsg == WM_ERASEBKGND)                        \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-		func((UI::IRenderTarget*)wParam);             \
+        SetMsgHandled(true);                          \
+		func((ui::IRenderTarget*)wParam);             \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 
 //
-//	ÔÚuiÖĞÊµÏÖpost message£¨ÉÔºóÔÙÏìÓ¦£©
-//	¼ûCForwardPostMessageWindow
+//	åœ¨uiä¸­å®ç°post messageï¼ˆç¨åå†å“åº”ï¼‰
+//	è§CForwardPostMessageWindow
 //
 #define UI_MSG_POSTMESSAGE  (WM_USER+829)
 
 
 
-// LRESULT OnMessageHandlerEX(UINT uMsg, WPARAM wParam, LPARAM lParam)
+// long OnMessageHandlerEX(unsigned int uMsg, long wParam, long lParam)
 #define UIMSG_HANDLER_EX(msg, func) \
 	if(uMsg == msg) \
 	{ \
-		SetMsgHandled(TRUE); \
+		SetMsgHandled(true); \
 		lResult = func(uMsg, wParam, lParam); \
 		if(IsMsgHandled()) \
-			return TRUE; \
+			return true; \
 	}
 
 
 
 struct GETDESIREDSIZEINFO
 {
-    LPCTSTR szText;
+    wchar_t* szText;
     int  nLimitWidth;
 };
 
 //
-//  »ñÈ¡¶ÔÏóÆÚÍû´óĞ¡£¬²»°üº¬¶ÔÏóµÄMargin£¬µ«ĞèÒª×Ô¼ºÈ¥¼ÆËãpadding/borderµÈ
+//  è·å–å¯¹è±¡æœŸæœ›å¤§å°ï¼Œä¸åŒ…å«å¯¹è±¡çš„Marginï¼Œä½†éœ€è¦è‡ªå·±å»è®¡ç®—padding/borderç­‰
 //
 //  wparam : [out] SIZE*
-//  lparam : GETDESIREDSIZEINFO* (Ä¿Ç°½öÔÚITextRenderBaseÖµ²»Îªnullptr)
+//  lparam : GETDESIREDSIZEINFO* (ç›®å‰ä»…åœ¨ITextRenderBaseå€¼ä¸ä¸ºnullptr)
 //
 #define UI_MSG_GETDESIREDSIZE  168261803
 
@@ -492,25 +492,25 @@ struct GETDESIREDSIZEINFO
 #define UIMSG_GETDESIREDSIZE(func)                    \
     if (uMsg == UI_MSG_GETDESIREDSIZE)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((SIZE*)wParam);                          \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void GetDesiredSize(SIZE* pSize, GETDESIREDSIZEINFO* pInfo);
 #define UIMSG_GETDESIREDSIZE2(func)                   \
     if (uMsg == UI_MSG_GETDESIREDSIZE)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((SIZE*)wParam, (GETDESIREDSIZEINFO*)lParam); \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 //
-//  RenderBase»æÖÆÏûÏ¢
+//  RenderBaseç»˜åˆ¶æ¶ˆæ¯
 //    
 //  message : UI_WM_RENDERBASE_DRAWSTATE
 //  code : NA
@@ -523,24 +523,24 @@ struct GETDESIREDSIZEINFO
 #define UIMSG_RENDERBASE_DRAWSTATE(func)              \
     if (uMsg == UI_MSG_RENDERBASE_DRAWSTATE)          \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((RENDERBASE_DRAWSTATE*)wParam);          \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void OnDrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
 #define UIMSG_TEXTRENDERBASE_DRAWSTATE(func)          \
     if (uMsg == UI_MSG_RENDERBASE_DRAWSTATE)          \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((TEXTRENDERBASE_DRAWSTATE*)wParam);      \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
-// ÉèÖÃ´°¿ÚÉÏµÄÄ¬ÈÏ°´Å¥ (¸ÃÏûÏ¢²»¸ºÔğË¢ĞÂ¶ÔÏó)
+// è®¾ç½®çª—å£ä¸Šçš„é»˜è®¤æŒ‰é’® (è¯¥æ¶ˆæ¯ä¸è´Ÿè´£åˆ·æ–°å¯¹è±¡)
 // message:  UI_DM_SETDEFID  
 // wParam:   IObject*
 #define UI_DM_SETDEFID  138011443
@@ -549,13 +549,13 @@ struct GETDESIREDSIZEINFO
 #define UIMSG_DM_SETDEFID(func)                       \
     if (uMsg == UI_DM_SETDEFID)                       \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UI::IObject*)wParam);                   \
+        SetMsgHandled(true);                          \
+        func((ui::IObject*)wParam);                   \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// »ñÈ¡´°¿ÚÉÏµÄÄ¬ÈÏ°´Å¥
+// è·å–çª—å£ä¸Šçš„é»˜è®¤æŒ‰é’®
 // message: UI_DM_GETDEFID  
 // return: IObject*
 #define UI_DM_GETDEFID  138011444
@@ -564,32 +564,32 @@ struct GETDESIREDSIZEINFO
 #define UIMSG_DM_GETDEFID(func)                       \
     if (uMsg == UI_DM_GETDEFID)                       \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        lResult = (LRESULT)func();                    \
+        SetMsgHandled(true);                          \
+        lResult = (long)func();                    \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 //
-//  ĞŞ¸Ä´´½¨´°¿ÚÊı¾İ
+//  ä¿®æ”¹åˆ›å»ºçª—å£æ•°æ®
 //  
 //  message: CREATESTRUCT*
 //
 #define UI_MSG_PRECREATEWINDOW 168270752
 
-// BOOL  PreCreateWindow(CREATESTRUCT* pcs);
+// bool  PreCreateWindow(CREATESTRUCT* pcs);
 #define UIMSG_PRECREATEWINDOW(func)                   \
     if (uMsg == UI_MSG_PRECREATEWINDOW)               \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func((CREATESTRUCT*)wParam);        \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 
-//  »ñÈ¡´°¿ÚµÄÍ¸Ã÷ÀàĞÍ£¬ÓÃÓÚÅĞ¶Ïµ±Ç°´°¿ÚÊÇ·Ö²ãµÄ£¬»¹ÊÇaero
+//  è·å–çª—å£çš„é€æ˜ç±»å‹ï¼Œç”¨äºåˆ¤æ–­å½“å‰çª—å£æ˜¯åˆ†å±‚çš„ï¼Œè¿˜æ˜¯aero
 //  wparam: 
 //  lparam:
 //  Return: 
@@ -597,85 +597,85 @@ struct GETDESIREDSIZEINFO
 //
 #define  UI_MSG_GET_WINDOW_TRANSPARENT_MODE  132831133
 
-// UI::WINDOW_TRANSPARENT_MODE  GetTransparentMode()
+// ui::WINDOW_TRANSPARENT_MODE  GetTransparentMode()
 #define UIMSG_GET_WINDOW_TRANSPARENT_MODE(func)           \
     if (uMsg == UI_MSG_GET_WINDOW_TRANSPARENT_MODE)       \
     {                                                     \
-        SetMsgHandled(TRUE);                              \
+        SetMsgHandled(true);                              \
         lResult = (long)func();                           \
         if (IsMsgHandled())                               \
-            return TRUE;                                  \
+            return true;                                  \
     } 
 
 
 
 //
-//  ¼ÓÔØÍêËùÓĞ¿Ø¼şºó£¬ÓÉ´°¿Ú·¢ÆğµÄ³õÊ¼»¯
+//  åŠ è½½å®Œæ‰€æœ‰æ§ä»¶åï¼Œç”±çª—å£å‘èµ·çš„åˆå§‹åŒ–
 //
-//  ³õÊ¼»¯Ë³Ğò£º
-//    1. ³õÊ¼»¯×Ô¼ºUI_WM_INITIALIZE£¬
-//    2. ³õÊ¼»¯×Ô¼ºµÄ×Ó¶ÔÏó
-//    3. ¸ø×Ô¼ºÔÙ·¢ËÍÒ»¸öUI_WM_INITIALIZE2ÏûÏ¢±íÊ¾×Ó¶ÔÏó³õÊ¼»¯Íê³É
-//    4. ¸ø×Ô¼ºÔÙ·¢ËÍÒ»¸öUI_MSG_BINDPLZÏûÏ¢,±íÊ¾¿ÉÒÔÈ¥°ó¶¨×Ó¿Ø¼şÁË
-//    Ã¿´Î»»²¼¾Ö£¨»»·ô£©ºó£¬»áÔÙ·¢ËÍÒ»´ÎUI_MSG_BINDPLZÍ¨Öª£¬µ«initÏûÏ¢²»»áÔÙ·¢ËÍÁË
-//    »»·ôÇ°»á¸øÃ¿¸ö¿Ø¼ş·¢ËÍÒ»¸öUI_MSG_UNBINDPLZÍ¨Öª£¬ÓÃÓÚÈ¡Ïû¸÷ÖÖ°ó¶¨
+//  åˆå§‹åŒ–é¡ºåºï¼š
+//    1. åˆå§‹åŒ–è‡ªå·±UI_WM_INITIALIZEï¼Œ
+//    2. åˆå§‹åŒ–è‡ªå·±çš„å­å¯¹è±¡
+//    3. ç»™è‡ªå·±å†å‘é€ä¸€ä¸ªUI_WM_INITIALIZE2æ¶ˆæ¯è¡¨ç¤ºå­å¯¹è±¡åˆå§‹åŒ–å®Œæˆ
+//    4. ç»™è‡ªå·±å†å‘é€ä¸€ä¸ªUI_MSG_BINDPLZæ¶ˆæ¯,è¡¨ç¤ºå¯ä»¥å»ç»‘å®šå­æ§ä»¶äº†
+//    æ¯æ¬¡æ¢å¸ƒå±€ï¼ˆæ¢è‚¤ï¼‰åï¼Œä¼šå†å‘é€ä¸€æ¬¡UI_MSG_BINDPLZé€šçŸ¥ï¼Œä½†initæ¶ˆæ¯ä¸ä¼šå†å‘é€äº†
+//    æ¢è‚¤å‰ä¼šç»™æ¯ä¸ªæ§ä»¶å‘é€ä¸€ä¸ªUI_MSG_UNBINDPLZé€šçŸ¥ï¼Œç”¨äºå–æ¶ˆå„ç§ç»‘å®š
 //
 #define UI_MSG_INITIALIZE  155051209
 #define UI_MSG_INITIALIZE2 155051210
-#define UI_MSG_DOBINDPLZ   174191106  // wParam: true°ó¶¨£¬ falseÈ¡Ïû°ó¶¨
+#define UI_MSG_DOBINDPLZ   174191106  // wParam: trueç»‘å®šï¼Œ falseå–æ¶ˆç»‘å®š
 
 // void  OnInitialize();
 #define UIMSG_INITIALIZE(func)                        \
     if (uMsg == UI_MSG_INITIALIZE)                    \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func();                                       \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void  OnInitialize2();
 #define UIMSG_INITIALIZE2(func)                       \
     if (uMsg == UI_MSG_INITIALIZE2)                   \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func();                                       \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void  DoBindPlz(bool bind);
 #define UIMSG_DOBINDPLZ(func)                         \
     if (uMsg == UI_MSG_DOBINDPLZ)                     \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func(wParam ? true:false);                    \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 #define  UI_MSG_GETRENDERFONT  168271806
 //
-// »ñÈ¡Render Font
+// è·å–Render Font
 //
 // IRenderFont*  OnGetFont()
 #define UIMSG_GETRENDERFONT(func) \
     if (uMsg == UI_MSG_GETRENDERFONT) \
     { \
-        SetMsgHandled(TRUE); \
+        SetMsgHandled(true); \
         lResult = (LONG_PTR)(IRenderFont*)func(); \
         if (IsMsgHandled()) \
-            return TRUE; \
+            return true; \
     }
 
 
 
-#pragma region // »»·ô
+#pragma region // æ¢è‚¤
 //
-//  ÔÚ´°¿Ú»»·ôÖ®Ç°£¬¸ø´°¿Ú·¢ËÍÒ»¸öÍ¨Öª¡£´°¿Ú¿ÉÒÔÔÚÕâÀï×èÖ¹×Ô¼º²ÎÓë»»·ô
+//  åœ¨çª—å£æ¢è‚¤ä¹‹å‰ï¼Œç»™çª—å£å‘é€ä¸€ä¸ªé€šçŸ¥ã€‚çª—å£å¯ä»¥åœ¨è¿™é‡Œé˜»æ­¢è‡ªå·±å‚ä¸æ¢è‚¤
 //		message: UI_WM_SKINCHANGING
 //		code:
-//		wparam:  BOOL* pbChangeSkin
+//		wparam:  bool* pbChangeSkin
 //		lparam: 
 //
 //	Return:
@@ -683,7 +683,7 @@ struct GETDESIREDSIZEINFO
 #define UI_MSG_SKINCHANGING 168271815
 
 //
-//	ÔÚ´°¿Ú»»·ôÍê³Éºó£¬¸ø´°¿Ú·¢ËÍÒ»¸öÍ¨Öª
+//	åœ¨çª—å£æ¢è‚¤å®Œæˆåï¼Œç»™çª—å£å‘é€ä¸€ä¸ªé€šçŸ¥
 //
 //		message: UI_WM_SKINCHANGED
 //		code:
@@ -695,12 +695,12 @@ struct GETDESIREDSIZEINFO
 #define UI_MSG_SKINCHANGED  168271814
 
 //
-//	ÔÚ´°¿ÚµÄHLS±ä»¯ºó£¬¸ø´°¿Ú·¢ËÍÒ»¸öÍ¨Öª
+//	åœ¨çª—å£çš„HLSå˜åŒ–åï¼Œç»™çª—å£å‘é€ä¸€ä¸ªé€šçŸ¥
 //
 #define UI_MSG_SKINHLSCHANGED  168271813
 
 //
-//	IRenderFont×ÖÌå±»ĞŞ¸Äºó¸ølistener·¢³öÀ´µÄÍ¨ÖªÊÂ¼ş
+//	IRenderFontå­—ä½“è¢«ä¿®æ”¹åç»™listenerå‘å‡ºæ¥çš„é€šçŸ¥äº‹ä»¶
 //
 //		message: UI_WM_FONTMODIFIED
 //		code:
@@ -709,47 +709,47 @@ struct GETDESIREDSIZEINFO
 //
 //	Return:
 //
-//    UI_WM_FONTMODIFIED, -- »úÖÆ×öµÄ²»ºÃ£¬·ÏÆú
+//    UI_WM_FONTMODIFIED, -- æœºåˆ¶åšçš„ä¸å¥½ï¼ŒåºŸå¼ƒ
 
-// Í¼Æ¬»»·ô
+// å›¾ç‰‡æ¢è‚¤
 #define UI_MSG_SKINTEXTURECHANGED  168271812
 
 #pragma endregion
 
 
 
-// ·µ»ØÖµ£º¹ö¶¯´ïµ½±ßÔµ£¬ĞèÒª½øĞĞ±ßÔµ»Øµ¯¶¯»­
+// è¿”å›å€¼ï¼šæ»šåŠ¨è¾¾åˆ°è¾¹ç¼˜ï¼Œéœ€è¦è¿›è¡Œè¾¹ç¼˜å›å¼¹åŠ¨ç”»
 #define GESTURE_RETURN_NEED_BOUNCE_EDGE  2
 
-// ´¥ÃşÏûÏ¢£ºÆ½ÒÆ
+// è§¦æ‘¸æ¶ˆæ¯ï¼šå¹³ç§»
 // wParam: MAKEWPARAM(xOffset, yOffset)
-// lParam: UI::GESTUREINFO*
+// lParam: ui::GESTUREINFO*
 // return: HANDLED | GESTURE_RETURN_NEED_BOUNCE_EDGE
 #define UI_WM_GESTURE_PAN  151221941
 
 // wParam: MAKEWPARAM(xOffset, yOffset)
-// lParam: UI::GESTUREINFO*
+// lParam: ui::GESTUREINFO*
 // return: HANDLED | GESTURE_RETURN_NEED_BOUNCE_EDGE2
 #define UI_WM_GESTURE_PRESSANDTAP  151221942
 
 //
-// ¿ªÊ¼´¥ÃşÇ°£¬Ïò±»´¥ÃşµÄ¶ÔÏó·¢ËÍÇëÇóÏûÏ¢ÊÇ·ñĞèÒªÊÖÊÆµÄÏûÏ¢¡£
-// Èç¹û×Ô¼º²»ĞèÒª£¬Ôò¼ÌĞøÏò¸Ã¶ÔÏóµÄ¸¸¶ÔÏó½øĞĞÇëÇó¡£
+// å¼€å§‹è§¦æ‘¸å‰ï¼Œå‘è¢«è§¦æ‘¸çš„å¯¹è±¡å‘é€è¯·æ±‚æ¶ˆæ¯æ˜¯å¦éœ€è¦æ‰‹åŠ¿çš„æ¶ˆæ¯ã€‚
+// å¦‚æœè‡ªå·±ä¸éœ€è¦ï¼Œåˆ™ç»§ç»­å‘è¯¥å¯¹è±¡çš„çˆ¶å¯¹è±¡è¿›è¡Œè¯·æ±‚ã€‚
 //
 // wParam: GESTUREINFO*
-// return: 0±íÊ¾²»ĞèÒª£¬1±íÊ¾ĞèÒª¸ÃÏûÏ¢
+// return: 0è¡¨ç¤ºä¸éœ€è¦ï¼Œ1è¡¨ç¤ºéœ€è¦è¯¥æ¶ˆæ¯
 //
 #define UI_WM_GESTURE_BEGIN_REQ  152270927
 
 
 
-// windows½ÓÊÕµ½mousewheelÖ®ºó£¬ÏÈ·¢ËÍ¸ø
-// press object£¬Ñ¯ÎÊµ±Ç°ÊÇ·ñÔÊĞímousewheel
+// windowsæ¥æ”¶åˆ°mousewheelä¹‹åï¼Œå…ˆå‘é€ç»™
+// press objectï¼Œè¯¢é—®å½“å‰æ˜¯å¦å…è®¸mousewheel
 //
-// wParam/lParam: WM_MOUSEWHEELÏûÏ¢²ÎÊı
+// wParam/lParam: WM_MOUSEWHEELæ¶ˆæ¯å‚æ•°
 //
-// return 0 ±íÊ¾pressobjÃ»´¦Àí£¬ÔÊĞímousewheel
-// return 1 ±íÊ¾pressobjÒÑ´¦Àí£¬²»ÔÊĞí·Ö·¢mousewheel
+// return 0 è¡¨ç¤ºpressobjæ²¡å¤„ç†ï¼Œå…è®¸mousewheel
+// return 1 è¡¨ç¤ºpressobjå·²å¤„ç†ï¼Œä¸å…è®¸åˆ†å‘mousewheel
 //
 #define UI_MSG_MOUSEWHEEL_REQ  142841001
 
@@ -758,41 +758,41 @@ struct GETDESIREDSIZEINFO
 
 
 //
-//  gifË¢ĞÂµÄÍ¨Öª
+//  gifåˆ·æ–°çš„é€šçŸ¥
 //  wParam:  GifImageRender*
 //  lParam:  notify.lparam
 #define UI_MSG_GIFFRAME_TICK  168281226
-// void  OnGifframeTick(WPARAM wParam, LPARAM lParam)
+// void  OnGifframeTick(long wParam, long lParam)
 #define UIMSG_WM_GIFFRAME_TICK(func)                  \
 	if (uMsg == UI_MSG_GIFFRAME_TICK)                 \
 	{                                                 \
-		SetMsgHandled(TRUE);                          \
+		SetMsgHandled(true);                          \
 		func(wParam, lParam);                         \
 		if (IsMsgHandled())                           \
-			return TRUE;                              \
+			return true;                              \
 	}
 
 
 namespace UI
 {
-	interface IUIAccessible;
-	interface IUIAccessibleCreator
+	struct IUIAccessible;
+	struct IUIAccessibleCreator
 	{
 		virtual void  Add(IUIAccessible*) = 0;	
 	};
 }
-// ´´½¨¿Ø¼şµÄIAccessible
-// WPARAM: IUIAccessibleCreator*
+// åˆ›å»ºæ§ä»¶çš„IAccessible
+// long: IUIAccessibleCreator*
 #define UI_WM_CREATE_ACCESSIBLE  155042030
 
 // void  OnCreateAccessible(IUIAccessibleCreator* p)
 #define UIMSG_CREATE_ACCESSIBLE(func)                 \
     if (uMsg == UI_WM_CREATE_ACCESSIBLE)              \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UI::IUIAccessibleCreator*)wParam);      \
+        SetMsgHandled(true);                          \
+        func((ui::IUIAccessibleCreator*)wParam);      \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
@@ -800,20 +800,20 @@ namespace UI
 #define UIMSG_SETFOCUS(func)                          \
     if (uMsg == WM_SETFOCUS)                          \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((IObject*)wParam);                       \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void  OnKillFocus(IObject* pNewFocusObj)
 #define UIMSG_KILLFOCUS(func)                         \
     if (uMsg == WM_KILLFOCUS)                         \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((IObject*)wParam);                       \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
@@ -822,23 +822,23 @@ namespace UI
 #define UIMSG_HSCROLL(func)                           \
     if (uMsg == WM_HSCROLL)                           \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((int)wParam, (int)lParam, pMsgFrom);     \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 // void  OnVScroll(int nSBCode, int nPos, IMessage* pMsgFrom)
 #define UIMSG_VSCROLL(func)                           \
     if (uMsg == WM_VSCROLL)                           \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((int)wParam, (int)lParam, pMsgFrom);     \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// ScrollBarMgrÍ¨Öª¿Ø¼şÆ½»¬¹ö¶¯£¬ÓÃÓÚ¿Ø¼ş×Ô¼ºË¢ĞÂ»òÕßÉèÖÃÆäËü±êÊ¶
+// ScrollBarMgré€šçŸ¥æ§ä»¶å¹³æ»‘æ»šåŠ¨ï¼Œç”¨äºæ§ä»¶è‡ªå·±åˆ·æ–°æˆ–è€…è®¾ç½®å…¶å®ƒæ ‡è¯†
 // message: UI_MSG_INERTIAVSCROLL
 // wParam: nOldPos
 // wParam: nNewPos
@@ -846,88 +846,88 @@ namespace UI
 
 
 
-// LRESULT  OnNotify(WPARAM w, LPARAM l);
+// long  OnNotify(long w, long l);
 #define UIMSG_NOTIFY(_code, func)                     \
     if (uMsg == UI_MSG_NOTIFY && _code == code)       \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func(wParam, lParam);               \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
-// LRESULT  OnNotify(WPARAM w, LPARAM l);
+// long  OnNotify(long w, long l);
 #define UIMSG_NOTIFY_CODE_FROM(_code, _From, func)    \
     if (uMsg == UI_MSG_NOTIFY &&                      \
         _code == code &&                              \
         static_cast<IMessage*>(_From) == pMsgFrom)    \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func(wParam, lParam);               \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// void  OnNotify(WPARAM w, LPARAM l);
+// void  OnNotify(long w, long l);
 #define UIMSG_NOTIFY_NORET(_code, func)               \
     if (uMsg == UI_MSG_NOTIFY && _code == code)       \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func(wParam, lParam);                         \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
-// void  OnNotify(WPARAM w, LPARAM l);
+// void  OnNotify(long w, long l);
 #define UIMSG_NOTIFY_CODE_FROM_NORET(_code, _From, func) \
     if (uMsg == UI_MSG_NOTIFY &&                      \
         _code == code &&                              \
         static_cast<IMessage*>(_From) == pMsgFrom)    \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func(wParam, lParam);                         \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// void  OnNotify(WPARAM w, LPARAM l);
+// void  OnNotify(long w, long l);
 #define UIMSG_NOTIFY_CODE(_code, func) \
     if (uMsg == UI_MSG_NOTIFY &&                      \
         _code == code)                                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         lResult = func(wParam, lParam);               \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
-//	void  OnSize(UINT nType, int cx, int cy);
+//	void  OnSize(unsigned int nType, int cx, int cy);
 #define UIMSG_SIZE(func)                              \
     if (uMsg == WM_SIZE)                              \
     {                                                 \
-        UINT nType = (UINT)wParam;                    \
+        unsigned int nType = (unsigned int)wParam;                    \
         int  cx    = LOWORD(lParam);                  \
         int  cy    = HIWORD(lParam);                  \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func(nType, cx, cy);                          \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// ±È´«µİWM_TIMERÔö¼ÓÒ»¸öLPARAM
-// void  OnTimer(UINT_PTR nIDEvent, LPARAM lParam)
+// æ¯”ä¼ é€’WM_TIMERå¢åŠ ä¸€ä¸ªLPARAM
+// void  OnTimer(UINT_PTR nIDEvent, long lParam)
 #define UIMSG_TIMER(func)                             \
     if (uMsg == WM_TIMER)                             \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((UINT_PTR)wParam, lParam);               \
         lResult = 0;                                  \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 
 //
-//  PopupControlWindow·¢ËÍ¸øLISTBOX¡¢MENUµÄÏûÏ¢£¬LISTBOX×ª·¢¸øCOMBOBOXµÄÏûÏ¢£¬COMBOBOX/MENU×ª·¢¸ø´°¿ÚµÄÏûÏ¢pMsgFrom½«Ö¸ÏòÏûÏ¢·¢ËÍ·½
+//  PopupControlWindowå‘é€ç»™LISTBOXã€MENUçš„æ¶ˆæ¯ï¼ŒLISTBOXè½¬å‘ç»™COMBOBOXçš„æ¶ˆæ¯ï¼ŒCOMBOBOX/MENUè½¬å‘ç»™çª—å£çš„æ¶ˆæ¯pMsgFromå°†æŒ‡å‘æ¶ˆæ¯å‘é€æ–¹
 //
 #define UI_WM_INITPOPUPCONTROLWINDOW    147301646
 #define UI_WM_UNINITPOPUPCONTROLWINDOW  147301647
@@ -940,44 +940,44 @@ namespace UI
 #define UIMSG_INITPOPUPCONTROLWINDOW(func)            \
     if (uMsg == UI_WM_INITPOPUPCONTROLWINDOW)         \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func();                                       \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
 //void OnUnInitPopupControlWindow()
 #define UIMSG_UNINITPOPUPCONTROLWINDOW(func)          \
     if (uMsg == UI_WM_UNINITPOPUPCONTROLWINDOW)       \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func();                                       \
         if(IsMsgHandled())                            \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 //
-// ×÷ÎªÄ¿±ê¶ÔÏóµÄÍÏ×§ÊÂ¼ş
+// ä½œä¸ºç›®æ ‡å¯¹è±¡çš„æ‹–æ‹½äº‹ä»¶
 //  wParam : DROPTARGETEVENT_TYPE
 //  lParam : DROPTARGETEVENT_DATA*
 //
 #define UI_MSG_DROPTARGETEVENT   136041933
 
-// void OnDropTargetEvent(UI::DROPTARGETEVENT_TYPE eType, UI::DROPTARGETEVENT_DATA* pData)
+// void OnDropTargetEvent(ui::DROPTARGETEVENT_TYPE eType, ui::DROPTARGETEVENT_DATA* pData)
 #define UIMSG_DROPTARGETEVENT(func)                   \
     if (uMsg == UI_MSG_DROPTARGETEVENT)               \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
-        func((UI::DROPTARGETEVENT_TYPE)wParam, (UI::DROPTARGETEVENT_DATA*)lParam); \
+        SetMsgHandled(true);                          \
+        func((ui::DROPTARGETEVENT_TYPE)wParam, (ui::DROPTARGETEVENT_DATA*)lParam); \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
 
 #define  UIALT_CALLLESS  154062051
 
-namespace UI
+namespace ui
 {
     struct IUIApplication;
     struct IUIEditor;
@@ -985,9 +985,9 @@ namespace UI
 }
 struct  CREATEBYEDITORDATA
 {
-    UI::IUIApplication*  pUIApp;
-    UI::IUIEditor*  pEditor;
-    UI::IUIElement*  pXml;
+    ui::IUIApplication*  pUIApp;
+    ui::IUIEditor*  pEditor;
+    ui::IUIElement*  pXml;
 };
 
 // wParam: CREATEBYEDITORDATA* pData
@@ -996,13 +996,13 @@ struct  CREATEBYEDITORDATA
 #define UIMSG_CREATEBYEDITOR(func)                    \
     if (uMsg == UI_MSG_CREATEBYEDITOR)                \
     {                                                 \
-        SetMsgHandled(TRUE);                          \
+        SetMsgHandled(true);                          \
         func((CREATEBYEDITORDATA*)wParam);            \
         if (IsMsgHandled())                           \
-            return TRUE;                              \
+            return true;                              \
     }
 
-// »Ø³µ£¬×÷ÓÃµ½ÁËÄ¬ÈÏ°´Å¥ÉÏÃæ
+// å›è½¦ï¼Œä½œç”¨åˆ°äº†é»˜è®¤æŒ‰é’®ä¸Šé¢
 #define  UI_MSG_DEFAULTBUTTON_VKRETURN_EVENT  169281816
 
 #endif

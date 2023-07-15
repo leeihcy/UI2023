@@ -1,26 +1,42 @@
 #ifndef _UIDEFINE_H_
 #define _UIDEFINE_H_
 
-// µ¼Èëµ¼³ö¶¨Òå
-#ifdef UI_EXPORTS
-#define UIAPI __declspec(dllexport)
+#include "../common.h"
+
+// å¯¼å…¥å¯¼å‡ºå®šä¹‰
+#if defined(OS_WIN)
+    #ifdef UI_EXPORTS
+    #define UIAPI __declspec(dllexport)
+    #else
+    #define UIAPI __declspec(dllimport)
+    #endif
 #else
-#define UIAPI __declspec(dllimport)
+    #ifdef UI_EXPORTS
+    #define UIAPI __attribute__((visibility("default")))
+    #else
+    #define UIAPI  
+    #endif
 #endif
 
+// TODO:
+#if defined(OS_WIN)
 #define UIAPI_UUID(guid)  __declspec(uuid(#guid)) UIAPI
+#else
+#define UIAPI_UUID(guid) UIAPI
+#endif
 
-namespace UI
+namespace ui
 {
-
-	// ÌØÊâº¬Òå³£Á¿
+    struct UIMSG;
+    
+	// ç‰¹æ®Šå«ä¹‰å¸¸é‡
 	enum
 	{
-		// Ê¹ÓÃ-1,-2,-3ÕâĞ©Ğ¡Öµ»áÓĞÆçÒå¡£ÀıÈçÎ»ÖÃm_configRight¸ÕºÃ³öÁËparentµÈÓÚ-1/-2£¬
-		// »áµ¼ÖÂÕâ¸öÌØÊâÖµ±»ÎÛÈ¾¡£Òò´Ë½«Öµ¸Ä´ó¡£ÒÔºóÔÙ¼ÓÆäËü±êÊ¶Î»
-        WH_SET = 0,   // Ä¬ÈÏ£¬Ö¸¶¨
-		NDEF = -1,    // Ã»ÓĞ¶¨ÒåµÄ±äÁ¿
-		AUTO = -2,    // ×Ô¶¯µ÷Õû£¨Èçwidth/height=auto£©
+		// ä½¿ç”¨-1,-2,-3è¿™äº›å°å€¼ä¼šæœ‰æ­§ä¹‰ã€‚ä¾‹å¦‚ä½ç½®m_configRightåˆšå¥½å‡ºäº†parentç­‰äº-1/-2ï¼Œ
+		// ä¼šå¯¼è‡´è¿™ä¸ªç‰¹æ®Šå€¼è¢«æ±¡æŸ“ã€‚å› æ­¤å°†å€¼æ”¹å¤§ã€‚ä»¥åå†åŠ å…¶å®ƒæ ‡è¯†ä½
+        WH_SET = 0,   // é»˜è®¤ï¼ŒæŒ‡å®š
+		NDEF = -1,    // æ²¡æœ‰å®šä¹‰çš„å˜é‡
+		AUTO = -2,    // è‡ªåŠ¨è°ƒæ•´ï¼ˆå¦‚width/height=autoï¼‰
         WH_AUTO = AUTO,
         WH_AVG = -3,
         WH_PERCENT = -4
@@ -39,13 +55,13 @@ namespace UI
 #define  UI_DECLARE_INTERFACE(T)                            \
 public:                                                     \
 	typedef T ImplName;                                     \
-	static I##T* CreateInstance(UI::ISkinRes* pSkinRes);    \
-	I##T(UI::E_BOOL_CREATE_IMPL);                               \
-    BOOL  nvProcessMessage(UI::UIMSG* pMsg, int nMsgMapID, bool bDoHook); \
+	static I##T* CreateInstance(ui::ISkinRes* pSkinRes);    \
+	I##T(ui::E_BOOL_CREATE_IMPL);                               \
+    bool  nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook); \
 	T*  GetImpl();                                          
 	
 
-// ¿çÄ£¿éÊ±£¬×÷Îª±¾Ä£¿éµÄ¸ù¶ÔÏó£¬ĞèÒªÔö¼Ó³ÉÔ±±äÁ¿¼°Ïú»Ù¸Ã±äÁ¿
+// è·¨æ¨¡å—æ—¶ï¼Œä½œä¸ºæœ¬æ¨¡å—çš„æ ¹å¯¹è±¡ï¼Œéœ€è¦å¢åŠ æˆå‘˜å˜é‡åŠé”€æ¯è¯¥å˜é‡
 #define  UI_DECLARE_INTERFACE_ACROSSMODULE(T)               \
 	UI_DECLARE_INTERFACE(T)                                 \
 protected:                                                  \
@@ -53,12 +69,12 @@ protected:                                                  \
 	T*  m_pImpl;
 
 
-// ÕâÀï²ÉÓÃoperator newµÄÔ­Òò£º
-//   Èç¹û²ÉÓÃm_pImpl = new T(this);
-//   ÄÇÃ´ÔÚT¹¹Ôìº¯ÊıÖĞµ÷ÓÃIxxxÀàµÄ·½·¨Ê±£¬IxxxµÄm_pImpl»¹Ã»ÓĞ
-//   ±»¸³Öµ¡£Òò´Ë½«¸Ã²Ù×÷·Ö½â³ÉÁ½²½£ºmalloc + construct
+// è¿™é‡Œé‡‡ç”¨operator newçš„åŸå› ï¼š
+//   å¦‚æœé‡‡ç”¨m_pImpl = new T(this);
+//   é‚£ä¹ˆåœ¨Tæ„é€ å‡½æ•°ä¸­è°ƒç”¨Ixxxç±»çš„æ–¹æ³•æ—¶ï¼ŒIxxxçš„m_pImplè¿˜æ²¡æœ‰
+//   è¢«èµ‹å€¼ã€‚å› æ­¤å°†è¯¥æ“ä½œåˆ†è§£æˆä¸¤æ­¥ï¼šmalloc + construct
 #define  UI_IMPLEMENT_INTERFACE(T, SUPER)                   \
-	I##T::I##T(UI::E_BOOL_CREATE_IMPL b) : I##SUPER(UI::CREATE_IMPL_FALSE)  \
+	I##T::I##T(ui::E_BOOL_CREATE_IMPL b) : I##SUPER(ui::CREATE_IMPL_FALSE)  \
 	{                                                       \
         if (b)                                              \
         {                                                   \
@@ -76,9 +92,9 @@ protected:                                                  \
 	}                                                       \
 	I##T* I##T::CreateInstance(ISkinRes* pSkinRes)          \
 	{                                                       \
-		return ObjectCreator<I##T>::CreateInstance(pSkinRes); \
+		return ui::ObjectCreator<I##T>::CreateInstance(pSkinRes); \
 	}                                                       \
-    BOOL  I##T::nvProcessMessage(UI::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
+    bool  I##T::nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
     {                                                       \
         return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook); \
     }       
@@ -93,7 +109,7 @@ protected:                                                  \
             m_pImpl = nullptr;                                 \
         }                                                   \
 	}                                                       \
-	I##T::I##T(UI::E_BOOL_CREATE_IMPL b) : I##SUPER(UI::CREATE_IMPL_TRUE)   \
+	I##T::I##T(ui::E_BOOL_CREATE_IMPL b) : I##SUPER(ui::CREATE_IMPL_TRUE)   \
 	{                                                       \
         if (b)                                              \
         {                                                   \
@@ -109,26 +125,26 @@ protected:                                                  \
 	{                                                       \
 		return static_cast<T*>(m_pImpl);                    \
 	}                                                       \
-	I##T* I##T::CreateInstance(UI::ISkinRes* pSkinRes)          \
+	I##T* I##T::CreateInstance(ui::ISkinRes* pSkinRes)          \
 	{                                                       \
-		return UI::ObjectCreator<I##T>::CreateInstance(pSkinRes); \
+		return ui::ObjectCreator<I##T>::CreateInstance(pSkinRes); \
 	}                                                       \
-    BOOL  I##T::nvProcessMessage(UI::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
+    bool  I##T::nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
     {                                                       \
         return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook); \
     }  
 
-	// TODO: ÓÅ»¯µ÷ÓÃĞÎÊ½¡£
+	// TODO: ä¼˜åŒ–è°ƒç”¨å½¢å¼ã€‚
 #define DO_PARENT_PROCESS(IMyInterface, IParentInterface) \
     static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0); \
     SetMsgHandled(TRUE)
 
-	// »ñÈ¡¸¸ÀàÊÇ·ñ´¦Àí
+	// è·å–çˆ¶ç±»æ˜¯å¦å¤„ç†
 #define DO_PARENT_PROCESS2(IMyInterface, IParentInterface, bHandled) \
 	bHandled = static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0); \
 	SetMsgHandled(TRUE)
     
-// »ñÈ¡·µ»ØÖµ
+// è·å–è¿”å›å€¼
 #define DO_PARENT_PROCESS3(IMyInterface, IParentInterface) \
 	(static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0), \
 	SetMsgHandled(TRUE), GetCurMsg()->lRet);
@@ -138,16 +154,16 @@ protected:                                                  \
     SetMsgHandled(TRUE)
 
 
-typedef RECT  REGION4;
-inline  int RECTW(LPCRECT prc) { return prc->right - prc->left; }
-inline  int RECTH(LPCRECT prc) { return prc->bottom - prc->top; }
-inline  int RECTW(RECT& rc)  { return rc.right - rc.left; }
-inline  int RECTH(RECT& rc)  { return rc.bottom - rc.top; }
+// typedef RECT  REGION4;
+// inline  int RECTW(LPCRECT prc) { return prc->right - prc->left; }
+// inline  int RECTH(LPCRECT prc) { return prc->bottom - prc->top; }
+// inline  int RECTW(RECT& rc)  { return rc.right - rc.left; }
+// inline  int RECTH(RECT& rc)  { return rc.bottom - rc.top; }
+// 
+// #define RGBA(r,g,b,a)  (((BYTE)(r))|((WORD)(((BYTE)(g))<<8))|(DWORD(((BYTE)(b))<<16))|((DWORD)(((BYTE)(a))<<24)))
 
-#define RGBA(r,g,b,a)  (((BYTE)(r))|((WORD)(((BYTE)(g))<<8))|(DWORD(((BYTE)(b))<<16))|((DWORD)(((BYTE)(a))<<24)))
 
-
-// ÊÇ·ñ´¦Àí·µ»ØÖµ 
+// æ˜¯å¦å¤„ç†è¿”å›å€¼ 
 enum HANDLED_VALUE
 {
 	NOT_HANDLED = 0,
@@ -157,33 +173,33 @@ enum HANDLED_VALUE
 class IRootInterface
 {
 public:
-	virtual ~IRootInterface() = 0 {};  // È·±£deleteÊ±ÄÜµ÷ÓÃµ½ÅÉÉúÀàµÄÎö¹¹º¯Êı
+	virtual ~IRootInterface() {};  // ç¡®ä¿deleteæ—¶èƒ½è°ƒç”¨åˆ°æ´¾ç”Ÿç±»çš„ææ„å‡½æ•°
 };
 
-// ±à¼­Æ÷µÄÒ»ÇĞ¹¦ÄÜ²»ºÃÊµÏÖ£¬Ö»ÄÜ½«Ò»Ğ©´úÂë¼Ó½øUISDK¹¤³Ì
-// ÕâĞ©´úÂë¶¼ÓÃÕâ¸öºê°üÆğÀ´£¬ÔÚreleaseÄ£Ê½ÏÂÃæ²»ÆôÓÃ
+// ç¼–è¾‘å™¨çš„ä¸€åˆ‡åŠŸèƒ½ä¸å¥½å®ç°ï¼Œåªèƒ½å°†ä¸€äº›ä»£ç åŠ è¿›UISDKå·¥ç¨‹
+// è¿™äº›ä»£ç éƒ½ç”¨è¿™ä¸ªå®åŒ…èµ·æ¥ï¼Œåœ¨releaseæ¨¡å¼ä¸‹é¢ä¸å¯ç”¨
 #ifdef _DEBUG
 #define EDITOR_MODE
 #endif
 
-// ¶ÔÏóĞòÁĞ»¯ÏûÏ¢¡£ÓÃÓÚÈ¡´úWM_SETATTRIBUTE
+// å¯¹è±¡åºåˆ—åŒ–æ¶ˆæ¯ã€‚ç”¨äºå–ä»£WM_SETATTRIBUTE
 enum SERIALIZEFLAG
 {
 	SERIALIZEFLAG_LOAD = 0x01,
-	SERIALIZEFLAG_RELOAD = 0x03,   // reloadÒ²ÊÇload
+	SERIALIZEFLAG_RELOAD = 0x03,   // reloadä¹Ÿæ˜¯load
 	SERIALIZEFLAG_SAVE = 0x04,
-	SERIALIZEFLAG_EDITOR = 0x08,  // »ñÈ¡ÊôĞÔÁĞ±íºÍÌáÊ¾ĞÅÏ¢
+	SERIALIZEFLAG_EDITOR = 0x08,  // è·å–å±æ€§åˆ—è¡¨å’Œæç¤ºä¿¡æ¯
 
-	// load ±êÊ¶
-	SERIALIZEFLAG_LOAD_ERASEATTR = 0x0200,  // »ñÈ¡µ½ÊôĞÔºó£¬½«¸ÃÊôĞÔ´ÓmapattrÖĞÉ¾³ı
+	// load æ ‡è¯†
+	SERIALIZEFLAG_LOAD_ERASEATTR = 0x0200,  // è·å–åˆ°å±æ€§åï¼Œå°†è¯¥å±æ€§ä»mapatträ¸­åˆ é™¤
 
-	// save ±êÊ¶
+	// save æ ‡è¯†
 };
-interface IMapAttribute;
-interface IListAttribute;
-interface IAttributeEditorProxy;
-interface IUIApplication;
-interface ISkinRes;
+struct IMapAttribute;
+struct IListAttribute;
+struct IAttributeEditorProxy;
+struct IUIApplication;
+struct ISkinRes;
 
 struct SERIALIZEDATA
 {
@@ -194,11 +210,11 @@ struct SERIALIZEDATA
 		IAttributeEditorProxy*  pAttributeEditorProxy;  // editor [in]
 	};
 
-	IUIApplication*  pUIApplication; // TODO: ·ÏÆú¸Ã±äÁ¿£¬Ö»Ê¹ÓÃpSkinRes
+	IUIApplication*  pUIApplication; // TODO: åºŸå¼ƒè¯¥å˜é‡ï¼Œåªä½¿ç”¨pSkinRes
 	ISkinRes*  pSkinRes;
-	LPCTSTR  szPrefix;      // ÊôĞÔÇ°×º
-	LPCTSTR  szParentKey;   // ¸¸ÊôĞÔ£¨½öÓÃÓÚeditor£©£¬Èçbkg.render.type
-	UINT  nFlags;
+	wchar*  szPrefix;      // å±æ€§å‰ç¼€
+	wchar*  szParentKey;   // çˆ¶å±æ€§ï¼ˆä»…ç”¨äºeditorï¼‰ï¼Œå¦‚bkg.render.type
+	uint  nFlags;
 
 	bool  IsReload() { return ((nFlags&SERIALIZEFLAG_RELOAD) == SERIALIZEFLAG_RELOAD) ? true : false; }
 	bool  IsLoad() { return ((nFlags&SERIALIZEFLAG_LOAD) == SERIALIZEFLAG_LOAD) ? true : false; }
@@ -209,53 +225,53 @@ struct SERIALIZEDATA
 };
 
 
-// objectµÄstate bit£¬×´Ì¬Î»
+// objectçš„state bitï¼ŒçŠ¶æ€ä½
 enum OBJECT_STATE_BIT
 {
-	OSB_UNVISIBLE = 0x0001,        // ×Ô¼ºÊÇ·ñ¿É¼û
-	OSB_COLLAPSED = 0x0002,        // listitemÎªÊÕÆğÀ´£¬²»ÏÔÊ¾×Ó½áµã£¨TODO:ÒÔºó¿ÉÓÃÓÚÀ©Õ¹ÎªÒş²Ø²¢ÇÒ²»Õ¼ÓÃ²¼¾Ö?£©
-	OSB_DISABLE = 0x0004,        // ×Ô¼ºÊÇ·ñ¿ÉÓÃ
+	OSB_UNVISIBLE = 0x0001,        // è‡ªå·±æ˜¯å¦å¯è§
+	OSB_COLLAPSED = 0x0002,        // listitemä¸ºæ”¶èµ·æ¥ï¼Œä¸æ˜¾ç¤ºå­ç»“ç‚¹ï¼ˆTODO:ä»¥åå¯ç”¨äºæ‰©å±•ä¸ºéšè—å¹¶ä¸”ä¸å ç”¨å¸ƒå±€?ï¼‰
+	OSB_DISABLE = 0x0004,        // è‡ªå·±æ˜¯å¦å¯ç”¨
 
 	OSB_PRESS = 0x0010,
 	OSB_HOVER = 0x0020,
 	OSB_FORCEPRESS = 0x0040,
 	OSB_FORCEHOVER = 0x0080,
-	OSB_READONLY = 0x0100,       // »¹ÊÇÓÉ¸÷¸ö¿Ø¼ş×Ô¼ºÊµÏÖ¸üºÃÒ»Ğ©¡£
+	OSB_READONLY = 0x0100,       // è¿˜æ˜¯ç”±å„ä¸ªæ§ä»¶è‡ªå·±å®ç°æ›´å¥½ä¸€äº›ã€‚
 	OSB_FOCUS = 0x0200,
 	OSB_DEFAULT = 0x0400,
-	OSB_SELECTED = 0x0800,        // ±»Ñ¡ÖĞ
+	OSB_SELECTED = 0x0800,        // è¢«é€‰ä¸­
 	OSB_CHECKED = 0x1000,
 	OSB_RADIOCHECKED = 0x2000,
-	OSB_DRAGDROPHOVER = 0x4000,       // ÍÏ×§¹ı³ÌÖĞ£¬Î»ÓÚÊó±êÏÂ¡£Ä¿Ç°½ölistitemÊ¹ÓÃ
-	OSB_DRAGING = 0x8000,       // ÕıÔÚ±»ÍÏ×§
-	OSB_EDITING = 0x10000,      // ÕıÔÚ±»±à¼­
+	OSB_DRAGDROPHOVER = 0x4000,       // æ‹–æ‹½è¿‡ç¨‹ä¸­ï¼Œä½äºé¼ æ ‡ä¸‹ã€‚ç›®å‰ä»…listitemä½¿ç”¨
+	OSB_DRAGING = 0x8000,       // æ­£åœ¨è¢«æ‹–æ‹½
+	OSB_EDITING = 0x10000,      // æ­£åœ¨è¢«ç¼–è¾‘
 
-	WSB_ACTIVE = 0x1000,        // ´°¿ÚÎªactive
+	WSB_ACTIVE = 0x1000,        // çª—å£ä¸ºactive
 };
 
-#define SWP_LAYEREDWINDOW_SIZEMOVE  0x80000000   // ±íÊ¾ÕâÊÇ¸ö·Ö²ã´°¿ÚÄ£ÄâµÄ´°¿Ú´óĞ¡¸Ä±ä
-#define SWP_NOUPDATELAYOUTPOS       0x40000000   // µ÷ÓÃSetObjectPosÊ±²»¸üĞÂ²¼¾ÖÊôĞÔ
-#define SWP_FORCESENDSIZEMSG        0x20000000   // ¼´Ê¹´óĞ¡Ã»ÓĞ¸Ä±ä£¬Ò²Ç¿ÖÆ·¢ËÍÒ»¸öWM_SIZEÏûÏ¢£¬ÓÃÓÚ×ßÍ¨Âß¼­
-#define SWP_FORCEUPDATEOBJECT       0x10000000   // ¼´Ê¹´óĞ¡Ã»ÓĞ¸Ä±ä£¬Ò²Ç¿ÖÆÄûÃÊËØ£¬ÓÃÓÚ×ßÍ¨Âß¼­
+#define SWP_LAYEREDWINDOW_SIZEMOVE  0x80000000   // è¡¨ç¤ºè¿™æ˜¯ä¸ªåˆ†å±‚çª—å£æ¨¡æ‹Ÿçš„çª—å£å¤§å°æ”¹å˜
+#define SWP_NOUPDATELAYOUTPOS       0x40000000   // è°ƒç”¨SetObjectPosæ—¶ä¸æ›´æ–°å¸ƒå±€å±æ€§
+#define SWP_FORCESENDSIZEMSG        0x20000000   // å³ä½¿å¤§å°æ²¡æœ‰æ”¹å˜ï¼Œä¹Ÿå¼ºåˆ¶å‘é€ä¸€ä¸ªWM_SIZEæ¶ˆæ¯ï¼Œç”¨äºèµ°é€šé€»è¾‘
+#define SWP_FORCEUPDATEOBJECT       0x10000000   // å³ä½¿å¤§å°æ²¡æœ‰æ”¹å˜ï¼Œä¹Ÿå¼ºåˆ¶æŸ æª¬ç´ ï¼Œç”¨äºèµ°é€šé€»è¾‘
 
 
 #define UI_DECLARE_RENDERBASE(className, xml, rendertype)   \
-    static LPCTSTR  GetXmlName() { return xml; }       \
+    static wchar*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      
 
 
-// ±¾ºê¶¨ÒåÖ÷ÒªÊÇÓÃÓÚthemeÀàĞÍµÄrenderbase£¬Òª¸ù¾İ¿Ø¼şÀàĞÍ½øĞĞ´´½¨
+// æœ¬å®å®šä¹‰ä¸»è¦æ˜¯ç”¨äºthemeç±»å‹çš„renderbaseï¼Œè¦æ ¹æ®æ§ä»¶ç±»å‹è¿›è¡Œåˆ›å»º
 #define UI_DECLARE_RENDERBASE2(className, xml, rendertype) \
-    static LPCTSTR  GetXmlName() { return xml; }       \
+    static wchar*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      \
 
 
 #define UI_DECLARE_TEXTRENDERBASE(className, xml, rendertype) \
-    static LPCTSTR  GetXmlName() { return xml; }       \
+    static wchar*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      
 
 #define UI_DECLARE_TEXTRENDERBASE2(className, xml, rendertype) \
-    static LPCTSTR  GetXmlName() { return xml; }       \
+    static wchar*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      \
 
 
@@ -268,14 +284,14 @@ enum OBJECT_STATE_BIT
     SetWindowLongPtr(hWnd, GWL_STYLE, GetWindowLongPtr(hWnd, GWL_STYLE)&~flag)
 
 
-// ´°¿ÚÀàÃû³Æ
+// çª—å£ç±»åç§°
 #define WND_CLASS_NAME                  _T("UI")
 #define WND_ANIMATE_CLASS_NAME          _T("UI_Animate")
-#define WND_POPUP_CONTROL_SHADOW_NAME   _T("UI_PopupControlShadow") // ´øÏµÍ³ÒõÓ°¹¦ÄÜ
+#define WND_POPUP_CONTROL_SHADOW_NAME   _T("UI_PopupControlShadow") // å¸¦ç³»ç»Ÿé˜´å½±åŠŸèƒ½
 #define WND_POPUP_CONTROL_NAME          _T("UI_PopupControl")
 #define WND_DRAGBITMAPWND_CLASS_NAME    _T("UI_DragBitmapWnd")
 
-// ´°¿Ú´´½¨Íê³Éºó£¬»ñÈ¡xmlÖĞµÄ¿Ø¼ş
+// çª—å£åˆ›å»ºå®Œæˆåï¼Œè·å–xmlä¸­çš„æ§ä»¶
 #define INIT_CONTROL(x, id) \
     x = (decltype(x))m_pWindow->FindObject(id);
 #define INIT_CONTROL2(x, id) \
@@ -284,7 +300,7 @@ enum OBJECT_STATE_BIT
 	x = (decltype(x))m_pWindow->TryFindObject(id);
 
 
-// µ¥ÀıÀà¡£·ÅÔÚÀàÀïµÄ×îºóÃæÉùÃ÷
+// å•ä¾‹ç±»ã€‚æ”¾åœ¨ç±»é‡Œçš„æœ€åé¢å£°æ˜
 #define SINGLE_INSTANCE(classname) \
     public: \
         static classname& Get() { static classname s; return s; }

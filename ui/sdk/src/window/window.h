@@ -1,8 +1,11 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
-#include "../../base/common.h"
-#include "../../base/signalslot/signal.h"
+#include "common.h"
+#include "interface/iwindow.h"
+#include "common/signalslot/signal.h"
+#include "base/uimsg.h"
+#include "object/message.h"
 #include <SkCanvas.h>
 #include <SkSurface.h>
 
@@ -19,10 +22,23 @@ struct WindowPlatform {
   virtual void Submit(sk_sp<SkSurface> sksurface) = 0;
 };
 
-class Window {
+class Window : public Message{
 public:
-  Window();
+  Window(IWindow* p);
   ~Window();
+
+	UI_BEGIN_MSG_MAP()
+        // UIMSG_ERASEBKGND( OnEraseBkgnd )
+        // UIMSG_DM_GETDEFID( OnGetDefId )
+        // UIMSG_DM_SETDEFID( OnSetDefId )
+        // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
+        // UIMSG_QUERYINTERFACE( WindowBase )
+        // UIMSG_SERIALIZE( OnSerialize )
+        // UIMSG_FINALCONSTRUCT( FinalConstruct )
+        // UIMSG_PRECREATEWINDOW( PreCreateWindow )
+    // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
+    // UI_END_MSG_MAP_CHAIN_PARENT( Message )
+    UI_END_MSG_MAP()
 
   void OnMessage();
   void Create(const Rect &rect);

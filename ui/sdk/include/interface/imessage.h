@@ -1,9 +1,22 @@
 #ifndef _UI_IMESSAGE_H_
 #define _UI_IMESSAGE_H_
+#include <string.h>
+#include "../base/uidefine.h"
 
-namespace UI
+namespace ui
 {
-interface  IMessage;
+struct  IMessage;
+
+struct MSG {
+#if defined(OS_WIN)
+    HWND hWnd;
+#else
+    long hWnd;
+#endif
+    uint message;
+    long wParam;
+    long lParam;
+};
 
 // 消息结构定义。系统控件仍然使用MSG，但UI控件使用UIMsg进行代码
 struct UIMSG : public MSG
@@ -12,38 +25,38 @@ struct UIMSG : public MSG
 
     IMessage*   pMsgFrom;    // 消息发送者
     IMessage*   pMsgTo;      // 消息接受者 
-    UINT        nCode;       // 针对 WM_COMMAND,WM_NOTIFY
-	LRESULT     lRet;        // 消息处理结束后的返回值
-    BOOL        bHandled;    // 该消息是否已被处理过
+    uint        nCode;       // 针对 WM_COMMAND,WM_NOTIFY
+	long        lRet;        // 消息处理结束后的返回值
+    bool        bHandled;    // 该消息是否已被处理过
 };
 
 
 
 class Message;
-interface UIAPI IMessage
+struct UIAPI IMessage
 {
     IMessage(E_BOOL_CREATE_IMPL);
-    BOOL  ProcessMessage(UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false);
+    bool  ProcessMessage(UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false);
     void  Release();
 	
-	BOOL    IsMsgHandled()const;
-	void    SetMsgHandled(BOOL b);
+	bool    IsMsgHandled()const;
+	void    SetMsgHandled(bool b);
 	UIMSG*  GetCurMsg();
 	void    SetCurMsg(UIMSG* p);
-	BOOL    DoHook(UIMSG* pMsg, int nMsgMapID);
+	bool    DoHook(UIMSG* pMsg, int nMsgMapID);
 
 protected:
     friend class Message;  
     virtual ~IMessage();  // 虚函数1. 保证正确释放整个对象
 private:
-    virtual BOOL  virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook);  // 虚函数2. 消息处理
+    virtual bool  virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook);  // 虚函数2. 消息处理
 	virtual void  virtual_delete_this();  // 由UIObjCreator负责实现
 
 public:
 	Message*  GetImpl();
     void  ClearNotify();
     void  SetNotify(IMessage* pObj, int nMsgMapID);
-	LONG_PTR  DoNotify(UIMSG* pMsg);
+	long  DoNotify(UIMSG* pMsg);
     IMessage*  GetNotifyObj();
 	void  CopyNotifyTo(IMessage* pObjCopyTo);
 
@@ -55,7 +68,7 @@ public:
     void  AddDelayRef(void** pp);
     void  RemoveDelayRef(void** pp);
 
-    void*  QueryInterface(REFIID iid);
+    void*  QueryInterface(const Guid& iid);
 protected:
     Message*   m_pImpl;
 };
@@ -68,11 +81,11 @@ public:
 	MessageProxy(IMessage* p);
 	virtual ~MessageProxy();
 
-	BOOL    IsMsgHandled()const;
-	void    SetMsgHandled(BOOL b);
+	bool    IsMsgHandled()const;
+	void    SetMsgHandled(bool b);
 	UIMSG*  GetCurMsg();
 	void    SetCurMsg(UIMSG* p);
-	BOOL    DoHook(UIMSG* pMsg, int nMsgMapID);
+	bool    DoHook(UIMSG* pMsg, int nMsgMapID);
 
 protected:
 	Message*  m_pImpl;
@@ -80,4 +93,4 @@ protected:
 
 }
 
-#endif  _UI_IMESSAGE_H_
+#endif  // _UI_IMESSAGE_H_
