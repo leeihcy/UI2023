@@ -1,9 +1,9 @@
-#include "stdafx.h"
+#include "include/inc.h"
 #include "math.h"
 
 
 
-namespace UI
+namespace ui
 {
 	bool  g_bInitSinCosTable = false;
 

@@ -3,7 +3,7 @@
 #include "point.h"
 #include "rect.h"
 
-namespace UI
+namespace ui
 {
 
 //
@@ -79,7 +79,7 @@ struct QUADF
 class Quad : public QUAD
 {
 public:
-    void  SetByRect(LPRECT prc);
+    void  SetByRect(RECT* prc);
     void  Offset(POINT pt);
     void  Offset(int x, int y);
     void  GetBoundRect2(RECT* prc);

@@ -3,7 +3,7 @@
 
 #include "iobject.h"
 
-namespace UI
+namespace ui
 {
 	interface ITextRenderBase;
 
@@ -25,8 +25,8 @@ struct UIAPI_UUID(78EC44D9-137E-46A1-8ACA-0E12A209FF4F) IControl
    bool  IsGroup();
    void  SetGroup(bool);
 
-   LPCTSTR  GetToolTipText();
-   void  SetToolTipText(LPCTSTR szText);
+   const wchar_t*  GetToolTipText();
+   void  SetToolTipText(const wchar_t* szText);
 
    ITextRenderBase*  CreateDefaultTextRender();
    ITextRenderBase*  GetTextRenderDefault();

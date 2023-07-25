@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "include/inc.h"
 #include "quad.h"
 
 
-void Quad::SetByRect(LPRECT prc)
+void Quad::SetByRect(RECT* prc)
 {
 	Ax = Dx = prc->left;
 	Bx = Cx = prc->right;

@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "mousemanager.h"
 #include "mkmgr.h"
-#include "Src\Helper\tooltip\tooltipmanager.h"
-#include "Inc\Interface\iwindow.h"
-#include "Src\Base\Object\object.h"
-#include "Src\UIObject\Window\window.h"
-#include "Src\UIObject\HwndHost\HwndHost.h"
-#include "Src\Util\Gesture\gesturehelper.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "src/Helper\tooltip\tooltipmanager.h"
+#include "include/interface/iwindow.h"
+#include "src/Base\Object\object.h"
+#include "src/UIObject\Window\window.h"
+#include "src/UIObject\HwndHost\HwndHost.h"
+#include "src/Util\Gesture\gesturehelper.h"
+#include "src/application/uiapplication.h"
 
 #pragma comment(lib, "Imm32.lib")
 
-namespace UI
+namespace ui
 {
 
 WindowMouseMgr::WindowMouseMgr(WindowBase& o):
@@ -44,7 +44,7 @@ void  WindowMouseMgr::ClearStateDirect()
 	m_pObjKeyboardCapture  = nullptr;
 	m_pObjMouseCapture = nullptr;
 
-	m_bMouseTrack = TRUE;      // Ĭ����Ҫ����������
+	m_bMouseTrack = TRUE;      // 默认需要进行鼠标监视
 	m_nKeyboardCaptureNotifyMsgId = 0;
 	m_nMouseCaptureNotifyMsgId = 0;
 	this->m_bMouseMoveReady = FALSE;
@@ -69,9 +69,9 @@ void WindowMouseMgr::SetPressObject(Object* pNewPressObj)
 	_SetPressObject(pNewPressObj, this);
 }
 
-// ������Direct���������ڷ�ֹ�����Ĳ��Ӧ���Ǽܹ����ŵ�����
-// ��listctrl�е��ڲ��ӿؼ�����ʱ��û��֪ͨ��listctrl��mousemgr������ȥ֪ͨwindow��mousemgr
-// ���������listctrl::removeall��SetHoverObject(nullptr)�б���
+// 这两个Direct仅仅是用于防止崩溃的产物。应该是架构不优的问题
+// 在listctrl中的内部子控件销毁时，没法通知到listctrl的mousemgr，而是去通知window的mousemgr
+// 导致最后在listctrl::removeall中SetHoverObject(nullptr)中崩溃
 void  WindowMouseMgr::SetHoverObjectDirectNULL()
 {
     m_pObjHover = nullptr;
@@ -85,9 +85,9 @@ void WindowMouseMgr::OnObjectVisibleChangeInd(Object* pObj, bool bVisible)
     if (nullptr == pObj)
         return;
 
-    // ��ʹ����ʾһ������Ҳ������ֱ����ʾ���˵�ǰhover object֮�ϣ����������
-    // hover���󣬻ᵼ���ٴε��ʱ���õ���Ӧ�����ϵ�hover object.
-    // ������ʾ�����ض�Ҫ����m_bMouseMoveReady = FALSE
+    // 即使是显示一个对象，也可能是直接显示到了当前hover object之上，如果不更新
+    // hover对象，会导致再次点击时，得到响应的是老的hover object.
+    // 所以显示和隐藏都要设置m_bMouseMoveReady = FALSE
     m_bMouseMoveReady = FALSE;
 
     if (!bVisible)
@@ -114,7 +114,7 @@ void WindowMouseMgr::OnObjectVisibleChangeInd(Object* pObj, bool bVisible)
             m_pObjOriginDefault = nullptr;
         }
 
-        // �л��µĽ���
+        // 切换新的焦点
         if (m_pFocusObject && 
             (pObj == m_pFocusObject || pObj->IsMyChild(m_pFocusObject, true)))
         {
@@ -186,26 +186,26 @@ void WindowMouseMgr::OnObjectRemoveInd(Object* pObj)
 
 
 //
-//	[�ݹ�+����] [public] [static] 
+//	[递归+遍历] [public] [static] 
 //
-//	��ȡ��ǰ����µ���С��λ�ؼ�. �� ���ɼ��������ã������������Ϣ�Ŀؼ���Panel ��Щ���͵Ķ��󲻷��أ�
+//	获取当前鼠标下的最小单位控件. （ 不可见，不可用，不接受鼠标消息的控件、Panel 这些类型的对象不返回）
 //
 //	Parameter
 //
 //		pObjParent
 //			[in]
-//				�ݹ����ʱ��ʹ�õ�parent object.���øú���ʱ��ֵΪ���ڶ���(Window/)pObj���ɡ�
+//				递归遍历时，使用的parent object.调用该函数时赋值为窗口对象(Window/)pObj即可。
 //		ptParent
 //			[in]
-//				�ڸ������е����λ�ã���ʼֵΪ�ڴ����е�λ��
+//				在父对象中的鼠标位置，初始值为在窗口中的位置
 // 
 //      bUIEditorInvoke
 //          [in]
-//              ��UIBuilder��ֻ��Ҫһ��������CONTROL���粻����SliderCtrl�е�button��
-//              ����UIBuilder����Ҫ���Ҳ����������Ϣ���͵Ŀؼ�����Label, Picture
+//              在UIBuilder中只需要一个完整的CONTROL例如不查找SliderCtrl中的button，
+//              另外UIBuilder还需要查找不接受鼠标消息类型的控件，如Label, Picture
 //
 //	Return
-//		��λ���µĶ���û���򷵻ؿ�
+//		该位置下的对象，没有则返回空
 //
 Object* WindowMouseMgr::GetObjectByPos(
 		Object* pObjParent, POINT* ptParent, __out POINT* ptOutInObj)
@@ -234,9 +234,9 @@ Object*  WindowMouseMgr::GetObjectByPos_UIEditor(
 }
 
 
-//  �����������GetObjectByPos�У�����Ӱ��GetObjectByPos��Ч��
-//  ע: ����⵽һ��Panelʱ������û�����и�panel���ӽ��ʱ��Ӧ�ý��ȥ���panel��
-//        ��һ����㣬������ֱ�ӷ���Null��
+//  将这个不放在GetObjectByPos中，避免影响GetObjectByPos的效率
+//  注: 鼠标检测到一个Panel时，并且没有命中该panel的子结点时，应该结点去检测panel的
+//        下一个结点，而不是直接返回Null。
 Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 {
 	Object*  pObjParent = pData->pObjParent;
@@ -256,7 +256,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 		{
 			bEnumNcChinding = false; 
 
-			// ��ʼö�ٿͻ������󣬾���ƫ�������ټ��������ͻ������Ӷ���
+			// 开始枚举客户区对象，纠正偏移量，再继续搜索客户区的子对象
 			REGION4 rcNonClient = {0};
 			pObjParent->GetNonClientRegion(&rcNonClient);
 
@@ -276,7 +276,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 
 		if (pData->bTestDisable)
 		{
-			if (!pChild->IsEnable())  // ע��disable�ؼ�Ӧ������tooltips
+			if (!pChild->IsEnable())  // 注：disable控件应该允许tooltips
 				continue;
 		}
 
@@ -305,7 +305,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 			data.bTestRejectMouseMsg = pData->bTestRejectMouseMsg;
 			Object* pRetObj = GetObjectByPosEx(&data);
 
-			// ���ӿؼ���û�д��ڸ�λ�õģ�ֱ�ӷ��ر�����
+			// 若子控件中没有处于该位置的，直接返回本对象
 			if (pRetObj)
 			{
 				if (ptOutInObj)
@@ -355,7 +355,7 @@ WindowBase* WindowMouseMgr::GetWindowObject()
 }
 
 
-LRESULT  WindowMouseMgr::HandleMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
 {
     switch (msg)
     {
@@ -381,12 +381,12 @@ LRESULT  WindowMouseMgr::HandleMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHan
 //The low-order word specifies the x-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area. 
 //The high-order word specifies the y-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area. 
 //
-LRESULT WindowMouseMgr::HandleMouseMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long WindowMouseMgr::HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
 {
     if (this->m_pObjMouseCapture)
     {
         BOOL bHandled = FALSE;
-        LRESULT lRet = UISendMessage(m_pObjMouseCapture, msg, w, l, 0,0, m_nMouseCaptureNotifyMsgId, &bHandled);
+        long lRet = UISendMessage(m_pObjMouseCapture, msg, w, l, 0,0, m_nMouseCaptureNotifyMsgId, &bHandled);
         if (bHandled)
         {
             if (pbHandled)
@@ -404,7 +404,7 @@ LRESULT WindowMouseMgr::HandleMouseMessage(UINT msg, WPARAM w, LPARAM l, BOOL* p
 	{
 	case WM_MOUSEMOVE:
 		{
-			if (m_bMouseTrack)    //������׷�٣���
+			if (m_bMouseTrack)    //若允许追踪，则。
 			{
 				TRACKMOUSEEVENT tme;
 				tme.cbSize = sizeof( TRACKMOUSEEVENT );
@@ -417,14 +417,14 @@ LRESULT WindowMouseMgr::HandleMouseMessage(UINT msg, WPARAM w, LPARAM l, BOOL* p
 
 			Object* pOldHover = m_pObjHover;
 			Object* pOldPress = m_pObjPress;
-			LRESULT lRet = this->OnMouseMove( vkFlag, xPos, yPos );
+			long lRet = this->OnMouseMove( vkFlag, xPos, yPos );
 
-			if (pOldPress==m_pObjPress && pOldHover!=m_pObjHover)  // ����µĶ������仯����Ҫ���������ʽ
+			if (pOldPress==m_pObjPress && pOldHover!=m_pObjHover)  // 鼠标下的对象发生变化，需要重置鼠标样式
             {
                 HWND hWnd = m_oWindow.GetHWND();
-				if (GetCapture() != hWnd)             // �����קʱ���䣬�����EDIT����ק����
+				if (GetCapture() != hWnd)             // 鼠标拖拽时不变，例如从EDIT中拖拽出来
 			    {
-				    ::PostMessage(hWnd, WM_SETCURSOR, (WPARAM)hWnd, MAKELPARAM(HTCLIENT,1));  // hiword 0��ʾ�����˵�
+				    ::PostMessage(hWnd, WM_SETCURSOR, (WPARAM)hWnd, MAKELPARAM(HTCLIENT,1));  // hiword 0表示弹出菜单
 			    }
             }
 			return lRet;
@@ -470,17 +470,17 @@ LRESULT WindowMouseMgr::HandleMouseMessage(UINT msg, WPARAM w, LPARAM l, BOOL* p
         break;
 
     case WM_MOUSEWHEEL:
-        return this->OnMouseWheel(w,l);  // ����Ϣ������Ҫ���׸������ڴ���
+        return this->OnMouseWheel(w,l);  // 该消息可能需要上抛给主窗口处理
 	}
 	return 0L;
 }
 
-LRESULT  WindowMouseMgr::HandleKeyboardMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::HandleKeyboardMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
 {
     if (this->m_pObjKeyboardCapture)
     {
         BOOL bHandled = FALSE;
-        LRESULT lRet = UISendMessage(m_pObjKeyboardCapture, msg, w, l, 0,0, m_nKeyboardCaptureNotifyMsgId, &bHandled);
+        long lRet = UISendMessage(m_pObjKeyboardCapture, msg, w, l, 0,0, m_nKeyboardCaptureNotifyMsgId, &bHandled);
         if (bHandled)
         {
             if (pbHandled)
@@ -525,7 +525,7 @@ LRESULT  WindowMouseMgr::HandleKeyboardMessage(UINT msg, WPARAM w, LPARAM l, BOO
     return 0L;
 }
 
-LRESULT  WindowMouseMgr::HandleTouchMessage(UINT msg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;
 	
@@ -551,8 +551,8 @@ LRESULT  WindowMouseMgr::HandleTouchMessage(UINT msg, WPARAM wParam, LPARAM lPar
 						 GC_PAN_WITH_SINGLE_FINGER_VERTICALLY |   						 
 						 GC_PAN_WITH_GUTTER |                     
 						 GC_PAN_WITH_INERTIA;
-		DWORD  panBlock = GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY;  // �ݲ�����������PAN������֧��ListItemDragDrop
-        // TODO: ��չ�������ؼ�������Ҫ����pan
+		DWORD  panBlock = GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY;  // 暂不开启横向触摸PAN，用于支持ListItemDragDrop
+        // TODO: 扩展，其它控件可能需要横向pan
 
 		UI::GESTURECONFIG  gc[] = //{0, GC_ALLGESTURES, 0};
 		{
@@ -590,9 +590,9 @@ Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, WPARAM wParam)
 
 BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
 {
-	// ������Ϣ֪ͨ��������
+	// 本次消息通知滚动距离
 	static POINT lastPoint = {0};
-	// ��һ�����Ƶ�ĿǰΪֹ���ܹ�������
+	// 这一次手势到目前为止的总滚动距离
 	static SIZE overpan = {0};
 	static ULONGLONG lastArguments = 0;
 
@@ -612,7 +612,7 @@ BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
     case GID_PAN:
 	case GID_PRESSANDTAP:
         {
-			UINT msg = UI_WM_GESTURE_PAN;
+			unsigned int msg = UI_WM_GESTURE_PAN;
 			if (gi.dwID == GID_PRESSANDTAP)				
 				msg = UI_WM_GESTURE_PRESSANDTAP;	
 
@@ -683,13 +683,13 @@ BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
 //			[in]
 //
 //		xPos, yPos
-//			[in]	��ǰ���λ�ã��Դ������Ͻ�Ϊ(0,0)���
+//			[in]	当前鼠标位置，以窗口左上角为(0,0)起点
 //
-LRESULT WindowMouseMgr::OnMouseMove( int vkFlag, int xPos, int yPos )
+long WindowMouseMgr::OnMouseMove( int vkFlag, int xPos, int yPos )
 {	
     this->m_bMouseMoveReady = TRUE;
 
-	// 1. �жϵ�ǰ���λ��
+	// 1. 判断当前鼠标位置
 	POINT pt = { xPos, yPos };
     POINT ptInObj = {0};
 
@@ -700,21 +700,21 @@ LRESULT WindowMouseMgr::OnMouseMove( int vkFlag, int xPos, int yPos )
 }
 
 
-LRESULT WindowMouseMgr::OnMouseLeave( int vkFlag, int xPos, int yPos )
+long WindowMouseMgr::OnMouseLeave( int vkFlag, int xPos, int yPos )
 {
 	_OnMouseLeave(this);
 
-	this->m_bMouseTrack = TRUE;// ��������TRACKMOUSEEVENT
+	this->m_bMouseTrack = TRUE;// 继续开启TRACKMOUSEEVENT
     this->m_bMouseMoveReady = FALSE;
 
-	if (GetCapture() == m_oWindow.GetHWND())  // �п�������������ֱ�ӷ��͹���WM_MOUSELEAVE������COMBOBOX.button.onlbuttondown
+	if (GetCapture() == m_oWindow.GetHWND())  // 有可能是其它对象直接发送过来WM_MOUSELEAVE，例如COMBOBOX.button.onlbuttondown
 	{
 		::ReleaseCapture();
 	}
 	return TRUE;
 }
 
-LRESULT WindowMouseMgr::OnCancelMode(WPARAM w, LPARAM l)
+long WindowMouseMgr::OnCancelMode(WPARAM w, LPARAM l)
 {
 	if (m_pObjPress != nullptr)
 	{
@@ -730,14 +730,14 @@ LRESULT WindowMouseMgr::OnCancelMode(WPARAM w, LPARAM l)
 }
 
 
-LRESULT WindowMouseMgr::OnLButtonDown( WPARAM w, LPARAM l, BOOL* pbHandled)
+long WindowMouseMgr::OnLButtonDown( WPARAM w, LPARAM l, BOOL* pbHandled)
 {
-    // ���汾�ε��λ�ڣ����ڹ���˫���¼�
+    // 保存本次点击位于，用于过滤双击事件
     m_posPrevClick = l;
 
     if (FALSE == this->m_bMouseMoveReady)
     {
-        HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);  // ע��Ҫȡ��wParam�е���갴�±��
+        HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);  // 注：要取消wParam中的鼠标按下标记
     }
 
 	if (m_pObjHover)
@@ -747,16 +747,16 @@ LRESULT WindowMouseMgr::OnLButtonDown( WPARAM w, LPARAM l, BOOL* pbHandled)
 	return 0L;
 }
 
-LRESULT WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
+long WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
 {
-    // Ϊ�˷�ֹ�ڶ����ڴ���WM_LBUTTONUP��ϢʱMouseManager��״̬�����˸ı�,�ȱ���״̬
+    // 为了防止在对象在处理WM_LBUTTONUP消息时MouseManager的状态发生了改变,先保存状态
     Object*  pSaveObjPress = m_pObjPress;
     Object*  pSaveObjHover = m_pObjHover;
 
-    // ���ͷ�capture��up����Ӧ�����У��簴ťclick�����ܵ���
-    // �˵�����������ģʽ����captureȴһֱ���ǰ�ť�������档
+    // 先释放capture。up的响应函数中（如按钮click）可能弹出
+    // 菜单，进入阻塞模式。但capture却一直还是按钮窗口上面。
     //
-    // ���Ҳ��ܷ���if (m_pObjPress)�С�m_pObjPress�п�����;�����
+    // 并且不能放在if (m_pObjPress)中。m_pObjPress有可能中途被清空
     if (GetCapture() == m_oWindow.GetHWND()) 
         ::ReleaseCapture();
 
@@ -764,7 +764,7 @@ LRESULT WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
 	{
         _OnLButtonUp(w, l, this);
 
-        // ������ʱ������뿪�˿ؼ�������MOUSELEAVE��Ϣ. ���ʱ�����λ�ÿ����Ѿ����±仯�ˣ���Ҫ���»�ȡ
+        // 如果这个时候鼠标离开了控件，发送MOUSELEAVE消息. 这个时候鼠标位置可能已经重新变化了，需要重新获取
         POINT ptCursorNow;
         GetCursorPos(&ptCursorNow);
         ::MapWindowPoints(nullptr, m_oWindow.GetHWND(), &ptCursorNow, 1);
@@ -780,14 +780,14 @@ LRESULT WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
 	return 0L;
 }
 
-LRESULT WindowMouseMgr::OnLButtonDBClick( WPARAM w,LPARAM l, BOOL* pbHandled )
+long WindowMouseMgr::OnLButtonDBClick( WPARAM w,LPARAM l, BOOL* pbHandled )
 {
     if (!AdjustDoubleClickMessage(l))
         return OnLButtonDown(w, l, pbHandled);
 
     if (FALSE == this->m_bMouseMoveReady)
     {
-        HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);  // ע��Ҫȡ��wParam�е���갴�±��
+        HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);  // 注：要取消wParam中的鼠标按下标记
     }
 
 	if (m_pObjPress || m_pObjHover)
@@ -799,7 +799,7 @@ LRESULT WindowMouseMgr::OnLButtonDBClick( WPARAM w,LPARAM l, BOOL* pbHandled )
 	return 0;
 }
 
-LRESULT WindowMouseMgr::OnRButtonDown( WPARAM w,LPARAM l )
+long WindowMouseMgr::OnRButtonDown( WPARAM w,LPARAM l )
 {
     if (FALSE == this->m_bMouseMoveReady)
     {
@@ -824,22 +824,22 @@ LRESULT WindowMouseMgr::OnRButtonDown( WPARAM w,LPARAM l )
 	
 	return 0;
 }
-LRESULT WindowMouseMgr::OnRButtonUp( WPARAM w,LPARAM l )
+long WindowMouseMgr::OnRButtonUp( WPARAM w,LPARAM l )
 {
 	if (m_pObjRPress)
 	{
-		LRESULT lRet = ::UISendMessage(m_pObjRPress, WM_RBUTTONUP, w, l);
+		long lRet = ::UISendMessage(m_pObjRPress, WM_RBUTTONUP, w, l);
         m_pObjRPress = nullptr;
         return lRet;
 	}
-// 	else if (m_pObjHover)  // ��hoverʱ������up��Ϣ����Ϊ�п���������ڱ�ĵط������Ȼ���Ƶ�hover���ͷ�
+// 	else if (m_pObjHover)  // 仅hover时不发送up消息，因为有可能是鼠标在别的地方点击，然后移到hover上释放
 // 	{
 // 		return ::UISendMessage(m_pObjHover, WM_RBUTTONUP, w, l);
 // 	}
 	return 0;
 }
 
-LRESULT  WindowMouseMgr::OnMButtonDown(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonDown(WPARAM w,LPARAM l)
 {
     if (FALSE == this->m_bMouseMoveReady)
         HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);
@@ -853,7 +853,7 @@ LRESULT  WindowMouseMgr::OnMButtonDown(WPARAM w,LPARAM l)
 
     return 0;
 }
-LRESULT  WindowMouseMgr::OnMButtonDBClick(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonDBClick(WPARAM w,LPARAM l)
 {
     if (FALSE == this->m_bMouseMoveReady)
         HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);
@@ -866,7 +866,7 @@ LRESULT  WindowMouseMgr::OnMButtonDBClick(WPARAM w,LPARAM l)
     }
     return 0;
 }
-LRESULT  WindowMouseMgr::OnMButtonUp(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonUp(WPARAM w,LPARAM l)
 {
     if (m_pObjMPress)
     {
@@ -876,7 +876,7 @@ LRESULT  WindowMouseMgr::OnMButtonUp(WPARAM w,LPARAM l)
     return 0;
 }
 
-// �ú���ͬʱ��֧����WM_CANCELMODE������
+// 该函数同时还支撑着WM_CANCELMODE的作用
 void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
 {
 	if (this->m_pObjHover)
@@ -892,7 +892,7 @@ void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
             ::ReleaseCapture();
         }
 
-		if (this->m_pObjPress != this->m_pObjHover)  // ���⽫WM_MOUSELEAVE��������
+		if (this->m_pObjPress != this->m_pObjHover)  // 避免将WM_MOUSELEAVE发送两次
 			::UISendMessage(m_pObjPress, WM_MOUSELEAVE);
 	}
     else
@@ -900,8 +900,8 @@ void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
         HWND hWndCapture = GetCapture();
         if (hWndCapture) 
         {
-            // �Ӵ�����setcapture��Ȼ���ⲿ����EnableWindow(������,FALSE)
-            // �������������յ�killfocus��Ϣ���Ӵ��ڵ�captureû�б�release
+            // 子窗口正setcapture，然后外部调用EnableWindow(主窗口,FALSE)
+            // 将导致主窗口收到killfocus消息。子窗口的capture没有被release
             HWND hWnd = m_oWindow.GetHWND();
             if (hWndCapture == hWnd || ::IsChild(hWnd, hWndCapture))
             {
@@ -912,7 +912,7 @@ void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
 
 	this->SetHoverObject(nullptr);
 	this->SetPressObject(nullptr);
-    this->m_bMouseMoveReady = FALSE;  // ʧ�����ֱ�Ӵ�����갴�»ᵼ��״̬����ȷ
+    this->m_bMouseMoveReady = FALSE;  // 失焦点后直接触发鼠标按下会导致状态不正确
 
     m_pObjKeyboardCapture = nullptr;
     m_nKeyboardCaptureNotifyMsgId = 0;
@@ -924,13 +924,13 @@ void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
     if (nullptr == p)
         p = m_pFocusObject;
 
-    if (p)  // ��Focus�����ͽ�����Ϣ����������m_pFocusObject���������㵽�����ϵ��µ�ʧ��
+    if (p)  // 给Focus对象发送焦点消息，但不重置m_pFocusObject。例如鼠标点到桌面上导致的失焦
     {
         p->SetFocus(false);
         ::UISendMessage(p, WM_KILLFOCUS, (WPARAM)nullptr, (LPARAM)0);
     }
 
-    // ������ǵ����˱����������һ��HOSTWND����Ӵ���ʱ������m_pFocusObject����������ٵ��m_pFocusObjectʱ��û��Ӧ
+    // 当鼠标是点在了本窗口上面的一个HOSTWND里的子窗口时，重置m_pFocusObject，否则鼠标再点回m_pFocusObject时将没反应
     if (m_oWindow)
     {
         HWND hWnd = m_oWindow.GetHWND();
@@ -944,7 +944,7 @@ void WindowMouseMgr::OnSetFocus()
     if (m_pFocusObject && !m_pFocusObject->IsFocus())
     {
         m_pFocusObject->SetFocus(true);
-        ::UISendMessage(m_pFocusObject, WM_SETFOCUS, (WPARAM)GetOldFocusObject(), (LPARAM)0);  // �����GetOldFocusObject��Ӧ��
+        ::UISendMessage(m_pFocusObject, WM_SETFOCUS, (WPARAM)GetOldFocusObject(), (LPARAM)0);  // 这里的GetOldFocusObject对应于
     }
     else
     {
@@ -969,8 +969,8 @@ BOOL WindowMouseMgr::OnSetCursor( WPARAM w,LPARAM l )
 
 void WindowMouseMgr::OnNcDestroy()
 {
-	m_pObjHover = m_pObjPress = nullptr;  // ������SetHoverObject/SetPressObject
-    m_pFocusObject = nullptr;	// ������SetFocusObject����Ϊ���漰ˢ����
+	m_pObjHover = m_pObjPress = nullptr;  // 不调用SetHoverObject/SetPressObject
+    m_pFocusObject = nullptr;	// 不调用SetFocusObject，因为不涉及刷新了
     m_pOldFocusObject = nullptr;
     m_pObjKeyboardCapture = nullptr;
 }
@@ -984,7 +984,7 @@ DLGC_DEFPUSHBUTTON     Control is a default push button.
 DLGC_HASSETSEL         Windows will send an EM_SETSEL message to the control to select its contents.
 DLGC_RADIOBUTTON       Control is an option (radio) button.
 DLGC_STATIC            Control is a static control.
-DLGC_UNDEFPUSHBUTTON   Control is a push button but not the default push button.(��һ����ť��������default)
+DLGC_UNDEFPUSHBUTTON   Control is a push button but not the default push button.(是一个按钮，但不是default)
 DLGC_WANTALLKEYS       Control processes all keyboard input.
 DLGC_WANTARROWS        Control processes arrow keys.
 DLGC_WANTCHARS         Control processes WM_CHAR messages.
@@ -1011,7 +1011,7 @@ void WindowMouseMgr::CheckDefPushButton(Object* pNewObj)
     if (codeNewFocus & DLGC_DEFPUSHBUTTON)
         return;
 
-    Object* pLastDefaultObj = m_pObjDefault; // ���ڼ�������defbtn
+    Object* pLastDefaultObj = m_pObjDefault; // 用于计算最终defbtn
 
     /*
      * If the focus is changing to or from a pushbutton, then remove the
@@ -1056,7 +1056,7 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
 			if (!IsWindowEnabled(m_oWindow.m_hWnd))
 				return FALSE;
 
-            LRESULT lRet = SendMessage(m_oWindow.m_hWnd, WM_QUERYUISTATE, 0, 0);
+            long lRet = SendMessage(m_oWindow.m_hWnd, WM_QUERYUISTATE, 0, 0);
             if (lRet & UISF_HIDEFOCUS)
             {
                 lRet &= ~UISF_HIDEFOCUS;
@@ -1065,13 +1065,13 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
             Object* pFocusObj = GetFocusObject();
             if (pFocusObj)
             {
-                LRESULT lr = UISendMessage(pFocusObj->GetIMessage(), WM_GETDLGCODE, pMsg->wParam, (LPARAM)pMsg);
+                long lr = UISendMessage(pFocusObj->GetIMessage(), WM_GETDLGCODE, pMsg->wParam, (LPARAM)pMsg);
                 if (lr & DLGC_WANTTAB)
                     return FALSE;
             }
 
-            // ����
-            if (Util::IsKeyDown(VK_SHIFT))
+            // 导航
+            if (util::IsKeyDown(VK_SHIFT))
             {
                 Tab_2_PrevControl();
             }
@@ -1101,14 +1101,14 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
         {
             if (m_pFocusObject)
             {
-                // �����ڶ��б༭���лس�
+                // 例如在多行编辑框中回车
 				LONG_PTR codeFocus = UISendMessage(m_pFocusObject, WM_GETDLGCODE, 0, (LPARAM)pMsg);
                 if (codeFocus & (DLGC_WANTMESSAGE|DLGC_WANTALLKEYS))
                     return FALSE;
             }
             
-            // Windows�������Ǹ����ڷ���һ��WM_COMMAND( id, hwnd )����Ϣ
-            // ����default button�����͸�defpushbutton
+            // Windows的做法是给窗口发送一个WM_COMMAND( id, hwnd )的消息
+            // 查找default button，发送给defpushbutton
             if (m_pObjDefault && 
                 m_pObjDefault->IsEnable() && 
                 m_pObjDefault->IsVisible())
@@ -1122,12 +1122,12 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
         }
         else if (VK_ESCAPE == pMsg->wParam || VK_CANCEL == pMsg->wParam)
         {
-            // ����ȡ����ť��������Ϣ
+            // 查找取消按钮，发送消息
         }
     }
     else if (pMsg->message == WM_SYSKEYDOWN && pMsg->wParam == VK_MENU)
     {
-        LRESULT lRet = SendMessage(m_oWindow.m_hWnd, WM_QUERYUISTATE, 0, 0);
+        long lRet = SendMessage(m_oWindow.m_hWnd, WM_QUERYUISTATE, 0, 0);
         if (lRet & UISF_HIDEFOCUS)
         {
             lRet &= ~UISF_HIDEFOCUS;
@@ -1259,16 +1259,16 @@ Object*  WindowMouseMgr::GetDefaultObject()
 
 
 //
-//	�ú���ֻ���������ط�����:
-//		a. �����ѡ��һ��UI�ؼ�
-//		b. ʹ��TAB�л��ؼ�
+//	该函数只会在两个地方触发:
+//		a. 鼠标点击选中一个UI控件
+//		b. 使用TAB切换控件
 //
-//	��˵������ѡ��һ��ϵͳ�ؼ�ʱ����Ҫ��HWNDHOST�е���һ��SetFocusObjectDirect
+//	因此当鼠标点击选中一个系统控件时，需要在HWNDHOST中调用一次SetFocusObjectDirect
 //
 void WindowMouseMgr::SetFocusObject(Object* pObj)
 {
-    // TODO: ��������ᵼ�½����ϵͳ��combobox.edit�����ui combobox.editʱû��Ӧ
-    //       ��������������ᵼ��UI COMBOBOX�е�EDIT�޷���קѡ�У���Ϊһֱ��KILLFOCUS/SETFOCUS��
+    // TODO: 这个条件会导致焦点从系统的combobox.edit点击到ui combobox.edit时没反应
+    //       但屏蔽这个条件会导致UI COMBOBOX中的EDIT无法拖拽选中（因为一直在KILLFOCUS/SETFOCUS）
     if (m_pFocusObject == pObj)  
         return;
 
@@ -1279,9 +1279,9 @@ void WindowMouseMgr::SetFocusObject(Object* pObj)
         {
             HWND hWndFocus = ::GetFocus();
             HWND hWndHost = ((HwndHost*)pObj)->m_hWnd;
-            if (hWndFocus != hWndHost && FALSE == ::IsChild(hWndHost, hWndFocus))  // �п��ܵ����combobox�е�edit,edit����һ��HOSTWND������HOSTWND���Ӵ���
+            if (hWndFocus != hWndHost && FALSE == ::IsChild(hWndHost, hWndFocus))  // 有可能点击了combobox中的edit,edit不是一个HOSTWND，但是HOSTWND的子窗口
             {
-                m_pOldFocusObject = m_pFocusObject;   // ��HwndHost::WndProc WM_SETFOCUS��ʹ��
+                m_pOldFocusObject = m_pFocusObject;   // 在HwndHost::WndProc WM_SETFOCUS中使用
                 m_pFocusObject = pObj;
 
                 if (GetWindowLongPtr(hWndHost, GWL_EXSTYLE)&WS_EX_NOACTIVATE)
@@ -1295,7 +1295,7 @@ void WindowMouseMgr::SetFocusObject(Object* pObj)
         {
             if (m_oWindow && ::GetFocus() != m_oWindow.GetHWND())
             {
-                m_pOldFocusObject = m_pFocusObject;   // ��KeyboardManager::SetFocus��ʹ��
+                m_pOldFocusObject = m_pFocusObject;   // 在KeyboardManager::SetFocus中使用
                 m_pFocusObject = pObj;
 
                 HWND hWnd = m_oWindow.GetHWND();
@@ -1330,9 +1330,9 @@ void WindowMouseMgr::SetFocusObject(Object* pObj)
 
 void  WindowMouseMgr::updateImeStatus()
 {
-	// ���ݽ�������л����뷨״̬
-	// ���ڵ����뷨����������һ���ؼ��Ƿ���Ҫ�������뷨��
-	// ���һ���ؼ����������뷨����ʹ�л����������뷨��Ҳ������ʾ���뷨��״̬���ġ�
+	// 根据焦点对象切换输入法状态
+	// 窗口的输入法，用于区分一个控件是否需要启用输入法。
+	// 如果一个控件不启用输入法，即使切换到中文输入法，也不会显示输入法的状态栏的。
 	OBJSTYLE s = {0};
 	s.enable_ime = 1;
 	if (m_pFocusObject && m_pFocusObject->TestObjectStyle(s))
@@ -1357,7 +1357,7 @@ BOOL WindowMouseMgr::OnChar(WPARAM w, LPARAM l)
     return FALSE;
 }
 
-BOOL WindowMouseMgr::OnKeyDown(UINT nMsg, WPARAM w,LPARAM l)
+BOOL WindowMouseMgr::OnKeyDown(unsigned int nMsg, WPARAM w,LPARAM l)
 {
     if (this->m_pFocusObject)
     {
@@ -1380,7 +1380,7 @@ BOOL WindowMouseMgr::OnKeyUp(WPARAM w,LPARAM l)
 
 long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
 {
-    // ��ѯ�ʵ�ǰ��press obj���ܷ����mouse wheel�ַ�
+    // 先询问当前的press obj，能否进行mouse wheel分发
     if (m_pObjPress)
     {
         BOOL  bHandled = (BOOL)UISendMessage(m_pObjPress->GetIMessage(), UI_MSG_MOUSEWHEEL_REQ, w, l);
@@ -1388,7 +1388,7 @@ long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
             return 0;
     }
 
-    // �Ƚ�������µ�hover������
+    // 先交给鼠标下的hover对象处理
     if (m_pObjHover)
     {
         BOOL  bHandled = (BOOL)UISendMessage(m_pObjHover->GetIMessage(), WM_MOUSEWHEEL, w, l);
@@ -1396,14 +1396,14 @@ long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
             return 0;
     }
 
-    // ����������û���������׸��������ĸ�����
-    // ����һ��λ��ScrollPanel�е�Edit����Edit
-    // �н���MouseWheel�Ļ�����Ӧ�ù���ScrollPanel
+    // 如果焦点对象没处理，则抛给焦点对象的父对象。
+    // 例如一个位于ScrollPanel中的Edit，在Edit
+    // 中进行MouseWheel的话，则应该滚动ScrollPanel
 
     Object*  pObj = m_pFocusObject;
 	if (!pObj)
 	{
-		// û��focusʱ��ֱ�Ӹ�hover�������ð��
+		// 没有focus时，直接给hover对象进行冒泡
 		if (m_pObjHover)
 			pObj = m_pObjHover->GetParentObject();
 	}
@@ -1419,7 +1419,7 @@ long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
     return 0;
 }
 
-LRESULT  WindowMouseMgr::OnImeMsg(UINT uMsg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::OnImeMsg(unsigned int uMsg, WPARAM w, LPARAM l, BOOL* pbHandled)
 {
     if (this->m_pFocusObject)
     {
@@ -1428,11 +1428,11 @@ LRESULT  WindowMouseMgr::OnImeMsg(UINT uMsg, WPARAM w, LPARAM l, BOOL* pbHandled
     return 0;
 }
 
-// ϵͳ��������˫���¼��ǻ��ڴ��ڿͻ�����ġ�
-// ����dui�У�ÿ���ؼ������޴��ڵģ��п����ڿؼ�A�ϵ������£�Ȼ������
-// �ܵ��ؼ�B��˫���ˡ���˶�˫���¼���һ�����ˡ�
+// 系统发出来的双击事件是基于窗口客户区域的。
+// 但在dui中，每个控件都是无窗口的，有可能在控件A上单击了下，然后立即
+// 跑到控件B上双击了。因此对双击事件做一个过滤。
 //
-// return: true��һ��˫���¼�, false��Ϊ�����¼�����
+// return: true是一个双击事件, false做为单击事件处理
 bool  WindowMouseMgr::AdjustDoubleClickMessage(LPARAM l)
 {
     if (m_posPrevClick == l)

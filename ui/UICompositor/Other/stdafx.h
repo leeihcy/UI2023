@@ -36,13 +36,13 @@ using namespace std;
 #include "../UISDK/Inc/inc.h"
 #include "../common/define.h"
 #pragma comment(lib, "UISDK.lib")
-using namespace UI;
+using namespace ui;
 #include "common\math\rect.h"
 #include "common\math\color.h"
 
 #include "Inc\inc.h"
 
-namespace UI
+namespace ui
 {
 typedef struct _D3DCOLORVALUE {
 	float r;

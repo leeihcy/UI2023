@@ -10,7 +10,7 @@
 // 统一Graphics Render Library的使用，一个窗口不再混合使用，只能使用一种Graphics Render Library
 // 否则处处要考虑创建什么类型的渲染库，搞的代码很乱，逻辑也乱
 //
-namespace UI
+namespace ui
 {
 class Object;
 class WindowBase;
@@ -32,7 +32,7 @@ public:
 public:
     void  BindHWND(HWND hWnd);   
 	void  OnSerialize(SERIALIZEDATA* pData);
-    void  OnWindowSize(UINT nWidth, UINT nHeight);
+    void  OnWindowSize(unsigned int nWidth, unsigned int nHeight);
 
     bool  CreateRenderTarget(IRenderTarget** pp);
     

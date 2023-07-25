@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "customwindow.h"
-#include "Src\Renderbase\renderbase\renderbase.h"
-#include "Inc\Interface\imapattr.h"
-#include "Src\UIObject\Window\wndtransmode\layered\layeredwrap.h"
-#include "Src\UIObject\Window\wndtransmode\aero\aerowrap.h"
-#include "Src\Base\Attribute\attribute.h"
-#include "Src\Base\Attribute\enum_attribute.h"
+#include "src/Renderbase\renderbase\renderbase.h"
+#include "include/interface/imapattr.h"
+#include "src/UIObject\Window\wndtransmode\layered\layeredwrap.h"
+#include "src/UIObject\Window\wndtransmode\aero\aerowrap.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/enum_attribute.h"
 #include "window_desc.h"
-#include "Inc\Interface\ilayout.h"
+#include "include/interface/ilayout.h"
 
 CustomWindow::CustomWindow(ICustomWindow* p) : Window(p)
 {
@@ -157,7 +157,7 @@ BOOL CALLBACK EnumChildWindowsForRedraw(HWND hwnd, LPARAM lparam)
 // Remark
 //	Return Nonzero if Windows should proceed with default processing; 0 to prevent the caption bar or icon from being deactivated.
 //
-LRESULT CustomWindow::_OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long CustomWindow::_OnNcActivate(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     this->SetActive(wParam?true:false);
 
@@ -176,13 +176,13 @@ LRESULT CustomWindow::_OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 
 // 解决在经典主题下面，调用setwindowtext/seticon会导致标题栏被系统重绘
-LRESULT  CustomWindow::_OnSetTextIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnSetTextIcon(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     if (m_hWnd && IsWindowVisible())
     {
 		LONG_PTR lOldStyle = GetWindowLongPtr(m_hWnd, GWL_STYLE);
         SetWindowLongPtr(m_hWnd, GWL_STYLE, lOldStyle &~ WS_CAPTION);
-        LRESULT lRet = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+        long lRet = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
         SetWindowLongPtr(m_hWnd, GWL_STYLE, lOldStyle);
         return lRet;
     }
@@ -192,18 +192,18 @@ LRESULT  CustomWindow::_OnSetTextIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         return 0;
     }
 }
-LRESULT  CustomWindow::_OnNCUAHDrawCaption(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnNCUAHDrawCaption(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = TRUE;
     return 0;
 }
-LRESULT  CustomWindow::_OnNCUAHDrawFrame(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnNCUAHDrawFrame(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = TRUE;
     return 0;
 }
 
-LRESULT  CustomWindow::_OnDwmCompositionChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnDwmCompositionChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // Win7下面，开启Aero之后，只有带WS_CAPTION的窗口才能使用系统自带动画
     // 在切换到经典模式之后，窗口最大化/还原时，点击下标题栏区域，会显示系统
@@ -302,8 +302,8 @@ LRESULT  CustomWindow::_OnDwmCompositionChanged(UINT uMsg, WPARAM wParam, LPARAM
 //         }
 //
 //
-LRESULT  CustomWindow::_OnWindowPosChanging(
-            UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnWindowPosChanging(
+            unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     __super::_OnWindowPosChanging(uMsg, wParam, lParam, bHandled);
     LPWINDOWPOS lpPos = (LPWINDOWPOS)lParam;
@@ -362,7 +362,7 @@ LRESULT  CustomWindow::_OnWindowPosChanging(
 }
 
 // 不显示标题和边框
-LRESULT  CustomWindow::_OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnNcCalcSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // chrome: 在任务栏上右击，选择层叠等无反应
     // Let User32 handle the first nccalcsize for captioned windows
@@ -387,14 +387,14 @@ LRESULT  CustomWindow::_OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 //     if (m_pWindowTransparent)
 //     {
-//         LRESULT lRet = 0;
+//         long lRet = 0;
 //         m_pWindowTransparent->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, lRet, 0);
 //     }
     bHandled = TRUE;
     return 0;
 }
 
-LRESULT  CustomWindow::_OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  CustomWindow::_OnNcHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
     MapWindowPoints(nullptr, m_hWnd, &pt, 1);
@@ -406,7 +406,7 @@ LRESULT  CustomWindow::_OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 // 但如果一个自定义窗口的m_nMaximizeBorder很大(如100，超过边框大小）时，最大化后窗口的max值就不正确了。
 // 因此在这里对这种情况进行处理。（多屏下面允许的窗口最大值为多个屏幕的总宽度，
 // 一般没什么问题，只需要处理单屏即可）
-LRESULT CustomWindow::_OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long CustomWindow::_OnGetMinMaxInfo( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     bHandled = FALSE;  // 由windowbase继续处理
 
@@ -437,7 +437,7 @@ LRESULT CustomWindow::_OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam,
     return 0;
 }
 
-// LRESULT CustomWindow::_OnNcPaint( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+// long CustomWindow::_OnNcPaint( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 // {
 // 	bHandled = FALSE;
 // 	return 0;
@@ -574,7 +574,7 @@ int CustomWindow::OnHitTest(POINT* pt, POINT*  ptInChild)
 	if (nullptr == pt)
 		return HTERROR;
 
-	UINT nHitTest = HTCLIENT;
+	unsigned int nHitTest = HTCLIENT;
 	if (IsZoomed(m_hWnd))
     {
         // Win7下面最大化时，允许拖拽还原窗口
@@ -644,11 +644,11 @@ int CustomWindow::OnHitTest(POINT* pt, POINT*  ptInChild)
 //	
 //  另外UpdateLayeredWindow支持更平滑的窗口拉伸效果，因此对于分层窗口的拉伸是另外一套逻辑实现的
 //
-// void CustomWindow::OnLButtonDown(UINT nFlags, POINT pt)
+// void CustomWindow::OnLButtonDown(unsigned int nFlags, POINT pt)
 // {
 // 	SetMsgHandled(FALSE);
 // 
-// 	UINT nHitTest = this->OnHitTest(&pt, nullptr);
+// 	unsigned int nHitTest = this->OnHitTest(&pt, nullptr);
 // 	switch(nHitTest)
 // 	{
 // 	case HTTOPLEFT:
@@ -692,7 +692,7 @@ int CustomWindow::OnHitTest(POINT* pt, POINT*  ptInChild)
 // TODO: (没解决的了，下次再看）
 // 用于解决没有标题栏的窗口，最小化和还原的时候，没有动画的问题。
 // 没有动画也会导致窗口还原时造成闪烁(例如使用了aero效果时)
-void  CustomWindow::OnSysCommand(UINT nID, CPoint point)
+void  CustomWindow::OnSysCommand(unsigned int nID, CPoint point)
 {
 //     if (nID == SC_MINIMIZE || (nID == SC_RESTORE && IsIconic(m_hWnd)))
 //     {
@@ -710,7 +710,7 @@ void  CustomWindow::OnSysCommand(UINT nID, CPoint point)
     SetMsgHandled(FALSE);
 }
 
-void  CustomWindow::OnLButtonDblClk(UINT nFlags, POINT point)
+void  CustomWindow::OnLButtonDblClk(unsigned int nFlags, POINT point)
 {
 	SetMsgHandled(FALSE);
 	if (::IsZoomed(m_hWnd))
@@ -728,7 +728,7 @@ void  CustomWindow::OnLButtonDblClk(UINT nFlags, POINT point)
 
 // 注：不要响应UIMSG的WM_SIZE。因为在WindowBase::_OnSize中就已经开始更新窗口了，因
 //     此需要在那之前将m_bNeedToSetWindowRgn标志置上。否则将光置上标志，却错过了OnEndEraseBknd
-void  CustomWindow::virtualOnSize(UINT nType, UINT nWidth, UINT nHeight)
+void  CustomWindow::virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight)
 {
     __super::virtualOnSize(nType, nWidth, nHeight);
 

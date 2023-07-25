@@ -1,6 +1,6 @@
 #pragma once
 #include "compositor.h"
-namespace UI
+namespace ui
 {
 
 // 软件合成与硬件合成的区别：

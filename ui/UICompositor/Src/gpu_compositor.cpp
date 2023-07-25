@@ -4,7 +4,7 @@
 #include "gpu_layer.h"
 #include "d3d10\common\Effects.h" 
 #include "d3d10\common\Font.h"
-using namespace UI;
+using namespace ui;
 
 
 //////////////////////////////////////////////////////////////////////////

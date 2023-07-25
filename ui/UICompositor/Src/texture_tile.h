@@ -1,7 +1,7 @@
 #pragma once
 struct SOURCE_BITMAP_DATA;
 
-namespace UI
+namespace ui
 {
 class GpuLayerCommitContext;
 class Hard3DTransform;

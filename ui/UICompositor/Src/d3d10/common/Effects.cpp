@@ -25,7 +25,7 @@ bool Effects::Init(ID3D10Device* pDevice)
     dwShaderFlags |= D3D10_SHADER_DEBUG|D3D10_SHADER_SKIP_OPTIMIZATION;
 #endif
 
-    HRESULT  hCompileResult = S_OK;
+    HRESULT  hCompileResult = 0;
     ID3D10Blob*  pCompileBlob = nullptr;
 
 #ifdef _DEBUG

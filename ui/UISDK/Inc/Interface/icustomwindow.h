@@ -3,7 +3,7 @@
 
 #include "iwindow.h"
 
-namespace UI
+namespace ui
 {
 class CustomWindow;
 interface IWindowTransparent;
@@ -13,7 +13,7 @@ interface UIAPI_UUID(AB69FBED-6311-4980-8444-B5D880568B10) ICustomWindow
 {
 	//ICustomWindow();  // 内部直接调用ICustomWindow(CREATE_IMPL_TRUE)
 
-    void  SetWindowResizeType(UINT nType);
+    void  SetWindowResizeType(unsigned int nType);
     void  SetWindowTransparentType(WINDOW_TRANSPARENT_TYPE eMode);
     WINDOW_TRANSPARENT_TYPE  GetWindowTransparentType();
 	IWindowTransparent*  GetWindowTransparent();

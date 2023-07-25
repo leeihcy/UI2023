@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "listitem_layer.h"
-#include "Src\Base\Object\object_layer.h"
+#include "src/Base\Object\object_layer.h"
 #include "..\listctrlbase.h"
 #include "listitembase.h"
 #include "..\..\Window\windowbase.h"
 
-using namespace UI;
+using namespace ui;
 
 ListItemLayer::ListItemLayer(ListItemBase& o) : m_item(o)
 {

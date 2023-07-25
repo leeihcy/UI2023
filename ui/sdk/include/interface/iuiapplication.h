@@ -1,8 +1,9 @@
 #ifndef _IUIAPPLICATION_H_
 #define _IUIAPPLICATION_H_
 #include <functional>
-#include "../base/uidefine.h"
-#include "../base/uiapi.h"
+#include "include/common/guid/guid.h"
+#include "include/base/uidefine.h"
+#include "include/base/uiapi.h"
 
 namespace uia
 {
@@ -42,14 +43,10 @@ struct UIAPI IUIApplication
     IUIApplication();
     ~IUIApplication();
     UIApplication*  GetImpl();
+    void  Release();
 
     void Run();
     void Quit();
-
-
-
-
-	// void  Release();
 
     ISkinRes*  LoadSkinRes(const wchar_t* szSkinPath);
 	ISkinRes*  LoadSkinRes(long hInstance, int resId=-1);
@@ -59,7 +56,7 @@ struct UIAPI IUIApplication
     void  SetUIEditorPtr(IUIEditor*);
     IUIEditor*  GetUIEditorPtr();
 
-    ISkinManager&       GetSkinMgr();
+    ISkinManager&       GetSkinManager();
     ITopWindowManager*  GetTopWindowMgr();
     uia::IAnimateManager*   GetAnimateMgr();
 	IMessageFilterMgr*  GetMessageFilterMgr();

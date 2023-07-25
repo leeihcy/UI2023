@@ -5,7 +5,7 @@
 
 // 业务数据属性绑定到控件
 // 目前是采用单头文件直接引用的方式，不导出。
-namespace UI
+namespace ui
 {
 	class bindable;
 

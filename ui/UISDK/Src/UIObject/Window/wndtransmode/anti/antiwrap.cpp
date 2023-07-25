@@ -3,7 +3,7 @@
 #include "Src/UIObject/Window/customwindow.h"
 #include "Inc/Interface/imapattr.h"
 
-namespace UI
+namespace ui
 {
 
 AntiWindowWrap::AntiWindowWrap()
@@ -29,7 +29,7 @@ void  AntiWindowWrap::Init(ICustomWindow* pWnd)
 
         if (szText)
 		{
-            Util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
+            util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
 		}
 
         SAFE_RELEASE(pMapAttrib);
@@ -255,7 +255,7 @@ void  AntiWindowWrap::Enable(bool b)
 }
 
 
-LRESULT  AntiWindowWrap::_OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  AntiWindowWrap::_OnNcPaint(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = TRUE;
 	return 0;

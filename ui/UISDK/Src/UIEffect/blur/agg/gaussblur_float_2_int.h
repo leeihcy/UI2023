@@ -5,7 +5,7 @@
 // 本代码摘自agg
 // 主要用于文字阴影显示，将浮点数转成整形计算，效率上有所提升，但却带来了误差，例如纯白色的背景变成了(250,250,250);
 //
-namespace UI
+namespace ui
 {
 
 template<class T=long> 

@@ -1,7 +1,7 @@
 #ifndef IUIACCESSIBLE_H_201505031655
 #define IUIACCESSIBLE_H_201505031655
 
-namespace UI
+namespace ui
 {
 
 // 2015-5-4 22:27

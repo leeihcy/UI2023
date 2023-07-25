@@ -5,7 +5,7 @@
 // 本代码摘自agg
 // 主要用于文字阴影显示，但目前为止自己仍然无法理解这个算法实现的原理是什么
 
-namespace UI
+namespace ui
 {
 
 #define RECURSIVE_BLUR_FLAG_X_ONLY  0x0001

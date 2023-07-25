@@ -3,7 +3,7 @@
 #include <list>
 // пе╨е/╡ш й╣ож
 
-namespace UI
+namespace ui
 {
 	enum slot_type
 	{

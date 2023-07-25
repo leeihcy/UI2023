@@ -118,13 +118,13 @@ void TextureTile::Upload(RECT& rcSrc, UploadGpuBitmapInfo& source)
         static int i = 0; 
         i++;
         TCHAR szTest[256];
-        _stprintf(szTest, TEXT("c:\\AAA\\%d.dds"),i);
+        wprintf(szTest, TEXT("c:\\AAA\\%d.dds"),i);
         D3DX10SaveTextureToFile(m_pTextureBuffer, D3DX10_IFF_DDS, szTest);
 
         CImage image;
         image.Attach(source.hBitmap);
 
-        _stprintf(szTest, TEXT("c:\\AAA\\%d_(%d_%d_%d_%d).png"),i,
+        wprintf(szTest, TEXT("c:\\AAA\\%d_(%d_%d_%d_%d).png"),i,
                 rcSrc.left,rcSrc.top,rcSrc.right,rcSrc.bottom);            
         image.Save(szTest, Gdiplus::ImageFormatPNG);
         image.Detach();

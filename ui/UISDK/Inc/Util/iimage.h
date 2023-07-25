@@ -6,7 +6,7 @@ namespace Gdiplus
 	class Bitmap;
 }
 
-namespace UI
+namespace ui
 {
 class Image;
 interface UIAPI ImageWrap
@@ -21,7 +21,7 @@ interface UIAPI ImageWrap
     void  Attach(HBITMAP hBitmap, bool bHasAlphaChannel);
     HBITMAP  Detach();
     bool  Load(const TCHAR*  szPath, bool bForceAlpha=false, bool dpiscale=true);
-    bool  LoadFromResource( HINSTANCE hInstance, UINT nIDResource, TCHAR* szResourceType );
+    bool  LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource, TCHAR* szResourceType );
 	bool  CreateFromGdiplusBitmap(Gdiplus::Bitmap& bmSrc, bool bForceAlpha=false, bool dpiscale=true);
 
     BOOL  Create(int nWidth, int nHeight, int nBPP, DWORD dwFlags = 0);

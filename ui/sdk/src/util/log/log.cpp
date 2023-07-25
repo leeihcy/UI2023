@@ -1,42 +1,40 @@
-#include "util/log.h"
+#include "log.h"
+#include "inc.h"
+#include <string>
 
 namespace ui
 {
 
-String LevelToString(const LOG_LEVEL& l)
+std::wstring LevelToString(const LOG_LEVEL& l)
 {
-	static String strRet;
+	static std::wstring strRet;
 
 	switch (l)
 	{
 	case LOG_LEVEL_DEBUG:
-		return String(L" [DEBUG]   ");
+		return std::wstring(L" [DEBUG]   ");
 
 	case LOG_LEVEL_INFO:
-		return String(L" [INFO]    ");
+		return std::wstring(L" [INFO]    ");
 
 	case LOG_LEVEL_WARN:
-		return String(L" [WARN]    ");
+		return std::wstring(L" [WARN]    ");
 
 	case LOG_LEVEL_ERROR:
-		return String(L" [ERROR]   ");
+		return std::wstring(L" [ERROR]   ");
 
 	case LOG_LEVEL_FATAL:
-		return String(L" [FATAL]   ");
+		return std::wstring(L" [FATAL]   ");
 
 	default:
-		return String(L" [UNKNOWN] ");
+		return std::wstring(L" [UNKNOWN] ");
 	}
-}
-void  __cdecl UILog2(LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
-{
-    // TODO:
 }
 void  __cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...)
 {
 #ifdef _DEBUG
 	// level
-	String strInfo;
+	std::wstring strInfo;
 	strInfo.append(LevelToString(lLevel));
 
 	// content
@@ -44,7 +42,7 @@ void  __cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFu
 	va_start(argList, szFormat);
 
 	int nLength = _vsctprintf(szFormat, argList) + 1;
-	TCHAR* pszFormatStack = (TCHAR*)_malloca(nLength*sizeof(TCHAR));
+	wchar* pszFormatStack = (wchar*)_malloca(nLength*sizeof(wchar));
 	_vstprintf_s(pszFormatStack, nLength, szFormat, argList);
 	strInfo.append(pszFormatStack);
 
@@ -54,8 +52,8 @@ void  __cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFu
 
 #if 0
 	// file name, line function
-	TCHAR szLine[16] = { 0 };
-	_stprintf(szLine, TEXT("(%d) : "), lLine);
+	wchar szLine[16] = { 0 };
+	wprintf(szLine, TEXT("(%d) : "), lLine);
 
 	strInfo.append(TEXT("\t\t\t"));
 	strInfo.append(szFile);
@@ -81,4 +79,9 @@ void  UIAPI __cdecl UILogA(
 	
 }
 
+}
+
+void  __cdecl UILog2(LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
+{
+    // TODO:
 }

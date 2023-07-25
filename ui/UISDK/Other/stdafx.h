@@ -36,6 +36,6 @@ using namespace WTL;
 
 #include "Inc/inc.h"
 #include "Inc/private_inc.h"
-using namespace UI;
+using namespace ui;
 
 extern HINSTANCE g_hInstance;

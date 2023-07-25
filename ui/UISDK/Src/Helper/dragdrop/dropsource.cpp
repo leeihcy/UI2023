@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dropsource.h"
 
-namespace UI
+namespace ui
 {
 
 void  CreateDropSourceInstance(IDropSource**  pp)
@@ -32,13 +32,13 @@ HRESULT STDMETHODCALLTYPE CDropSource::QueryInterface(REFIID riid, void **ppvObj
     {
         AddRef();
         *ppvObject = static_cast<IDropSource*>(this);
-        return S_OK;
+        return 0;
     }
     else if (IsEqualIID(riid, IID_IDropSourceEx))
     {
         AddRef();
         *ppvObject = static_cast<IDropSourceEx*>(this);
-        return S_OK;
+        return 0;
     }
 
     return E_NOINTERFACE;
@@ -71,7 +71,7 @@ ULONG STDMETHODCALLTYPE CDropSource::Release(void)
 // Return Value
 //  DRAGDROP_S_CANCEL if the ESC key or right button is pressed, 
 //  or left button is raised before dragging starts. DRAGDROP_S_DROP 
-//  if a drop operation should occur. Otherwise S_OK.
+//  if a drop operation should occur. Otherwise 0.
 //
 HRESULT STDMETHODCALLTYPE CDropSource::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
 {
@@ -82,7 +82,7 @@ HRESULT STDMETHODCALLTYPE CDropSource::QueryContinueDrag(BOOL fEscapePressed, DW
     if (0== (grfKeyState&(MK_LBUTTON|MK_RBUTTON)))
         return DRAGDROP_S_DROP;
 
-    return S_OK;
+    return 0;
 }
 
 // Return Value

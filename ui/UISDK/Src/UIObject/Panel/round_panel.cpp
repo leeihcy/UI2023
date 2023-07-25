@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "round_panel.h"
-#include "Src\Util\RoundRect\roundrect.h"
+#include "src/Util\RoundRect\roundrect.h"
 #include "panel_desc.h"
-#include "Src\Base\Attribute\attribute.h"
+#include "src/attribute/attribute.h"
 
-namespace UI
+namespace ui
 {
 
 static  BufferSwitcher  s_parentBuf;

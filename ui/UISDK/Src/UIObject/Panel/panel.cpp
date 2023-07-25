@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "panel.h"
-#include "Inc\Interface\ilayout.h"
-#include "Inc\Interface\iwindow.h"
-#include "Src\Helper\layout\layout.h"
-#include "Inc\Interface\imapattr.h"
-#include "Src\UIObject\Window\windowbase.h"
-#include "Src\Base\Attribute\attribute.h"
-#include "Src\Base\Attribute\enum_attribute.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Src\Base\Attribute\stringselect_attribute.h"
-#include "Inc\Interface\irenderbase.h"
+#include "include/interface/ilayout.h"
+#include "include/interface/iwindow.h"
+#include "src/layout/layout.h"
+#include "include/interface/imapattr.h"
+#include "src/UIObject\Window\windowbase.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/enum_attribute.h"
+#include "src/application/uiapplication.h"
+#include "src/attribute/stringselect_attribute.h"
+#include "include/interface/irenderbase.h"
 
-namespace UI
+namespace ui
 {
 
 Panel::Panel(IPanel* p) : Object(p)
@@ -76,12 +76,12 @@ LAYOUTTYPE  Panel::GetLayoutType()
     return m_pLayout->GetLayoutType();
 }
 
-LRESULT Panel::OnGetLayoutPtr(UINT uMsg, WPARAM wParam, LPARAM lParam)
+long Panel::OnGetLayoutPtr(unsigned int uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return (LRESULT)m_pLayout;
+	return (long)m_pLayout;
 }
 
-void  Panel::virtualOnSize(UINT nType, UINT cx, UINT cy)
+void  Panel::virtualOnSize(unsigned int nType, unsigned int cx, unsigned int cy)
 {
 	Object::virtualOnSize(nType, cx, cy);
     if (m_pLayout)

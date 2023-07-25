@@ -2,6 +2,7 @@
 #define _UI_IMESSAGE_H_
 #include <string.h>
 #include "../base/uidefine.h"
+#include "include/common/guid/guid.h"
 
 namespace ui
 {
@@ -18,7 +19,7 @@ struct MSG {
     long lParam;
 };
 
-// 消息结构定义。系统控件仍然使用MSG，但UI控件使用UIMsg进行代码
+// 消息结构定义。系统控件仍然使uiSG，但UI控件使用UIMsg进行代码
 struct UIMSG : public MSG
 {
     UIMSG() { memset(this, 0, sizeof(UIMSG)); }

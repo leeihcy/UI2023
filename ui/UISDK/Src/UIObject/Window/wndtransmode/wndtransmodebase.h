@@ -1,8 +1,8 @@
 #pragma once
-#include "Inc\Interface\iwndtransmode.h"
+#include "include/interface/iwndtransmode.h"
 #include "Src\Base\Message\message.h"
 
-namespace UI
+namespace ui
 {
 class CustomWindow;
 interface ICustomWindow;
@@ -14,7 +14,7 @@ public:
     WndTransModeBase();
     virtual ~WndTransModeBase();
 
-    virtual BOOL  ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0)
+    virtual BOOL  ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0)
     {
         return FALSE;
     }

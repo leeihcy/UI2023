@@ -1,15 +1,15 @@
 #include "stdafx.h"
-#include "Inc\Interface\icustomwindow.h"
-#include "Src\UIObject\Window\customwindow.h"
+#include "include/interface/icustomwindow.h"
+#include "src/UIObject\Window\customwindow.h"
 
-namespace UI
+namespace ui
 {
 UI_IMPLEMENT_INTERFACE(CustomWindow, Window)
 
 // ICustomWindow::ICustomWindow() : ICustomWindow(CREATE_IMPL_TRUE) {
 // };
 
-void  ICustomWindow::SetWindowResizeType(UINT nType)         
+void  ICustomWindow::SetWindowResizeType(unsigned int nType)         
 { 
     __pImpl->SetResizeCapability(nType); 
 }

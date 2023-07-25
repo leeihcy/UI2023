@@ -563,7 +563,7 @@ void GdiplusRenderTarget::Clear(RECT* prc)
 // 	
 // }
 #if 0
-int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, UINT nFormat, IRenderFont* pRenderFont, Color col)
+int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, unsigned int nFormat, IRenderFont* pRenderFont, Color col)
 {
 	if (NULL == lpRect || lpRect->Width() <= 0 || lpRect->Height() <= 0)
 		return 0;
@@ -628,7 +628,7 @@ int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, UI
 	// Draw string.
 	Gdiplus::Status s = /*m_pGraphics->*/g.DrawString(
 		szText,
-		-1/*_tcslen(szText)*/,
+		-1/*wcslen(szText)*/,
 		pFont,
 		region,
 		&format,
@@ -696,7 +696,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // Draw string.
        g.DrawString(
             pParam->szText,
-            -1/*_tcslen(szText)*/,
+            -1/*wcslen(szText)*/,
             pFont,
             region,
             &format,
@@ -738,7 +738,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // ÒõÓ°
         gMem.DrawString(
             pParam->szText,
-            -1/*_tcslen(szText)*/,
+            -1/*wcslen(szText)*/,
             pFont,
             regionMem,
             &format,
@@ -753,7 +753,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // ÎÄ×Ö
         gMem.DrawString(
             pParam->szText,
-            -1/*_tcslen(szText)*/,
+            -1/*wcslen(szText)*/,
             pFont,
             regionMem,
             &format,
@@ -771,7 +771,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
     }
 }
 
-void  GdiplusRenderTarget::GetStringFormatByGdiFormat(UINT nFormatFlag, Gdiplus::StringFormat* p)
+void  GdiplusRenderTarget::GetStringFormatByGdiFormat(unsigned int nFormatFlag, Gdiplus::StringFormat* p)
 {
     if (nFormatFlag & DT_CENTER)
     {

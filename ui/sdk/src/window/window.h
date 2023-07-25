@@ -5,7 +5,7 @@
 #include "interface/iwindow.h"
 #include "common/signalslot/signal.h"
 #include "base/uimsg.h"
-#include "object/message.h"
+#include "object/object.h"
 #include <SkCanvas.h>
 #include <SkSurface.h>
 
@@ -22,7 +22,7 @@ struct WindowPlatform {
   virtual void Submit(sk_sp<SkSurface> sksurface) = 0;
 };
 
-class Window : public Message{
+class Window : public Object {
 public:
   Window(IWindow* p);
   ~Window();

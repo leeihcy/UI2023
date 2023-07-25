@@ -35,13 +35,13 @@
 #include "Src\atl\image.h"
 #include "Inc\Util\igifimage.h"
 
-using namespace UI;
+using namespace ui;
 #include <fstream>
 #include <math.h>
 #include <list>
 #include <vector>
 
-namespace UI
+namespace ui
 {
 #ifdef _DEBUG
 #define DEBUG_TRACE
@@ -58,7 +58,7 @@ namespace UI
 	#define GIFTRACE1_int(x,d) \
 		{ \
 			TCHAR szTrace[256] = _T(""); \
-			_stprintf(szTrace, x, d ); \
+			wprintf(szTrace, x, d ); \
 			::OutputDebugString(szTrace); \
 		} 
 #else

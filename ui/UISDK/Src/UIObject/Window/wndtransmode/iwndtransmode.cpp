@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Inc\Interface\iwndtransmode.h"
+#include "include/interface/iwndtransmode.h"
 #include "layered\layeredwrap.h"
 #include "aero\aerowrap.h"
 #include "alpha\alphawrap.h"
@@ -7,7 +7,7 @@
 #include "anti\antiwrap.h"
 #include "glow\glowwrap.h"
 
-namespace UI
+namespace ui
 {
     
 WINDOW_TRANSPARENT_TYPE  GetTransparentModeTypeFromAttr(IMapAttribute* pMapAttrib)

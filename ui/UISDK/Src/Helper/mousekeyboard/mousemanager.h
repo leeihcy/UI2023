@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 class KeyboardMgrBase;
 class WindowKeyboardMgr;
@@ -34,10 +34,10 @@ public:
     WindowBase*  GetWindowObject();
     void  SetUIApplication(UIApplication* p);
 
-    LRESULT  HandleMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    LRESULT  HandleMouseMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    LRESULT  HandleKeyboardMessage(UINT msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    LRESULT  HandleTouchMessage(UINT msg, WPARAM w, LPARAM l, BOOL& bHandled);
+    long  HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
+    long  HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
+    long  HandleKeyboardMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
+    long  HandleTouchMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL& bHandled);
     BOOL     IsDialogMessage(MSG* pMsg);
 
 	void  ClearStateDirect();
@@ -70,24 +70,24 @@ public:
     void  OnObjectRemoveInd(Object* pObj);
 
 protected:
-    LRESULT  OnMouseMove (int vkFlag, int xPos, int yPos);
-    LRESULT  OnMouseLeave(int vkFlag, int xPos, int yPos);
-    LRESULT  OnCancelMode(WPARAM, LPARAM );
-    LRESULT  OnLButtonDown(WPARAM, LPARAM, BOOL* pbHandled);
-    LRESULT  OnLButtonUp (WPARAM, LPARAM);
-    LRESULT  OnRButtonDown(WPARAM,LPARAM);
-    LRESULT  OnRButtonUp  (WPARAM,LPARAM);
-    LRESULT  OnLButtonDBClick(WPARAM,LPARAM, BOOL* pbHandled);
-    LRESULT  OnMButtonDown(WPARAM,LPARAM);
-    LRESULT  OnMButtonDBClick(WPARAM,LPARAM);
-    LRESULT  OnMButtonUp  (WPARAM,LPARAM);
-    LRESULT  OnImeMsg(UINT, WPARAM, LPARAM, BOOL* pbHandled);
+    long  OnMouseMove (int vkFlag, int xPos, int yPos);
+    long  OnMouseLeave(int vkFlag, int xPos, int yPos);
+    long  OnCancelMode(WPARAM, LPARAM );
+    long  OnLButtonDown(WPARAM, LPARAM, BOOL* pbHandled);
+    long  OnLButtonUp (WPARAM, LPARAM);
+    long  OnRButtonDown(WPARAM,LPARAM);
+    long  OnRButtonUp  (WPARAM,LPARAM);
+    long  OnLButtonDBClick(WPARAM,LPARAM, BOOL* pbHandled);
+    long  OnMButtonDown(WPARAM,LPARAM);
+    long  OnMButtonDBClick(WPARAM,LPARAM);
+    long  OnMButtonUp  (WPARAM,LPARAM);
+    long  OnImeMsg(unsigned int, WPARAM, LPARAM, BOOL* pbHandled);
     void  OnKillFocus(HWND hWndFocus);
     void  OnSetFocus();
     BOOL  OnSetCursor(WPARAM,LPARAM);
     void  OnNcDestroy();
     BOOL  OnChar(WPARAM,LPARAM);
-    BOOL  OnKeyDown(UINT nMsg, WPARAM,LPARAM);
+    BOOL  OnKeyDown(unsigned int nMsg, WPARAM,LPARAM);
     BOOL  OnKeyUp(WPARAM,LPARAM);
     long  OnMouseWheel(WPARAM, LPARAM);
     BOOL  OnGesture(LPARAM hGestureInfo);

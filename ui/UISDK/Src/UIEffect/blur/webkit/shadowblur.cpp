@@ -58,7 +58,7 @@
 		    centered on the pixel boundary between the output pixel and the one to the
 		    right) and one box blur of size 'd+1' centered on the output pixel.
 */
-namespace UI
+namespace ui
 {
 
 enum

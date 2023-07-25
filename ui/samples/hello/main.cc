@@ -20,21 +20,30 @@ int main() {
 #if 0
     mac_main();
 #else
-    ui::IUIApplication uiapp;
+    ui::IUIApplication* uiapp;
 
-    ui::ISkinRes* skinres = (ui::ISkinRes*)1;
+    // wchar szSDKVersion[64] = {0};
+    // UI::UISDKVersion::GetVersionText(szSDKVersion, 64);
+
+    CreateUIApplication(&uiapp);
+    //UICtrl_RegisterUIObject(g_pUIApplication);
+
+    ui::ISkinRes* skinres = uiapp->LoadSkinRes(
+        LR"(/Users/libo/2030/github/UI2023/ui/samples/StyleDemo/skin/Default)");
+
     ui::IWindow* pWindow = ui::IWindow::CreateInstance(skinres);
 
     ui::Rect rc = {100, 100, 500, 400};
     pWindow->Create(rc);
     pWindow->SetTitle("你好Hello!");
     pWindow->Show();
-    pWindow->DestroySignal().connect(on_window_destroy, &uiapp);
+    pWindow->DestroySignal().connect(on_window_destroy, uiapp);
     pWindow->PaintSignal().connect(on_window_paint);
 
-    uiapp.Run();
+    uiapp->Run();
 
     pWindow->Release();
+    uiapp->Release();
 
 #endif
     return 0;

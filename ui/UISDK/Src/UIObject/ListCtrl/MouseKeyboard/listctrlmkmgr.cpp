@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "listctrlmkmgr.h"
-#include "Src\UIObject\ListCtrl\listctrlbase.h"
-#include "Src\UIObject\ListCtrl\ListItemBase\listitembase.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Inc\Interface\ipanel.h"
-#include "Src\UIObject\Panel\panel.h"
-#include "Src\Helper\mousekeyboard\mkmgr.h"
+#include "src/UIObject\ListCtrl\listctrlbase.h"
+#include "src/UIObject\ListCtrl\ListItemBase\listitembase.h"
+#include "src/application/uiapplication.h"
+#include "include/interface/ipanel.h"
+#include "src/UIObject\Panel\panel.h"
+#include "src/Helper\mousekeyboard\mkmgr.h"
 
 ListCtrlMKMgrBase::ListCtrlMKMgrBase()
 {

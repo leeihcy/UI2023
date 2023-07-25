@@ -1,8 +1,8 @@
 #pragma once
-#include "Inc\Interface\iuiinterface.h"
+#include "include/interface/iuiinterface.h"
 #include "GifImage.h"
 
-namespace UI
+namespace ui
 {
 class GifTimerManager : public IWaitForHandleCallback
 {

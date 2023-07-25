@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 class  ListItemBase;
 
@@ -34,13 +34,13 @@ public:
     bool  RemoveToolTip(long lId);
     bool  ModifyToolTip(ListITemToolTipInfo* pInfo);
 
-    void  SetToolTip(LPCTSTR szText);
-    LPCTSTR  GetToolTip();
+    void  SetToolTip(const wchar_t* szText);
+    const wchar_t*  GetToolTip();
     void  ShowSingleToolTip();
     void  SetToolTipMode(LISTITEMTOOLTIPMODE eMode);
 
 protected:
-    LRESULT  OnGetToolTipInfo(WPARAM wParam, LPARAM lParam);
+    long  OnGetToolTipInfo(WPARAM wParam, LPARAM lParam);
     
     void  OnMouseMove(WPARAM wParam, LPARAM lParam);
     void  OnMouseLeave();

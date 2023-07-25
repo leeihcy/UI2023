@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "object_accessible.h"
-#include "Src\Base\Object\object.h"
-#include "Src\UIObject\Window\windowbase.h"
+#include "src/Base\Object\object.h"
+#include "src/UIObject\Window\windowbase.h"
 
-using namespace UI;
+using namespace ui;
 
 
 ObjectAccessible::ObjectAccessible(Object& o) : m_refObject(o)
@@ -53,7 +53,7 @@ HRESULT  ObjectAccessible::get_accParent(
 // 					(DWORD)CHILDID_SELF, IID_IDispatch,
 // 					(void **)ppdispParent);
 // 		}
-		return S_OK;
+		return 0;
 	}
 
 	m_refObject.GetParentObject()->CreateAccesible(&pAccessible);
@@ -61,7 +61,7 @@ HRESULT  ObjectAccessible::get_accParent(
 		return S_FALSE;
 
 	*ppdispParent = static_cast<IDispatch*>(pAccessible);
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::get_accChildCount( 
@@ -71,7 +71,7 @@ HRESULT  ObjectAccessible::get_accChildCount(
 
 	if (pcountChildren)
 		*pcountChildren = m_refObject.GetChildCount();
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::get_accChild( 
@@ -98,7 +98,7 @@ HRESULT  ObjectAccessible::get_accChild(
 		return S_FALSE;
 
 	*ppdispChild = static_cast<IDispatch*>(pAccessible);
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::get_accName(VARIANT varChild, 
@@ -127,7 +127,7 @@ HRESULT  ObjectAccessible::get_accName(VARIANT varChild,
 			*pszName = SysAllocString(pChild->GetId());
 		}
 	}
-	return (*pszName != nullptr) ? S_OK : S_FALSE;
+	return (*pszName != nullptr) ? 0 : S_FALSE;
 }
 
 HRESULT  ObjectAccessible::accNavigate( 
@@ -186,7 +186,7 @@ HRESULT  ObjectAccessible::accNavigate(
 
 	pvarEndUpAt->vt = VT_DISPATCH;
 	pvarEndUpAt->pdispVal = static_cast<IDispatch*>(p);
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::accHitTest( 
@@ -230,7 +230,7 @@ HRESULT  ObjectAccessible::accHitTest(
 	Object* pObjChildHit = WindowMouseMgr::GetObjectByPosEx(&data);
 
 	if (!pObjChildHit)
-		return S_OK;
+		return 0;
 
 #if 0
 	unsigned long lIndex = m_refObject.GetChildObjectIndex(pObjChildHit);
@@ -240,12 +240,12 @@ HRESULT  ObjectAccessible::accHitTest(
 	IAccessible* pAccessible = nullptr;
 	pObjChildHit->CreateAccesible(&pAccessible);
 	if (!pAccessible)
-		return S_OK;
+		return 0;
 
 	pvarChild->vt = VT_DISPATCH;
 	pvarChild->pdispVal = static_cast<IDispatch*>(pAccessible);
 #endif
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::accLocation( 
@@ -282,7 +282,7 @@ HRESULT  ObjectAccessible::accLocation(
 	if (pcyHeight)
 		*pcyHeight = rc.Height();
 
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::get_accDescription(VARIANT varChild,
@@ -312,12 +312,12 @@ HRESULT  ObjectAccessible::get_accDescription(VARIANT varChild,
 		return S_FALSE;
 
 	// TODO:
-// 	LPCTSTR szToolTips = pObj->GetToolTipText();
+// 	const wchar_t* szToolTips = pObj->GetToolTipText();
 // 	if (szToolTips && szToolTips[0])
 // 	{
 // 		*pszDescription = SysAllocString(szToolTips);
 // 	}
-	return S_OK;
+	return 0;
 }
 
 long  MapControlType(CONTROL_TYPE eCtrlType)
@@ -418,7 +418,7 @@ HRESULT  ObjectAccessible::get_accRole(VARIANT varChild,
 			eCtrlType = (CONTROL_TYPE)pObj->GetDescription()->GetMinorType();
 		pvarRole->lVal = MapControlType(eCtrlType);
 	}
-	return S_OK;
+	return 0;
 }
 
 HRESULT  ObjectAccessible::get_accState(VARIANT varChild, 
@@ -467,6 +467,6 @@ HRESULT  ObjectAccessible::get_accState(VARIANT varChild,
 	if (pObj->m_objState.readonly)
 		pvarState->lVal |= STATE_SYSTEM_READONLY;
 
-	return S_OK;
+	return 0;
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 // namespace GESTURE
 // {
@@ -55,7 +55,7 @@ DECLARE_HANDLE(HGESTUREINFO);
  *     argument information.
  */
 typedef struct tagGESTUREINFO {
-    UINT cbSize;                    // size, in bytes, of this structure (including variable length Args field)
+    unsigned int cbSize;                    // size, in bytes, of this structure (including variable length Args field)
     DWORD dwFlags;                  // see GF_* flags
     DWORD dwID;                     // gesture ID, see GID_* defines
     HWND hwndTarget;                // handle to window targeted by this gesture
@@ -63,7 +63,7 @@ typedef struct tagGESTUREINFO {
     DWORD dwInstanceID;             // internally used
     DWORD dwSequenceID;             // internally used
     ULONGLONG ullArguments;         // arguments for gestures whose arguments fit in 8 BYTES
-    UINT cbExtraArgs;               // size, in bytes, of extra arguments, if any, that accompany this gesture
+    unsigned int cbExtraArgs;               // size, in bytes, of extra arguments, if any, that accompany this gesture
 } GESTUREINFO, *PGESTUREINFO;
 typedef GESTUREINFO const * PCGESTUREINFO;
 
@@ -76,7 +76,7 @@ typedef GESTUREINFO const * PCGESTUREINFO;
  *     current gesture settings.
  */
 typedef struct tagGESTURENOTIFYSTRUCT {
-    UINT cbSize;                    // size, in bytes, of this structure
+    unsigned int cbSize;                    // size, in bytes, of this structure
     DWORD dwFlags;                  // unused
     HWND hwndTarget;                // handle to window targeted by the gesture
     POINTS ptsLocation;             // starting location
@@ -107,7 +107,7 @@ typedef BOOL (__stdcall *pfnGetGestureInfo)(
  */
 typedef BOOL (__stdcall *pfnGetGestureExtraArgs)(
     __in HGESTUREINFO hGestureInfo,
-    __in UINT cbExtraArgs,
+    __in unsigned int cbExtraArgs,
     __out_bcount(cbExtraArgs) PBYTE pExtraArgs);
 
 /*
@@ -182,10 +182,10 @@ typedef struct tagGESTURECONFIG {
 typedef BOOL (__stdcall *pfnSetGestureConfig)(
     __in HWND hwnd,                                     // window for which configuration is specified
     __in DWORD dwReserved,                              // reserved, must be 0
-    __in UINT cIDs,                                     // count of GESTURECONFIG structures
+    __in unsigned int cIDs,                                     // count of GESTURECONFIG structures
     __in_ecount(cIDs) PGESTURECONFIG pGestureConfig,    // array of GESTURECONFIG structures, dwIDs will be processed in the
                                                         // order specified and repeated occurances will overwrite previous ones
-    __in UINT cbSize);                                  // sizeof(GESTURECONFIG)
+    __in unsigned int cbSize);                                  // sizeof(GESTURECONFIG)
 
 
 #define GCF_INCLUDE_ANCESTORS           0x00000001      // If specified, GetGestureConfig returns consolidated configuration
@@ -199,7 +199,7 @@ typedef BOOL (__stdcall *pfnGetGestureConfig)(
                                                         // of the buffer pointed to by pGestureConfig
     __inout_ecount(*pcIDs) PGESTURECONFIG pGestureConfig,
                                                         // pointer to buffer to receive the returned array of GESTURECONFIG structures
-    __in UINT cbSize);                                  // sizeof(GESTURECONFIG)
+    __in unsigned int cbSize);                                  // sizeof(GESTURECONFIG)
 
 
 typedef BOOL (__stdcall *pfnBeginPanningFeedback)(

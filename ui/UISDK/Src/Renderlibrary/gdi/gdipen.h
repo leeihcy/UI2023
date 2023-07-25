@@ -1,8 +1,8 @@
 #pragma once
 #include "..\renderresourceimpl.h"
-#include "Inc\Interface\renderlibrary.h"
+#include "include/interface/renderlibrary.h"
 
-namespace UI
+namespace ui
 {
 class GdiPen : public IRenderResourceImpl<IRenderPen>
 {

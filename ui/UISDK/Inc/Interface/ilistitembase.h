@@ -2,7 +2,7 @@
 #define _UI_ILISTITEMBASE_H_
 #include "imessage.h"
 
-namespace UI
+namespace ui
 {
 interface IPanel;
 class ListItemBase;
@@ -98,7 +98,7 @@ UIAPI IListItemBase : public IMessage
     void  SetId(LONG_PTR n);
     int   GetItemType();
     void  SetItemType(long);
-    UINT  GetItemFlag();
+    unsigned int  GetItemFlag();
     void  SetItemFlag(int n);
     void  SetText(const TCHAR* szText);
     const TCHAR*  GetText();
@@ -131,8 +131,8 @@ UIAPI IListItemBase : public IMessage
     void  SetIconFromFile(const TCHAR* szIconPath);
     void  SetIconFromImageId(const TCHAR* szImageId);
 
-    UINT  GetItemState();
-    UINT  GetItemDelayOp();
+    unsigned int  GetItemState();
+    unsigned int  GetItemDelayOp();
     void  AddItemDelayOp(int n);
     void  RemoveDelayOp(int n);
     void  ClearDelayOp();
@@ -184,7 +184,7 @@ class CustomListItem;
 interface UIAPI ICustomListItem : public IListItemBase
 {
 	enum {FLAG = 162712129};
-	IObject*  FindControl(LPCTSTR szId);
+	IObject*  FindControl(const wchar_t* szId);
 
 	void  SetStringData(LPCSTR data);
 	LPCSTR  GetStringData();

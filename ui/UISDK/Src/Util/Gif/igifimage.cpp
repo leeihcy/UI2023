@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Inc\Util\igifimage.h"
-#include "Src\Util\Gif\GifImage.h"
-#include "Inc\Interface\iuiapplication.h"
+#include "src/Util\Gif\GifImage.h"
+#include "include/interface/iuiapplication.h"
 
 IGifImage::IGifImage(GifImageBase* p)
 {

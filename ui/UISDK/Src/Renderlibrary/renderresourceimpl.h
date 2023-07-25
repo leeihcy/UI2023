@@ -1,7 +1,7 @@
 #pragma  once
 
 // 为了实现不导出IRenderResource类，只暴露纯接口，将IRenderResource的一些实现采用模板类来实现
-namespace UI
+namespace ui
 {
 interface IRenderResource;
 

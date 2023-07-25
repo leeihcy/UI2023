@@ -1,7 +1,7 @@
 #pragma once
 #include "listctrlmkmgr.h"
 
-namespace UI
+namespace ui
 {
 
 

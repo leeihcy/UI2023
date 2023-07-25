@@ -57,7 +57,7 @@ bool  ImageWrap::Load(const TCHAR*  szPath, bool bForceAlpha, bool dpiscale)
     return true;
 }
 
-bool  ImageWrap::LoadFromResource( HINSTANCE hInstance, UINT nIDResource, TCHAR* szResourceType )
+bool  ImageWrap::LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource, TCHAR* szResourceType )
 {
     m_pImageImpl->LoadFromResource(hInstance, nIDResource, szResourceType);
     if (m_pImageImpl->IsNull())

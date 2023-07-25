@@ -10,7 +10,7 @@
 // 4. 仅win7上有效
 //
 
-namespace UI
+namespace ui
 {
 CDragFeedback*  g_pCurDragFeedback = nullptr;
 
@@ -71,14 +71,14 @@ HRESULT  CDragFeedback::GiveFeedback(DWORD dwEffect)
     {
         static HCURSOR hCursorWait = LoadCursor(nullptr, IDC_WAIT);
         SetCursor(hCursorWait);
-        return S_OK;
+        return 0;
     }
     else if (m_strPrevDescription.length())
     {
         // 普通光标 加 文本描述
         static HCURSOR hCursorArrow = LoadCursor(nullptr, IDC_ARROW);
         SetCursor(hCursorArrow);
-        return S_OK;
+        return 0;
     }
     else
     {
@@ -178,8 +178,8 @@ void  CDragFeedback::UpdateTextWnd(
 	SIZE sizeWnd = sizeText;
 
 	const int icon_text_margin = 3;
-	UINT nIconW = 0;
-	UINT nIconH = 0;
+	unsigned int nIconW = 0;
+	unsigned int nIconH = 0;
 	if (hIcon)
 	{	
 		BITMAP  bm = {0};
@@ -198,7 +198,7 @@ void  CDragFeedback::UpdateTextWnd(
     sizeWnd.cx += padding.left + padding.right;
     sizeWnd.cy += padding.top + padding.bottom;
     
-    const UINT maxWidth = 300;
+    const unsigned int maxWidth = 300;
     if (sizeWnd.cx > maxWidth)
         sizeWnd.cx = maxWidth;
 
@@ -327,7 +327,7 @@ HWND  CDragFeedback::CreateDragImageWnd(HBITMAP hBitmap, int x, int y)
 	return hWnd;
 }
 
-LRESULT CALLBACK MouseProc(
+long CALLBACK MouseProc(
 	int nCode,
     WPARAM wParam,
     LPARAM lParam
@@ -478,7 +478,7 @@ void  CDragFeedback::Unbind2DropSource(IDropSource* pDropSource)
     }
 }
 
-LRESULT UIDoDragDrop(
+long UIDoDragDrop(
 		IDataObject* pDataObject, 
 		IDropSource* pDropSource, 
 		DWORD dwOKEffect,         
@@ -491,7 +491,7 @@ LRESULT UIDoDragDrop(
     feedback.Bind2DataObject(pDataObject);
     feedback.Bind2DropSource(pDropSource);
     
-    LRESULT lRet = DoDragDrop(
+    long lRet = DoDragDrop(
 			pDataObject, pDropSource, dwOKEffect, pdwEffect);
 
     feedback.Unbind2DataObject(pDataObject);

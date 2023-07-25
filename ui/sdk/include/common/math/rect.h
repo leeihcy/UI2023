@@ -1,7 +1,8 @@
 #ifndef _UI_MATH_RECT_H_
 #define _UI_MATH_RECT_H_
+#include "include/common.h"
 
-namespace UI
+namespace ui
 {
 
 typedef struct tagRECTF
@@ -17,10 +18,10 @@ class RectF : public RECTF
 {
 public:
 //  RectF();
-// 	RectF(LPCRECT prc);
+// 	RectF(const RECT* prc);
 // 
 //  void  CopyFrom(LPRECTF pScr);
-// 	void  Set(LPCRECT prc);
+// 	void  Set(const RECT* prc);
 // 	void  Set(float _fLeft, float _fTop, float _fRight, float _fBottom);
 // 	void  Set(int _Left, int _Top, int _Right, int _Bottom);
 
@@ -28,12 +29,12 @@ public:
 	{
 		left = top = right = bottom = 0;
 	}
-	RectF(LPCRECT prc)
+	RectF(const RECT* prc)
 	{
 		Set(prc);
 	}
 
-	void  Set(LPCRECT prc)
+	void  Set(const RECT* prc)
 	{
 		left = (float)prc->left;
 		top = (float)prc->top;

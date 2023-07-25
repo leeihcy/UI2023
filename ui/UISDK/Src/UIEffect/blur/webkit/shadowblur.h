@@ -7,7 +7,7 @@
 
 
 
-namespace UI
+namespace ui
 {
 	//
 	// ²ÎÊý£º

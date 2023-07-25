@@ -1,13 +1,13 @@
 #ifndef _UI_IWINDOW_TRANSPARENT_MODE_H_
 #define _UI_IWINDOW_TRANSPARENT_MODE_H_
 
-namespace UI
+namespace ui
 {
 interface ICustomWindow;
 
 interface IWindowTransparent
 {
-    virtual BOOL  ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0) = 0;
+    virtual BOOL  ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0) = 0;
     virtual BOOL  ProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) = 0;
 
     virtual WINDOW_TRANSPARENT_TYPE  GetType() = 0;

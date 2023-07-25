@@ -1,7 +1,7 @@
 #ifndef _UI_MATH_COLOR_H_
 #define _UI_MATH_COLOR_H_
 
-namespace UI
+namespace ui
 {
 struct COLORF
 {

@@ -7,7 +7,7 @@
 #define UIAUTOMATOR_API __declspec(dllimport)
 #endif
 
-namespace UI
+namespace ui
 {
 	struct IWindow;
 

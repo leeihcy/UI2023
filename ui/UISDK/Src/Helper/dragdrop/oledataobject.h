@@ -3,7 +3,7 @@
 
 // ≤Œ’’MFC COleDataSource,  oledobj2.cpp
 
-namespace UI
+namespace ui
 {
     struct OleDataObjectItem
     {

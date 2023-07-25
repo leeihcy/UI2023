@@ -6,7 +6,7 @@
 #include "gdibrush.h"
 #include "Src\Util\RectArray\rectarray.h"
 
-namespace UI
+namespace ui
 {
 class RenderBuffer;
 

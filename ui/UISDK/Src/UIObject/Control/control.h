@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Src\Base\Object\object.h"
-#include "Inc\Interface\icontrol.h"
+#include "src/object/object.h"
+#include "include/interface/icontrol.h"
 
-namespace UI
+namespace ui
 {
 	interface IToolTipUI;
 
@@ -33,8 +33,8 @@ public:
 	void TryUpdateLayoutOnContentChanged();
 
 public:
-	LPCTSTR  GetToolTipText();
-	void  SetToolTipText(LPCTSTR szText);
+	const wchar_t*  GetToolTipText();
+	void  SetToolTipText(const wchar_t* szText);
 
 protected:
 	BOOL  OnGetToolTipInfo(TOOLTIPITEM* pItem, IToolTipUI* pUI);

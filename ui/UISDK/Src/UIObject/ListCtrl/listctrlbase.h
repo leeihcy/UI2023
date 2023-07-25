@@ -1,5 +1,5 @@
  #pragma once
-#include "Inc\Interface\ilistctrlbase.h"
+#include "include/interface/ilistctrlbase.h"
 #include "Src\UIObject\Control\control.h"
 #include "Src\UIObject\ScrollBar\scrollbarmanager.h"
 #include "ListItemLayout\listitemlayout.h"
@@ -8,7 +8,7 @@
 #include "float/float_item_mgr.h"
 #include "Reuse/listctrl_reuse.h"
 
-namespace UI
+namespace ui
 {
 class ListCtrlBase;
 interface IListItemBase;
@@ -91,29 +91,29 @@ protected:
     void  FinalRelease();
 	void  OnPaint(IRenderTarget* pRenderTarget);
     void  OnPostPaint(IRenderTarget* pRenderTarget);
-	void  OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags );
-    void  OnLButtonDown(UINT nFlags, POINT point);
-	void  OnSize( UINT nType, int cx, int cy );
-	void  OnStateChanged(UINT nMask);
+	void  OnKeyDown( unsigned int nChar, unsigned int nRepCnt, unsigned int nFlags );
+    void  OnLButtonDown(unsigned int nFlags, POINT point);
+	void  OnSize( unsigned int nType, int cx, int cy );
+	void  OnStateChanged(unsigned int nMask);
 	void  OnVScroll(int nSBCode, int nPos, IMessage* pMsgFrom);
     void  OnHScroll(int nSBCode, int nPos, IMessage* pMsgFrom);
-    LRESULT  OnInertiaVScroll(
-				UINT uMsg, WPARAM wParam, LPARAM lParam);
+    long  OnInertiaVScroll(
+				unsigned int uMsg, WPARAM wParam, LPARAM lParam);
 	void  GetDesiredSize(SIZE* pSize);
 	void  OnSerialize(SERIALIZEDATA* pData);
-    LRESULT  OnHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam);
-    BOOL  OnMouseWheel(UINT nFlags, short zDelta, POINT pt);
+    long  OnHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam);
+    BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
     HANDLED_VALUE  OnDrawItem(
 				IRenderTarget* pRenderTarget, ListItemBase* p);
-    LRESULT  OnDelayRemoveItem(WPARAM w, LPARAM l);
-    LRESULT  OnGesturePan(UINT, WPARAM, LPARAM);
+    long  OnDelayRemoveItem(WPARAM w, LPARAM l);
+    long  OnGesturePan(unsigned int, WPARAM, LPARAM);
 
 public:
 	// 公用接口
     bool  AddItem(ListItemBase* pItem);
     bool  InsertItem(
             ListItemBase* pItem, 
-            UINT nPos);
+            unsigned int nPos);
     bool  InsertItem(
             ListItemBase* pItem, 
             ListItemBase* pInsertAfter);
@@ -142,18 +142,18 @@ public:
 	int   GetItemCount() { return m_nItemCount; }
     int   GetVisibleItemCount();
     int   GetRootItemCount();
-	LPCTSTR   GetItemText(ListItemBase* pItem);
+	const wchar_t*   GetItemText(ListItemBase* pItem);
 	
-	ListItemBase*  GetItemByPos(UINT i, bool bVisibleOnly=true);
+	ListItemBase*  GetItemByPos(unsigned int i, bool bVisibleOnly=true);
     int  GetItemPos(ListItemBase*, bool bVisibleOnly = true);
     ListItemBase*  GetItemByWindowPoint(POINT pt);
     ListItemBase*  GetItemUnderCursor();
     ListItemBase*  GetItemById(long lId);
     ListItemBase*  FindItemByText(
-            LPCTSTR  szText, 
+            const wchar_t*  szText, 
             ListItemBase* pStart=nullptr);
     ListItemBase*  FindChildItemByText(
-            LPCTSTR  szText, 
+            const wchar_t*  szText, 
             ListItemBase* pParent=nullptr, 
             ListItemBase* pStart=nullptr);
 	ListItemBase*  GetFirstItem();
@@ -220,7 +220,7 @@ public:
 
 	// Custom List Item
 	CustomListItem*  InsertCustomItem(
-			LPCTSTR  szLayoutName,
+			const wchar_t*  szLayoutName,
 			long lId,
 			IListItemBase* pParent = UITVI_ROOT, 
 			IListItemBase* pInsertAfter = UITVI_LAST);
@@ -248,7 +248,7 @@ public:
 	ListItemBase*  GetFirstSelectItem() { 
             return m_pFirstSelectedItem; }
 	ListItemBase*  GetLastSelectItem();
-    UINT  GetSelectedItemCount();
+    unsigned int  GetSelectedItemCount();
     bool  IsSelectMulti();
     void  SelectAll(bool bUpdate);
 
@@ -385,7 +385,7 @@ protected:
     short  m_nVertSpacing;                   // 行间距
     short  m_nHorzSpacing;                   // 横向间距
     int    m_nChildNodeIndent;               // 子结点缩进
-    UINT   m_nItemCount;                     // 列表项数量
+    unsigned int   m_nItemCount;                     // 列表项数量
     long   m_nItemHeight;                    // 列表项的高度
 
     // auto size列表框的最小尺寸，包括nonclient region。
@@ -436,14 +436,14 @@ public:
     signal<IListCtrlBase*, IListItemBase*>  dbclick;
 
 	// 键盘消息 vKey / bool是否已处理
-	signal<IListCtrlBase*, UINT, bool&>  keydown;
+	signal<IListCtrlBase*, unsigned int, bool&>  keydown;
 #else
 	signal2<IListCtrlBase*, IListItemBase*>  rclick;
 	signal2<IListCtrlBase*, IListItemBase*>  mclick;
 	signal2<IListCtrlBase*, IListItemBase*>  dbclick;
 
 	// 键盘消息 vKey / bool是否已处理
-	signal3<IListCtrlBase*, UINT, bool&>  keydown;
+	signal3<IListCtrlBase*, unsigned int, bool&>  keydown;
 #endif
     
 };

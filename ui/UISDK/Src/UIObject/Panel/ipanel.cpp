@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Inc\Interface\ipanel.h"
-#include "Src\UIObject\Panel\panel.h"
+#include "include/interface/ipanel.h"
+#include "src/UIObject\Panel\panel.h"
 #include "round_panel.h"
 
-namespace UI
+namespace ui
 {
 UI_IMPLEMENT_INTERFACE(Panel, Object)
 UI_IMPLEMENT_INTERFACE(RoundPanel, Panel)

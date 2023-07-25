@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Inc\Interface\ipanel.h"
-#include "Src\Base\Object\object.h"
+#include "include/interface/ipanel.h"
+#include "src/object/object.h"
 #include "panel_desc.h"
 
 
-namespace UI
+namespace ui
 {
 
 class Panel : public Object
@@ -39,12 +39,12 @@ public:
 	}
 
 protected:
-	virtual void  virtualOnSize(UINT nType, UINT nWidth, UINT nHeight) override;
+	virtual void  virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight) override;
 
 	void  OnEraseBkgnd(IRenderTarget*);
 	void  OnPaint(IRenderTarget* pRenderTarget);
     void  OnPostPaint(IRenderTarget* pRenderTarget);
-	LRESULT  OnGetLayoutPtr(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	long  OnGetLayoutPtr(unsigned int uMsg, WPARAM wParam, LPARAM lParam);
 	void  OnSerialize(SERIALIZEDATA* pData);
 	void  OnGetDesiredSize(SIZE* pSize);  // √¸√˚Œ™On,±‹√‚”Îobject::GetDesiredSize≥ÂÕª 
 private:

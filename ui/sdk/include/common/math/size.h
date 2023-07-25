@@ -1,7 +1,7 @@
 #ifndef _UI_MATH_SIZE_H_
 #define _UI_MATH_SIZE_H_
 
-namespace UI
+namespace ui
 {
 
 struct SIZEF

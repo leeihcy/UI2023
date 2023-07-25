@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Inc\Interface\icontrol.h"
-#include "Src\UIObject\Control\control.h"
+#include "include/interface/icontrol.h"
+#include "src/UIObject\Control\control.h"
 
-using namespace UI;
+using namespace ui;
 
 UI_IMPLEMENT_INTERFACE(Control, Object)
 
@@ -32,11 +32,11 @@ ITextRenderBase*  IControl::CreateDefaultTextRender()
     return __pImpl->CreateDefaultTextRender();
 }
 
-LPCTSTR  IControl::GetToolTipText()
+const wchar_t*  IControl::GetToolTipText()
 {
     return __pImpl->GetToolTipText();
 }
-void  IControl::SetToolTipText(LPCTSTR szText)
+void  IControl::SetToolTipText(const wchar_t* szText)
 {
     __pImpl->SetToolTipText(szText);
 }

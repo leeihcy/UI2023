@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Inc\Interface\ilistitembase.h"
+#include "include/interface/ilistitembase.h"
 #include "listitembase.h"
 #include "..\CustomItem\custom_listitem.h"
 
-using namespace UI;
+using namespace ui;
 
 UI_IMPLEMENT_INTERFACE(ListItemBase, Message);
 UI_IMPLEMENT_INTERFACE(CustomListItem, ListItemBase);
@@ -237,7 +237,7 @@ void  IListItemBase::SetToolTip(const TCHAR* szText)
 {
     return __pImpl->SetToolTip(szText); 
 }
-UINT  IListItemBase::GetItemFlag()                                            
+unsigned int  IListItemBase::GetItemFlag()                                            
 {
     return __pImpl->GetItemFlag(); 
 }
@@ -333,7 +333,7 @@ void  IListItemBase::SetIconFromImageId(const TCHAR* szImageId)
     __pImpl->SetIconFromImageId(szImageId); 
 }
 
-UINT  IListItemBase::GetItemState()                                           
+unsigned int  IListItemBase::GetItemState()                                           
 { 
     return __pImpl->GetItemState(); 
 }
@@ -465,7 +465,7 @@ int   IListItemBase::GetItemRenderState()
 {
     return (int)UISendMessage(this, UI_LISTITEM_MSG_GETRENDERSTATE); 
 }
-UINT  IListItemBase::GetItemDelayOp()                                         
+unsigned int  IListItemBase::GetItemDelayOp()                                         
 {
     return __pImpl->GetItemDelayOp(); 
 }
@@ -500,7 +500,7 @@ void  IListItemBase::Invalidate()
 }
 //////////////////////////////////////////////////////////////////////////
 
-IObject*  ICustomListItem::FindControl(LPCTSTR szId)
+IObject*  ICustomListItem::FindControl(const wchar_t* szId)
 {
 	return __pImpl->FindControl(szId);
 }

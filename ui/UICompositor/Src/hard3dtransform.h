@@ -3,7 +3,7 @@
 #include "../common/math/quad.h"
 #include "../common/math/matrix.h"
 
-namespace UI
+namespace ui
 {
 
 class Hard3DTransform : public IRenderLayerTransform3D

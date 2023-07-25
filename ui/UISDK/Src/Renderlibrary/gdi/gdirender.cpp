@@ -442,7 +442,7 @@ void  GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect& rcText, DRAWTE
     // 文字会将255->0，因此再inverse一次，即可拿到只有文字的内存图片
     FillAlpha255(hMemDC, &rcMemText);
     // 阴影
-    ::DrawText(hMemDC, pParam->szText, _tcslen(pParam->szText), 
+    ::DrawText(hMemDC, pParam->szText, wcslen(pParam->szText), 
         (RECT*)&rcMemText, pParam->nFormatFlag);
     InverseAlpha(hMemDC, &rcMemText);
 
@@ -470,7 +470,7 @@ void  GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect& rcText, DRAWTE
     oldColor = ::SetTextColor(hDC, color);
     hOldFont = (HFONT)::SelectObject(hDC, hFont);
 
-    ::DrawText(hDC, pParam->szText, _tcslen(pParam->szText),
+    ::DrawText(hDC, pParam->szText, wcslen(pParam->szText),
         (LPRECT)&rcText, pParam->nFormatFlag);
 
     ::SetTextColor(hDC, oldColor);
@@ -494,7 +494,7 @@ void  GdiRenderTarget::draw_string_endalphamask(
 
     int nWidth = prcText->right-prcText->left;
     int nHeight = prcText->bottom-prcText->top;
-    uint nTextLength = _tcslen(pParam->szText);
+    uint nTextLength = wcslen(pParam->szText);
     HDC hDC = GetHDC();
 
     // 如果指定的区域内能够显示下这些文本，直接绘制即可
@@ -552,7 +552,7 @@ void  GdiRenderTarget::draw_string_endalphamask(
             _FixAlpha(
                 hMemDC, 
                 &rc, 
-                Util::SET_ALPHA_VALUE_IF_ALPHA_IS_255, 
+                util::SET_ALPHA_VALUE_IF_ALPHA_IS_255, 
                 lAlpha);
 
             rc.left--;
@@ -561,7 +561,7 @@ void  GdiRenderTarget::draw_string_endalphamask(
     }
 
     // alpha blend要求预乘
-    Util::PreMultiAlpha(hMemBmp, &rcMem,
+    util::PreMultiAlpha(hMemBmp, &rcMem,
         CacheBitmap::GetInstance()->IsTopdowmBitmap());
 
     BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
@@ -600,7 +600,7 @@ void  GdiRenderTarget::draw_string_normal(
     ::DrawText(
 		hDC, 
 		pParam->szText, 
-		(int)_tcslen(pParam->szText),
+		(int)wcslen(pParam->szText),
 		prcText,
 		pParam->nFormatFlag);
 
@@ -646,7 +646,7 @@ void GdiRenderTarget::DrawRect(LPRECT lprc, UI::Color* pColor)
     //     if (pColor->a != 255)
     //     {
     //         HBITMAP hBitmap = (HBITMAP)GetCurrentObject(hDC, OBJ_BITMAP);
-    //         Util::PreMultiAlpha(
+    //         util::PreMultiAlpha(
     //                 hBitmap, lprc, RenderBuffer::IsTopDownBitmap());
     //     }
     }
@@ -781,11 +781,11 @@ void GdiRenderTarget::DrawPolyline(POINT* lppt, int nCount, IRenderPen* pPen)
 
 void GdiRenderTarget::GradientFillH(LPRECT lprc, COLORREF colFrom, COLORREF colTo )
 {
-//	Util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
+//	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
 }
 void GdiRenderTarget::GradientFillV(LPRECT lprc, COLORREF colFrom, COLORREF colTo )
 {
-//	Util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
+//	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
 }
 
 void GdiRenderTarget::BitBlt(int xDest, int yDest, int wDest, int hDest, IRenderTarget* pSrcHDC, int xSrc, int ySrc, DWORD dwRop)
@@ -1470,23 +1470,23 @@ void  GdiRenderTarget::Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCoun
 // 决定，能不采用gdi+画文本就不采用
 void  GdiRenderTarget::FixAlpha0To255(HDC hDC, LPCRECT lpRect)
 {
-    _FixAlpha(hDC, lpRect, Util::SET_ALPHA_255_IF_ALPHA_IS_0, 0);
+    _FixAlpha(hDC, lpRect, util::SET_ALPHA_255_IF_ALPHA_IS_0, 0);
 }
 
 void  GdiRenderTarget::FillAlpha255(HDC hDC, LPCRECT lpRect)
 {
-    _FixAlpha(hDC, lpRect, Util::SET_ALPHA_255, 0);
+    _FixAlpha(hDC, lpRect, util::SET_ALPHA_255, 0);
 }
 void  GdiRenderTarget::FillAlphaValue(HDC hDC, LPCRECT lpRect, WPARAM w)
 {
-	_FixAlpha(hDC, lpRect, Util::SET_ALPHA_VALUE, w);
+	_FixAlpha(hDC, lpRect, util::SET_ALPHA_VALUE, w);
 }
 void  GdiRenderTarget::InverseAlpha(HDC hDC, LPCRECT lpRect)
 {
-    _FixAlpha(hDC, lpRect, Util::SET_ALPHA_INVERSE_0_255, 0);
+    _FixAlpha(hDC, lpRect, util::SET_ALPHA_INVERSE_0_255, 0);
 }
 void  GdiRenderTarget::_FixAlpha(
-	HDC hDC, LPCRECT lpRect, Util::FixAlphaMode e, WPARAM wParam)
+	HDC hDC, LPCRECT lpRect, util::FixAlphaMode e, WPARAM wParam)
 {
     RECT rc = *lpRect;
 
@@ -1498,11 +1498,11 @@ void  GdiRenderTarget::_FixAlpha(
     ::GetViewportOrgEx(hDC, &ptOffset);
     ::OffsetRect(&rc, ptOffset.x, ptOffset.y);
 
-    Util::FixAlphaData data = {0};
+    util::FixAlphaData data = {0};
     data.bTopDownDib = RenderBuffer::IsTopDownBitmap();
     data.hDC = hDC;
     data.lprc = &rc;
     data.eMode = e;
 	data.wParam = wParam;
-    Util::FixBitmapAlpha(&data);
+    util::FixBitmapAlpha(&data);
 }

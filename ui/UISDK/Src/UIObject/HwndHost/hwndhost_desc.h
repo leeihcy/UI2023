@@ -1,6 +1,6 @@
 #pragma once
-#include "Inc\Interface\iobjectdescription.h"
-#include "Inc\Interface\ihwndhost.h"
+#include "include/interface/iobjectdescription.h"
+#include "include/interface/ihwndhost.h"
 
 class HwndHostDescription : public IObjectDescription
 {

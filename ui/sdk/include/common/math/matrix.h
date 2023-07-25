@@ -4,13 +4,15 @@
 #include "rect.h"
 #include "quad.h"
 
+#include "include/base/uidefine.h"
+
 // 一个3D变换测试网页
 // http://ie.microsoft.com/testdrive/Graphics/hands-on-css3/hands-on_3d-transforms.htm
 // 变换矩阵数学公式
 // http://www.w3.org/TR/css3-transforms/#mathematical-description
 // 3d变换阐述
 // https://dev.opera.com/articles/understanding-3d-transforms/
-namespace UI
+namespace ui
 {
 
 typedef struct tagMATRIX33
@@ -56,7 +58,7 @@ public:
 
 public:
 	void  Set(LPMATRIX33 p);
-	void  CopyTo(__out LPMATRIX33 p);
+	void  CopyTo(LPMATRIX33 p);
 	void  Identity();
 	bool  IsIdentity();
 	bool  IsIdentityOrTranslation();
@@ -81,7 +83,7 @@ public:
 
 public:
 	void  Set(LPMATRIX44 p);
-	void  CopyTo(__out LPMATRIX44 p);
+	void  CopyTo(LPMATRIX44 p);
 	void  Identity();
     bool  IsIdentity();
 	bool  IsIdentityOrTranslation();
@@ -97,7 +99,7 @@ public:
 	Matrix44&  Rotate(float x, float y, float z, float angle);
 	Matrix44&  Multiply(MATRIX44& m);
 	
-	void  ToMatrix33(__out LPMATRIX33 p);
+	void  ToMatrix33(LPMATRIX33 p);
 	void  MakeAffine();
 	
 	bool  ProjectPoint(POINT* pt, POINT* pOut);

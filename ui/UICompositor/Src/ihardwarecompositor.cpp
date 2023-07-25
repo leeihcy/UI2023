@@ -3,7 +3,7 @@
 #include "gpu_layer.h"
 #include "d3d10\d3dapp.h"
 #include "hard3dtransform.h"
-using namespace UI;
+using namespace ui;
 
 /*
 IHardwareComposition::IHardwareComposition()

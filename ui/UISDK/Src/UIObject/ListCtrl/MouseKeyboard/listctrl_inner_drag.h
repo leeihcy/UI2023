@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 class ListItemBase;
 class ListCtrlBase;

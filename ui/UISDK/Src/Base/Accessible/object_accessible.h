@@ -2,7 +2,7 @@
 #include "accessibleimpl.h"
 #include "..\Object\object.h"
 
-namespace UI
+namespace ui
 {
 
 class ObjectAccessible : public IUIAccessible

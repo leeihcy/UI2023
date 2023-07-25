@@ -2,7 +2,7 @@
 #include "wndtransmodebase.h"
 #include "Src/UIObject/Window/customwindow.h"
 
-namespace UI
+namespace ui
 {
 
 WndTransModeBase::WndTransModeBase():Message(nullptr)

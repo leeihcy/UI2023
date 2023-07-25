@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "windowrender.h"
-#include "Src\Base\Object\object.h"
-#include "Src\UIObject\Window\windowbase.h"
-#include "Inc\Interface\iwndtransmode.h"
-#include "Inc\Interface\irenderlayer.h"
-#include "Src\Base\Attribute\attribute.h"
-#include "Src\Base\Attribute\enum_attribute.h"
+#include "src/Base\Object\object.h"
+#include "src/UIObject\Window\windowbase.h"
+#include "include/interface/iwndtransmode.h"
+#include "include/interface/irenderlayer.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/enum_attribute.h"
 
-#include "Src\Layer\hardware_compositor.h"
-#include "Src\Layer\software_compositor.h"
+#include "src/Layer\hardware_compositor.h"
+#include "src/Layer\software_compositor.h"
 #include "..\Util\Stopwatch\stopwatch.h"
 #include "..\UIObject\ListCtrl\ListItemBase\listitembase.h"
 
-using namespace UI; 
+using namespace ui; 
 
 WindowRender::WindowRender(WindowBase*  p)
 {
@@ -116,7 +116,7 @@ bool  WindowRender::CreateRenderTarget(IRenderTarget** pp)
 // 	Commit(hDC, prcDamageArray, nCount);
 // }
 
-void WindowRender::OnWindowSize(UINT nWidth, UINT nHeight)
+void WindowRender::OnWindowSize(unsigned int nWidth, unsigned int nHeight)
 {
 //     if (m_pHardwareComposition)
 //         m_pHardwareComposition->Resize(nWidth, nHeight);

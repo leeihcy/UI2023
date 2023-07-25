@@ -1,7 +1,7 @@
 #pragma once
-#include "Inc\Interface\iuiinterface.h"
+#include "include/interface/iuiinterface.h"
 
-namespace UI
+namespace ui
 {
 	class WaitForHandlesMgr;
 

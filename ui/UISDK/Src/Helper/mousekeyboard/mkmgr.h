@@ -1,7 +1,7 @@
 #pragma once
 
 // mouse keyboard manager
-namespace UI
+namespace ui
 {
 class Object;
 class UIApplication;

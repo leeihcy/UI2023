@@ -1,7 +1,7 @@
 #pragma once
-#include "Inc\Interface\ilistctrlbase.h"
+#include "include/interface/ilistctrlbase.h"
 
-namespace UI
+namespace ui
 {
 
 
@@ -19,7 +19,7 @@ public:
 
 	void  OnPaint(UI::IRenderTarget*);
 
-	void  makeView(LPCTSTR identify);
+	void  makeView(const wchar_t* identify);
 
 	//visibleCells[]
 	//reusableCells[]

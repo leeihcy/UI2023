@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
-#include "Inc\Interface\iwindow.h"
-#include "Src\Renderlibrary\gdi\gdibitmap.h"
-#include "Src\Renderlibrary\gdi\gdirender.h"
-#include "Src\Base\Object\object.h"
+#include "include/interface/iwindow.h"
+#include "src/Renderlibrary\gdi\gdibitmap.h"
+#include "src/Renderlibrary\gdi\gdirender.h"
+#include "src/Base\Object\object.h"
 
 void RenderBitmapFactory::CreateInstance(IUIApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut)
 {
@@ -101,7 +101,7 @@ void RenderBitmapFactory::CreateInstance(IUIApplication* pUIApp, GRAPHICS_RENDER
  
 
 //////////////////////////////////////////////////////////////////////////
-namespace UI
+namespace ui
 {
 
 // IRenderTarget* 没有引用计数机制

@@ -3,7 +3,7 @@
 
 #include "iobject.h"
 
-namespace UI
+namespace ui
 {
 interface ILayout;
 interface IObject;

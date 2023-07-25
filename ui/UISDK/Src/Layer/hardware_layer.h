@@ -1,7 +1,7 @@
 #pragma once
 #include "layer.h"
 #if 1//ENABLE_HARDCOMPOSITION
-namespace UI
+namespace ui
 {
 class GpuLayerCommitContext;
 

@@ -6,7 +6,7 @@
 
 // WHERE_NOONE_CAN_SEE_ME
 #define WINDOWS_MINIMIZED_POINT  -32000  // 窗口最小化后，window传递给我们的位置
-namespace UI
+namespace ui
 {
 
 
@@ -46,15 +46,15 @@ void  LayeredWindowWrap::GetWindowPos()
 
 
 // 模拟拖拽窗口拉伸过程
-void  LayeredWindowWrap::OnLButtonDown(UINT nHitTest)
+void  LayeredWindowWrap::OnLButtonDown(unsigned int nHitTest)
 {
     OnEnterSizeMove(nHitTest);
 }
-void  LayeredWindowWrap::OnLButtonUp(UINT nFlags, POINT point)
+void  LayeredWindowWrap::OnLButtonUp(unsigned int nFlags, POINT point)
 {
     OnExitSizeMove();
 }
-void  LayeredWindowWrap::OnMouseMove(UINT nFlags, POINT point)
+void  LayeredWindowWrap::OnMouseMove(unsigned int nFlags, POINT point)
 {
     if (0 == m_nHitTestFlag)
         return;
@@ -223,7 +223,7 @@ void  LayeredWindowWrap::OnMouseMove(UINT nFlags, POINT point)
     }
     UpdateLayeredCaptionWindowRgn();
 }
-void  LayeredWindowWrap::OnEnterSizeMove(UINT nHitTest)
+void  LayeredWindowWrap::OnEnterSizeMove(unsigned int nHitTest)
 {
 	HWND hWnd = GetHWND();
 
@@ -334,7 +334,7 @@ bool LayeredWindowWrap::Commit()
 // 注：在这里没有使用响应WM_SHOWWINDOW来通过分层窗口刷新，因为在响应WM_SHOWWINDOW的时候，IsWindowVisible还是FALSE
 //     因此改用OnWindowPosChanged来得到窗口显示的时机，通过分层窗口刷新
 //   
-// LRESULT LayeredWindowWrap::_OnWindowPosChanging( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+// long LayeredWindowWrap::_OnWindowPosChanging( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 // {
 //     bHandled = FALSE;
 //     LPWINDOWPOS lpWndPos = (LPWINDOWPOS)lParam;
@@ -356,7 +356,7 @@ bool LayeredWindowWrap::Commit()
 //
 //	通知分层窗口新的位置和大小
 //
-LRESULT LayeredWindowWrap::_OnWindowPosChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long LayeredWindowWrap::_OnWindowPosChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 	LPWINDOWPOS lpWndPos = (LPWINDOWPOS)lParam;
@@ -365,7 +365,7 @@ LRESULT LayeredWindowWrap::_OnWindowPosChanged(UINT uMsg, WPARAM wParam, LPARAM 
 	return 0;
 }
 
-LRESULT  LayeredWindowWrap::_OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  LayeredWindowWrap::_OnSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 	UpdateLayeredCaptionWindowRgn();
@@ -406,7 +406,7 @@ void  LayeredWindowWrap::OnWindowPosChanged(LPWINDOWPOS lpWndPos)
     }
 }
 
-LRESULT LayeredWindowWrap::_OnCancelMode( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long LayeredWindowWrap::_OnCancelMode( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     bHandled = FALSE;
     OnExitSizeMove();
@@ -414,17 +414,17 @@ LRESULT LayeredWindowWrap::_OnCancelMode( UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 // 分层窗口不使用NC那套拖拽机制，不平滑
-LRESULT  LayeredWindowWrap::_OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  LayeredWindowWrap::_OnNcHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return HTCLIENT;
 }
-LRESULT  LayeredWindowWrap::_OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  LayeredWindowWrap::_OnSetCursor(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     POINT pt;
     ::GetCursorPos(&pt);
     ::MapWindowPoints(nullptr, GetHWND(), &pt,1);
 
-    UINT nHitTest = m_pWindow->OnHitTest(&pt, nullptr);
+    unsigned int nHitTest = m_pWindow->OnHitTest(&pt, nullptr);
     if (nHitTest != HTCLIENT)
     {
         m_pWindow->SetCursorByHitTest(nHitTest);
@@ -437,9 +437,9 @@ LRESULT  LayeredWindowWrap::_OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam
 //	
 //  另外UpdateLayeredWindow支持更平滑的窗口拉伸效果，因此对于分层窗口的拉伸是另外一套逻辑实现的
 //
-void LayeredWindowWrap::OnLButtonDown(UINT nFlags, POINT pt)
+void LayeredWindowWrap::OnLButtonDown(unsigned int nFlags, POINT pt)
 {
-    UINT nHitTest = m_pWindow->OnHitTest(&pt, nullptr);
+    unsigned int nHitTest = m_pWindow->OnHitTest(&pt, nullptr);
 
     switch(nHitTest)
     {

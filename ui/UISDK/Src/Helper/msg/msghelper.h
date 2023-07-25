@@ -1,8 +1,8 @@
 #pragma once
 #include "Src\Util\DataStruct\list.h"
-#include "Inc\Interface\iuiinterface.h"
+#include "include/interface/iuiinterface.h"
 
-namespace UI
+namespace ui
 {
 class UIApplication;
 // 创建一个隐藏消息窗口，用于实现post ui message
@@ -10,7 +10,7 @@ class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
 {
 public:
 	ForwardPostMessageWindow(UIApplication* pUIApp) { m_pUIApplication = pUIApp; }
-	BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0);
+	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0);
 
 protected:
 	UIApplication*  m_pUIApplication;

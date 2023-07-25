@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "aerowrap.h"
-#include "Src\UIObject\Window\customwindow.h"
-#include "Inc\Interface\imapattr.h"
+#include "src/UIObject\Window\customwindow.h"
+#include "include/interface/imapattr.h"
 
-namespace UI
+namespace ui
 {
 AeroWindowWrap::AeroWindowWrap()
 {
@@ -61,7 +61,7 @@ void  AeroWindowWrap::Init(ICustomWindow* pWnd)
             {
 				// 注： 如果这个值过小，会导致窗口四个圆角变形！建议至少为5? 7?
                 RECT rc;
-                if (Util::TranslateRECT(szText, &rc, XML_SEPARATOR))
+                if (util::TranslateRECT(szText, &rc, XML_SEPARATOR))
                 {
                     trans.m_margins.cxLeftWidth = rc.left;
                     trans.m_margins.cxRightWidth = rc.right;
@@ -81,14 +81,14 @@ void  AeroWindowWrap::Init(ICustomWindow* pWnd)
             szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_AERO_BLUR_REGION, false);
             if (szText)
             {
-                Util::TranslateRECT(szText, &blur.m_regionBlur, XML_SEPARATOR);
+                util::TranslateRECT(szText, &blur.m_regionBlur, XML_SEPARATOR);
             }
             pMapAttrib->GetAttr_bool(XML_WINDOW_TRANSPARENT_AERO_BLUR_AUTOCLIPCHILDCTRL, false, &blur.m_bAutoClipChildCtrl);
         }
     }
 }
 
-LRESULT  AeroWindowWrap::_OnDwmCompositionChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  AeroWindowWrap::_OnDwmCompositionChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     Enable(true);
     m_pWindow->m_bNeedToSetWindowRgn = true;
@@ -314,14 +314,14 @@ void  AeroWindowWrap::UpdateRgn()
 					blur.m_regionBlur.bottom == -1
 					)
 				{
-					if (Util::IsWin8OrLater())
+					if (util::IsWin8OrLater())
 						hRgn = CreateRectRgn(-1, -1, 0, 0);
 					else
 						hRgn = CreateRectRgnIndirect(&rcClient);
 				}
 				else
 				{
-					if (Util::IsWin8OrLater())
+					if (util::IsWin8OrLater())
 					{
 // 						HRGN hRgnFull = CreateRectRgnIndirect(&rcClient);
 // 						rcClient.DeflateRect(blur.m_regionBlur.left,

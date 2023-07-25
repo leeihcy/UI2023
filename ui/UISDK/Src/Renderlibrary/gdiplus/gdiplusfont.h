@@ -3,7 +3,7 @@
 #include "UISDK\Kernel\Src\Renderlibrary\renderresourceimpl.h"
 
 namespace Gdiplus { class Font; }
-namespace UI
+namespace ui
 {
 class  GdiplusRenderFont : public IRenderResourceImpl<IRenderFont>
 {
@@ -23,7 +23,7 @@ public:
 	virtual HFONT   Detach();
 	virtual bool    IsAttach();
 
-	virtual UINT    GetCaretHeight( );
+	virtual unsigned int    GetCaretHeight( );
 	virtual SIZE    MeasureString( const TCHAR* szText, int nLimitWidth = -1 );
 
 	virtual HFONT   GetHFONT();

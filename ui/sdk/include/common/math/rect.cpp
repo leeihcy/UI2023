@@ -1,18 +1,18 @@
-#include "stdafx.h"
+#include "include/inc.h"
 #include "UISDK\Kernel\Inc\Util\math\rect.h"
 
-using namespace UI;
+using namespace ui;
 
 RectF::RectF()
 {
 	left = top = right = bottom = 0;
 }
-RectF::RectF(LPCRECT prc)
+RectF::RectF(const RECT* prc)
 {
 	Set(prc);
 }
 
-void  RectF::Set(LPCRECT prc)
+void  RectF::Set(const RECT* prc)
 {
 	left = (float)prc->left;
 	top = (float)prc->top;

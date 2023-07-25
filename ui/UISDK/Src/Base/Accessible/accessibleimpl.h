@@ -2,7 +2,7 @@
 #include "iuiaccessible.h"
 
 
-namespace UI
+namespace ui
 {
 class AccessibleImpl : public IAccessible
 {
@@ -95,20 +95,20 @@ public:
 
 #pragma region // IDispatch
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
-		__RPC__out UINT *pctinfo) override 
+		__RPC__out unsigned int *pctinfo) override 
 	{
 		return E_NOTIMPL;
 	}
 
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
-		UINT iTInfo,
+		unsigned int iTInfo,
 		LCID lcid,
 		ITypeInfo **ppTInfo) override NOTIMPL;
 
 	virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
 		REFIID riid,
 		LPOLESTR *rgszNames,
-		UINT cNames,
+		unsigned int cNames,
 		LCID lcid,
 		DISPID *rgDispId) override NOTIMPL;
 
@@ -120,7 +120,7 @@ public:
 		DISPPARAMS *pDispParams,
 		VARIANT *pVarResult,
 		EXCEPINFO *pExcepInfo,
-		UINT *puArgErr) override NOTIMPL;
+		unsigned int *puArgErr) override NOTIMPL;
 #pragma endregion
 
 #pragma region // IUnknown

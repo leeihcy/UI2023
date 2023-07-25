@@ -15,7 +15,7 @@
 //  所以无边框的窗口还是用blur模式去处理吧)
 //  
 
-namespace UI
+namespace ui
 {
 
 class AeroWindowWrap: public WndTransModeBase
@@ -37,8 +37,8 @@ public:
 	UI_END_MSG_MAP()
 
 
-    LRESULT  _OnDwmCompositionChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-//	LRESULT  _OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnDwmCompositionChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+//	long  _OnNcCalcSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     virtual WINDOW_TRANSPARENT_TYPE  GetType();
     virtual bool  RequireAlphaChannel();

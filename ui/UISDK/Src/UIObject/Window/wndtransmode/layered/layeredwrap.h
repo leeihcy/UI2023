@@ -1,6 +1,6 @@
 #pragma once
 #include "..\wndtransmodebase.h"
-namespace UI
+namespace ui
 {
 
 //
@@ -28,15 +28,15 @@ public:
         UIMSG_QUERYINTERFACE(LayeredWindowWrap)
 	UI_END_MSG_MAP()
 
-    LRESULT  _OnWindowPosChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT  _OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnCancelMode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnWindowPosChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnCancelMode(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnNcHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnSetCursor(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-    void  OnLButtonDown(UINT nFlags, POINT point);
-    void  OnLButtonUp(UINT nFlags, POINT point);
-    void  OnMouseMove(UINT nFlags, POINT point);
+    void  OnLButtonDown(unsigned int nFlags, POINT point);
+    void  OnLButtonUp(unsigned int nFlags, POINT point);
+    void  OnMouseMove(unsigned int nFlags, POINT point);
 
     ILayeredWindowWrap*  GetILayeredWindowWrap();
     byte  GetAlpha();
@@ -63,8 +63,8 @@ public:
     void   GetWindowPos();
     void   OnWindowPosChanged(LPWINDOWPOS lpWndPos);
 
-    void   OnLButtonDown(UINT nHitTest);
-    void   OnEnterSizeMove(UINT nHitTest);
+    void   OnLButtonDown(unsigned int nHitTest);
+    void   OnEnterSizeMove(unsigned int nHitTest);
     void   OnExitSizeMove();
 
 protected:
@@ -82,7 +82,7 @@ protected:
     SIZE      m_sizeWindow;        // 分层窗口的大小(客户区大小，不是窗口大小，与buffer的大小必须一致，否则渲染失败)
 
     // 分层窗口拉伸时使用的中间参数
-    UINT      m_nHitTestFlag;      // 拉伸标识
+    unsigned int      m_nHitTestFlag;      // 拉伸标识
     POINT     m_ptStartSizeMove;   // 开始拉伸时，鼠标的位置，用于计算鼠标偏移
     POINT     m_ptWindowOld;       // 开始拉伸时的窗口坐标，用于和偏移一起计算新位置
     SIZE      m_sizeWindowOld;     // 开始拉伸时的窗口大小，用于和偏移一起计算新大小

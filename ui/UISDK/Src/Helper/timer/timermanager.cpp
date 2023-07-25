@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "timermanager.h"
 
-namespace UI
+namespace ui
 {
 
 TimerHelper* TimerHelper::GetInstance()
@@ -127,7 +127,7 @@ void  TimerHelper::KillTimerByNotify(IMessage* pNotify)
     }
 }
 
-VOID CALLBACK  TimerHelper::TimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent,	DWORD dwTime )
+VOID CALLBACK  TimerHelper::TimerProc( HWND hwnd, unsigned int uMsg, UINT_PTR idEvent,	DWORD dwTime )
 {
     TimerHelper::GetInstance()->OnTimer(idEvent);
 }

@@ -3,7 +3,7 @@
 #include "Src/UIObject/Window/customwindow.h"
 #include "Inc/Interface/imapattr.h"
 
-namespace UI
+namespace ui
 {
 
 AlphaMaskWindowWrap::AlphaMaskWindowWrap()
@@ -24,7 +24,7 @@ void  AlphaMaskWindowWrap::Init(ICustomWindow* pWnd)
     if (pMapAttrib)
     {
         const TCHAR* szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKALPHA_9REGION, false);
-        Util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
+        util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
 
         // Í¸Ã÷¶È
         szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKALPHA_VALUE, true);

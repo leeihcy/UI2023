@@ -2,7 +2,7 @@
 
 // 用于管理顶层窗口，例如换肤
 
-namespace UI
+namespace ui
 {
 class Object;
 class WindowBase;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "include/inc.h"
 #include "matrix.h"
 #include "math.h"
 
@@ -68,7 +68,7 @@ void  Matrix33::Set(LPMATRIX33 p)
 	memcpy(m, p, sizeof(MATRIX33));
 }
 
-void  Matrix33::CopyTo(__out LPMATRIX33 p)
+void  Matrix33::CopyTo(LPMATRIX33 p)
 {
 	memcpy(p, m, sizeof(MATRIX33));
 }
@@ -277,12 +277,12 @@ void  Matrix44::Set(LPMATRIX44 p)
 	memcpy(m, p, sizeof(MATRIX44));
 }
 
-void  Matrix44::CopyTo(__out LPMATRIX44 p)
+void  Matrix44::CopyTo(LPMATRIX44 p)
 {
 	memcpy(p->m, m, sizeof(MATRIX44));
 }
 
-void  Matrix44::ToMatrix33(__out LPMATRIX33 p)
+void  Matrix44::ToMatrix33(LPMATRIX33 p)
 {
 	p->m11 = m11;
 	p->m12 = m12;

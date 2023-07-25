@@ -1,7 +1,7 @@
 #pragma once
 #include "layer.h"
 
-namespace UI
+namespace ui
 {
 
 class SoftwareLayer : public Layer

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "GifImage.h"
-#include "Inc\Interface\imessage.h"
-#include "Inc\Interface\iskindatasource.h"
-#include "Src\SkinParse\datasource\skindatasource.h"
+#include "include/interface/imessage.h"
+#include "include/interface/iskindatasource.h"
+#include "src/SkinParse\datasource\skindatasource.h"
 #include "Inc\Util\iimage.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "src/application/uiapplication.h"
 #include "giftimermanager.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -329,7 +329,7 @@ bool  GifImage::Load(IStreamBufferReader*  pBuffer, IMapAttribute* pMapAttrib)
 
     int time = (int)((liEnd.QuadPart - liStart.QuadPart)*1000/liPerFreq.QuadPart);
     TCHAR szText[128] = {0};
-    _stprintf(szText, _T("Load gif Cost: %d ms\r\n"), time);
+    wprintf(szText, _T("Load gif Cost: %d ms\r\n"), time);
     ::OutputDebugString(szText);
 
     return bRet;
@@ -655,7 +655,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 #ifdef _DEBUGx // <-- 将每一帧保存为一个文件
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
-	_stprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
+	wprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
 	pFrame->image.Save(szPath, Gdiplus::ImageFormatPNG);
 #endif
 
@@ -704,7 +704,7 @@ bool GifImage::decode_by_gdiplus(IStreamBufferReader*  pBuffer,
 #ifdef _DEBUGx // <-- 将每一帧保存为一个文件
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
-	_stprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
+	wprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
 	fstream temp;
 	temp.open(szPath,ios_base::out|ios_base::binary);
 	if( temp.good() )
@@ -1141,7 +1141,7 @@ void GifImageRender::draw_frame(GIF_Frame* pFrame)
 #ifdef _DEBUGx // <-- 将每一帧保存为一个文件
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
-	_stprintf(szPath, _T("C:\\one_frame\\%d_a.png"),++n );
+	wprintf(szPath, _T("C:\\one_frame\\%d_a.png"),++n );
 	 
 	ImageWrap image;
 	image.Attach(m_hMemCanvasBitmap, true);
@@ -1161,7 +1161,7 @@ void GifImageRender::draw_frame(GIF_Frame* pFrame)
 		pFrame->descriptor.image_height);
 
 #ifdef _DEBUGx // <-- 将每一帧保存为一个文件
-	_stprintf(szPath, _T("C:\\one_frame\\%d_b.png"),n );
+	wprintf(szPath, _T("C:\\one_frame\\%d_b.png"),n );
 	image.Attach(m_hMemCanvasBitmap, true);
 	image.SaveAsPng(szPath);
 	image.Detach();
@@ -1511,7 +1511,7 @@ inline void GifLZWDecoder::Output(WORD w)
 
 #ifdef _DEBUG
 // 		 	TCHAR szInfo[16];
-// 		 	_stprintf(szInfo, _T("%d(%02X) "),w,w);
+// 		 	wprintf(szInfo, _T("%d(%02X) "),w,w);
 // 		 	::OutputDebugString(szInfo);
 #endif
 	}

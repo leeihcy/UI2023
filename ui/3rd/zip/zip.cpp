@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
@@ -2406,7 +2405,7 @@ ZRESULT TZip::Close()
 
 //
 // 2018/01/04 
-// GENERIC_READ,FILE_SHARE_READ模式兼容性太差了，打不开其它程序正在写的日志文件。修改为FILE_SHARE_READ|FILE_SHARE_WRITE
+// GENERIC_READ,FILE_SHARE_READ模式锟斤拷锟斤拷锟斤拷太锟斤拷锟剿ｏ拷锟津不匡拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷写锟斤拷锟斤拷志锟侥硷拷锟斤拷锟睫革拷为FILE_SHARE_READ|FILE_SHARE_WRITE
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa363874(v=vs.85).aspx
 //
 ZRESULT TZip::open_file(const TCHAR *fn)
@@ -2584,7 +2583,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   TZipFileInfo zfi; zfi.nxt=nullptr;
   strcpy(zfi.name,"");
 #ifdef UNICODE
-  WideCharToMultiByte(CP_ACP/*CP_UTF8*/,0,dstzn,-1,zfi.iname,MAX_PATH,0,0); // 2014.5.8 libo modify 添加中文名称的文件会变成乱码
+  WideCharToMultiByte(CP_ACP/*CP_UTF8*/,0,dstzn,-1,zfi.iname,MAX_PATH,0,0); // 2014.5.8 libo modify 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟狡碉拷锟侥硷拷锟斤拷锟斤拷锟斤拷锟斤拷
 #else
   strcpy(zfi.iname,dstzn);
 #endif

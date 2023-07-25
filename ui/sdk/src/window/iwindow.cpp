@@ -5,11 +5,11 @@
 #include "src/window/window.h"
 
 #if 0
-#include "Src\Resource\skinres.h"
+#include "src/resource/skinres.h"
 #endif
 
 using namespace ui;
-UI_IMPLEMENT_INTERFACE(Window, Message)
+UI_IMPLEMENT_INTERFACE(Window, Object)
 
 void IWindow::Create(const Rect &rect) { __pImpl->Create(rect); }
 void IWindow::SetTitle(const char *title) { __pImpl->SetTitle(title); }
@@ -27,11 +27,11 @@ HWND  IWindowBase::GetHWND()
 { 
 	return __pImpl->GetHWND(); 
 }
-BOOL  IWindowBase::IsChildWindow()                                        
+bool  IWindowBase::IsChildWindow()                                        
 {
 	return __pImpl->IsChildWindow(); 
 }
-BOOL  IWindowBase::IsWindowVisible()
+bool  IWindowBase::IsWindowVisible()
 {
 	return __pImpl->IsWindowVisible(); 
 }
@@ -106,7 +106,7 @@ IObject*  IWindowBase::GetObjectByPos(IObject* pObjParent, POINT* pt, bool bSkin
 
     return nullptr;
 }
-bool  IWindowBase::Create(LPCTSTR szID, HWND hWndParent, RECT* prc, long lStyle, long lExStyle) 
+bool  IWindowBase::Create(const wchar_t* szID, HWND hWndParent, RECT* prc, long lStyle, long lExStyle) 
 {
 	return __pImpl->Create(szID, hWndParent, prc, lStyle, lExStyle);
 }
@@ -114,7 +114,7 @@ void  IWindowBase::DestroyWindow()
 {
 	return __pImpl->DestroyWindow();
 }
-bool  IWindowBase::Attach(HWND hWnd, LPCTSTR szID) 
+bool  IWindowBase::Attach(HWND hWnd, const wchar_t* szID) 
 { 
 	return __pImpl->Attach(hWnd, szID);
 }
@@ -122,19 +122,19 @@ void  IWindowBase::Detach()
 {
 	__pImpl->Detach(); 
 }
-INT_PTR  IWindowBase::DoModal(LPCTSTR szID, HWND hWndParent, bool canResize ) 
+INT_PTR  IWindowBase::DoModal(const wchar_t* szID, HWND hWndParent, bool canResize ) 
 {
 	return __pImpl->DoModal(szID, hWndParent, canResize);
 }
-INT_PTR  IWindowBase::DoModal(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent)
+INT_PTR  IWindowBase::DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent)
 {
 	return __pImpl->DoModal(hResInst, nResID, szID, hWndParent); 
 }
-HWND  IWindowBase::DoModeless(LPCTSTR szID, HWND hWndParent, bool canResize )
+HWND  IWindowBase::DoModeless(const wchar_t* szID, HWND hWndParent, bool canResize )
 {
 	return __pImpl->DoModeless(szID, hWndParent, canResize);
 }
-HWND  IWindowBase::DoModeless(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent) 
+HWND  IWindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent) 
 { 
 	return __pImpl->DoModeless(hResInst, nResID, szID, hWndParent);
 }
@@ -151,7 +151,7 @@ void  IWindowBase::CalcClientRectByWindowRect( RECT* rcWindow, RECT* rcClient )
 {
 	__pImpl->CalcClientRectByWindowRect(rcWindow, rcClient);
 }
-void  IWindowBase::SaveMemBitmap(TCHAR* szFile) 
+void  IWindowBase::SaveMemBitmap(wchar* szFile) 
 {
 	__pImpl->SaveMemBitmap(szFile);
 }
@@ -178,7 +178,7 @@ void  IWindowBase::EnableDwmTransition(bool b)
 // 	__pImpl->HideAllAnchorItem(); 
 // }
 
-HRESULT  IWindowBase::SetDroppable(bool b) 
+long  IWindowBase::SetDroppable(bool b) 
 {
 	return __pImpl->SetCanDrop(b);
 }
@@ -210,22 +210,22 @@ signal_mc<bool&>&  IWindowBase::OnCloseEvent()
     return __pImpl->on_close;
 }
 
-void UI::IWindowBase::ChangeSkinLayout(LPCTSTR szLayoutId)
+void ui::IWindowBase::ChangeSkinLayout(const wchar_t* szLayoutId)
 {
 	__pImpl->ChangeSkinLayout(szLayoutId);
 }
 
-bool UI::IWindowBase::IsSizeMoveIng()
+bool ui::IWindowBase::IsSizeMoveIng()
 {
 	return __pImpl->IsSizeMoveIng();
 }
 
 
-void  IWindowBase::GetWindowNormalRect(LPRECT prc)
+void  IWindowBase::GetWindowNormalRect(RECT* prc)
 {
 	__pImpl->GetWindowNormalRect(prc);
 }
-void  IWindowBase::SetWindowNormalRect(LPCRECT prc)
+void  IWindowBase::SetWindowNormalRect(const RECT* prc)
 {
 	__pImpl->SetWindowNormalRect(prc);
 }
@@ -236,10 +236,10 @@ void  IWindowBase::UpdateDesktopLayout()
 }
 #endif
 #if 0
-namespace UI
+namespace ui
 {
 	extern "C"
-		void GetWindowNormalRect(HWND hWnd, LPRECT prc)
+		void GetWindowNormalRect(HWND hWnd, RECT* prc)
 	{
 		UIASSERT(hWnd);
 		if (!hWnd)

@@ -10,14 +10,22 @@
 
 
 #ifndef _unzip_H
+#ifndef DECLARE_HANDLE
+#define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
+#endif
 DECLARE_HANDLE(HZIP);
 #endif
 // An HZIP identifies a zip file that is being created
 
-typedef DWORD ZRESULT;
+typedef unsigned int ZRESULT;
 // return codes from any of the zip functions. Listed later.
 
-
+// #if !defined(OS_WIN)
+// #define TCHAR wchar_t
+// #define DWORD unsigned int
+// #define MAX_PATH 256
+// #define HANDLE long
+// #endif
 
 HZIP CreateZip(const TCHAR *fn, const char *password);
 HZIP CreateZip(void *buf,unsigned int len, const char *password);

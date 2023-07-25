@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Inc\Interface\ihwndhost.h"
-#include "Src\UIObject\HwndHost\HwndHost.h"
+#include "include/interface/ihwndhost.h"
+#include "src/UIObject\HwndHost\HwndHost.h"
 
-namespace UI
+namespace ui
 {
 
 UI_IMPLEMENT_INTERFACE(HwndHost, Control)

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "msghelper.h"
-#include "Src\Base\Message\message.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "src/Base\Message\message.h"
+#include "src/application/uiapplication.h"
 
-using namespace UI;
+using namespace ui;
 
-BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID)
+BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID)
 {
 	if (UI_MSG_POSTMESSAGE == uMsg)
 	{

@@ -2,7 +2,7 @@
 #include "Src\Atl\image.h"
 #include "Inc\Util\dragdrop.h"
 
-namespace UI
+namespace ui
 {
 
 class CDragFeedback : public IDragFeedback

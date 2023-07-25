@@ -68,7 +68,7 @@ struct XEventSource {
 
 void MessageLoopPlatformLinux::Initialize(MessageLoop *p) {
   m_message_loop = p;
-  this->loop = g_main_loop_new(NULL, FALSE);
+  this->loop = g_main_loop_new(NULL, false);
   // this->context = g_main_context_default();
   this->context = g_main_loop_get_context(this->loop);
 
@@ -123,7 +123,7 @@ static int on_idle(gpointer pointer) {
   PostTaskType *p = (PostTaskType *)pointer;
   p->emit();
   delete p;
-  return FALSE;
+  return false;
 }
 void MessageLoopPlatformLinux::PostTask(PostTaskType &&task) {
   auto *p = new PostTaskType(std::forward<PostTaskType>(task));

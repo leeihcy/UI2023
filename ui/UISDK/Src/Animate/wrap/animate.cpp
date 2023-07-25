@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "animate.h"
-#include "Src\Helper\msg\msghelper.h"
+#include "src/Helper\msg\msghelper.h"
 #include "..\animatemgr.h"
 
 AnimateHelper::AnimateHelper(UIApplication& app) : m_uiApplication(app)

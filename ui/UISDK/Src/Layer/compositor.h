@@ -1,6 +1,6 @@
 #pragma once
 #include "layer.h"
-namespace UI
+namespace ui
 {
     class UIApplication;
 }
@@ -8,7 +8,7 @@ namespace UI
 #define MSG_INVALIDATE  161311307
 #define MSG_ASYNCTASK   175021413
 
-namespace UI
+namespace ui
 {
 class Compositor
 {

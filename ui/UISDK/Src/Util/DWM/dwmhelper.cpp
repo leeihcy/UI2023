@@ -21,7 +21,7 @@ DwmHelper::DwmHelper()
     pDwmSetWindowAttribute = (pfnDwmSetWindowAttribute)GetProcAddress(m_hModule, "DwmSetWindowAttribute");
 	pDwmDefWindowProc = (pfnDwmDefWindowProc)GetProcAddress(m_hModule, "DwmDefWindowProc");
 
-	if (UI::Util::IsWin8OrLater())
+	if (UI::util::IsWin8OrLater())
 	{
 		pSetWindowCompositionAttribute = (pfnSetWindowCompositionAttribute)GetProcAddress(
 			GetModuleHandle(L"user32.dll"), "SetWindowCompositionAttribute");

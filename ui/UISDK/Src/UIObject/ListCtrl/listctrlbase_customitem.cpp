@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "listctrlbase.h"
-#include "Src\Resource\skinres.h"
+#include "src/resource/skinres.h"
 #include "CustomItem\custom_listitem.h"
-#include "Src\UIObject\Panel\panel.h"
+#include "src/UIObject\Panel\panel.h"
 #include "ListItemRootPanel\listitemrootpanel.h"
 
 CustomListItem*  ListCtrlBase::InsertCustomItem(
-                    LPCTSTR  szLayoutName,
+                    const wchar_t*  szLayoutName,
                     long lId,
                     IListItemBase* pParent, 
                     IListItemBase* pInsertAfter)

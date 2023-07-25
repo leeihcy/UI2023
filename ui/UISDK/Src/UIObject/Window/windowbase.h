@@ -2,13 +2,13 @@
 
 #include "Src\UIObject\Panel\panel.h"
 #include "Src\UIObject\Window\sync_window.h"
-#include "Inc\Interface\iwindow.h"
+#include "include/interface/iwindow.h"
 #include "Src\Helper\MouseKeyboard\mousemanager.h"
 #include "Src\Helper\dragdrop\windowdragdropmgr.h"
 #include "Src\Util\RectArray\rectarray.h"
 #include "Src\Layer\windowrender.h"
 
-namespace UI
+namespace ui
 {
 class WindowRender;
 class SkinRes;
@@ -40,7 +40,7 @@ public:
 	{
 		m_pCallback = p;
 	}
-	BOOL  OnWindowMessage(UINT msg, WPARAM w, LPARAM l, LRESULT& lResult)
+	BOOL  OnWindowMessage(unsigned int msg, WPARAM w, LPARAM l, long& lResult)
 	{
 		lResult = 0;
 		if (m_pCallback)
@@ -183,14 +183,14 @@ public:
     Object*    GetPressObject();
 	void  SetPressObject(Object*);
 
-	bool  Create(LPCTSTR szID,  HWND hWndParent = nullptr, RECT* prc = nullptr, long lStyle = 0, long lExStyle = 0);
+	bool  Create(const wchar_t* szID,  HWND hWndParent = nullptr, RECT* prc = nullptr, long lStyle = 0, long lExStyle = 0);
 	void  DestroyWindow();
-	INT_PTR  DoModal(LPCTSTR szID, HWND hWndParent, bool canResize);
-	INT_PTR  DoModal(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent);
-	HWND  DoModeless(LPCTSTR szID, HWND hWndOnwer, bool canResize);
-	HWND  DoModeless(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndOnwer);
+	INT_PTR  DoModal(const wchar_t* szID, HWND hWndParent, bool canResize);
+	INT_PTR  DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent);
+	HWND  DoModeless(const wchar_t* szID, HWND hWndOnwer, bool canResize);
+	HWND  DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndOnwer);
 	void  EndDialog(INT_PTR);
-	bool  Attach(HWND hWnd, LPCTSTR szID);
+	bool  Attach(HWND hWnd, const wchar_t* szID);
 	void  Detach();
 	void  SetWindowMessageCallback(IWindowDelegate*);
 
@@ -222,8 +222,8 @@ public:
 
     // 获取字体流程：先获取自己的m_pTextRender，如果没有则调用自己的m_pWindow的GetRenderFont
     IRenderFont*  GetWindowDefaultRenderFont();
-	void  SetDefaultRenderFont(LPCTSTR);
-	LPCTSTR  GetDefaultRenderFontId();
+	void  SetDefaultRenderFont(const wchar_t*);
+	const wchar_t*  GetDefaultRenderFontId();
 
 	void  SetGpuComposite(bool b);
 	bool  IsGpuComposite();
@@ -233,12 +233,12 @@ public:
 	void  AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha);
 	void  BitBltMemBitmap(HDC hDC, RECT* prc);
     void  EnableDwmTransition(bool b);
-    void  SetCursorByHitTest(UINT nHitTest);
+    void  SetCursorByHitTest(unsigned int nHitTest);
 
-	void  ChangeSkinLayout(LPCTSTR szLayoutId);
+	void  ChangeSkinLayout(const wchar_t* szLayoutId);
 
 protected:
-	bool  CreateUI(LPCTSTR szID);
+	bool  CreateUI(const wchar_t* szID);
 	INT_PTR  ModalLoop(HWND hWndParent);
     HMONITOR  GetPrimaryMonitor();
     
@@ -261,45 +261,45 @@ protected:
     void       OnSetDefId(IObject* pButton);
     IObject*   OnGetDefId();
 
-	virtual BOOL  PreTranslateMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* pRet);
+	virtual BOOL  PreTranslateMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, long* pRet);
 	
 #pragma region // message handle
 public:
-	static LRESULT CALLBACK  StartWindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	static LRESULT CALLBACK  StartDialogProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );\
+	static long CALLBACK  StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+	static long CALLBACK  StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );\
 protected:
 	static CREATE_WND_DATA  s_create_wnd_data;    // 创建窗口时，拦截第一个窗口消息，将HWND->this
-	static LRESULT CALLBACK ThunkWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	LRESULT  StartProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog );
-	LRESULT  WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
-	LRESULT  DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
-    LRESULT  WndProc_GetRetValue(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, LRESULT lRet);
+	static long CALLBACK ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+	long  StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog );
+	long  WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+	long  DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+    long  WndProc_GetRetValue(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, long lRet);
 
 protected:
-	LRESULT  _OnSetCursor( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-    LRESULT  _OnNcHitTest( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnEraseBkgnd( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnPaint( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnPostMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnSize( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnCreate( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT  _OnNcDestroy( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnDestroy( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnHandleMouseMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnHandleKeyBoardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnHandleTouchMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT  _OnSetFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnKillFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-    LRESULT  _OnMouseActive( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnThemeChange( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnWindowPosChanging( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-    LRESULT  _OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT  _OnSyncWindow( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnEnterSizeMove( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnExitSizeMove( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-	LRESULT  _OnGetObject( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+    long  _OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnEraseBkgnd( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnPaint( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnPostMessage( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnSize( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnCreate( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnNcDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnHandleKeyBoardMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnHandleTouchMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnSetFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnKillFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+    long  _OnMouseActive( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnThemeChange( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnWindowPosChanging( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+    long  _OnShowWindow(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnSyncWindow( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnGetMinMaxInfo( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnEnterSizeMove( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnExitSizeMove( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+	long  _OnGetObject( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
 
 	void      OnEraseBkgnd(IRenderTarget*);
     void      OnGetDesiredSize(SIZE* pSize);

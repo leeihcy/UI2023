@@ -1,7 +1,7 @@
 #ifndef _UI_MATH_POINT_H_
 #define _UI_MATH_POINT_H_
 
-namespace UI
+namespace ui
 {
 	
 // 不包含w分量2D向量和点

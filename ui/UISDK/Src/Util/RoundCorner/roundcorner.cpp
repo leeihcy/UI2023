@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "roundcorner.h"
 
-namespace UI
+namespace ui
 {
 
 // hBitmap目前只做了 topdown 类型

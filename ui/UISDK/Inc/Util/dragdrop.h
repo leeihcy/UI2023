@@ -3,7 +3,7 @@
 
 interface IDataObject;
 
-namespace UI
+namespace ui
 {
 
 	// 创建一个IDataObject，用于实现拖拽源、Ole对象。避免每个拖拽源都得再实现一次IDataObject IDropSource接口
@@ -57,7 +57,7 @@ namespace UI
 
 	UIAPI void  CreateDataObjectInstance(IDataObject**  pp);
 	UIAPI void  CreateDropSourceInstance(IDropSource**  pp);
-	UIAPI LRESULT  UIDoDragDrop(
+	UIAPI long  UIDoDragDrop(
 		IDataObject* pDataObject,   // Pointer to the data object
 		IDropSource* pDropSource,   // Pointer to the source
 		DWORD dwOKEffect,           // Effects allowed by the source

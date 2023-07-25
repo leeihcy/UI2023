@@ -43,7 +43,7 @@
 // µ¯Ìø¶¯»­
 // Bounce animation
 //
-namespace UI
+namespace ui
 {
 
 interface  IStoryboard;

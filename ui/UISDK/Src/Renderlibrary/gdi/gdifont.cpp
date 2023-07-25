@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "gdifont.h"
-#include "Src\Atl\image.h"
+#include "src/Atl\image.h"
 
 
 // ×¢£º
@@ -98,7 +98,7 @@ bool  GDIRenderFont::IsAttach()
 SIZE GDIRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 {
 	CSize sizeText(0, 0);
-    uint nLength = (uint)_tcslen(szText);
+    uint nLength = (uint)wcslen(szText);
     if (!nLength)
         return sizeText;
 
@@ -127,7 +127,7 @@ SIZE GDIRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 	return sizeText;
 }
 
-UINT GDIRenderFont::GetCaretHeight()
+unsigned int GDIRenderFont::GetCaretHeight()
 {
 	HDC hDC = Image::GetCacheDC();
 	HFONT hOldFont = (HFONT)::SelectObject(hDC, m_hFont);

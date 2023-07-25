@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 
-namespace UI
+namespace ui
 {
     interface IUIApplication;
 }

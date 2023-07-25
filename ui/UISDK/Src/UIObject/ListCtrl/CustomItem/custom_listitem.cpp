@@ -13,7 +13,7 @@ CustomListItem::~CustomListItem()
 
 }
 
-IObject*  CustomListItem::FindControl(LPCTSTR szId)
+IObject*  CustomListItem::FindControl(const wchar_t* szId)
 {
 	if (!m_pPanelRoot)
 		return nullptr;
@@ -29,7 +29,7 @@ void  CustomListItem::OnPaint(IRenderTarget* pRenderTarget)
 	CRect  rcParent;
 	this->GetParentOrFloatRect(&rcParent);
 
-	UINT nRenderState = 0;
+	unsigned int nRenderState = 0;
 	IRenderBase* pRender = m_pListCtrlBase->GetForeRender();
 	if (pRender)
 	{

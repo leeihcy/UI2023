@@ -2,26 +2,26 @@
 #include "windowbase.h"
 #include <Uxtheme.h>
 
-#include "Inc\Interface\ixmlwrap.h"
-#include "Inc\Interface\iuires.h"
-#include "Inc\Interface\imapattr.h"
-#include "Src\Atl\image.h"
-#include "Src\Helper\layout\layout.h"
-#include "Src\Helper\topwindow\topwindowmanager.h"
-#include "Src\Resource\skinres.h"
-#include "Src\Util\dwm\dwmhelper.h"
-#include "Src\Base\Message\message.h"
-#include "Src\Base\Attribute\attribute.h"
-#include "Src\Base\Attribute\long_attribute.h"
-#include "Src\Base\Attribute\string_attribute.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Src\Util\DPI\dpihelper.h"
-#include "Src\Layer\compositor.h"
-#include "Inc\Interface\renderlibrary.h"
-#include "Inc\Interface\iuiapplication.h"
-#include "Inc\Interface\iuiautotest.h"
+#include "include/interface/ixmlwrap.h"
+#include "include/interface/iuires.h"
+#include "include/interface/imapattr.h"
+#include "src/Atl\image.h"
+#include "src/layout/layout.h"
+#include "src/Helper\topwindow\topwindowmanager.h"
+#include "src/resource/skinres.h"
+#include "src/Util\dwm\dwmhelper.h"
+#include "src/Base\Message\message.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/long_attribute.h"
+#include "src/attribute/string_attribute.h"
+#include "src/application/uiapplication.h"
+#include "src/Util\DPI\dpihelper.h"
+#include "src/Layer\compositor.h"
+#include "include/interface/renderlibrary.h"
+#include "include/interface/iuiapplication.h"
+#include "include/interface/iuiautotest.h"
 
-using namespace UI;
+using namespace ui;
 
 #ifdef _DEBUG
 //  避免有未正确释放的窗口对象，造成内存泄露
@@ -92,7 +92,7 @@ HRESULT  WindowBase::FinalConstruct(ISkinRes* p)
 
 	m_windowStyle.hard_composite = false;// p->GetUIApplication()->IsGpuCompositeEnable();
 
-    return S_OK;
+    return 0;
 }
 
 void  WindowBase::OnSerialize(SERIALIZEDATA* pData)
@@ -128,7 +128,7 @@ void  WindowBase::OnSerialize(SERIALIZEDATA* pData)
 //	备注：调用该函数的情况是：有一个窗口（例如派生自CDialog，而不是一个UI的window类），
 //		  但它却想使用我们的UI控件，这个时候需要采用这个
 //
-bool WindowBase::CreateUI(LPCTSTR szId)
+bool WindowBase::CreateUI(const wchar_t* szId)
 {
 	if (!m_pSkinRes)
 	{
@@ -137,10 +137,10 @@ bool WindowBase::CreateUI(LPCTSTR szId)
 	}
 	LayoutManager& layoutmanager = m_pSkinRes->GetLayoutManager();
 
-	if (szId && _tcslen(szId)>0)   
+	if (szId && wcslen(szId)>0)   
 	{
 		//	加载子控件
-        LPCTSTR  szName = L"";
+        const wchar_t*  szName = L"";
         if  (m_pDescription)
             szName = m_pDescription->GetTagName();
 
@@ -258,7 +258,7 @@ void  WindowBase::DestroyWindow()
 	m_strId.clear();
 }
 
-bool WindowBase::Create(LPCTSTR szId, HWND hWndParent, RECT* prc, long lStyle, long lExStyle)
+bool WindowBase::Create(const wchar_t* szId, HWND hWndParent, RECT* prc, long lStyle, long lExStyle)
 {
 	if (false == this->CreateUI(szId))
 	{
@@ -314,7 +314,7 @@ bool WindowBase::Create(LPCTSTR szId, HWND hWndParent, RECT* prc, long lStyle, l
 	return true;
 }
 
-bool WindowBase::Attach(HWND hWnd, LPCTSTR szID)
+bool WindowBase::Attach(HWND hWnd, const wchar_t* szID)
 {
 	if (m_hWnd)
 		return false;
@@ -362,7 +362,7 @@ void WindowBase::EndDialog(INT_PTR nResult)
 	::PostMessage( this->m_hWnd, WM_NULL, 0,0 );
 }
 
-INT_PTR WindowBase::DoModal(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent )
+INT_PTR WindowBase::DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent )
 {
 #if 0
 	UIASSERT( nullptr == m_hWnd );
@@ -387,7 +387,7 @@ INT_PTR WindowBase::DoModal(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND 
 //
 // 创建一个空的模态对话框
 //
-INT_PTR WindowBase::DoModal(LPCTSTR szID, HWND hWndParent, bool canResize)
+INT_PTR WindowBase::DoModal(const wchar_t* szID, HWND hWndParent, bool canResize)
 {
 
 #if 0
@@ -451,7 +451,7 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 //     UIMSG  msg;
 //     msg.message = UI_WM_SHOWMODALWINDOW;
 //     msg.pMsgFrom = msg.pMsgTo = m_pIWindowBase;
-//     LRESULT lRet = UISendMessage(&msg);
+//     long lRet = UISendMessage(&msg);
 // 
 //     if(msg.bHandled && lRet)
 //     {
@@ -519,7 +519,7 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 	return this->m_lDoModalReturn;
 }
 
-BOOL WindowBase::PreTranslateMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* pRet)
+BOOL WindowBase::PreTranslateMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, long* pRet)
 {
 	return FALSE;
 }
@@ -530,7 +530,7 @@ BOOL WindowBase::PreTranslateMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, LR
 //     为了解决该问题，为每一个Dialog加上WS_THICKFRAME，同时修改WM_NCHITTEST消息、删除SysMenu中的SC_SIZE.
 ///    因此外部在调用该函数时，需要传递一个canResize标志
 //
-HWND WindowBase::DoModeless(LPCTSTR szId, HWND hWndOnwer, bool canResize)
+HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
 {
 	UIASSERT(nullptr == m_hWnd);
 
@@ -601,7 +601,7 @@ HWND WindowBase::DoModeless(LPCTSTR szId, HWND hWndOnwer, bool canResize)
 	return m_hWnd;
 }
 
-HWND WindowBase::DoModeless(HINSTANCE hResInst, UINT nResID, LPCTSTR szId, HWND hWndOnwer)
+HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szId, HWND hWndOnwer)
 {
 	UIASSERT( nullptr == m_hWnd );
 
@@ -646,7 +646,7 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, UINT nResID, LPCTSTR szId, HWND 
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-LRESULT CALLBACK WindowBase::StartWindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+long CALLBACK WindowBase::StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	// 获取this指针
 	WindowBase* pThis = (WindowBase*)s_create_wnd_data.ExtractCreateWndData();
@@ -660,7 +660,7 @@ LRESULT CALLBACK WindowBase::StartWindowProc( HWND hwnd, UINT uMsg, WPARAM wPara
 //
 //	[static] Dialog类型窗口的第一个窗口消息调用的窗口过程
 //
-LRESULT CALLBACK WindowBase::StartDialogProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+long CALLBACK WindowBase::StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	// 获取this指针
 	WindowBase* pThis = (WindowBase*)s_create_wnd_data.ExtractCreateWndData();
@@ -675,7 +675,7 @@ LRESULT CALLBACK WindowBase::StartDialogProc( HWND hwnd, UINT uMsg, WPARAM wPara
 //
 //	由StartWindowProc/StartDialogProc调用，将窗口过程转换为类对象的一个方法
 //
-LRESULT WindowBase::StartProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog )
+long WindowBase::StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog )
 {
 	// 子类化
     set_hwnd(hwnd);
@@ -699,7 +699,7 @@ LRESULT WindowBase::StartProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 //
-//	[static] LRESULT CALLBACK ThunkWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+//	[static] long CALLBACK ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 //
 //	被ATL的thunk替换过的窗口过程
 //
@@ -710,10 +710,10 @@ LRESULT WindowBase::StartProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 //		uMsg,wParam,lParam
 //			[in]	消息信息
 //
-LRESULT  WindowBase::ThunkWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+long  WindowBase::ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	WindowBase* pThis = (WindowBase*)hwnd;
-	LRESULT lRet = 0;
+	long lRet = 0;
 
 	if (FALSE == pThis->PreTranslateMessage(uMsg, wParam, lParam, &lRet))
 		lRet = pThis->WndProc( uMsg, wParam, lParam );
@@ -721,7 +721,7 @@ LRESULT  WindowBase::ThunkWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return lRet;
 }
 
-LRESULT WindowBase::DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+long WindowBase::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if (m_oldWndProc)
 	{
@@ -731,20 +731,20 @@ LRESULT WindowBase::DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 //
-//	[private] LRESULT WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+//	[private] long WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 //
 //	窗口被子类化过之后的窗口过程
 //
-LRESULT	WindowBase::WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 
-	LRESULT lRes;
+	long lRes;
 	UIMSG*  pOldMsg = m_pCurMsg;
 
 	// 外部预处理
 	if (m_pCallbackProxy)
 	{
-		LRESULT lRes = 0;
+		long lRes = 0;
 		BOOL bHandled = m_pCallbackProxy->OnWindowMessage(uMsg, wParam, lParam, lRes);
 		if (bHandled)
 		{
@@ -789,9 +789,9 @@ LRESULT	WindowBase::WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 // 设置对话框的DialogProc返回值，见MSDN中对DialogProc返回值的说明
-LRESULT  WindowBase::WndProc_GetRetValue(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, LRESULT lRet)
+long  WindowBase::WndProc_GetRetValue(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, long lRet)
 {
-    LRESULT lResult = 0; 
+    long lResult = 0; 
 
     if (nullptr == m_oldWndProc)  // Dialog窗口过程
     {
@@ -840,7 +840,7 @@ LRESULT  WindowBase::WndProc_GetRetValue(UINT uMsg, WPARAM wParam, LPARAM lParam
     return lResult;
 }
 
-LRESULT WindowBase::_OnSetCursor( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = TRUE;
 
@@ -858,7 +858,7 @@ LRESULT WindowBase::_OnSetCursor( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	else if (hWnd == m_hWnd)  
 	{
 		// TODO: 这里需要区分window/dialog吗
-        UINT nHitTest = LOWORD(lParam);
+        unsigned int nHitTest = LOWORD(lParam);
         if (m_oldWndProc)
         {
             if (nHitTest != HTCLIENT)   
@@ -901,7 +901,7 @@ LRESULT WindowBase::_OnSetCursor( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	return TRUE;
 }
 
-void  WindowBase::SetCursorByHitTest(UINT nHitTest)
+void  WindowBase::SetCursorByHitTest(unsigned int nHitTest)
 {
     static HCURSOR _arrow = ::LoadCursor(nullptr, IDC_ARROW);
 
@@ -949,14 +949,14 @@ void  WindowBase::SetCursorByHitTest(UINT nHitTest)
     }
 }
 
-LRESULT  WindowBase::_OnNcHitTest( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long  WindowBase::_OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     bHandled = FALSE;
     if (!m_oldWndProc)
     {
         if (m_windowStyle.dialog_noresize)
         {
-            LRESULT lr = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+            long lr = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
             if (lr >= HTLEFT && lr <= HTBORDER)  // 用HTTOPRIGHT还有是问题，非得用HTBORDER，为什么
             {
                 lr = HTBORDER;
@@ -974,7 +974,7 @@ LRESULT  WindowBase::_OnNcHitTest( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 // 
 // 如果 lParam == 0，则表示是系统自己发出来的消息，由于系统消息会导致和WM_PAINT DC不一致，从而产生闪烁
 // 因此将WM_ERASEBKGND消息放在WM_PAINT中由我们自己发出，并且将lParam置为非0
-LRESULT WindowBase::_OnEraseBkgnd( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnEraseBkgnd( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
 	if (0 == lParam)
@@ -1012,7 +1012,7 @@ LRESULT WindowBase::_OnEraseBkgnd( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
-LRESULT WindowBase::_OnPostMessage( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnPostMessage( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
 	if (wParam == MSG_INVALIDATE)
@@ -1048,7 +1048,7 @@ void  WindowBase::AsyncTask(std::function<void(WindowBase*)> callback)
 //
 // [注]分层窗口的InvalidateRect，拿到的ps.rcPaint永远是空的
 //
-LRESULT WindowBase::_OnPaint( UINT uMsg, WPARAM wParam,LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnPaint( unsigned int uMsg, WPARAM wParam,LPARAM lParam, BOOL& bHandled )
 {
 	PAINTSTRUCT ps;
 	HDC  hDC = nullptr;
@@ -1098,7 +1098,7 @@ LRESULT WindowBase::_OnPaint( UINT uMsg, WPARAM wParam,LPARAM lParam, BOOL& bHan
 
 // win7下面带WS_THICKFRAME样式窗口贴边最大化/还原的消息只有WM_SIZE，没有WM_SYSCOMMAND
 // 因此就不能使用WM_SYSCOMMAND消息来处理
-LRESULT WindowBase::_OnSize( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnSize( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
 	if (SIZE_MINIMIZED == wParam)
@@ -1114,7 +1114,7 @@ LRESULT WindowBase::_OnSize( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		SetConfigHeight(rcWindow.bottom-rcWindow.top);
 
 	bHandled = TRUE;
-	notify_WM_SIZE((UINT)wParam, LOWORD(lParam), HIWORD(lParam));
+	notify_WM_SIZE((unsigned int)wParam, LOWORD(lParam), HIWORD(lParam));
 	size_changed.emit((long)wParam);
 
     m_oWindowRender.OnWindowSize(LOWORD(lParam), HIWORD(lParam));
@@ -1151,8 +1151,8 @@ LRESULT WindowBase::_OnSize( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 	return 0;
 }
 
-LRESULT WindowBase::_OnCreate(
-        UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long WindowBase::_OnCreate(
+        unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 
@@ -1280,7 +1280,7 @@ void  WindowBase::virtualInnerInitWindow()
 {
 }
 
-LRESULT  WindowBase::_OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowBase::_OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;  // 默认处理会调用DestroyWindow
 
@@ -1321,13 +1321,13 @@ LRESULT  WindowBase::_OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 	return 0;
 }
 
-LRESULT  WindowBase::_OnDestroy( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long  WindowBase::_OnDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
 	return 0;
 }
 
-LRESULT WindowBase::_OnNcDestroy( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long WindowBase::_OnNcDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 
@@ -1364,7 +1364,7 @@ LRESULT WindowBase::_OnNcDestroy( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	return 0;
 }
 
-LRESULT WindowBase::_OnHandleMouseMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long WindowBase::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if (m_syncWindow.IsSizeMoveIng())  // 拖拽过程中不处理
 	{
@@ -1373,7 +1373,7 @@ LRESULT WindowBase::_OnHandleMouseMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 	}
 
 	bHandled = FALSE;
-	LRESULT lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
+	long lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
 
     if (bHandled)
         return lRet;
@@ -1384,20 +1384,20 @@ LRESULT WindowBase::_OnHandleMouseMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 // 	}
 	return 0;
 }
-LRESULT  WindowBase::_OnHandleKeyBoardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowBase::_OnHandleKeyBoardMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;
     return m_oMouseManager.HandleKeyboardMessage( uMsg, wParam, lParam, &bHandled );
 }
 
-LRESULT  WindowBase::_OnHandleTouchMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowBase::_OnHandleTouchMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;
     return m_oMouseManager.HandleTouchMessage( uMsg, wParam, lParam, bHandled);
 }
 
 
-LRESULT WindowBase::_OnSetFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnSetFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = TRUE;
 
@@ -1414,7 +1414,7 @@ LRESULT WindowBase::_OnSetFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	return 1;    // 注：由于Dialog默认的WM_SETFOCUS会将焦点再设置到自己的第一个控件上面，因此如果在这里return 0或者bHandled = FALSE
 	             //     将导致::SetFocus(m_hWnd)的焦点到窗口上面后，又被窗口自己设置到控件上面，导致SetFocus达不到我们的本意
 }
-LRESULT WindowBase::_OnKillFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnKillFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = TRUE;
 
@@ -1434,7 +1434,7 @@ LRESULT WindowBase::_OnKillFocus( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 // 用于解决如果WindowBase是一个子窗口，放在一个普通顶层窗口上，那么点击WindowBase
 // 将无法得到焦点。因此在这里响应MouseActive消息，将自己SetFocus
 // 至少像系统按钮控件是如何处理的点击得到焦点就不得而知了，但WS_TABSTOP不是原因，试过了，没用。
-LRESULT WindowBase::_OnMouseActive( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnMouseActive( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     bHandled = FALSE;
     if (IsChildWindow() && ::GetFocus() != m_hWnd)
@@ -1444,7 +1444,7 @@ LRESULT WindowBase::_OnMouseActive( UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
-LRESULT WindowBase::_OnThemeChange( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnThemeChange( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
 	
@@ -1493,7 +1493,7 @@ HMONITOR  WindowBase::GetPrimaryMonitor()
 // 5. ptMaxSize，Windows内部是与主屏的monitorarea比较的。当ptMaxSize大小主屏大小时，Windows会自动
 //    将窗口调整为workarea大小。但如果ptMaxSize小于主屏大小时，Windows不做调整
 //
-LRESULT WindowBase::_OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnGetMinMaxInfo( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     // 对于WindowBase，只对窗口最小值和最大值对处理。
     // 其它逻辑由CustomWindow去处理
@@ -1516,21 +1516,21 @@ LRESULT WindowBase::_OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam, B
 	return 0;
 }
 
-LRESULT WindowBase::_OnWindowPosChanging( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnWindowPosChanging( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     m_syncWindow._OnWindowPosChanging((LPWINDOWPOS)lParam, bHandled);
 	return 0;
 }
 
-LRESULT  WindowBase::_OnShowWindow(
-            UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowBase::_OnShowWindow(
+            unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;
 
     m_syncWindow._OnShowWindow(wParam, lParam);
     return 0;
 }
-LRESULT WindowBase::_OnSyncWindow( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnSyncWindow( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	switch(wParam)
 	{
@@ -1587,29 +1587,29 @@ LRESULT WindowBase::_OnSyncWindow( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	}
 	return 0;
 }
-LRESULT WindowBase::_OnEnterSizeMove( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnEnterSizeMove( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
     m_syncWindow._OnEnterSizeMove();
 
-	LRESULT lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
+	long lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
 	if (bHandled)
 		return lRet;
 
 	return 0;
 }
-LRESULT WindowBase::_OnExitSizeMove( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long WindowBase::_OnExitSizeMove( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	bHandled = FALSE;
     m_syncWindow._OnExitSizeMove();
 
-	LRESULT lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
+	long lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
 	if (bHandled)
 		return lRet;
 	return 0;
 }	
 
-LRESULT  WindowBase::_OnGetObject( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+long  WindowBase::_OnGetObject( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 	if (!m_hWnd)
 		return 0;
@@ -1618,7 +1618,7 @@ LRESULT  WindowBase::_OnGetObject( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	this->CreateAccesible(&pAccessible);
 	if (pAccessible)
 	{
-		LRESULT lres = LresultFromObject(IID_IAccessible, wParam, pAccessible);
+		long lres = LresultFromObject(IID_IAccessible, wParam, pAccessible);
 		pAccessible->Release();
 		return lres;
 	}
@@ -2166,7 +2166,7 @@ IRenderFont*  WindowBase::GetWindowDefaultRenderFont()
 	return m_pDefaultFont; 
 }
 
-void  WindowBase::SetDefaultRenderFont(LPCTSTR szFontId)
+void  WindowBase::SetDefaultRenderFont(const wchar_t* szFontId)
 {
 	SAFE_RELEASE(m_pDefaultFont);
     if (!szFontId)
@@ -2212,7 +2212,7 @@ void  WindowBase::SetDefaultRenderFont(LPCTSTR szFontId)
 	}
 }
 
-LPCTSTR  WindowBase::GetDefaultRenderFontId()
+const wchar_t*  WindowBase::GetDefaultRenderFontId()
 {
 	if (!m_pDefaultFont)
 		return nullptr;
@@ -2351,7 +2351,7 @@ void  GetNamedChildrenAndReleaseOthers(
 		pNext = pParent->EnumAllChildObject(pChild);  // save
 		pChild->ClearMyTreeRelationOnly();
 
-		LPCTSTR id = pChild->GetId();
+		const wchar_t* id = pChild->GetId();
 		if (id && id[0])
 		{
 #ifdef _DEBUG
@@ -2378,7 +2378,7 @@ void  GetNamedChildrenAndReleaseOthers(
 // 更换窗口布局，用在一些需要改变布局的场景。
 // 场景1：会话窗口，开启桌面共享后，整个界面布局需要进行调整。这种情况下如果使用代码进行调整会很麻烦，而且有些控件样式也不一样。
 //
-void  WindowBase::ChangeSkinLayout(LPCTSTR szLayoutId)
+void  WindowBase::ChangeSkinLayout(const wchar_t* szLayoutId)
 {
 	// 1. 清理窗口状态
 	if (m_pCallbackProxy)

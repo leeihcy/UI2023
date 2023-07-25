@@ -28,7 +28,7 @@ TreeView::~TreeView()
         m_pFloatGroup = nullptr;
     }
 }
-LRESULT  TreeView::OnFirstLastDrawItemUpdated(UINT, WPARAM, LPARAM)
+long  TreeView::OnFirstLastDrawItemUpdated(unsigned int, WPARAM, LPARAM)
 {
     if (!m_pFirstDrawItem)
         return 0;
@@ -89,7 +89,7 @@ LRESULT  TreeView::OnFirstLastDrawItemUpdated(UINT, WPARAM, LPARAM)
 }
 */
 
-namespace UI
+namespace ui
 {
 class ListItemBase;
 class ListCtrlBase;

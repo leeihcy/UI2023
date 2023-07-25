@@ -1,8 +1,8 @@
 #pragma once
 #include "Src\Util\Timeout\timeout.h"
-#include "Inc\Interface\iuiinterface.h"
+#include "include/interface/iuiinterface.h"
 
-namespace UI
+namespace ui
 {
 #define TOOLTIP_DELAY_SHOW_TIME    600
 #define TOOLTIP_AUTO_HIDE_TIME    (GetDoubleClickTime()*10)

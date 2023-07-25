@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "font.h"
-#include "Src\common_def.h"
+#include "src/common_def.h"
 #include "..\UISDK\Src\Util\Stopwatch\stopwatch.h"
 
 static Font  s_fontForDebug;
@@ -72,7 +72,7 @@ void Font::DrawDebugFps()
 	s_fontForDebug.beginDraw();
 
 	TCHAR buf[64];
-	_stprintf(buf, TEXT("%0.2f fps"), fps);
+	wprintf(buf, TEXT("%0.2f fps"), fps);
 
 	RECT rc = { 0, 0, 0, 0 };
 	s_fontForDebug.DrawText(buf, -1, &rc, RGB(255, 0, 0), DT_NOCLIP);

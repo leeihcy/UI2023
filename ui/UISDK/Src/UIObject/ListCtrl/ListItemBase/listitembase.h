@@ -1,10 +1,10 @@
 #pragma once
-#include "Inc\Interface\ilistitembase.h"
+#include "include/interface/ilistitembase.h"
 #include "Src\Base\Message\message.h"
 #include "..\ListItemTooltip\listitemtooltip.h"
 #include "listitem_layer.h"
 
-namespace UI
+namespace ui
 {
 
 class RenderContext;
@@ -63,9 +63,9 @@ public:
 
     bool  HasChild() { return nullptr != m_pChild; }
     bool  IsMyChildItem(ListItemBase* pChild, bool bTestdescendant);
-    UINT  GetChildCount();
-    UINT  GetDescendantCount();
-    UINT  GetDescendantLeafCount();
+    unsigned int  GetChildCount();
+    unsigned int  GetDescendantCount();
+    unsigned int  GetDescendantLeafCount();
 
     void  SetNextItem(ListItemBase* p) { m_pNext = p; }
     void  SetPrevItem(ListItemBase* p) { m_pPrev = p; }
@@ -87,8 +87,8 @@ public:
     int   GetHeight()                         { return m_rcParent.bottom - m_rcParent.top; }
 	void  GetVisibleRectInWindow(LPRECT prcRet);
 
-    void  SetText(LPCTSTR szText);
-    LPCTSTR  GetText()                        { return m_strText.c_str(); }
+    void  SetText(const wchar_t* szText);
+    const wchar_t*  GetText()                        { return m_strText.c_str(); }
     long*  GetData()                          { return m_pData; } 
     void  SetData(long* p)                    { m_pData = p; }
 	long*  GetCtrlData()                      { return m_pCtrlData; }
@@ -119,18 +119,18 @@ public:
 	Layer*  GetSelfLayer();
 	Layer*  GetLayerForAnimate();
 
-    void  SetToolTip(LPCTSTR szText);
-    LPCTSTR  GetToolTip();
+    void  SetToolTip(const wchar_t* szText);
+    const wchar_t*  GetToolTip();
     void  ShowSingleToolTip();
 
     IRenderBase*  GetIconRender() { return m_pIconRender; }
     void  SetIconRender(IRenderBase* p);
     void  SetIconRenderType(RENDER_TYPE eType);
-    void  SetIconFromFile(LPCTSTR szIconPath);
-    void  SetIconFromImageId(LPCTSTR szImageId);
+    void  SetIconFromFile(const wchar_t* szIconPath);
+    void  SetIconFromImageId(const wchar_t* szImageId);
 
-    UINT  GetItemState(); 
-    UINT  GetItemDelayOp();
+    unsigned int  GetItemState(); 
+    unsigned int  GetItemDelayOp();
     void  AddItemDelayOp(int n);
     void  RemoveDelayOp(int n);
     void  ClearDelayOp();
@@ -180,7 +180,7 @@ public:
     void  SetId(UINT_PTR n);
     long  GetItemType() { return m_lItemType; }
     void  SetItemType(long n) { m_lItemType = n; }
-    UINT  GetItemFlag() { return m_nItemFlag; }
+    unsigned int  GetItemFlag() { return m_nItemFlag; }
     void  SetItemFlag(int n) { m_nItemFlag = n; }
     
     // listctrl调用，需要自己刷新
@@ -196,8 +196,8 @@ protected:
     // void  SetAttribute(IMapAttribute* pMapAttr, bool bReload);
     void  OnSize();
     void  OnLazyLoadData();
-    LRESULT  OnDelayOp(UINT, WPARAM, LPARAM);
-    LRESULT  OnGetRenderState(UINT, WPARAM, LPARAM);
+    long  OnDelayOp(unsigned int, WPARAM, LPARAM);
+    long  OnGetRenderState(unsigned int, WPARAM, LPARAM);
 
     // 导航
 protected:
@@ -220,7 +220,7 @@ protected:
 
     LISTITEMSTYLE  m_itemStyle;     // item的一些能力定义。例如是否可选
     long    m_lItemType;      // 一个类型中可能有多种类型的item，用于业务操作
-    UINT    m_nItemFlag;      // 用于为控件标识一个item的类型，常见于 enum IxxxListItem::FLAG
+    unsigned int    m_nItemFlag;      // 用于为控件标识一个item的类型，常见于 enum IxxxListItem::FLAG
     long*   m_pData;          // 每个ITEM的自定义数据
 	long*   m_pCtrlData;      // 用于控件为每个ITEM分配一个数据类型。与m_pData不同，m_pData可能是外部设置的逻辑数据，而
                               // m_pCtrlData是控件为item设置的一个关联数据，例如Menu为PopupMenuItem关联一个pSubMenu.
@@ -229,8 +229,8 @@ protected:
 
     // 绘制相关数据
     IRenderBase*  m_pIconRender;
-    UINT    m_nItemState;       // hover/press/selected/checked/disable...
-    UINT    m_nFlagsDelayOp;    // 延时操作
+    unsigned int    m_nItemState;       // hover/press/selected/checked/disable...
+    unsigned int    m_nFlagsDelayOp;    // 延时操作
     CRect   m_rcParent;         // 基于列表控件的client 区域 
     int     m_nLineIndex;       // 记录该项位于第几行(可见行)
     int     m_nTreeIndex;       // m_nLineIndex标识在所有非隐藏item中的索引，m_nTreeIndex标识在树上的位置

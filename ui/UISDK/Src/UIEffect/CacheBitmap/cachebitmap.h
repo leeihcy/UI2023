@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Src\Atl\image.h"
-namespace UI
+namespace ui
 {
 // 2013.7.30
 // 用于解决一些特效计算过程中需要临时的内存图片，避免不断的创建内存位图

@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "listctrlbase.h"
 #include <algorithm>
-#include "Inc\Interface\iwindow.h"
-#include "Inc\Interface\ilistitembase.h"
-#include "Src\UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.h"
-#include "Inc\Interface\irenderlayer.h"
-#include "Src\UIObject\ListCtrl\ListItemBase\listitembase.h"
-#include "Src\Helper\layout\canvaslayout.h"
-#include "Src\UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.h"
-#include "Src\UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.h"
-#include "Src\UIObject\ListCtrl\MouseKeyboard\menumkmgr.h"
-#include "Src\UIObject\ListCtrl\MouseKeyboard\listctrl_inner_drag.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Src\Util\Gesture\gesturehelper.h"
-#include "Src\Util\DPI\dpihelper.h"
-#include "Src\Resource\skinres.h"
-namespace UI
+#include "include/interface/iwindow.h"
+#include "include/interface/ilistitembase.h"
+#include "src/UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.h"
+#include "include/interface/irenderlayer.h"
+#include "src/UIObject\ListCtrl\ListItemBase\listitembase.h"
+#include "src/layout/canvaslayout.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\menumkmgr.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\listctrl_inner_drag.h"
+#include "src/application/uiapplication.h"
+#include "src/Util\Gesture\gesturehelper.h"
+#include "src/Util\DPI\dpihelper.h"
+#include "src/resource/skinres.h"
+namespace ui
 {
 
 //////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ HRESULT  ListCtrlBase::FinalConstruct(ISkinRes* p)
 	s.hscroll = 1;
 	this->ModifyObjectStyle(&s, 0);
 
-	return S_OK;
+	return 0;
 }
 
 void  ListCtrlBase::FinalRelease()
@@ -286,7 +286,7 @@ void  ListCtrlBase::DelayRemoveItem(ListItemBase* pItem)
     UIPostMessage(pUIApplication, &msg);
 }
 
-LRESULT  ListCtrlBase::OnDelayRemoveItem(WPARAM w, LPARAM l)
+long  ListCtrlBase::OnDelayRemoveItem(WPARAM w, LPARAM l)
 {
 	ListItemBase* pListItem = (ListItemBase*)w;
 
@@ -783,7 +783,7 @@ ListItemBase*  ListCtrlBase::GetItemUnderCursor()
     MapWindowPoints(nullptr, m_pIListCtrlBase->GetHWND(), &pt, 1);
     return GetItemByWindowPoint(pt);
 }
-ListItemBase* ListCtrlBase::GetItemByPos(UINT nIndex, bool bVisibleOnly)
+ListItemBase* ListCtrlBase::GetItemByPos(unsigned int nIndex, bool bVisibleOnly)
 {
 	if (nIndex < 0)
 		return nullptr;
@@ -792,7 +792,7 @@ ListItemBase* ListCtrlBase::GetItemByPos(UINT nIndex, bool bVisibleOnly)
     {
         ListItemBase* pItem = FindVisibleItemFrom(nullptr);
 
-        UINT i = 0;
+        unsigned int i = 0;
         while (pItem)
         {
             if (i == nIndex)
@@ -809,7 +809,7 @@ ListItemBase* ListCtrlBase::GetItemByPos(UINT nIndex, bool bVisibleOnly)
 
 	    ListItemBase* pItem = m_pFirstItem;
 
-	    UINT i = 0;
+	    unsigned int i = 0;
 	    while (pItem)
 	    {
 		    if (i == nIndex)
@@ -834,7 +834,7 @@ int  ListCtrlBase::GetItemPos(ListItemBase* pFindItem, bool bVisibleOnly)
     {
         ListItemBase* pItem = FindVisibleItemFrom(nullptr);
 
-        UINT i = 0;
+        unsigned int i = 0;
         while (pItem)
         {
             if (pFindItem == pItem)
@@ -848,7 +848,7 @@ int  ListCtrlBase::GetItemPos(ListItemBase* pFindItem, bool bVisibleOnly)
     {
         ListItemBase* pItem = m_pFirstItem;
 
-        UINT i = 0;
+        unsigned int i = 0;
         while (pItem)
         {
             if (pFindItem == pItem)
@@ -905,7 +905,7 @@ void  ListCtrlBase::ItemIdChanged(
         m_mapItem[lNewId] = pItem;
     }
 }
-ListItemBase* ListCtrlBase::FindItemByText(LPCTSTR  szText, ListItemBase* pStart)
+ListItemBase* ListCtrlBase::FindItemByText(const wchar_t*  szText, ListItemBase* pStart)
 {
     if (nullptr == szText)
         return nullptr;
@@ -954,7 +954,7 @@ ListItemBase*  ListCtrlBase::EnumItemByProc(ListItemEnumProc pProc, ListItemBase
 }
 
 // 仅在pParent下查找，如果pParent为nullptr,则仅在最顶层查找
-ListItemBase*  ListCtrlBase::FindChildItemByText(LPCTSTR  szText, ListItemBase* pParent, ListItemBase* pStart)
+ListItemBase*  ListCtrlBase::FindChildItemByText(const wchar_t*  szText, ListItemBase* pParent, ListItemBase* pStart)
 {
     if (nullptr == szText)
         return nullptr;
@@ -1160,7 +1160,7 @@ void ListCtrlBase::LayoutItem(ListItemBase* pStart, bool bRedraw)
 	}
 }
 
-void ListCtrlBase::OnSize(UINT nType, int cx, int cy)
+void ListCtrlBase::OnSize(unsigned int nType, int cx, int cy)
 {
     SetMsgHandled(FALSE);
 
@@ -1438,9 +1438,9 @@ void ListCtrlBase::ClearSelectItem(bool bNotify)
 		this->FireSelectItemChanged(pOldSelection);
 	}
 }
-UINT  ListCtrlBase::GetSelectedItemCount()
+unsigned int  ListCtrlBase::GetSelectedItemCount()
 {
-    UINT  nCount = 0;
+    unsigned int  nCount = 0;
     ListItemBase* p = m_pFirstSelectedItem;
     while (p)
     {
@@ -1610,7 +1610,7 @@ void  ListCtrlBase::GetScrollPos(int* pnX, int* pnY)
 	m_mgrScrollBar.GetScrollPos(pnX, pnY);
 }
 
-bool ListCtrlBase::InsertItem(ListItemBase* pItem, UINT nPos)
+bool ListCtrlBase::InsertItem(ListItemBase* pItem, unsigned int nPos)
 {
 	ListItemBase* pInsertAfter = nullptr;
 	if (nPos >= m_nItemCount)
@@ -2188,7 +2188,7 @@ void ListCtrlBase::WindowPoint2ItemPoint(ListItemBase* pItem, const POINT* ptWnd
     }
 }
 
-void ListCtrlBase::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+void ListCtrlBase::OnKeyDown(unsigned int nChar, unsigned int nRepCnt, unsigned int nFlags)
 {
     // 向外部发出notify，如果外部处理，则不再交由mousekeymgr处理
 // 	UIMSG  msg;
@@ -2209,7 +2209,7 @@ void ListCtrlBase::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-void  ListCtrlBase::OnLButtonDown(UINT nFlags, POINT point)
+void  ListCtrlBase::OnLButtonDown(unsigned int nFlags, POINT point)
 {
     if (m_listctrlStyle.dragwnd_if_clickblank &&
         !GetHoverItem() && !GetPressItem())
@@ -2229,7 +2229,7 @@ void  ListCtrlBase::OnLButtonDown(UINT nFlags, POINT point)
     SetMsgHandled(FALSE);
 }
 
-void ListCtrlBase::OnStateChanged(UINT nMask)
+void ListCtrlBase::OnStateChanged(unsigned int nMask)
 {
     SetMsgHandled(FALSE);
 	if (nMask & OSB_FOCUS)
@@ -2248,7 +2248,7 @@ void ListCtrlBase::OnHScroll(int nSBCode, int nPos, IMessage* pMsgFrom)
     SetMsgHandled(FALSE);
     SetCalcFirstLastDrawItemFlag();
 }
-BOOL  ListCtrlBase::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
+BOOL  ListCtrlBase::OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt)
 {
     BOOL bHandled = TRUE;
     BOOL bNeedRefresh = FALSE;
@@ -2264,7 +2264,7 @@ BOOL  ListCtrlBase::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
     return bHandled;
 }
 
-LRESULT  ListCtrlBase::OnInertiaVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam)
+long  ListCtrlBase::OnInertiaVScroll(unsigned int uMsg, WPARAM wParam, LPARAM lParam)
 {
     SetCalcFirstLastDrawItemFlag();
     this->Invalidate();
@@ -2478,7 +2478,7 @@ void ListCtrlBase::RedrawItemByInnerCtrl(IRenderTarget* pRenderTarget, ListItemB
 
 //////////////////////////////////////////////////////////////////////////
 
-LPCTSTR  ListCtrlBase::GetItemText(ListItemBase* pItem)
+const wchar_t*  ListCtrlBase::GetItemText(ListItemBase* pItem)
 {
 	if (nullptr == pItem)
 		return nullptr;
@@ -2591,14 +2591,14 @@ void  ListCtrlBase::RemoveItemTypeShareData(int lType)
 // }
 
 // pt为控件内部坐标
-LRESULT  ListCtrlBase::OnHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam)
+long  ListCtrlBase::OnHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam)
 {
     POINT pt = {(int)wParam, (int)lParam};
 
     // 1. 检查float item 
     ListItemBase* pItem = m_MgrFloatItem.HitTest(pt);
     if (pItem)
-        return (LRESULT)pItem->GetIListItemBase();
+        return (long)pItem->GetIListItemBase();
 
     // 2. 检查可视item
 	UpdateListIfNeed();
@@ -2617,7 +2617,7 @@ LRESULT  ListCtrlBase::OnHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         if (PtInRect(&rcParent, pt))
         {
-            return (LRESULT)p->GetIListItemBase();
+            return (long)p->GetIListItemBase();
         }
         if (p == m_pLastDrawItem)
             break;
@@ -3157,9 +3157,9 @@ bool  ListCtrlBase::TestListCtrlStyle(LISTCTRLSTYLE* test)
 }
 
 
-LRESULT  ListCtrlBase::OnGesturePan(UINT, WPARAM wParam, LPARAM lParam)
+long  ListCtrlBase::OnGesturePan(unsigned int, WPARAM wParam, LPARAM lParam)
 {
-	LRESULT lRet = HANDLED;
+	long lRet = HANDLED;
 	
 	static int  bounce_edge_power = 0;
 	//UI::GESTUREINFO* pgi = (UI::GESTUREINFO*)lParam;

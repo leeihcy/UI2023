@@ -1,7 +1,7 @@
 #pragma once
 #include "..\wndtransmodebase.h"
 
-namespace UI
+namespace ui
 {
 
 class AntiWindowWrap : public WndTransModeBase
@@ -23,7 +23,7 @@ public:
 	virtual void  Enable(bool b);
 
 protected:
-	LRESULT  _OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnNcPaint(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 protected:
     C9Region  m_9region;

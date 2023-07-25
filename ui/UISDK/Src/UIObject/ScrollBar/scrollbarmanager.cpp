@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "scrollbarmanager.h"
-#include "Src\UIObject\Window\window.h"
+#include "src/UIObject\Window\window.h"
 
-using namespace UI;
+using namespace ui;
 
 ScrollBarManager::ScrollBarManager():Message(nullptr)
 {
@@ -174,13 +174,13 @@ void  ScrollBarManager::OnHScroll(int nSBCode, int nPos, IMessage* pMsgFrom)
     }
 }
 
-void  ScrollBarManager::OnStateChanged(UINT nMask)
+void  ScrollBarManager::OnStateChanged(unsigned int nMask)
 {
     SetMsgHandled(FALSE);
 	NotifyStateChanged(nMask);
 }
 
-void  ScrollBarManager::NotifyStateChanged(UINT nMask)
+void  ScrollBarManager::NotifyStateChanged(unsigned int nMask)
 {
     if (nMask & (OSB_HOVER|OSB_FORCEHOVER|OSB_PRESS))
     {
@@ -193,7 +193,7 @@ void  ScrollBarManager::NotifyStateChanged(UINT nMask)
 }
 
 // 请求该控件是否需要触摸消息
-LRESULT  ScrollBarManager::OnGestureBeginReq(UINT uMsg, WPARAM, LPARAM)
+long  ScrollBarManager::OnGestureBeginReq(unsigned int uMsg, WPARAM, LPARAM)
 {
     if (m_pBindObject)
     {
@@ -208,7 +208,7 @@ LRESULT  ScrollBarManager::OnGestureBeginReq(UINT uMsg, WPARAM, LPARAM)
 // 为了支持hover列表滚动，对WM_MOUSEWHEEL消息流程进行了些调整
 // 消息的返回值才表示是否处理了滚动消息。如滚动条不显示时返回0，显示时返回1。
 // 但即使滚动条显示了，也不一定需要刷新，例如滚动条在最底端。
-BOOL  ScrollBarManager::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
+BOOL  ScrollBarManager::OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt)
 {
     BOOL bHandled = TRUE;
     BOOL bNeedRedraw = FALSE;
@@ -216,7 +216,7 @@ BOOL  ScrollBarManager::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
     return bHandled;
 }
 void  ScrollBarManager::DoMouseWheel(
-        UINT nFlags, 
+        unsigned int nFlags, 
         short zDelta, 
         POINT pt, 
         BOOL& bHandled,
@@ -235,7 +235,7 @@ void  ScrollBarManager::DoMouseWheel(
     bHandled = TRUE;
 
     enum ScrollAction { None, HScroll, VScroll };
-    UINT nAction = None;
+    unsigned int nAction = None;
 
     if (m_evScrollbarVisibleType == SCROLLBAR_VISIBLE_NONE)
     {
@@ -250,7 +250,7 @@ void  ScrollBarManager::DoMouseWheel(
         bool bVScrollBarAvailable = m_vScrollInfo.nRange > m_vScrollInfo.nPage;
         bool bHScrollBarAvailable = m_hScrollInfo.nRange > m_hScrollInfo.nPage;
 
-        if (bVScrollBarAvailable && bHScrollBarAvailable && Util::IsKeyDown(VK_SHIFT))
+        if (bVScrollBarAvailable && bHScrollBarAvailable && util::IsKeyDown(VK_SHIFT))
         {
             nAction = HScroll;
         }
@@ -284,7 +284,7 @@ BOOL  ScrollBarManager::OnHMouseWheel(short zDelta, POINT pt)
     if (nullptr == m_pBindObject)
         return FALSE;
 
-    bool bCtrlDown = Util::IsKeyDown(VK_CONTROL);  // 按下CTRL后，以3倍速进行滚动
+    bool bCtrlDown = util::IsKeyDown(VK_CONTROL);  // 按下CTRL后，以3倍速进行滚动
     int nWheel = m_hScrollInfo.nWheelLine;
     if (bCtrlDown)
         nWheel *= 3;
@@ -311,7 +311,7 @@ BOOL  ScrollBarManager::OnVMouseWheel(short zDelta, POINT pt)
     if (nullptr == m_pBindObject)
         return FALSE;
 
-    bool bCtrlDown = Util::IsKeyDown(VK_CONTROL);  // 按下CTRL后，以3倍速进行滚动
+    bool bCtrlDown = util::IsKeyDown(VK_CONTROL);  // 按下CTRL后，以3倍速进行滚动
     if (!m_smoothScroll.IsEnable() || bCtrlDown)
     {
         int nWheel = m_vScrollInfo.nWheelLine;
@@ -341,7 +341,7 @@ BOOL  ScrollBarManager::OnVMouseWheel(short zDelta, POINT pt)
 }
 
 // 在平滑滚动过程中点击了列表控件，立即停止滚动
-LRESULT  ScrollBarManager::OnCaptureStopInertiaScroll(UINT uMsg, WPARAM, LPARAM)
+long  ScrollBarManager::OnCaptureStopInertiaScroll(unsigned int uMsg, WPARAM, LPARAM)
 {
     SetMsgHandled(FALSE);
 

@@ -427,7 +427,7 @@ static void  improve_timer_resolution(HMODULE& hModuleWinmm)
 
     if (hModuleWinmm)
     {
-        typedef UINT (__stdcall *pfntimeBeginPeriod)(UINT uPeriod);
+        typedef unsigned int (__stdcall *pfntimeBeginPeriod)(unsigned int uPeriod);
 
         static FARPROC func = nullptr;
         if (!func)
@@ -443,7 +443,7 @@ static void  restore_timer_resolution(HMODULE& hModuleWinmm)
     if (!hModuleWinmm)
         return;
 
-    typedef UINT (__stdcall *timeEndPeriod)(UINT uPeriod);
+    typedef unsigned int (__stdcall *timeEndPeriod)(unsigned int uPeriod);
 
     static FARPROC func = nullptr;
     if (!func)
@@ -455,7 +455,7 @@ static void  restore_timer_resolution(HMODULE& hModuleWinmm)
 
 void  /*VSYNC_API*/ WaitForVerticalBlank();
 
-void CALLBACK TimerProc(HWND, UINT, UINT_PTR, DWORD)
+void CALLBACK TimerProc(HWND, unsigned int, UINT_PTR, DWORD)
 {
 	g_pAnimateManager->OnTick();
 }

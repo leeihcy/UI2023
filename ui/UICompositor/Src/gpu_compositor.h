@@ -16,7 +16,7 @@
 //    in the rasterizer state
 //
 
-namespace UI
+namespace ui
 {
 class GpuRenderLayer;
 class GpuComposition : public IHardwareComposition

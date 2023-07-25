@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "renderbuffer.h"
-#include "Src\Atl\image.h"
+#include "src/Atl\image.h"
 #include "..\UICompositor\Inc\inc.h"
 
-using namespace UI;
+using namespace ui;
 
 RenderBuffer::RenderBuffer()
 {
@@ -102,7 +102,7 @@ bool RenderBuffer::IsTopDownBitmap()
 //     }
 // }
 
-void  RenderBuffer::Dump(LPCTSTR szPath)
+void  RenderBuffer::Dump(const wchar_t* szPath)
 {
     if (m_hBitmap)
     {

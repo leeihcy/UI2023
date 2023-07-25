@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "Inc\Interface\ilistctrlbase.h"
-#include "Src\UIObject\ListCtrl\listctrlbase.h"
-#include "Inc\Interface\ilistitembase.h"
-#include "Src\UIObject\ListCtrl\ListItemBase\listitembase.h"
+#include "include/interface/ilistctrlbase.h"
+#include "src/UIObject\ListCtrl\listctrlbase.h"
+#include "include/interface/ilistitembase.h"
+#include "src/UIObject\ListCtrl\ListItemBase\listitembase.h"
 #include "CustomItem\custom_listitem.h"
 
-namespace UI
+namespace ui
 {
 
 UI_IMPLEMENT_INTERFACE(ListCtrlBase, Control)
@@ -55,7 +55,7 @@ bool  IListCtrlBase::InsertItem(
 }
 
 ICustomListItem*  IListCtrlBase::InsertCustomItem(
-                    LPCTSTR  szLayoutName,
+                    const wchar_t*  szLayoutName,
                     long lId,
                     IListItemBase* pParent, 
                     IListItemBase* pInsertAfter)
@@ -339,7 +339,7 @@ IListItemBase*  IListCtrlBase::GetItemById(long lId)
         return p->GetIListItemBase();
     return nullptr;
 }
-IListItemBase*  IListCtrlBase::FindItemByText(LPCTSTR szText, IListItemBase* pStart)
+IListItemBase*  IListCtrlBase::FindItemByText(const wchar_t* szText, IListItemBase* pStart)
 {
     ListItemBase* pStartImpl = nullptr;
     if (pStart)
@@ -350,7 +350,7 @@ IListItemBase*  IListCtrlBase::FindItemByText(LPCTSTR szText, IListItemBase* pSt
         return p->GetIListItemBase();
     return nullptr;
 }
-IListItemBase*  IListCtrlBase::FindChildItemByText(LPCTSTR szText, 
+IListItemBase*  IListCtrlBase::FindChildItemByText(const wchar_t* szText, 
                                                    IListItemBase* pParent,
                                                    IListItemBase* pStart)
 {
@@ -658,7 +658,7 @@ signal<IListCtrlBase*, IListItemBase*>&  IListCtrlBase::DBClickEvent()
 {
     return __pImpl->dbclick;
 }
-signal<IListCtrlBase*, UINT, bool&>&  IListCtrlBase::KeyDownEvent()
+signal<IListCtrlBase*, unsigned int, bool&>&  IListCtrlBase::KeyDownEvent()
 {
     return __pImpl->keydown;
 }
@@ -675,7 +675,7 @@ signal2<IListCtrlBase*, IListItemBase*>&  IListCtrlBase::DBClickEvent()
 {
 	return __pImpl->dbclick;
 }
-signal3<IListCtrlBase*, UINT, bool&>&  IListCtrlBase::KeyDownEvent()
+signal3<IListCtrlBase*, unsigned int, bool&>&  IListCtrlBase::KeyDownEvent()
 {
 	return __pImpl->keydown;
 }

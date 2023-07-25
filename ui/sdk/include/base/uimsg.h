@@ -19,7 +19,7 @@
 //
 
 #define UI_BEGIN_MSG_MAP()                            \
-    virtual bool virtualProcessMessage(ui::UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false) \
+    virtual bool virtualProcessMessage(ui::UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false) override \
     {                                                 \
         return this->nvProcessMessage(pMsg, nMsgMapID, bDoHook); \
     }                                                 \
@@ -127,7 +127,7 @@
 
 #define VIRTUAL_BEGIN_MSG_MAP(theClass) \
         public: \
-        virtual bool ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, DWORD dwMsgMapID = 0) \
+        virtual bool ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID = 0) \
         { \
             bool bHandled = true; \
             (hWnd); \
@@ -152,7 +152,7 @@
 //  wparam : ISkinRes*,对象所属资源包
 //
 #define UI_MSG_FINALCONSTRUCT  168252120
-// HRESULT  FinalConstruct(ISkinRes* p);
+// long  FinalConstruct(ISkinRes* p);
 #define UIMSG_FINALCONSTRUCT(func)                    \
     if (uMsg == UI_MSG_FINALCONSTRUCT)                \
     {                                                 \
@@ -239,6 +239,7 @@
 //
 #define UI_MSG_QUERYINTERFACE 165312200
 
+#if defined(OS_WIN)
 #define UIMSG_QUERYINTERFACE(className)               \
     if (uMsg == UI_MSG_QUERYINTERFACE)                \
     {                                                 \
@@ -250,6 +251,15 @@
             return true;                              \
         }                                             \
     }
+#else
+#define UIMSG_QUERYINTERFACE(className)               \
+    if (uMsg == UI_MSG_QUERYINTERFACE)                \
+    {                                                 \
+        SetMsgHandled(true);                          \
+        UIASSERT(false);                              \
+        return false;                                 \
+    }
+#endif
 
 // void*  QueryInterface(const IID* pIID);
 #define UIMSG_QUERYINTERFACE2(className)              \
@@ -275,7 +285,7 @@
 //		HTNOWHERE表示不在该对象上面
 //
 #define UI_MSG_HITTEST  168261616
-// LONG_PTR  OnHitTest(POINT* ptInParent, __out POINT* ptInChild)
+// long*  OnHitTest(POINT* ptInParent, POINT* ptInChild)
 #define UIMSG_HITTEST(func)                           \
     if (uMsg == UI_MSG_HITTEST)                       \
     {                                                 \
@@ -406,12 +416,12 @@
 //
 #define UI_MSG_CALC_PARENT_NONCLIENTRECT 168261659
 
-// void OnCalcParentNonClientRect(CRegion4* prcNonClientRegion)
+// void OnCalcParentNonClientRect(RECT* prcNonClientRegion)
 #define UIMSG_CALCPARENTNONCLIENTRECT(func)               \
     if (uMsg == UI_MSG_CALC_PARENT_NONCLIENTRECT)         \
     {                                                     \
         SetMsgHandled(true);                              \
-        func((CRegion4*)wParam);                          \
+        func((RECT*)wParam);                          \
         if (IsMsgHandled())                               \
             return true;                                  \
     } 
@@ -663,7 +673,7 @@ struct GETDESIREDSIZEINFO
     if (uMsg == UI_MSG_GETRENDERFONT) \
     { \
         SetMsgHandled(true); \
-        lResult = (LONG_PTR)(IRenderFont*)func(); \
+        lResult = (long)(long*)(IRenderFont*)func(); \
         if (IsMsgHandled()) \
             return true; \
     }
@@ -773,7 +783,7 @@ struct GETDESIREDSIZEINFO
 	}
 
 
-namespace UI
+namespace ui
 {
 	struct IUIAccessible;
 	struct IUIAccessibleCreator
@@ -913,12 +923,12 @@ namespace UI
     }
 
 // 比传递WM_TIMER增加一个LPARAM
-// void  OnTimer(UINT_PTR nIDEvent, long lParam)
+// void  OnTimer(unsigned int* nIDEvent, long lParam)
 #define UIMSG_TIMER(func)                             \
     if (uMsg == WM_TIMER)                             \
     {                                                 \
         SetMsgHandled(true);                          \
-        func((UINT_PTR)wParam, lParam);               \
+        func((unsigned int*)wParam, lParam);               \
         lResult = 0;                                  \
         if(IsMsgHandled())                            \
             return true;                              \

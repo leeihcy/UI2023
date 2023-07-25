@@ -1,7 +1,7 @@
 #pragma once
 #include "Src\atl\image.h"
 
-namespace UI
+namespace ui
 {
 template<class T>
 class GdiplusRenderBitmapImpl : public T

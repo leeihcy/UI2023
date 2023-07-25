@@ -36,7 +36,7 @@ bool  GdiplusRenderFont::Load(LOGFONT* plogfont)
 
 	SAFE_DELETE(m_pFont);
 
-	INT  nSize = abs(Util::FontHeight2Size(plogfont->lfHeight));
+	INT  nSize = abs(util::FontHeight2Size(plogfont->lfHeight));
 	//Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;   // FontStyle不支持|=，改用int代替
 	int  nStyle = Gdiplus::FontStyleRegular;
 
@@ -116,7 +116,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 	if (NULL == m_pFont)
 		return sizeText;
 
-	if (NULL == szText || _tcslen(szText)==0)
+	if (NULL == szText || wcslen(szText)==0)
 		return sizeText;
 
 	HDC hDC = Image::GetCacheDC();
@@ -132,7 +132,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 		Gdiplus::RectF  layoutRect((Gdiplus::REAL)0,(Gdiplus::REAL)0, (Gdiplus::REAL)nLimitWidth, (Gdiplus::REAL)0 );
 		Gdiplus::RectF  boundingBox;
 
-		g.MeasureString( szText, -1/*_tcslen(szText)*/, m_pFont, layoutRect, pStringFormat, &boundingBox, NULL,NULL );
+		g.MeasureString( szText, -1/*wcslen(szText)*/, m_pFont, layoutRect, pStringFormat, &boundingBox, NULL,NULL );
 
 		sizeText.cx = (int)boundingBox.Width+1;
 		sizeText.cy = (int)boundingBox.Height+1;
@@ -142,7 +142,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 		Gdiplus::PointF origin((Gdiplus::REAL)0,(Gdiplus::REAL)0 );
 		Gdiplus::RectF  boundingBox;
 
-		g.MeasureString( szText, -1/*_tcslen(szText)*/, m_pFont, origin, pStringFormat, &boundingBox );
+		g.MeasureString( szText, -1/*wcslen(szText)*/, m_pFont, origin, pStringFormat, &boundingBox );
 
 		sizeText.cx = (int)boundingBox.Width+1;
 		sizeText.cy = (int)boundingBox.Height+1;
@@ -153,14 +153,14 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 }
 
 
-UINT GdiplusRenderFont::GetCaretHeight( )
+unsigned int GdiplusRenderFont::GetCaretHeight( )
 {
 	if (NULL == m_pFont)
 		return 0;
 
 	HDC hDC = ::Image::GetCacheDC();
 	Gdiplus::Graphics g(hDC);
-	UINT nRet = (UINT)m_pFont->GetHeight(&g);
+	unsigned int nRet = (unsigned int)m_pFont->GetHeight(&g);
 	Image::ReleaseCacheDC(hDC);
 
 	return nRet;

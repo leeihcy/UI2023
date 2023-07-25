@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "oledataobject.h"
 
-namespace UI
+namespace ui
 {
 
 void  CreateDataObjectInstance(IDataObject**  pp)
@@ -75,7 +75,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::QueryInterface(REFIID riid,void **ppvOb
 	}
 
 	this->AddRef();
-	return S_OK;
+	return 0;
 }
 ULONG   STDMETHODCALLTYPE OleDataObject::AddRef(void)
 {
@@ -141,7 +141,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::GetData(FORMATETC *pformatetcIn, STGMED
             }
 
 			_AfxCopyStgMedium(pformatetcIn->cfFormat, pmedium, &pItem->stgmedium);
-			return S_OK;
+			return 0;
 		}
 	}
 	return DV_E_FORMATETC;
@@ -168,7 +168,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::QueryGetData(FORMATETC *pformatetcIn)
 			pItem->formatetc.dwAspect == pformatetcIn->dwAspect &&
 			0 != (pformatetcIn->tymed&pItem->formatetc.tymed) )
 		{
-			return S_OK;
+			return 0;
 		}
 	}
 	return DV_E_FORMATETC;
@@ -213,7 +213,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::SetData(FORMATETC *pformatetc, STGMEDIU
 	}
 
 	m_list.push_back(pItem);
-	return S_OK;
+	return 0;
 }
 
 // 在OleSetClipboard, SetClipboardFormats时将会调用
@@ -226,7 +226,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(DWORD dwDirection, IEnumF
 	p->AddRef();
 	*ppenumFormatEtc = static_cast<IEnumFORMATETC*>(p);
 
-	return S_OK;
+	return 0;
 }
 
 // 数据改变的通知机制，不实现
@@ -269,7 +269,7 @@ HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::QueryInterface(REFIID riid,void **
     }
 
 	this->AddRef();
-	return S_OK;
+	return 0;
 }
 ULONG   STDMETHODCALLTYPE IEnumFORMATETCImpl::AddRef(void)
 {
@@ -305,17 +305,17 @@ HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::Next(ULONG celt, FORMATETC *rgelt,
 		*pceltFetched = j;
 	m_nCurIndex += j;
 
-	return j==celt?S_OK:S_FALSE;
+	return j==celt?0:S_FALSE;
 }
 HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::Skip(ULONG celt)
 {
 	m_nCurIndex += celt;
-	return S_OK;
+	return 0;
 }
 HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::Reset(void)
 {
 	m_nCurIndex = 0;
-	return S_OK;
+	return 0;
 }
 HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::Clone(IEnumFORMATETC **ppenum)
 {
@@ -323,7 +323,7 @@ HRESULT STDMETHODCALLTYPE IEnumFORMATETCImpl::Clone(IEnumFORMATETC **ppenum)
 	p->m_nCurIndex = m_nCurIndex;
 	*ppenum = p;
 
-	return S_OK;
+	return 0;
 }
 
 #pragma region
@@ -424,7 +424,7 @@ BOOL _AfxCopyStgMedium(CLIPFORMAT cfFormat, LPSTGMEDIUM lpDest, LPSTGMEDIUM lpSo
 				{
 					return FALSE;
 				}
-				UINT cbSrc = lstrlenW(lpSource->lpszFileName);
+				unsigned int cbSrc = lstrlenW(lpSource->lpszFileName);
 				LPOLESTR szFileName = (LPOLESTR)::ATL::AtlCoTaskMemCAlloc((cbSrc+1),sizeof(OLECHAR));
 				lpDest->lpszFileName = szFileName;
 				if (szFileName == nullptr)
@@ -464,7 +464,7 @@ BOOL _AfxCopyStgMedium(CLIPFORMAT cfFormat, LPSTGMEDIUM lpDest, LPSTGMEDIUM lpSo
 
 			// get the size of the source stream
 			STATSTG stat;
-			if (lpSource->pstm->Stat(&stat, STATFLAG_NONAME) != S_OK)
+			if (lpSource->pstm->Stat(&stat, STATFLAG_NONAME) != 0)
 			{
 				// unable to get size of source stream
 				return FALSE;
@@ -496,7 +496,7 @@ BOOL _AfxCopyStgMedium(CLIPFORMAT cfFormat, LPSTGMEDIUM lpDest, LPSTGMEDIUM lpSo
 			UIASSERT(lpSource->pstg != nullptr);
 
 			// just copy source to destination
-			if (lpSource->pstg->CopyTo(0, nullptr, nullptr, lpDest->pstg) != S_OK)
+			if (lpSource->pstg->CopyTo(0, nullptr, nullptr, lpDest->pstg) != 0)
 				return FALSE;
 		}
 		return TRUE;

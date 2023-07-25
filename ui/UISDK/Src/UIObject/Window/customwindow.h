@@ -1,7 +1,7 @@
 #pragma once
-#include "Inc\Interface\icustomwindow.h"
+#include "include/interface/icustomwindow.h"
 #include "Src\UIObject\Window\window.h"
-#include "Inc\Interface\iwndtransmode.h"
+#include "include/interface/iwndtransmode.h"
 
 /*
  非客户区重绘的一些东西：
@@ -45,7 +45,7 @@
 #define WM_NCUAHDRAWFRAME   0xAF  
 
 
-namespace UI
+namespace ui
 {
 
 class LayeredWindowWrap;
@@ -136,39 +136,39 @@ private:
 	// 消息响应
 protected:
     
-    LRESULT  _OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnGetMinMaxInfo( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-//	LRESULT  _OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT  _OnNcActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnSetTextIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnNCUAHDrawCaption(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnNCUAHDrawFrame(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT  _OnDwmCompositionChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnNcCalcSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnWindowPosChanging(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnNcHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnGetMinMaxInfo( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
+//	long  _OnNcPaint(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	long  _OnNcActivate(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnSetTextIcon(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnNCUAHDrawCaption(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnNCUAHDrawFrame(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    long  _OnDwmCompositionChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
 	void  OnEraseBkgnd(IRenderTarget* hDC);
     int   OnHitTest(POINT* pt, POINT*  ptInChild);
-    void  OnSysCommand(UINT nID, CPoint point);
-	void  OnLButtonDblClk(UINT nFlags, POINT point);
+    void  OnSysCommand(unsigned int nID, CPoint point);
+	void  OnLButtonDblClk(unsigned int nFlags, POINT point);
 
 
-    virtual void  virtualOnSize(UINT nType, UINT nWidth, UINT nHeight);
+    virtual void  virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight);
 
 //	int  OnCreate(LPCREATESTRUCT lpCreateStruct);
-//	LRESULT  OnNcHitTest( POINT pt );
-// 	void OnNcMouseMove( UINT nHitTest, POINT point );
-// 	void OnNcMouseHover( UINT nHitTest, POINT point ); 
+//	long  OnNcHitTest( POINT pt );
+// 	void OnNcMouseMove( unsigned int nHitTest, POINT point );
+// 	void OnNcMouseHover( unsigned int nHitTest, POINT point ); 
 // 	void OnNcMouseLeave();
-// 	void OnNcLButtonDown( UINT nHitTest, POINT point );
-// 	void OnNcLButtonUp( UINT nHitTest, POINT point );
-// 	void OnNcLButtonDblClk( UINT nHitTest, POINT point );
-// 	void OnNcRButtonDown( UINT nHitTest, POINT point );
-// 	void OnNcRButtonUp( UINT nHitTest, POINT point );
-// 	void OnNcRButtonDblClk( UINT nHitTest, POINT point );
-// 	void OnNcMButtonDown( UINT nHitTest, POINT point );
-// 	void OnNcMButtonUp( UINT nHitTest, POINT point );
-// 	void OnNcMButtonDblClk( UINT nHitTest, POINT point );
+// 	void OnNcLButtonDown( unsigned int nHitTest, POINT point );
+// 	void OnNcLButtonUp( unsigned int nHitTest, POINT point );
+// 	void OnNcLButtonDblClk( unsigned int nHitTest, POINT point );
+// 	void OnNcRButtonDown( unsigned int nHitTest, POINT point );
+// 	void OnNcRButtonUp( unsigned int nHitTest, POINT point );
+// 	void OnNcRButtonDblClk( unsigned int nHitTest, POINT point );
+// 	void OnNcMButtonDown( unsigned int nHitTest, POINT point );
+// 	void OnNcMButtonUp( unsigned int nHitTest, POINT point );
+// 	void OnNcMButtonDblClk( unsigned int nHitTest, POINT point );
 
 protected:
 	bool    TestResizeBit(int nBit);

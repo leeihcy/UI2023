@@ -1,7 +1,7 @@
 #pragma once
 #include "Inc\private_inc.h"
 
-namespace UI
+namespace ui
 {
 class Object;
 class ListCtrlBase;

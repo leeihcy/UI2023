@@ -35,7 +35,7 @@ void  ListCtrlReusable::OnPaint(UI::IRenderTarget*)
 
 }
 
-void ListCtrlReusable::makeView(LPCTSTR identify)
+void ListCtrlReusable::makeView(const wchar_t* identify)
 {
 
 }

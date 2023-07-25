@@ -3,7 +3,7 @@
 
 #include "../base/uidefine.h"
 #include "../common/signalslot/signal.h"
-#include "imessage.h"
+#include "iobject.h"
 #include <SkCanvas.h>
 #include <SkSurface.h>
 // #include "irenderlayer.h"
@@ -16,10 +16,10 @@ struct IWindowMouseMgr;
 struct IWindowKeyboardMgr;
 
 //
-//  ·ÇUIÏûÏ¢£¬²ÉÓÃ::SendMessage·¢ËÍ
-//  ´¦ÀíÒ»¸öÍ¬²½ÒÆ¶¯´°¿ÚÊÂ¼ş(Ìí¼Ó¡¢ĞŞ¸Ä¡¢É¾³ı)
+//  éuiæ¶ˆæ¯ï¼Œé‡‡ç”¨::SendMessageå‘é€
+//  å¤„ç†ä¸€ä¸ªåŒæ­¥ç§»åŠ¨çª—å£äº‹ä»¶(æ·»åŠ ã€ä¿®æ”¹ã€åˆ é™¤)
 //		wparam:  SYNC_WINDOW_EVENT_TYPE
-//		lparam:  ¾ßÌå²é¿´SYNC_WINDOW_EVENT_TYPE¶¨Òå
+//		lparam:  å…·ä½“æŸ¥çœ‹SYNC_WINDOW_EVENT_TYPEå®šä¹‰
 #define UI_WM_SYNC_WINDOW  (WM_USER+827)
 
 #define ANCHOR_NONE        0
@@ -31,24 +31,24 @@ struct IWindowKeyboardMgr;
 #define ANCHOR_OUT_RIGHT   0x0020
 #define ANCHOR_OUT_TOP     0x0040
 #define ANCHOR_OUT_BOTTOM  0x0080
-#define ANCHOR_CUSTOM      0x0100   // ·¢ËÍUI_WM_SYNC_WINDOWPOSCHANGINGÏûÏ¢¸ø´°¿Ú£¬ÓÉ´°¿Ú×ÔĞĞ¾ö¶¨ÈçºÎÒÆ¶¯×Ô¼º
-#define ANCHOR_CLIENTREGION  0x200  // ÓëhostµÄ¿Í»§Çø¶ÔÆë£¬ÀıÈçhostÊÇ¸öÆÕÍ¨±ß¿ò´°¿Ú
+#define ANCHOR_CUSTOM      0x0100   // å‘é€UI_WM_SYNC_WINDOWPOSCHANGINGæ¶ˆæ¯ç»™çª—å£ï¼Œç”±çª—å£è‡ªè¡Œå†³å®šå¦‚ä½•ç§»åŠ¨è‡ªå·±
+#define ANCHOR_CLIENTREGION  0x200  // ä¸hostçš„å®¢æˆ·åŒºå¯¹é½ï¼Œä¾‹å¦‚hostæ˜¯ä¸ªæ™®é€šè¾¹æ¡†çª—å£
 
 
 enum SYNC_WINDOW_EVENT_TYPE
 {
-    ADD_SYNC_WINDOW,            // Í¨ÖªHOST, Ôö¼ÓÒ»¸ö¸úËæÕß.LPARAM: SyncWindowData*
-    MODIFY_SYNC_WINDOW,         // Í¨ÖªHOST, ĞŞ¸ÄÒ»¸ö¸úËæÕßĞÅÏ¢.LPARAM: SyncWindowData*
-    REMOVE_SYNC_WINDOW,         // Í¨ÖªHOST, ÒÆ³ıÒ»¸ö¸úËæÕß.LPARAM: SyncWindowData*
+    ADD_SYNC_WINDOW,            // é€šçŸ¥HOST, å¢åŠ ä¸€ä¸ªè·Ÿéšè€….long: SyncWindowData*
+    MODIFY_SYNC_WINDOW,         // é€šçŸ¥HOST, ä¿®æ”¹ä¸€ä¸ªè·Ÿéšè€…ä¿¡æ¯.long: SyncWindowData*
+    REMOVE_SYNC_WINDOW,         // é€šçŸ¥HOST, ç§»é™¤ä¸€ä¸ªè·Ÿéšè€….long: SyncWindowData*
 
-    ADD_SYNC_WINDOW_RESULT,     // Í¨ÖªSITE£¬Ìí¼Ó³É¹¦.LPARAM: host HWND
-    MODIFY_SYNC_WINDOW_RESULT,  // Í¨ÖªSITE£¬ĞŞ¸Ä³É¹¦.LPARAM: host HWND
-    REMOVE_SYNC_WINDOW_RESULT,  // Í¨ÖªSITE£¬É¾³ı³É¹¦.LPARAM: host HWND
+    ADD_SYNC_WINDOW_RESULT,     // é€šçŸ¥SITEï¼Œæ·»åŠ æˆåŠŸ.long: host HWND
+    MODIFY_SYNC_WINDOW_RESULT,  // é€šçŸ¥SITEï¼Œä¿®æ”¹æˆåŠŸ.long: host HWND
+    REMOVE_SYNC_WINDOW_RESULT,  // é€šçŸ¥SITEï¼Œåˆ é™¤æˆåŠŸ.long: host HWND
 
-    HOST_WINDOW_DESTROYED,      // Òª¸úËæµÄHOSTÏú»ÙÁË£¬Çå¿Õ×Ô¼ºµÄHOST¾ä±ú. LPARAM: ÎŞ
-    HOST_WINDOW_POSCHANGING,    // ·¢ËÍ¸øSITE´°¿Ú£¬±êÃ÷ÏÂÒ»´ÎÏìÓ¦µÄWindowPosChaningÏûÏ¢ÊÇÒòÎªHOSTÒÆ¶¯²úÉúµÄ
+    HOST_WINDOW_DESTROYED,      // è¦è·Ÿéšçš„HOSTé”€æ¯äº†ï¼Œæ¸…ç©ºè‡ªå·±çš„HOSTå¥æŸ„. long: æ— 
+    HOST_WINDOW_POSCHANGING,    // å‘é€ç»™SITEçª—å£ï¼Œæ ‡æ˜ä¸‹ä¸€æ¬¡å“åº”çš„WindowPosChaningæ¶ˆæ¯æ˜¯å› ä¸ºHOSTç§»åŠ¨äº§ç”Ÿçš„
 
-    SYNC_NOW,                   // ·¢ËÍ¸øhost£¬Á¢¼´Í¬²½Ò»´Î£¬Èç´°¿Ú¸Õ´´½¨Íê³É
+    SYNC_NOW,                   // å‘é€ç»™hostï¼Œç«‹å³åŒæ­¥ä¸€æ¬¡ï¼Œå¦‚çª—å£åˆšåˆ›å»ºå®Œæˆ
 };
 
 struct  AnchorData
@@ -58,11 +58,11 @@ struct  AnchorData
 
     union{
         int xOffset2;
-        int Width;         // -1 ±íÊ¾²»ĞŞ¸Ä´°¿Ú¿í¶È
+        int Width;         // -1 è¡¨ç¤ºä¸ä¿®æ”¹çª—å£å®½åº¦
     };
     union{
         int yOffset2;
-        int Height;       // -1 ±íÊ¾²»ĞŞ¸Ä´°¿Ú¸ß¶È
+        int Height;       // -1 è¡¨ç¤ºä¸ä¿®æ”¹çª—å£é«˜åº¦
     };
 
     AnchorData()
@@ -80,11 +80,11 @@ struct  AnchorData
 struct  SyncWindowData
 {
     HWND         m_hWnd;           
-    UINT         m_nMask;
-    UINT         m_nAnchorType;   
-    AnchorData   m_rcAnchorData;  // µ±m_nAnchorTypeÏàÓ¦Î»ÓĞÖµÊ±£¬m_rcAnchorDataµÄ¸ÃÎ»ÓĞĞ§
-    bool         m_bAnchorOn;     // ¸úËæÊÇ·ñÆğ×÷ÓÃ¡£ÀıÈçÁÙÊ±½«´°¿ÚÒÆ³öHOST´°¿Ú£¬²»½øĞĞ¸úËæ£¬È»ºóÓÖÌùµ½HOST´°¿ÚÅÔÔÙ´Î¿ªÆô¸úËæ¡£
-	bool         m_bSyncVisible;  // ÊÇ·ñÍ¬²½ÏÔÒş
+    unsigned int         m_nMask;
+    unsigned int         m_nAnchorType;   
+    AnchorData   m_rcAnchorData;  // å½“m_nAnchorTypeç›¸åº”ä½æœ‰å€¼æ—¶ï¼Œm_rcAnchorDataçš„è¯¥ä½æœ‰æ•ˆ
+    bool         m_bAnchorOn;     // è·Ÿéšæ˜¯å¦èµ·ä½œç”¨ã€‚ä¾‹å¦‚ä¸´æ—¶å°†çª—å£ç§»å‡ºHOSTçª—å£ï¼Œä¸è¿›è¡Œè·Ÿéšï¼Œç„¶ååˆè´´åˆ°HOSTçª—å£æ—å†æ¬¡å¼€å¯è·Ÿéšã€‚
+	bool         m_bSyncVisible;  // æ˜¯å¦åŒæ­¥æ˜¾éš
 
     SyncWindowData()
     {
@@ -100,21 +100,21 @@ struct  SyncWindowData
 // window style
 typedef struct tagWindowStyle
 {
-	bool  destroyed : 1;       // ±íÊ¾¸Ã´°¿ÚÒÑ¾­±»Ïú»ÙÁË(WM_NCDESTROY)£¬ÓÃÓÚ´¥·¢OnFinalMessage
-	bool  attach : 1;          // ±íÊ¾¸Ã´°¿ÚÊÇattachµÄ£¬´´½¨¡¢Ïú»ÙÓÉÍâ²¿À´¿ØÖÆ
-	bool  setcreaterect : 1;   // ´´½¨´°¿ÚÊ±Ö¸¶¨ÁË´°¿Ú´óĞ¡£¬²»ÓÃÔÙ½øĞĞ´°¿Ú²¼¾ÖÁË
-	bool  dialog_noresize : 1; // ÓÃÓÚ½â¾öwin7ÏÂÃæDialogÏÔÊ¾´óĞ¡ÓÚGetWindowRect²»Ò»ÖÂµÄÎÊÌâ
-	bool  hard_composite: 1;   // ±¾´°¿ÚÊ¹ÓÃÓ²¼şºÏ³É 
+	bool  destroyed : 1;       // è¡¨ç¤ºè¯¥çª—å£å·²ç»è¢«é”€æ¯äº†(WM_NCDESTROY)ï¼Œç”¨äºè§¦å‘OnFinalMessage
+	bool  attach : 1;          // è¡¨ç¤ºè¯¥çª—å£æ˜¯attachçš„ï¼Œåˆ›å»ºã€é”€æ¯ç”±å¤–éƒ¨æ¥æ§åˆ¶
+	bool  setcreaterect : 1;   // åˆ›å»ºçª—å£æ—¶æŒ‡å®šäº†çª—å£å¤§å°ï¼Œä¸ç”¨å†è¿›è¡Œçª—å£å¸ƒå±€äº†
+	bool  dialog_noresize : 1; // ç”¨äºè§£å†³win7ä¸‹é¢Dialogæ˜¾ç¤ºå¤§å°äºGetWindowRectä¸ä¸€è‡´çš„é—®é¢˜
+	bool  hard_composite: 1;   // æœ¬çª—å£ä½¿ç”¨ç¡¬ä»¶åˆæˆ 
 }WindowStyle;
 
-// ÓÃÓÚÍâ²¿ÒµÎñÊµÏÖÕß´¦Àí´°¿ÚÏûÏ¢¡£
-// Íâ²¿²»ÔÙÒªÇó´ÓIWindowBaseÅÉÉú£¬Ö»ĞèÒªÊµÏÖIWindowMessageCallback½Ó¿Ú¼´¿É¡£
+// ç”¨äºå¤–éƒ¨ä¸šåŠ¡å®ç°è€…å¤„ç†çª—å£æ¶ˆæ¯ã€‚
+// å¤–éƒ¨ä¸å†è¦æ±‚ä»IWindowBaseæ´¾ç”Ÿï¼Œåªéœ€è¦å®ç°IWindowMessageCallbackæ¥å£å³å¯ã€‚
 struct IWindowDelegate
 {
-    virtual BOOL  OnWindowMessage(UINT, WPARAM, LPARAM, LRESULT& lResult) { return FALSE; }
-    virtual BOOL  OnWindowUIMessage(UIMSG* pMsg) { return FALSE; }
+    virtual bool  OnWindowMessage(unsigned int, long, long, LRESULT& lResult) { return FALSE; }
+    virtual bool  OnWindowUIMessage(UIMSG* pMsg) { return FALSE; }
     virtual void  OnWindowInitialize() {}
-	virtual void  DoBindPlz(bool bind) {}  // ÔÚ»»·ôÊ±»áÔÙÍ¨ÖªÒ»´Î£¬ÒòÎªÓĞ¿ÉÄÜÓĞĞÂÔöµÄ¿Ø¼ş
+	virtual void  DoBindPlz(bool bind) {}  // åœ¨æ¢è‚¤æ—¶ä¼šå†é€šçŸ¥ä¸€æ¬¡ï¼Œå› ä¸ºæœ‰å¯èƒ½æœ‰æ–°å¢çš„æ§ä»¶
     virtual void  OnWindowClose(bool& bCanClose) { }
     virtual void  OnWindowDestroy() {};
 };
@@ -127,15 +127,15 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
     IWindowRender*  GetWindowRender();
 	ISkinRes*  GetSkinRes();
 
-    BOOL  IsChildWindow();
-	BOOL  IsWindowVisible();
+    bool  IsChildWindow();
+	bool  IsWindowVisible();
     void  ShowWindow();
     void  HideWindow();
     bool  IsDoModal();
     void  CenterWindow(HWND hWndCenter = nullptr);
     void  CenterWindow(HMONITOR hMonitor = nullptr);
-	void  GetWindowNormalRect(LPRECT prc);
-	void  SetWindowNormalRect(LPCRECT prc);
+	void  GetWindowNormalRect(RECT* prc);
+	void  SetWindowNormalRect(const RECT* prc);
 	void  UpdateDesktopLayout();
 
     void  SetFocusObject(IObject* pObj);
@@ -144,18 +144,18 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
     IObject*  GetPressObject();
     IObject*  GetObjectByPos(IObject* pObjParent, POINT* pt, bool bSkinBuilderInvoke=false);
 
-    bool  Create(LPCTSTR szID, HWND hWndParent=nullptr, RECT* prc=nullptr, long lStyle = 0, long lExStyle = 0);
-    bool  Attach(HWND hWnd, LPCTSTR szID);
+    bool  Create(const wchar_t* szID, HWND hWndParent=nullptr, RECT* prc=nullptr, long lStyle = 0, long lExStyle = 0);
+    bool  Attach(HWND hWnd, const wchar_t* szID);
     void  Detach();
-	INT_PTR  DoModal(LPCTSTR szID, HWND hWndParent, bool canResize);
-	INT_PTR  DoModal(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent);
-    HWND  DoModeless(LPCTSTR szID, HWND hWndParent, bool canResize);
-    HWND  DoModeless(HINSTANCE hResInst, UINT nResID, LPCTSTR szID, HWND hWndParent);
+	INT_PTR  DoModal(const wchar_t* szID, HWND hWndParent, bool canResize);
+	INT_PTR  DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent);
+    HWND  DoModeless(const wchar_t* szID, HWND hWndParent, bool canResize);
+    HWND  DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent);
     void  EndDialog(INT_PTR);
 	void  DestroyWindow();
-	void  ChangeSkinLayout(LPCTSTR szLayoutId);
+	void  ChangeSkinLayout(const wchar_t* szLayoutId);
 
-    void  SaveMemBitmap(TCHAR* szFile);
+    void  SaveMemBitmap(wchar* szFile);
 	void  AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha);
 	void  BitBltMemBitmap(HDC hDC, RECT* prc);
     void  EnableDwmTransition(bool b);
@@ -170,7 +170,7 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 //     bool  AddAnchorItem(const SyncWindowData& data);
 //     void  HideAllAnchorItem();
 
-    HRESULT  SetDroppable(bool b);
+    long  SetDroppable(bool b);
 	bool  IsSizeMoveIng();
 
 	signal_mc<long>&  SizeChangedEvent();
@@ -182,7 +182,7 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 
 
 class Window;
-struct UIAPI_UUID(5C36801E-5929-4512-A998-F9719DCC6903) IWindow : public IMessage
+struct UIAPI IWindow : public IObject
 {
   void Create(const Rect &rect);
   void SetTitle(const char* title);
@@ -192,11 +192,12 @@ struct UIAPI_UUID(5C36801E-5929-4512-A998-F9719DCC6903) IWindow : public IMessag
   ui::signal<void(SkCanvas&)> &PaintSignal();
   
   UI_DECLARE_INTERFACE(Window)
+  DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903")
 };
 
 #if 0
 extern "C"
-void UIAPI GetWindowNormalRect(HWND hWnd, LPRECT prc);
+void UIAPI GetWindowNormalRect(HWND hWnd, RECT* prc);
 #endif
 }
 

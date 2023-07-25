@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Inc\Interface\iscrollbarmanager.h"
-#include "Src\UIObject\ScrollBar\scrollbarmanager.h"
+#include "include/interface/iscrollbarmanager.h"
+#include "src/UIObject\ScrollBar\scrollbarmanager.h"
 
-using namespace UI;
+using namespace ui;
 
 IScrollBarManager::IScrollBarManager(ScrollBarManager* p) : IMessage(CREATE_IMPL_FALSE)
 {

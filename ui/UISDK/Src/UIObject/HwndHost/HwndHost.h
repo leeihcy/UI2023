@@ -1,8 +1,8 @@
 #pragma  once
 #include "Src\UIObject\Control\control.h"
-#include "Inc\Interface\ihwndhost.h"
+#include "include/interface/ihwndhost.h"
 
-namespace UI
+namespace ui
 {
 
 //
@@ -50,9 +50,9 @@ public:
 	void  SyncPosition();
 
 protected:
-	static LRESULT CALLBACK  _WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	LRESULT  WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
-	LRESULT  DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
+	static long CALLBACK  _WndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+	long  WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam );
+	long  DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 
     void  UpdateTabStopStyle();
 public:

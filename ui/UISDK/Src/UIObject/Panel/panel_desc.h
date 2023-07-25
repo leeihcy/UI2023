@@ -1,6 +1,6 @@
 #pragma once
-#include "Inc\Interface\iobjectdescription.h"
-#include "Inc\Interface\ipanel.h"
+#include "include/interface/iobjectdescription.h"
+#include "include/interface/ipanel.h"
 
 class PanelDescription : public IObjectDescription
 {

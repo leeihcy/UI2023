@@ -1,6 +1,6 @@
 #pragma once
 #include <shobjidl.h>  // IDropTargetHelper
-namespace UI
+namespace ui
 {
 
 class WindowBase;

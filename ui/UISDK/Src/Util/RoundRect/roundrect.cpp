@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Src\Atl\image.h"
+#include "src/Atl\image.h"
 #include "roundrect.h"
 #include <assert.h>
 
 
-using namespace UI;
+using namespace ui;
 
 // TODO: 如何优化除法处理
 
@@ -481,7 +481,7 @@ void  RoundRectHandler::DestroyBuffer()
     }
 }
 
-void  RoundRectHandler::RequestBuffer(UINT nWidth, UINT nHeight)
+void  RoundRectHandler::RequestBuffer(unsigned int nWidth, unsigned int nHeight)
 {
     if (nWidth > m_nBitmapWidth || nHeight > m_nBitmapHeigth)
     {
@@ -579,11 +579,11 @@ void  RoundRectHandler::CreatePath(Gdiplus::GraphicsPath* pPath)
     CreateRoundRectPath3(pPath, &rc, lefttop, righttop, leftbottom, rightbottom);
 } 
 
-UINT  RoundRectHandler::GetMinWidth()
+unsigned int  RoundRectHandler::GetMinWidth()
 {
     return max((lefttop + righttop), (leftbottom+rightbottom));
 }
-UINT  RoundRectHandler::GetMinHeight()
+unsigned int  RoundRectHandler::GetMinHeight()
 {
     return max((lefttop + leftbottom), (righttop+rightbottom));
 }
@@ -622,7 +622,7 @@ void RoundRectHandler::Set(int nLeftTop, int nRightTop, int nLeftBottom, int nRi
     CreateMaskBitmap();
 }
 
-namespace UI
+namespace ui
 {
 RoundRectHandler  g_CommonRoundRectHandler;
 RoundRectHandler  g_Circle24_24RoundRectHandler;

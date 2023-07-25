@@ -2,7 +2,7 @@
 #define _UI_IHWNDHOST_H_
 #include "icontrol.h"
 
-namespace UI
+namespace ui
 {
 
 class HwndHost;

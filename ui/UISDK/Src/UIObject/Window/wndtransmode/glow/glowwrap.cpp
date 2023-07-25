@@ -47,7 +47,7 @@ void  GlowWindowWrap::Enable(bool b)
 
 
 BOOL UI::GlowWindowWrap::ProcessWindowMessage(
-        HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID /*= 0*/)
+        HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID /*= 0*/)
 {
     if (uMsg == WM_SIZE)
     {
@@ -122,7 +122,7 @@ GlowWindow::~GlowWindow()
 	}
 }
 
-void  GlowWindow::OnSize(UINT nType, CSize size)
+void  GlowWindow::OnSize(unsigned int nType, CSize size)
 {
 	m_buffer.Destroy();
 	m_buffer.Create(size.cx, size.cy, 32, Image::createAlphaChannel);
@@ -172,11 +172,11 @@ void  GlowWindow::render()
 	DeleteObject(hPen);
 
 
-	Util::FixAlphaData  data = { 0 };
+	util::FixAlphaData  data = { 0 };
 	data.hDC = hDC;
-	data.eMode = Util::SET_ALPHA_255_IF_RGBA_ISNOT_0;
+	data.eMode = util::SET_ALPHA_255_IF_RGBA_ISNOT_0;
 	data.bTopDownDib = false;
-	Util::FixBitmapAlpha(&data);
+	util::FixBitmapAlpha(&data);
 	m_buffer.ReleaseDC();
 
 	ShadowBlur(m_buffer.GetHBITMAP(), m_color, nullptr, UI::ScaleByDpi(4));

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "HwndHost.h"
-#include "Src\UIObject\Window\windowbase.h"
+#include "src/UIObject\Window\windowbase.h"
 #include "hwndhost_desc.h"
-#include "Inc\Interface\imapattr.h"
+#include "include/interface/imapattr.h"
 
 HwndHost::HwndHost(IHwndHost* p):Control(p)
 {
@@ -149,7 +149,7 @@ void  HwndHost::Attach(HWND hWnd)
 }
 
 //
-//	[static] LRESULT CALLBACK _WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+//	[static] long CALLBACK _WndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 //
 //	被ATL的thunk替换过的窗口过程
 //
@@ -160,13 +160,13 @@ void  HwndHost::Attach(HWND hWnd)
 //		uMsg,wParam,lParam
 //			[in]	消息信息
 //
-LRESULT  HwndHost::_WndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+long  HwndHost::_WndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	HwndHost* pThis = (HwndHost*)hwnd;
 	return pThis->WndProc( uMsg, wParam, lParam );
 }
 
-LRESULT HwndHost::DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+long HwndHost::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( nullptr != m_oldWndProc )
 	{
@@ -177,11 +177,11 @@ LRESULT HwndHost::DefWindowProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 }
 
 //
-//	[private] LRESULT WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+//	[private] long WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 //
 //	窗口被子类化过之后的窗口过程
 //
-LRESULT	HwndHost::WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
+long	HwndHost::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
 	switch(uMsg)
 	{
@@ -214,7 +214,7 @@ LRESULT	HwndHost::WndProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 	case WM_NCDESTROY:
 		{
-			LRESULT lRet = DefWindowProc(uMsg,wParam,lParam);
+			long lRet = DefWindowProc(uMsg,wParam,lParam);
 			this->UnSubclassWindow();  // 会清空 oldwndproc，因此先调用默认过程
 			m_hWnd = nullptr;
 			return lRet;

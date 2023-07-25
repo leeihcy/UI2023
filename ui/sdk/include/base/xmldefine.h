@@ -1,77 +1,77 @@
-#ifndef XMLDEFINE_H_CBBD5468_6BF1_45ac_B02C_F10AC19A651A
-#define XMLDEFINE_H_CBBD5468_6BF1_45ac_B02C_F10AC19A651A
+#ifndef _UI_XMLDEFINE_H_
+#define _UI_XMLDEFINE_H_
 
-namespace UI
+namespace ui
 {
 
 /////////////////////////////////////////////////////////////////////////////////
 //                                                                             //
-//                                XMLÖĞµÄtag¶¨Òå                               //
+//                                XMLä¸­çš„tagå®šä¹‰                               //
 //                                                                             //
 /////////////////////////////////////////////////////////////////////////////////
 
-#define XML_SEPARATOR             _T(',')            // xmlÖĞµÄ·Ö¸ô·û£¬Èç±íÊ¾ÑÕÉ«¡¢ÇøÓò
-#define XML_PATH_SEPARATOR        _T('/')            // xmlÖĞµÄÂ·¾¶·Ö¸ô·û£¨ÈçÑùÊ½Â·¾¶£¬×Ó¶ÔÏóÂ·¾¶£©
-#define XML_MULTI_SEPARATOR       _T(';')            // xmlÖĞµÄ·Ö¸ô·û,Èç·Ö¸ôÒ»¸ö¿Ø¼şµÄ¶à¸östyle.
-#define XML_FLAG_SEPARATOR        _T('|')            // xmlÖĞµÄ·Ö¸ô·û£¬ÈçÎÄ±¾¶ÔÆë·½Ê½: left|top|vcenter
-#define XML_CHILD_SEPARATOR       _T('.')            // xmlÖĞ¸¸×ÓÖ®¼äµÄ·Ö¸ô·û£¬ÈçMenu.String
-#define XML_KEYVALUE_SEPARATOR    _T(':')            // xmlÖĞkey:valueÖ®¼äµÄ·Ö¸ôÌõ
-#define XML_HEADER                _T("<?xml version=\"1.0\" encoding=\"utf-8\" ?>")
+#define XML_SEPARATOR             L','            // xmlä¸­çš„åˆ†éš”ç¬¦ï¼Œå¦‚è¡¨ç¤ºé¢œè‰²ã€åŒºåŸŸ
+#define XML_PATH_SEPARATOR        L'/'            // xmlä¸­çš„è·¯å¾„åˆ†éš”ç¬¦ï¼ˆå¦‚æ ·å¼è·¯å¾„ï¼Œå­å¯¹è±¡è·¯å¾„ï¼‰
+#define XML_MULTI_SEPARATOR       L';'            // xmlä¸­çš„åˆ†éš”ç¬¦,å¦‚åˆ†éš”ä¸€ä¸ªæ§ä»¶çš„å¤šä¸ªstyle.
+#define XML_FLAG_SEPARATOR        L'|'            // xmlä¸­çš„åˆ†éš”ç¬¦ï¼Œå¦‚æ–‡æœ¬å¯¹é½æ–¹å¼: left|top|vcenter
+#define XML_CHILD_SEPARATOR       L'.'            // xmlä¸­çˆ¶å­ä¹‹é—´çš„åˆ†éš”ç¬¦ï¼Œå¦‚Menu.String
+#define XML_KEYVALUE_SEPARATOR    L':'            // xmlä¸­key:valueä¹‹é—´çš„åˆ†éš”æ¡
+#define XML_HEADER                L"<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
 
 
-#define XML_BOOL_VALUE_YES        _T("yes")
-#define XML_BOOL_VALUE_NO         _T("no")
-#define XML_BOOL_VALUE_1          _T("1")
-#define XML_BOOL_VALUE_0          _T("0")
-#define XML_BOOL_VALUE_TRUE       _T("true")
-#define XML_BOOL_VALUE_FALSE      _T("false")
+#define XML_BOOL_VALUE_YES        L"yes"
+#define XML_BOOL_VALUE_NO         L"no"
+#define XML_BOOL_VALUE_1          L"1"
+#define XML_BOOL_VALUE_0          L"0"
+#define XML_BOOL_VALUE_TRUE       L"true"
+#define XML_BOOL_VALUE_FALSE      L"false"
 
-// #define XML_UI_XMLFILE_EXT   _T(".ui")          // ¹¤³ÌÃèÊöÎÄ¼şµÄºó×ºÃû
-#define XML_SKIN_XML              _T("skin.xml")
-#define XML_SKIN_PACKET_EXT       _T("skn")        // Æ¤·ô°üºó×ºÃû
+// #define XML_UI_XMLFILE_EXT   L".ui"          // å·¥ç¨‹æè¿°æ–‡ä»¶çš„åç¼€å
+#define XML_SKIN_XML              L"skin.xml"
+#define XML_SKIN_PACKET_EXT       L"skn"        // çš®è‚¤åŒ…åç¼€å
 
-#define XML_UI               _T("ui")            // root
-#define XML_SKIN             _T("skin")          // root
-#define XML_XML              _T("xml")
-#define XML_LOG              _T("log")
-#define XML_IMG              _T("image")
-#define XML_FONT             _T("font")
-#define XML_COLOR            _T("color")
-#define XML_LAYOUT           _T("layout")
-#define XML_STYLE            _T("style")
-#define XML_I18N             _T("i18n")
-#define XML_I18N_PREFIX      _T('#')
-#define XML_INCLUDE          _T("include")
-#define XML_PROJECT_EXT      _T("uiproj")          // ¹¤³ÌÎÄ¼şºó×ºÃû
-#define XML_PROJECT_EXT2     _T(".uiproj")
-#define XML_LOG_UI_ID        _T("ui")             // uiÈÕÖ¾id
-#define XML_LAYOUTCONFIG     _T("layoutconfig")   // ÑÓ³Ù¼ÓÔØÆ¤·ôÁĞ±í
-#define XML_PROP             _T("prop")           // ¸´ÔÓÊôĞÔ£¬µ¥¶ÀÅäÖÃÔÚÒ»ĞĞ
-#define XML_KEY              _T("key")            // <prop> </prop>ÏÂÃæµÄkey
+#define XML_UI               L"ui"            // root
+#define XML_SKIN             L"skin"          // root
+#define XML_XML              L"xml"
+#define XML_LOG              L"log"
+#define XML_IMG              L"image"
+#define XML_FONT             L"font"
+#define XML_COLOR            L"color"
+#define XML_LAYOUT           L"layout"
+#define XML_STYLE            L"style"
+#define XML_I18N             L"i18n"
+#define XML_I18N_PREFIX      L'#'
+#define XML_INCLUDE          L"include"
+#define XML_PROJECT_EXT      L"uiproj"          // å·¥ç¨‹æ–‡ä»¶åç¼€å
+#define XML_PROJECT_EXT2     L".uiproj"
+#define XML_LOG_UI_ID        L"ui"             // uiæ—¥å¿—id
+#define XML_LAYOUTCONFIG     L"layoutconfig"   // å»¶è¿ŸåŠ è½½çš®è‚¤åˆ—è¡¨
+#define XML_PROP             L"prop"           // å¤æ‚å±æ€§ï¼Œå•ç‹¬é…ç½®åœ¨ä¸€è¡Œ
+#define XML_KEY              L"key"            // <prop> </prop>ä¸‹é¢çš„key
 
-#define XML_ITEM             _T("item")
-#define XML_IMAGE_ITEM_GIF   _T("gif")
-#define XML_IMAGE_ITEM_CURSOR _T("cursor")
-#define XML_ID               _T("id")
-#define XML_NAME             _T("name")
-#define XML_TEXT             _T("text")
-#define XML_TOOLTIP          _T("tooltip")
-#define XML_PATH             _T("path")
-#define XML_VISIBLE          _T("visible")
-#define XML_READONLY         _T("readonly")
-#define XML_DISABLE          _T("disable")
-#define XML_FILE             _T("file")
-#define XML_WINDOW           _T("window")
-#define XML_WINDOW_          _T("Window")
-#define XML_LISTITEM         _T("listitem")
-#define XML_LISTITEM_        _T("ListItem")
+#define XML_ITEM             L"item"
+#define XML_IMAGE_ITEM_GIF   L"gif"
+#define XML_IMAGE_ITEM_CURSOR L"cursor"
+#define XML_ID               L"id"
+#define XML_NAME             L"name"
+#define XML_TEXT             L"text"
+#define XML_TOOLTIP          L"tooltip"
+#define XML_PATH             L"path"
+#define XML_VISIBLE          L"visible"
+#define XML_READONLY         L"readonly"
+#define XML_DISABLE          L"disable"
+#define XML_FILE             L"file"
+#define XML_WINDOW           L"window"
+#define XML_WINDOW_          L"Window"
+#define XML_LISTITEM         L"listitem"
+#define XML_LISTITEM_        L"ListItem"
 
-#define XML_ALIGN_LEFT       _T("left")
-#define XML_ALIGN_RIGHT      _T("right")
-#define XML_ALIGN_TOP        _T("top")
-#define XML_ALIGN_BOTTOM     _T("bottom")
-#define XML_ALIGN_CENTER     _T("center")
-#define XML_ALIGN_VCENTER    _T("vcenter")
+#define XML_ALIGN_LEFT       L"left"
+#define XML_ALIGN_RIGHT      L"right"
+#define XML_ALIGN_TOP        L"top"
+#define XML_ALIGN_BOTTOM     L"bottom"
+#define XML_ALIGN_CENTER     L"center"
+#define XML_ALIGN_VCENTER    L"vcenter"
 
 enum ALIGN_TYPE
 {
@@ -84,26 +84,26 @@ enum ALIGN_TYPE
 };
 
 
-#define XML_FONT_FACENAME    _T("face")
-#define XML_FONT_FACENAME2   _T("face2")  // µ±facename×ÖÌå²»´æÔÚÊ±£¬³¢ÊÔfacename2
-#define XML_FONT_HEIGHT      _T("size")
-#define XML_FONT_ORIENTATION _T("orientation") 
-#define XML_FONT_BOLD        _T("bold")
-#define XML_FONT_ITALIC      _T("italic")
-#define XML_FONT_UNDERLINE   _T("underline")
-#define XML_FONT_STRIKEOUT   _T("strikeout")  
-#define XML_FONT_CLEARTYPE   _T("cleartype")   // ÊÇ·ñÊ¹ÓÃcleartypeÑùÊ½
+#define XML_FONT_FACENAME    L"face"
+#define XML_FONT_FACENAME2   L"face2"  // å½“facenameå­—ä½“ä¸å­˜åœ¨æ—¶ï¼Œå°è¯•facename2
+#define XML_FONT_HEIGHT      L"size"
+#define XML_FONT_ORIENTATION L"orientation" 
+#define XML_FONT_BOLD        L"bold"
+#define XML_FONT_ITALIC      L"italic"
+#define XML_FONT_UNDERLINE   L"underline"
+#define XML_FONT_STRIKEOUT   L"strikeout"  
+#define XML_FONT_CLEARTYPE   L"cleartype"   // æ˜¯å¦ä½¿ç”¨cleartypeæ ·å¼
 
-#define XML_IMAGE_THEMEHLS            _T("themehls")    // ¸Ä±äÆ¤·ôÉ«µ÷Ê±£¬¸ÃÍ¼Æ¬ÊÇ·ñ²ÎÓë 0/1£¬Ä¬ÈÏÎª0
-#define XML_IMAGE_NEED_ANTIALIASING   _T("antialiasing")  // Í¼Æ¬ÊÇ·ñĞèÒªÖ§³Ö¿¹¾â³İ£¨Ëõ·ÅÊ±£©
-#define XML_IMAGE_DPI_ADAPT           _T("dpiadapt")    // ÊÇ·ñDPI×ÔÊÊÓ¦Ëõ·Å
+#define XML_IMAGE_THEMEHLS            L"themehls"    // æ”¹å˜çš®è‚¤è‰²è°ƒæ—¶ï¼Œè¯¥å›¾ç‰‡æ˜¯å¦å‚ä¸ 0/1ï¼Œé»˜è®¤ä¸º0
+#define XML_IMAGE_NEED_ANTIALIASING   L"antialiasing"  // å›¾ç‰‡æ˜¯å¦éœ€è¦æ”¯æŒæŠ—é”¯é½¿ï¼ˆç¼©æ”¾æ—¶ï¼‰
+#define XML_IMAGE_DPI_ADAPT           L"dpiadapt"    // æ˜¯å¦DPIè‡ªé€‚åº”ç¼©æ”¾
 
-#define XML_IMAGE_ITEM_TYPE           _T("type")          // imageÀàĞÍ
-#define XML_IMAGE_ITEM_TYPE_IMAGE     _T("image")         // Ä¬ÈÏÖµ
-#define XML_IMAGE_ITEM_TYPE_ICON      _T("icon")          // Í¼±ê 
-#define XML_IMAGE_ITEM_TYPE_IMAGELIST _T("imagelist")     // Í¼Æ¬ÁĞ±í
-#define XML_IMAGE_ITEM_TYPE_GIF       _T("gif")           // gifÍ¼Æ¬
-#define XML_IMAGE_ITEM_TYPE_PNGLISTGIF _T("pnglistgif")   // pngÁĞ±íĞÎÊ½µÄgifÍ¼Æ¬
+#define XML_IMAGE_ITEM_TYPE           L"type"          // imageç±»å‹
+#define XML_IMAGE_ITEM_TYPE_IMAGE     L"image"         // é»˜è®¤å€¼
+#define XML_IMAGE_ITEM_TYPE_ICON      L"icon"          // å›¾æ ‡ 
+#define XML_IMAGE_ITEM_TYPE_IMAGELIST L"imagelist"     // å›¾ç‰‡åˆ—è¡¨
+#define XML_IMAGE_ITEM_TYPE_GIF       L"gif"           // gifå›¾ç‰‡
+#define XML_IMAGE_ITEM_TYPE_PNGLISTGIF L"pnglistgif"   // pngåˆ—è¡¨å½¢å¼çš„gifå›¾ç‰‡
 enum IMAGE_ITEM_TYPE
 {
     IMAGE_ITEM_TYPE_IMAGE,
@@ -114,53 +114,53 @@ enum IMAGE_ITEM_TYPE
     IMAGE_ITEM_TYPE_CURSOR,
 };
 
-#define XML_IMAGE_ICON_WIDTH          _T("width")         // Òª¼ÓÔØµÄÍ¼±ê¿í¶È
-#define XML_IMAGE_ICON_HEIGHT         _T("height")        // Òª¼ÓÔØµÄÍ¼±ê¸ß¶È
-#define XML_IMAGE_IMAGELIST_COUNT     _T("count")         // Í¼Æ¬ÁĞ±íÏîµÄÊıÄ¿ 
-#define XML_IMAGE_IMAGELIST_LAYOUT    _T("layout")        // Í¼Æ¬ÁĞ±íÏîµÄÅÅ²¼·½Ê½
-#define XML_IMAGE_IMAGELIST_LAYOUT_H  _T("h")  
-#define XML_IMAGE_IMAGELIST_LAYOUT_V  _T("v")
+#define XML_IMAGE_ICON_WIDTH          L"width"         // è¦åŠ è½½çš„å›¾æ ‡å®½åº¦
+#define XML_IMAGE_ICON_HEIGHT         L"height"        // è¦åŠ è½½çš„å›¾æ ‡é«˜åº¦
+#define XML_IMAGE_IMAGELIST_COUNT     L"count"         // å›¾ç‰‡åˆ—è¡¨é¡¹çš„æ•°ç›® 
+#define XML_IMAGE_IMAGELIST_LAYOUT    L"layout"        // å›¾ç‰‡åˆ—è¡¨é¡¹çš„æ’å¸ƒæ–¹å¼
+#define XML_IMAGE_IMAGELIST_LAYOUT_H  L"h"  
+#define XML_IMAGE_IMAGELIST_LAYOUT_V  L"v"
 
-#define XML_COLOR_USESKINHLS          _T("useskinhls")    // ¸Ä±äÆ¤·ôÉ«µ÷Ê±£¬¸ÃÑÕÉ«ÊÇ·ñ²ÎÓë 0/1£¬Ä¬ÈÏÎª1
+#define XML_COLOR_USESKINHLS          L"useskinhls"    // æ”¹å˜çš®è‚¤è‰²è°ƒæ—¶ï¼Œè¯¥é¢œè‰²æ˜¯å¦å‚ä¸ 0/1ï¼Œé»˜è®¤ä¸º1
 
-// ¹¤³ÌÅäÖÃ
-#define XML_PROJECT_NAME       _T("projectname")     // ¹¤³ÌÃû³Æ
-#define XML_PROJECT_SELECT     _T("select")          // µ±Ç°¹¤³ÌÊ¹ÓÃÁËÄÄ¿îÆ¤·ôÃû³Æ
-#define XML_PROJECT_SKIN       _T("skin")            // ¹¤³ÌÖĞÒ»¿îÆ¤·ô
-#define XML_PROJECT_SKIN_NAME  _T("name")            // Æ¤·ôÃû³Æ
-#define XML_PROJECT_SKIN_PATH  _T("path")            // Æ¤·ôui.xmlËùÔÚÂ·¾¶
-#define XML_PROJECT_SKIN_HLS   _T("hls")             // ¸ÃÆ¤·ôµÄÉ«µ÷ĞÅÏ¢,Èç"10,0,0"
+// å·¥ç¨‹é…ç½®
+#define XML_PROJECT_NAME       L"projectname"     // å·¥ç¨‹åç§°
+#define XML_PROJECT_SELECT     L"select"          // å½“å‰å·¥ç¨‹ä½¿ç”¨äº†å“ªæ¬¾çš®è‚¤åç§°
+#define XML_PROJECT_SKIN       L"skin"            // å·¥ç¨‹ä¸­ä¸€æ¬¾çš®è‚¤
+#define XML_PROJECT_SKIN_NAME  L"name"            // çš®è‚¤åç§°
+#define XML_PROJECT_SKIN_PATH  L"path"            // çš®è‚¤ui.xmlæ‰€åœ¨è·¯å¾„
+#define XML_PROJECT_SKIN_HLS   L"hls"             // è¯¥çš®è‚¤çš„è‰²è°ƒä¿¡æ¯,å¦‚"10,0,0"
 
-#define XML_SKINBUILDER_CTRLSDLL _T("ctrlsdll")      // Íâ²¿¿Ø¼şËùÔÚµÄDLL£¬ÓÃÓÚ×¢²á´´½¨ĞÅÏ¢
+#define XML_SKINBUILDER_CTRLSDLL L"ctrlsdll"      // å¤–éƒ¨æ§ä»¶æ‰€åœ¨çš„DLLï¼Œç”¨äºæ³¨å†Œåˆ›å»ºä¿¡æ¯
 
 //
 // layout.xml
 //
 
-// Object¶ÔÏóÊôĞÔ
+// Objectå¯¹è±¡å±æ€§
 
-//#define XML_ID                   _T("id")            // Ã¿¸ö¶ÔÏóµÄ±êÊ¶·û
-#define XML_STYLECLASS           _T("style")         // ¶ÔÏóµÄÑùÊ½ÀàĞÍ
-#define XML_WIDTH                _T("width")         // ¶ÔÏóµÄ¿í¶È£¬¿ÉÒÔÎª auto | ÊıÖµ
-#define XML_HEIGHT               _T("height")        // ¶ÔÏóµÄ¸ß¶È£¬¿ÉÒÔÎª auto | ÊıÖµ
-#define XML_MARGIN               _T("margin")        // ¶ÔÏóµÄÍâ±ß¾à
-#define XML_PADDING              _T("padding")       // ¶ÔÏóµÄÄÚ±ß¾à
-#define XML_BORDER               _T("border")        // ¶ÔÏóµÄ±ß¿ò
-#define XML_MINWIDTH             _T("minwidth")      // ¶ÔÏóµÄ×îĞ¡¿í¶È
-#define XML_MINHEIGHT            _T("minheigth")     // ¶ÔÏóµÄ×îĞ¡¸ß¶È
-#define XML_MAXWIDTH             _T("maxwidth")      // ¶ÔÏóµÄ×î´ó¿í¶È
-#define XML_MAXHEIGHT            _T("maxheight")     // ¶ÔÏóµÄ×î´ó¸ß¶È
-#define XML_AUTO                 _T("auto")          // ¶ÔÏóµÄ¿íºÍ¸ßÉèÖÃÎªÓÉÄÚ²¿ÄÚÈİ¾ö¶¨
-#define XML_NDEF                 _T("")              // Î´¶¨Òå
-#define XML_ASTERISK             _T("*")             // ¶ÔÏóµÄ¿íºÍ¸ßÉèÖÃÎªÆ½·Ö
-#define XML_AVERAGE              _T("avg")           // ¶ÔÏóµÄ¿íºÍ¸ßÉèÖÃÎªÆ½¾ù
-#define XML_PERCENT              _T("percent")       // ¶ÔÏóµÄ¿íºÍ¸ßÉèÖÃÎª°Ù·Ö±È pct ?
-#define XML_PERCENT_CHAR         _T('%') 
-#define XML_AVERAGE_CHAR         _T('*')             // Ôİ²»Ö§³Ö x*,
+//#define XML_ID                   L"id"            // æ¯ä¸ªå¯¹è±¡çš„æ ‡è¯†ç¬¦
+#define XML_STYLECLASS           L"style"         // å¯¹è±¡çš„æ ·å¼ç±»å‹
+#define XML_WIDTH                L"width"         // å¯¹è±¡çš„å®½åº¦ï¼Œå¯ä»¥ä¸º auto | æ•°å€¼
+#define XML_HEIGHT               L"height"        // å¯¹è±¡çš„é«˜åº¦ï¼Œå¯ä»¥ä¸º auto | æ•°å€¼
+#define XML_MARGIN               L"margin"        // å¯¹è±¡çš„å¤–è¾¹è·
+#define XML_PADDING              L"padding"       // å¯¹è±¡çš„å†…è¾¹è·
+#define XML_BORDER               L"border"        // å¯¹è±¡çš„è¾¹æ¡†
+#define XML_MINWIDTH             L"minwidth"      // å¯¹è±¡çš„æœ€å°å®½åº¦
+#define XML_MINHEIGHT            L"minheigth"     // å¯¹è±¡çš„æœ€å°é«˜åº¦
+#define XML_MAXWIDTH             L"maxwidth"      // å¯¹è±¡çš„æœ€å¤§å®½åº¦
+#define XML_MAXHEIGHT            L"maxheight"     // å¯¹è±¡çš„æœ€å¤§é«˜åº¦
+#define XML_AUTO                 L"auto"          // å¯¹è±¡çš„å®½å’Œé«˜è®¾ç½®ä¸ºç”±å†…éƒ¨å†…å®¹å†³å®š
+#define XML_NDEF                 L""              // æœªå®šä¹‰
+#define XML_ASTERISK             L"*"             // å¯¹è±¡çš„å®½å’Œé«˜è®¾ç½®ä¸ºå¹³åˆ†
+#define XML_AVERAGE              L"avg"           // å¯¹è±¡çš„å®½å’Œé«˜è®¾ç½®ä¸ºå¹³å‡
+#define XML_PERCENT              L"percent"       // å¯¹è±¡çš„å®½å’Œé«˜è®¾ç½®ä¸ºç™¾åˆ†æ¯” pct ?
+#define XML_PERCENT_CHAR         L'%' 
+#define XML_AVERAGE_CHAR         L'*'             // æš‚ä¸æ”¯æŒ x*,
 
 // EraseBkgnd
-#define XML_BACKGND_IS_TRANSPARENT        _T("transparent")             // ÊÇ·ñĞèÒª½øĞĞÍ¸Ã÷´¦Àí£¨Ë¢ÉÏ¸¸¶ÔÏóµÄ±³¾°£©0/1
-#define XML_NO_CLIP_DRAW                  _T("noclip")                  // ÔÚ»æÖÆ×Ô¼ºÊ±£¬²»ĞèÒªÎ¬»¤¼ô²ÃÇøÓò£¬Ä¬ÈÏ¼ô²Ã
+#define XML_BACKGND_IS_TRANSPARENT        L"transparent"             // æ˜¯å¦éœ€è¦è¿›è¡Œé€æ˜å¤„ç†ï¼ˆåˆ·ä¸Šçˆ¶å¯¹è±¡çš„èƒŒæ™¯ï¼‰0/1
+#define XML_NO_CLIP_DRAW                  L"noclip"                  // åœ¨ç»˜åˆ¶è‡ªå·±æ—¶ï¼Œä¸éœ€è¦ç»´æŠ¤å‰ªè£åŒºåŸŸï¼Œé»˜è®¤å‰ªè£
 
 enum VISIBILITY_TYPE
 {	
@@ -168,73 +168,73 @@ enum VISIBILITY_TYPE
 	VISIBILITY_VISIBLE = 1,     // visible=true
 	VISIBILITY_HIDDEN = 2       // visible=false, but layout
 };
-#define  XML_VISIBILITY_COLLAPSED         _T("collapsed")
-#define  XML_VISIBILITY_VISIBLE           _T("visible")
-#define  XML_VISIBILITY_HIDDEN            _T("hidden")
+#define  XML_VISIBILITY_COLLAPSED         L"collapsed"
+#define  XML_VISIBILITY_VISIBLE           L"visible"
+#define  XML_VISIBILITY_HIDDEN            L"hidden"
 
-#define XML_RENDER                        _T("render")
-#define XML_RENDER_TYPE                   _T("render.type")             // ÉèÖÃäÖÈ¾ÀàĞÍ
-#define XML_RENDER_TYPE_GRADIENT          _T("gradient")                // ºáÏò½¥±ä Color + Color
-#define XML_RENDER_TYPE_IMAGE             _T("image")                   // ÌùÍ¼Image + Color
-#define XML_RENDER_TYPE_IMAGELISTITEM     _T("imagelistitem")           // Í¼Æ¬ÁĞ±íÖĞµÄÒ»Ïî£¬ĞèÒªÖ¸¶¨ÆäË÷Òı
-#define XML_RENDER_TYPE_IMAGELIST         _T("imagelist")               // Í¼Æ¬ÁĞ±í
-#define XML_RENDER_TYPE_COLOR             _T("color")                   // ´¿É«Ìî³ä Color
-#define XML_RENDER_TYPE_SYSCOLOR          _T("syscolor")                // ÏµÍ³É«Ìî³ä Color
-#define XML_RENDER_TYPE_COLORLIST         _T("colorlist")               // ÀàËÆoffice 2003¹¤¾ßÀ¸Ê½°´Å¥
-#define XML_RENDER_TYPE_NOTHEME           _T("notheme")                 // win2000Ö÷Ìâ¿Ø¼ş
-#define XML_RENDER_TYPE_THEME             _T("theme")                   // ÏµÍ³Ö÷Ìâ¿Ø¼ş
-#define XML_RENDER_TYPE_NULL              _T("null")                    // ²»»æÖÆ¸Ãrender£¬µ«Ò²»áÊµÀı»¯¸ÃrenderÖ¸Õë£¬±ÜÃâ¿Ø¼şÄ¬ÈÏÊ¹ÓÃthemeÖ÷Ìâ
+#define XML_RENDER                        L"render"
+#define XML_RENDER_TYPE                   L"render.type"             // è®¾ç½®æ¸²æŸ“ç±»å‹
+#define XML_RENDER_TYPE_GRADIENT          L"gradient"                // æ¨ªå‘æ¸å˜ Color + Color
+#define XML_RENDER_TYPE_IMAGE             L"image"                   // è´´å›¾Image + Color
+#define XML_RENDER_TYPE_IMAGELISTITEM     L"imagelistitem"           // å›¾ç‰‡åˆ—è¡¨ä¸­çš„ä¸€é¡¹ï¼Œéœ€è¦æŒ‡å®šå…¶ç´¢å¼•
+#define XML_RENDER_TYPE_IMAGELIST         L"imagelist"               // å›¾ç‰‡åˆ—è¡¨
+#define XML_RENDER_TYPE_COLOR             L"color"                   // çº¯è‰²å¡«å…… Color
+#define XML_RENDER_TYPE_SYSCOLOR          L"syscolor"                // ç³»ç»Ÿè‰²å¡«å…… Color
+#define XML_RENDER_TYPE_COLORLIST         L"colorlist"               // ç±»ä¼¼office 2003å·¥å…·æ å¼æŒ‰é’®
+#define XML_RENDER_TYPE_NOTHEME           L"notheme"                 // win2000ä¸»é¢˜æ§ä»¶
+#define XML_RENDER_TYPE_THEME             L"theme"                   // ç³»ç»Ÿä¸»é¢˜æ§ä»¶
+#define XML_RENDER_TYPE_NULL              L"null"                    // ä¸ç»˜åˆ¶è¯¥renderï¼Œä½†ä¹Ÿä¼šå®ä¾‹åŒ–è¯¥renderæŒ‡é’ˆï¼Œé¿å…æ§ä»¶é»˜è®¤ä½¿ç”¨themeä¸»é¢˜
 
 
-#define XML_RENDER_THEME_DISABLE          _T("render.theme.disable")    // ÊÇ·ñÇ¿ÖÆÊ¹ÓÃÎŞÖ÷ÌâµÄäÖÈ¾
-#define XML_RENDER_COLOR                  _T("render.color")            // Ìî³äÑÕÉ«
-#define XML_RENDER_BORDER                 _T("render.border")           // ±ß¿ò´óĞ¡ RECT
-#define XML_RENDER_BORDERCOLOR            _T("render.border.color")     // ±ß¿òÑÕÉ«
-#define XML_RENDER_COLORFROM              _T("render.color.from")       // ½¥±äÆğÊ¼É«
-#define XML_RENDER_COLORTO                _T("render.color.to")         // ½¥±äÖÕµãÉ«
-#define XML_RENDER_COLOR_GRADIENT_DIR     _T("render.color.gradient.dir") // ½¥±äÉ«·½Ïò
+#define XML_RENDER_THEME_DISABLE          L"render.theme.disable"    // æ˜¯å¦å¼ºåˆ¶ä½¿ç”¨æ— ä¸»é¢˜çš„æ¸²æŸ“
+#define XML_RENDER_COLOR                  L"render.color"            // å¡«å……é¢œè‰²
+#define XML_RENDER_BORDER                 L"render.border"           // è¾¹æ¡†å¤§å° RECT
+#define XML_RENDER_BORDERCOLOR            L"render.border.color"     // è¾¹æ¡†é¢œè‰²
+#define XML_RENDER_COLORFROM              L"render.color.from"       // æ¸å˜èµ·å§‹è‰²
+#define XML_RENDER_COLORTO                L"render.color.to"         // æ¸å˜ç»ˆç‚¹è‰²
+#define XML_RENDER_COLOR_GRADIENT_DIR     L"render.color.gradient.dir" // æ¸å˜è‰²æ–¹å‘
 
-#define XML_RENDER_COLOR_GRADIENT_DIR_H   _T("h")
-#define XML_RENDER_COLOR_GRADIENT_DIR_V   _T("v")
+#define XML_RENDER_COLOR_GRADIENT_DIR_H   L"h"
+#define XML_RENDER_COLOR_GRADIENT_DIR_V   L"v"
 enum
 {
     RENDER_COLOR_GRADIENT_DIR_H,
     RENDER_COLOR_GRADIENT_DIR_V,
 };
 
-#define XML_RENDER_IMAGE                  _T("render.image")            // ±³¾°Í¼Æ¬
-#define XML_RENDER_IMAGE9REGION           _T("render.image.9region")    // ±³¾°ÉìËõ·½Ê½
-#define XML_RENDER_LIST_STATEMAPINDEX     _T("render.statemap")    // ÉèÖÃ¿Ø¼ş»æÖÆ×´Ì¬¶ÔÓ¦µÄÍ¼Æ¬Ïî£¬ÀıÈç0:0,1:0,2:0,3:0,4:1 ±íÊ¾ÓĞÁ½¸öÍ¼Æ¬Ïî£¬µ«selectionÓÃµÚ¶şÕÅÍ¼Æ¬£¬ÆäËüÓÃµÚÒ»ÕÅÍ¼Æ¬
-#define XML_RENDER_COLORLIST_COUNT        _T("render.colorlist.count")  // ÑÕÉ«ÁĞ±íµÄÊıÁ¿
-// #define XML_RENDER_IMAGELIST_COUNT        _T("render.imagelist.count")  // Í¼Æ¬ÁĞ±íÖĞµÄÍ¼Æ¬ÊıÁ¿
-// #define XML_RENDER_IMAGELIST_LAYOUT       _T("render.imagelist.layout") // Í¼Æ¬ÅÅÁĞ·½Ïò(Ä¬ÈÏÎªºáÏò)
-// #define XML_RENDER_IMAGELIST_LAYOUT_H     _T("h")                       // Í¼Æ¬ºáÏòÅÅÁĞ
-// #define XML_RENDER_IMAGELIST_LAYOUT_V     _T("v")                       // Í¼Æ¬×İÏòÅÅÁĞ
-#define XML_RENDER_IMAGELIST_ALPHA_ANIMATE _T("render.imagelist.alphaanimate") // ÊÇ·ñÆôÓÃalpha½¥±ä¶¯»­
+#define XML_RENDER_IMAGE                  L"render.image"            // èƒŒæ™¯å›¾ç‰‡
+#define XML_RENDER_IMAGE9REGION           L"render.image.9region"    // èƒŒæ™¯ä¼¸ç¼©æ–¹å¼
+#define XML_RENDER_LIST_STATEMAPINDEX     L"render.statemap"    // è®¾ç½®æ§ä»¶ç»˜åˆ¶çŠ¶æ€å¯¹åº”çš„å›¾ç‰‡é¡¹ï¼Œä¾‹å¦‚0:0,1:0,2:0,3:0,4:1 è¡¨ç¤ºæœ‰ä¸¤ä¸ªå›¾ç‰‡é¡¹ï¼Œä½†selectionç”¨ç¬¬äºŒå¼ å›¾ç‰‡ï¼Œå…¶å®ƒç”¨ç¬¬ä¸€å¼ å›¾ç‰‡
+#define XML_RENDER_COLORLIST_COUNT        L"render.colorlist.count"  // é¢œè‰²åˆ—è¡¨çš„æ•°é‡
+// #define XML_RENDER_IMAGELIST_COUNT        L"render.imagelist.count"  // å›¾ç‰‡åˆ—è¡¨ä¸­çš„å›¾ç‰‡æ•°é‡
+// #define XML_RENDER_IMAGELIST_LAYOUT       L"render.imagelist.layout" // å›¾ç‰‡æ’åˆ—æ–¹å‘(é»˜è®¤ä¸ºæ¨ªå‘)
+// #define XML_RENDER_IMAGELIST_LAYOUT_H     L"h"                       // å›¾ç‰‡æ¨ªå‘æ’åˆ—
+// #define XML_RENDER_IMAGELIST_LAYOUT_V     L"v"                       // å›¾ç‰‡çºµå‘æ’åˆ—
+#define XML_RENDER_IMAGELIST_ALPHA_ANIMATE L"render.imagelist.alphaanimate" // æ˜¯å¦å¯ç”¨alphaæ¸å˜åŠ¨ç”»
 
-#define XML_RENDER_IMAGELISTITEM_INDEX    _T("render.imagelistitem.index")  // Í¼Æ¬ÁĞ±íÏîµÄË÷ÒıÖµ
+#define XML_RENDER_IMAGELISTITEM_INDEX    L"render.imagelistitem.index"  // å›¾ç‰‡åˆ—è¡¨é¡¹çš„ç´¢å¼•å€¼
 
-#define XML_RENDER_IMAGE_DRAWTYPE         _T("render.image.drawtype")   // Í¼Æ¬»æÖÆ·½Ê½
-#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT  _T("bitblt")                  // (0,0)Î»ÖÃ¿ªÊ¼ÌùÍ¼Image + Color
-#define XML_RENDER_IMAGE_DRAWTYPE_TILE    _T("tile")                    // (0,0)Î»ÖÃ¿ªÊ¼Æ½ÆÌImage
-#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH _T("stretch")                 // À­ÉìÄ£Ê½Image + Image9Region*
-#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH_DISABLE_AA _T("stretch.disableaa")       // À­ÉìÄ£Ê½Image + ²»Òª¿¹¾â³İ
-#define XML_RENDER_IMAGE_DRAWTYPE_ADAPT   _T("adapt")                   // ×ÔÊÊÓ¦¾ÓÖĞ£¬²»»á³¬³ö»æÖÆ·¶Î§
-#define XML_RENDER_IMAGE_DRAWTYPE_CENTER  _T("center")                  // ¾ÓÖĞ£¬¿ÉÄÜ³¬³ö»æÖÆ·¶Î§
-#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER      _T("stretchborder")     // Í¨¹ı9¹¬À­Éì»æÖÆ±ß¿ò£¬²»»æÖÆÖĞ¼ä²¿·Ö
-#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTTOP     _T("bitbltrighttop")    // ×óÉÏ½Ç¶ÔÆë
-#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTBOTTOM   _T("bitbltleftbottom")  // ×óÏÂ½Ç¶ÔÆë
-#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTBOTTOM  _T("bitbltrightbottom") // ÓÒÏÂ½Ç¶ÔÆë
-#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER  _T("bitbltleftvcenter") // ×óÖĞ¶ÔÆë
+#define XML_RENDER_IMAGE_DRAWTYPE         L"render.image.drawtype"   // å›¾ç‰‡ç»˜åˆ¶æ–¹å¼
+#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT  L"bitblt"                  // (0,0)ä½ç½®å¼€å§‹è´´å›¾Image + Color
+#define XML_RENDER_IMAGE_DRAWTYPE_TILE    L"tile"                    // (0,0)ä½ç½®å¼€å§‹å¹³é“ºImage
+#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH L"stretch"                 // æ‹‰ä¼¸æ¨¡å¼Image + Image9Region*
+#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH_DISABLE_AA L"stretch.disableaa"       // æ‹‰ä¼¸æ¨¡å¼Image + ä¸è¦æŠ—é”¯é½¿
+#define XML_RENDER_IMAGE_DRAWTYPE_ADAPT   L"adapt"                   // è‡ªé€‚åº”å±…ä¸­ï¼Œä¸ä¼šè¶…å‡ºç»˜åˆ¶èŒƒå›´
+#define XML_RENDER_IMAGE_DRAWTYPE_CENTER  L"center"                  // å±…ä¸­ï¼Œå¯èƒ½è¶…å‡ºç»˜åˆ¶èŒƒå›´
+#define XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER      L"stretchborder"     // é€šè¿‡9å®«æ‹‰ä¼¸ç»˜åˆ¶è¾¹æ¡†ï¼Œä¸ç»˜åˆ¶ä¸­é—´éƒ¨åˆ†
+#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTTOP     L"bitbltrighttop"    // å·¦ä¸Šè§’å¯¹é½
+#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTBOTTOM   L"bitbltleftbottom"  // å·¦ä¸‹è§’å¯¹é½
+#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTBOTTOM  L"bitbltrightbottom" // å³ä¸‹è§’å¯¹é½
+#define XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER  L"bitbltleftvcenter" // å·¦ä¸­å¯¹é½
 
-#define XML_RENDER_IMAGE_ALPHA            _T("render.image.alpha")      // Í¼Æ¬»æÖÆÊ±Ê¹ÓÃµÄalphaÖµ
-#define XML_RENDER_IMAGE_SRC_REGION       _T("render.image.srcregion")  // Í¼Æ¬»æÖÆµÄÔ´ÇøÓò
+#define XML_RENDER_IMAGE_ALPHA            L"render.image.alpha"      // å›¾ç‰‡ç»˜åˆ¶æ—¶ä½¿ç”¨çš„alphaå€¼
+#define XML_RENDER_IMAGE_SRC_REGION       L"render.image.srcregion"  // å›¾ç‰‡ç»˜åˆ¶çš„æºåŒºåŸŸ
 
-#define XML_BACKGND_RENDER_PREFIX         _T("back.")    // ±³¾°äÖÈ¾ÊôĞÔÇ°×º£¬Èçback.render.type="" fore.render.image=""
-#define XML_FOREGND_RENDER_PREFIX         _T("fore.")    // Ç°¾°
-#define XML_ICON_RENDER_PREFIX            _T("icon.")    // Í¼±êÊôĞÔäÖÈ¾Ç°×º
-#define XML_BKGCOLOR                      _T("bkgcolor")  // ±³¾°ÑÕÉ«
-#define XML_BKGCOLOR_PREFIX               _T("bkgcolor.") // ±³¾°ÑÕÉ«Ç°×º
+#define XML_BACKGND_RENDER_PREFIX         L"back."    // èƒŒæ™¯æ¸²æŸ“å±æ€§å‰ç¼€ï¼Œå¦‚back.render.type="" fore.render.image=""
+#define XML_FOREGND_RENDER_PREFIX         L"fore."    // å‰æ™¯
+#define XML_ICON_RENDER_PREFIX            L"icon."    // å›¾æ ‡å±æ€§æ¸²æŸ“å‰ç¼€
+#define XML_BKGCOLOR                      L"bkgcolor"  // èƒŒæ™¯é¢œè‰²
+#define XML_BKGCOLOR_PREFIX               L"bkgcolor." // èƒŒæ™¯é¢œè‰²å‰ç¼€
 
 enum IMAGELIST_LAYOUT_TYPE
 {
@@ -242,98 +242,98 @@ enum IMAGELIST_LAYOUT_TYPE
     IMAGELIST_LAYOUT_TYPE_V
 };
 
-#define XML_TEXTRENDER                      _T("text.render")            // ÎÄ×ÖäÖÈ¾
-#define XML_TEXTRENDER_TYPE                 _T("text.render.type")       // ÉèÖÃÎÄ×ÖäÖÈ¾ÀàĞÍ
-#define XML_TEXTRENDER_TYPE_SIMPLE          _T("simple")                // color + font
-#define XML_TEXTRENDER_TYPE_COLORLIST       _T("colorlist")             // color list + font
-#define XML_TEXTRENDER_TYPE_FONTLIST        _T("fontlist")              // font list + color
-#define XML_TEXTRENDER_TYPE_FONTCOLORLIST   _T("fontcolorlist")         // font list + color list
-#define XML_TEXTRENDER_TYPE_CONTRAST_COLOR    _T("contrastcolor")       // font + ¸úËæ±³¾°É«×ÔÊÊÓ¦µÄºÚ°×color
-#define XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST _T("contrastcolorlist")   // 
+#define XML_TEXTRENDER                      L"text.render"            // æ–‡å­—æ¸²æŸ“
+#define XML_TEXTRENDER_TYPE                 L"text.render.type"       // è®¾ç½®æ–‡å­—æ¸²æŸ“ç±»å‹
+#define XML_TEXTRENDER_TYPE_SIMPLE          L"simple"                // color + font
+#define XML_TEXTRENDER_TYPE_COLORLIST       L"colorlist"             // color list + font
+#define XML_TEXTRENDER_TYPE_FONTLIST        L"fontlist"              // font list + color
+#define XML_TEXTRENDER_TYPE_FONTCOLORLIST   L"fontcolorlist"         // font list + color list
+#define XML_TEXTRENDER_TYPE_CONTRAST_COLOR    L"contrastcolor"       // font + è·ŸéšèƒŒæ™¯è‰²è‡ªé€‚åº”çš„é»‘ç™½color
+#define XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST L"contrastcolorlist"   // 
 
-#define XML_TEXTRENDER_COLOR                _T("text.render.color")      // ×ÖÌåÑÕÉ«
-#define XML_TEXTRENDER_FONT                 _T("text.render.font")       // ×ÖÌå
-#define XML_TEXTRENDER_COLORLIST_COUNT      _T("text.render.colorlist.count")
-#define XML_TEXTRENDER_FONTCOLORLIST_COUNT  _T("text.render.fontcolorlist.count")  // ×ÖÌå¡¢ÑÕÉ«ÊıÁ¿
-#define XML_TEXTRENDER_ALIGN                _T("text.render.align")      // ¶ÔÆë
-#define XML_TEXTRENDER_EFFECT               _T("text.render.effect")     // ÌØĞ§
+#define XML_TEXTRENDER_COLOR                L"text.render.color"      // å­—ä½“é¢œè‰²
+#define XML_TEXTRENDER_FONT                 L"text.render.font"       // å­—ä½“
+#define XML_TEXTRENDER_COLORLIST_COUNT      L"text.render.colorlist.count"
+#define XML_TEXTRENDER_FONTCOLORLIST_COUNT  L"text.render.fontcolorlist.count"  // å­—ä½“ã€é¢œè‰²æ•°é‡
+#define XML_TEXTRENDER_ALIGN                L"text.render.align"      // å¯¹é½
+#define XML_TEXTRENDER_EFFECT               L"text.render.effect"     // ç‰¹æ•ˆ
 
-#define XML_TEXTRENDER_ALIGN_TOP            _T("top")
-#define XML_TEXTRENDER_ALIGN_BOTTOM         _T("bottom")
-#define XML_TEXTRENDER_ALIGN_LEFT           _T("left")
-#define XML_TEXTRENDER_ALIGN_RIGHT          _T("right")
-#define XML_TEXTRENDER_ALIGN_CENTER         _T("center")
-#define XML_TEXTRENDER_ALIGN_VCENTER        _T("vcenter")
-#define XML_TEXTRENDER_ALIGN_END_ELLIPSIS   _T("endellipsis")
-#define XML_TEXTRENDER_ALIGN_SINGLELINE     _T("singleline")
-#define XML_TEXTRENDER_ALIGN_MULTILINE      _T("multiline")
-#define XML_TEXTRENDER_ALIGN_NO_PREFIX      _T("noprefix")
+#define XML_TEXTRENDER_ALIGN_TOP            L"top"
+#define XML_TEXTRENDER_ALIGN_BOTTOM         L"bottom"
+#define XML_TEXTRENDER_ALIGN_LEFT           L"left"
+#define XML_TEXTRENDER_ALIGN_RIGHT          L"right"
+#define XML_TEXTRENDER_ALIGN_CENTER         L"center"
+#define XML_TEXTRENDER_ALIGN_VCENTER        L"vcenter"
+#define XML_TEXTRENDER_ALIGN_END_ELLIPSIS   L"endellipsis"
+#define XML_TEXTRENDER_ALIGN_SINGLELINE     L"singleline"
+#define XML_TEXTRENDER_ALIGN_MULTILINE      L"multiline"
+#define XML_TEXTRENDER_ALIGN_NO_PREFIX      L"noprefix"
 
-#define XML_TEXTRENDER_EFFECT_NONE          _T("none")
-#define XML_TEXTRENDER_EFFECT_HALO          _T("halo")
-#define XML_TEXTRENDER_EFFECT_HALO_RADIUS   _T("text.render.halo.radius")
-#define XML_TEXTRENDER_EFFECT_HALO_SHADOW_COLOR _T("text.render.halo.shadow.color")
-#define XML_TEXTRENDER_EFFECT_ENDALPHAMASK  _T("endalphamask")
+#define XML_TEXTRENDER_EFFECT_NONE          L"none"
+#define XML_TEXTRENDER_EFFECT_HALO          L"halo"
+#define XML_TEXTRENDER_EFFECT_HALO_RADIUS   L"text.render.halo.radius"
+#define XML_TEXTRENDER_EFFECT_HALO_SHADOW_COLOR L"text.render.halo.shadow.color"
+#define XML_TEXTRENDER_EFFECT_ENDALPHAMASK  L"endalphamask"
 
 // windows attribute
-// #define  XML_WINDOW_MAX_WIDTH                           _T("maxwidth")
-// #define  XML_WINDOW_MAX_HEIGHT                          _T("maxheight")
-// #define  XML_WINDOW_MIN_WIDHT                           _T("minwidth")
-// #define  XML_WINDOW_MIN_HEIGHT                          _T("minheight")
+// #define  XML_WINDOW_MAX_WIDTH                           L"maxwidth"
+// #define  XML_WINDOW_MAX_HEIGHT                          L"maxheight"
+// #define  XML_WINDOW_MIN_WIDHT                           L"minwidth"
+// #define  XML_WINDOW_MIN_HEIGHT                          L"minheight"
 
-#define  XML_WINDOW_MAXIMIZE_BORDER                     _T("maximizeborder")   // intÀàĞÍ£¬×î´ó»¯Ê±Î»ÓÚÆÁÄ»ÍâµÄÇøÓò´óĞ¡
-#define  XML_WINDOW_RESIZE_BORDER                       _T("resizeborder")     // intÀàĞÍ£¬ÍÏ×§ÇøÓò´óĞ¡
-#define  XML_WINDOW_RESIZE_CAPABILITY                   _T("resizecapability") // ÍÏ×§ÄÜÁ¦
-#define  XML_WINDOW_RESIZE_CAPABILITY_NONE              _T("none")             // ½ûÖ¹ÍÏ×§
-#define  XML_WINDOW_RESIZE_CAPABILITY_CAPTION           _T("caption")          // Ö»ÄÜÍÏ×§£¬²»ÄÜĞŞ¸Ä´óĞ¡
-#define  XML_WINDOW_RESIZE_CAPABILITY_ALL               _T("all")              // ÄÜÍÏ×§£¬ÄÜĞŞ¸Ä´óĞ¡
-#define  XML_WINDOW_RESIZE_CAPABILITY_TRANSPARENT       _T("transparent")    // ´©Í¸µ½¸¸´°¿ÚÍÏ×§
+#define  XML_WINDOW_MAXIMIZE_BORDER                     L"maximizeborder"   // intç±»å‹ï¼Œæœ€å¤§åŒ–æ—¶ä½äºå±å¹•å¤–çš„åŒºåŸŸå¤§å°
+#define  XML_WINDOW_RESIZE_BORDER                       L"resizeborder"     // intç±»å‹ï¼Œæ‹–æ‹½åŒºåŸŸå¤§å°
+#define  XML_WINDOW_RESIZE_CAPABILITY                   L"resizecapability" // æ‹–æ‹½èƒ½åŠ›
+#define  XML_WINDOW_RESIZE_CAPABILITY_NONE              L"none"             // ç¦æ­¢æ‹–æ‹½
+#define  XML_WINDOW_RESIZE_CAPABILITY_CAPTION           L"caption"          // åªèƒ½æ‹–æ‹½ï¼Œä¸èƒ½ä¿®æ”¹å¤§å°
+#define  XML_WINDOW_RESIZE_CAPABILITY_ALL               L"all"              // èƒ½æ‹–æ‹½ï¼Œèƒ½ä¿®æ”¹å¤§å°
+#define  XML_WINDOW_RESIZE_CAPABILITY_TRANSPARENT       L"transparent"    // ç©¿é€åˆ°çˆ¶çª—å£æ‹–æ‹½
 
-#define WRSB_TRANSPARENT      0x10000    // ÓÃÓÚÊµÏÖÊó±êÔÚ×Ó´°¿ÚÉÏÍÏ×§Ê±£¬ÄÜ¹»Ö±½ÓÍÏ×§¸¸´°¿Ú
-#define WRSB_TOP              0x8000     // ¡ü
-#define WRSB_LEFT             0x4000     // ¡û
-#define WRSB_BOTTOM           0x2000     // ¡ı
-#define WRSB_RIGHT            0x1000     // ¡ú
-#define WRSB_TOPLEFT          0x0800     // ¨I
-#define WRSB_TOPRIGHT         0x0400     // ¨J
-#define WRSB_BOTTOMLEFT       0x0200     // ¨L
-#define WRSB_BOTTOMRIGHT      0x0100     // ¨K
+#define WRSB_TRANSPARENT      0x10000    // ç”¨äºå®ç°é¼ æ ‡åœ¨å­çª—å£ä¸Šæ‹–æ‹½æ—¶ï¼Œèƒ½å¤Ÿç›´æ¥æ‹–æ‹½çˆ¶çª—å£
+#define WRSB_TOP              0x8000     // â†‘
+#define WRSB_LEFT             0x4000     // â†
+#define WRSB_BOTTOM           0x2000     // â†“
+#define WRSB_RIGHT            0x1000     // â†’
+#define WRSB_TOPLEFT          0x0800     // â†–
+#define WRSB_TOPRIGHT         0x0400     // â†—
+#define WRSB_BOTTOMLEFT       0x0200     // â†™
+#define WRSB_BOTTOMRIGHT      0x0100     // â†˜
 #define WRSB_CAPTION          0x0080     // 
 #define WRSB_DRAGSIZE         (WRSB_TOP | WRSB_LEFT | WRSB_BOTTOM | WRSB_RIGHT | WRSB_TOPLEFT | WRSB_TOPRIGHT | WRSB_BOTTOMLEFT | WRSB_BOTTOMRIGHT)
 #define WRSB_ALL              (WRSB_CAPTION | WRSB_DRAGSIZE)
 #define WRSB_NONE             0x0
 
 // window rgn
-#define  XML_WINDOW_TRANSPARENT_TYPE                    _T("transparent.type")
-#define  XML_WINDOW_TRANSPARENT_9REGION                 _T("transparent.9region") // ´°¿ÚÍ¸Ã÷ÇøÓò²ÎÊı£¨9RegionÀàĞÍ£¬¿ÉÎª4£¬8£¬9ÈıÖÖ£©
+#define  XML_WINDOW_TRANSPARENT_TYPE                    L"transparent.type"
+#define  XML_WINDOW_TRANSPARENT_9REGION                 L"transparent.9region" // çª—å£é€æ˜åŒºåŸŸå‚æ•°ï¼ˆ9Regionç±»å‹ï¼Œå¯ä¸º4ï¼Œ8ï¼Œ9ä¸‰ç§ï¼‰
 
-#define  XML_WINDOW_TRANSPARENT_TYPE_AERO               _T("aero")             // Ê¹ÓÃ·Ö²ã´°¿Ú½øĞĞÍ¸Ã÷
-#define  XML_WINDOW_TRANSPARENT_TYPE_LAYERED            _T("layered")          // Ê¹ÓÃ·Ö²ã´°¿Ú½øĞĞÍ¸Ã÷
-#define  XML_WINDOW_TRANSPARENT_TYPE_MASKCOLOR          _T("maskcolor")        // Ê¹ÓÃÑÕÉ«Öµ
-#define  XML_WINDOW_TRANSPARENT_TYPE_MASKALPHA          _T("maskalpha")        // Ê¹ÓÃÍ¸Ã÷Öµ
-#define  XML_WINDOW_TRANSPARENT_TYPE_ANTIALIASING       _T("anti")             // ¿¹¾â³İÔ²½Ç
-#define  XML_WINDOW_TRANSPARENT_TYPE_GLOW               _T("glow")             // ÀàVS2013±ß¿ò·¢¹âĞ§¹û
+#define  XML_WINDOW_TRANSPARENT_TYPE_AERO               L"aero"             // ä½¿ç”¨åˆ†å±‚çª—å£è¿›è¡Œé€æ˜
+#define  XML_WINDOW_TRANSPARENT_TYPE_LAYERED            L"layered"          // ä½¿ç”¨åˆ†å±‚çª—å£è¿›è¡Œé€æ˜
+#define  XML_WINDOW_TRANSPARENT_TYPE_MASKCOLOR          L"maskcolor"        // ä½¿ç”¨é¢œè‰²å€¼
+#define  XML_WINDOW_TRANSPARENT_TYPE_MASKALPHA          L"maskalpha"        // ä½¿ç”¨é€æ˜å€¼
+#define  XML_WINDOW_TRANSPARENT_TYPE_ANTIALIASING       L"anti"             // æŠ—é”¯é½¿åœ†è§’
+#define  XML_WINDOW_TRANSPARENT_TYPE_GLOW               L"glow"             // ç±»VS2013è¾¹æ¡†å‘å…‰æ•ˆæœ
 
-#define  XML_WINDOW_TRANSPARENT_MASKCOLOR_VALUE         _T("transparent.maskcolor")  // ´°¿ÚÍ¸Ã÷É«
-#define  XML_WINDOW_TRANSPARENT_MASKALPHA_VALUE         _T("transparent.maskalpha")  // ½«´°¿ÚÖĞĞ¡ÓÚalphaÖµÍ¨¹ıµÄ¿Ùµô
+#define  XML_WINDOW_TRANSPARENT_MASKCOLOR_VALUE         L"transparent.maskcolor"  // çª—å£é€æ˜è‰²
+#define  XML_WINDOW_TRANSPARENT_MASKALPHA_VALUE         L"transparent.maskalpha"  // å°†çª—å£ä¸­å°äºalphaå€¼é€šè¿‡çš„æŠ æ‰
 
-#define  XML_WINDOW_TRANSPARENT_ANTI_9REGION            _T("transparent.anti.9region")       // ×óÉÏ½ÇÔ²½Ç¶ÈÊı£¬ÉÏ²àËõ½ø£¬ÓÒÉÏ½ÇÔ²½Ç¶ÈÊı£¬×ó²àËõ½ø£¬ÓÒ²àËõ½ø£¬×óÏÂ½ÇÔ²½Ç¶ÈÊı£¬ÏÂ²àËõ½ø£¬ÓÒÏÂ½ÇÔ²½Ç¶ÈÊı
-#define  XML_WINDOW_TRANSPARENT_ANTI_BORDERINDENT       _T("transparent.anti.borderIndent")  // ËÄÖÜËõ½øÖµ¡£Ä¬ÈÏÎªÈ«0¡£ÓÃÓÚ½â¾öaero blurÇĞ»»µ½antiÊ±£¬ËÄÖÜÓĞÒ»²¿·ÖÒõÓ°µÄÎÊÌâ
-#define  XML_WINDOW_TRANSPARENT_MASKALPHA_9REGION       _T("transparent.maskalpha.9region")  // È«0±íÊ¾Ê²Ã´Ò²²»×ö¡£È«-1±íÊ¾Õû¸ö´°¿Ú¹ıÂË¡£top,left,right.bottomËÄ¸öÖµÈç¹û´óÓÚ0±íÊ¾Òª¹ıÂËÕâËÄ¸ö±ß£¬Ğ¡ÓÚ0±íÊ¾²»¹ıÂË£¬½öÓÃÓÚÉèÖÃËÄ¸ö½ÇµÄÎ»ÖÃ²ÎÊı
-#define  XML_WINDOW_TRANSPARENT_MASKCOLOR_9REGION       _T("transparent.maskcolor.9region")  // Í¬XML_WINDOW_TRANSPARENT_MASKALPHA_9REGION
+#define  XML_WINDOW_TRANSPARENT_ANTI_9REGION            L"transparent.anti.9region"       // å·¦ä¸Šè§’åœ†è§’åº¦æ•°ï¼Œä¸Šä¾§ç¼©è¿›ï¼Œå³ä¸Šè§’åœ†è§’åº¦æ•°ï¼Œå·¦ä¾§ç¼©è¿›ï¼Œå³ä¾§ç¼©è¿›ï¼Œå·¦ä¸‹è§’åœ†è§’åº¦æ•°ï¼Œä¸‹ä¾§ç¼©è¿›ï¼Œå³ä¸‹è§’åœ†è§’åº¦æ•°
+#define  XML_WINDOW_TRANSPARENT_ANTI_BORDERINDENT       L"transparent.anti.borderIndent"  // å››å‘¨ç¼©è¿›å€¼ã€‚é»˜è®¤ä¸ºå…¨0ã€‚ç”¨äºè§£å†³aero bluråˆ‡æ¢åˆ°antiæ—¶ï¼Œå››å‘¨æœ‰ä¸€éƒ¨åˆ†é˜´å½±çš„é—®é¢˜
+#define  XML_WINDOW_TRANSPARENT_MASKALPHA_9REGION       L"transparent.maskalpha.9region"  // å…¨0è¡¨ç¤ºä»€ä¹ˆä¹Ÿä¸åšã€‚å…¨-1è¡¨ç¤ºæ•´ä¸ªçª—å£è¿‡æ»¤ã€‚top,left,right.bottomå››ä¸ªå€¼å¦‚æœå¤§äº0è¡¨ç¤ºè¦è¿‡æ»¤è¿™å››ä¸ªè¾¹ï¼Œå°äº0è¡¨ç¤ºä¸è¿‡æ»¤ï¼Œä»…ç”¨äºè®¾ç½®å››ä¸ªè§’çš„ä½ç½®å‚æ•°
+#define  XML_WINDOW_TRANSPARENT_MASKCOLOR_9REGION       L"transparent.maskcolor.9region"  // åŒXML_WINDOW_TRANSPARENT_MASKALPHA_9REGION
 
-#define  XML_WINDOW_TRANSPARENT_AERO_MODE               _T("transparent.aero.mode")   // aeroÍ¸Ã÷Ä£Ê½
-#define  XML_WINDOW_TRANSPARENT_AERO_MODE_TRANS         _T("trans")
-#define  XML_WINDOW_TRANSPARENT_AERO_MODE_BLUR          _T("blur")
+#define  XML_WINDOW_TRANSPARENT_AERO_MODE               L"transparent.aero.mode"   // aeroé€æ˜æ¨¡å¼
+#define  XML_WINDOW_TRANSPARENT_AERO_MODE_TRANS         L"trans"
+#define  XML_WINDOW_TRANSPARENT_AERO_MODE_BLUR          L"blur"
 enum AERO_MODE 
 {
-    AERO_MODE_TRANSPARENT,   // Ö»Í¸Ã÷
-    AERO_MODE_BLUR,          // ´øÄ£ºı
+    AERO_MODE_TRANSPARENT,   // åªé€æ˜
+    AERO_MODE_BLUR,          // å¸¦æ¨¡ç³Š
 };
-#define  XML_WINDOW_TRANSPARENT_AERO_TRANS_MARGINS      _T("transparent.aero.trans.margins")  // rect Í¸Ã÷ÇøÓòÉèÖÃ£¨DwmExtendFrameIntoClientArea²ÎÊı£©
-#define  XML_WINDOW_TRANSPARENT_AERO_BLUR_REGION        _T("transparent.aero.blur.region")    // rect Ä¥É³Ğ§¹ûÇøÓò£¨DwmEnableBlurBehindWindow²ÎÊı£©
-#define  XML_WINDOW_TRANSPARENT_AERO_BLUR_AUTOCLIPCHILDCTRL  _T("transparent.aero.blur.autoclipchildctrl")  // ÊÇ·ñ×Ô¶¯¼ô²Ã×Ó¿Ø¼ş
-#define  XML_WINDOW_TRANSPARENT_TYPE_AERO_DISABLE       _T("transparent.aero.disable")        // aeroÄ£Ê½²»¿ÉÓÃÊ±µÄ´°¿ÚÍ¸Ã÷ÀàĞÍ
+#define  XML_WINDOW_TRANSPARENT_AERO_TRANS_MARGINS      L"transparent.aero.trans.margins"  // rect é€æ˜åŒºåŸŸè®¾ç½®ï¼ˆDwmExtendFrameIntoClientAreaå‚æ•°ï¼‰
+#define  XML_WINDOW_TRANSPARENT_AERO_BLUR_REGION        L"transparent.aero.blur.region"    // rect ç£¨æ²™æ•ˆæœåŒºåŸŸï¼ˆDwmEnableBlurBehindWindowå‚æ•°ï¼‰
+#define  XML_WINDOW_TRANSPARENT_AERO_BLUR_AUTOCLIPCHILDCTRL  L"transparent.aero.blur.autoclipchildctrl"  // æ˜¯å¦è‡ªåŠ¨å‰ªè£å­æ§ä»¶
+#define  XML_WINDOW_TRANSPARENT_TYPE_AERO_DISABLE       L"transparent.aero.disable"        // aeroæ¨¡å¼ä¸å¯ç”¨æ—¶çš„çª—å£é€æ˜ç±»å‹
 
 
 enum WINDOW_TRANSPARENT_TYPE
@@ -348,111 +348,111 @@ enum WINDOW_TRANSPARENT_TYPE
 	WINDOW_TRANSPARENT_TYPE_GLOW = 64,
 };
 
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY          _T("graphics")         // Í¼ĞÎÒıÇæÀàĞÍ
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDI      _T("gdi")
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDIPLUS  _T("gdiplus")
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D2D      _T("d2d")
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT2D _T("direct2d")
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D3D      _T("d3d")
-#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT3D _T("direct3d")
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY          L"graphics"         // å›¾å½¢å¼•æ“ç±»å‹
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDI      L"gdi"
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDIPLUS  L"gdiplus"
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D2D      L"d2d"
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT2D L"direct2d"
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D3D      L"d3d"
+#define XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT3D L"direct3d"
 
-#define XML_WINDOW_NEED_ALPHACHANNEL                _T("needalphachannel")  // ´°¿ÚÊÇ·ñĞèÒªäÖÈ¾alphaÍ¨µÀ¡£Ä¬ÈÏÎªtrue
+#define XML_WINDOW_NEED_ALPHACHANNEL                L"needalphachannel"  // çª—å£æ˜¯å¦éœ€è¦æ¸²æŸ“alphaé€šé“ã€‚é»˜è®¤ä¸ºtrue
 
 
 enum GRAPHICS_RENDER_LIBRARY_TYPE
 {
-	//	GRAPHICS_RENDER_LIBRARY_TYPE_AUTO = 0,   // <- ÒÀ¾İ´°¿ÚÀàĞÍ¾ö¶¨¡£·Ö²ã´°¿ÚÊ¹ÓÃGDIPLUS,ÆÕÍ¨´°¿ÚÊ¹ÓÃGDI£¬·ÏÆú£¬Âß¼­Ì«¸´ÔÓ
+	//	GRAPHICS_RENDER_LIBRARY_TYPE_AUTO = 0,   // <- ä¾æ®çª—å£ç±»å‹å†³å®šã€‚åˆ†å±‚çª—å£ä½¿ç”¨GDIPLUS,æ™®é€šçª—å£ä½¿ç”¨GDIï¼ŒåºŸå¼ƒï¼Œé€»è¾‘å¤ªå¤æ‚
 	GRAPHICS_RENDER_LIBRARY_TYPE_GDI = 1,
 	GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS,
 	GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT2D,
 	GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT3D
 };
 
-#define XML_TEXTURE_RENDER_PREFIX            _T("texture.")         // customwindowÓÃÓÚÖ§³Ö»»·ôµÄÆ¤·ôrenderÇ°×º
-#define XML_MASK_RENDER_PREFIX               _T("mask.")            // ÔÚ»æÖÆÍê×Ó½áµãºó£¬ÔÙ»­µÄÒ»²ã(PostPaint)
-#define XML_PANEL_RENDER_REGION              _T("render.region")    // Æ¤·ôÍ¼Æ¬ÔÚ´°¿ÚÉÏÏÔÊ¾µÄÇøÓò£¬ÀàĞÍÓÚpaddingµÄÅäÖÃ
+#define XML_TEXTURE_RENDER_PREFIX            L"texture."         // customwindowç”¨äºæ”¯æŒæ¢è‚¤çš„çš®è‚¤renderå‰ç¼€
+#define XML_MASK_RENDER_PREFIX               L"mask."            // åœ¨ç»˜åˆ¶å®Œå­ç»“ç‚¹åï¼Œå†ç”»çš„ä¸€å±‚(PostPaint)
+#define XML_PANEL_RENDER_REGION              L"render.region"    // çš®è‚¤å›¾ç‰‡åœ¨çª—å£ä¸Šæ˜¾ç¤ºçš„åŒºåŸŸï¼Œç±»å‹äºpaddingçš„é…ç½®
 
-#define XML_ROUNDPANEL_CORNER_LEFTTOP        _T("corner.lefttop")
-#define XML_ROUNDPANEL_CORNER_RIGHTTOP       _T("corner.righttop")
-#define XML_ROUNDPANEL_CORNER_LEFTBOTTOM     _T("corner.leftbottom")
-#define XML_ROUNDPANEL_CORNER_RIGHTBOTTOM    _T("corner.rightbottom")
+#define XML_ROUNDPANEL_CORNER_LEFTTOP        L"corner.lefttop"
+#define XML_ROUNDPANEL_CORNER_RIGHTTOP       L"corner.righttop"
+#define XML_ROUNDPANEL_CORNER_LEFTBOTTOM     L"corner.leftbottom"
+#define XML_ROUNDPANEL_CORNER_RIGHTBOTTOM    L"corner.rightbottom"
 
 enum ROUND_CORNER_TYPE
 {
     ROUND_CORNER_NONE,
-    ROUND_CORNER_ANTI, // ¿¹¾â³İÄ£Ê½
-    ROUND_CORNER_DIRECT_THROW,  // Ö±½ÓÉ¾³ıÔ²½Ç´¦ÏñËØÖµ
+    ROUND_CORNER_ANTI, // æŠ—é”¯é½¿æ¨¡å¼
+    ROUND_CORNER_DIRECT_THROW,  // ç›´æ¥åˆ é™¤åœ†è§’å¤„åƒç´ å€¼
 };
 
-// ÆäËüÍ¨ÓÃÊôĞÔ
-#define XML_CURSOR                           _T("cursor")       // ¶ÔÏóµÄÊó±êÑùÊ½
-#define XML_CURSOR_IDC_ARROW                 _T("idc_arrow")    // ¸÷ÖÖÏµÍ³Êó±êÑùÊ½ÅäÖÃ
-#define XML_CURSOR_IDC_IBEAM                 _T("idc_ibeam")
-#define XML_CURSOR_IDC_WAIT                  _T("idc_wait")
-#define XML_CURSOR_IDC_CROSS                 _T("idc_cross")
-#define XML_CURSOR_IDC_UPARROW               _T("idc_uparrow")
-#define XML_CURSOR_IDC_SIZE                  _T("idc_size")
-#define XML_CURSOR_IDC_ICON                  _T("idc_icon")
-#define XML_CURSOR_IDC_SIZENWSE              _T("idc_sizenwse")
-#define XML_CURSOR_IDC_SIZENESW              _T("idc_sizenesw")
-#define XML_CURSOR_IDC_SIZEWE                _T("idc_sizewe")
-#define XML_CURSOR_IDC_SIZENS                _T("idc_sizens")
-#define XML_CURSOR_IDC_SIZEALL               _T("idc_sizeall")
-#define XML_CURSOR_IDC_NO                    _T("idc_no")
-#define XML_CURSOR_IDC_HAND                  _T("idc_hand")
-#define XML_CURSOR_IDC_APPSTARTING           _T("idc_appstarting")
-#define XML_CURSOR_IDC_HELP                  _T("idc_help")
+// å…¶å®ƒé€šç”¨å±æ€§
+#define XML_CURSOR                           L"cursor"       // å¯¹è±¡çš„é¼ æ ‡æ ·å¼
+#define XML_CURSOR_IDC_ARROW                 L"idc_arrow"    // å„ç§ç³»ç»Ÿé¼ æ ‡æ ·å¼é…ç½®
+#define XML_CURSOR_IDC_IBEAM                 L"idc_ibeam"
+#define XML_CURSOR_IDC_WAIT                  L"idc_wait"
+#define XML_CURSOR_IDC_CROSS                 L"idc_cross"
+#define XML_CURSOR_IDC_UPARROW               L"idc_uparrow"
+#define XML_CURSOR_IDC_SIZE                  L"idc_size"
+#define XML_CURSOR_IDC_ICON                  L"idc_icon"
+#define XML_CURSOR_IDC_SIZENWSE              L"idc_sizenwse"
+#define XML_CURSOR_IDC_SIZENESW              L"idc_sizenesw"
+#define XML_CURSOR_IDC_SIZEWE                L"idc_sizewe"
+#define XML_CURSOR_IDC_SIZENS                L"idc_sizens"
+#define XML_CURSOR_IDC_SIZEALL               L"idc_sizeall"
+#define XML_CURSOR_IDC_NO                    L"idc_no"
+#define XML_CURSOR_IDC_HAND                  L"idc_hand"
+#define XML_CURSOR_IDC_APPSTARTING           L"idc_appstarting"
+#define XML_CURSOR_IDC_HELP                  L"idc_help"
 
-#define XML_CURSOR_IDC_DRAG_SEPERATOR        _T("idc_drag_seperator")
-#define XML_CURSOR_IDC_SPLITBAR_H            _T("idc_splitbar_h")
-#define XML_CURSOR_IDC_SPLITBAR_V            _T("idc_splitbar_v")
+#define XML_CURSOR_IDC_DRAG_SEPERATOR        L"idc_drag_seperator"
+#define XML_CURSOR_IDC_SPLITBAR_H            L"idc_splitbar_h"
+#define XML_CURSOR_IDC_SPLITBAR_V            L"idc_splitbar_v"
 
 
-#define XML_TOOLTIP                          _T("tooltip")      // ¶ÔÏóµÄÌáÊ¾ĞÅÏ¢£¬×Ô¶¨ÒåµÄÌáÊ¾ÄÚÈİĞèÒª´úÂë×ÔĞĞÌí¼Ó
-#define XML_CONTROL_STYLE_GROUP              _T("group")
-#define XML_CONTROL_STYLE_TABABLE            _T("tabstop")
-#define XML_REJEST_SELF_MOUSE_MSG            _T("rejectselfmousemsg")  // ²»½ÓÊÜÊó±êÏûÏ¢
-#define XML_REJEST_MOUSE_MSG                 _T("rejectmousemsg")  // ²»½ÓÊÜÊó±êÏûÏ¢
-#define XML_ZINDEX_OVERLAP                   _T("zindexoverlap")   // zĞòÖØµşÁË±êÊ¶
-#define XML_ZORDER                           _T("zorder")          // ÔÚ±¾²ãÖĞµÄzĞò£¬µ±²»Îª0Ê±£¬½«Îª¸Ã¶ÔÏó´´½¨Ò»¸ölayer
-#define XML_ISNCCHILD                        _T("ncchild")         // ÊÇÒ»¸öncchild£¬ÀıÈç¹ö¶¯Ìõ
+#define XML_TOOLTIP                          L"tooltip"      // å¯¹è±¡çš„æç¤ºä¿¡æ¯ï¼Œè‡ªå®šä¹‰çš„æç¤ºå†…å®¹éœ€è¦ä»£ç è‡ªè¡Œæ·»åŠ 
+#define XML_CONTROL_STYLE_GROUP              L"group"
+#define XML_CONTROL_STYLE_TABABLE            L"tabstop"
+#define XML_REJEST_SELF_MOUSE_MSG            L"rejectselfmousemsg"  // ä¸æ¥å—é¼ æ ‡æ¶ˆæ¯
+#define XML_REJEST_MOUSE_MSG                 L"rejectmousemsg"  // ä¸æ¥å—é¼ æ ‡æ¶ˆæ¯
+#define XML_ZINDEX_OVERLAP                   L"zindexoverlap"   // zåºé‡å äº†æ ‡è¯†
+#define XML_ZORDER                           L"zorder"          // åœ¨æœ¬å±‚ä¸­çš„zåºï¼Œå½“ä¸ä¸º0æ—¶ï¼Œå°†ä¸ºè¯¥å¯¹è±¡åˆ›å»ºä¸€ä¸ªlayer
+#define XML_ISNCCHILD                        L"ncchild"         // æ˜¯ä¸€ä¸ªncchildï¼Œä¾‹å¦‚æ»šåŠ¨æ¡
 
-#define XML_LAYER                            _T("layer")           // Îª¸Ã¶ÔÏó½¨Á¢Ò»¸örenderlayer£¨´ø»º´æ£©
+#define XML_LAYER                            L"layer"           // ä¸ºè¯¥å¯¹è±¡å»ºç«‹ä¸€ä¸ªrenderlayerï¼ˆå¸¦ç¼“å­˜ï¼‰
 
 // window
-// #define  XML_WINDOW_BK_TYPE                    _T("bktype")     // ´°¿Ú±³¾°»æÖÆÀàĞÍ
-// #define  XML_WINDOW_BK_TYPE_COLOR              _T("color")      // ´°¿Ú±³¾°»æÖÆÀàĞÍ--ÑÕÉ«£¬»­Ë¢»­±Ê
-// #define  XML_WINDOW_BK_TYPE_TILE               _T("tile")       // ´°¿Ú±³¾°»æÖÆÀàĞÍ--Æ½ÆÌ
-// #define  XML_WINDOW_BK_TYPE_SIMPLE             _T("simple")     // ´°¿Ú±³¾°»æÖÆÀàĞÍ--¼òµ¥£¬(0,0)bitblt
-// #define  XML_WINDOW_BK_TYPE_CENTER             _T("center")     // ´°¿Ú±³¾°»æÖÆÀàĞÍ--¾ÓÖĞ
-// #define  XML_WINDOW_BK_TYPE_STRETCH            _T("stretch")    // ´°¿Ú±³¾°»æÖÆÀàĞÍ--À­Éì
-// #define  XML_WINDOW_BK_TYPE_FRAME              _T("frame")      // ´°¿Ú±³¾°»æÖÆÀàĞÍ--±ß¿ò
-// #define  XML_WINDOW_BK_IMAGE                   _T("bkimage")    // ´°¿Ú±³¾°Í¼Æ¬Ãû³Æ
-// #define  XML_WINDOW_BK_TYPE_COLOR_PEN          _T("bkpencol")   // bktype=color£¬´°¿Ú±ß¿òÉ«
-// #define  XML_WINDOW_BK_TYPE_COLOR_BRUSH        _T("bkbrushcol") // bktype=color£¬´°¿Ú±³¾°É«
-// #define  XML_WINDOW_BK_TYPE_FRAME_9REGION      _T("bk9region")  // bktype=frame£¬´°¿ÚÇĞ¸î·¶Î§
+// #define  XML_WINDOW_BK_TYPE                    L"bktype"     // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹
+// #define  XML_WINDOW_BK_TYPE_COLOR              L"color"      // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--é¢œè‰²ï¼Œç”»åˆ·ç”»ç¬”
+// #define  XML_WINDOW_BK_TYPE_TILE               L"tile"       // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--å¹³é“º
+// #define  XML_WINDOW_BK_TYPE_SIMPLE             L"simple"     // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--ç®€å•ï¼Œ(0,0)bitblt
+// #define  XML_WINDOW_BK_TYPE_CENTER             L"center"     // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--å±…ä¸­
+// #define  XML_WINDOW_BK_TYPE_STRETCH            L"stretch"    // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--æ‹‰ä¼¸
+// #define  XML_WINDOW_BK_TYPE_FRAME              L"frame"      // çª—å£èƒŒæ™¯ç»˜åˆ¶ç±»å‹--è¾¹æ¡†
+// #define  XML_WINDOW_BK_IMAGE                   L"bkimage"    // çª—å£èƒŒæ™¯å›¾ç‰‡åç§°
+// #define  XML_WINDOW_BK_TYPE_COLOR_PEN          L"bkpencol"   // bktype=colorï¼Œçª—å£è¾¹æ¡†è‰²
+// #define  XML_WINDOW_BK_TYPE_COLOR_BRUSH        L"bkbrushcol" // bktype=colorï¼Œçª—å£èƒŒæ™¯è‰²
+// #define  XML_WINDOW_BK_TYPE_FRAME_9REGION      L"bk9region"  // bktype=frameï¼Œçª—å£åˆ‡å‰²èŒƒå›´
 
-// ÏµÍ³°´Å¥ID
-#define XML_SYS_BTN_RESTORE       _T("sys_restore")   // ÏµÍ³»¹Ô­°´Å¥ID
-#define XML_SYS_BTN_MAXIMIZE      _T("sys_maximize")  // ÏµÍ³×î´ó»¯°´Å¥ID
-#define XML_SYS_BTN_MINIMIZE      _T("sys_minimize")  // ÏµÍ³×îĞ¡»¯°´Å¥ID
-#define XML_SYS_BTN_CLOSE         _T("sys_close")     // ÏµÍ³¹Ø±Õ°´Å¥ID
+// ç³»ç»ŸæŒ‰é’®ID
+#define XML_SYS_BTN_RESTORE       L"sys_restore"   // ç³»ç»Ÿè¿˜åŸæŒ‰é’®ID
+#define XML_SYS_BTN_MAXIMIZE      L"sys_maximize"  // ç³»ç»Ÿæœ€å¤§åŒ–æŒ‰é’®ID
+#define XML_SYS_BTN_MINIMIZE      L"sys_minimize"  // ç³»ç»Ÿæœ€å°åŒ–æŒ‰é’®ID
+#define XML_SYS_BTN_CLOSE         L"sys_close"     // ç³»ç»Ÿå…³é—­æŒ‰é’®ID
 
 // hwnd host
-#define XML_HWNDHOST_CONTROL_ID   _T("controlid")     // ¿Ø¼şIDÊıÖµ£¬ÕûĞÎ
+#define XML_HWNDHOST_CONTROL_ID   L"controlid"     // æ§ä»¶IDæ•°å€¼ï¼Œæ•´å½¢
 
-#pragma region // ²¼¾ÖlayoutµÄÊôĞÔ
-#define XML_LAYOUT_PREFIX        _T("layout.")
-#define XML_LAYOUT_TYPE          _T("layout.type")    // ¶ÔÏóµÄ²¼¾ÖÀàĞÍ
-//#define XML_LAYOUT_STACK         _T("stack")          // ²¼¾ÖÀàĞÍ£ºstack
-#define XML_LAYOUT_VERT          _T("vert")           // ²¼¾ÖÀàĞÍ£ºvert
-#define XML_LAYOUT_HORZ          _T("horz")           // ²¼¾ÖÀàĞÍ£ºhorz
-#define XML_LAYOUT_NULL          _T("null")           // ²¼¾ÖÀàĞÍ£ºnull
-#define XML_LAYOUT_GRID          _T("grid")           // ²¼¾ÖÀàĞÍ£ºgrid
-#define XML_LAYOUT_DOCK          _T("dock")           // ²¼¾ÖÀàĞÍ£ºdock
-#define XML_LAYOUT_CANVAS        _T("canvas")         // ²¼¾ÖÀàĞÍ£ºcanvas
-#define XML_LAYOUT_CARD          _T("card")           // ²¼¾ÖÀàĞÍ£ºcard
-#define XML_LAYOUT_AVERAGE       _T("average")        // ²¼¾ÖÀàĞÍ£ºaverage
+#pragma region // å¸ƒå±€layoutçš„å±æ€§
+#define XML_LAYOUT_PREFIX        L"layout."
+#define XML_LAYOUT_TYPE          L"layout.type"    // å¯¹è±¡çš„å¸ƒå±€ç±»å‹
+//#define XML_LAYOUT_STACK         L"stack"          // å¸ƒå±€ç±»å‹ï¼šstack
+#define XML_LAYOUT_VERT          L"vert"           // å¸ƒå±€ç±»å‹ï¼švert
+#define XML_LAYOUT_HORZ          L"horz"           // å¸ƒå±€ç±»å‹ï¼šhorz
+#define XML_LAYOUT_NULL          L"null"           // å¸ƒå±€ç±»å‹ï¼šnull
+#define XML_LAYOUT_GRID          L"grid"           // å¸ƒå±€ç±»å‹ï¼šgrid
+#define XML_LAYOUT_DOCK          L"dock"           // å¸ƒå±€ç±»å‹ï¼šdock
+#define XML_LAYOUT_CANVAS        L"canvas"         // å¸ƒå±€ç±»å‹ï¼šcanvas
+#define XML_LAYOUT_CARD          L"card"           // å¸ƒå±€ç±»å‹ï¼šcard
+#define XML_LAYOUT_AVERAGE       L"average"        // å¸ƒå±€ç±»å‹ï¼šaverage
 
 enum LAYOUTTYPE
 {
@@ -466,14 +466,14 @@ enum LAYOUTTYPE
     LAYOUT_TYPE_AVERAGE,
 };
 
-// stack²¼¾ÖµÄÊôĞÔ
-// #define XML_LAYOUT_STACK_DIRECTION      _T("layout.direction")  // stack²¼¾ÖµÄ·½Ïò
-// #define XML_LAYOUT_STACK_LEFTTORIGHT    _T("lefttoright")       // xmlÖĞ¿ÉÅäÖÃµÄÖµ
-// #define XML_LAYOUT_STACK_RIGHTTOLEFT    _T("righttoleft")       // xmlÖĞ¿ÉÅäÖÃµÄÖµ
-// #define XML_LAYOUT_STACK_LEFTANDRIGHT   _T("leftandright")      // xmlÖĞ¿ÉÅäÖÃµÄÖµ
-// #define XML_LAYOUT_STACK_TOPTOBOTTOM    _T("toptobottom")       // xmlÖĞ¿ÉÅäÖÃµÄÖµ
-// #define XML_LAYOUT_STACK_BOTTOMTOTOP    _T("bottomtotop")       // xmlÖĞ¿ÉÅäÖÃµÄÖµ
-// #define XML_LAYOUT_STACK_TOPANDBOTTOM   _T("topandbottom")      // xmlÖĞ¿ÉÅäÖÃµÄÖµ
+// stackå¸ƒå±€çš„å±æ€§
+// #define XML_LAYOUT_STACK_DIRECTION      L"layout.direction"  // stackå¸ƒå±€çš„æ–¹å‘
+// #define XML_LAYOUT_STACK_LEFTTORIGHT    L"lefttoright"       // xmlä¸­å¯é…ç½®çš„å€¼
+// #define XML_LAYOUT_STACK_RIGHTTOLEFT    L"righttoleft"       // xmlä¸­å¯é…ç½®çš„å€¼
+// #define XML_LAYOUT_STACK_LEFTANDRIGHT   L"leftandright"      // xmlä¸­å¯é…ç½®çš„å€¼
+// #define XML_LAYOUT_STACK_TOPTOBOTTOM    L"toptobottom"       // xmlä¸­å¯é…ç½®çš„å€¼
+// #define XML_LAYOUT_STACK_BOTTOMTOTOP    L"bottomtotop"       // xmlä¸­å¯é…ç½®çš„å€¼
+// #define XML_LAYOUT_STACK_TOPANDBOTTOM   L"topandbottom"      // xmlä¸­å¯é…ç½®çš„å€¼
 
 // enum LAYOUT_STACK_DIRECTION
 // {
@@ -484,12 +484,12 @@ enum LAYOUTTYPE
 //     LAYOUT_STACK_BOTTOMTOTOP  = 4,   
 //     LAYOUT_STACK_TOPANDBOTTOM = 5   
 // };
-#define XML_LAYOUT_STACK_GAP            _T("layout.gap")        // Ã¿Ò»ÏîÖ®¼äµÄ¼äÏ¶
+#define XML_LAYOUT_STACK_GAP            L"layout.gap"        // æ¯ä¸€é¡¹ä¹‹é—´çš„é—´éš™
 
-// average²¼¾Ö
-#define XML_LAYOUT_AVERAGE_DIRECTION    _T("layout.direction")  // stack²¼¾ÖµÄ·½Ïò
-#define XML_LAYOUT_AVERAGE_H            _T("h")
-#define XML_LAYOUT_AVERAGE_V            _T("v")
+// averageå¸ƒå±€
+#define XML_LAYOUT_AVERAGE_DIRECTION    L"layout.direction"  // stackå¸ƒå±€çš„æ–¹å‘
+#define XML_LAYOUT_AVERAGE_H            L"h"
+#define XML_LAYOUT_AVERAGE_V            L"v"
 
 enum LAYOUT_AVERAGE_DIRECTION
 {
@@ -497,17 +497,17 @@ enum LAYOUT_AVERAGE_DIRECTION
     LAYOUT_AVERAGE_V
 };
 
-#define XML_LAYOUT_AVERAGE_GAP         _T("layout.gap")        // Ã¿Ò»ÏîÖ®¼äµÄ¼äÏ¶
+#define XML_LAYOUT_AVERAGE_GAP         L"layout.gap"        // æ¯ä¸€é¡¹ä¹‹é—´çš„é—´éš™
 
-// dock²¼¾ÖµÄÊôĞÔ
+// dockå¸ƒå±€çš„å±æ€§
 
-// grid²¼¾ÖµÄÊôĞÔ
-#define XML_LAYOUT_GRID_WIDTH           _T("layout.width")      // grid²¼¾ÖµÄ¸÷ÁĞµÄ¿í¶È¶¨Òå
-#define XML_LAYOUT_GRID_HEIGHT          _T("layout.height")     // grid²¼¾ÖµÄ¸÷ÁĞµÄ¸ß¶È¶¨Òå
+// gridå¸ƒå±€çš„å±æ€§
+#define XML_LAYOUT_GRID_WIDTH           L"layout.width"      // gridå¸ƒå±€çš„å„åˆ—çš„å®½åº¦å®šä¹‰
+#define XML_LAYOUT_GRID_HEIGHT          L"layout.height"     // gridå¸ƒå±€çš„å„åˆ—çš„é«˜åº¦å®šä¹‰
 
 #pragma endregion
 
-#pragma region // ²¼¾Ö×ÓÔªËØÊôĞÔ
+#pragma region // å¸ƒå±€å­å…ƒç´ å±æ€§
 
 enum LAYOUT_FLAG
 {
@@ -517,12 +517,12 @@ enum LAYOUT_FLAG
     LAYOUT_ITEM_ALIGN_BOTTOM = 0x0010,
     LAYOUT_ITEM_ALIGN_CENTER = 0x0020,
     LAYOUT_ITEM_ALIGN_VCENTER = 0x0040,
-    LAYOUT_ITEM_ALIGN_FILL   = 0x0080,  // Ìî³äÊ£Óà¿Õ¼ä--stack²¼¾Ö
-	// LAYOUT_FLAG_FORCE_DESIREDSIZE = 0x0100, // Ç¿ÖÆÊ¹ÓÃ¿Ø¼ş×Ô¼ºµÄÆÚÍû´óĞ¡£¬·ÏÆú£¬ÔÙµ÷Ò»´Îget desired sizeµÃÁË
+    LAYOUT_ITEM_ALIGN_FILL   = 0x0080,  // å¡«å……å‰©ä½™ç©ºé—´--stackå¸ƒå±€
+	// LAYOUT_FLAG_FORCE_DESIREDSIZE = 0x0100, // å¼ºåˆ¶ä½¿ç”¨æ§ä»¶è‡ªå·±çš„æœŸæœ›å¤§å°ï¼ŒåºŸå¼ƒï¼Œå†è°ƒä¸€æ¬¡get desired sizeå¾—äº†
 
     LAYOUT_ITEM_ALIGN_LTRB = LAYOUT_ITEM_ALIGN_LEFT|LAYOUT_ITEM_ALIGN_TOP|LAYOUT_ITEM_ALIGN_RIGHT|LAYOUT_ITEM_ALIGN_BOTTOM,
 
-	// todo: Ê¹ÓÃ-1×÷ÎªNDEFÓĞÎÊÌâ
+	// todo: ä½¿ç”¨-1ä½œä¸ºNDEFæœ‰é—®é¢˜
 	LAYOUT_ITEM_LEFT_NOT_DEFINE = 0x0100,
 	LAYOUT_ITEM_TOP_NOT_DEFINE = 0x0200,
 	LAYOUT_ITEM_RIGHT_NOT_DEFINE = 0x0400,
@@ -530,29 +530,29 @@ enum LAYOUT_FLAG
 };
 
 
-// canvas²¼¾ÖÖĞµÄ×ÓÔªËØµÄÊôĞÔ
-#define XML_LAYOUT_ITEM_LEFT        _T("layout.left")
-#define XML_LAYOUT_ITEM_TOP         _T("layout.top")
-#define XML_LAYOUT_ITEM_RIGHT       _T("layout.right")
-#define XML_LAYOUT_ITEM_BOTTOM      _T("layout.bottom")
+// canvaså¸ƒå±€ä¸­çš„å­å…ƒç´ çš„å±æ€§
+#define XML_LAYOUT_ITEM_LEFT        L"layout.left"
+#define XML_LAYOUT_ITEM_TOP         L"layout.top"
+#define XML_LAYOUT_ITEM_RIGHT       L"layout.right"
+#define XML_LAYOUT_ITEM_BOTTOM      L"layout.bottom"
 
-// stack²¼¾ÖÖĞµÄ×ÓÔªËØµÄÊôĞÔ
-#define XML_LAYOUT_ITEM_ALIGN          _T("layout.align")       // µ±layout.direction=leftandright||topandbottomÊ±£¬ĞèÒªÖ¸¶¨×ÓÔªËØµ½µ×Í£¿¿ÔÚÄÄÒ»²à
-#define XML_LAYOUT_ITEM_ALIGN_LEFT     _T("left")
-#define XML_LAYOUT_ITEM_ALIGN_RIGHT    _T("right")
-#define XML_LAYOUT_ITEM_ALIGN_TOP      _T("top")
-#define XML_LAYOUT_ITEM_ALIGN_BOTTOM   _T("bottom")
+// stackå¸ƒå±€ä¸­çš„å­å…ƒç´ çš„å±æ€§
+#define XML_LAYOUT_ITEM_ALIGN          L"layout.align"       // å½“layout.direction=leftandright||topandbottomæ—¶ï¼Œéœ€è¦æŒ‡å®šå­å…ƒç´ åˆ°åº•åœé åœ¨å“ªä¸€ä¾§
+#define XML_LAYOUT_ITEM_ALIGN_LEFT     L"left"
+#define XML_LAYOUT_ITEM_ALIGN_RIGHT    L"right"
+#define XML_LAYOUT_ITEM_ALIGN_TOP      L"top"
+#define XML_LAYOUT_ITEM_ALIGN_BOTTOM   L"bottom"
 
-#define XML_LAYOUT_ITEM_ALIGN_CENTER   _T("center")  // -- stack/dock layout
-#define XML_LAYOUT_ITEM_ALIGN_VCENTER  _T("vcenter") // -- stack layout
-#define XML_LAYOUT_ITEM_ALIGN_FILL     _T("fill")    // -- stack layout
+#define XML_LAYOUT_ITEM_ALIGN_CENTER   L"center"  // -- stack/dock layout
+#define XML_LAYOUT_ITEM_ALIGN_VCENTER  L"vcenter" // -- stack layout
+#define XML_LAYOUT_ITEM_ALIGN_FILL     L"fill"    // -- stack layout
 
-// ×Ó¿Ø¼şËÄ±ßÈ«¶ÔÆë²¼¾Ö£¬¸¸¶ÔÏóÔÚMeasure×Ô¼ºÊ±£¬ÈçºÎ´¦Àí¸Ã×Ó¿Ø¼şµÄdesiredsize
-// 1. Õı³£Çé¿öÏÂ£¬ÓÉÓÚ×Ó¿Ø¼ş²ÉÓÃµÄÊÇlrtb¶ÔÆë£¬½«²»²âÊÔ×Ô¼ºµÄ´óĞ¡£¬¶øÊÇÖ±½ÓÒÀÀµÓÚ¸¸¶ÔÏó
-// 2. ÔÚ²Ëµ¥´°¿Ú³¡¾°ÏÂ£¬´°¿ÚµÄ´óĞ¡ÔòÊÇÈ¡¾öÓÚ²Ëµ¥ÄÚÈİ´óĞ¡£¬µ«²Ëµ¥ÓÖÊÇlrtb¶ÔÆë²¼¾ÖµÄ£¬
-//    Òò´Ë´°¿ÚÔÚ±éÀúÊ±£¬²Ëµ¥µÄdesiredsize²»Ó¦¸ÃÒÀÀµ¸¸¶ÔÏó£¬¶øÊÇ·µ»ØÕæÊµ´óĞ¡
-// ·ÏÆú£¬ÔÙµ÷Ò»´Îget desired sizeµÃÁË
-//#define XML_LAYOUT_ALIGN_FORCE_DESIREDSIZE  _T("xxxx")
+// å­æ§ä»¶å››è¾¹å…¨å¯¹é½å¸ƒå±€ï¼Œçˆ¶å¯¹è±¡åœ¨Measureè‡ªå·±æ—¶ï¼Œå¦‚ä½•å¤„ç†è¯¥å­æ§ä»¶çš„desiredsize
+// 1. æ­£å¸¸æƒ…å†µä¸‹ï¼Œç”±äºå­æ§ä»¶é‡‡ç”¨çš„æ˜¯lrtbå¯¹é½ï¼Œå°†ä¸æµ‹è¯•è‡ªå·±çš„å¤§å°ï¼Œè€Œæ˜¯ç›´æ¥ä¾èµ–äºçˆ¶å¯¹è±¡
+// 2. åœ¨èœå•çª—å£åœºæ™¯ä¸‹ï¼Œçª—å£çš„å¤§å°åˆ™æ˜¯å–å†³äºèœå•å†…å®¹å¤§å°ï¼Œä½†èœå•åˆæ˜¯lrtbå¯¹é½å¸ƒå±€çš„ï¼Œ
+//    å› æ­¤çª—å£åœ¨éå†æ—¶ï¼Œèœå•çš„desiredsizeä¸åº”è¯¥ä¾èµ–çˆ¶å¯¹è±¡ï¼Œè€Œæ˜¯è¿”å›çœŸå®å¤§å°
+// åºŸå¼ƒï¼Œå†è°ƒä¸€æ¬¡get desired sizeå¾—äº†
+//#define XML_LAYOUT_ALIGN_FORCE_DESIREDSIZE  L"xxxx"
 
 
 // enum LAYOUT_STACK_ITEM_ALIGN
@@ -563,19 +563,19 @@ enum LAYOUT_FLAG
 // 	LAYOUT_STACK_ITEM_ALIGN_BOTTOM = 1,
 // };
 
-// dock²¼¾ÖÖĞµÄ×ÓÔªËØµÄÊôĞÔ
-// #define XML_LAYOUT_DOCK_DOCK          _T("layout.dock")       // ×ÓÔªËØÍ£¿¿ÔÚÄÄÒ»¸ö·½Ïò
-// #define XML_LAYOUT_DOCK_DOCK_LEFT     _T("left")
-// #define XML_LAYOUT_DOCK_DOCK_RIGHT    _T("right")
-// #define XML_LAYOUT_DOCK_DOCK_TOP      _T("top")
-// #define XML_LAYOUT_DOCK_DOCK_BOTTOM   _T("bottom")
-// #define XML_LAYOUT_DOCK_DOCK_CENTER   _T("center")
+// dockå¸ƒå±€ä¸­çš„å­å…ƒç´ çš„å±æ€§
+// #define XML_LAYOUT_DOCK_DOCK          L"layout.dock"       // å­å…ƒç´ åœé åœ¨å“ªä¸€ä¸ªæ–¹å‘
+// #define XML_LAYOUT_DOCK_DOCK_LEFT     L"left"
+// #define XML_LAYOUT_DOCK_DOCK_RIGHT    L"right"
+// #define XML_LAYOUT_DOCK_DOCK_TOP      L"top"
+// #define XML_LAYOUT_DOCK_DOCK_BOTTOM   L"bottom"
+// #define XML_LAYOUT_DOCK_DOCK_CENTER   L"center"
 
-// grid²¼¾ÖÖĞµÄ×ÓÔªËØµÄÊôĞÔ
-#define XML_LAYOUT_GRID_ROW          _T("layout.row")        // ¶ÔÓ¦ m_nConfigTop
-#define XML_LAYOUT_GRID_COL          _T("layout.col")        // ¶ÔÓ¦ m_nConfigLeft
-#define XML_LAYOUT_GRID_ROWSPAN      _T("layout.rowspan")    // ¶ÔÓ¦ m_nConfigBottom
-#define XML_LAYOUT_GRID_COLSPAN      _T("layout.colspan")    // ¶ÔÓ¦ m_nConfigRight
+// gridå¸ƒå±€ä¸­çš„å­å…ƒç´ çš„å±æ€§
+#define XML_LAYOUT_GRID_ROW          L"layout.row"        // å¯¹åº” m_nConfigTop
+#define XML_LAYOUT_GRID_COL          L"layout.col"        // å¯¹åº” m_nConfigLeft
+#define XML_LAYOUT_GRID_ROWSPAN      L"layout.rowspan"    // å¯¹åº” m_nConfigBottom
+#define XML_LAYOUT_GRID_COLSPAN      L"layout.colspan"    // å¯¹åº” m_nConfigRight
 
 #pragma endregion
 //
@@ -587,12 +587,12 @@ enum STYLE_SELECTOR_TYPE
     STYLE_SELECTOR_TYPE_CLASS,
     STYLE_SELECTOR_TYPE_TAG
 };
-#define  XML_STYLE_SELECTOR_TYPE_ID            _T("id")       // id Ñ¡ÔñÆ÷
-#define  XML_STYLE_SELECTOR_TYPE_CLASS         _T("class")    // classÑ¡ÔñÆ÷
-#define  XML_STYLE_INHERIT                     _T("inherit")  // ¼Ì³ĞÊôĞÔ
+#define  XML_STYLE_SELECTOR_TYPE_ID            L"id"       // id é€‰æ‹©å™¨
+#define  XML_STYLE_SELECTOR_TYPE_CLASS         L"class"    // classé€‰æ‹©å™¨
+#define  XML_STYLE_INHERIT                     L"inherit"  // ç»§æ‰¿å±æ€§
 
-#define  STYLE_ID_PREFIX                       _T('#')        // idÑ¡ÔñÆ÷Ç°×º
-#define  STYLE_CLASS_PREFIX                    _T('.')        // classÑ¡ÔñÆ÷Ç°×º
+#define  STYLE_ID_PREFIX                       L'#'        // idé€‰æ‹©å™¨å‰ç¼€
+#define  STYLE_CLASS_PREFIX                    L'.'        // classé€‰æ‹©å™¨å‰ç¼€
 
 // Control
 
@@ -601,33 +601,33 @@ enum STYLE_SELECTOR_TYPE
 // Picture
 
 // GifPicture
-#define  XML_GIFCTRL_GIF   _T("gif")       // gif×ÊÔ´id
-#define  XML_GIFCTRL_AUTOPLAY    _T("autoplay")   // ÊÇ·ñ×Ô¶¯¿ªÊ¼£¬Ä¬ÈÏÎªfalse£¬ĞèÒªÊÖ¶¯µ÷ÓÃstartº¯Êı
+#define  XML_GIFCTRL_GIF   L"gif"       // gifèµ„æºid
+#define  XML_GIFCTRL_AUTOPLAY    L"autoplay"   // æ˜¯å¦è‡ªåŠ¨å¼€å§‹ï¼Œé»˜è®¤ä¸ºfalseï¼Œéœ€è¦æ‰‹åŠ¨è°ƒç”¨startå‡½æ•°
 
 // GroupBox
-#define XML_GROUPBOX_TEXTINDENT   _T("textindent")  // ÎÄ×ÖËõ½øÖµ
-#define XML_GROUPBOX_TEXTMARGIN   _T("textmargin")  // ÎÄ×ÖÓë±ß¿òµÄ¼ä¾à
-#define XML_GROUPBOX_TEXTALIGN    _T("textalign")   // ÎÄ×Ö¶ÔÆë·½Ê½
+#define XML_GROUPBOX_TEXTINDENT   L"textindent"  // æ–‡å­—ç¼©è¿›å€¼
+#define XML_GROUPBOX_TEXTMARGIN   L"textmargin"  // æ–‡å­—ä¸è¾¹æ¡†çš„é—´è·
+#define XML_GROUPBOX_TEXTALIGN    L"textalign"   // æ–‡å­—å¯¹é½æ–¹å¼
 
 //////////////////////////////////////////////////////////////////////////
 // Button
 
-#define  XML_BUTTON_DEFPUSHBUTTON       _T("defpushbutton")    // ÊÇ·ñÊÇÄ¬ÈÏ°´Å¥
-#define  XML_BUTTON_DRAW_FOCUS_TYPE     _T("drawfocus")        // ÈçºÎ»æÖÆ½¹µã
-#define  XML_BUTTON_DRAW_FOCUS_TYPE_NONE   _T("none")        
-#define  XML_BUTTON_DRAW_FOCUS_TYPE_DOT    _T("dot")    
-#define  XML_BUTTON_HAND_CUROSR         _T("handcursor")       // ÏÔÊ¾ÊÖĞÍÊó±êÑùÊ½
+#define  XML_BUTTON_DEFPUSHBUTTON       L"defpushbutton"    // æ˜¯å¦æ˜¯é»˜è®¤æŒ‰é’®
+#define  XML_BUTTON_DRAW_FOCUS_TYPE     L"drawfocus"        // å¦‚ä½•ç»˜åˆ¶ç„¦ç‚¹
+#define  XML_BUTTON_DRAW_FOCUS_TYPE_NONE   L"none"        
+#define  XML_BUTTON_DRAW_FOCUS_TYPE_DOT    L"dot"    
+#define  XML_BUTTON_HAND_CUROSR         L"handcursor"       // æ˜¾ç¤ºæ‰‹å‹é¼ æ ‡æ ·å¼
 
 typedef enum
 {
-    BUTTON_RENDER_DRAW_FOCUS_TYPE_NONE,                               // ²»»æÖÆ
-    BUTTON_RENDER_DRAW_FOCUS_TYPE_DOT,                                // Ê¹ÓÃĞéÏßµã»æÖÆ
+    BUTTON_RENDER_DRAW_FOCUS_TYPE_NONE,                               // ä¸ç»˜åˆ¶
+    BUTTON_RENDER_DRAW_FOCUS_TYPE_DOT,                                // ä½¿ç”¨è™šçº¿ç‚¹ç»˜åˆ¶
 }BUTTON_RENDER_DRAW_FOCUS_TYPE;
 
-#define XML_BUTTON_AUTOSIZE_TYPE           _T("autosize")     // µ±Ã»ÓĞÖ¸¶¨°´Å¥´óĞ¡Ê±£¬ÈçºÎ¼ÆËãÆä´óĞ¡
-#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE   _T("backimage")      // ±³¾°Í¼Æ¬µÄ´óĞ¡¾ö¶¨°´Å¥´óĞ¡
-#define XML_BUTTON_AUTOSIZE_TYPE_CONTENT   _T("content")      // ±³¾°Í¼Æ¬µÄÄÚÈİ(Í¼±ê+ÎÄ±¾)¾ö¶¨°´Å¥´óĞ¡
-#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH _T("bkimagehcontentw")  // Í¼Æ¬µÄ¸ß¶È+ÄÚÈİµÄ¿í¶È
+#define XML_BUTTON_AUTOSIZE_TYPE           L"autosize"     // å½“æ²¡æœ‰æŒ‡å®šæŒ‰é’®å¤§å°æ—¶ï¼Œå¦‚ä½•è®¡ç®—å…¶å¤§å°
+#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE   L"backimage"      // èƒŒæ™¯å›¾ç‰‡çš„å¤§å°å†³å®šæŒ‰é’®å¤§å°
+#define XML_BUTTON_AUTOSIZE_TYPE_CONTENT   L"content"      // èƒŒæ™¯å›¾ç‰‡çš„å†…å®¹(å›¾æ ‡+æ–‡æœ¬)å†³å®šæŒ‰é’®å¤§å°
+#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH L"bkimagehcontentw"  // å›¾ç‰‡çš„é«˜åº¦+å†…å®¹çš„å®½åº¦
 
 enum BUTTON_AUTO_SIZE_TYPE
 {
@@ -637,17 +637,17 @@ enum BUTTON_AUTO_SIZE_TYPE
     BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH
 };
 
-#define XML_BUTTON_ICON_ALIGN  _T("iconalign")    // °´Å¥Í¼±êµÄÎ»ÖÃ
+#define XML_BUTTON_ICON_ALIGN  L"iconalign"    // æŒ‰é’®å›¾æ ‡çš„ä½ç½®
 
-// #define  XML_BUTTON_ICON                             _T("icon")             // °´Å¥Í¼±ê
-// #define  XML_BUTTON_ICON_RENDER_TYPE                 _T("icontype")         // °´Å¥Í¼±ê»æÖÆÀàĞÍ
-// #define  XML_BUTTON_ICON_RENDER_TYPE_STATIC          _T("static")           // ¾²Ì¬Í¼±ê
-// #define  XML_BUTTON_ICON_RENDER_TYPE_8STATE          _T("8state")           // 8Ì¬Í¼±ê
-// #define  XML_BUTTON_ICON_RENDER_TYPE_THEME_RADIO     _T("themeradio")       // Ö÷Ìâµ¥Ñ¡Í¼±ê
-// #define  XML_BUTTON_ICON_RENDER_TYPE_THEME_CHECK     _T("themecheck")       // Ö÷Ìâ¸´Ñ¡Í¼±ê
+// #define  XML_BUTTON_ICON                             L"icon"             // æŒ‰é’®å›¾æ ‡
+// #define  XML_BUTTON_ICON_RENDER_TYPE                 L"icontype"         // æŒ‰é’®å›¾æ ‡ç»˜åˆ¶ç±»å‹
+// #define  XML_BUTTON_ICON_RENDER_TYPE_STATIC          L"static"           // é™æ€å›¾æ ‡
+// #define  XML_BUTTON_ICON_RENDER_TYPE_8STATE          L"8state"           // 8æ€å›¾æ ‡
+// #define  XML_BUTTON_ICON_RENDER_TYPE_THEME_RADIO     L"themeradio"       // ä¸»é¢˜å•é€‰å›¾æ ‡
+// #define  XML_BUTTON_ICON_RENDER_TYPE_THEME_CHECK     L"themecheck"       // ä¸»é¢˜å¤é€‰å›¾æ ‡
 // typedef enum
 // {
-// 	BUTTON_ICON_RENDER_TYPE_NONE,        // ²»»æÖÆÍ¼±ê
+// 	BUTTON_ICON_RENDER_TYPE_NONE,        // ä¸ç»˜åˆ¶å›¾æ ‡
 // 	BUTTON_ICON_RENDER_TYPE_STATIC,
 // 	BUTTON_ICON_RENDER_TYPE_GIF,
 // 	BUTTON_ICON_RENDER_TYPE_4STATE,
@@ -656,46 +656,46 @@ enum BUTTON_AUTO_SIZE_TYPE
 // 	BUTTON_ICON_RENDER_TYPE_THEME_CHECK
 // }BUTTON_ICON_RENDER_TYPE;
 
-#define   XML_BUTTON_ICON_TEXT_SPACE           _T("icontextspace")   // ÎÄ±¾ÓëÍ¼±êÖ®¼äµÄ¼ä¾à
-// #define  XML_BUTTON_TEXT_RENDER_TYPE           _T("texttype")         // ÎÄ±¾»æÖÆÀàĞÍ
-// #define  XML_BUTTON_TEXT_RENDER_TYPE_SINGLELINE _T("singleline")      // µ¥ĞĞÎÄ±¾
-// #define  XML_BUTTON_TEXT_RENDER_TYPE_HYPERLINK  _T("hyperlink")       // ³¬Á´½ÓÄ£Ê½
+#define   XML_BUTTON_ICON_TEXT_SPACE           L"icontextspace"   // æ–‡æœ¬ä¸å›¾æ ‡ä¹‹é—´çš„é—´è·
+// #define  XML_BUTTON_TEXT_RENDER_TYPE           L"texttype"         // æ–‡æœ¬ç»˜åˆ¶ç±»å‹
+// #define  XML_BUTTON_TEXT_RENDER_TYPE_SINGLELINE L"singleline"      // å•è¡Œæ–‡æœ¬
+// #define  XML_BUTTON_TEXT_RENDER_TYPE_HYPERLINK  L"hyperlink"       // è¶…é“¾æ¥æ¨¡å¼
 // typedef enum
 // {
-// 	BUTTON_TEXT_RENDER_TYPE_NONE,         // ²»»æÖÆÎÄ±¾
-// 	BUTTON_TEXT_RENDER_TYPE_SINGLELINE,   // µ¥ĞĞÎÄ±¾
-// 	BUTTON_TEXT_RENDER_TYPE_HYPERLINK,    // ³¬Á´½Ó
+// 	BUTTON_TEXT_RENDER_TYPE_NONE,         // ä¸ç»˜åˆ¶æ–‡æœ¬
+// 	BUTTON_TEXT_RENDER_TYPE_SINGLELINE,   // å•è¡Œæ–‡æœ¬
+// 	BUTTON_TEXT_RENDER_TYPE_HYPERLINK,    // è¶…é“¾æ¥
 // 
 // }BUTTON_TEXT_RENDER_TYPE;
 
-#define XML_BUTTON_CHECKED_TOOLTIP      _T("checked.tooltip")  // ±»Ñ¡ÖĞÊ±µÄÌáÊ¾ĞÅÏ¢
+#define XML_BUTTON_CHECKED_TOOLTIP      L"checked.tooltip"  // è¢«é€‰ä¸­æ—¶çš„æç¤ºä¿¡æ¯
 
 // HyperLink
-#define  XML_HYPERLINK_HREF              _T("href")     // ³¬Á´½Ó
+#define  XML_HYPERLINK_HREF              L"href"     // è¶…é“¾æ¥
 
 
-// #define  XML_BRUSHBUTTON_BKHOVERCOL            _T("bkhovercol")
-// #define  XML_BRUSHBUTTON_BKPRESSCOL            _T("bkpresscol")
-// #define  XML_BRUSHBUTTON_BORDERHOVERCOL        _T("borderhovercol")
-// #define  XML_BRUSHBUTTON_BORDERPRESSCOL        _T("borderpresscol")
-// #define  XML_BRUSHBUTTON_TEXTNORMALCOL         _T("textnormalcol")
-// #define  XML_BRUSHBUTTON_TEXTHOVERCOL          _T("texthovercol")
-// #define  XML_BRUSHBUTTON_TEXTPRESSCOL          _T("textpresscol")
-// #define  XML_BRUSHBUTTON_TEXTDISABLECOL        _T("textdisablecol")
-// #define  XML_BRUSHBUTTON_TEXT                  _T("text")
-// #define  XML_BRUSHBUTTON_ICON                  _T("icon")
+// #define  XML_BRUSHBUTTON_BKHOVERCOL            L"bkhovercol"
+// #define  XML_BRUSHBUTTON_BKPRESSCOL            L"bkpresscol"
+// #define  XML_BRUSHBUTTON_BORDERHOVERCOL        L"borderhovercol"
+// #define  XML_BRUSHBUTTON_BORDERPRESSCOL        L"borderpresscol"
+// #define  XML_BRUSHBUTTON_TEXTNORMALCOL         L"textnormalcol"
+// #define  XML_BRUSHBUTTON_TEXTHOVERCOL          L"texthovercol"
+// #define  XML_BRUSHBUTTON_TEXTPRESSCOL          L"textpresscol"
+// #define  XML_BRUSHBUTTON_TEXTDISABLECOL        L"textdisablecol"
+// #define  XML_BRUSHBUTTON_TEXT                  L"text"
+// #define  XML_BRUSHBUTTON_ICON                  L"icon"
 
-//#define  XML_BUTTON_BK_TYPE                    _T("bktype")     // °´Å¥±³¾°»æÖÆÀàĞÍ
-//#define  XML_BUTTON_BK_TYPE_COLOR              _T("color")    
+//#define  XML_BUTTON_BK_TYPE                    L"bktype"     // æŒ‰é’®èƒŒæ™¯ç»˜åˆ¶ç±»å‹
+//#define  XML_BUTTON_BK_TYPE_COLOR              L"color"    
 
 //////////////////////////////////////////////////////////////////////////
 // ProgressCtrl / SliderCtrl
 
-#define  XML_PROGRESSBAR_DIRECTION            _T("direction")       // ¹ö¶¯ÌõµÄ·½Ïò
-#define  XML_PROGRESSBAR_DIRECTION_LEFTRIGHT  _T("lefttoright")       // ×ó->ÓÒ
-#define  XML_PROGRESSBAR_DIRECTION_BOTTOMTOP  _T("bottomtotop")       // ÏÂ->ÉÏ
-#define  XML_PROGRESSBAR_DIRECTION_RIGHTLEFT  _T("righttoleft")       // ÓÒ->×ó
-#define  XML_PROGRESSBAR_DIRECTION_TOPBOTTOM  _T("toptobottom")       // ÉÏ->ÏÂ
+#define  XML_PROGRESSBAR_DIRECTION            L"direction"       // æ»šåŠ¨æ¡çš„æ–¹å‘
+#define  XML_PROGRESSBAR_DIRECTION_LEFTRIGHT  L"lefttoright"       // å·¦->å³
+#define  XML_PROGRESSBAR_DIRECTION_BOTTOMTOP  L"bottomtotop"       // ä¸‹->ä¸Š
+#define  XML_PROGRESSBAR_DIRECTION_RIGHTLEFT  L"righttoleft"       // å³->å·¦
+#define  XML_PROGRESSBAR_DIRECTION_TOPBOTTOM  L"toptobottom"       // ä¸Š->ä¸‹
 
 enum PROGRESSBAR_SCROLL_DIRECTION_TYPE
 {
@@ -705,12 +705,12 @@ enum PROGRESSBAR_SCROLL_DIRECTION_TYPE
     PROGRESSBAR_SCROLL_TOP_2_BOTTOM
 };
 
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION          _T("thumbarrow")  // »¬¿é°´Å¥µÄÖ¸Ïò
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_BOTH     _T("both")            // Ä¬ÈÏÖµ
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_LEFT     _T("left")    
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_TOP      _T("top")     
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_RIGHT    _T("right")   
-#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_BOTTOM   _T("bottom")   
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION          L"thumbarrow"  // æ»‘å—æŒ‰é’®çš„æŒ‡å‘
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_BOTH     L"both"            // é»˜è®¤å€¼
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_LEFT     L"left"    
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_TOP      L"top"     
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_RIGHT    L"right"   
+#define  XML_SLIDERCTRL_THUMB_POINT_DIRECTION_BOTTOM   L"bottom"   
 
 
 // #define  PROGRESSCTRL_FLAG_DIRECTION_LEFTRIGHT    0x0000
@@ -718,57 +718,62 @@ enum PROGRESSBAR_SCROLL_DIRECTION_TYPE
 // #define  PROGRESSCTRL_FLAG_DIRECTION_RIGHTLEFT    0x0002
 // #define  PROGRESSCTRL_FLAG_DIRECTION_BOTTOMTOP    0x0003
 
-#define  XML_SLIDERCTRL_BUTTON_ATTR_PRIFIX     _T("trackbtn.")       // »¬¶¯¿Ø¼şµÄ°´Å¥ÊôĞÔÇ°×º
+#define  XML_SLIDERCTRL_BUTTON_ATTR_PRIFIX     L"trackbtn."       // æ»‘åŠ¨æ§ä»¶çš„æŒ‰é’®å±æ€§å‰ç¼€
 
-#define  XML_IMAGEPROGRESSCTRL_FOREIMAGE       _T("foreimage")       // Ç°¾°Í¼Æ¬£¨Ò»ÕÅ£©
-#define  XML_IMAGEPROGRESSCTRL_BKGNDIMAGE      _T("bkgndimage")      // ±³¾°Í¼Æ¬£¨Ò»ÕÅ£©
+#define  XML_IMAGEPROGRESSCTRL_FOREIMAGE       L"foreimage"       // å‰æ™¯å›¾ç‰‡ï¼ˆä¸€å¼ ï¼‰
+#define  XML_IMAGEPROGRESSCTRL_BKGNDIMAGE      L"bkgndimage"      // èƒŒæ™¯å›¾ç‰‡ï¼ˆä¸€å¼ ï¼‰
 
 // Edit
-#define  XML_EDIT_TEXT                        _T("text")             // ÎÄ×ÖÄÚÈİ
-#define  XML_EDIT_TEXT_ALIGN                  _T("align")            // ÎÄ×Ö¶ÔÆë·½Ê½
+#define  XML_EDIT_TEXT                        L"text"             // æ–‡å­—å†…å®¹
+#define  XML_EDIT_TEXT_ALIGN                  L"align"            // æ–‡å­—å¯¹é½æ–¹å¼
 
-#define  XML_EDIT_COLOR                       _T("color.text")       // Õı³£ÎÄ×ÖÏÔÊ¾ÑÕÉ«
-#define  XML_EDIT_SELECT_COLOR                _T("color.select")     // ÎÄ×Ö±»Ñ¡ÖĞÊ±µÄÑÕÉ«
-#define  XML_EDIT_SELECT_BK_COLOR             _T("color.select.back")// ÎÄ×Ö±»Ñ¡ÖĞÊ±±³¾°µÄÑÕÉ«
-#define  XML_EDIT_DISABLE_COLOR               _T("color.disable")    // ±»½ûÓÃÊ±µÄÎÄ±¾ÑÕÉ«
-#define  XML_EDIT_READONLY_COLOR              _T("color.readonly")   // Ö»¶ÁÊ±µÄÎÄ±¾ÑÕÉ«
-#define  XML_INSTANTEDIT_COLOR                _T("color.quiet")      // ¼´Ê±±à¼­Ê±£¬Î´¿ªÆô±à¼­Ê±µÄÎÄ±¾ÑÕÉ« 
-#define  XML_EDIT_MAX_LENGTH                  _T("limit")            // ÄÚÈİµÄ×î³¤Öµ
-#define  XML_EDIT_MAX_LENGTH_BYTELIMIT        _T("bytelimit")        // °´×Ö½ÚÏŞÖÆ³¤¶È£¬ºº×ÖËãÁ½¸ö
-#define  XML_EDIT_CARET_HEIGHT                _T("caretheight")      // ¹â±ê¼°Ñ¡ÖĞÎÄ±¾±³¾°µÄ¸ß¶È
+#define  XML_EDIT_COLOR                       L"color.text"       // æ­£å¸¸æ–‡å­—æ˜¾ç¤ºé¢œè‰²
+#define  XML_EDIT_SELECT_COLOR                L"color.select"     // æ–‡å­—è¢«é€‰ä¸­æ—¶çš„é¢œè‰²
+#define  XML_EDIT_SELECT_BK_COLOR             L"color.select.back"// æ–‡å­—è¢«é€‰ä¸­æ—¶èƒŒæ™¯çš„é¢œè‰²
+#define  XML_EDIT_DISABLE_COLOR               L"color.disable"    // è¢«ç¦ç”¨æ—¶çš„æ–‡æœ¬é¢œè‰²
+#define  XML_EDIT_READONLY_COLOR              L"color.readonly"   // åªè¯»æ—¶çš„æ–‡æœ¬é¢œè‰²
+#define  XML_INSTANTEDIT_COLOR                L"color.quiet"      // å³æ—¶ç¼–è¾‘æ—¶ï¼Œæœªå¼€å¯ç¼–è¾‘æ—¶çš„æ–‡æœ¬é¢œè‰² 
+#define  XML_EDIT_MAX_LENGTH                  L"limit"            // å†…å®¹çš„æœ€é•¿å€¼
+#define  XML_EDIT_MAX_LENGTH_BYTELIMIT        L"bytelimit"        // æŒ‰å­—èŠ‚é™åˆ¶é•¿åº¦ï¼Œæ±‰å­—ç®—ä¸¤ä¸ª
+#define  XML_EDIT_CARET_HEIGHT                L"caretheight"      // å…‰æ ‡åŠé€‰ä¸­æ–‡æœ¬èƒŒæ™¯çš„é«˜åº¦
 //#define  XML_EDIT_MAX_INT
 
 // Scroll Bar
-#define  XML_SCROLLBAR_RANGE                  _T("range")            // ¹ö¶¯Ìõ·¶Î§ÉèÖÃ
-#define  XML_SCROLLBAR_PAGE                   _T("page")             // ¹ö¶¯ÌõÒ³´óĞ¡ÉèÖÃ
-#define  XML_SCROLLBAR_POS                    _T("pos")              // ¹ö¶¯ÌõÎ»ÖÃÉèÖÃ
-#define  XML_SCROLLBAR_BTNLINE                _T("btnline")          // ¹ö¶¯Ìõµã»÷°´Å¥ºó¹ö¶¯´óĞ¡ÉèÖÃ
-#define  XML_SCROLLBAR_WHEELLINE              _T("wheelline")        // Ê¹ÓÃÊó±ê»¬ÂÖºó¹ö¶¯´óĞ¡ÉèÖÃ
+#define  XML_SCROLLBAR_RANGE                  L"range"            // æ»šåŠ¨æ¡èŒƒå›´è®¾ç½®
+#define  XML_SCROLLBAR_PAGE                   L"page"             // æ»šåŠ¨æ¡é¡µå¤§å°è®¾ç½®
+#define  XML_SCROLLBAR_POS                    L"pos"              // æ»šåŠ¨æ¡ä½ç½®è®¾ç½®
+#define  XML_SCROLLBAR_BTNLINE                L"btnline"          // æ»šåŠ¨æ¡ç‚¹å‡»æŒ‰é’®åæ»šåŠ¨å¤§å°è®¾ç½®
+#define  XML_SCROLLBAR_WHEELLINE              L"wheelline"        // ä½¿ç”¨é¼ æ ‡æ»‘è½®åæ»šåŠ¨å¤§å°è®¾ç½®
 
-#define  XML_HSCROLLBAR                           _T("hscrollbar")  // ºáÏò¹ö¶¯ÌõÀàĞÍ
-#define  XML_VSCROLLBAR                           _T("vscrollbar")  // ×İÏò¹ö¶¯ÌõÀàĞÍ
-#define  XML_SCROLLBAR_NONE                       _T("none")        // ¸Ã·½ÏòÎŞ¹ö¶¯Ìõ
-#define  XML_SCROLLBAR_AUTO                       _T("auto")        // ¸Ã·½ÏòÉÏµÄ¹ö¶¯ÌõÔÚĞèÒªÊ±ÏÔÊ¾
-#define  XML_SCROLLBAR_ALWAYSSHOW                 _T("show")        // ¸Ã·½ÏòÉÏµÄ¹ö¶¯Ìõ±£³ÖÏÔÊ¾
-#define  XML_SCROLLBAR_ALWAYSHIDE                 _T("hide")        // ¸Ã·½ÏòÉÏÖ§³Ö¹ö¶¯£¬µ«²»ÏÔÊ¾¹ö¶¯Ìõ
+#define  XML_HSCROLLBAR                           L"hscrollbar"  // æ¨ªå‘æ»šåŠ¨æ¡ç±»å‹
+#define  XML_VSCROLLBAR                           L"vscrollbar"  // çºµå‘æ»šåŠ¨æ¡ç±»å‹
+#define  XML_SCROLLBAR_NONE                       L"none"        // è¯¥æ–¹å‘æ— æ»šåŠ¨æ¡
+#define  XML_SCROLLBAR_AUTO                       L"auto"        // è¯¥æ–¹å‘ä¸Šçš„æ»šåŠ¨æ¡åœ¨éœ€è¦æ—¶æ˜¾ç¤º
+#define  XML_SCROLLBAR_ALWAYSSHOW                 L"show"        // è¯¥æ–¹å‘ä¸Šçš„æ»šåŠ¨æ¡ä¿æŒæ˜¾ç¤º
+#define  XML_SCROLLBAR_ALWAYSHIDE                 L"hide"        // è¯¥æ–¹å‘ä¸Šæ”¯æŒæ»šåŠ¨ï¼Œä½†ä¸æ˜¾ç¤ºæ»šåŠ¨æ¡
 
 enum SCROLLBAR_VISIBLE_TYPE
 {
-    SCROLLBAR_VISIBLE_NONE,          // ²»Ê¹ÓÃ
-    SCROLLBAR_VISIBLE_AUTO,          // µ±ĞèÒª¹ö¶¯µÄÊ±ºòÔÙÏÔÊ¾
-    SCROLLBAR_VISIBLE_SHOW_ALWAYS,   // Ò»Ö±ÏÔÊ¾
-    SCROLLBAR_VISIBLE_HIDE_ALWAYS,   // Ò»Ö±Òş²Ø£¬Âß¼­ÉÏµÄ
+    SCROLLBAR_VISIBLE_NONE,          // ä¸ä½¿ç”¨
+    SCROLLBAR_VISIBLE_AUTO,          // å½“éœ€è¦æ»šåŠ¨çš„æ—¶å€™å†æ˜¾ç¤º
+    SCROLLBAR_VISIBLE_SHOW_ALWAYS,   // ä¸€ç›´æ˜¾ç¤º
+    SCROLLBAR_VISIBLE_HIDE_ALWAYS,   // ä¸€ç›´éšè—ï¼Œé€»è¾‘ä¸Šçš„
 };
 enum SCROLLBAR_DIRECTION_TYPE
 {
+#if defined(OS_WIN)
     HSCROLLBAR = WM_HSCROLL,
     VSCROLLBAR = WM_VSCROLL
+#else
+    HSCROLLBAR = 1,
+    VSCROLLBAR = 2
+#endif
 };
 
-// #define  XML_SCROLLBAR_TYPE                       _T("type")        // Ç°½ÓXML_xxSCROLLBAR_PRIFIX£¬¹ö¶¯ÌõµÄÀàĞÍ
-// #define  XML_SCROLLBAR_TYPE_SYSTEM                _T("system")      // ÏµÍ³ÑùÊ½µÄ¹ö¶¯Ìõ£¬Á½¸ö°´Å¥+Ò»¸öÍÏ¶¯Ìõ
-// #define  XML_SCROLLBAR_TYPE_LOGIC                 _T("logic")       // ÎŞ¹ö¶¯ÌõÏÔÊ¾£¬µ«Î¬»¤°ó¶¨¶ÔÏó½øĞĞ¹ö¶¯µÄÊı¾İ
-// #define  XML_SCROLLBAR_TYPE_MENU                  _T("menu")        // 
+// #define  XML_SCROLLBAR_TYPE                       L"type"        // å‰æ¥XML_xxSCROLLBAR_PRIFIXï¼Œæ»šåŠ¨æ¡çš„ç±»å‹
+// #define  XML_SCROLLBAR_TYPE_SYSTEM                L"system"      // ç³»ç»Ÿæ ·å¼çš„æ»šåŠ¨æ¡ï¼Œä¸¤ä¸ªæŒ‰é’®+ä¸€ä¸ªæ‹–åŠ¨æ¡
+// #define  XML_SCROLLBAR_TYPE_LOGIC                 L"logic"       // æ— æ»šåŠ¨æ¡æ˜¾ç¤ºï¼Œä½†ç»´æŠ¤ç»‘å®šå¯¹è±¡è¿›è¡Œæ»šåŠ¨çš„æ•°æ®
+// #define  XML_SCROLLBAR_TYPE_MENU                  L"menu"        // 
 // 
 // enum SCROLLBAR_RENDER_TYPE
 // {
@@ -777,80 +782,80 @@ enum SCROLLBAR_DIRECTION_TYPE
 //     SCROLLBAR_RENDER_TYPE_MENU,
 // };
 
-#define  XML_HSCROLLBAR_PRIFIX                    _T("hscrollbar.") // ºáÏò¹ö¶¯ÌõµÄÊôĞÔÇ°×º
-#define  XML_VSCROLLBAR_PRIFIX                    _T("vscrollbar.") // ×İÏò¹ö¶¯ÌõµÄÊôĞÔÇ°×º
+#define  XML_HSCROLLBAR_PRIFIX                    L"hscrollbar." // æ¨ªå‘æ»šåŠ¨æ¡çš„å±æ€§å‰ç¼€
+#define  XML_VSCROLLBAR_PRIFIX                    L"vscrollbar." // çºµå‘æ»šåŠ¨æ¡çš„å±æ€§å‰ç¼€
 
-#define  XML_SCROLLBAR_RENDER_TYPE                _T("type")        // ÉèÖÃ¹ö¶¯ÌõµÄäÖÈ¾Àà
+#define  XML_SCROLLBAR_RENDER_TYPE                L"type"        // è®¾ç½®æ»šåŠ¨æ¡çš„æ¸²æŸ“ç±»
 
 // scrollpanel
-#define  XML_SCROLLPANEL_VIEWSIZE                 _T("viewsize")    // ÊÓÍ¼´óĞ¡£¬¸ñÊ½Îª "100,100"
+#define  XML_SCROLLPANEL_VIEWSIZE                 L"viewsize"    // è§†å›¾å¤§å°ï¼Œæ ¼å¼ä¸º "100,100"
 
 // listbox
-#define  XML_LISTCTRL_ITEM_HEIGHT                 _T("itemheight")  // ÁĞ±í¿Ø¼şÃ¿Ò»ÏîµÄ¸ß¶È
-#define  XML_LISTCTRL_ITEM_PADDING                _T("itempadding") // ÁĞ±íÏîµÄËõ½ø
+#define  XML_LISTCTRL_ITEM_HEIGHT                 L"itemheight"  // åˆ—è¡¨æ§ä»¶æ¯ä¸€é¡¹çš„é«˜åº¦
+#define  XML_LISTCTRL_ITEM_PADDING                L"itempadding" // åˆ—è¡¨é¡¹çš„ç¼©è¿›
 
-#define  XML_LISTCTRL_MIN_WIDTH                   _T("minwidth")    //  auto sizeÁĞ±í¿òµÄ×îĞ¡¡¢´ó³ß´ç
-#define  XML_LISTCTRL_MIN_HEIGHT                  _T("minheight")
-// #define  XML_LISTCTRL_MAX_WIDTH                   _T("maxwidth")
-// #define  XML_LISTCTRL_MAX_HEIGHT                  _T("maxheight")
+#define  XML_LISTCTRL_MIN_WIDTH                   L"minwidth"    //  auto sizeåˆ—è¡¨æ¡†çš„æœ€å°ã€å¤§å°ºå¯¸
+#define  XML_LISTCTRL_MIN_HEIGHT                  L"minheight"
+// #define  XML_LISTCTRL_MAX_WIDTH                   L"maxwidth"
+// #define  XML_LISTCTRL_MAX_HEIGHT                  L"maxheight"
 
-#define  XML_LISTCTRL_EDIT_PRIFIX                 _T("edit.")       // ±à¼­¿òµÄÊôĞÔÇ°×º
-#define  XML_LISTCTRL_BUTTON_PRIFIX               _T("button.")     // °´Å¥µÄÊôĞÔÇ°×º
-#define  XML_LISTCTRL_COMBOBOX_PRIFIX             _T("combobox.")   // ÏÂÀ­ÁĞ±íµÄÊôĞÔÇ°×º
+#define  XML_LISTCTRL_EDIT_PRIFIX                 L"edit."       // ç¼–è¾‘æ¡†çš„å±æ€§å‰ç¼€
+#define  XML_LISTCTRL_BUTTON_PRIFIX               L"button."     // æŒ‰é’®çš„å±æ€§å‰ç¼€
+#define  XML_LISTCTRL_COMBOBOX_PRIFIX             L"combobox."   // ä¸‹æ‹‰åˆ—è¡¨çš„å±æ€§å‰ç¼€
 
 // combobox
-#define  XML_COMBOBOX_EDIT_PRIFIX                 _T("edit.")       // ±à¼­¿òµÄÊôĞÔÇ°×º
-#define  XML_COMBOBOX_BUTTON_PRIFIX               _T("button.")     // °´Å¥µÄÊôĞÔÇ°×º
-#define  XML_COMBOBOX_LISTBOX_PRIFIX              _T("listbox.")    // ÏÂÀ­ÁĞ±íµÄÊôĞÔÇ°×º
-#define  XML_COMBOBOX_DROPWNDID                   _T("dropwnd.id")  // ÏÂÀ­´°¿Úid
+#define  XML_COMBOBOX_EDIT_PRIFIX                 L"edit."       // ç¼–è¾‘æ¡†çš„å±æ€§å‰ç¼€
+#define  XML_COMBOBOX_BUTTON_PRIFIX               L"button."     // æŒ‰é’®çš„å±æ€§å‰ç¼€
+#define  XML_COMBOBOX_LISTBOX_PRIFIX              L"listbox."    // ä¸‹æ‹‰åˆ—è¡¨çš„å±æ€§å‰ç¼€
+#define  XML_COMBOBOX_DROPWNDID                   L"dropwnd.id"  // ä¸‹æ‹‰çª—å£id
 
 // ledctrl
-#define  XML_LEDCTRL_INDEXMAP                     _T("indexmap")    // Í¼Æ¬Ë÷ÒıÓ³Éä¹ØÏµ
-#define  XML_LEDCTRL_ITEMWIDTH                    _T("itemwidth")   // ÅäÖÃÃ¿Ò»ÏîµÄÏÔÊ¾¿í¶È£¨Ä¬ÈÏÎªÍ¼Æ¬¿í¶È£©
-#define  XML_LEDCTRL_ITEMHEIGHT                   _T("itemheight")  // ÅäÖÃÃ¿Ò»ÏîµÄÏÔÊ¾¸ß¶È£¨Ä¬ÈÏÎªÍ¼Æ¬¸ß¶È£©
-#define  XML_LEDEXCTRL_SAMEWIDTH                  _T("samewidth")   // bool£¬Èç¹û´óĞ¡ÏàÍ¬µÄ»°£¬¾Í²»ÓÃÅäÖÃposmapÊôĞÔÁË
-#define  XML_LEDEXCTRL_POSMAP                     _T("posmap")      // Í¼Æ¬ÏîÎ»ÖÃÓ³Éä¹ØÏµ  0,10;10,16;16,6;22,6;28,6;34,6;40,6;46,6;52,6;58,6;64,6 ...
+#define  XML_LEDCTRL_INDEXMAP                     L"indexmap"    // å›¾ç‰‡ç´¢å¼•æ˜ å°„å…³ç³»
+#define  XML_LEDCTRL_ITEMWIDTH                    L"itemwidth"   // é…ç½®æ¯ä¸€é¡¹çš„æ˜¾ç¤ºå®½åº¦ï¼ˆé»˜è®¤ä¸ºå›¾ç‰‡å®½åº¦ï¼‰
+#define  XML_LEDCTRL_ITEMHEIGHT                   L"itemheight"  // é…ç½®æ¯ä¸€é¡¹çš„æ˜¾ç¤ºé«˜åº¦ï¼ˆé»˜è®¤ä¸ºå›¾ç‰‡é«˜åº¦ï¼‰
+#define  XML_LEDEXCTRL_SAMEWIDTH                  L"samewidth"   // boolï¼Œå¦‚æœå¤§å°ç›¸åŒçš„è¯ï¼Œå°±ä¸ç”¨é…ç½®posmapå±æ€§äº†
+#define  XML_LEDEXCTRL_POSMAP                     L"posmap"      // å›¾ç‰‡é¡¹ä½ç½®æ˜ å°„å…³ç³»  0,10;10,16;16,6;22,6;28,6;34,6;40,6;46,6;52,6;58,6;64,6 ...
 
 // menu
-#define  XML_MENU                 _T("Menu")      // layout.xmlÖĞ²Ëµ¥½áµãµÄtag name
-#define  XML_MENU_STRINGITEM      _T("String")    //
-#define  XML_MENU_POPUPITEM       _T("Popup")     //
-#define  XML_MENU_SEPARATORITEM   _T("Separator") // 
-#define  XML_MENU_DISABLE         _T("disable")   // menu itemÊÇ·ñ¿ÉÓÃ£¬Îª1»òÕßtrue±íÊ¾±»½ûÓÃ
-#define  XML_MENU_POPUP_WNDID     _T("wnd.id")    // popup×Ó²Ëµ¥Æ¤·ô×ÊÔ´´°¿Úid
-#define  XML_MENU_POPUP_MENUID    _T("menu.id")   // popup×Ó²Ëµ¥ÔÚ´°¿ÚÖĞµÄ¿Ø¼şid
+#define  XML_MENU                 L"Menu"      // layout.xmlä¸­èœå•ç»“ç‚¹çš„tag name
+#define  XML_MENU_STRINGITEM      L"String"    //
+#define  XML_MENU_POPUPITEM       L"Popup"     //
+#define  XML_MENU_SEPARATORITEM   L"Separator" // 
+#define  XML_MENU_DISABLE         L"disable"   // menu itemæ˜¯å¦å¯ç”¨ï¼Œä¸º1æˆ–è€…trueè¡¨ç¤ºè¢«ç¦ç”¨
+#define  XML_MENU_POPUP_WNDID     L"wnd.id"    // popupå­èœå•çš®è‚¤èµ„æºçª—å£id
+#define  XML_MENU_POPUP_MENUID    L"menu.id"   // popupå­èœå•åœ¨çª—å£ä¸­çš„æ§ä»¶id
 
-#define  XML_MENU_ICONGUTTERWIDTH            _T("icongutterwidth")  // ²Ëµ¥Í¼±êÁĞµÄ¿í¶È
-#define  XML_MENU_POPUPTRIANGLEWIDTH         _T("trianglewidth")    // ÓÒ²àÈı½ÇĞÎµÄÕ¼ÓÃ¿í¶È
-#define  XML_MENU_SEPARATORHEIGHT            _T("separatorheight")  // ·Ö¸ôÌõµÄ¸ß¶È
-#define  XML_MENU_LEFT_TEXT_INDENT           _T("textleftindent")   // ×ó²àÎÄ±¾Ëõ½ø
-#define  XML_MENU_RIGHT_TEXT_INDENT          _T("textrightindent")  // ×ó²àÎÄ±¾Ëõ½ø
-#define  XML_MENU_SUBMENU_GAP                _T("submenugap")       // ×Ó²Ëµ¥Óë¸¸²Ëµ¥Ö®¼äµÄ¼äÏ¶£¬Ä¬ÈÏÎª-2
+#define  XML_MENU_ICONGUTTERWIDTH            L"icongutterwidth"  // èœå•å›¾æ ‡åˆ—çš„å®½åº¦
+#define  XML_MENU_POPUPTRIANGLEWIDTH         L"trianglewidth"    // å³ä¾§ä¸‰è§’å½¢çš„å ç”¨å®½åº¦
+#define  XML_MENU_SEPARATORHEIGHT            L"separatorheight"  // åˆ†éš”æ¡çš„é«˜åº¦
+#define  XML_MENU_LEFT_TEXT_INDENT           L"textleftindent"   // å·¦ä¾§æ–‡æœ¬ç¼©è¿›
+#define  XML_MENU_RIGHT_TEXT_INDENT          L"textrightindent"  // å·¦ä¾§æ–‡æœ¬ç¼©è¿›
+#define  XML_MENU_SUBMENU_GAP                L"submenugap"       // å­èœå•ä¸çˆ¶èœå•ä¹‹é—´çš„é—´éš™ï¼Œé»˜è®¤ä¸º-2
 
-#define  XML_MENU_RADIO_ICON_RENDER_PREFIX   _T("radioicon.")       // Ñ¡ÖĞÍ¼±ê»æÖÆrenderÇ°×º
-#define  XML_MENU_CHECK_ICON_RENDER_PREFIX   _T("checkicon.")       // Ñ¡ÖĞÍ¼±ê»æÖÆrenderÇ°×º
-#define  XML_MENU_RADIOCHECK_ICONBK_RENDER_PREFIX   _T("radiocheckiconbk.") // Ñ¡ÖĞÍ¼±ê±³¾°»æÖÆrenderÇ°×º
-#define  XML_MENU_SEPARATOR_RENDEER_PREFIX   _T("separator.")       // ·Ö¸ôÌõ»æÖÆrenderÇ°×º
-#define  XML_MENU_TRAIANGLE_RENDER_PREFIX    _T("triangle.")        // µ¯³ö¼ıÍ·»æÖÆrenderÇ°×º
+#define  XML_MENU_RADIO_ICON_RENDER_PREFIX   L"radioicon."       // é€‰ä¸­å›¾æ ‡ç»˜åˆ¶renderå‰ç¼€
+#define  XML_MENU_CHECK_ICON_RENDER_PREFIX   L"checkicon."       // é€‰ä¸­å›¾æ ‡ç»˜åˆ¶renderå‰ç¼€
+#define  XML_MENU_RADIOCHECK_ICONBK_RENDER_PREFIX   L"radiocheckiconbk." // é€‰ä¸­å›¾æ ‡èƒŒæ™¯ç»˜åˆ¶renderå‰ç¼€
+#define  XML_MENU_SEPARATOR_RENDEER_PREFIX   L"separator."       // åˆ†éš”æ¡ç»˜åˆ¶renderå‰ç¼€
+#define  XML_MENU_TRAIANGLE_RENDER_PREFIX    L"triangle."        // å¼¹å‡ºç®­å¤´ç»˜åˆ¶renderå‰ç¼€
 
-#define  XML_MENU_ITEM_ICON_RENDER_PREFIX    _T("icon.")            // ²Ëµ¥ÏîµÄÍ¼±ê
+#define  XML_MENU_ITEM_ICON_RENDER_PREFIX    L"icon."            // èœå•é¡¹çš„å›¾æ ‡
 
 #define  MENU_SEPARATOR_ID    -1
 #define  MENU_POPUP_ID        0
 
 // header ctrl
-#define  XML_HEADERCTRL_RIGHT_BLANK_RENDER_PRIFIX  _T("rightblank.") // ÓÒ²à¿Õ°×ÇøÓòµÄ±³¾°»æÖÆÇ°Ôµ
+#define  XML_HEADERCTRL_RIGHT_BLANK_RENDER_PRIFIX  L"rightblank." // å³ä¾§ç©ºç™½åŒºåŸŸçš„èƒŒæ™¯ç»˜åˆ¶å‰ç¼˜
 
 
 // listview ctrl
-#define  XML_LISTVIEWCTRL_HEADERCTRL_PREFIX   _T("headerctrl.")  // ÁĞ±í¿Ø¼şÖĞµÄheaderÊôĞÔÇ°×º
+#define  XML_LISTVIEWCTRL_HEADERCTRL_PREFIX   L"headerctrl."  // åˆ—è¡¨æ§ä»¶ä¸­çš„headerå±æ€§å‰ç¼€
 
 // Flash Wrap
-#define  XML_FLASH_URI                        _T("uri")          // flashÎÄ¼şµØÖ·
-#define  XML_FLASH_WMODE                      _T("wmode")        // flash´°¿ÚÄ£Ê½
-#define  XML_FLASH_WMODE_WINDOW               _T("window")
-#define  XML_FLASH_WMODE_OPAQUE               _T("opaque")
-#define  XML_FLASH_WMODE_TRANSPARENT          _T("transparent")
+#define  XML_FLASH_URI                        L"uri"          // flashæ–‡ä»¶åœ°å€
+#define  XML_FLASH_WMODE                      L"wmode"        // flashçª—å£æ¨¡å¼
+#define  XML_FLASH_WMODE_WINDOW               L"window"
+#define  XML_FLASH_WMODE_OPAQUE               L"opaque"
+#define  XML_FLASH_WMODE_TRANSPARENT          L"transparent"
 enum FLASH_WMODE
 {
     FLASH_WMODE_WINDOW,
@@ -858,32 +863,33 @@ enum FLASH_WMODE
     FLASH_WMODE_TRANSPARENT,
 };
 
-// Layer -- ¹ıÆÚ
-// #define  XML_LAYER_TYPE             _T("type")    // render chainÖĞµÄlayerÀàĞÍ
-// #define  XML_LAYER_TYPE_DIRECT      _T("direct")  // Ö±½ÓäÖÈ¾£¬ÎŞĞè»º´æ¡£renderbaseÀàĞÍ
-// #define  XML_LAYER_TYPE_CONTROL     _T("control") // ÄÚÇ¶Ò»¸ö¿Ø¼ş£¬ÀıÈçflash
+// Layer -- è¿‡æœŸ
+// #define  XML_LAYER_TYPE             L"type"    // render chainä¸­çš„layerç±»å‹
+// #define  XML_LAYER_TYPE_DIRECT      L"direct"  // ç›´æ¥æ¸²æŸ“ï¼Œæ— éœ€ç¼“å­˜ã€‚renderbaseç±»å‹
+// #define  XML_LAYER_TYPE_CONTROL     L"control" // å†…åµŒä¸€ä¸ªæ§ä»¶ï¼Œä¾‹å¦‚flash
 
-//#define  XML_LAYER_TYPE_FLASH       _T("flash")   // flash²ã
+//#define  XML_LAYER_TYPE_FLASH       L"flash"   // flashå±‚
 
 
 // TabCtrl
-#define   XML_TABCTRL_HEAD_HEIGHT               _T("head.height")  // Í·²¿µÄ¸ß¶È
-#define   XML_TABCTRL_HEAD_LAYOUT_TYPE          _T("head.layout")  // Í·²¿²¼¾Ö·½Ê½
-#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_Win32    _T("win32")
-#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_AVERAGE  _T("average")
-#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_FIX      _T("fix")
-#define   XML_TABCTRL_CONTENTPANEL_PREFIX       _T("contentpanel.")
+#define   XML_TABCTRL_HEAD_HEIGHT               L"head.height"  // å¤´éƒ¨çš„é«˜åº¦
+#define   XML_TABCTRL_HEAD_LAYOUT_TYPE          L"head.layout"  // å¤´éƒ¨å¸ƒå±€æ–¹å¼
+#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_Win32    L"win32"
+#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_AVERAGE  L"average"
+#define   XML_TABCTRL_HEAD_LAYOUT_TYPE_FIX      L"fix"
+#define   XML_TABCTRL_CONTENTPANEL_PREFIX       L"contentpanel."
 
 enum TABCTRL_HEAD_LAYOUT_TYPE
 {
-    TABCTRL_HEAD_LAYOUT_TYPE_FIX = 0,     // ¹Ì¶¨´óĞ¡ÅÅÁĞÔÚ×ó²à
-    TABCTRL_HEAD_LAYOUT_TYPE_AVERAGE = 1, // °´ÕÕTABCTRLµÄ´óĞ¡Æ½¾ùÉèÖÃÃ¿¸ö°´Å¥µÄ¿í¶È
-    TABCTRL_HEAD_LAYOUT_TYPE_Win32 = 2,   // ²Ù×÷ÏµÍ³ÀàĞÍ
+    TABCTRL_HEAD_LAYOUT_TYPE_FIX = 0,     // å›ºå®šå¤§å°æ’åˆ—åœ¨å·¦ä¾§
+    TABCTRL_HEAD_LAYOUT_TYPE_AVERAGE = 1, // æŒ‰ç…§TABCTRLçš„å¤§å°å¹³å‡è®¾ç½®æ¯ä¸ªæŒ‰é’®çš„å®½åº¦
+    TABCTRL_HEAD_LAYOUT_TYPE_Win32 = 2,   // æ“ä½œç³»ç»Ÿç±»å‹
 };
 
 // TreeView
-#define   XML_EXPANDICON_RENDER_TYPE_PREFIX   _T("expandicon.")   // Õ¹¿ª/ÊÕËõÍ¼±êrenderÇ°×º
+#define   XML_EXPANDICON_RENDER_TYPE_PREFIX   L"expandicon."   // å±•å¼€/æ”¶ç¼©å›¾æ ‡renderå‰ç¼€
 
 
 }
-#endif XMLDEFINE_H_CBBD5468_6BF1_45ac_B02C_F10AC19A651A
+
+#endif 

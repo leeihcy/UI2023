@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "control.h"
-#include "Src\Base\Attribute\attribute.h"
-#include "Src\Base\Attribute\bool_attribute.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Src\Base\Attribute\stringselect_attribute.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/bool_attribute.h"
+#include "src/application/uiapplication.h"
+#include "src/attribute/stringselect_attribute.h"
 #include "Inc\Base\uidefine.h"
-#include "Inc\Interface\itextrenderbase.h"
-#include "Inc\Interface\iuiapplication.h"
-#include "Src\Resource\skinres.h"
-#include "Inc\Interface\ilayout.h"
+#include "include/interface/itextrenderbase.h"
+#include "include/interface/iuiapplication.h"
+#include "src/resource/skinres.h"
+#include "include/interface/ilayout.h"
 
-using namespace UI;
+using namespace ui;
 
 Control::Control(IControl* p) : Object(p)
 {
@@ -146,11 +146,11 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
 
 
 
-LPCTSTR  Control::GetToolTipText()
+const wchar_t*  Control::GetToolTipText()
 {
 	return GetAttribute(XML_TOOLTIP, false);
 }
-void  Control::SetToolTipText(LPCTSTR szText)
+void  Control::SetToolTipText(const wchar_t* szText)
 {
 	if (!szText || 0 == szText[0])
 	{
@@ -167,11 +167,11 @@ BOOL  Control::OnGetToolTipInfo(TOOLTIPITEM* pToolTipItem, IToolTipUI* pToolTip)
 	if (nullptr == pToolTipItem || nullptr == pToolTip)
 		return 0;
 
-	LPCTSTR szTooltip = GetToolTipText();
+	const wchar_t* szTooltip = GetToolTipText();
 	if (!szTooltip || !szTooltip[0])
 		return 0;
 
-    LPCTSTR szText = m_pSkinRes->GetI18nRes().MapConfigValue(szTooltip);
+    const wchar_t* szText = m_pSkinRes->GetI18nRes().MapConfigValue(szTooltip);
     pToolTip->SetText(szText);
 	return 1;
 }

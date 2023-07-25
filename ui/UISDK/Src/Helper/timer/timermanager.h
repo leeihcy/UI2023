@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 
 //
@@ -23,7 +23,7 @@ public:
     void  KillTimerById(int nId, IMessage* pNotify);
     void  KillTimerByNotify(IMessage* pNotify);
 
-	static VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent,	DWORD dwTime );
+	static VOID CALLBACK TimerProc( HWND hwnd, unsigned int uMsg, UINT_PTR idEvent,	DWORD dwTime );
 	void  OnTimer(UINT_PTR idEvent);
 
 private:

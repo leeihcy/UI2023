@@ -2,7 +2,7 @@
 #define _UI_ISCROLLBARMANAGER_H_
 #include "imessage.h"
 
-namespace UI
+namespace ui
 {
 
 #define UISIF_RANGE           0x0001

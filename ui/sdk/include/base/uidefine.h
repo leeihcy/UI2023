@@ -154,13 +154,13 @@ protected:                                                  \
     SetMsgHandled(TRUE)
 
 
-// typedef RECT  REGION4;
-// inline  int RECTW(LPCRECT prc) { return prc->right - prc->left; }
-// inline  int RECTH(LPCRECT prc) { return prc->bottom - prc->top; }
+typedef RECT  REGION4;
+// inline  int RECTW(const RECT* prc) { return prc->right - prc->left; }
+// inline  int RECTH(const RECT* prc) { return prc->bottom - prc->top; }
 // inline  int RECTW(RECT& rc)  { return rc.right - rc.left; }
 // inline  int RECTH(RECT& rc)  { return rc.bottom - rc.top; }
 // 
-// #define RGBA(r,g,b,a)  (((BYTE)(r))|((WORD)(((BYTE)(g))<<8))|(DWORD(((BYTE)(b))<<16))|((DWORD)(((BYTE)(a))<<24)))
+// #define RGBA(r,g,b,a)  (((BYTE)(r))|((WORD)(((BYTE)(g))<<8))|(unsigned int(((BYTE)(b))<<16))|((unsigned int)(((BYTE)(a))<<24)))
 
 
 // 是否处理返回值 
@@ -212,8 +212,8 @@ struct SERIALIZEDATA
 
 	IUIApplication*  pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
 	ISkinRes*  pSkinRes;
-	wchar*  szPrefix;      // 属性前缀
-	wchar*  szParentKey;   // 父属性（仅用于editor），如bkg.render.type
+	const wchar*  szPrefix;      // 属性前缀
+	const wchar*  szParentKey;   // 父属性（仅用于editor），如bkg.render.type
 	uint  nFlags;
 
 	bool  IsReload() { return ((nFlags&SERIALIZEFLAG_RELOAD) == SERIALIZEFLAG_RELOAD) ? true : false; }
@@ -254,24 +254,23 @@ enum OBJECT_STATE_BIT
 #define SWP_FORCESENDSIZEMSG        0x20000000   // 即使大小没有改变，也强制发送一个WM_SIZE消息，用于走通逻辑
 #define SWP_FORCEUPDATEOBJECT       0x10000000   // 即使大小没有改变，也强制柠檬素，用于走通逻辑
 
-
 #define UI_DECLARE_RENDERBASE(className, xml, rendertype)   \
-    static wchar*  GetXmlName() { return xml; }       \
+    static const wchar_t*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      
 
 
 // 本宏定义主要是用于theme类型的renderbase，要根据控件类型进行创建
 #define UI_DECLARE_RENDERBASE2(className, xml, rendertype) \
-    static wchar*  GetXmlName() { return xml; }       \
+    static const wchar_t*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      \
 
 
 #define UI_DECLARE_TEXTRENDERBASE(className, xml, rendertype) \
-    static wchar*  GetXmlName() { return xml; }       \
+    static const wchar_t*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      
 
 #define UI_DECLARE_TEXTRENDERBASE2(className, xml, rendertype) \
-    static wchar*  GetXmlName() { return xml; }       \
+    static const wchar_t*  GetXmlName() { return xml; }       \
     static int  GetType() { return rendertype; }      \
 
 
@@ -285,7 +284,7 @@ enum OBJECT_STATE_BIT
 
 
 // 窗口类名称
-#define WND_CLASS_NAME                  _T("UI")
+#define WND_CLASS_NAME                  _T("ui")
 #define WND_ANIMATE_CLASS_NAME          _T("UI_Animate")
 #define WND_POPUP_CONTROL_SHADOW_NAME   _T("UI_PopupControlShadow") // 带系统阴影功能
 #define WND_POPUP_CONTROL_NAME          _T("UI_PopupControl")

@@ -17,9 +17,9 @@ int  UISDKVersion::GetPatch()
 int  UISDKVersion::GetVersionText(TCHAR* szText, int nTextSize)
 {
 	TCHAR szTemp[32] = {0};
-	_stprintf(szTemp, TEXT("%d.%d.%d"), GetMajor(), GetMinor(), GetPatch());
+	wprintf(szTemp, TEXT("%d.%d.%d"), GetMajor(), GetMinor(), GetPatch());
 
-	int nDesiredLen = (int)_tcslen(szTemp)+1;
+	int nDesiredLen = (int)wcslen(szTemp)+1;
 	if (nTextSize < nDesiredLen)
 		return nDesiredLen;
 

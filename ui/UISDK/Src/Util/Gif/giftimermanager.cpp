@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "giftimermanager.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "src/application/uiapplication.h"
 
-using namespace UI;
+using namespace ui;
 GifTimerManager::GifTimerManager()
 {
 	m_pUIApplication = nullptr;

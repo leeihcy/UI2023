@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "Inc\Interface\iuiapplication.h"
-#include "Src\Helper\topwindow\topwindowmanager.h"
-#include "Inc\Interface\iwindow.h"
-#include "Inc\Interface\iuires.h"
-#include "Inc\Interface\iuiinterface.h"
+#include "include/interface/iuiapplication.h"
+#include "src/Helper\topwindow\topwindowmanager.h"
+#include "include/interface/iwindow.h"
+#include "include/interface/iuires.h"
+#include "include/interface/iuiinterface.h"
 
-namespace UI
+namespace ui
 {
 
 ITopWindowManager::ITopWindowManager(TopWindowManager* p) 

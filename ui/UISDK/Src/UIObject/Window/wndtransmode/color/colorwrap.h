@@ -1,7 +1,7 @@
 #pragma once
 #include "..\wndtransmodebase.h"
 
-namespace UI
+namespace ui
 {
 
 class ColorMaskWindowWrap : public WndTransModeBase

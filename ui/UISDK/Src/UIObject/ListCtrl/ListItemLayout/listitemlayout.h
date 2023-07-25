@@ -1,7 +1,7 @@
 #pragma once
 #include "Inc/Interface/ilistctrlbase.h"
 
-namespace UI
+namespace ui
 {
 interface IListItemBase;
 interface IListCtrlBase;

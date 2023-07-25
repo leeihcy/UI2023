@@ -1,8 +1,8 @@
 #pragma once
 #include "..\renderresourceimpl.h"
-#include "Inc\Interface\renderlibrary.h"
+#include "include/interface/renderlibrary.h"
 
-namespace UI
+namespace ui
 {
 
 class  GDIRenderFont : public IRenderResourceImpl<IRenderFont>
@@ -30,7 +30,7 @@ public:
 	virtual SIZE  MeasureString( 
             const TCHAR* szText, 
             int nLimitWidth = -1 );
-	virtual UINT  GetCaretHeight( );
+	virtual unsigned int  GetCaretHeight( );
 
 	virtual HFONT GetHFONT();
 	virtual bool  GetLogFont(LOGFONT* plf);

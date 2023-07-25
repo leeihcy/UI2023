@@ -4,7 +4,7 @@
 #include "iimage.h"
 #include <functional>
 
-namespace UI
+namespace ui
 {
 interface  IGifImageRender;
 

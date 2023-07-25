@@ -14,7 +14,7 @@ namespace ui
 // 注意，不要使用MsgWaitForMultipleObjects -- QS_ALLEVENTS标志，会出现系统卡顿现象，例如安装了底层键盘钩子时，一输入就卡了
 //
 // HHOOK  g_hKeyBoardHook = nullptr;
-// LRESULT CALLBACK  LLKeyboardProc(int code, WPARAM wParam, LPARAM lParam)
+// LRESULT CALLBACK  LLKeyboardProc(int code, long wParam, long lParam)
 // {
 //     return 0;
 //     return CallNextHookEx(g_hKeyBoardHook, code, wParam, lParam);
@@ -38,8 +38,8 @@ namespace ui
 //
 void MessageLoop::Run(bool* quit_ref)
 {
-	DWORD    dwRet = 0;
-    DWORD&   nCount = m_WaitForHandlesMgr.m_nHandleCount;
+	unsigned int    dwRet = 0;
+    unsigned int&   nCount = m_WaitForHandlesMgr.m_nHandleCount;
     HANDLE*& pHandles = m_WaitForHandlesMgr.m_pHandles;
 	MSG      msg;
 
@@ -51,7 +51,7 @@ void MessageLoop::Run(bool* quit_ref)
         bool&  bQuitRef = (quit_ref==nullptr ? bExit : *quit_ref);
 	    while (false == bQuitRef)
 	    {
-		    dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
+		    dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, false, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
 		    if (nCount > 0 && dwRet < nCount)
 		    {
 			    m_WaitForHandlesMgr.Do(pHandles[dwRet]);
@@ -73,7 +73,7 @@ void MessageLoop::Run(bool* quit_ref)
                         return;  // 如果这时还继续处理，就会导致主窗口被销毁，当前用于弹出菜单的堆栈对象也被销毁了
 
                     PeekMessage(&msg, nullptr, 0,0, PM_REMOVE);
-                    if (FALSE == this->IsDialogMessage(&msg))
+                    if (false == this->IsDialogMessage(&msg))
                     {
                         ::TranslateMessage(&msg);
                         ::DispatchMessage(&msg);
@@ -89,7 +89,7 @@ void MessageLoop::Run(bool* quit_ref)
     {
         while (1)
         {
-            dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
+            dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, false, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
             if (nCount > 0 && dwRet < nCount)
             {
                 m_WaitForHandlesMgr.Do(pHandles[dwRet]);
@@ -104,8 +104,8 @@ void MessageLoop::Run(bool* quit_ref)
                         return;
                     }
 
-                    if (FALSE == m_MsgFilterMgr.PreTranslateMessage(&msg) && 
-                        FALSE == this->IsDialogMessage(&msg)) 
+                    if (false == m_MsgFilterMgr.PreTranslateMessage(&msg) && 
+                        false == this->IsDialogMessage(&msg)) 
                     {
                         ::TranslateMessage(&msg);                                      
                         ::DispatchMessage(&msg);

@@ -1,8 +1,8 @@
 #pragma once
-#include "Inc\Interface\ipanel.h"
+#include "include/interface/ipanel.h"
 #include "Src\UIObject\Panel\panel.h"
 
-namespace UI
+namespace ui
 {
 
 class ListCtrlBase;

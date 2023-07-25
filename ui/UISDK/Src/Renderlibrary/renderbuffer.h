@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace UI
+namespace ui
 {
 	class ImageData;
 
@@ -16,7 +16,7 @@ public:
     void  Resize(unsigned int width, unsigned int height);
     void  Clear(DWORD dwColor, RECT* prc);
 	void  Destroy();
-    void  Dump(LPCTSTR);
+    void  Dump(const wchar_t*);
 	void  GetImageData(ImageData*  pData);
     void  Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCount);
 

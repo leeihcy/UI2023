@@ -32,9 +32,9 @@ namespace ui
 	typedef  long(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 	// uiapplication中的枚举回调
-	typedef  bool(*pfnEnumLayoutTypeCallback)(long, wchar_t*, long, long);
-	typedef  void(*pfnEnumRenderBaseNameCallback)(wchar_t*, long, long);
-	typedef  void(*pfnEnumTextRenderBaseNameCallback)(wchar_t*, long, long);
+	typedef  bool(*pfnEnumLayoutTypeCallback)(long, const wchar_t*, long, long);
+	typedef  void(*pfnEnumRenderBaseNameCallback)(const wchar_t*, long, long);
+	typedef  void(*pfnEnumTextRenderBaseNameCallback)(const wchar_t*, long, long);
 
 
 	// 返回值:
@@ -83,7 +83,7 @@ namespace ui
 
     UIAPI long GetDpi();
     UIAPI long ScaleByDpi(long x);
-#define dpi(x)  UI::ScaleByDpi(x)
+#define dpi(x)  ui::ScaleByDpi(x)
 
 }
 #endif

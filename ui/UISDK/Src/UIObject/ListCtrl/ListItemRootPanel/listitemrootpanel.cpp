@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "listitemrootpanel.h"
-#include "Src\UIObject\ListCtrl\listctrlbase.h"
-#include "Src\UIObject\ListCtrl\ListItemBase\listitembase.h"
+#include "src/UIObject\ListCtrl\listctrlbase.h"
+#include "src/UIObject\ListCtrl\ListItemBase\listitembase.h"
 
-namespace UI
+namespace ui
 {
 
 UI_IMPLEMENT_INTERFACE(ListItemRootPanel, Panel);

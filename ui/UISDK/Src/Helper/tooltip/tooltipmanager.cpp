@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "tooltipmanager.h"
-#include "Src\Atl\image.h"
-#include "Inc\Interface\iobject.h"
-#include "Src\Base\Application\uiapplication.h"
-#include "Inc\Interface\iuiapplication.h"
+#include "src/Atl\image.h"
+#include "include/interface/iobject.h"
+#include "src/application/uiapplication.h"
+#include "include/interface/iuiapplication.h"
 
 #pragma region //CSystemTooltip
 class CSystemTooltip : public IToolTipUI
@@ -54,7 +54,7 @@ public:
 		m_toolinfo.cbSize = /*sizeof(TOOLINFO)*/ TTTOOLINFOA_V2_SIZE;
 		m_toolinfo.uFlags = 0/* | TTF_TRACK | TTF_ABSOLUTE*/; // 注：加上TTF_TRACK|TTF_ABSOLUTE之后将导致提示条失去显示在屏幕范围之内的功能
 		m_toolinfo.hwnd   = nullptr;
-		m_toolinfo.uId    = (UINT)0;
+		m_toolinfo.uId    = (unsigned int)0;
 		m_toolinfo.hinst  = nullptr;
 		m_toolinfo.lpszText  = _T("leeihcy")/*LPSTR_TEXTCALLBACK*/;
 		m_toolinfo.rect.left = m_toolinfo.rect.top = m_toolinfo.rect.bottom = m_toolinfo.rect.right = 0; 
@@ -83,9 +83,9 @@ public:
 // 		}
 
 #if 0
-		LPCTSTR szFontFace =  /*_T("宋体");*/_T("微软雅黑");
+		const wchar_t* szFontFace =  /*_T("宋体");*/_T("微软雅黑");
 		// 设置字体为 微软雅黑
-		if ( Util::IsFontExist(szFontFace) )
+		if ( util::IsFontExist(szFontFace) )
 		{
 			m_hFont = ::CreateFont(
 				14,//18,                        // nHeight
@@ -125,7 +125,7 @@ public:
 		delete this;
 		return true;
 	}
-	virtual bool  SetText(LPCTSTR szText)
+	virtual bool  SetText(const wchar_t* szText)
 	{
 		if (nullptr == m_hToolTip)
 		{
@@ -139,7 +139,7 @@ public:
 		::SendMessage(m_hToolTip, TTM_UPDATETIPTEXTW, 0, (LPARAM)&m_toolinfo );
 		return true;
 	}
-	virtual bool  SetTitle(LPCTSTR szText) 
+	virtual bool  SetTitle(const wchar_t* szText) 
 	{
 		if (nullptr == m_hToolTip)
 		{
@@ -198,12 +198,12 @@ protected:
 		HFONT hFont = (HFONT)SendMessage(m_hToolTip, UI_MSG_GETRENDERFONT, 0,0);
 		HDC   hDC   = Image::GetCacheDC();
 		HFONT hOldFont = (HFONT)SelectObject(hDC, hFont);
-		LPCTSTR szText = src.c_str();
+		const wchar_t* szText = src.c_str();
 
 		int   nStart  = 0;
 		int   nLength = (int)src.length(); 
 		RECT  rcLimit = {0,0, TOOLTIP_MAX_WIDTH, 1};  // 将高度设置为1，保证DrawTextEx只计算第一行文本的字符数
-		UINT  nDrawTextFlag = DT_EDITCONTROL|DT_WORDBREAK/*|DT_NOFULLWIDTHCHARBREAK*/;
+		unsigned int  nDrawTextFlag = DT_EDITCONTROL|DT_WORDBREAK/*|DT_NOFULLWIDTHCHARBREAK*/;
 
 		DRAWTEXTPARAMS  param;
 		ZeroMemory(&param, sizeof(DRAWTEXTPARAMS));

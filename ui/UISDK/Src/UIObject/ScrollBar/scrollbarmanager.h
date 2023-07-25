@@ -1,11 +1,11 @@
 #pragma once
 #include "Src\Base\Message\message.h"
 #include "Src\Base\Attribute\attribute.h"
-#include "Inc\Interface\iscrollbarmanager.h"
+#include "include/interface/iscrollbarmanager.h"
 #include "smoothscroll.h"
 
 
-namespace UI
+namespace ui
 {
 #define UI_MSGMAP_ID_INERTIA_MOUSE_CAPTURE     138191528
 #define UI_MSGMAP_ID_INERTIA_KEYBOARD_CAPTURE  138191529
@@ -111,7 +111,7 @@ public:
 
 	void  Serialize(SERIALIZEDATA* pData);
 
-    void  DoMouseWheel(UINT nFlags, 
+    void  DoMouseWheel(unsigned int nFlags, 
 			short zDelta, POINT pt,
 			BOOL& bHandled, BOOL& bNeedRedraw);
 
@@ -120,17 +120,17 @@ public:
 protected:
     void  OnGetScrollOffset(int* pxOffset, int* pyOffset);
     void  OnGetScrollRange(int* pxRange, int* pyRange);
-    BOOL  OnMouseWheel(UINT nFlags, short zDelta, POINT pt);
+    BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
     void  OnVScroll(int nSBCode, int nPos, IMessage* pMsgFrom);
     void  OnHScroll(int nSBCode, int nPos, IMessage* pMsgFrom);
-    void  OnStateChanged(UINT nMask);
-    LRESULT  OnGestureBeginReq(UINT uMsg, WPARAM, LPARAM);
+    void  OnStateChanged(unsigned int nMask);
+    long  OnGestureBeginReq(unsigned int uMsg, WPARAM, LPARAM);
 
 protected:
 	LONG_PTR  NotifyHScrollInfoChanged(bool bNeedUpdateVisibleState);
 	LONG_PTR  NotifyVScrollInfoChanged(bool bNeedUpdateVisibleState);
     void  NotifyScrollbarVisibleChanged();
-	void  NotifyStateChanged(UINT nMask);
+	void  NotifyStateChanged(unsigned int nMask);
 
     bool  _SetScrollInfo1(
 			SCROLLBAR_DIRECTION_TYPE eType,
@@ -147,7 +147,7 @@ protected:
     BOOL  OnVMouseWheel(short zDelta, POINT pt);
 
     // 惯性滚动相关函数
-    LRESULT  OnCaptureStopInertiaScroll(UINT uMsg, WPARAM, LPARAM);
+    long  OnCaptureStopInertiaScroll(unsigned int uMsg, WPARAM, LPARAM);
     virtual  void SmoothScroll_Start();
     virtual  void SmoothScroll_Stop();
 	virtual  SmoothScrollResult SmoothScroll_Scroll(

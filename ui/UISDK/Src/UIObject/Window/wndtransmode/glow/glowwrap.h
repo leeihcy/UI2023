@@ -9,7 +9,7 @@
 // 3. 窗口的显隐未处理
 // 4. 窗口的最大化最小化未处理
 
-namespace UI
+namespace ui
 {
 	enum GLOW_WINDOW_ALIGN
 	{
@@ -36,7 +36,7 @@ public:
 	void  commit();
 
 private:
-	void OnSize(UINT nType, CSize size);
+	void OnSize(unsigned int nType, CSize size);
 
 private:
 	Image  m_buffer;
@@ -56,7 +56,7 @@ public:
         return WINDOW_TRANSPARENT_TYPE_GLOW;
     }
 
-    virtual BOOL  ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0);
+    virtual BOOL  ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0);
 	virtual void  Enable(bool b);
 
 public:

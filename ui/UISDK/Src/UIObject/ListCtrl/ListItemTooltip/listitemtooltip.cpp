@@ -4,7 +4,7 @@
 #include "../listctrlbase.h"
 #include "Inc/Interface/iuiinterface.h"
 
-using namespace UI;
+using namespace ui;
 
 ListITemToolTipMgr::ListITemToolTipMgr()
 {
@@ -116,7 +116,7 @@ BOOL  ListITemToolTipMgr::ProcessMessage(UIMSG* pMsg, int nMsgMapId, bool bDoHoo
     return FALSE;
 }
 
-LRESULT  ListITemToolTipMgr::OnGetToolTipInfo(WPARAM wParam, LPARAM lParam)
+long  ListITemToolTipMgr::OnGetToolTipInfo(WPARAM wParam, LPARAM lParam)
 {
     IToolTipUI*  pToolTip = (IToolTipUI*)lParam;
 
@@ -169,7 +169,7 @@ LRESULT  ListITemToolTipMgr::OnGetToolTipInfo(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void  ListITemToolTipMgr::SetToolTip(LPCTSTR szText)
+void  ListITemToolTipMgr::SetToolTip(const wchar_t* szText)
 {
     if (nullptr == szText)
     {
@@ -178,7 +178,7 @@ void  ListITemToolTipMgr::SetToolTip(LPCTSTR szText)
     }
     m_strToolTip = szText;
 }
-LPCTSTR  ListITemToolTipMgr::GetToolTip()                
+const wchar_t*  ListITemToolTipMgr::GetToolTip()                
 {
     return m_strToolTip.c_str(); 
 }

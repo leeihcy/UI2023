@@ -3,13 +3,13 @@
 #include "..\ListItemRootPanel\listitemrootpanel.h"
 #include "..\listctrlbase.h"
 #include "..\float\float_item_mgr.h"
-#include "Inc\Interface\ilayout.h"
-#include "Inc\Interface\iimagerender.h"
-#include "Src\Base\Object\object.h"
-#include "Inc\Interface\iuires.h"
+#include "include/interface/ilayout.h"
+#include "include/interface/iimagerender.h"
+#include "src/Base\Object\object.h"
+#include "include/interface/iuires.h"
 #include "..\animate_callback\listctrl_animate.h"
 
-using namespace UI;
+using namespace ui;
 
 ListItemBase::ListItemBase(IListItemBase* p) : Message(p), m_itemLayer(*this)
 {
@@ -172,7 +172,7 @@ void  ListItemBase::AddChild(ListItemBase* p)
 //     m_pParent = m_pNext = m_pPrev = nullptr;
 // }
 
-void  ListItemBase::SetText(LPCTSTR szText)
+void  ListItemBase::SetText(const wchar_t* szText)
 {
     if (nullptr == szText)
     {
@@ -181,11 +181,11 @@ void  ListItemBase::SetText(LPCTSTR szText)
     }
     m_strText = szText;
 }
-LPCTSTR  ListItemBase::GetToolTip()                
+const wchar_t*  ListItemBase::GetToolTip()                
 {
     return m_ToolTipMgr.GetToolTip();
 }
-void  ListItemBase::SetToolTip(LPCTSTR szText)  
+void  ListItemBase::SetToolTip(const wchar_t* szText)  
 {
     m_ToolTipMgr.SetToolTip(szText);
 }
@@ -193,11 +193,11 @@ void  ListItemBase::ShowSingleToolTip()
 {
     m_ToolTipMgr.ShowSingleToolTip();
 }
-UINT  ListItemBase::GetItemState() 
+unsigned int  ListItemBase::GetItemState() 
 { 
     return m_nItemState; 
 }
-UINT  ListItemBase::GetItemDelayOp() 
+unsigned int  ListItemBase::GetItemDelayOp() 
 { 
     return m_nFlagsDelayOp; 
 }
@@ -330,7 +330,7 @@ bool  ListItemBase::IsEditing()
 
 void  ListItemBase::SetPress(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_PRESS;
     else
@@ -347,7 +347,7 @@ void  ListItemBase::SetPress(bool b, bool bNotify)
 }
 void  ListItemBase::SetHover(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_HOVER;
     else
@@ -364,7 +364,7 @@ void  ListItemBase::SetHover(bool b, bool bNotify)
 }
 void  ListItemBase::SetFocus(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_FOCUS;
     else
@@ -381,7 +381,7 @@ void  ListItemBase::SetFocus(bool b, bool bNotify)
 }
 void  ListItemBase::SetExpand(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState &= ~OSB_COLLAPSED;
     else
@@ -409,7 +409,7 @@ void  ListItemBase::SetExpand(bool b, bool bNotify)
 }
 void  ListItemBase::SetVisible(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState &= ~OSB_UNVISIBLE;
     else
@@ -431,7 +431,7 @@ void  ListItemBase::SetVisible(bool b, bool bNotify)
 }
 void  ListItemBase::SetSelected(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_SELECTED;
     else
@@ -449,7 +449,7 @@ void  ListItemBase::SetSelected(bool b, bool bNotify)
 
 void  ListItemBase::SetDisable(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_DISABLE;
     else
@@ -471,7 +471,7 @@ void  ListItemBase::SetDisable(bool b, bool bNotify)
 }
 void  ListItemBase::SetChecked(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_CHECKED;
     else
@@ -488,7 +488,7 @@ void  ListItemBase::SetChecked(bool b, bool bNotify)
 }
 void  ListItemBase::SetRadioChecked(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_RADIOCHECKED;
     else
@@ -538,7 +538,7 @@ bool  ListItemBase::IsDragDropHover()
 }
 void  ListItemBase::SetDragDropHover(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_DRAGDROPHOVER;
     else
@@ -560,7 +560,7 @@ bool  ListItemBase::IsDraging()
 }
 void  ListItemBase::SetDraging(bool b, bool bNotify)
 {
-    UINT nOld = m_nItemState;
+    unsigned int nOld = m_nItemState;
     if (b)
         m_nItemState |= OSB_DRAGING;
     else
@@ -578,7 +578,7 @@ void  ListItemBase::SetDraging(bool b, bool bNotify)
 
 void  ListItemBase::SetEditing(bool b, bool bNotify)
 {
-	UINT nOld = m_nItemState;
+	unsigned int nOld = m_nItemState;
 	if (b)
 		m_nItemState |= OSB_EDITING;
 	else
@@ -650,9 +650,9 @@ bool  ListItemBase::IsMyChildItem(ListItemBase* pChild, bool bTestdescendant)
     return false;
 }
 
-UINT  ListItemBase::GetChildCount()
+unsigned int  ListItemBase::GetChildCount()
 {
-    UINT n = 0;
+    unsigned int n = 0;
     ListItemBase* p = m_pChild;
     while (p)
     {
@@ -662,9 +662,9 @@ UINT  ListItemBase::GetChildCount()
     return n;
 }
 
-UINT  ListItemBase::GetDescendantCount()
+unsigned int  ListItemBase::GetDescendantCount()
 {
-    UINT n = 0;
+    unsigned int n = 0;
     ListItemBase* p = m_pChild;
     while (p)
     {
@@ -679,9 +679,9 @@ UINT  ListItemBase::GetDescendantCount()
 }
 
 // 获取子孙结点中的未父结点
-UINT  ListItemBase::GetDescendantLeafCount()
+unsigned int  ListItemBase::GetDescendantLeafCount()
 {
-    UINT n = 0;
+    unsigned int n = 0;
     ListItemBase* p = m_pChild;
     while (p)
     {
@@ -882,7 +882,7 @@ bool ListItemBase::CreateRootPanel()
     return true;
 }
 
-LRESULT  ListItemBase::OnDelayOp(UINT, WPARAM, LPARAM)
+long  ListItemBase::OnDelayOp(unsigned int, WPARAM, LPARAM)
 {
     if (m_nFlagsDelayOp & DELAY_OP_LAZYLOADDATA)
     {
@@ -1056,7 +1056,7 @@ void  ListItemBase::OnSize()
 // {
 //     if (!bReload)
 //     {
-//         LPCTSTR szText = pMapAttrib->GetAttr(XML_TOOLTIP, true);
+//         const wchar_t* szText = pMapAttrib->GetAttr(XML_TOOLTIP, true);
 //         if (szText)
 //         {
 //             SetToolTip(szText);
@@ -1113,7 +1113,7 @@ void  ListItemBase::GetDesiredSize(SIZE* pSize)
 
 
 // 获取一个ITEM的渲染值
-LRESULT  ListItemBase::OnGetRenderState(UINT, WPARAM, LPARAM)
+long  ListItemBase::OnGetRenderState(unsigned int, WPARAM, LPARAM)
 {
 	bool bSelected = IsSelected();
 	// bool bFocus = IsFocus();
@@ -1167,10 +1167,10 @@ LRESULT  ListItemBase::OnGetRenderState(UINT, WPARAM, LPARAM)
 					LISTCTRLITEM_FOREGND_RENDER_STATE_NORMAL ;
 	}
 
-	return (LRESULT)nRenderState;
+	return (long)nRenderState;
 }
 
-void  ListItemBase::SetIconFromFile(LPCTSTR szIconPath)
+void  ListItemBase::SetIconFromFile(const wchar_t* szIconPath)
 {
 	UIASSERT(0);
 #if 0
@@ -1208,7 +1208,7 @@ void  ListItemBase::SetIconFromFile(LPCTSTR szIconPath)
 #endif
 }
 
-void  ListItemBase::SetIconFromImageId(LPCTSTR szImageId)
+void  ListItemBase::SetIconFromImageId(const wchar_t* szImageId)
 {
     SAFE_RELEASE(m_pIconRender);
     if (nullptr == szImageId)

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "smoothscroll.h"
-#include "Inc\Interface\ianimate.h"
+#include "include/interface/ianimate.h"
 #include <math.h>
-#include "Src\Base\Application\uiapplication.h"
+#include "src/application/uiapplication.h"
 
 #define BOUNCE_EDGE_DURATION  200
 #define SCROLL_DURATION  600

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "topwindowmanager.h"
 
-#include "Inc\Interface\iobject.h"
-#include "Inc\Interface\iwindow.h"
-#include "Src\Helper\layout\layout.h"
-#include "Src\Resource\skinres.h"
-#include "Src\Base\Object\object.h"
-#include "Src\UIObject\Window\windowbase.h"
-#include "Src\Base\Application\uiapplication.h"
+#include "include/interface/iobject.h"
+#include "include/interface/iwindow.h"
+#include "src/layout/layout.h"
+#include "src/resource/skinres.h"
+#include "src/Base\Object\object.h"
+#include "src/UIObject\Window\windowbase.h"
+#include "src/application/uiapplication.h"
 
 TopWindowManager::TopWindowManager(UIApplication* p)
 {
@@ -43,7 +43,7 @@ HRESULT TopWindowManager::AddTopWindowObject(WindowBase* pObj)
 	this->m_lTopWindowObject.push_back( pObj );
 
 	UI_LOG_DEBUG( _T("TopWindowManager::AddTopWindowObject, ID=%s"), pObj->GetId());
-	return S_OK;
+	return 0;
 }
 
 HRESULT TopWindowManager::RemoveTopWindowObject(WindowBase* pObj)
@@ -60,7 +60,7 @@ HRESULT TopWindowManager::RemoveTopWindowObject(WindowBase* pObj)
 			m_lTopWindowObject.erase( iter );
 
 			UI_LOG_DEBUG( _T("TopWindowManager::RemoveTopWindowObject, ID=%s"), pObj->GetId());
-			return S_OK;
+			return 0;
 		}
 	}
 	return E_FAIL;

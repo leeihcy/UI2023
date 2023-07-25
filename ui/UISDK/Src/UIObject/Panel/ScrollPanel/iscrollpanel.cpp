@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "scrollpanel.h"
-#include "Inc\Interface\iscrollpanel.h"
+#include "include/interface/iscrollpanel.h"
 
-namespace UI
+namespace ui
 {
 UI_IMPLEMENT_INTERFACE(ScrollPanel, Panel);
 

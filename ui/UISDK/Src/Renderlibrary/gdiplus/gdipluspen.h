@@ -1,7 +1,7 @@
 #pragma once
 #include "UISDK\Kernel\Src\Renderlibrary\renderresourceimpl.h"
 
-namespace UI
+namespace ui
 {
 class GdiplusPen : public IRenderResourceImpl<IRenderPen>
 {

@@ -1,7 +1,7 @@
 #pragma once
-#include "Inc\Interface\iobjectdescription.h"
-#include "Inc\Interface\iwindow.h"
-#include "Inc\Interface\icustomwindow.h"
+#include "include/interface/iobjectdescription.h"
+#include "include/interface/iwindow.h"
+#include "include/interface/icustomwindow.h"
 
 class WindowDescription : public IObjectDescription
 {

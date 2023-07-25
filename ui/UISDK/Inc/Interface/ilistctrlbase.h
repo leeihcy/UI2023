@@ -3,7 +3,7 @@
 #include "icontrol.h"
 #include "..\Util\struct.h"
 
-namespace UI
+namespace ui
 {
     class ListCtrlBase;
     interface IListItemBase;
@@ -21,7 +21,7 @@ namespace UI
 // ListCtrl Notify/Message
 //////////////////////////////////////////////////////////////////////////
 
-namespace UI
+namespace ui
 {
     struct  LISTCTRL_CLICKNOTIFY_DATA
     {
@@ -147,7 +147,7 @@ namespace UI
 #define UITVI_FIRST   ((UI::IListItemBase*)TVI_FIRST)
 #define UITVI_LAST    ((UI::IListItemBase*)TVI_LAST)
 
-namespace UI
+namespace ui
 {
 
 typedef bool (*ListItemCompareProc)(IListItemBase* p1, IListItemBase* p2);
@@ -253,8 +253,8 @@ struct UIAPI IListCtrlBase : public IControl
     int  GetItemPos(IListItemBase*, bool bVisibleOnly = true);
     IListItemBase*  GetItemUnderCursor();
     IListItemBase*  GetItemById(long lId);
-    IListItemBase*  FindItemByText(LPCTSTR szText, IListItemBase* pStart=nullptr);
-    IListItemBase*  FindChildItemByText(LPCTSTR szText, IListItemBase* pParent=nullptr, IListItemBase* pStart=nullptr);
+    IListItemBase*  FindItemByText(const wchar_t* szText, IListItemBase* pStart=nullptr);
+    IListItemBase*  FindChildItemByText(const wchar_t* szText, IListItemBase* pParent=nullptr, IListItemBase* pStart=nullptr);
     IListItemBase*  GetItemByWindowPoint(POINT ptWindow);
     IListItemBase*  GetFirstItem();
     IListItemBase*  GetLastItem();
@@ -266,7 +266,7 @@ struct UIAPI IListCtrlBase : public IControl
     IListItemBase*  GetLastSelectItem();
 
 	ICustomListItem*  InsertCustomItem(
-		LPCTSTR  szLayoutName,
+		const wchar_t*  szLayoutName,
 		long lId,
 		IListItemBase* pParent = UITVI_ROOT, 
 		IListItemBase* pInsertAfter = UITVI_LAST);
@@ -341,12 +341,12 @@ struct UIAPI IListCtrlBase : public IControl
     signal<IListCtrlBase*, IListItemBase*>&  RClickEvent();
     signal<IListCtrlBase*, IListItemBase*>&  MClickEvent();
     signal<IListCtrlBase*, IListItemBase*>&  DBClickEvent();
-    signal<IListCtrlBase*, UINT, bool&>&  KeyDownEvent();
+    signal<IListCtrlBase*, unsigned int, bool&>&  KeyDownEvent();
 #else
 	signal2<IListCtrlBase*, IListItemBase*>&  RClickEvent();
 	signal2<IListCtrlBase*, IListItemBase*>&  MClickEvent();
 	signal2<IListCtrlBase*, IListItemBase*>&  DBClickEvent();
-	signal3<IListCtrlBase*, UINT, bool&>&  KeyDownEvent();
+	signal3<IListCtrlBase*, unsigned int, bool&>&  KeyDownEvent();
 #endif
 //     static void  SetListItemRectChangedCallback(
 //                     bool (__stdcall *func)(IListItemBase& item,LPCRECT prcOld,LPCRECT prcNew));

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "listctrlbase.h"
-#include "Inc\Interface\ilistitembase.h"
+#include "include/interface/ilistitembase.h"
 #include "ListItemBase\listitembase.h"
-using namespace UI;
+using namespace ui;
 
 // 拖拽过程中，鼠标下面的列表项。用于绘制高亮状态
 // 默认同一时间只有一个拖拽操作

@@ -1,7 +1,7 @@
 #pragma once
 #include "..\ListItemBase\listitembase.h"
 
-namespace UI
+namespace ui
 {
 class CustomListItem : public ListItemBase
 {
@@ -16,7 +16,7 @@ public:
 	ICustomListItem*  GetICustomListItem() { return m_pICustomListItem; }
 
 public:
-	IObject*  FindControl(LPCTSTR szId);
+	IObject*  FindControl(const wchar_t* szId);
 
 	void  SetStringData(LPCSTR data);
 	LPCSTR  GetStringData();

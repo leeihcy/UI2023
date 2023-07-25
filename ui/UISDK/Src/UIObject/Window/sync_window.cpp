@@ -129,7 +129,7 @@ void SyncWindow::OnHostWindowPosChanging(LPWINDOWPOS lpWndPos)
 
         if (!IsLayeredWindow)
         {
-            UINT nFlag = lpWndPos->flags & ~0x01000000;  // ?? 不过滤掉该标记会导致DeferWindodwPos失败，不知道为什么
+            unsigned int nFlag = lpWndPos->flags & ~0x01000000;  // ?? 不过滤掉该标记会导致DeferWindodwPos失败，不知道为什么
             hdwp = ::DeferWindowPos(hdwp,
                 m_hWnd,
                 lpWndPos->hwndInsertAfter,

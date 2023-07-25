@@ -1,8 +1,8 @@
 #pragma once
 #include "animate_wrap.h"
-#include "Inc\Interface\ilistitembase.h"
+#include "include/interface/ilistitembase.h"
 
-namespace UI
+namespace ui
 {
     interface IListCtrlBase;
 }

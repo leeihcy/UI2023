@@ -20,7 +20,7 @@
 
 // 注：back.render的数据不会做圆角化，fore.render+child的数据会被圆角化
 
-namespace UI
+namespace ui
 {
 
 class RoundPanel : public Panel

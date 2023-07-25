@@ -30,7 +30,7 @@ void  CreateCirclePortrait(__in Gdiplus::Bitmap* pBitmap, int nPortraitSize, __o
 }
 */
 
-namespace UI
+namespace ui
 {
 
 class RoundRectHandler
@@ -50,11 +50,11 @@ public:
             RECT* prcClip);
     
 protected:
-    UINT  GetMinWidth();
-    UINT  GetMinHeight();
+    unsigned int  GetMinWidth();
+    unsigned int  GetMinHeight();
     void  CreatePath(Gdiplus::GraphicsPath* pPath);
     void  CreateMaskBitmap();
-    void  RequestBuffer(UINT nWidth, UINT nHeight);
+    void  RequestBuffer(unsigned int nWidth, unsigned int nHeight);
     void  DestroyBuffer();
 
 	struct CORNER_DATA
@@ -88,11 +88,11 @@ private:
 //    bool  m_bHandleBorder;  // 是否处理四周线条
 
     HBITMAP  m_hBitmap;
-    UINT     m_nBitmapWidth;
-    UINT     m_nBitmapHeigth;
-    UINT     m_nBitmapAvailableWidth;   // 由于图片共享，可能只使用了m_hBitmap中左上角的一部分
-    UINT     m_nBitmapAvailableHeight;
-    UINT     m_nPitch;
+    unsigned int     m_nBitmapWidth;
+    unsigned int     m_nBitmapHeigth;
+    unsigned int     m_nBitmapAvailableWidth;   // 由于图片共享，可能只使用了m_hBitmap中左上角的一部分
+    unsigned int     m_nBitmapAvailableHeight;
+    unsigned int     m_nPitch;
     byte*    m_pBits;
 
     HDC      m_hDC;

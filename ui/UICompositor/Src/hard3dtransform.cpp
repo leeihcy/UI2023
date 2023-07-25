@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "hard3dtransform.h"
 
-using namespace UI;
+using namespace ui;
 
 Hard3DTransform::Hard3DTransform()
 {

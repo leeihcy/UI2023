@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "scrollpanel.h"
-#include "Inc\Interface\ilayout.h"
+#include "include/interface/ilayout.h"
 #include "..\..\Window\windowbase.h"
 
-namespace UI
+namespace ui
 {
 
 ScrollPanel::ScrollPanel(IScrollPanel* p) : Panel(p)
@@ -35,7 +35,7 @@ HRESULT  ScrollPanel::FinalConstruct(ISkinRes* p)
 	sRemove.default_reject_self_mouse_msg = sRemove.reject_self_mouse_msg = 1;
 	this->ModifyObjectStyle(&s, &sRemove);
 
-    return S_OK;
+    return 0;
 }
 
 void  ScrollPanel::OnSerialize(SERIALIZEDATA* pData)
@@ -53,7 +53,7 @@ void  ScrollPanel::OnSerialize(SERIALIZEDATA* pData)
 //
 // 1. 指定了viewSize，直接传递viewSize给滚动条作为range
 // 2. 没有指定viewSize，则使用DesiredSize作为滚动条range
-void  ScrollPanel::virtualOnSize(UINT nType, UINT cx, UINT cy)
+void  ScrollPanel::virtualOnSize(unsigned int nType, unsigned int cx, unsigned int cy)
 {
     Panel::virtualOnSize(nType, cx, cy);
 
@@ -79,7 +79,7 @@ void  ScrollPanel::virtualOnSize(UINT nType, UINT cx, UINT cy)
 }
 
 
-BOOL  ScrollPanel::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
+BOOL  ScrollPanel::OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt)
 {
     int nhScrollPos = 0, nvScrollPos = 0;
     int nhScrollPos2 = 0, nvScrollPos2 = 0;
@@ -97,7 +97,7 @@ BOOL  ScrollPanel::OnMouseWheel(UINT nFlags, short zDelta, POINT pt)
 }
 
 // 直接拖拽窗口
-void  ScrollPanel::OnLButtonDown(UINT nFlags, POINT point)
+void  ScrollPanel::OnLButtonDown(unsigned int nFlags, POINT point)
 {
 		// 这种情况下面直接拖动窗口
 	WindowBase* pWindowBase = GetWindowObject();

@@ -97,7 +97,7 @@ HRESULT CreateD3DDevice(
 						ID3D10Device1 **ppDevice
 						)
 {
-	HRESULT hr = S_OK;
+	HRESULT hr = 0;
 
 	static const D3D10_FEATURE_LEVEL1 levelAttempts[] =
 	{
@@ -167,7 +167,7 @@ bool D3D10App::Init()
 	IDXGIDevice*    pDXGIDevice = nullptr;
 	IDXGIAdapter*   pAdapter = nullptr;
 
-	HRESULT hr = S_OK;
+	HRESULT hr = 0;
 	// Create device
 	hr = CreateD3DDevice(
 		nullptr,

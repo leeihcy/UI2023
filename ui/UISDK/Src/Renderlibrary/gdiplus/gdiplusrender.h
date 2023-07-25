@@ -11,7 +11,7 @@
 // 其它时候不保留该对象，避免每次设置剪裁和偏移时，还得同步给Graphics。
 // 另外由于使用Gdiplus时，大部分的绘图工作还是交给了gdi的alphablend
 //
-namespace UI
+namespace ui
 {
 class RenderBuffer;
 
@@ -87,7 +87,7 @@ public:
 	static void  DrawBitmapEx(HDC hBindDC, IRenderBitmap* pBitmap, DRAWBITMAPPARAM* pParam);
     static void  DrawStringEx(HDC hBindDC, IRenderFont*  pFont, DRAWTEXTPARAM* pParam);
 
-    static void  GetStringFormatByGdiFormat(UINT, Gdiplus::StringFormat* p);
+    static void  GetStringFormatByGdiFormat(unsigned int, Gdiplus::StringFormat* p);
 
 private:
     void  update_clip_rgn();

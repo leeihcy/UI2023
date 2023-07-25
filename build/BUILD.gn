@@ -14,6 +14,10 @@ config("compiler_defaults") {
     defines = ["OS_MAC"]
   }
 
+  if (is_x64) {
+    defines += ["CPU_X64"]
+  }
+
   if (current_os == "linux") {
     cflags = [
       "-fPIC",

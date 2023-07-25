@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "gesturehelper.h"
 
-namespace UI
+namespace ui
 {
 GestureHelper*  GetGestureInstance()
 {

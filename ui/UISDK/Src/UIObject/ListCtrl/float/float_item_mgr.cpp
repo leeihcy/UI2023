@@ -3,7 +3,7 @@
 #include "..\ListItemBase\listitembase.h"
 #include "..\listctrlbase.h"
 
-using namespace UI;
+using namespace ui;
 
 FloatItemMgr::FloatItemMgr()
 {

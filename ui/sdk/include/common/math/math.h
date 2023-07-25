@@ -1,7 +1,7 @@
 #ifndef _UI_MATH_H_
 #define _UI_MATH_H_
 
-namespace UI
+namespace ui
 {
 
 // webkit  Source\WebCore\platform\graphics\color.cpp

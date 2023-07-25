@@ -1,7 +1,7 @@
 #pragma once
 #include "Src\UIObject\Window\windowbase.h"
 
-namespace UI
+namespace ui
 {
 
     // TODO: 整理WindowBase类，将一些逻辑剥离出来放到Window类中

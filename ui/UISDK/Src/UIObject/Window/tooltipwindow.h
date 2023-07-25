@@ -1,7 +1,7 @@
 #pragma  once
 #include "UISDK\Kernel\Src\UIObject\Window\customwindow.h"
 
-namespace UI
+namespace ui
 {
 #if 0
 //

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "timeout.h"
 
-namespace UI
+namespace ui
 {
 
 
@@ -22,7 +22,7 @@ CTimeout::~CTimeout()
 }
 
 
-void CALLBACK CTimeout::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+void CALLBACK CTimeout::TimerProc(HWND hwnd, unsigned int uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
     CTimeout* pThis = (CTimeout*)hwnd;  // 被thunk修改过了
 

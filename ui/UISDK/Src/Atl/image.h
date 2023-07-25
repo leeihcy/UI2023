@@ -52,40 +52,40 @@ using namespace std;
 #endif  // WINVER >= 0x0500
 
 
-namespace UI
+namespace ui
 {
 	const int CIMAGE_DC_CACHE_SIZE = 4;
 
 	class Image;
 
-	// 
-	//	图片内存数据拷贝，用于皮肤改变色调时保存其原始数据，并兼容gdi/gdi+图片
-	//
-	class ImageData
-	{
-	public:
-		ImageData()
-		{
-			m_bNeedDeletePtr = false;
-			m_ptr = m_pScan0 = 0;
-			m_nbpp = m_nStride = m_nWidth = m_nHeight = 0;
-		}
-		~ImageData()
-		{
-			if (m_ptr && m_bNeedDeletePtr)
-				delete[] m_ptr;
-			m_ptr = m_pScan0 = 0;
-			m_nbpp = m_nStride = m_nWidth = m_nHeight = 0;
-		}
+	// // 
+	// //	图片内存数据拷贝，用于皮肤改变色调时保存其原始数据，并兼容gdi/gdi+图片
+	// //
+	// class ImageData
+	// {
+	// public:
+	// 	ImageData()
+	// 	{
+	// 		m_bNeedDeletePtr = false;
+	// 		m_ptr = m_pScan0 = 0;
+	// 		m_nbpp = m_nStride = m_nWidth = m_nHeight = 0;
+	// 	}
+	// 	~ImageData()
+	// 	{
+	// 		if (m_ptr && m_bNeedDeletePtr)
+	// 			delete[] m_ptr;
+	// 		m_ptr = m_pScan0 = 0;
+	// 		m_nbpp = m_nStride = m_nWidth = m_nHeight = 0;
+	// 	}
 
-		BYTE*  m_ptr;         // 数据首地址，用于new/delete
-		BYTE*  m_pScan0;      // 图片第一行的数据地址
-		int    m_nbpp;        // bit per pixel
-		int    m_nStride;     // Offset, in bytes, between consecutive scan lines of the bitmap. If the stride is positive, the bitmap is top-down. If the stride is negative, the bitmap is bottom-up.
-		int    m_nWidth;      // 图片宽度
-		int    m_nHeight;     // 图片高度
-		bool  m_bNeedDeletePtr;  // 是否需要释放m_ptr
-	};
+	// 	BYTE*  m_ptr;         // 数据首地址，用于new/delete
+	// 	BYTE*  m_pScan0;      // 图片第一行的数据地址
+	// 	int    m_nbpp;        // bit per pixel
+	// 	int    m_nStride;     // Offset, in bytes, between consecutive scan lines of the bitmap. If the stride is positive, the bitmap is top-down. If the stride is negative, the bitmap is bottom-up.
+	// 	int    m_nWidth;      // 图片宽度
+	// 	int    m_nHeight;     // 图片高度
+	// 	bool  m_bNeedDeletePtr;  // 是否需要释放m_ptr
+	// };
 
 	class CImageDC
 	{
@@ -196,10 +196,10 @@ namespace UI
 		const void* GetBits() const throw();
 		void* GetBits() throw();
 		int   GetBPP() const throw();
-		void  GetColorTable( UINT iFirstColor, UINT nColors, RGBQUAD* prgbColors ) const throw();
+		void  GetColorTable( unsigned int iFirstColor, unsigned int nColors, RGBQUAD* prgbColors ) const throw();
 		HDC   GetDC() const throw();
-		static HRESULT GetExporterFilterString( String& strExporters, vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription = nullptr, DWORD dwExclude = excludeDefaultSave, TCHAR chSeparator = _T( '|' ) );
-		static HRESULT GetImporterFilterString( String& strImporters, vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription = nullptr, DWORD dwExclude = excludeDefaultLoad, TCHAR chSeparator = _T( '|' ) );
+		static HRESULT GetExporterFilterString( String& strExporters, vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription = nullptr, DWORD dwExclude = excludeDefaultSave, TCHAR chSeparator = _T( '|' ) );
+		static HRESULT GetImporterFilterString( String& strImporters, vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription = nullptr, DWORD dwExclude = excludeDefaultLoad, TCHAR chSeparator = _T( '|' ) );
 		static HDC   GetCacheDC(){ return s_cache.GetDC(); }
 		static void  ReleaseCacheDC(HDC hDC) { s_cache.ReleaseDC(hDC); }
 
@@ -214,11 +214,11 @@ namespace UI
 		bool IsDIBSection() const throw();
 		bool IsIndexed() const throw();
 		bool IsNull() const throw();
-		HRESULT Load( LPCTSTR pszFileName ) throw();
+		HRESULT Load( const wchar_t* pszFileName ) throw();
 		HRESULT Load( IStream* pStream ) throw();
-		void LoadFromResource( HINSTANCE hInstance, LPCTSTR pszResourceName ) throw();
-		void LoadFromResource( HINSTANCE hInstance, UINT nIDResource ) throw();
-		void LoadFromResource( HINSTANCE hInstance, UINT nIDResource, TCHAR* szResourceType );
+		void LoadFromResource( HINSTANCE hInstance, const wchar_t* pszResourceName ) throw();
+		void LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource ) throw();
+		void LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource, TCHAR* szResourceType );
 		bool LoadFromData( void* pImageData, int nSize );
 		HRESULT CreateFromGdiplusBitmap( Gdiplus::Bitmap& bmSrc, bool bForceAlpha ) throw();
 		void  CreateSpecialSizeFromGdiplusBitmap(Gdiplus::Bitmap* pBmp, long newWidth, long newHeight);
@@ -233,8 +233,8 @@ namespace UI
 		BOOL PlgBlt( HDC hDestDC, const POINT* pPoints, const RECT& rectSrc, const POINT& pointMask, HBITMAP hbmMask = nullptr ) const throw();
 		void ReleaseDC() const throw();
 		HRESULT Save( IStream* pStream, REFGUID guidFileType ) const throw();
-		HRESULT Save( LPCTSTR pszFileName, REFGUID guidFileType = GUID_NULL ) const throw();
-		void SetColorTable( UINT iFirstColor, UINT nColors, const RGBQUAD* prgbColors ) throw();
+		HRESULT Save( const wchar_t* pszFileName, REFGUID guidFileType = GUID_NULL ) const throw();
+		void SetColorTable( unsigned int iFirstColor, unsigned int nColors, const RGBQUAD* prgbColors ) throw();
         void SetPixelBit32(uint x, uint y, long lValue);
 		void SetPixel( int x, int y, COLORREF color ) throw();
 		void SetPixelIndexed( int x, int y, int iIndex ) throw();
@@ -246,10 +246,10 @@ namespace UI
 		BOOL StretchBlt( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, DWORD dwROP = SRCCOPY ) const throw();
 		BOOL StretchBlt( HDC hDestDC, const RECT& rectDest, const RECT& rectSrc, DWORD dwROP = SRCCOPY ) const throw();
 #if WINVER >= 0x0500
-		BOOL TransparentBlt( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, UINT crTransparent = CLR_INVALID ) const throw();
-		BOOL TransparentBlt( HDC hDestDC, const RECT& rectDest, UINT crTransparent = CLR_INVALID ) const throw();
-		BOOL TransparentBlt( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, UINT crTransparent = CLR_INVALID ) const throw();
-		BOOL TransparentBlt( HDC hDestDC, const RECT& rectDest, const RECT& rectSrc, UINT crTransparent = CLR_INVALID ) const throw();
+		BOOL TransparentBlt( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, unsigned int crTransparent = CLR_INVALID ) const throw();
+		BOOL TransparentBlt( HDC hDestDC, const RECT& rectDest, unsigned int crTransparent = CLR_INVALID ) const throw();
+		BOOL TransparentBlt( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, unsigned int crTransparent = CLR_INVALID ) const throw();
+		BOOL TransparentBlt( HDC hDestDC, const RECT& rectDest, const RECT& rectSrc, unsigned int crTransparent = CLR_INVALID ) const throw();
 #endif  // WINVER >= 0x0500
 
 		static BOOL IsTransparencySupported() throw();
@@ -297,9 +297,9 @@ namespace UI
 
 		// Implementation
 	private:
-		static CLSID FindCodecForExtension( LPCTSTR pszExtension, const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs );
-		static CLSID FindCodecForFileType( REFGUID guidFileType, const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs );
-		static void BuildCodecFilterString( const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs, String& strFilter, vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription, DWORD dwExclude, TCHAR chSeparator );
+		static CLSID FindCodecForExtension( const wchar_t* pszExtension, const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs );
+		static CLSID FindCodecForFileType( REFGUID guidFileType, const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs );
+		static void BuildCodecFilterString( const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs, String& strFilter, vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription, DWORD dwExclude, TCHAR chSeparator );
 		static bool ShouldExcludeFormat( REFGUID guidFileType, DWORD dwExclude ) throw();
 		void UpdateBitmapInfo( DIBOrientation eOrientation );
 
@@ -758,7 +758,7 @@ namespace UI
 		return( m_nBPP );
 	}
 
-	inline void Image::GetColorTable( UINT iFirstColor, UINT nColors, 
+	inline void Image::GetColorTable( unsigned int iFirstColor, unsigned int nColors, 
 		RGBQUAD* prgbColors ) const throw()
 	{
 		assert( m_hBitmap != nullptr );
@@ -813,8 +813,8 @@ namespace UI
 		return( (dwExclude&excludeOther) != 0 );
 	}
 
-	inline void Image::BuildCodecFilterString( const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs,
-		String& strFilter, vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription, 
+	inline void Image::BuildCodecFilterString( const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs,
+		String& strFilter, vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription, 
 		DWORD dwExclude, TCHAR chSeparator )
 	{
 #ifdef _UNICODE // libo 20101117 remove 使用于多字节编码
@@ -825,7 +825,7 @@ namespace UI
 
 		String strAllExtensions;
 		String strTempFilter;
-		for( UINT iCodec = 0; iCodec < nCodecs; iCodec++ )
+		for( unsigned int iCodec = 0; iCodec < nCodecs; iCodec++ )
 		{
 			const Gdiplus::ImageCodecInfo* pCodec = &pCodecs[iCodec];
 
@@ -868,7 +868,7 @@ namespace UI
 	}
 
 	inline HRESULT Image::GetImporterFilterString( String& strImporters, 
-		vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription /* = nullptr */,
+		vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription /* = nullptr */,
 		DWORD dwExclude /* = excludeDefaultLoad */, TCHAR chSeparator /* = '|' */ )
 	{
 		if( !InitGDIPlus() )
@@ -876,8 +876,8 @@ namespace UI
 			return( E_FAIL );
 		}
 
-		UINT nCodecs;
-		UINT nSize;
+		unsigned int nCodecs;
+		unsigned int nSize;
 		Gdiplus::Status status;
 		Gdiplus::ImageCodecInfo* pCodecs;
 
@@ -895,7 +895,7 @@ namespace UI
 	}
 
 	inline HRESULT Image::GetExporterFilterString( String& strExporters, 
-		vector< GUID >& aguidFileTypes, LPCTSTR pszAllFilesDescription /* = nullptr */,
+		vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription /* = nullptr */,
 		DWORD dwExclude /* = excludeDefaultSave */, TCHAR chSeparator /* = '|' */ )
 	{
 		if( !InitGDIPlus() )
@@ -903,8 +903,8 @@ namespace UI
 			return( E_FAIL );
 		}
 
-		UINT nCodecs;
-		UINT nSize;
+		unsigned int nCodecs;
+		unsigned int nSize;
 		Gdiplus::Status status;
 		Gdiplus::ImageCodecInfo* pCodecs;
 
@@ -1035,7 +1035,7 @@ namespace UI
 		return( CreateFromGdiplusBitmap( bmSrc, m_bHasAlphaChannel ) );
 	}
 
-	inline HRESULT Image::Load( LPCTSTR pszFileName ) throw()
+	inline HRESULT Image::Load( const wchar_t* pszFileName ) throw()
 	{
 #ifdef _UNICODE // libo 20101117 remove 只适用用于多字节编码
 		if( !InitGDIPlus() )
@@ -1060,7 +1060,7 @@ namespace UI
 	{
 		m_bHasAlphaChannel = bForceAlpha;
 
-		UINT  nBPP = 32;
+		unsigned int  nBPP = 32;
 		DWORD dwFlags = 0;
 
 		Gdiplus::PixelFormat eSrcPixelFormat = bmSrc.GetPixelFormat();
@@ -1087,7 +1087,7 @@ namespace UI
 		Gdiplus::ColorPalette* pPalette = nullptr;
 		if (false == m_bHasAlphaChannel && Gdiplus::IsIndexedPixelFormat(eSrcPixelFormat))  // 有可能外部强制指定了创建alpha通道的32位图片，这时候没有color table
 		{
-			UINT nPaletteSize = bmSrc.GetPaletteSize();
+			unsigned int nPaletteSize = bmSrc.GetPaletteSize();
 			pPalette = static_cast< Gdiplus::ColorPalette* >( _alloca(nPaletteSize) );
 
 			if( pPalette == nullptr )
@@ -1097,7 +1097,7 @@ namespace UI
 
 			RGBQUAD argbPalette[256];
 			assert( (pPalette->Count > 0) && (pPalette->Count <= 256) );
-			for( UINT iColor = 0; iColor < pPalette->Count; iColor++ )
+			for( unsigned int iColor = 0; iColor < pPalette->Count; iColor++ )
 			{
 				Gdiplus::ARGB color = pPalette->Entries[iColor];
 				argbPalette[iColor].rgbRed = (BYTE)( (color>>RED_SHIFT) & 0xff );
@@ -1207,7 +1207,7 @@ namespace UI
 	inline HRESULT Image::Create32BPPFromGdiplusBitmap( Gdiplus::Bitmap& bmSrc ) throw()
 	{
 		Gdiplus::PixelFormat eSrcPixelFormat = bmSrc.GetPixelFormat();
-		UINT nBPP = 32;
+		unsigned int nBPP = 32;
 		DWORD dwFlags = 0;
 		Gdiplus::PixelFormat eDestPixelFormat = PixelFormat32bppRGB;
 		if( eSrcPixelFormat&PixelFormatGDI )
@@ -1231,7 +1231,7 @@ namespace UI
 		Gdiplus::ColorPalette* pPalette = nullptr;
 		if( Gdiplus::IsIndexedPixelFormat( eSrcPixelFormat ) )
 		{
-			UINT nPaletteSize = bmSrc.GetPaletteSize();
+			unsigned int nPaletteSize = bmSrc.GetPaletteSize();
 			pPalette = static_cast< Gdiplus::ColorPalette* >( _alloca(nPaletteSize) );
 
 			if( pPalette == nullptr )
@@ -1241,7 +1241,7 @@ namespace UI
 
 			RGBQUAD argbPalette[256];
 			assert( (pPalette->Count > 0) && (pPalette->Count <= 256) );
-			for( UINT iColor = 0; iColor < pPalette->Count; iColor++ )
+			for( unsigned int iColor = 0; iColor < pPalette->Count; iColor++ )
 			{
 				Gdiplus::ARGB color = pPalette->Entries[iColor];
 				argbPalette[iColor].rgbRed = (BYTE)( (color>>RED_SHIFT) & 0xff );
@@ -1320,7 +1320,7 @@ namespace UI
 #endif
 
 	/* <BEGIN  ADD libo 20101116 添加从资源中加载png图片的方法 */
-	inline void Image::LoadFromResource( HINSTANCE hInstance, UINT nIDResource, TCHAR* szResourceType ) throw()
+	inline void Image::LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource, TCHAR* szResourceType ) throw()
 	{
 		// 如果没有指定资源类型，那么可能就是默认的bmp图片
 		if( nullptr == szResourceType )
@@ -1383,7 +1383,7 @@ namespace UI
 	}
 	/* ADD END> */
 
-	inline void Image::LoadFromResource( HINSTANCE hInstance, LPCTSTR pszResourceName ) throw()
+	inline void Image::LoadFromResource( HINSTANCE hInstance, const wchar_t* pszResourceName ) throw()
 	{
 		HBITMAP hBitmap;
 
@@ -1393,7 +1393,7 @@ namespace UI
 		Attach( hBitmap );
 	}
 
-	inline void Image::LoadFromResource( HINSTANCE hInstance, UINT nIDResource ) throw()
+	inline void Image::LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource ) throw()
 	{
 		LoadFromResource( hInstance, MAKEINTRESOURCE( nIDResource ) );
 	}
@@ -1490,12 +1490,12 @@ namespace UI
 		}
 	}
 
-	inline CLSID Image::FindCodecForExtension( LPCTSTR pszExtension, const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs )
+	inline CLSID Image::FindCodecForExtension( const wchar_t* pszExtension, const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs )
 	{
 #ifdef _UNICODE // libo 20101117 remove 只适用用于多字节编码
 		LPCWSTR pszExtensionW( pszExtension );
 
-		for( UINT iCodec = 0; iCodec < nCodecs; iCodec++ )
+		for( unsigned int iCodec = 0; iCodec < nCodecs; iCodec++ )
 		{
 			String strExtensions( pCodecs[iCodec].FilenameExtension );
 
@@ -1539,9 +1539,9 @@ namespace UI
 
 	}
 
-	inline CLSID Image::FindCodecForFileType( REFGUID guidFileType, const Gdiplus::ImageCodecInfo* pCodecs, UINT nCodecs )
+	inline CLSID Image::FindCodecForFileType( REFGUID guidFileType, const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs )
 	{
-		for( UINT iCodec = 0; iCodec < nCodecs; iCodec++ )
+		for( unsigned int iCodec = 0; iCodec < nCodecs; iCodec++ )
 		{
 			if( pCodecs[iCodec].FormatID == guidFileType )
 			{
@@ -1559,8 +1559,8 @@ namespace UI
 			return( E_FAIL );
 		}
 
-		UINT nEncoders;
-		UINT nBytes;
+		unsigned int nEncoders;
+		unsigned int nBytes;
 		Gdiplus::Status status;
 
 		status = Gdiplus::GetImageEncodersSize( &nEncoders, &nBytes );
@@ -1610,7 +1610,7 @@ namespace UI
 		return( S_OK );
 	}
 
-	inline HRESULT Image::Save( LPCTSTR pszFileName, REFGUID guidFileType ) const throw()
+	inline HRESULT Image::Save( const wchar_t* pszFileName, REFGUID guidFileType ) const throw()
 	{
 #ifdef _UNICODE // libo 20101117 remove 只适用用于多字节编码
 		if( !InitGDIPlus() )
@@ -1618,8 +1618,8 @@ namespace UI
 			return( E_FAIL );
 		}
 
-		UINT nEncoders;
-		UINT nBytes;
+		unsigned int nEncoders;
+		unsigned int nBytes;
 		Gdiplus::Status status;
 
 		status = Gdiplus::GetImageEncodersSize( &nEncoders, &nBytes );
@@ -1687,7 +1687,7 @@ namespace UI
 		return( S_OK );
 	}
 
-	inline void Image::SetColorTable( UINT iFirstColor, UINT nColors, 
+	inline void Image::SetColorTable( unsigned int iFirstColor, unsigned int nColors, 
 		const RGBQUAD* prgbColors ) throw()
 	{
 		assert( m_hBitmap != nullptr );
@@ -1793,14 +1793,14 @@ namespace UI
 
 #if WINVER >= 0x0500
 	inline BOOL Image::TransparentBlt( HDC hDestDC, int xDest, int yDest, 
-		int nDestWidth, int nDestHeight, UINT crTransparent ) const throw()
+		int nDestWidth, int nDestHeight, unsigned int crTransparent ) const throw()
 	{
 		return( TransparentBlt( hDestDC, xDest, yDest, nDestWidth, nDestHeight, 0, 
 			0, m_nWidth, m_nHeight, crTransparent ) );
 	}
 
 	inline BOOL Image::TransparentBlt( HDC hDestDC, const RECT& rectDest, 
-		UINT crTransparent ) const throw()
+		unsigned int crTransparent ) const throw()
 	{
 		return( TransparentBlt( hDestDC, rectDest.left, rectDest.top, 
 			rectDest.right-rectDest.left, rectDest.bottom-rectDest.top, 
@@ -1809,7 +1809,7 @@ namespace UI
 
 	inline BOOL Image::TransparentBlt( HDC hDestDC, int xDest, int yDest, 
 		int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, 
-		int nSrcHeight, UINT crTransparent ) const throw()
+		int nSrcHeight, unsigned int crTransparent ) const throw()
 	{
 		BOOL bResult;
 
@@ -1836,7 +1836,7 @@ namespace UI
 	}
 
 	inline BOOL Image::TransparentBlt( HDC hDestDC, const RECT& rectDest, 
-		const RECT& rectSrc, UINT crTransparent ) const throw()
+		const RECT& rectSrc, unsigned int crTransparent ) const throw()
 	{
 		return( TransparentBlt( hDestDC, rectDest.left, rectDest.top, 
 			rectDest.right-rectDest.left, rectDest.bottom-rectDest.top, rectSrc.left, 

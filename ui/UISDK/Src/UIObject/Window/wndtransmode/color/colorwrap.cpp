@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "colorwrap.h"
 #include "Src/UIObject/Window/customwindow.h"
-#include "Inc\Interface\iuires.h"
-#include "Inc\Interface\imapattr.h"
-#include "Src\Resource\colorres.h"
-#include "Src\Resource\skinres.h"
+#include "include/interface/iuires.h"
+#include "include/interface/imapattr.h"
+#include "src/resource/colorres.h"
+#include "src/resource/skinres.h"
 
-namespace UI
+namespace ui
 {
 
 ColorMaskWindowWrap::ColorMaskWindowWrap()
@@ -27,7 +27,7 @@ void  ColorMaskWindowWrap::Init(ICustomWindow* pWnd)
     if (pMapAttrib)
     {
         const TCHAR* szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKCOLOR_9REGION, false);
-        Util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
+        util::TranslateImage9Region(szText, &m_9region, XML_SEPARATOR);
 
         szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKCOLOR_VALUE, false);
         if (szText)

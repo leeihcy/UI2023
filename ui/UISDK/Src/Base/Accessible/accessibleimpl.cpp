@@ -2,7 +2,7 @@
 #include "accessibleimpl.h"
 
 #pragma comment(lib, "Oleacc.lib")
-using namespace UI;
+using namespace ui;
 
 AccessibleImpl::AccessibleImpl()
 {
@@ -40,7 +40,7 @@ HRESULT AccessibleImpl::QueryInterface(
 		AddRef();
 	}
 
-	return (nullptr == *ppvObj) ? E_NOINTERFACE : S_OK;
+	return (nullptr == *ppvObj) ? E_NOINTERFACE : 0;
 }
 
 ULONG AccessibleImpl::AddRef(void)

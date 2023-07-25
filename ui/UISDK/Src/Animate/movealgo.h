@@ -98,7 +98,7 @@ public:
         //     {
         //         static int s_tprev = 0;
         //         TCHAR szText[64] = _T("");
-        //         _stprintf(szText, _T("%d\n"), t-s_tprev);
+        //         wprintf(szText, _T("%d\n"), t-s_tprev);
         //         s_tprev = t;
         //         ::OutputDebugString(szText);
         //     }

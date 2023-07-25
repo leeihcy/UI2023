@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "windowdragdropmgr.h"
-#include "Src\UIObject\Window\windowbase.h"
+#include "src/UIObject\Window\windowbase.h"
 #include <ShlGuid.h>
 #include "Inc\Util\dragdrop.h"
 
@@ -33,7 +33,7 @@
 // 是一个in/out参数，in表示拖拽源可以接受的拖拽格式，out表示最终拖拽效果
 // 因此不能一上来就将*pdwEffect = DROPEFFECT_NONE
 
-namespace UI
+namespace ui
 {
 
 WindowDragDropMgr::WindowDragDropMgr()
@@ -76,7 +76,7 @@ HRESULT  WindowDragDropMgr::SetDroppable(bool b)
     if (nullptr == m_pWindowBase)
         return E_FAIL;
 
-    HRESULT hr = S_OK;
+    HRESULT hr = 0;
 
     if (b)
     {
@@ -84,7 +84,7 @@ HRESULT  WindowDragDropMgr::SetDroppable(bool b)
         {
             hr = ::RegisterDragDrop(m_pWindowBase->m_hWnd, static_cast<IDropTarget*>(this));    
             if (hr == 0x80040101)// 这个窗口已被注册成拖放目标
-                return S_OK;
+                return 0;
 
             if (FAILED(hr))
                 return hr;
@@ -104,7 +104,7 @@ HRESULT  WindowDragDropMgr::SetDroppable(bool b)
                 return hr;
         }
     }
-    return S_OK;
+    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -115,13 +115,13 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::QueryInterface(REFIID riid, void **
     {
         AddRef();
         *ppvObject = static_cast<IUnknown*>(this);
-        return S_OK;
+        return 0;
     }
     else if (IsEqualIID(riid, IID_IDropTarget))
     {
         AddRef();
         *ppvObject = static_cast<IDropTarget*>(this);
-        return S_OK;
+        return 0;
     }
 
     return E_NOINTERFACE;
@@ -219,7 +219,7 @@ HRESULT  WindowDragDropMgr::DragMove(IDataObject *pDataObj,
             *pdwEffect = DROPEFFECT_NONE;
         }
     }
-    return S_OK;
+    return 0;
 }
 
 HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragLeave(void)
@@ -244,7 +244,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::Drop(IDataObject *pDataObj, DWORD g
 
     DROPTARGETEVENT_DATA data = {pDataObj, grfKeyState, pt, pdwEffect};
 
-    HRESULT lRet = S_OK;
+    HRESULT lRet = 0;
     if (m_pObjHover)
     {
         lRet = this->DoDropTargetNotify(m_pObjHover, _Drop, &data);
@@ -275,9 +275,9 @@ HRESULT  WindowDragDropMgr::DoDropTargetNotify(Object* pHoverObj, DROPTARGETEVEN
 //         break;
 // 
 //     if (msg.bHandled)
-//         return S_OK;
+//         return 0;
     
-    return S_OK;
+    return 0;
 }
 
 // [注]: 直接在这里调用 m_pWindowBase->GetHoverObject(); 可能什么也得不到，必须重新获取

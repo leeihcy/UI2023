@@ -1,5 +1,5 @@
 #pragma once
-namespace UI
+namespace ui
 {
 
 
@@ -33,7 +33,7 @@ public:
     void  SetParam(long lId, WPARAM wParam = 0, LPARAM lParam = 0);
 
 private:
-    static void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
+    static void CALLBACK TimerProc(HWND hwnd, unsigned int uMsg, UINT_PTR idEvent, DWORD dwTime);
     void   OnTimer();
 
 private:

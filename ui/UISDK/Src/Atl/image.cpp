@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "image.h"
 #include "..\..\Inc\Util\struct.h"
-namespace UI
+namespace ui
 {
 
 Image::CInitGDIPlus		Image::s_initGDIPlus;
@@ -16,7 +16,7 @@ void  JPEG_Rotation_and_EXIF_Orientation(Gdiplus::Bitmap* pBmp)
 	if (guid != Gdiplus::ImageFormatJPEG)
 		return;
 
-	UINT size = pBmp->GetPropertyItemSize(PropertyTagOrientation);
+	unsigned int size = pBmp->GetPropertyItemSize(PropertyTagOrientation);
 	if (size == 0)
 		return;
 
@@ -152,7 +152,7 @@ void  Image::AlphaEdge(int nEdge, byte nSpeed)
 
 
 
-// 注：已被Util::FixGdiAlpha取代，但该函数仍然可以使用
+// 注：已util:::FixGdiAlpha取代，但该函数仍然可以使用
 //
 // 将nAlphaIsZero==1的位置重新设置alpha=0（配置SetAlpha使用）
 // 将其它位置alpha设置为255。 用于richedit在分层窗口上的绘制
@@ -507,169 +507,6 @@ HBITMAP Image::CreateDDB()
 
 	return ddb;
 #endif
-}
-
-//
-//	根据参数中提供的原始数据pSaveBits，将自己偏移wNewH色调
-//
-bool ChangeColorHue(BYTE& R, BYTE& G, BYTE& B, short h, bool bOffsetOrReplace)
-{
-    if( R==G && G==B )  // 灰色系不能改变它的色调，永远为160
-        return false;
-
-    Color c(R,G,B,255);
-
-    HSL hsl;
-    c.GetHSL(hsl);
-
-    if (bOffsetOrReplace)
-        hsl.hue += h;
-    else
-        hsl.hue = h;
-
-    while(hsl.hue < MIN_HUE_VALUE)
-        hsl.hue += MAX_HUE_VALUE;
-    while (hsl.hue >= MAX_HUE_VALUE)
-        hsl.hue -= MAX_HUE_VALUE;
-    
-    c.SetHSL(hsl);
-
-    R = c.r;
-    G = c.g;
-    B = c.b;
-
-    return true;
-}
-
-void ChangeColorLuminance(BYTE& R, BYTE& G, BYTE& B, short l, float dL)  // dL = l/100;
-{
-    if (l > 0)  // 相当于是在背景图上面盖了一张全白的图片（alpha为dL)
-    {  
-        R = R + (BYTE)((255 - R) * dL);  
-        G = G + (BYTE)((255 - G) * dL);  
-        B = B + (BYTE)((255 - B) * dL);  
-    }  
-    else if (l < 0)  // 相当于是在背景图上面盖了一张全黑的图片(alpha为dL)
-    {  
-        R = R + (BYTE)(R * dL);  
-        G = G + (BYTE)(G * dL);   
-        B = B + (BYTE)(B * dL);  
-    }  
-#define CHECK_RGB_RANGE(x)  \
-    if (x>255) x = 255; \
-    if (x<0)   x = 0;
-
-    CHECK_RGB_RANGE(R);
-    CHECK_RGB_RANGE(G);
-    CHECK_RGB_RANGE(B);
-}
-
-bool ChangeColorHueAndSaturation(BYTE& R, BYTE& G, BYTE& B, short h, bool bOffsetOrReplace, short s, float dS)
-{
-    if( R==G && G==B )  // 灰色系不能改变它的色调，永远为160
-        return false;
-
-    Color c(R,G,B,255);
-
-    HSL hsl;
-    c.GetHSL(hsl);
-
-    // hue
-    if (bOffsetOrReplace)
-        hsl.hue += h;
-    else
-        hsl.hue = h;
-
-    while(hsl.hue < MIN_HUE_VALUE)
-        hsl.hue += MAX_HUE_VALUE;
-    while (hsl.hue >= MAX_HUE_VALUE)
-        hsl.hue -= MAX_HUE_VALUE;
-
-    // saturation
-    if (s > 0)
-        hsl.saturation = (hsl.saturation / (1-dS));
-    else
-        hsl.saturation = (hsl.saturation * (1+dS));
-
-    if(hsl.saturation <= MIN_SATURATION_VALUE)
-        hsl.saturation = 0, hsl.hue = 0;  // 灰色系了
-
-    if (hsl.saturation > MAX_SATURATION_VALUE)
-        hsl.saturation = MAX_SATURATION_VALUE;
-
-
-    c.SetHSL(hsl);
-    R = c.r;
-    G = c.g;
-    B = c.b;
-
-    return true;
-}
-bool ChangeColorSaturation(BYTE& R, BYTE& G, BYTE& B, short s, float dS)
-{
-    if( R==G && G==B )  // 灰色系不能改变它的色调，永远为160
-        return false;
-
-    Color c(R,G,B,255);
-
-    HSL hsl;
-    c.GetHSL(hsl);
-
-    // saturation
-    if (s > 0)
-        hsl.saturation = (hsl.saturation / (1-dS));
-    else
-        hsl.saturation = (hsl.saturation * (1+dS));
-
-    if(hsl.saturation <= MIN_SATURATION_VALUE)
-        hsl.saturation = 0, hsl.hue = 0;  // 灰色系了
-
-    if (hsl.saturation > MAX_SATURATION_VALUE)
-        hsl.saturation = MAX_SATURATION_VALUE;
-
-    c.SetHSL(hsl);
-    R = c.r;
-    G = c.g;
-    B = c.b;
-
-    return true;
-}
-
-bool ChangeColorHLS(BYTE& R, BYTE& G, BYTE& B, short h, short l , short s, int nFlag )
-{
-    bool bChangeH = nFlag & CHANGE_SKIN_HLS_FLAG_H ? true:false;
-    bool bChangeL = nFlag & CHANGE_SKIN_HLS_FLAG_L ? true:false;
-    bool bChangeS = nFlag & CHANGE_SKIN_HLS_FLAG_S ? true:false;
-    bool bSetHueMode = nFlag & CHANGE_SKIN_HLS_FALG_REPLACE_MODE ? false:true;
-    if (l == 0)
-        bChangeL = false;
-    if (s == 0)
-        bChangeS = false;
-
-    if(false == bChangeH && false == bChangeL && false == bChangeS)
-        return false;
-
-    float dL = 0, ds = 0;
-    if (bChangeL)
-        dL = (float)(l/100.0); 
-    if (bChangeS)
-        ds = (float)(s/100.0);
-
-    if (bChangeL)
-        ChangeColorLuminance(R,G,B,l,dL);
-
-    if (bChangeH && bChangeS)
-    {
-        ChangeColorHueAndSaturation(R,G,B,h,bSetHueMode,s,ds);
-    }
-    else
-    {
-        if (bChangeH)
-            ChangeColorHue(R,G,B,h,bSetHueMode);
-        if (bChangeS)
-            ChangeColorSaturation(R,G,B,s,ds);
-    }
-    return true;
 }
 
 bool Image::ChangeHSL(const ImageData* pOriginImageData, short h, short s, short l, int nFlag)

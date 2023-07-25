@@ -8,7 +8,7 @@
 #define UICOMPOSITOR_API __declspec(dllimport)
 #endif
 
-namespace UI
+namespace ui
 {
 
 // interface  IUICompositor

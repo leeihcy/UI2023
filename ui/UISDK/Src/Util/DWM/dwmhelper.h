@@ -1,6 +1,6 @@
 #pragma once
 
-namespace UI
+namespace ui
 {
 
 // Blur behind data structures
@@ -112,7 +112,7 @@ typedef HRESULT (__stdcall *pfnDwmEnableBlurBehindWindow)(HWND hWnd, __in const 
 typedef HRESULT (__stdcall *pfnDwmIsCompositionEnabled)(BOOL *pfEnabled);
 typedef HRESULT (__stdcall *pfnDwmGetWindowAttribute)(HWND hwnd, DWORD dwAttribute, PVOID pvAttribute, DWORD cbAttribute);
 typedef HRESULT (__stdcall *pfnDwmSetWindowAttribute)(HWND hwnd, DWORD dwAttribute, LPCVOID pvAttribute, DWORD cbAttribute);
-typedef HRESULT (__stdcall *pfnDwmDefWindowProc)(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, LRESULT *plResult);
+typedef HRESULT (__stdcall *pfnDwmDefWindowProc)(HWND hwnd, unsigned int msg, WPARAM wParam, LPARAM lParam, long *plResult);
 typedef BOOL(__stdcall *pfnSetWindowCompositionAttribute)(HWND, struct WINDOWCOMPOSITIONATTRIBDATA*);
 
 class DwmHelper

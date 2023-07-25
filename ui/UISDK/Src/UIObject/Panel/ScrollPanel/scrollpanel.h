@@ -1,9 +1,9 @@
 #pragma once
-#include "Inc\Interface\iscrollpanel.h"
+#include "include/interface/iscrollpanel.h"
 #include "..\..\ScrollBar\scrollbarmanager.h"
 #include "..\panel.h"
 
-namespace UI
+namespace ui
 {
 
 class ScrollPanel : public Panel
@@ -23,12 +23,12 @@ public:
     IScrollPanel*  GetIScrollPanel() { return m_pIScrollPanel; }
 
 protected:
-	virtual void  virtualOnSize(UINT nType, UINT nWidth, UINT nHeight);
+	virtual void  virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight);
 
     HRESULT  FinalConstruct(ISkinRes* p);
 	void  OnSerialize(SERIALIZEDATA* pData);
-    BOOL  OnMouseWheel(UINT nFlags, short zDelta, POINT pt);
-	void  OnLButtonDown(UINT nFlags, POINT point);
+    BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
+	void  OnLButtonDown(unsigned int nFlags, POINT point);
 
 protected:
     IScrollPanel*      m_pIScrollPanel;

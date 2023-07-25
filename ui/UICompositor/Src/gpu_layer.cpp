@@ -8,7 +8,7 @@
 #include "d3d10\common/RenderStates.h"
 #include "d3d10\common/Effects.h"
 
-using namespace UI;
+using namespace ui;
 
 
 // http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome
@@ -491,7 +491,7 @@ void  GpuLayerTexture::Translation(float xPos, float yPos, float zPos)
 	m_bNeedUpdateTransform = true;
 
 // 	TCHAR szText[32] = {0};
-// 	_stprintf(szText, TEXT("%f\n"), yPos);
+// 	wprintf(szText, TEXT("%f\n"), yPos);
 // 	::OutputDebugString(szText);
 }
 void  GpuLayerTexture::TranslationBy(float xPos, float yPos, float zPos)
