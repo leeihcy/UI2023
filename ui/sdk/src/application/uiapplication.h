@@ -9,11 +9,16 @@
 #include "src/render/renderbase_factory.h"
 #include "src/render/textrender/textrender_factory.h"
 #include "src/layout/layout_factory.h"
+#include "src/helper/topwindow/topwindowmanager.h"
+#include "src/animate/wrap/animate.h"
+#include "src/helper/msg/msghelper.h"
+// #include "src/helper/tooltip/tooltipmanager.h"
+// #include "ui/UISDK/Src/Animate/wrap/animate.h
 
 namespace ui
 {
 
-// class GifTimerManager;
+class GifTimerManager;
 // struct IObjectDescription;
 // class ImageManager;
 // class ImageRes;
@@ -26,12 +31,13 @@ namespace ui
 // class StyleManager;
 // class StyleRes;
 // class LayoutManager;
-// struct IUIAutoTest;
+struct IUIAutoTest;
 
 class UIApplication
 {
 public:  
     UIApplication(IUIApplication* p);
+    ~UIApplication();
     IUIApplication*  GetIUIApplication() { return m_pUIApplication; }
 
     void Run();
@@ -45,14 +51,15 @@ public:
 	IUIEditor*  GetUIEditorPtr() { return m_pUIEditor; }
 
     void  x_Init();  // 内部初始化，避免在构造函数中调用太多东西
-#if 0
+
 	IUIAutoTest*  GetUIAutoTestPtr() { return m_pUIAutoTest; }
 	
 	ITopWindowManager*  GetITopWindowMgr();
 	TopWindowManager*   GetTopWindowMgr() { return &m_TopWindowMgr; }
-	UIA::IAnimateManager*   GetAnimateMgr();
-	GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
-	IWaitForHandlesMgr*  GetWaitForHandlesMgr() { return &m_WaitForHandlesMgr; }
+	uia::IAnimateManager*   GetAnimateManager();
+#if 0    
+    GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
+    IWaitForHandlesMgr*  GetWaitForHandlesMgr() { return &m_WaitForHandlesMgr; }
 	IMessageFilterMgr*  GetMessageFilterMgr() { return &m_MsgFilterMgr; }
 	HMODULE  GetUID2DModule();
 	HMODULE  GetUID3DModule();
@@ -78,10 +85,10 @@ public:
     bool  GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc);
     bool  RegisterUIObject(IObjectDescription*);
 	IObject*  CreateUIObjectByName(const wchar_t* szXmlName, ISkinRes*);
-#if 0
-    IObject*  CreateUIObjectByClsid(REFCLSID clsid, ISkinRes*);
-    void  LoadUIObjectListToToolBox();
+    IObject*  CreateUIObjectByClsid(const Guid& clsid, ISkinRes*);
 
+    void  LoadUIObjectListToToolBox();
+#if 0
 	bool  IsDialogMessage(MSG* pMsg);
 	void  MsgHandleLoop(bool* pbQuitLoopRef);
 	void  MsgHandleOnce();
@@ -118,23 +125,24 @@ private:
 	RenderBaseFactory  m_renderBaseFactory;
 	TextRenderFactory  m_textRenderFactroy;
 	LayoutFactory  m_layoutFactory;
-#if 0
-    TopWindowManager    m_TopWindowMgr; 
-	GifTimerManager*    m_pGifTimerMgr;
 
-    WaitForHandlesMgr   m_WaitForHandlesMgr;
-    ForwardPostMessageWindow  m_WndForwardPostMsg; 
-    MessageFilterMgr    m_MsgFilterMgr;
+    TopWindowManager    m_TopWindowMgr; 
+
+#if defined(OS_WIN)
+	GifTimerManager*    m_pGifTimerMgr;
     ToolTipManager      m_ToolTipMgr;
-    AnimateHelper       m_animate; 
+    WaitForHandlesMgr   m_WaitForHandlesMgr;
+    MessageFilterMgr    m_MsgFilterMgr;
+    ForwardPostMessageWindow  m_WndForwardPostMsg;     
 #endif
+    AnimateHelper       m_animate; 
 
 private:
 
     IUIApplication*     m_pUIApplication = nullptr;              // 对外提供的接口
     // OSVERSIONINFOEX     m_osvi;                        // 操作系统版本
 	IUIEditor*          m_pUIEditor;                   // 外部的编辑器指针，用于消息通知和数据获取
-	// IUIAutoTest*        m_pUIAutoTest;                 // 外部的自动化测试指针。
+	IUIAutoTest*        m_pUIAutoTest;                 // 外部的自动化测试指针。
 
     // 是否是编辑器模式
     bool  m_bEditorMode = false;

@@ -1,3 +1,4 @@
+#include "include/inc.h"
 #include "rectarray.h"
 
 namespace ui {
@@ -30,7 +31,7 @@ RectArray& RectArray::operator=(const RectArray& o)
     return *this;
 }
 
-LPRECT  RectArray::GetArrayPtr()
+RECT*  RectArray::GetArrayPtr()
 {
     if (m_heapArray)
         return m_heapArray;
@@ -38,7 +39,7 @@ LPRECT  RectArray::GetArrayPtr()
     return m_stackArray;
 }
 
-LPCRECT  RectArray::GetArrayPtr2() const
+const RECT*  RectArray::GetArrayPtr2() const
 {
     if (m_heapArray)
         return m_heapArray;
@@ -46,7 +47,7 @@ LPCRECT  RectArray::GetArrayPtr2() const
     return m_stackArray;
 }
 
-LPRECT  RectArray::GetRectPtrAt(uint nIndex)
+RECT*  RectArray::GetRectPtrAt(uint nIndex)
 {
     UIASSERT (nIndex < m_nCount);
 
@@ -80,7 +81,7 @@ void  RectArray::CopyFrom(const RectArray* po)
         po->m_nCount);
 }
 
-void  RectArray::CopyFromArray(LPCRECT pArray, uint nCount)
+void  RectArray::CopyFromArray(const RECT* pArray, uint nCount)
 {
     Destroy();
     if (nCount > STACK_SIZE)
@@ -96,14 +97,14 @@ void  RectArray::CopyFromArray(LPCRECT pArray, uint nCount)
     m_nCount = nCount;
 }
 
-void  RectArray::AddRect(LPCRECT prc)
+void  RectArray::AddRect(const RECT* prc)
 {
 	if (m_nCount >= STACK_SIZE || m_heapArray)
 	{
 		long nCount = m_nCount;
 		RECT* pHeap = new RECT[nCount+1];
 		memcpy(pHeap, GetArrayPtr(), m_nCount*sizeof(RECT));
-		CopyRect(pHeap+m_nCount, prc);
+		(pHeap+m_nCount)->CopyFrom(*prc);
 
 		Destroy();
 		m_heapArray = pHeap;
@@ -112,7 +113,7 @@ void  RectArray::AddRect(LPCRECT prc)
 	}
 	else
 	{
-		CopyRect(&m_stackArray[m_nCount], prc);
+		m_stackArray[m_nCount].CopyFrom(*prc);
 		m_nCount ++;
 	}
 
@@ -139,7 +140,7 @@ bool  RectArray::SetAt(uint nIndex, RECT*  pValue)
     if (!pValue)
         return false;
 
-    CopyRect(GetRectPtrAt(nIndex), pValue);
+    GetRectPtrAt(nIndex)->CopyFrom(*pValue);
     return true;
 }
 
@@ -147,12 +148,12 @@ void  RectArray::Offset(int x, int y)
 {
     for (uint i = 0; i < m_nCount; i++)
     {
-        OffsetRect(GetRectPtrAt(i), x, y);
+        GetRectPtrAt(i)->Offset(x, y);
     }
 }
 
-// ÔËĞĞÍêÖ®ºó£¬m_heapArrayµÄ´óĞ¡Óëm_nCount¿ÉÄÜ²»Æ¥Åä
-bool RectArray::IntersectRect(LPCRECT prc, bool OnlyTest)
+// è¿è¡Œå®Œä¹‹åï¼Œm_heapArrayçš„å¤§å°ä¸m_nCountå¯èƒ½ä¸åŒ¹é…
+bool RectArray::IntersectRect(const RECT* prc, bool OnlyTest)
 {
     if (0 == m_nCount)
         return false;
@@ -162,7 +163,7 @@ bool RectArray::IntersectRect(LPCRECT prc, bool OnlyTest)
 
     for (unsigned int i = 0; i < m_nCount; i++)
     {
-        if (::IntersectRect(&temp, GetRectPtrAt(i), prc))
+        if (GetRectPtrAt(i)->Intersect(*prc, &temp))
         {
             if (OnlyTest)
             {
@@ -170,7 +171,7 @@ bool RectArray::IntersectRect(LPCRECT prc, bool OnlyTest)
             }
             else
             {
-                CopyRect(GetRectPtrAt(nNewCount), &temp);
+                GetRectPtrAt(nNewCount)->CopyFrom(temp);
                 nNewCount++;
             }
         }
@@ -191,35 +192,35 @@ bool RectArray::IntersectRect(LPCRECT prc, bool OnlyTest)
     if (OnlyTest)
         return true;
 
-    // Çå¿ÕÃ»ÓÃµÄÎ»ÖÃ
+    // æ¸…ç©ºæ²¡ç”¨çš„ä½ç½®
     for (uint i = nNewCount; i < m_nCount; i++)
-        SetRectEmpty(GetRectPtrAt(i));
+        GetRectPtrAt(i)->SetEmpty();
     
     m_nCount = nNewCount;
     return true;
 }
 
-// ³¡¾°£º´°¿ÚÔàÇøÓòÂß¼­
-void  RectArray::UnionDirtyRect(LPCRECT prc)
+// åœºæ™¯ï¼šçª—å£è„åŒºåŸŸé€»è¾‘
+void  RectArray::UnionDirtyRect(const RECT* prc)
 {
-    // 1. ¼ì²âÓĞÃ»ÓĞÖØµşÏî£¬»òÕßÓĞ½»¼¯µÄÏî
+    // 1. æ£€æµ‹æœ‰æ²¡æœ‰é‡å é¡¹ï¼Œæˆ–è€…æœ‰äº¤é›†çš„é¡¹
 	RECT rcTemp = {0};
     for (uint i = 0; i < m_nCount; i++)
     {
-        LPRECT prcTest = GetRectPtrAt(i);
+        RECT* prcTest = GetRectPtrAt(i);
 
-        if (!::IntersectRect(&rcTemp, prcTest, prc))
+        if (!prcTest->Intersect(*prc, &rcTemp))
             continue;
 
-        // ÓĞ½»¼¯£¬Ö±½ÓÇó½»
-        ::UnionRect(prcTest, prcTest, prc);
+        // æœ‰äº¤é›†ï¼Œç›´æ¥æ±‚äº¤
+        prcTest->Union(*prc, prcTest);
         return;
     }
 
-    // Ã»ÓĞ½»¼¯£¬¼Ó½øÀ´ 
+    // æ²¡æœ‰äº¤é›†ï¼ŒåŠ è¿›æ¥ 
     this->AddRect(prc);
 }
-
+#if defined(OS_WIN)
 HRGN  RectArray::CreateRgn()
 {
     if (0 == m_nCount || nullptr == GetArrayPtr())
@@ -248,13 +249,14 @@ HRGN  RectArray::CreateRgn()
 
     return hRgn;
 }
+#endif
 
 void  RectArray::GetUnionRect(RECT* prc)
 {
-    SetRectEmpty(prc);
+    prc->SetEmpty();
     for (uint i = 0; i < m_nCount; i++)
     {
-        UnionRect(prc, GetRectPtrAt(i), prc);
+        GetRectPtrAt(i)->Union(*prc, prc);
     }
 }
 }

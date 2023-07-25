@@ -1,6 +1,7 @@
 #include "include/inc.h"
-#include "Inc\Util\struct.h"
+#include "include/util/struct.h"
 
+namespace ui {
 void C9Region::Set( short w )
 {
 	topleft = top = topright = left = right = bottomleft = bottom = bottomright = w;
@@ -21,7 +22,7 @@ void C9Region::Set( short wLeft, short wTop, short wRight, short wBottom )
 }
 bool C9Region::IsAll_0()
 {
-	WORD* p = (WORD*)this;
+	unsigned short* p = (unsigned short*)this;
 	for (int i = 0; i < 8; i++)
 	{
 		if (p[i] != 0)
@@ -96,4 +97,6 @@ bool C9Region::IsEqual( const C9Region& r )
 		return true;
 
 	return false;
+}
+
 }

@@ -14,16 +14,19 @@ enum LOG_LEVEL
 	LOG_LEVEL_FATAL = 4
 };
 
+}
+
+
 void  UIAPI __cdecl UILog(
-		LOG_LEVEL lLevel,
-		const wchar* szFile,
+		ui::LOG_LEVEL lLevel,
+		const wchar_t* szFile,
 		const wchar_t* szFunction, 
 		long lLine, 
 		const wchar_t* szFormat,
 		...);
 
 void  UIAPI __cdecl UILog2(
-		LOG_LEVEL lLevel,
+		ui::LOG_LEVEL lLevel,
 		const char* szFile,
 		const char* szFunction, 
 		long lLine, 
@@ -31,7 +34,7 @@ void  UIAPI __cdecl UILog2(
 		...);
 
 void  UIAPI __cdecl UILogA(
-		LOG_LEVEL lLevel,
+		ui::LOG_LEVEL lLevel,
 		const char* szFile,
 		const char* szFunction, 
 		long lLine, 
@@ -41,13 +44,13 @@ void  UIAPI __cdecl UILogA(
 #ifdef _UNICODE
 
 	#define UI_LOG_LEVEL(level, format, ...) \
-			ui::UILog(level, __FILEW__, __FUNCTIONW__, __LINE__, format, __VA_ARGS__)
+			UILog(level, __FILEW__, __FUNCTIONW__, __LINE__, format, __VA_ARGS__)
 	#define UI_LOG_LEVELA(level, format, ...) \
-			ui::UILogA(level, __FILE__, __FUNCTION__, __LINE__, format, __VA_ARGS__)
+			UILogA(level, __FILE__, __FUNCTION__, __LINE__, format, __VA_ARGS__)
 #else
 
 	#define UI_LOG_LEVEL(level, format, ...) \
-			ui::UILog2(level, __FILE__, __FUNCTION__, __LINE__, format, #__VA_ARGS__)
+			UILog2(level, __FILE__, __FUNCTION__, __LINE__, format, #__VA_ARGS__)
 
 #endif
 
@@ -64,7 +67,5 @@ void  UIAPI __cdecl UILogA(
 #define UI_LOG_WARNA(format, ... )    UI_LOG_LEVELA(ui::LOG_LEVEL_WARN,  format, __VA_ARGS__)
 #define UI_LOG_ERRORA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_ERROR, format, __VA_ARGS__)
 #define UI_LOG_FATALA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_FATAL, format, __VA_ARGS__)
-
-}
 
 #endif

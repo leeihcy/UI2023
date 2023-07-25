@@ -11,6 +11,7 @@
 #include "src/resource/i18nmanager.h"
 #include "src/resource/skinres.h"
 #include "src/skin_parse/skinparseengine.h"
+#include "include/interface/iuiautotest.h"
 
 #if defined(OS_MAC)
 #include "application_mac.h"
@@ -22,10 +23,10 @@ namespace ui {
 UIApplication::UIApplication(IUIApplication* p): 
     m_pUIApplication(p),
     // m_WndForwardPostMsg(this), 
-    // m_TopWindowMgr(this),
+    m_TopWindowMgr(this),
 	m_renderBaseFactory(*this),
-	m_textRenderFactroy(*this)
-	//, m_animate(*this) 
+	m_textRenderFactroy(*this), 
+	m_animate(*this) 
 {
 #if defined(OS_MAC)
   ApplicationMac::Init();
@@ -120,7 +121,6 @@ SkinRes* UIApplication::GetDefaultSkinRes()
 	return m_skin_manager.GetDefaultSkinRes();
 }
 
-#if 0
 UIApplication::~UIApplication(void)
 {
 	// 应用程序退出日志
@@ -129,9 +129,9 @@ UIApplication::~UIApplication(void)
 	if (m_pUIAutoTest) {
 		m_pUIAutoTest->Release();
 	}
-
+#if 0
 	this->m_ToolTipMgr.Release();  // 保证顶层窗口计数为0
-
+#endif
 #ifdef _DEBUG
 	int nCount = this->m_TopWindowMgr.GetTopWindowCount();
 	if (0 != nCount)   // <-- 该方法有可能还是不准，有可能窗口被销毁了，但窗口对象还没有析构
@@ -142,27 +142,28 @@ UIApplication::~UIApplication(void)
 
     ClearRegisterUIObject();
 
+#if 0
 	if (m_WndForwardPostMsg.IsWindow())
 	{
 		m_WndForwardPostMsg.DestroyWindow();
 	}
+#endif
 	m_skin_manager.Destroy();
 
 	m_pUIEditor = nullptr;
 
     m_animate.UnInit();
 
+#if 0
 	SAFE_DELETE(m_pGifTimerMgr);
-
     Image::ReleaseGDIPlus();
-
     if (m_bGpuEnable)
     {
 		ShutdownGpuCompositor();
     }
-
     //	::CoUninitialize(); // do not call CoInitialize, CoInitializeEx, or CoUninitialize from the DllMain function. 
 	OleUninitialize();
+#endif
 }
 
 ITopWindowManager* UIApplication::GetITopWindowMgr()
@@ -170,11 +171,12 @@ ITopWindowManager* UIApplication::GetITopWindowMgr()
 	return m_TopWindowMgr.GetITopWindowManager();
 }
 
-UIA::IAnimateManager* UIApplication::GetAnimateMgr()
+uia::IAnimateManager* UIApplication::GetAnimateManager()
 {
     return m_animate.GetAnimateManager();
 }
 
+#if defined(OS_WIN)
 //	一个空的窗口过程，因为UI这个窗口类的窗口过程最终要被修改成为一个类的成员函数，
 //  因此这里的窗口过程只是用来填充WNDCLASS参数。
 //
@@ -182,7 +184,7 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam, long lParam)
 {
 	return ::DefWindowProc( hWnd, message, wParam, lParam );
 }
-
+#endif
 /*
 **	[private] void  RegisterWndClass()
 **
@@ -196,6 +198,7 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam, long lParam)
 **
 **	See Also
 */
+#if defined(OS_WIN)
 void UIApplication::RegisterWndClass()
 {
 	WNDCLASSEX wcex;
@@ -237,7 +240,6 @@ void UIApplication::RegisterWndClass()
 	wcex.style          = 0;
 	wcex.lpfnWndProc    = DefWindowProc;
 	RegisterClassEx(&wcex);
-
 }
 
 bool UIApplication::IsUnderXpOS()
@@ -274,6 +276,7 @@ bool UIApplication::IsVistaOrWin7etc()
 	return bHighThanVista;
 }
 #endif
+
 bool  UIApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
 {
     if (nullptr == szTag || nullptr == pFunc)
@@ -418,13 +421,12 @@ IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, ISkinRes*
 	return nullptr;
 }
 
-#if 0
-IObject* UIApplication::CreateUIObjectByClsid(REFCLSID clsid, ISkinRes* pSkinRes)
+IObject* UIApplication::CreateUIObjectByClsid(const Guid& clsid, ISkinRes* pSkinRes)
 {
     int nSize = (int)m_vecUIObjectDesc.size();
     for (int i = 0; i < nSize; i++)
     {
-        if (::IsEqualIID(clsid, m_vecUIObjectDesc[i]->GetGUID()))
+        if (clsid == m_vecUIObjectDesc[i]->GetGUID())
         {
             IObject* p = nullptr;
             m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void**)&p);
@@ -435,7 +437,7 @@ IObject* UIApplication::CreateUIObjectByClsid(REFCLSID clsid, ISkinRes* pSkinRes
     UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed."));
     return nullptr;
 }
-
+#if 0
 BOOL UIApplication::IsDialogMessage(MSG* pMsg)
 {
 	if (nullptr == pMsg)
@@ -630,18 +632,6 @@ HWND  UIApplication::GetForwardPostMessageWnd()
 	return m_WndForwardPostMsg.m_hWnd;
 }
 
-void UIApplication::LoadUIObjectListToToolBox()
-{
-    if (!m_pUIEditor)
-        return;
-
-    UIOBJ_CREATE_DATA::iterator iter = m_vecUIObjectDesc.begin();
-    for (; iter != m_vecUIObjectDesc.end(); iter++)
-    {
-        m_pUIEditor->OnToolBox_AddObject((*iter));
-    }
-}
-
 // 加载UI3D.dll
 HMODULE  UIApplication::GetUID2DModule()
 {
@@ -743,7 +733,7 @@ bool  UIApplication::EnableGpuComposite()
 	return true;
 }
 
-void UI::UIApplication::ShutdownGpuCompositor()
+void UIApplication::ShutdownGpuCompositor()
 {
 	if (!m_bGpuEnable)
 		return;
@@ -763,6 +753,19 @@ void UI::UIApplication::ShutdownGpuCompositor()
 	m_bGpuEnable = false;
 }
 #endif
+
+
+void UIApplication::LoadUIObjectListToToolBox()
+{
+    if (!m_pUIEditor)
+        return;
+
+    UIOBJ_CREATE_DATA::iterator iter = m_vecUIObjectDesc.begin();
+    for (; iter != m_vecUIObjectDesc.end(); iter++)
+    {
+        m_pUIEditor->OnToolBox_AddObject((*iter));
+    }
+}
 
 bool  UIApplication::CreateRenderBaseByName(
 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)

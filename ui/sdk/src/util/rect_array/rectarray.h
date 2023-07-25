@@ -27,8 +27,9 @@ public:
 
     // 运行完之后，m_prcArray的大小与m_nCount可能不匹配
     bool  IntersectRect(const RECT* prc, bool OnlyTest=false);
-
+#if defined(OS_WIN)
     HRGN  CreateRgn();
+#endif
     void  GetUnionRect(RECT* prc);
 
     enum {

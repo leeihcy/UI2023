@@ -1,8 +1,8 @@
 #include "include/inc.h"
 #include "transform3d.h"
-#include "..\common\math\math.h"
+#include "include/common/math/math.h"
 
-using namespace ui;
+namespace ui {
 
 Transform3D::Transform3D()
 {
@@ -131,11 +131,11 @@ void  Transform3D::set_pos(int x, int y)
 // 	m_matrix.CopyTo(pMatrix);
 // }
 
-void  Transform3D::mappoint_layer_2_view(__inout POINT* ptInLayer)
+void  Transform3D::mappoint_layer_2_view(POINT* ptInLayer)
 {
 	m_matrix.MapPoint(ptInLayer, ptInLayer);
 }
-void  Transform3D::mappoint_view_2_layer(__inout POINT* ptInLayer)
+void  Transform3D::mappoint_view_2_layer(POINT* ptInLayer)
 {
 	m_matrixInverse.ProjectPoint(ptInLayer, ptInLayer);
 }
@@ -332,6 +332,8 @@ void  Transform3D::get_origin(float* pfx, float* pfy, float* pfz)
 		case TRANSFORM_ROTATE_ORIGIN_CENTER:
 			*pfx = m_fWidth/2 + m_fOriginOffsetX;
 			break;
+        default:
+            break;
 		}
 
 		*pfx += m_fx;
@@ -352,6 +354,8 @@ void  Transform3D::get_origin(float* pfx, float* pfy, float* pfz)
 		case TRANSFORM_ROTATE_ORIGIN_CENTER:
 			*pfy = m_fHeight/2 + m_fOriginOffsetY;
 			break;
+        default:
+            break;
 		}
 
 		*pfy += m_fy;
@@ -380,11 +384,13 @@ bool  Transform3D::is_visible()
     return !m_matrix.IsBackfaceVisible();
 }
 
-void UI::Transform3D::get_matrix(MATRIX44* pMatrix)
+void Transform3D::get_matrix(MATRIX44* pMatrix)
 {
 	if (!pMatrix)
 		return;
 
 	update();
 	*pMatrix = m_matrix;
+}
+
 }

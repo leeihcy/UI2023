@@ -111,7 +111,7 @@ protected:
 struct IStoryboard;
 class ImageListRender :
             public RenderBase
-//			, public UIA::IAnimateEventCallback
+//			, public uia::IAnimateEventCallback
 {
 public:
 	ImageListRender(IImageListRender* p);
@@ -140,7 +140,7 @@ public:
 	void  OnSerialize(SERIALIZEDATA* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 	void  GetDesiredSize(SIZE* pSize);
-    //virtual UIA::E_ANIMATE_TICK_RESULT OnAnimateTick(UIA::IStoryboard*) override;
+    //virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard*) override;
 
 	int   GetItemWidth();
 	int   GetItemHeight();

@@ -3,7 +3,7 @@
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/interface/imapattr.h"
-#include "src/util/log/log.h"
+#include "include/util/log.h"
 
 namespace ui
 {

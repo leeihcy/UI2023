@@ -1,7 +1,7 @@
 #include "include/inc.h"
 #include "pugixmlwrap.h"
 #include "include/interface/imapattr.h"
-#include "src/util/util.cpp"
+#include "include/util/util.h"
 
 namespace ui {
 PugiXmlElement::PugiXmlElement(pugi::xml_node& node, UIDocument* pDoc) :

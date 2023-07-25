@@ -1,36 +1,37 @@
 #ifndef _IUIINTERFACE_H_
 #define _IUIINTERFACE_H_
+#include "include/interface/imessage.h"
 
 // IUIApplication接口
 namespace ui
 {
-	interface  IToolTipUI;
-	interface  IWindowBase;
-	interface  ISkinManager;
-	interface  ISkinRes;
+	struct  IToolTipUI;
+	struct  IWindow;
+	struct  ISkinManager;
+	struct  ISkinRes;
 	struct     TOOLTIPITEM;
-	interface  IRenderBitmap;
-	interface  IRenderFont;
-	interface  ISkinConfigRes;
-	interface  ISkinConfigManager;
-	interface  ITopWindowManager;
-	interface  IWaitForHandlesMgr;
-	interface  IRenderTarget;
-	interface  IMessageFilterMgr;
-    interface  IMapAttribute;
-    interface  IObject;
+	struct  IRenderBitmap;
+	struct  IRenderFont;
+	struct  ISkinConfigRes;
+	struct  ISkinConfigManager;
+	struct  ITopWindowManager;
+	struct  IWaitForHandlesMgr;
+	struct  IRenderTarget;
+	struct  IMessageFilterMgr;
+    struct  IMapAttribute;
+    struct  IObject;
 
 	// 句柄定义
-	interface IUIApplication;
+	struct IUIApplication;
 
     class TopWindowManager;
-    interface UIAPI ITopWindowManager : public IRootInterface
+    struct UIAPI ITopWindowManager : public IRootInterface
     {
         ITopWindowManager(TopWindowManager* p);
         TopWindowManager* GetImpl();
 
-        long  AddTopWindowObject(IWindowBase*);
-        long  RemoveTopWindowObject(IWindowBase*);
+        long  AddTopWindowObject(IWindow*);
+        long  RemoveTopWindowObject(IWindow*);
         //void     ChangeSkin(ISkinRes* pNewSkinRes);
 
         bool  UpdateAllWindow();
@@ -48,10 +49,10 @@ namespace ui
 	//
 	// 各种提示条绘制的抽象类	
 	//
-	interface IToolTipUI
+	struct IToolTipUI
 	{
 	public:
-		virtual ~IToolTipUI() = 0 {};
+		virtual ~IToolTipUI() {};
 		virtual bool  Create()  = 0;
 		virtual bool  Destroy() = 0;
 		virtual bool  SetText(const wchar_t* szText) = 0;
@@ -62,28 +63,27 @@ namespace ui
 		virtual void  OnSerialize(SERIALIZEDATA* pData) = 0;
 	};
 
-	interface IWaitForHandleCallback
+	struct IWaitForHandleCallback
 	{
-		virtual void OnWaitForHandleObjectCallback(HANDLE, long) = 0;
+		virtual void OnWaitForHandleObjectCallback(/*HANDLE*/long, long) = 0;
 	};
-	interface IWaitForHandlesMgr : public IRootInterface
+	struct IWaitForHandlesMgr : public IRootInterface
 	{
-		virtual bool  AddHandle(HANDLE h, IWaitForHandleCallback* pCB, long l) = 0;
-		virtual bool  RemoveHandle(HANDLE h) = 0;
+		virtual bool  AddHandle(/*HANDLE*/long h, IWaitForHandleCallback* pCB, long l) = 0;
+		virtual bool  RemoveHandle(/*HANDLE*/long h) = 0;
 	};
 
-	interface IFlashInvalidateListener
+	struct IFlashInvalidateListener
 	{
 		virtual void OnInvalidateRect(const RECT*, bool) = 0;
 	};
-
-	interface IPreTranslateMessage  // IMessageFilter 被系统其它地方已经定义过了
+	struct IPreTranslateMessage  // IMessageFilter 被系统其它地方已经定义过了
 	{
 	public:
-		virtual bool PreTranslateMessage(MSG* pMsg) = 0;
+		virtual bool PreTranslateMessage(ui::MSG* pMsg) = 0;
 	};
 
-	interface IMessageFilterMgr : public IRootInterface
+	struct IMessageFilterMgr : public IRootInterface
 	{
 		virtual void  AddMessageFilter(IPreTranslateMessage* p) = 0;
 		virtual void  RemoveMessageFilter(IPreTranslateMessage* p) = 0;

@@ -95,7 +95,7 @@ private:
 	std::function<void(const LayerAnimateFinishParam&)>  m_finishCallback;
 
 };
-#define DefaultLayerAnimateParam (UI::LayerAnimateParam*)-1L
+#define DefaultLayerAnimateParam (ui::LayerAnimateParam*)-1L
 
 
 class Layer;

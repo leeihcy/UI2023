@@ -1,7 +1,7 @@
 #include "include/inc.h"
 #include "quad.h"
 
-
+namespace ui {
 void Quad::SetByRect(RECT* prc)
 {
 	Ax = Dx = prc->left;
@@ -40,10 +40,10 @@ void  Quad::GetBoundRect2(RECT* prc)
 }
 void  Quad::GetBoundRect(RECT* prc)
 {
-	prc->left   = min(min(min(Ax,Bx),Cx),Dx);
-	prc->top    = min(min(min(Ay,By),Cy),Dy);
-	prc->right  = max(max(max(Ax,Bx),Cx),Dx); 
-	prc->bottom = max(max(max(Ay,By),Cy),Dy);
+	prc->left   = std::min(std::min(std::min(Ax,Bx),Cx),Dx);
+	prc->top    = std::min(std::min(std::min(Ay,By),Cy),Dy);
+	prc->right  = std::max(std::max(std::max(Ax,Bx),Cx),Dx); 
+	prc->bottom = std::max(std::max(std::max(Ay,By),Cy),Dy);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -81,4 +81,6 @@ void  QuadF::ToQuad(QUAD* p)
 	p->Cy = _round(Cy);
 	p->Dx = _round(Dx);
 	p->Dy = _round(Dy);
+}
+
 }

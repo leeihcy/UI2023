@@ -3,6 +3,7 @@
 #include "windowrender.h"
 #include "layer.h"
 
+namespace ui {
 IWindowRender::IWindowRender(WindowRender* p)
 {
 	m_pWindowRenderImpl = p;
@@ -16,6 +17,7 @@ WindowRender*  IWindowRender::GetImpl()
 {
 	return m_pWindowRenderImpl;
 }
+#if 0
 void  IWindowRender::SetCanCommit(bool b)
 {
 	m_pWindowRenderImpl->SetCanCommit(b);
@@ -49,7 +51,7 @@ IWindowCommitListener*  IWindowRender::GetCommitListener()
 {
     return m_pWindowRenderImpl->GetCommitListener();
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 ILayer::ILayer(Layer* p)
@@ -68,4 +70,5 @@ IRenderTarget*  ILayer::GetRenderTarget()
 void  ILayer::ScaleTo(float x, float y, LayerAnimateParam* param)
 {
 	m_pImpl->ScaleTo(x, y, param);
+}
 }

@@ -99,7 +99,7 @@ struct RECT
         this->right = 0;
         this->bottom = 0;
     }
-    bool IsEmpty() {
+    bool IsEmpty() const {
         return left==right && top==bottom;
     }
     void Set(int l, int t, int r, int b) {
@@ -119,6 +119,10 @@ struct RECT
             pt.y >= top && pt.y <= bottom;
     }
     bool Intersect(const RECT& rc, RECT* out) {
+        if (!out) {
+            return false;
+        }
+        
         if (rc.right < left || rc.left > right || 
             rc.bottom < top || rc.top > bottom) {
             return false;
@@ -131,6 +135,18 @@ struct RECT
             std::min(rc.bottom, bottom)
         );
         return true;
+    }
+    void Union(const RECT& rc, RECT* out) {
+        if (!out) {
+            return;
+        }
+        
+        out->Set(
+            std::min(rc.left, left),
+            std::max(rc.right, right),
+            std::min(rc.top, top),
+            std::max(rc.bottom, bottom)
+        );
     }
 
     void Offset(int x, int y) {

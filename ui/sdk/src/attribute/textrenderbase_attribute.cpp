@@ -1,8 +1,8 @@
 #include "include/inc.h"
 #include "textrenderbase_attribute.h"
 #include "attribute.h"
-#include "..\Application\uiapplication.h"
-#include "..\Object\object.h"
+#include "src/application/uiapplication.h"
+#include "src/object/object.h"
 
 namespace ui
 {
@@ -10,7 +10,6 @@ namespace ui
     {
         return new TextRenderBaseAttribute();
     }
-}
 
 TextRenderBaseAttribute::TextRenderBaseAttribute() 
 {
@@ -113,7 +112,7 @@ void  TextRenderBaseAttribute::do_child_action(SERIALIZEDATA* pData)
 void  TextRenderBaseAttribute::Load(SERIALIZEDATA* pData)
 {
 	// 保存自己的类型
-	__super::Load(pData);
+	AttributeBase::Load(pData);
 
 	// 子属性序列化
 	do_child_action(pData);
@@ -121,7 +120,7 @@ void  TextRenderBaseAttribute::Load(SERIALIZEDATA* pData)
 void  TextRenderBaseAttribute::Save(SERIALIZEDATA* pData)
 {
 	// 保存自己的类型
-	__super::Save(pData);
+	AttributeBase::Save(pData);
 
 	// 子属性序列化
 	do_child_action(pData);
@@ -144,4 +143,6 @@ ITextRenderBaseAttribute*  TextRenderBaseAttribute::GetITextRenderBaseAttribute(
         m_pITextRenderBaseAttribute = new ITextRenderBaseAttribute(this);
 
     return m_pITextRenderBaseAttribute;
+}
+
 }

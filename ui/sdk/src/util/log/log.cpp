@@ -1,11 +1,12 @@
 #include "log.h"
 #include "inc.h"
 #include <string>
+#include "include/util/log.h"
 
 namespace ui
 {
 
-std::wstring LevelToString(const LOG_LEVEL& l)
+std::wstring LevelToString(const ui::LOG_LEVEL& l)
 {
 	static std::wstring strRet;
 
@@ -30,7 +31,7 @@ std::wstring LevelToString(const LOG_LEVEL& l)
 		return std::wstring(L" [UNKNOWN] ");
 	}
 }
-void  __cdecl UILog(LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...)
+void  __cdecl UILog(ui::LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...)
 {
 #ifdef _DEBUG
 	// level
@@ -81,7 +82,7 @@ void  UIAPI __cdecl UILogA(
 
 }
 
-void  __cdecl UILog2(LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
+void  __cdecl UILog2(ui::LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
 {
     // TODO:
 }

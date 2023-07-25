@@ -1,13 +1,14 @@
 #include "include/inc.h"
+#include <memory>
 #include "layer.h"
 #include "compositor.h"
 #include "src/application/uiapplication.h"
-#include "..\Base\Object\object_layer.h"
-#include "..\Base\Object\object.h"
-#include <memory>
-#include "..\common\math\math.h"
+#include "src/object/object_layer.h"
+#include "src/object/object.h"
+#include "include/common/math/math.h"
 
-using namespace ui;
+namespace ui {
+
 static LayerAnimateParam  s_defaultLayerAnimateParam;
 
 enum LAYER_ANIMATE_TYPE
@@ -63,17 +64,17 @@ Layer::~Layer()
 		m_pLayerContent->OnLayerDestory();
 	}
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 	if (pAni)
 	{
 		pAni->ClearStoryboardByNotify(
-			static_cast<UIA::IAnimateEventCallback*>(this));
+			static_cast<uia::IAnimateEventCallback*>(this));
 	}
 
 	RemoveMeInTheTree();
 
-    // ÓÉÃ¿¸ö object ×Ô¼ºÈ¥Ïú»Ù×Ô¼ºµÄlayer
+    // ç”±æ¯ä¸ª object è‡ªå·±å»é”€æ¯è‡ªå·±çš„layer
 //     while (m_pFirstChild)
 //     {
 //         Layer* p = m_pFirstChild;
@@ -106,7 +107,7 @@ void  Layer::SetCompositorPtr(Compositor* p)
     m_pCompositor = p;
 }
 
-// bUpdateNow -- ³¡¾°£ºÈç¹ûÊÇ×èÈûĞÍµÄ¶¯»­£¬ÔòÒªÁ¢¼´Ë¢ĞÂ
+// bUpdateNow -- åœºæ™¯ï¼šå¦‚æœæ˜¯é˜»å¡å‹çš„åŠ¨ç”»ï¼Œåˆ™è¦ç«‹å³åˆ·æ–°
 void  Layer::InvalidateForLayerAnimate(bool bUpdateNow)
 {
 	if (GetType() == Layer_Software)
@@ -130,13 +131,13 @@ void  Layer::InvalidateForLayerAnimate(bool bUpdateNow)
 	}
 }
 
-void  Layer::Invalidate(LPCRECT prcDirtyInLayer, uint nCount)
+void  Layer::Invalidate(const RECT* prcDirtyInLayer, uint nCount)
 {
 	for (uint i = 0; i < nCount; i++)
 		Invalidate(prcDirtyInLayer+i);
 }
 
-void  Layer::Invalidate(LPCRECT prcDirtyInLayer)
+void  Layer::Invalidate(const RECT* prcDirtyInLayer)
 {
     RECT rcDirty = {0};
 
@@ -144,29 +145,29 @@ void  Layer::Invalidate(LPCRECT prcDirtyInLayer)
     {
         m_dirtyRectangles.Destroy();
         
-        SetRect(&rcDirty, 0, 0, m_size.cx, m_size.cy);
+        rcDirty.Set(0, 0, m_size.cx, m_size.cy);
         m_dirtyRectangles.AddRect(&rcDirty);
     }
     else
     {
-	    if (IsRectEmpty(prcDirtyInLayer))
+	    if (prcDirtyInLayer->IsEmpty())
 		    return;
 
-        CopyRect(&rcDirty, prcDirtyInLayer);
+        rcDirty.CopyFrom(*prcDirtyInLayer);
 	    m_dirtyRectangles.UnionDirtyRect(prcDirtyInLayer);
     }
 
-    // Èç¹ûÊÇÈí¼şäÖÈ¾£¬ÏòÉÏÃ°Åİ
+    // å¦‚æœæ˜¯è½¯ä»¶æ¸²æŸ“ï¼Œå‘ä¸Šå†’æ³¡
     if (m_pParent && GetType() == Layer_Software)
     {
-        // rcDirty ×ª»»³É ¸¸layerÎ»ÖÃ£¬²¢ÓÉ¸¸layerÈ¥ÇëÇóºÏ³É
+        // rcDirty è½¬æ¢æˆ çˆ¶layerä½ç½®ï¼Œå¹¶ç”±çˆ¶layerå»è¯·æ±‚åˆæˆ
         RECT rcParent = {0};
         m_pParent->m_pLayerContent->GetParentWindowRect(&rcParent);
 
         RECT rcSelf = {0};
         m_pLayerContent->GetWindowRect(&rcSelf);
 
-        OffsetRect(&rcDirty, 
+        rcDirty.Offset( 
             rcSelf.left-rcParent.left, 
             rcSelf.top-rcParent.top);
 
@@ -193,7 +194,7 @@ bool Layer::AddSubLayer(Layer* pLayer, Layer* pInsertBeforeChild)
     }
     else
     {
-        // ·ÅÔÚ×îºóÃæ
+        // æ”¾åœ¨æœ€åé¢
         if (!pInsertBeforeChild)
         {
             Layer* p = m_pFirstChild;
@@ -208,7 +209,7 @@ bool Layer::AddSubLayer(Layer* pLayer, Layer* pInsertBeforeChild)
         }
         else
         {
-			// ×÷ÎªµÚÒ»¸ö×Ó½áµã 
+			// ä½œä¸ºç¬¬ä¸€ä¸ªå­ç»“ç‚¹ 
 			if (m_pFirstChild == pInsertBeforeChild)
 			{
 				m_pFirstChild = pLayer;
@@ -318,30 +319,30 @@ void Layer::SetOpacity(byte b, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (m_nOpacity == b)
 	{
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
 	}
 	m_nOpacity = b;
 
-	// ¿ªÆôÒşÊ½¶¯»­
+	// å¼€å¯éšå¼åŠ¨ç”»
 	if (pParam)
 	{
-		UIA::IAnimateManager* pAni = m_pCompositor->
-			GetUIApplication()->GetAnimateMgr();
+		uia::IAnimateManager* pAni = m_pCompositor->
+			GetUIApplication()->GetAnimateManager();
 
 		pAni->RemoveStoryboardByNotityAndId(
-			static_cast<UIA::IAnimateEventCallback*>(this), 
+			static_cast<uia::IAnimateEventCallback*>(this), 
 			STORYBOARD_ID_OPACITY);
 
-		UIA::IStoryboard* pStoryboard = 
+		uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_OPACITY);
 
 		pStoryboard->CreateTimeline(0)->SetParam(
@@ -389,13 +390,13 @@ void  Layer::RotateYTo(float f, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (m_fyRotate == f)
 	{
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
@@ -403,16 +404,16 @@ void  Layer::RotateYTo(float f, LayerAnimateParam* pParam)
 
 	m_fyRotate = f;
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
 	pAni->RemoveStoryboardByNotityAndId(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+		static_cast<uia::IAnimateEventCallback*>(this),
 		STORYBOARD_ID_YROTATE);
 
 	if (pParam)
 	{
-		UIA::IStoryboard* pStoryboard = 
+		uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_YROTATE);
 
 		pStoryboard->CreateTimeline(0)->SetParam(
@@ -455,13 +456,13 @@ void  Layer::RotateXTo(float f, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (m_fxRotate == f)
 	{
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
@@ -469,16 +470,16 @@ void  Layer::RotateXTo(float f, LayerAnimateParam* pParam)
 
 	m_fxRotate = f;
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
 	pAni->RemoveStoryboardByNotityAndId(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+		static_cast<uia::IAnimateEventCallback*>(this),
 		STORYBOARD_ID_XROTATE);
 
 	if (pParam)
 	{
-		UIA::IStoryboard* pStoryboard = 
+		uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_XROTATE);
 
 		pStoryboard->CreateTimeline(0)->SetParam(
@@ -521,13 +522,13 @@ void  Layer::RotateZTo(float f, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (m_fzRotate == f)
 	{
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
@@ -535,16 +536,16 @@ void  Layer::RotateZTo(float f, LayerAnimateParam* pParam)
 
 	m_fzRotate = f;
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
 	pAni->RemoveStoryboardByNotityAndId(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+		static_cast<uia::IAnimateEventCallback*>(this),
 		STORYBOARD_ID_ZROTATE);
 
 	if (pParam)
 	{
-		UIA::IStoryboard* pStoryboard = 
+		uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_ZROTATE);
 
 		pStoryboard->CreateTimeline(0)->SetParam(
@@ -586,13 +587,13 @@ void  Layer::ScaleTo(float x, float y, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (fequ(x, m_fxScale) && fequ(y, m_fyScale))
 	{
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
@@ -601,17 +602,17 @@ void  Layer::ScaleTo(float x, float y, LayerAnimateParam* pParam)
 	m_fxScale = x;
 	m_fyScale = y;
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
 	pAni->RemoveStoryboardByNotityAndId(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+		static_cast<uia::IAnimateEventCallback*>(this),
 		STORYBOARD_ID_SCALE);
 
 	
 	if (pParam)
 	{
-		UIA::IStoryboard* pStoryboard = 
+		uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_SCALE);
 
 		pStoryboard->CreateTimeline(0)->SetParam(
@@ -665,7 +666,7 @@ void  Layer::TranslateTo(float x, float y, float z, LayerAnimateParam* pParam)
 	if (pParam == DefaultLayerAnimateParam)
 		pParam = &s_defaultLayerAnimateParam;
 
-	// ÏàµÈÒ²ÒªÍùÏÂÈ¥£¬ÒÔ´¥·¢paramÖĞ¿ÉÄÜµÄend callback
+	// ç›¸ç­‰ä¹Ÿè¦å¾€ä¸‹å»ï¼Œä»¥è§¦å‘paramä¸­å¯èƒ½çš„end callback
 	if (m_xTranslate == x &&
 		m_yTranslate == y &&
 		m_zTranslate == z)
@@ -673,7 +674,7 @@ void  Layer::TranslateTo(float x, float y, float z, LayerAnimateParam* pParam)
 		if (pParam && pParam->GetFinishCallback())
 		{
 			LayerAnimateFinishParam info = { 0 };
-			info.endreason = UIA::ANIMATE_END_NORMAL;
+			info.endreason = uia::ANIMATE_END_NORMAL;
 			pParam->GetFinishCallback()(info);
 		}
 		return;
@@ -683,16 +684,16 @@ void  Layer::TranslateTo(float x, float y, float z, LayerAnimateParam* pParam)
     m_yTranslate = y;
     m_zTranslate = z;
 
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
 	pAni->RemoveStoryboardByNotityAndId(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+		static_cast<uia::IAnimateEventCallback*>(this),
 		STORYBOARD_ID_TRANSLATE);
         
     if (pParam)
     {
-        UIA::IStoryboard* pStoryboard = 
+        uia::IStoryboard* pStoryboard = 
 			create_storyboard(STORYBOARD_ID_TRANSLATE);
 
         pStoryboard->CreateTimeline(0)->SetParam(
@@ -760,7 +761,7 @@ float  Layer::GetZTranslate()
     return m_zTranslate;
 }
 
-UIA::E_ANIMATE_TICK_RESULT Layer::OnAnimateTick(UIA::IStoryboard* pStoryboard)
+uia::E_ANIMATE_TICK_RESULT Layer::OnAnimateTick(uia::IStoryboard* pStoryboard)
 {
 	LayerAnimateParam* pParam = (LayerAnimateParam*)pStoryboard->GetWParam();
 	bool isblock = false;
@@ -825,10 +826,10 @@ UIA::E_ANIMATE_TICK_RESULT Layer::OnAnimateTick(UIA::IStoryboard* pStoryboard)
 	break;
 	}
 
-	return UIA::ANIMATE_TICK_RESULT_CONTINUE;
+	return uia::ANIMATE_TICK_RESULT_CONTINUE;
 }
 
-void  Layer::OnAnimateEnd(UIA::IStoryboard* pStoryboard, UIA::E_ANIMATE_END_REASON e)
+void  Layer::OnAnimateEnd(uia::IStoryboard* pStoryboard, uia::E_ANIMATE_END_REASON e)
 {
 	m_nCurrentStoryboardCount--;
 	UIASSERT(m_nCurrentStoryboardCount >= 0);
@@ -838,7 +839,7 @@ void  Layer::OnAnimateEnd(UIA::IStoryboard* pStoryboard, UIA::E_ANIMATE_END_REAS
 
 	if (pStoryboard->GetId() == STORYBOARD_ID_TRANSLATE)
 	{
-		// Æ«ÒÆÀà¶¯»­½áÊøºó£¬½«Æ«ÒÆÁ¿×ª¼Şµ½¿Ø¼şÎ»ÖÃ×ø±êÉÏÃæ..zÖáÈÔÈ»±£Áô£¬Èç¹ûÓĞµÄ»°
+		// åç§»ç±»åŠ¨ç”»ç»“æŸåï¼Œå°†åç§»é‡è½¬å«åˆ°æ§ä»¶ä½ç½®åæ ‡ä¸Šé¢..zè½´ä»ç„¶ä¿ç•™ï¼Œå¦‚æœæœ‰çš„è¯
 		Object* obj = GetLayerContentObject();
 		if (obj)
 		{
@@ -862,8 +863,8 @@ void  Layer::OnAnimateEnd(UIA::IStoryboard* pStoryboard, UIA::E_ANIMATE_END_REAS
 		pParam->GetFinishCallback()(info);
 	}
 
-	// !=normalÊ±£¬¿ÉÄÜÊÇµ±Ç°¶¯»­ÕıÔÚ±»ĞÂµÄ¶¯»­È¡´ú£¬Õâ¸öÊ±ºò²»È¥³¢ÊÔÏú»Ù£¬ÓÉĞÂµÄ¶¯»­½áÊøºó´¥·¢
-	if (e == UIA::ANIMATE_END_NORMAL)
+	// !=normalæ—¶ï¼Œå¯èƒ½æ˜¯å½“å‰åŠ¨ç”»æ­£åœ¨è¢«æ–°çš„åŠ¨ç”»å–ä»£ï¼Œè¿™ä¸ªæ—¶å€™ä¸å»å°è¯•é”€æ¯ï¼Œç”±æ–°çš„åŠ¨ç”»ç»“æŸåè§¦å‘
+	if (e == uia::ANIMATE_END_NORMAL)
 	{
 		TryDestroy();
 	}
@@ -891,7 +892,7 @@ IRenderTarget*  Layer::GetRenderTarget()
     return m_pRenderTarget;
 }
 
-// Ç¿ÖÆÏú»Ù 
+// å¼ºåˆ¶é”€æ¯ 
 void  Layer::Destroy()
 {
 	delete this;
@@ -902,7 +903,7 @@ void  Layer::TryDestroy()
 	if (CanDestroy())
 		Destroy();
 }
-// ÅĞ¶ÏÒ»¸ö¿Ø¼şµÄlayerµ±Ç°ÊÇ·ñ¿ÉÒÔ±»Ïú»Ù£¬Èç¹ûÓĞ¶¯»­£¬Ôò²»Ïú»Ù¡£ÔÚ¶¯»­½áÊøºóÅĞ¶ÏÒ»´Î
+// åˆ¤æ–­ä¸€ä¸ªæ§ä»¶çš„layerå½“å‰æ˜¯å¦å¯ä»¥è¢«é”€æ¯ï¼Œå¦‚æœæœ‰åŠ¨ç”»ï¼Œåˆ™ä¸é”€æ¯ã€‚åœ¨åŠ¨ç”»ç»“æŸååˆ¤æ–­ä¸€æ¬¡
 bool  Layer::CanDestroy()
 {
 	if (m_nCurrentStoryboardCount != 0)
@@ -955,16 +956,18 @@ Object*  Layer::GetLayerContentObject()
 	return &static_cast<IObjectLayerContent*>(m_pLayerContent)->GetObject();
 }
 
-// ±¾ÀàÖĞËùÓĞµÄ´´½¨¶¯»­¶¼×ßÕâÀï£¬ÓÃÓÚÊıÁ¿Í³¼Æ
-UIA::IStoryboard*  Layer::create_storyboard(int id)
+// æœ¬ç±»ä¸­æ‰€æœ‰çš„åˆ›å»ºåŠ¨ç”»éƒ½èµ°è¿™é‡Œï¼Œç”¨äºæ•°é‡ç»Ÿè®¡
+uia::IStoryboard*  Layer::create_storyboard(int id)
 {
-	UIA::IAnimateManager* pAni = m_pCompositor->
-		GetUIApplication()->GetAnimateMgr();
+	uia::IAnimateManager* pAni = m_pCompositor->
+		GetUIApplication()->GetAnimateManager();
 
-	UIA::IStoryboard* pStoryboard = pAni->CreateStoryboard(
-		static_cast<UIA::IAnimateEventCallback*>(this),
+	uia::IStoryboard* pStoryboard = pAni->CreateStoryboard(
+		static_cast<uia::IAnimateEventCallback*>(this),
 		id);
 
 	m_nCurrentStoryboardCount++;
 	return pStoryboard;
+}
+
 }

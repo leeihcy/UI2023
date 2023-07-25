@@ -80,20 +80,18 @@ ISkinManager&  IUIApplication::GetSkinManager()
     return m_pImpl->GetSkinManager().GetISkinManager();
 }
 
-#if 0
-
 ITopWindowManager*  IUIApplication::GetTopWindowMgr()
 {
     return m_pImpl->GetITopWindowMgr(); 
 }
-UIA::IAnimateManager*  IUIApplication::GetAnimateMgr()  
+uia::IAnimateManager*  IUIApplication::GetAnimateManager()  
 { 
-    return m_pImpl->GetAnimateMgr();
+    return m_pImpl->GetAnimateManager();
 }
-IMessageFilterMgr*  IUIApplication::GetMessageFilterMgr()
-{
-	return m_pImpl->GetMessageFilterMgr();
-}
+// IMessageFilterMgr*  IUIApplication::GetMessageFilterMgr()
+// {
+// 	return m_pImpl->GetMessageFilterMgr();
+// }
 ISkinRes*  IUIApplication::GetDefaultSkinRes()
 {
     SkinRes* p = m_pImpl->GetDefaultSkinRes(); 
@@ -122,7 +120,7 @@ IObject*  IUIApplication::CreateUIObjectByName(const wchar_t* szName, ISkinRes* 
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
-IObject*  IUIApplication::CreateUIObjectByClsid(REFCLSID clsid, ISkinRes* pISkinRes) 
+IObject*  IUIApplication::CreateUIObjectByClsid(const Guid& clsid, ISkinRes* pISkinRes) 
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
@@ -168,6 +166,7 @@ bool  IUIApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase*
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType, pObject, ppOut);
 }
+
 void  IUIApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetRenderBaseFactory().EnumRenderBaseName(callback, wParam, lParam);
@@ -210,113 +209,109 @@ bool  IUIApplication::CreateLayout(int nType, IObject* pObject, ILayout** ppOut)
 {
     return m_pImpl->GetLayoutFactory().Create(nType, pObject, ppOut);
 }
-#endif
 void  IUIApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
 }
-#if 0
-bool  IUIApplication::IsDialogMessage(MSG* pMsg) 
-{
-    return m_pImpl->IsDialogMessage(pMsg); 
-}
-void  IUIApplication::MsgHandleLoop(bool* pbQuitLoopRef)
-{ 
-    m_pImpl->MsgHandleLoop(pbQuitLoopRef);
-}
-void  IUIApplication::RedrawTopWindows() 
-{ 
-    m_pImpl->RedrawTopWindows(); 
-}
+// bool  IUIApplication::IsDialogMessage(MSG* pMsg) 
+// {
+//     return m_pImpl->IsDialogMessage(pMsg); 
+// }
+// void  IUIApplication::MsgHandleLoop(bool* pbQuitLoopRef)
+// { 
+//     m_pImpl->MsgHandleLoop(pbQuitLoopRef);
+// }
+// void  IUIApplication::RedrawTopWindows() 
+// { 
+//     m_pImpl->RedrawTopWindows(); 
+// }
+// bool  IUIApplication::ShowToolTip(TOOLTIPITEM* pItem)
+// {
+//     return m_pImpl->ShowToolTip(pItem); 
+// }
+// void  IUIApplication::HideToolTip() 
+// { 
+//     m_pImpl->HideToolTip(); 
+// }
 
-bool  IUIApplication::ShowToolTip(TOOLTIPITEM* pItem)
-{
-    return m_pImpl->ShowToolTip(pItem); 
-}
-void  IUIApplication::HideToolTip() 
-{ 
-    m_pImpl->HideToolTip(); 
-}
+// unsigned int*  IUIApplication::SetTimer(int nElapse, IMessage* pNotify)
+// {
+//     return TimerHelper::GetInstance()->SetTimer(nElapse, pNotify);
+// }
+// unsigned int*  IUIApplication::SetTimer(
+// 	int nElapse, std::function<bool(unsigned int*, TimerItem*)> func)
+// {
+// 	return TimerHelper::GetInstance()->SetTimer(nElapse, func);
+// }
+// unsigned int*  IUIApplication::SetTimer(int nElapse, TimerItem* pTimerItem)
+// {
+//     return TimerHelper::GetInstance()->SetTimer(nElapse, pTimerItem);
+// }
+// unsigned int*  IUIApplication::SetTimerById(
+// 	int nElapse, unsigned int* nId, IMessage* pNotify)
+// {
+//     return  TimerHelper::GetInstance()->SetTimerById(nElapse, nId, pNotify);
+// }
+// void  IUIApplication::KillTimer(unsigned int*& nTimerID)
+// {
+//     TimerHelper::GetInstance()->KillTimer(nTimerID);
+// }
+// void  IUIApplication::KillTimerById(int nId, IMessage* pNotify)
+// {
+//     TimerHelper::GetInstance()->KillTimerById(nId, pNotify);
+// }
+// void  IUIApplication::KillTimerByNotify(IMessage* pNotify)
+// {
+//     TimerHelper::GetInstance()->KillTimerByNotify(pNotify);
+// }
+// 
+// HDC  IUIApplication::GetCacheDC()
+// {
+//     return Image::GetCacheDC();
+// }
+// void  IUIApplication::ReleaseCacheDC(HDC hDC)
+// {
+//     return Image::ReleaseCacheDC(hDC);
+// }  
+// HBITMAP  IUIApplication::GetCacheBitmap(int nWidth, int nHeight)
+// {
+//     return CacheBitmap::GetInstance()->Create(nWidth, nHeight);
+// }
+// void   IUIApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius)
+// {
+//     ::ShadowBlur(hBitmap, colorShadow, prcBlur, nRadius);
+// }
 
-unsigned int*  IUIApplication::SetTimer(int nElapse, IMessage* pNotify)
-{
-    return TimerHelper::GetInstance()->SetTimer(nElapse, pNotify);
-}
-unsigned int*  IUIApplication::SetTimer(
-	int nElapse, std::function<bool(unsigned int*, TimerItem*)> func)
-{
-	return TimerHelper::GetInstance()->SetTimer(nElapse, func);
-}
-unsigned int*  IUIApplication::SetTimer(int nElapse, TimerItem* pTimerItem)
-{
-    return TimerHelper::GetInstance()->SetTimer(nElapse, pTimerItem);
-}
-unsigned int*  IUIApplication::SetTimerById(
-	int nElapse, unsigned int* nId, IMessage* pNotify)
-{
-    return  TimerHelper::GetInstance()->SetTimerById(nElapse, nId, pNotify);
-}
-void  IUIApplication::KillTimer(unsigned int*& nTimerID)
-{
-    TimerHelper::GetInstance()->KillTimer(nTimerID);
-}
-void  IUIApplication::KillTimerById(int nId, IMessage* pNotify)
-{
-    TimerHelper::GetInstance()->KillTimerById(nId, pNotify);
-}
-void  IUIApplication::KillTimerByNotify(IMessage* pNotify)
-{
-    TimerHelper::GetInstance()->KillTimerByNotify(pNotify);
-}
+// bool  IUIApplication::IsUnderXpOS() 
+// { 
+//     return m_pImpl->IsUnderXpOS();
+// }
+// bool  IUIApplication::IsVistaOrWin7etc() 
+// { 
+//     return m_pImpl->IsVistaOrWin7etc();
+// }
+// bool  IUIApplication::IsAeroEnable()
+// {
+//     return DwmHelper::GetInstance()->IsEnable();
+// }
 
-HDC  IUIApplication::GetCacheDC()
-{
-    return Image::GetCacheDC();
-}
-void  IUIApplication::ReleaseCacheDC(HDC hDC)
-{
-    return Image::ReleaseCacheDC(hDC);
-}  
-HBITMAP  IUIApplication::GetCacheBitmap(int nWidth, int nHeight)
-{
-    return CacheBitmap::GetInstance()->Create(nWidth, nHeight);
-}
-void   IUIApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius)
-{
-    ::ShadowBlur(hBitmap, colorShadow, prcBlur, nRadius);
-}
+// HWND  IUIApplication::GetForwardPostMessageWnd() 
+// { 
+//     return m_pImpl->GetForwardPostMessageWnd();
+// }
 
-bool  IUIApplication::IsUnderXpOS() 
-{ 
-    return m_pImpl->IsUnderXpOS();
-}
-bool  IUIApplication::IsVistaOrWin7etc() 
-{ 
-    return m_pImpl->IsVistaOrWin7etc();
-}
-bool  IUIApplication::IsAeroEnable()
-{
-    return DwmHelper::GetInstance()->IsEnable();
-}
+// bool  IUIApplication::IsGpuCompositeEnable()
+// {
+//     return m_pImpl->IsGpuCompositeEnable();
+// }
+// bool  IUIApplication::EnableGpuComposite()
+// {
+//     return m_pImpl->EnableGpuComposite();
+// }
 
-HWND  IUIApplication::GetForwardPostMessageWnd() 
-{ 
-    return m_pImpl->GetForwardPostMessageWnd();
-}
-
-bool  IUIApplication::IsGpuCompositeEnable()
-{
-    return m_pImpl->IsGpuCompositeEnable();
-}
-bool  IUIApplication::EnableGpuComposite()
-{
-    return m_pImpl->EnableGpuComposite();
-}
-
-IWindowBase*  IUIApplication::GetWindowBaseFromHWND(HWND hWnd)
-{
-    return m_pImpl->GetTopWindowMgr()->GetWindowBase(hWnd);
-}
-#endif
+// IWindowBase*  IUIApplication::GetWindowBaseFromHWND(HWND hWnd)
+// {
+//     return m_pImpl->GetTopWindowMgr()->GetWindowBase(hWnd);
+// }
 }
 

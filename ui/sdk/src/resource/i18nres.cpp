@@ -2,6 +2,7 @@
 #include "i18nres.h"
 #include "skinres.h"
 
+namespace ui {
 I18nRes::I18nRes(SkinRes* p)
 {
 	m_pSkinRes = p;
@@ -18,7 +19,7 @@ const wchar_t* I18nRes::Map(const wchar_t* key)
 	if (!key)
 		return nullptr;
 
-	map<String, String>::iterator iter = m_dict.find(String(key));
+	std::map<String, String>::iterator iter = m_dict.find(String(key));
     if (iter == m_dict.end())
     {
         SkinRes* pParentRes = m_pSkinRes->GetParentSkinRes();
@@ -31,7 +32,7 @@ const wchar_t* I18nRes::Map(const wchar_t* key)
 	return iter->second.c_str();
 }
 
-// ³¢ÊÔ·­ÒëÒ»¸öxmlÖĞµÄÅäÖÃÏî£¬Èç¹ûÊÇÒ»¸öi18nÊôĞÔ£¬Ôò·­Òë£¬·ñÔòÖ±½Ó·µ»ØÔ­×Ö·û´®
+// å°è¯•ç¿»è¯‘ä¸€ä¸ªxmlä¸­çš„é…ç½®é¡¹ï¼Œå¦‚æœæ˜¯ä¸€ä¸ªi18nå±æ€§ï¼Œåˆ™ç¿»è¯‘ï¼Œå¦åˆ™ç›´æ¥è¿”å›åŸå­—ç¬¦ä¸²
 const wchar_t*  I18nRes::MapConfigValue(const wchar_t* szConfigText)
 {
     if (!szConfigText)
@@ -47,12 +48,12 @@ const wchar_t*  I18nRes::MapConfigValue(const wchar_t* szConfigText)
         
     if (szConfigText[1] == XML_I18N_PREFIX)
     {
-        // Á½¸ö##£¬È¡Ïû×ªÒå
+        // ä¸¤ä¸ª##ï¼Œå–æ¶ˆè½¬ä¹‰
         szConfigText = szConfigText + 1;
         return szConfigText;
     }
 
-    // ºóÃæµÄÎªĞèÒª½âÎöµÄ¹ú¼Ê»¯×Ö¶Î
+    // åé¢çš„ä¸ºéœ€è¦è§£æçš„å›½é™…åŒ–å­—æ®µ
     szConfigText = szConfigText + 1;
     const wchar_t* szRet = Map(szConfigText);
     if (szRet)
@@ -81,4 +82,6 @@ II18nRes&  I18nRes::GetII18nRes()
 		m_pII18nRes = new II18nRes(this);
 
 	return *m_pII18nRes;
+}
+
 }

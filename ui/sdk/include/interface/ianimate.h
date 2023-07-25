@@ -130,6 +130,8 @@ private:
 
 struct ITimingFunction 
 {
+    virtual ~ITimingFunction() {}
+    
 	// in: 当前时间进度
 	// out: 当前位移进度
 	virtual float OnTick(float fTimePercent) = 0;

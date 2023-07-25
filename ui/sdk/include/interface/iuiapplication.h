@@ -58,8 +58,8 @@ struct UIAPI IUIApplication
 
     ISkinManager&       GetSkinManager();
     ITopWindowManager*  GetTopWindowMgr();
-    uia::IAnimateManager*   GetAnimateMgr();
-	IMessageFilterMgr*  GetMessageFilterMgr();
+    uia::IAnimateManager*   GetAnimateManager();
+	// IMessageFilterMgr*  GetMessageFilterMgr();
 
     ISkinRes*       GetDefaultSkinRes();
 

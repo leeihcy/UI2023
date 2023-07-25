@@ -437,7 +437,7 @@ IRenderBitmap*  ImageListRender::GetRenderBitmap()
     return m_pImageList;
 }
 #if 0
-UIA::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(UIA::IStoryboard* pStoryboard)
+uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pStoryboard)
 {
     m_nCurrentAlpha = pStoryboard->FindTimeline(0)
 		->GetCurrentIntValue();
@@ -449,7 +449,7 @@ UIA::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(UIA::IStoryboard* pSto
     if (bFinish)
         m_bIsAnimate = false;
 
-    return UIA::ANIMATE_TICK_RESULT_CONTINUE;
+    return uia::ANIMATE_TICK_RESULT_CONTINUE;
 }
 #endif
 void  ImageListRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
@@ -528,7 +528,7 @@ void  ImageListRender::DestroyAnimate()
     if (m_bUseAlphaAnimate && m_bIsAnimate)
     {
         IUIApplication* pUIApp = m_pObject->GetIUIApplication();
-        UIA::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateMgr();
+        uia::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateManager();
         pAnimateMgr->ClearStoryboardByNotify(
             static_cast<IAnimateEventCallback*>(this));
         m_bIsAnimate = false;
@@ -540,16 +540,16 @@ void  ImageListRender::CreateAnimate(int nFrom, int nTo)
 {
 #if 0
     IUIApplication* pUIApp = m_pObject->GetIUIApplication();
-    UIA::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateMgr();
+    uia::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateManager();
     pAnimateMgr->ClearStoryboardByNotify(
         static_cast<IAnimateEventCallback*>(this));
 
-    UIA::IStoryboard*  pStoryboard = pAnimateMgr->
+    uia::IStoryboard*  pStoryboard = pAnimateMgr->
             CreateStoryboard(static_cast<IAnimateEventCallback*>(this));
 
-    UIA::IFromToTimeline* pTimeline = pStoryboard->CreateTimeline(0);
+    uia::IFromToTimeline* pTimeline = pStoryboard->CreateTimeline(0);
     pTimeline->SetParam((float)nFrom, (float)nTo, 200)
-            ->SetEaseType(UIA::linear);
+            ->SetEaseType(uia::linear);
     pStoryboard->Begin();
 
     m_bIsAnimate = true;

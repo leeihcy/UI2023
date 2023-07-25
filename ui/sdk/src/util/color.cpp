@@ -1,4 +1,5 @@
 #include <math.h>
+#include "include/inc.h"
 #include "include/util/color.h"
 
 //
@@ -129,7 +130,7 @@ void  Color::ReplaceRGB(COLORREF c)
     m_col = c;
     a = a_old;
 }
-void  Color::ReplaceRGB(BYTE r1, BYTE g1, BYTE b1)
+void  Color::ReplaceRGB(unsigned char r1, unsigned char g1, unsigned char b1)
 {
     r = r1; g = g1; b = b1;
 }
@@ -222,8 +223,8 @@ void  Color::GetHSL(HSL& hsl)
     double dg = g/255.0;
     double db = b/255.0;
 
-    double max = max(max(dr, dg), db);
-    double min = min(min(dr, dg), db);
+    double max = std::max(std::max(dr, dg), db);
+    double min = std::min(std::min(dr, dg), db);
 
     double& hue = hsl.hue;
     double& lightness = hsl.lightness;
@@ -258,8 +259,8 @@ void  Color::GetHSV(HSV& hsv)
     double dg = g/255.0;
     double db = b/255.0;
 
-    double max = max(max(dr, dg), db);
-    double min = min(min(dr, dg), db);
+    double max = std::max(std::max(dr, dg), db);
+    double min = std::min(std::min(dr, dg), db);
 
     double& hue = hsv.hue;
     double& value = hsv.value;

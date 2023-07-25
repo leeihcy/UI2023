@@ -1,6 +1,7 @@
 #include "include/inc.h"
 #include "matrix.h"
 #include "math.h"
+#include <math.h>
 
 // AffineTransform  (webkit 3*3)
 // TransformationMatrix (webkit 4*4)
@@ -11,6 +12,8 @@
 //
 //  calculate the determinant of a 2x2 matrix.
 //
+
+namespace ui {
 static float determinant2x2(float& a, float& b, float& c, float& d)
 {
 	return a * d - b * c;
@@ -894,4 +897,6 @@ bool  Matrix44::IsBackfaceVisible()
     // we can avoid the costly division because we only care about the resulting
     // +/- sign; we can check this equivalently by multiplication.
     return cofactor33 * determinant < 0;
+}
+
 }
