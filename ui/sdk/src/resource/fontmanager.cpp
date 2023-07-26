@@ -3,8 +3,8 @@
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
-#include "skinres.h"
-#include "skinmanager.h"
+#include "res_bundle.h"
+#include "resource_manager.h"
 
 namespace ui
 {
@@ -84,7 +84,7 @@ bool IsFontExist(const wchar_t* pszFaceName)
 #endif
 }
 
-FontManager::FontManager(SkinRes* p):m_resFont(p)
+FontManager::FontManager(ResBundle* p):m_resFont(p)
 {
     m_pIFontManager = nullptr;
 	m_pSkinRes = p;
@@ -139,7 +139,7 @@ FontRes&  FontManager::GetFontRes()
 }
 
 
-long  FontManager::UIParseFontTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  FontManager::UIParseFontTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
     IFontManager&  pFontMgr = pSkinRes->GetFontManager();
     return pFontMgr.GetImpl()->ParseNewElement(pElem->GetImpl());

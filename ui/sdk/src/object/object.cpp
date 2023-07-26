@@ -16,7 +16,7 @@
 #include "include/interface/iuires.h"
 #include "src/resource/cursorres.h"
 #include "src/resource/stylemanager.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/resource/colorres.h"
 // #include "src/Atl\image.h"
 #include "include/interface/imapattr.h"
@@ -82,7 +82,7 @@ Object::~Object(void)
 #endif
 }
 
-long Object::FinalConstruct(ISkinRes* pSkinRes)
+long Object::FinalConstruct(IResBundle* pSkinRes)
 {
 	m_pSkinRes = pSkinRes->GetImpl();
     return 0;
@@ -388,7 +388,7 @@ void  Object::LoadAttributeFromMap(IMapAttribute* pMapAttrib, bool bReload)
 
     SERIALIZEDATA data = { 0 };
     data.pUIApplication = GetIUIApplication();
-	data.pSkinRes = m_pSkinRes->GetISkinRes();
+	data.pSkinRes = m_pSkinRes->GetIResBundle();
 	data.pMapAttrib = pMapAttrib;
 	data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;
 	if (bReload)
@@ -1386,7 +1386,7 @@ void  Object::InitDefaultAttrib()
 
 	SERIALIZEDATA data = {0};
     data.pUIApplication = GetIUIApplication();
-	data.pSkinRes = m_pSkinRes->GetISkinRes();
+	data.pSkinRes = m_pSkinRes->GetIResBundle();
 	data.pMapAttrib = pMapAttrib;
 	data.nFlags = SERIALIZEFLAG_LOAD;
 
@@ -1421,17 +1421,17 @@ void  Object::SetOutRef(void** ppOutRef)
 	m_ppOutRef = ppOutRef;
 }
 
-SkinRes*  Object::GetSkinRes()
+ResBundle*  Object::GetSkinRes()
 {
 	return m_pSkinRes;
 }
 
-ISkinRes*  Object::GetISkinRes()
+IResBundle*  Object::GetIResBundle()
 {
 	if (!m_pSkinRes)
 		return nullptr;
 	
-	return m_pSkinRes->GetISkinRes();
+	return m_pSkinRes->GetIResBundle();
 }
 
 UIApplication*  Object::GetUIApplication() 
@@ -1599,7 +1599,7 @@ void  Object::load_renderbase(const wchar_t* szName, IRenderBase*& pRender)
 	{
 #if defined(OS_WIN)
 		GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
-            m_pSkinRes->GetISkinRes(), szName, m_pIObject, &pRender);
+            m_pSkinRes->GetIResBundle(), szName, m_pIObject, &pRender);
 #else
         UIASSERT(false);
 #endif
@@ -1612,7 +1612,7 @@ void  Object::load_textrender(const wchar_t* szName, ITextRenderBase*& pTextRend
     if (szName) {
 #if defined(OS_WIN)    
 		GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
-		m_pSkinRes->GetISkinRes(), szName, m_pIObject, &pTextRender);
+		m_pSkinRes->GetIResBundle(), szName, m_pIObject, &pTextRender);
 #endif
     }
 }

@@ -9,7 +9,7 @@ namespace ui
 	class UIApplication;
     class ColorRes;
     class ImageRes;
-    class SkinRes;
+    class ResBundle;
     class Object;
 
 const unsigned int  WINDOW_BKGND_RENDER_STATE_ACTIVE  = 0;   // 窗口激活样式
@@ -46,7 +46,7 @@ public:
 	void  SetRenderType( const RENDER_TYPE& nType ){ m_nRenderType = nType ; }
 	RENDER_TYPE  GetRenderType() { return m_nRenderType; }
 
-    SkinRes*  GetSkinRes();
+    ResBundle*  GetSkinRes();
 	ColorRes*  GetSkinColorRes();
 	ImageRes*  GetSkinImageRes();
 	

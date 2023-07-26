@@ -5,7 +5,7 @@
 namespace ui
 {
 	struct IWindowBase;
-	struct ISkinRes;
+	struct IResBundle;
 	struct IObjectDescription;
 	struct ITextRenderBase;
 	struct IRenderFont;
@@ -66,7 +66,7 @@ namespace ui
 	struct UIAPI IObject : public IMessage
 	{
 		IUIApplication* GetUIApplication();
-		ISkinRes*  GetSkinRes();
+		IResBundle*  GetSkinRes();
     #if 0
 		IWindowBase*  GetWindowObject();
     #endif

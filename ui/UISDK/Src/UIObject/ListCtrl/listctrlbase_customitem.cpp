@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "listctrlbase.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "CustomItem\custom_listitem.h"
 #include "src/UIObject\Panel\panel.h"
 #include "ListItemRootPanel\listitemrootpanel.h"
@@ -20,7 +20,7 @@ CustomListItem*  ListCtrlBase::InsertCustomItem(
         return nullptr;
 
     ICustomListItem* pItem = ICustomListItem::
-            CreateInstance(m_pSkinRes->GetISkinRes());
+            CreateInstance(m_pSkinRes->GetIResBundle());
 
     CustomListItem* pImpl = pItem->GetImpl();
     if (!this->InsertItem(pImpl, pParent, pInsertAfter))

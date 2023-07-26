@@ -4,7 +4,7 @@
 #include "include/interface/iuires.h"
 #include "include/interface/imapattr.h"
 #include "src/resource/colorres.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 
 namespace ui
 {
@@ -32,7 +32,7 @@ void  ColorMaskWindowWrap::Init(ICustomWindow* pWnd)
         szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKCOLOR_VALUE, false);
         if (szText)
         {
-            SkinRes* pSkinRes = pWnd->GetImpl()->GetSkinRes();
+            ResBundle* pSkinRes = pWnd->GetImpl()->GetSkinRes();
             if (pSkinRes)
             {
                 ColorRes colorRes = pSkinRes->GetColorRes();

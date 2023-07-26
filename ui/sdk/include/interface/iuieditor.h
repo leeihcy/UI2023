@@ -83,11 +83,11 @@ namespace ui
                 /*__in*/ ICursorResItem*  pItem) = 0;
 
 		virtual void  OnStyleChanged(
-                ISkinRes* pSkinRes, 
+                IResBundle* pSkinRes, 
                 IStyleResItem* p, 
                 EditorOPType e) = 0;
 		virtual void  OnStyleAttributeChanged(
-                ISkinRes* pSkinRes, 
+                IResBundle* pSkinRes, 
                 IStyleResItem* p, 
                 const wchar_t* szKey, 
                 EditorOPType e) = 0;

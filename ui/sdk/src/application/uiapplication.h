@@ -5,7 +5,7 @@
 #include <vector>
 #include "interface/iuiapplication.h"
 #include "message_loop/message_loop.h"
-#include "resource/skinmanager.h"
+#include "resource/resource_manager.h"
 #include "src/render/renderbase_factory.h"
 #include "src/render/textrender/textrender_factory.h"
 #include "src/layout/layout_factory.h"
@@ -43,7 +43,7 @@ public:
     void Run();
     void Quit();
 
-    SkinManager&  GetSkinManager();
+    ResourceManager&  GetResourceManager();
 
     void  SetEditorMode(bool b) { m_bEditorMode = b; }
 	bool  IsEditorMode() { return m_bEditorMode; }
@@ -74,7 +74,7 @@ public:
                 IObject* pObject, 
                 IRenderBase** ppOut);
 
-	SkinRes*  GetDefaultSkinRes();
+	ResBundle*  GetDefaultSkinRes();
 #if 0
 	bool  ShowToolTip(TOOLTIPITEM* pItem);
 	void  HideToolTip();
@@ -84,8 +84,8 @@ public:
     bool  GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc);
     bool  GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc);
     bool  RegisterUIObject(IObjectDescription*);
-	IObject*  CreateUIObjectByName(const wchar_t* szXmlName, ISkinRes*);
-    IObject*  CreateUIObjectByClsid(const Guid& clsid, ISkinRes*);
+	IObject*  CreateUIObjectByName(const wchar_t* szXmlName, IResBundle*);
+    IObject*  CreateUIObjectByClsid(const Guid& clsid, IResBundle*);
 
     void  LoadUIObjectListToToolBox();
 #if 0
@@ -147,9 +147,9 @@ private:
     // 是否是编辑器模式
     bool  m_bEditorMode = false;
 
-    SkinManager   m_skin_manager;
 private:
     MessageLoop m_message_loop;
+    ResourceManager m_resource_manager;
     
 };
 } // namespace ui

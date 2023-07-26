@@ -6,22 +6,22 @@ namespace ui
 struct IUIElement;
 struct UIElement;
 struct SkinDataSource;
-class SkinRes;
+class ResBundle;
 class UIApplication;
 
 class SkinParseEngine
 {
 public:
-    SkinParseEngine(SkinRes* pSkinRes);
+    SkinParseEngine(ResBundle* pSkinRes);
     ~SkinParseEngine();
 
     bool  Parse(SkinDataSource* pDataSource, const wchar_t* szXmlFile);
     void  NewChild(UIElement* pElement);
 
-    static long UIParseIncludeTagCallback(IUIElement*, ISkinRes* pSkinRes);
+    static long UIParseIncludeTagCallback(IUIElement*, IResBundle* pSkinRes);
 
     UIApplication*  m_pUIApplication;
-    SkinRes*  m_pSkinRes;
+    ResBundle*  m_pSkinRes;
 };
 
 }

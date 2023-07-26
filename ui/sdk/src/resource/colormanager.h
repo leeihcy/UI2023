@@ -7,7 +7,7 @@ namespace ui
 struct UIElement;
 struct IUIElement;
 struct IColorManager;
-class SkinRes;
+class ResBundle;
 
 class  ColorTagElementInfo
 {
@@ -19,7 +19,7 @@ public:
 class ColorManager
 {
 public:
-    ColorManager(SkinRes* pSkinRes);
+    ColorManager(ResBundle* pSkinRes);
     ~ColorManager(void);
 
     ColorRes&  GetColorRes();
@@ -33,7 +33,7 @@ public:
 
     bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-    static long  UIParseColorTagCallback(IUIElement*, ISkinRes* pSkinRes);
+    static long  UIParseColorTagCallback(IUIElement*, IResBundle* pSkinRes);
 
 private:
     void  OnNewChild(UIElement* pElem);
@@ -46,6 +46,6 @@ private:
 	_MyList  m_listUIElement;
 
     ColorRes     m_resColor;              
-    SkinRes*     m_pSkinRes;
+    ResBundle*     m_pSkinRes;
 };
 }

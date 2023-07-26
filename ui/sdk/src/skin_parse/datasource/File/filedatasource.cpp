@@ -130,7 +130,7 @@ bool FileDataSource::FileExist(const wchar_t* szPath)
 }
 
 // 
-// bool  FileDataSource::CalcFilePath(const wchar_t* szPath, ISkinRes* pSkinRes, String& strLastPath)
+// bool  FileDataSource::CalcFilePath(const wchar_t* szPath, IResBundle* pSkinRes, String& strLastPath)
 // {
 //     if (nullptr == szPath || nullptr == pSkinRes)
 //         return false;

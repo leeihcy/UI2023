@@ -6,7 +6,7 @@
 
 namespace ui
 {
-class SkinRes;
+class ResBundle;
 class UIApplication;
 class WindowBase;
 class Window;
@@ -50,8 +50,8 @@ public:
 
 	UIApplication*  GetUIApplication();
 	IUIApplication*  GetIUIApplication();
-	SkinRes*  GetSkinRes();
-	ISkinRes*  GetISkinRes();
+	ResBundle*  GetSkinRes();
+	IResBundle*  GetIResBundle();
 	Window*  GetWindowObject();
 #if defined(OS_WIN)
 	HWND  GetHWND();
@@ -309,7 +309,7 @@ public:
 	void  ScaleTo(float x, float y, LayerAnimateParam* param = nullptr);
 
 protected:
-	long  FinalConstruct(ISkinRes* pSkinRes);
+	long  FinalConstruct(IResBundle* pSkinRes);
 	void  FinalRelease();
 	unsigned int  OnHitTest(POINT* ptInParent, POINT* ptInChild);
 	void  OnVisibleChanged(bool bVisible, IObject* pObjChanged);
@@ -353,7 +353,7 @@ public:
 
 protected:
 	IObject*   m_pIObject;
-	SkinRes*   m_pSkinRes;  // 用于支持多皮肤包共存（插件模式）
+	ResBundle*   m_pSkinRes;  // 用于支持多皮肤包共存（插件模式）
 	IObjectDescription*  m_pDescription; // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
 
 	String  m_strId;                    // 该对象在XML中的标识

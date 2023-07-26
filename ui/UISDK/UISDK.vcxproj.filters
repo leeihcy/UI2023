@@ -351,7 +351,7 @@
     <ClInclude Include="Inc\Base\uicreator.h">
       <Filter>01. Inc\01. Base</Filter>
     </ClInclude>
-    <ClInclude Include="Inc\Interface\iskinres.h">
+    <ClInclude Include="Inc\Interface\iresbundle.h">
       <Filter>01. Inc\02. Interface</Filter>
     </ClInclude>
     <ClInclude Include="Src\Base\Object\objtree.h">
@@ -408,10 +408,10 @@
     <ClInclude Include="Src\Resource\colormanager.h">
       <Filter>02. Src\03. 皮肤资源\01. color</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Resource\skinres.h">
+    <ClInclude Include="Src\Resource\res_bundle.h">
       <Filter>02. Src\03. 皮肤资源</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Resource\skinmanager.h">
+    <ClInclude Include="Src\Resource\resource_manager.h">
       <Filter>02. Src\03. 皮肤资源</Filter>
     </ClInclude>
     <ClInclude Include="Src\Resource\imagemanager.h">

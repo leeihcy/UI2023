@@ -1,9 +1,9 @@
 #include "include/inc.h"
 #include "i18nres.h"
-#include "skinres.h"
+#include "res_bundle.h"
 
 namespace ui {
-I18nRes::I18nRes(SkinRes* p)
+I18nRes::I18nRes(ResBundle* p)
 {
 	m_pSkinRes = p;
 	m_pII18nRes = nullptr;
@@ -22,7 +22,7 @@ const wchar_t* I18nRes::Map(const wchar_t* key)
 	std::map<String, String>::iterator iter = m_dict.find(String(key));
     if (iter == m_dict.end())
     {
-        SkinRes* pParentRes = m_pSkinRes->GetParentSkinRes();
+        ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
         if (pParentRes)
             return pParentRes->GetI18nRes().Map(key);
 

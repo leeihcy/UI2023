@@ -3,7 +3,7 @@
 #include "attribute.h"
 #include "src/application/uiapplication.h"
 #include "src/object/object.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 
 
 namespace ui

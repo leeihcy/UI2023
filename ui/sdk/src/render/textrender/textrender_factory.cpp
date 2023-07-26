@@ -62,7 +62,7 @@ bool  TextRenderFactory::RegisterUITextRenderBaseCreateData(
 }
 
 bool  TextRenderFactory::CreateTextRenderBaseByName(
-        ISkinRes* pSkinRes, 
+        IResBundle* pSkinRes, 
         const wchar_t* bstrName, 
         IObject* pObject, 
         ITextRenderBase** ppOut)
@@ -98,7 +98,7 @@ bool  TextRenderFactory::CreateTextRenderBaseByName(
 	return false;
 }
 bool  TextRenderFactory::CreateTextRender(
-        ISkinRes* pSkinRes, 
+        IResBundle* pSkinRes, 
         int nType, 
         IObject* pObject, 
         ITextRenderBase** ppOut)

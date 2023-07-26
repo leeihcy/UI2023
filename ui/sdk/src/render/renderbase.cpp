@@ -4,7 +4,7 @@
 #include "src/object/object.h"
 #include "src/attribute/attribute.h"
 #include "include/interface/iuires.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/application/uiapplication.h"
 #include "include/interface/renderlibrary.h"
 // #include "src\UIObject\Window\windowbase.h"
@@ -42,7 +42,7 @@ long  RenderBase::Release()
 	return m_lRef;
 }
 
-SkinRes*  RenderBase::GetSkinRes()
+ResBundle*  RenderBase::GetSkinRes()
 {
     if (!m_pObject)
         return nullptr;
@@ -51,7 +51,7 @@ SkinRes*  RenderBase::GetSkinRes()
 }
 ColorRes*  RenderBase::GetSkinColorRes()
 {
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return nullptr;
 
@@ -60,7 +60,7 @@ ColorRes*  RenderBase::GetSkinColorRes()
 
 ImageRes*  RenderBase::GetSkinImageRes()
 {
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return nullptr;
 
@@ -115,7 +115,7 @@ void  RenderBase::_LoadBitmap(const wchar_t* szBitmapId, IRenderBitmap*& pBitmap
 
 	if (m_pObject)
 	{
-		SkinRes* pSkinRes = m_pObject->GetSkinRes();
+		ResBundle* pSkinRes = m_pObject->GetSkinRes();
 		if (!pSkinRes)
 			return;
 

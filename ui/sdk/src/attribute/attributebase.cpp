@@ -99,7 +99,7 @@ void  AttributeBase::SetUIApplication(UIApplication* p)
 {
 	m_pUIApplication = p;
 }
-void  AttributeBase::SetSkinRes(SkinRes* p)
+void  AttributeBase::SetSkinRes(ResBundle* p)
 {
 	m_pSkinRes = p;
 }

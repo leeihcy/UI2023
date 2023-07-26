@@ -7,7 +7,7 @@ namespace ui
 {
 class Object;
 class Window;
-class SkinRes;
+class ResBundle;
 class UIApplication;
 struct ITopWindowManager;
 struct IWindowBase;
@@ -29,7 +29,7 @@ public:
 	int   GetTopWindowCount() { return (int)m_lTopWindowObject.size(); }
 	IWindowBase* GetWindowBase(HWND hWnd); 
 				
-	// void  ChangeSkin(SkinRes* pNewSkinRes);
+	// void  ChangeSkin(ResBundle* pNewSkinRes);
 	bool  UpdateAllWindow();
 
     void  SendMessage2AllWnd(UIMSG* pMsg);

@@ -7,7 +7,7 @@ namespace ui
 {
 struct IColorResItem;
 struct IColorRes;
-class SkinRes;
+class ResBundle;
 
 //
 //	color中的一项信息数据
@@ -55,7 +55,7 @@ private:
 class ColorRes
 {
 public:
-	ColorRes(SkinRes* p);
+	ColorRes(ResBundle* p);
 	~ColorRes();
 
     IColorRes&  GetIColorRes();
@@ -77,7 +77,7 @@ public:
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 private:
-	SkinRes*  m_pSkinRes;
+	ResBundle*  m_pSkinRes;
     IColorRes*  m_pIColorRes;
     std::vector<ColorResItem*> m_vColors;
 };

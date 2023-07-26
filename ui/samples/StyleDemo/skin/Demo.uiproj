@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <uiproj>
   <SkinList>
-    <SkinRes path="Default"/>
+    <ResBundle path="Default"/>
   </SkinList>
   <DependsCtrlDll>
   <item>..\..\UI\UICtrls.dll</item>

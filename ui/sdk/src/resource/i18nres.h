@@ -5,11 +5,11 @@
 
 namespace ui
 {
-class SkinRes;
+class ResBundle;
 class I18nRes : public II18nCallback
 {
 public:
-	I18nRes(SkinRes*);
+	I18nRes(ResBundle*);
 	~I18nRes();
 
 public:
@@ -24,7 +24,7 @@ private:
     virtual const wchar_t* Map(const wchar_t* key) override;
 
 private:
-	SkinRes*  m_pSkinRes;
+	ResBundle*  m_pSkinRes;
 	II18nRes*  m_pII18nRes;
 
 	std::map<std::wstring, std::wstring>  m_dict;

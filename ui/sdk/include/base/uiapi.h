@@ -7,12 +7,12 @@ namespace ui
 {
 
 	// 编译时版本定义
-#define UISDK_VERSION_MAJOR   1    // 主版本
+#define UISDK_VERSION_MAJOR   2    // 主版本
 #define UISDK_VERSION_MINOR   0    // 次版本
-#define UISDK_VERSION_PATCH   0    // 补丁版本
+#define UISDK_VERSION_PATCH   1    // 补丁版本
 
 	struct IUIElement;
-	struct ISkinRes;
+	struct IResBundle;
 	struct IObject;
 	struct ILayout;
 	struct IUIApplication;
@@ -20,15 +20,15 @@ namespace ui
 	UIAPI bool  CreateUIApplication(IUIApplication** pp);
 
 	// UI对象创建函数
-	//typedef  long(*pfnUICreateRenderBasePtr)(ISkinRes* pSkinRes, void** ppOut);
-	//typedef  long(*pfnUICreateTextRenderBasePtr)(ISkinRes* pSkinRes, void** ppOut);
-	typedef  long(*pfnParseSkinTag)(IUIElement*, ISkinRes* pSkinRes);
+	//typedef  long(*pfnUICreateRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
+	//typedef  long(*pfnUICreateTextRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
+	typedef  long(*pfnParseSkinTag)(IUIElement*, IResBundle* pSkinRes);
 	//typedef  long(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 	// UI对象创建函数
-	typedef  void(*pfnUICreateRenderBasePtr)(ISkinRes* pSkinRes, void** ppOut);
-	typedef  void(*pfnUICreateTextRenderBasePtr)(ISkinRes* pSkinRes, void** ppOut);
-	typedef  long(*pfnParseSkinTag)(IUIElement*, ISkinRes* pSkinRes);
+	typedef  void(*pfnUICreateRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
+	typedef  void(*pfnUICreateTextRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
+	typedef  long(*pfnParseSkinTag)(IUIElement*, IResBundle* pSkinRes);
 	typedef  long(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 	// uiapplication中的枚举回调
@@ -45,7 +45,7 @@ namespace ui
 		ParseControl_LoadObject,   // 创建对象并加载其属性，但处没处理子结点
 		ParseControl_LoadDescendants,  // 加载自己和所有子结点的属性
 	};
-	typedef  PARSE_CONTROL_RETURN(*pfnParseControlTag)(IUIElement*, ISkinRes*, IObject* pObjParent, IObject**);
+	typedef  PARSE_CONTROL_RETURN(*pfnParseControlTag)(IUIElement*, IResBundle*, IObject* pObjParent, IObject**);
 
 	// 外部UI对象注册入口，由外部DLL实现该导出函数
 #define FUN_RegisterUIObject_NAME  "RegisterUIObject"

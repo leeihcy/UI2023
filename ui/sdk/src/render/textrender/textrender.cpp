@@ -12,7 +12,7 @@
 #include "src/attribute/flags_attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/string_attribute.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 // #include "src/Layer\windowrender.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/colorres.h"
@@ -225,14 +225,14 @@ SIZE TextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
 
 IColorRes*  TextRenderBase::GetSkinColorRes()
 {
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return nullptr;
 
     return &pSkinRes->GetColorRes().GetIColorRes();
 }
 
-SkinRes*  TextRenderBase::GetSkinRes()
+ResBundle*  TextRenderBase::GetSkinRes()
 {
     if (m_pObject)
     {
@@ -244,7 +244,7 @@ SkinRes*  TextRenderBase::GetSkinRes()
 
 IFontRes*  TextRenderBase::GetSkinFontRes()
 {
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return nullptr;
 
@@ -310,7 +310,7 @@ void  SimpleTextRender::LoadFont(const wchar_t* szFontId)
 	}
 #endif
 
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return;
 
@@ -672,7 +672,7 @@ void  ColorListTextRender::LoadFont(const wchar_t* szFontId)
         m_strFontId.clear();
 #endif
 
-    SkinRes* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetSkinRes();
     if (!pSkinRes)
         return;
 

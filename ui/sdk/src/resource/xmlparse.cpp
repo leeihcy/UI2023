@@ -2278,12 +2278,12 @@ IStyleManager*  CXmlLayoutParse::getStyleMgr()
 	if (NULL == m_pUIApp)
 		return NULL;
 
-	ISkinManager* pSkinMgr = NULL;
+	IResourceManager* pSkinMgr = NULL;
 	m_pUIApp->GetSkinMgr(&pSkinMgr);
 	if (NULL == pSkinMgr)
 		return NULL;
 
-	ISkinRes* pSkinRes = NULL;
+	IResBundle* pSkinRes = NULL;
 	pSkinMgr->GetActiveSkin(&pSkinRes);
 	if (NULL == pSkinRes)
 		return NULL;

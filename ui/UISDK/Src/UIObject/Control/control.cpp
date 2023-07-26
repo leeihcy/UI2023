@@ -7,7 +7,7 @@
 #include "Inc\Base\uidefine.h"
 #include "include/interface/itextrenderbase.h"
 #include "include/interface/iuiapplication.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/ilayout.h"
 
 using namespace ui;
@@ -117,7 +117,7 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
     if (!m_pTextRender)
     {
         GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
-            m_pSkinRes->GetISkinRes(), 
+            m_pSkinRes->GetIResBundle(), 
             TEXTRENDER_TYPE_SIMPLE,
             m_pIObject, 
             &m_pTextRender);
@@ -130,7 +130,7 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
 			
             SERIALIZEDATA data = {0};
             data.pUIApplication = GetUIApplication()->GetIUIApplication();
-			data.pSkinRes = m_pSkinRes->GetISkinRes();
+			data.pSkinRes = m_pSkinRes->GetIResBundle();
             data.pMapAttrib = pMapAttr;
             data.szPrefix = nullptr;
             data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;

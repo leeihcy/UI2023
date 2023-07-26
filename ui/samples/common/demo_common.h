@@ -27,12 +27,12 @@ void  Demo_Log(UI::IUIApplication* pUIApp, __in LPCTSTR szAppDir)
 	//pUIApp->LogUI(szLogXml);
 }
 
-UI::ISkinRes*  Demo_LoadSkin(
+UI::IResBundle*  Demo_LoadSkin(
 		UI::IUIApplication* pUIApp, 
 		__in LPCTSTR szAppDir)
 {
 	TCHAR szSkinPath[MAX_PATH];
 	_tcscpy(szSkinPath, szAppDir);
 	_tcscat(szSkinPath, TEXT("Default"));
-	return pUIApp->LoadSkinRes(szSkinPath);
+	return pUIApp->LoadResBundle(szSkinPath);
 }

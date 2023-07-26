@@ -7,8 +7,8 @@ namespace ui
 {
 	struct  IToolTipUI;
 	struct  IWindow;
-	struct  ISkinManager;
-	struct  ISkinRes;
+	struct  IResourceManager;
+	struct  IResBundle;
 	struct     TOOLTIPITEM;
 	struct  IRenderBitmap;
 	struct  IRenderFont;
@@ -32,7 +32,7 @@ namespace ui
 
         long  AddTopWindowObject(IWindow*);
         long  RemoveTopWindowObject(IWindow*);
-        //void     ChangeSkin(ISkinRes* pNewSkinRes);
+        //void     ChangeSkin(IResBundle* pNewSkinRes);
 
         bool  UpdateAllWindow();
         void  SendMessage2AllWnd(UIMSG*  pMsg);

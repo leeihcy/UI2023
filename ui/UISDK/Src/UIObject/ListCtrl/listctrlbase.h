@@ -87,7 +87,7 @@ public:
 
 protected:
 	// 消息处理
-    HRESULT  FinalConstruct(ISkinRes* p);
+    HRESULT  FinalConstruct(IResBundle* p);
     void  FinalRelease();
 	void  OnPaint(IRenderTarget* pRenderTarget);
     void  OnPostPaint(IRenderTarget* pRenderTarget);

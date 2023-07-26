@@ -9,7 +9,7 @@
 #include "src/resource/stylemanager.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/i18nmanager.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/skin_parse/skinparseengine.h"
 #include "include/interface/iuiautotest.h"
 
@@ -36,9 +36,9 @@ void UIApplication::Run() { m_message_loop.Run(); }
 void UIApplication::Quit() { m_message_loop.Quit(); }
 
 
-SkinManager& UIApplication::GetSkinManager()
+ResourceManager& UIApplication::GetResourceManager()
 {
-	return m_skin_manager;
+	return m_resource_manager;
 }
 
 
@@ -54,7 +54,7 @@ void  UIApplication::x_Init()
     m_bEditorMode = false;
     m_pUIEditor = nullptr;
 
-    m_skin_manager.SetUIApplication(this);
+    m_resource_manager.SetUIApplication(this);
     m_animate.Init(&m_WaitForHandlesMgr);
 
 	m_pGifTimerMgr = nullptr;
@@ -116,9 +116,9 @@ void  UIApplication::x_Init()
 #endif
 }
 
-SkinRes* UIApplication::GetDefaultSkinRes()
+ResBundle* UIApplication::GetDefaultSkinRes()
 {
-	return m_skin_manager.GetDefaultSkinRes();
+	return m_resource_manager.GetDefaultSkinRes();
 }
 
 UIApplication::~UIApplication(void)
@@ -148,7 +148,7 @@ UIApplication::~UIApplication(void)
 		m_WndForwardPostMsg.DestroyWindow();
 	}
 #endif
-	m_skin_manager.Destroy();
+	m_resource_manager.Destroy();
 
 	m_pUIEditor = nullptr;
 
@@ -401,7 +401,7 @@ void  UIApplication::RestoreRegisterUIObject()
     RegisterDefaultUIObject();
 }
 
-IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, ISkinRes* pSkinRes)
+IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, IResBundle* pSkinRes)
 {
 	if (!szXmlName)
 		return nullptr;
@@ -421,7 +421,7 @@ IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, ISkinRes*
 	return nullptr;
 }
 
-IObject* UIApplication::CreateUIObjectByClsid(const Guid& clsid, ISkinRes* pSkinRes)
+IObject* UIApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pSkinRes)
 {
     int nSize = (int)m_vecUIObjectDesc.size();
     for (int i = 0; i < nSize; i++)
@@ -770,15 +770,15 @@ void UIApplication::LoadUIObjectListToToolBox()
 bool  UIApplication::CreateRenderBaseByName(
 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
 {
-    ISkinRes* pSkinRes = nullptr;
+    IResBundle* pSkinRes = nullptr;
 	if (pObject)
 	{
 		pSkinRes = pObject->GetSkinRes();
 	}
 	else
 	{
-		SkinRes* p = GetDefaultSkinRes();
-		pSkinRes = p ? p->GetISkinRes() : nullptr;
+		ResBundle* p = GetDefaultSkinRes();
+		pSkinRes = p ? p->GetIResBundle() : nullptr;
 	}
 
     return m_renderBaseFactory.CreateRenderBaseByName(

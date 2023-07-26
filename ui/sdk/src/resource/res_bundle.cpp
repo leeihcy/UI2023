@@ -1,5 +1,5 @@
-#include "skinres.h"
-#include "src/resource/skinmanager.h"
+#include "res_bundle.h"
+#include "src/resource/resource_manager.h"
 #include "src/skin_parse/skinparseengine.h"
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "src/skin_parse/datasource/skindatasource.h"
@@ -10,7 +10,7 @@
 namespace ui 
 {
     
-SkinRes::SkinRes(SkinManager& o):
+ResBundle::ResBundle(ResourceManager& o):
     m_mgrSkinRef(o),
     m_mgrLayout(this),
     m_mgrStyle(this),
@@ -26,7 +26,7 @@ SkinRes::SkinRes(SkinManager& o):
     m_pHLSInfo = nullptr;
 	m_pParentSkinRes = nullptr;
 }
-SkinRes::~SkinRes()
+ResBundle::~ResBundle()
 {
     Unload();
     SAFE_DELETE(m_pISkinRes);
@@ -34,16 +34,16 @@ SkinRes::~SkinRes()
     SAFE_RELEASE(m_pDataSource);
 }
 
-ISkinRes*  SkinRes::GetISkinRes()
+IResBundle*  ResBundle::GetIResBundle()
 {
     if (nullptr == m_pISkinRes)
     {
-        m_pISkinRes = new ISkinRes(this);
+        m_pISkinRes = new IResBundle(this);
     }
     return m_pISkinRes; 
 }
 
-void  SkinRes::SetName(const wchar_t* szName)
+void  ResBundle::SetName(const wchar_t* szName)
 {
 	if (szName)
 		m_strSkinResName = szName;
@@ -51,7 +51,7 @@ void  SkinRes::SetName(const wchar_t* szName)
 		m_strSkinResName.clear();
 }
 
-void  SkinRes::SetPath(const wchar_t* szPath)
+void  ResBundle::SetPath(const wchar_t* szPath)
 {
 	UIASSERT(m_pDataSource);
 	if (!m_pDataSource)
@@ -59,7 +59,7 @@ void  SkinRes::SetPath(const wchar_t* szPath)
 	m_pDataSource->SetPath(szPath);
 }
 
-SkinDataSource*  SkinRes::CreateDataSource(SKIN_PACKET_TYPE eType)
+SkinDataSource*  ResBundle::CreateDataSource(SKIN_PACKET_TYPE eType)
 {
 	SAFE_DELETE(m_pDataSource);
 	CreateDataSourceInstance(eType, &m_pDataSource);
@@ -67,12 +67,12 @@ SkinDataSource*  SkinRes::CreateDataSource(SKIN_PACKET_TYPE eType)
 	return m_pDataSource;
 }
 
-const wchar_t*  SkinRes::GetName()
+const wchar_t*  ResBundle::GetName()
 { 
     return m_strSkinResName.c_str();
 }
 
-const wchar_t*  SkinRes::GetPath() 
+const wchar_t*  ResBundle::GetPath() 
 { 
     if (nullptr == m_pDataSource)
         return nullptr;
@@ -80,7 +80,7 @@ const wchar_t*  SkinRes::GetPath()
     return m_pDataSource->GetPath(); 
 }
 
-bool  SkinRes::Load()
+bool  ResBundle::Load()
 {
     if (m_eLoadState == SKIN_RES_LOAD_STATE_LOADED)
         return true;
@@ -112,7 +112,7 @@ bool  SkinRes::Load()
 	}
 }
 
-bool  SkinRes::Unload()
+bool  ResBundle::Unload()
 {
     _DocList::iterator iter = m_listDoc.begin();
     for (; iter != m_listDoc.end(); iter++)
@@ -126,20 +126,20 @@ bool  SkinRes::Unload()
     return true;
 }
 
-void  SkinRes::SetParentSkinRes(SkinRes* p)
+void  ResBundle::SetParentSkinRes(ResBundle* p)
 {
     UIASSERT(p != this);
 	m_pParentSkinRes = p;
 } 
 
-SkinRes*  SkinRes::GetParentSkinRes()
+ResBundle*  ResBundle::GetParentSkinRes()
 {
 	return m_pParentSkinRes;
 }
 
 // parse.ProcessFile在解析配置文件过程中，如果发现一个新的文档，
 // 则会回调该函数进行通知
-void  SkinRes::OnNewUIDocument(UIDocument* pDoc)
+void  ResBundle::OnNewUIDocument(UIDocument* pDoc)
 {
 	if (!pDoc)
 		return;
@@ -148,7 +148,7 @@ void  SkinRes::OnNewUIDocument(UIDocument* pDoc)
     m_listDoc.push_back(pDoc);
 }
 
-bool SkinRes::Save()
+bool ResBundle::Save()
 {
     _DocList::iterator iter = m_listDoc.begin();
     for (; iter != m_listDoc.end(); iter++)
@@ -168,7 +168,7 @@ bool SkinRes::Save()
 	return true;
 }
 
-bool SkinRes::ChangeSkinHLS(short h, short l, short s, int nFlag)
+bool ResBundle::ChangeSkinHLS(short h, short l, short s, int nFlag)
 {
     if (nullptr == m_pHLSInfo)
     {
@@ -196,7 +196,7 @@ bool SkinRes::ChangeSkinHLS(short h, short l, short s, int nFlag)
 }
 
 
-UIDocument*  SkinRes::GetXmlDoc(unsigned int nIndex)
+UIDocument*  ResBundle::GetXmlDoc(unsigned int nIndex)
 {
     if (nIndex >= GetXmlDocCount())
         return nullptr;
@@ -204,7 +204,7 @@ UIDocument*  SkinRes::GetXmlDoc(unsigned int nIndex)
     return m_listDoc[nIndex];
 }
 
-UIDocument* SkinRes::GetXmlDocByName(const wchar_t* szName)
+UIDocument* ResBundle::GetXmlDocByName(const wchar_t* szName)
 {
 	if (!szName)
 		return nullptr;
@@ -221,34 +221,34 @@ UIDocument* SkinRes::GetXmlDocByName(const wchar_t* szName)
 	return nullptr;
 }
 
-UIApplication*  SkinRes::GetUIApplication()  
+UIApplication*  ResBundle::GetUIApplication()  
 { 
 	return m_mgrSkinRef.GetUIApplication();
 }
-ISkinManager&  SkinRes::GetISkinManager()   
+IResourceManager&  ResBundle::GetIResourceManager()   
 { 
-	return m_mgrSkinRef.GetISkinManager(); 
+	return m_mgrSkinRef.GetIResourceManager(); 
 }
 
-ImageRes&  SkinRes::GetImageRes()
+ImageRes&  ResBundle::GetImageRes()
 {
 	return m_mgrImage.GetImageRes();
 }
-ColorRes&  SkinRes::GetColorRes()
+ColorRes&  ResBundle::GetColorRes()
 {
 	return m_mgrColor.GetColorRes();
 }
-FontRes&  SkinRes::GetFontRes()
+FontRes&  ResBundle::GetFontRes()
 {
 	return m_mgrFont.GetFontRes();
 }
 
-StyleRes&  SkinRes::GetStyleRes()
+StyleRes&  ResBundle::GetStyleRes()
 {
     return m_mgrStyle.GetStyleRes();
 }
 
-I18nRes&  SkinRes::GetI18nRes()
+I18nRes&  ResBundle::GetI18nRes()
 {
 	return m_mgrI18n.GetI18nRes();
 }

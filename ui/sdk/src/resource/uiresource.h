@@ -3,7 +3,7 @@
 
 namespace ui
 {
-class SkinRes;
+class ResBundle;
 class Object;
 
 class OutCtrlDllItem

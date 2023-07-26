@@ -4,7 +4,7 @@
 #include "include/interface/ixmlwrap.h"
 // #include "..\..\Layer\layer.h"
 #include "src/application/uiapplication.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 
 using namespace ui;
 
@@ -83,13 +83,13 @@ IUIApplication* IObject::GetUIApplication()
 
 	return p->GetIUIApplication();
 }
-ISkinRes*  IObject::GetSkinRes()
+IResBundle*  IObject::GetSkinRes()
 {
-	SkinRes* p = __pImpl->GetSkinRes();
+	ResBundle* p = __pImpl->GetSkinRes();
 	if (!p)
 		return nullptr;
 
-	return p->GetISkinRes();
+	return p->GetIResBundle();
 }
 
 void  IObject::SetOutRef(void** ppOutRef)                  

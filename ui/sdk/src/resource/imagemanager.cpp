@@ -1,5 +1,5 @@
 #include "imagemanager.h"
-#include "skinres.h"
+#include "res_bundle.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/interface/iuires.h"
 #include "src/application/uiapplication.h"
@@ -13,7 +13,7 @@ namespace ui {
 //////////////////////////////////////////////////////////////////////////
 
 
-ImageManager::ImageManager(SkinRes* pSkinRes) : m_resImage(pSkinRes)
+ImageManager::ImageManager(ResBundle* pSkinRes) : m_resImage(pSkinRes)
 #if defined(OS_WIN)
 , m_resGif(pSkinRes)
 #endif
@@ -168,7 +168,7 @@ GifRes&  ImageManager::GetGifRes()
 
 //////////////////////////////////////////////////////////////////////////
 
-long  ImageManager::UIParseImageTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  ImageManager::UIParseImageTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
     IImageManager&  pImageMgr = pSkinRes->GetImageManager();
     return pImageMgr.GetImpl()->ParseNewElement(pElem->GetImpl());

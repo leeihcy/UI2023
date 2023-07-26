@@ -11,27 +11,28 @@ namespace ui
 {
 class UIApplication;
 class Object;
-class SkinManager;
+class ResourceManager;
 struct UIDocument;
 struct SkinDataSource;
 struct SKIN_HLS_INFO;
-struct ISkinManager;
+struct IResourceManager;
 
 enum SKIN_RES_LOAD_STATE
 {
-    SKIN_RES_LOAD_STATE_NONE,     // ½önew SkinRes
-    SKIN_RES_LOAD_STATE_LOADED,   // ÒÑ¼ÓÔØ    
+    SKIN_RES_LOAD_STATE_NONE,     // ä»…new ResBundle
+    SKIN_RES_LOAD_STATE_LOADED,   // å·²åŠ è½½    
 };
 
 
 //
-//	Ò»¿îÆ¤·ô×ÊÔ´¹ÜÀí
+//	ä¸€ä¸ªèµ„æºåŒ…ã€‚
+//  å¯ä»¥æ˜¯ç›®å½•ï¼Œæˆ–è€…æ˜¯ä¸€ä¸ªå‹ç¼©åŒ…ï¼Œæˆ–è€…æ˜¯ä»£ç æ§åˆ¶çš„èµ„æºã€‚
 //	
-class SkinRes
+class ResBundle
 {
 public:
-    SkinRes(SkinManager& o);
-	~SkinRes();
+    ResBundle(ResourceManager& o);
+	~ResBundle();
 
 	bool  Load();
 	bool  Unload();
@@ -43,9 +44,9 @@ public:
 	SkinDataSource*  CreateDataSource(SKIN_PACKET_TYPE eType); 
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	ISkinRes*        GetISkinRes();
+	IResBundle*        GetIResBundle();
     UIApplication*   GetUIApplication();
-    ISkinManager&    GetISkinManager();
+    IResourceManager&    GetIResourceManager();
 
 //     IImageManager*   GetIImageManager()   { return m_mgrImage.GetIImageManager(); }
 //     IColorManager*   GetIColorManager()   { return m_mgrColor.GetIColorManager(); }
@@ -58,7 +59,7 @@ public:
 //     IStyleRes*       GetIStyleRes()       { return m_mgrStyle.GetStyleRes().GetIStyleRes(); }
 	
 
-	SkinManager&     GetSkinMgr()         { return m_mgrSkinRef; } //  ÄÚ²¿µ÷ÓÃ
+	ResourceManager&     GetSkinMgr()         { return m_mgrSkinRef; } //  å†…éƒ¨è°ƒç”¨
 	ImageManager&    GetImageManager()    { return m_mgrImage;  }
 	ColorManager&    GetColorManager()    { return m_mgrColor;  }
 	FontManager&     GetFontManager()     { return m_mgrFont;   }
@@ -80,16 +81,16 @@ public:
 
 	void  OnNewUIDocument(UIDocument* pDoc);    
 	
-	void  SetParentSkinRes(SkinRes*);
-	SkinRes*  GetParentSkinRes();
+	void  SetParentSkinRes(ResBundle*);
+	ResBundle*  GetParentSkinRes();
 
 private:
-    ISkinRes*  m_pISkinRes;
-	SkinManager&  m_mgrSkinRef;
+    IResBundle*  m_pISkinRes;
+	ResourceManager&  m_mgrSkinRef;
 
-	// ¸¸Ò»¼¶µÄ×ÊÔ´£¬±¾µØÕÒ²»×ÅÊ±£¬ÏòÉÏ²éÕÒ
-	// ÓÃÓÚ²å¼ş×ÊÔ´ÖĞÒıÓÃ¸¸Ò»¼¶µÄ×ÊÔ´
-	SkinRes*  m_pParentSkinRes;  
+	// çˆ¶ä¸€çº§çš„èµ„æºï¼Œæœ¬åœ°æ‰¾ä¸ç€æ—¶ï¼Œå‘ä¸ŠæŸ¥æ‰¾
+	// ç”¨äºæ’ä»¶èµ„æºä¸­å¼•ç”¨çˆ¶ä¸€çº§çš„èµ„æº
+	ResBundle*  m_pParentSkinRes;  
 
 	String  m_strSkinResName;
     SkinDataSource*  m_pDataSource;
@@ -104,7 +105,7 @@ private:
     SKIN_HLS_INFO*  m_pHLSInfo;
 
     typedef std::vector<UIDocument*> _DocList;
-    _DocList  m_listDoc;   // ¸÷¸öxmlÎÄµµÖ¸Õë
+    _DocList  m_listDoc;   // å„ä¸ªxmlæ–‡æ¡£æŒ‡é’ˆ
 };
 
 }

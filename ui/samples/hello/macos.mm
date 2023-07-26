@@ -50,7 +50,7 @@ int mac_main()
 
     [pool drain];
 #endif
-
+#if 0
 
 //   [NSAutoreleasePool new];
   id app = [NSApplication sharedApplication];
@@ -87,6 +87,6 @@ NSWindow* m_window = [[NSWindow alloc] initWithContentRect:windowRect
 //   [app activateIgnoringOtherApps:YES];
   [app run];
   return 0;
- 
+ #endif
     return 0;
 }

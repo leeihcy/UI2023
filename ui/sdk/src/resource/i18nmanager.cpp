@@ -1,8 +1,8 @@
 #include "i18nmanager.h"
 #include "include/interface/ixmlwrap.h"
-#include "include/interface/iskinres.h"
-#include "skinres.h"
-#include "skinmanager.h"
+#include "include/interface/iresbundle.h"
+#include "res_bundle.h"
+#include "resource_manager.h"
 
 namespace ui {
 I18nManager::~I18nManager()
@@ -15,7 +15,7 @@ I18nManager::~I18nManager()
     m_listElement.clear();
 }
 
-long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
 	I18nManager& mgr = pSkinRes->GetImpl()->GetI18nManager();
 	return mgr.ParseNewElement(pElem->GetImpl());

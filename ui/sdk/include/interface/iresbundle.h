@@ -5,7 +5,7 @@
 
 namespace ui
 {
-	struct ISkinManager;
+	struct IResourceManager;
 	struct IImageManager;
 	struct IImageManager;
 	struct IColorManager;
@@ -20,15 +20,15 @@ namespace ui
 	struct IUIDocument;
 	struct II18nRes;
 
-	class SkinRes;
-	struct UIAPI ISkinRes
+	class ResBundle;
+	struct UIAPI IResBundle
 	{
-		ISkinRes(SkinRes*);
-		SkinRes*  GetImpl();
-		void  SetParentSkinRes(ISkinRes*);
+		IResBundle(ResBundle*);
+		ResBundle*  GetImpl();
+		void  SetParentSkinRes(IResBundle*);
 
 		IUIApplication*  GetUIApplication();
-        ISkinManager&    GetSkinManager();
+        IResourceManager&    GetResourceManager();
         IImageManager&   GetImageManager();
         IColorManager&   GetColorManager();
         IFontManager&    GetFontManager();
@@ -53,30 +53,30 @@ namespace ui
 		bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 	private:
-		SkinRes*  m_pImpl;
+		ResBundle*  m_pImpl;
 	};
 
 
 	struct ISkinDataSource;
-	class SkinManager;
-	struct UIAPI ISkinManager : public IRootInterface
+	class ResourceManager;
+	struct UIAPI IResourceManager : public IRootInterface
 	{
-		ISkinManager(SkinManager*);
-		SkinManager*  GetImpl();
+		IResourceManager(ResourceManager*);
+		ResourceManager*  GetImpl();
 
 		IUIApplication*  GetUIApplication();
 		void  ChangeSkinHLS(short h, short l, short s, int nFlag);
-		bool  Save(ISkinRes* pSkinRes);
+		bool  Save(IResBundle* pSkinRes);
 
 		unsigned int  GetSkinResCount();
-		ISkinRes*  GetSkinResByIndex(unsigned int i);
-		ISkinRes*  GetSkinResByName(const wchar_t* szName);
+		IResBundle*  GetSkinResByIndex(unsigned int i);
+		IResBundle*  GetSkinResByName(const wchar_t* szName);
 
         void  SetCurrentLanguage(const wchar_t*);
         const wchar_t*  GetCurrentLanguage();
 
 	private:
-		SkinManager*  m_pImpl;
+		ResourceManager*  m_pImpl;
 	};
 }
 #endif

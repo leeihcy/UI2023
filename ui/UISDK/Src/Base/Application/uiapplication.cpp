@@ -4,7 +4,7 @@
 #include "include/interface/iuires.h"
 #include "src/Atl\image.h"
 #include "src/UIObject\Control\control.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/Resource\imagemanager.h"
 #include "src/Resource\colormanager.h"
 #include "src/Resource\fontmanager.h"

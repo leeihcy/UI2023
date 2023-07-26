@@ -13,7 +13,7 @@
 #include "include/interface/imessage.h"
 // #include "Interface/iobject.h"
 // #include "Interface/ipanel.h"
-#include "include/interface/iskinres.h"
+#include "include/interface/iresbundle.h"
 // #include "Interface/iuiapplication.h"
 #include "include/interface/renderlibrary.h"
 #include "include/interface/iobjectdescription.h"

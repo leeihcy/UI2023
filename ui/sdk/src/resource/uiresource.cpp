@@ -1,6 +1,6 @@
 #include "include/inc.h"
 #include "uiresource.h"
-#include "UISDK\Kernel\src/resource/skinres.h"
+#include "UISDK\Kernel\src/resource/res_bundle.h"
 #include "UISDK\Kernel\include/interface/iuires.h"
 
 OutCtrlDllItem::OutCtrlDllItem() 

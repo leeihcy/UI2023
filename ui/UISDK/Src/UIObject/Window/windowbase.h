@@ -11,7 +11,7 @@
 namespace ui
 {
 class WindowRender;
-class SkinRes;
+class ResBundle;
 interface IRenderFont;
 
 // 
@@ -255,7 +255,7 @@ public:
 	virtual IMKMgr* virtualGetIMKMgr() override;
 
 protected:
-    HRESULT    FinalConstruct(ISkinRes* p);
+    HRESULT    FinalConstruct(IResBundle* p);
     BOOL       PreCreateWindow(CREATESTRUCT* pcs) { return TRUE; }
 	void       OnSerialize(SERIALIZEDATA* pData);
     void       OnSetDefId(IObject* pButton);

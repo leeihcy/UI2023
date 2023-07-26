@@ -1,6 +1,6 @@
 #include "interface/iuiapplication.h"
 #include "src/application/uiapplication.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/iobject.h"
 // #include "src/Atl\image.h"
 // #include "src/Helper\timer\timermanager.h"
@@ -41,19 +41,23 @@ void  IUIApplication::Release()
 	delete this;
 }
 
-ISkinRes*  IUIApplication::LoadSkinRes(const wchar_t* szSkinResPath)
+IResBundle* IUIApplication::RootBundle() {
+    return m_pImpl->GetResourceManager().RootBundle().GetIResBundle();
+}
+
+IResBundle*  IUIApplication::LoadResBundle(const wchar_t* szSkinResPath)
 {
-    SkinRes* p = m_pImpl->GetSkinManager().LoadSkinRes(szSkinResPath); 
+    ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(szSkinResPath); 
 	if (p)
-		return p->GetISkinRes();
+		return p->GetIResBundle();
 	return nullptr;
 }
 
-ISkinRes*  IUIApplication::LoadSkinRes(long hInstance, int resId)
+IResBundle*  IUIApplication::LoadResBundle(long hInstance, int resId)
 {
-	SkinRes* p = m_pImpl->GetSkinManager().LoadSkinRes(hInstance, resId); 
+	ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(hInstance, resId); 
 	if (p)
-		return p->GetISkinRes();
+		return p->GetIResBundle();
 	return nullptr;
 }
 
@@ -75,9 +79,9 @@ IUIEditor*  IUIApplication::GetUIEditorPtr()
     return m_pImpl->GetUIEditorPtr(); 
 }
 
-ISkinManager&  IUIApplication::GetSkinManager()    
+IResourceManager&  IUIApplication::GetResourceManager()    
 { 
-    return m_pImpl->GetSkinManager().GetISkinManager();
+    return m_pImpl->GetResourceManager().GetIResourceManager();
 }
 
 ITopWindowManager*  IUIApplication::GetTopWindowMgr()
@@ -92,11 +96,11 @@ uia::IAnimateManager*  IUIApplication::GetAnimateManager()
 // {
 // 	return m_pImpl->GetMessageFilterMgr();
 // }
-ISkinRes*  IUIApplication::GetDefaultSkinRes()
+IResBundle*  IUIApplication::GetDefaultSkinRes()
 {
-    SkinRes* p = m_pImpl->GetDefaultSkinRes(); 
+    ResBundle* p = m_pImpl->GetDefaultSkinRes(); 
 	if (p)
-		return p->GetISkinRes();
+		return p->GetIResBundle();
 	return nullptr;
 }
 void  IUIApplication::RestoreRegisterUIObject()      
@@ -116,11 +120,11 @@ bool  IUIApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseContr
     return m_pImpl->GetControlTagParseFunc(szTag, pFunc);
 }
 
-IObject*  IUIApplication::CreateUIObjectByName(const wchar_t* szName, ISkinRes* pISkinRes)
+IObject*  IUIApplication::CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes)
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
-IObject*  IUIApplication::CreateUIObjectByClsid(const Guid& clsid, ISkinRes* pISkinRes) 
+IObject*  IUIApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes) 
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
@@ -142,7 +146,7 @@ bool  IUIApplication::RegisterUIRenderBaseCreateData(
 // bool  IUIApplication::CreateRenderBaseByName(
 // 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
 // {
-//     ISkinRes* pSkinRes = nullptr;
+//     IResBundle* pSkinRes = nullptr;
 //     if (pObject)
 //         pSkinRes = pObject->GetSkinRes();
 //     else
@@ -159,7 +163,7 @@ bool  IUIApplication::RegisterUIRenderBaseCreateData(
 
 bool  IUIApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** ppOut) 
 { 
-    ISkinRes* pSkinRes = nullptr;
+    IResBundle* pSkinRes = nullptr;
     if (pObject)
         pSkinRes = pObject->GetSkinRes();
     else
@@ -180,7 +184,7 @@ bool  IUIApplication::RegisterUITextRenderBaseCreateData(
 }
 bool  IUIApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* pObject, ITextRenderBase** ppOut) 
 {
-    ISkinRes* pSkinRes = nullptr;
+    IResBundle* pSkinRes = nullptr;
     if (pObject)
         pSkinRes = pObject->GetSkinRes();
     else
@@ -189,7 +193,7 @@ bool  IUIApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject*
 }
 bool  IUIApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRenderBase** ppOut) 
 { 
-    ISkinRes* pSkinRes = nullptr;
+    IResBundle* pSkinRes = nullptr;
     if (pObject)
         pSkinRes = pObject->GetSkinRes();
     else

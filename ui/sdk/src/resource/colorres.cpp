@@ -3,7 +3,7 @@
 #include "include/interface/imapattr.h"
 // #include "Src/Atl/image.h"
 #include "uiresource.h"
-#include "skinres.h"
+#include "res_bundle.h"
 
 namespace ui
 {
@@ -288,7 +288,7 @@ bool ColorResItem::ModifyHLS( short h, short l, short s, int nFlag)
 	return true;
 }
 
-ColorRes::ColorRes(SkinRes* p)
+ColorRes::ColorRes(ResBundle* p)
 {
     m_pSkinRes = p; 
     m_pIColorRes = nullptr; 

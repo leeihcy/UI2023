@@ -7,7 +7,7 @@
 
 namespace ui
 {
-ColorManager::ColorManager(SkinRes* pSkinRes): m_resColor(pSkinRes)
+ColorManager::ColorManager(ResBundle* pSkinRes): m_resColor(pSkinRes)
 {
     m_pIColorManager = nullptr;
 	m_pSkinRes = pSkinRes;
@@ -70,7 +70,7 @@ ColorRes&  ColorManager::GetColorRes()
 
 //////////////////////////////////////////////////////////////////////////
 
-long  ColorManager::UIParseColorTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  ColorManager::UIParseColorTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
     IColorManager&  pColorMgr = pSkinRes->GetColorManager();
     return pColorMgr.GetImpl()->ParseNewElement(pElem->GetImpl());

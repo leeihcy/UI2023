@@ -14,8 +14,8 @@ namespace ui
 class UIApplication;
 struct ILayout;
 struct IUIEditor;
-struct ISkinRes;      
-struct ISkinManager;
+struct IResBundle;      
+struct IResourceManager;
 struct IImageManager;
 struct IImageRes;   
 struct ICursorRes;
@@ -48,28 +48,29 @@ struct UIAPI IUIApplication
     void Run();
     void Quit();
 
-    ISkinRes*  LoadSkinRes(const wchar_t* szSkinPath);
-	ISkinRes*  LoadSkinRes(long hInstance, int resId=-1);
+    IResBundle* RootBundle();
+    IResBundle* LoadResBundle(const wchar_t* szSkinPath);
+	IResBundle* LoadResBundle(long hInstance, int resId=-1);
 
     void  SetEditorMode(bool b);
     bool  IsEditorMode();
     void  SetUIEditorPtr(IUIEditor*);
     IUIEditor*  GetUIEditorPtr();
 
-    ISkinManager&       GetSkinManager();
+    IResourceManager&       GetResourceManager();
     ITopWindowManager*  GetTopWindowMgr();
     uia::IAnimateManager*   GetAnimateManager();
 	// IMessageFilterMgr*  GetMessageFilterMgr();
 
-    ISkinRes*       GetDefaultSkinRes();
+    IResBundle*       GetDefaultSkinRes();
 
     void  RestoreRegisterUIObject();
     bool  RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func);
     bool  GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc);
     bool  GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc);
     
-    IObject*  CreateUIObjectByName(const wchar_t* szName, ISkinRes* pISkinRes);
-    IObject*  CreateUIObjectByClsid(const Guid& clsid, ISkinRes* pISkinRes);
+    IObject*  CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes);
+    IObject*  CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes);
     bool  RegisterUIObject(IObjectDescription* p);
     void  LoadUIObjectListToToolBox();
 
@@ -121,12 +122,32 @@ private:
     UIApplication*  m_pImpl;
 };
 
-struct UIAPI UISDKVersion
+// ¸¨ÖúÀà
+class UIApplicationPtr
+{
+public:
+    UIApplicationPtr() {
+        ui::CreateUIApplication(&m_p);
+    }
+    ~UIApplicationPtr() {
+        m_p->Release();
+    }
+    IUIApplication* operator->() {
+        return m_p;
+    }
+    operator IUIApplication* () const {
+        return m_p;
+    }
+private:
+    IUIApplication* m_p;
+};
+
+struct /*UIAPI*/ SDKVersion
 {
 	static int  GetMajor();
 	static int  GetMinor();
 	static int  GetPatch();
-	static int  GetVersionText(wchar_t* szText, int nTextSize);
+	static int  GetVersionText(char* szText, int nTextSize);
 };
 
 }

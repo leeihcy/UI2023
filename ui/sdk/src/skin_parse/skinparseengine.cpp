@@ -2,7 +2,7 @@
 #include "skinparseengine.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/interface/iskindatasource.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/iuires.h"
 #include "xml/pugixmlwrap/pugixmlwrap.h"
 #include "datasource/skindatasource.h"
@@ -10,7 +10,7 @@
 
 namespace ui {
 
-SkinParseEngine::SkinParseEngine(SkinRes* pSkinRes)
+SkinParseEngine::SkinParseEngine(ResBundle* pSkinRes)
 {   
 	UIASSERT(pSkinRes);
     m_pSkinRes = pSkinRes;
@@ -82,11 +82,11 @@ void  SkinParseEngine::NewChild(UIElement* pElement)
         return;
 	}
 
-    func(pElement->GetIUIElement(), m_pSkinRes->GetISkinRes());
+    func(pElement->GetIUIElement(), m_pSkinRes->GetIResBundle());
 }
 
 
-long  SkinParseEngine::UIParseIncludeTagCallback(IUIElement* pElement, ISkinRes* pSkinRes)
+long  SkinParseEngine::UIParseIncludeTagCallback(IUIElement* pElement, IResBundle* pSkinRes)
 {
     if (nullptr == pElement || nullptr == pSkinRes)
         return -1; // E_FAIL;

@@ -1,5 +1,5 @@
 #include "styleres.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/interface/iuires.h"
 #include "include/interface/imapattr.h"
@@ -220,7 +220,7 @@ bool StyleResItem::Apply(IMapAttribute* pMapAttrib, bool bOverwrite)
 //   StyleRes
 //
 
-StyleRes::StyleRes(SkinRes* p)
+StyleRes::StyleRes(ResBundle* p)
 {
     m_pIStyleRes = nullptr;
 	m_pSkinRes = p;
@@ -421,7 +421,7 @@ StyleResItem* StyleRes::GetItem(STYLE_SELECTOR_TYPE type, const wchar_t* szId)
 		}
 	}
 
-    SkinRes* pParentRes = m_pSkinRes->GetParentSkinRes();
+    ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
     if (pParentRes)
     {
         return pParentRes->GetStyleRes().GetItem(type, szId);

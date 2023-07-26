@@ -22,7 +22,7 @@ public:
 class ImageManager
 {
 public:
-	ImageManager(SkinRes* pSkinRes);
+	ImageManager(ResBundle* pSkinRes);
 	~ImageManager(void);
 
     IImageManager&  GetIImageManager();
@@ -44,7 +44,7 @@ public:
 	void  Clear();
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	static long  UIParseImageTagCallback(IUIElement*, ISkinRes* pSkinRes);
+	static long  UIParseImageTagCallback(IUIElement*, IResBundle* pSkinRes);
 
 private:
     // ISkinTagParse
@@ -65,7 +65,7 @@ private:
 	CursorRes       m_resCursor;   // 鼠标样式图片
 	GifRes          m_resGif;      // 动画
 #endif
-	SkinRes*        m_pSkinRes;
+	ResBundle*        m_pSkinRes;
 };
 
 } 

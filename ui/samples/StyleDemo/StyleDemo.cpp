@@ -19,7 +19,7 @@
 //#pragma comment(lib, "uictrls.lib")
 
 UI::IUIApplication* g_pUIApplication = nullptr;
-UI::ISkinRes* g_pSkinRes = nullptr;
+UI::IResBundle* g_pSkinRes = nullptr;
 
 TCHAR  g_szAppDir[MAX_PATH] = {0};
 long   g_framecount = 0;
@@ -45,7 +45,7 @@ public:
     //    UIMSG_WM_INITIALIZE(OnInitialize)
     //UI_END_MSG_MAP_CHAIN_PARENT(IWindow);
 
-    void  Create(UI::ISkinRes* skinres) {
+    void  Create(UI::IResBundle* skinres) {
         m_pWindow = UI::IWindow::CreateInstance(skinres);
         m_pWindow->SetWindowMessageCallback(
             static_cast<UI::IWindowDelegate*>(this));
@@ -103,7 +103,7 @@ int APIENTRY _tWinMain(
     CreateUIApplication(&g_pUIApplication);
     //UICtrl_RegisterUIObject(g_pUIApplication);
 
-    g_pSkinRes = g_pUIApplication->LoadSkinRes(LR"(C:\Users\libo\Desktop\github\UI2023\ui\samples\StyleDemo\skin\Default)");
+    g_pSkinRes = g_pUIApplication->LoadResBundle(LR"(C:\Users\libo\Desktop\github\UI2023\ui\samples\StyleDemo\skin\Default)");
     
 
     {

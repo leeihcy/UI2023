@@ -8,30 +8,24 @@ void on_window_destroy(ui::IUIApplication* uiapp) {
     printf("on_window_destroy\n");
     uiapp->Quit();
 }
-void on_window_paint(SkCanvas& canvas) {
-    canvas.clear(SK_ColorRED);
+// void on_window_paint(SkCanvas& canvas) {
+//     canvas.clear(SK_ColorRED);
 
-    SkPaint paint;
-    canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10, paint);
-}
+//     SkPaint paint;
+//     canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10, paint);
+// }
 
-int mac_main();
+// int mac_main();
 int main() {
+    char version[32] = {0};
+    ui::SDKVersion::GetVersionText(version, 32);
+    printf("ui sdk verson: %s\n", version);
+
+    ui::UIApplicationPtr uiapp;
+    ui::IResBundle* bundle = uiapp->RootBundle();
+
 #if 0
-    mac_main();
-#else
-    ui::IUIApplication* uiapp;
-
-    // wchar szSDKVersion[64] = {0};
-    // UI::UISDKVersion::GetVersionText(szSDKVersion, 64);
-
-    CreateUIApplication(&uiapp);
-    //UICtrl_RegisterUIObject(g_pUIApplication);
-
-    ui::ISkinRes* skinres = uiapp->LoadSkinRes(
-        LR"(/Users/libo/2030/github/UI2023/ui/samples/StyleDemo/skin/Default)");
-
-    ui::IWindow* pWindow = ui::IWindow::CreateInstance(skinres);
+    ui::IWindow* pWindow = ui::IWindow::CreateInstance(bundle);
 
     ui::Rect rc = {100, 100, 500, 400};
     pWindow->Create(rc);
@@ -43,8 +37,6 @@ int main() {
     uiapp->Run();
 
     pWindow->Release();
-    uiapp->Release();
-
 #endif
     return 0;
 }

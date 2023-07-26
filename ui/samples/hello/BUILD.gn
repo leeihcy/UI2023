@@ -16,19 +16,18 @@ executable("hello") {
         "macos.mm"
     ]
 
-    lib_dirs = ["../../3rd/skia/lib"]
-    libs = ["skia"]
+    # lib_dirs = ["../../3rd/skia/lib"]
+    # libs = ["skia"]
 
-    if (true) {
-        # skia Mac 依赖
-        ldflags = [
-            "-framework", "CoreFoundation",
-            "-framework", "CoreGraphics",
-            "-framework", "CoreText",
-            "-framework", "CoreServices",
-            "-framework", "Cocoa",
-        ]
-    }
+    # skia Mac 依赖
+    # ldflags = [
+    #     "-framework", "CoreFoundation",
+    #     "-framework", "CoreGraphics",
+    #     "-framework", "CoreText",
+    #     "-framework", "CoreServices",
+    #     "-framework", "Cocoa",
+    # ]
+
     cflags = []
     if (is_debug) {
       cflags += ["-g"]

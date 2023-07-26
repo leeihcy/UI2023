@@ -15,7 +15,7 @@
 namespace ui
 {
 struct IUIApplication;
-struct ISkinRes;
+struct IResBundle;
 struct UIMSG;
 
 template<class T>
@@ -23,12 +23,12 @@ class ObjectCreator : public T
 {
 public: 
 	// 通用型
-	static void CreateInstance2(ISkinRes* pSkinRes, void** pp)
+	static void CreateInstance2(IResBundle* pSkinRes, void** pp)
 	{
 		*pp = (void*)ObjectCreator<T>::CreateInstance(pSkinRes);
 	}
 	// 专用型
-	static T* CreateInstance(ISkinRes* pSkinRes)
+	static T* CreateInstance(IResBundle* pSkinRes)
 	{
         if (!pSkinRes)
         {
@@ -77,12 +77,12 @@ class ObjectNoImplCreator : public T
 {
 public: 
 	// 通用型
-	static void CreateInstance2(ISkinRes* pSkinRes, void** pp)
+	static void CreateInstance2(IResBundle* pSkinRes, void** pp)
 	{
 		*pp = (void*)ObjectNoImplCreator<T>::CreateInstance(pSkinRes);
 	}
 	// 专用型
-	static T* CreateInstance(ISkinRes* pSkinRes)
+	static T* CreateInstance(IResBundle* pSkinRes)
 	{
 		T* p = new ObjectNoImplCreator<T>;
 

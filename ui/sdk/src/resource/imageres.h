@@ -9,7 +9,7 @@ namespace ui
 class ImageData;
 class GDIRenderBitmap;
 class GdiplusRenderBitmap;
-class SkinRes;
+class ResBundle;
 
 //
 //	image中的一项信息数据
@@ -41,8 +41,8 @@ public:
 	bool  ModifyHLS(short h, short l, short s, int nFlag);
 	bool  ModifyHLS(IRenderBitmap* pBitmap, short h, short l, short s, int nFlag);
 	bool  ModifyAlpha(byte nAlphaPercent);
-	IRenderBitmap*  GetImage(SkinRes* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI, bool* pbFirstTimeCreate=nullptr);
-    IRenderBitmap*  GetImage_gdi(SkinRes* pSkinRes, bool* pbFirstTimeCreate=nullptr);
+	IRenderBitmap*  GetImage(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI, bool* pbFirstTimeCreate=nullptr);
+    IRenderBitmap*  GetImage_gdi(ResBundle* pSkinRes, bool* pbFirstTimeCreate=nullptr);
 
 	bool  IsMyRenderBitmap(IRenderBitmap* pRenderBitmap);
 
@@ -115,7 +115,7 @@ private:
 class ImageRes
 {
 public:
-	ImageRes(SkinRes*  pSkinRes);
+	ImageRes(ResBundle*  pSkinRes);
 	~ImageRes();
 
 	IImageRes&  GetIImageRes();
@@ -146,7 +146,7 @@ public:
 
 private: 
 	IImageRes*  m_pIImageRes;
-	SkinRes*  m_pSkinRes;
+	ResBundle*  m_pSkinRes;
 
     typedef  std::map<String,  ImageResItem*>::iterator  _MyIter;
     std::map<std::wstring,  ImageResItem*>   m_mapImages;

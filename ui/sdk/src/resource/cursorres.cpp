@@ -1,6 +1,6 @@
 #include "include/inc.h"
 #include "cursorres.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/resource/uicursor.h"
 #include "include/interface/iuires.h"
 #include "include/interface/imapattr.h"

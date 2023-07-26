@@ -5,7 +5,7 @@
 #include "src/window/window.h"
 
 #if 0
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #endif
 
 using namespace ui;
@@ -59,9 +59,9 @@ IWindowRender*  IWindowBase::GetWindowRender()
 { 
 	return __pImpl->GetWindowRender()->GetIWindowRender();
 }
-ISkinRes*  IWindowBase::GetSkinRes()                                      
+IResBundle*  IWindowBase::GetSkinRes()                                      
 { 
-	return __pImpl->GetSkinRes()->GetISkinRes(); 
+	return __pImpl->GetSkinRes()->GetIResBundle(); 
 }
 void   IWindowBase::SetFocusObject(IObject* pObj)
 {

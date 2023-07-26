@@ -2,7 +2,7 @@
 #include "string_attribute.h"
 #include "attribute.h"
 #include "src/resource/i18nres.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/application/uiapplication.h"
 #include "attributex64.h"
 

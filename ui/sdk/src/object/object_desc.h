@@ -12,7 +12,7 @@ public:
 		return &s;
 	}
 
-    virtual void  CreateInstance(ISkinRes* p, void** pp) override
+    virtual void  CreateInstance(IResBundle* p, void** pp) override
     {
         UIASSERT(0);
     }

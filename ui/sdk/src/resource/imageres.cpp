@@ -4,7 +4,7 @@
 #include "image/image.h"
 // #include "src\Renderlibrary\gdi\gdibitmap.h"
 // #ina clude "src/Renderlibrary\gdiplus\gdiplusbitmap.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 // #include "Inc\Util\iimage.h"
 #include "include/base/xmldefine.h"
 #include "include/interface/iuires.h"
@@ -86,7 +86,7 @@ bool  ImageResItem::IsMyRenderBitmap(IRenderBitmap* pRenderBitmap)
 	return false;
 }
 
-IRenderBitmap* ImageResItem::GetImage(SkinRes* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, bool* pbFirstTimeCreate)
+IRenderBitmap* ImageResItem::GetImage(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, bool* pbFirstTimeCreate)
 {
 	if (nullptr == pSkinRes)
 		return nullptr;
@@ -112,7 +112,7 @@ IRenderBitmap* ImageResItem::GetImage(SkinRes* pSkinRes, GRAPHICS_RENDER_LIBRARY
 	return nullptr;
 }
 
-IRenderBitmap*  ImageResItem::GetImage_gdi(SkinRes* pSkinRes, bool* pbFirstTimeCreate)
+IRenderBitmap*  ImageResItem::GetImage_gdi(ResBundle* pSkinRes, bool* pbFirstTimeCreate)
 {
 #if defined(OS_WIN)
     SkinDataSource* pDataSource = pSkinRes->GetDataSource();
@@ -441,7 +441,7 @@ void  ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap)
 //	ImageRes
 //
 
-ImageRes::ImageRes(SkinRes*  pSkinRes)
+ImageRes::ImageRes(ResBundle*  pSkinRes)
 {
 	m_pSkinRes = pSkinRes; 
 	m_pIImageRes = nullptr;
@@ -825,7 +825,7 @@ const wchar_t*  ImageRes::GetRenderBitmapId(IRenderBitmap* pBitmap)
 		}
 	}
 
-    SkinRes* pParent = m_pSkinRes->GetParentSkinRes();
+    ResBundle* pParent = m_pSkinRes->GetParentSkinRes();
     if (pParent)
     {
         return pParent->GetImageRes().GetRenderBitmapId(pBitmap);

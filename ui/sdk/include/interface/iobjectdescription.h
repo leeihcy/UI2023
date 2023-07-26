@@ -76,7 +76,7 @@ enum LAYER_TYPE
 
 struct  IObjectDescription
 {
-    virtual void  CreateInstance(ui::ISkinRes* p, void**) = 0;
+    virtual void  CreateInstance(ui::IResBundle* p, void**) = 0;
 	virtual OBJ_TYPE  GetMajorType() = 0;
 	virtual long  GetMinorType() = 0;
 	virtual const wchar_t*  GetCategory() = 0;

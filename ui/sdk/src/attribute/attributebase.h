@@ -1,6 +1,6 @@
 #pragma once
 #include "include/interface/iattribute.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 
 namespace ui
 {
@@ -54,7 +54,7 @@ namespace ui
 		void  SetGroupName(const wchar_t* szGroupName);
 		const wchar_t*  GetGroupName();
 		void  SetUIApplication(UIApplication* p);
-		void  SetSkinRes(SkinRes* p);
+		void  SetSkinRes(ResBundle* p);
 		UIApplication*  GetUIApplication();
 
     protected:
@@ -83,6 +83,6 @@ namespace ui
 
     protected:
         UIApplication*  m_pUIApplication;
-		SkinRes*  m_pSkinRes;
+		ResBundle*  m_pSkinRes;
     };
 }

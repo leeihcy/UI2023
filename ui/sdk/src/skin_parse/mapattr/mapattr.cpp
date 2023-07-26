@@ -303,7 +303,7 @@ long  CMapAttribute::GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t
 //     const wchar_t* szPrefix, 
 //     const wchar_t* szKey, 
 //     bool bErase, 
-//     ISkinRes* pUIApp,
+//     IResBundle* pUIApp,
 //     IObject* pBindObj, 
 //     ITextRenderBase** ppGet)
 // {
@@ -350,7 +350,7 @@ long  CMapAttribute::GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t
 //         const wchar_t* szPrefix,
 //         const wchar_t* szKey, 
 //         bool bErase, 
-//         ISkinRes* pSkinRes,
+//         IResBundle* pSkinRes,
 //         Color** ppColor)
 // {
 //     UIASSERT(pSkinRes);

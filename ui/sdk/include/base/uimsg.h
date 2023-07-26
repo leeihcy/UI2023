@@ -77,7 +77,7 @@
     }
 
 #define UI_BEGIN_MSG_MAP_Ixxx(iclassname) \
-	static iclassname* CreateInstance(ui::ISkinRes* pSkinRes)        \
+	static iclassname* CreateInstance(ui::IResBundle* pSkinRes)        \
 	{ return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes); } \
     UI_BEGIN_MSG_MAP()
 
@@ -149,15 +149,15 @@
 //  
 //  message : UI_WM_FINALCONSTRUCT
 //  code : NA
-//  wparam : ISkinRes*,对象所属资源包
+//  wparam : IResBundle*,对象所属资源包
 //
 #define UI_MSG_FINALCONSTRUCT  168252120
-// long  FinalConstruct(ISkinRes* p);
+// long  FinalConstruct(IResBundle* p);
 #define UIMSG_FINALCONSTRUCT(func)                    \
     if (uMsg == UI_MSG_FINALCONSTRUCT)                \
     {                                                 \
         SetMsgHandled(true);                          \
-        lResult = func((ui::ISkinRes*)wParam);        \
+        lResult = func((ui::IResBundle*)wParam);        \
         if (IsMsgHandled())                           \
             return true;                              \
     }

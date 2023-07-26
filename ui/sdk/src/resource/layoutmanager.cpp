@@ -2,7 +2,7 @@
 #include "src/private_inc.h"
 
 #include "src/resource/uiresource.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/ixmlwrap.h"
 #include "src/object/object.h"
 #include "src/resource/stylemanager.h"
@@ -17,7 +17,7 @@
 namespace ui
 {
 
-LayoutManager::LayoutManager(SkinRes* p)
+LayoutManager::LayoutManager(ResBundle* p)
 {
 	m_pSkinRes = p;
     m_pILayoutManager = nullptr;
@@ -120,7 +120,7 @@ UIElementProxy  LayoutManager::FindWindowElement(
 	if (proxy)
 		return proxy;
 
-	SkinRes* pParentRes = m_pSkinRes->GetParentSkinRes();
+	ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
 	if (pParentRes)
 	{
 		return pParentRes->GetLayoutManager().FindWindowElement(szTagName, szId);
@@ -314,7 +314,7 @@ Object*  LayoutManager::ParseElement(
 	if (0 == wcscmp(XML_PROP, bstrTagName.c_str()))
 		return nullptr;
 
-    IObject* pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(), m_pSkinRes->GetISkinRes());
+    IObject* pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(), m_pSkinRes->GetIResBundle());
     if (nullptr == pIObject)
     {
         // 尝试寻找该Tag是否被注册了
@@ -324,7 +324,7 @@ Object*  LayoutManager::ParseElement(
         {
             eParseRet = func(
                     pUIElement->GetIUIElement(), 
-                    m_pSkinRes->GetISkinRes(), 
+                    m_pSkinRes->GetIResBundle(), 
                     pParent?pParent->GetIObject():nullptr, 
                     &pIObject);
 
@@ -516,13 +516,13 @@ void  LayoutManager::ReloadChildObjects(
 
 //////////////////////////////////////////////////////////////////////////
 
-long  LayoutManager::UIParseLayoutTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  LayoutManager::UIParseLayoutTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
     ILayoutManager&  pLayoutMgr = pSkinRes->GetLayoutManager();
     pLayoutMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 	return true;
 }
-long  LayoutManager::UIParseLayoutConfigTagCallback(IUIElement* pElem, ISkinRes* pSkinRes)
+long  LayoutManager::UIParseLayoutConfigTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
 {
 	ILayoutManager&  pLayoutMgr = pSkinRes->GetLayoutManager();
 	pLayoutMgr.GetImpl()->ParseLayoutConfigTag(pElem->GetImpl());

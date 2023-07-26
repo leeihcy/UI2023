@@ -125,7 +125,7 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 {
     HWND  GetHWND();
     IWindowRender*  GetWindowRender();
-	ISkinRes*  GetSkinRes();
+	IResBundle*  GetSkinRes();
 
     bool  IsChildWindow();
 	bool  IsWindowVisible();

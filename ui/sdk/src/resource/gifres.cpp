@@ -1,5 +1,5 @@
 #include "gifres.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/util/gif/gifImage.h"
 #include "include/interface/iuires.h"
 #include "Inc/Interface/imapattr.h"
@@ -54,7 +54,7 @@ IGifResItem*  GifResItem::GetIGifResItem()
 	return m_pIGifResItem;
 }
 
-GifImageBase*  GifResItem::GetGifImage(SkinRes* pSkinRes)
+GifImageBase*  GifResItem::GetGifImage(ResBundle* pSkinRes)
 {
 	if (nullptr == m_pUIApp)
 		return nullptr;
@@ -96,7 +96,7 @@ void GifResItem::SetAttribute(IMapAttribute* pMapAttrib)
 	m_pMapAttrib->AddRef();
 }
 
-GifRes::GifRes(SkinRes* p)
+GifRes::GifRes(ResBundle* p)
 {
 	m_pUIApp = nullptr; 
 	m_pIGifRes = nullptr;

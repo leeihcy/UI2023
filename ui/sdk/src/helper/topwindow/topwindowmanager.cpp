@@ -4,7 +4,7 @@
 #include "include/interface/iobject.h"
 #include "include/interface/iwindow.h"
 #include "src/layout/layout.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/object/object.h"
 #include "src/window/window.h"
 #include "src/application/uiapplication.h"
@@ -95,7 +95,7 @@ IWindow* TopWindowManager::GetWindow(HWND hWnd)
 //	修改皮肤，让当前所有窗口重新加载
 //
 #if 0
-void TopWindowManager::ChangeSkin(SkinRes* pNewSkinRes)
+void TopWindowManager::ChangeSkin(ResBundle* pNewSkinRes)
 {
 	if( nullptr == pNewSkinRes )
 		return;

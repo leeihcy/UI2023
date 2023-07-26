@@ -4,7 +4,7 @@ namespace ui
 {
 struct IGifImage;
 class GifImageBase;
-class SkinRes;
+class ResBundle;
 struct IGifResItem;
 struct IGifRes;
 class UIApplication;
@@ -32,7 +32,7 @@ public:
 	bool  ModifyGif(const String& strPath) { UIASSERT(0); return false; } // TODO:
 	bool  ModifyHLS(short h, short l, short s, int nFlag){ UIASSERT(0); return false; } // TODO:
 	void  SetAttribute(IMapAttribute* pMapAttrib);
-	GifImageBase*  GetGifImage(SkinRes* pSkinRes);
+	GifImageBase*  GetGifImage(ResBundle* pSkinRes);
 	IGifResItem*  GetIGifResItem();
 
 	DECLARE_bool_SETGET(UseSkinHLS);
@@ -47,7 +47,7 @@ public:
 class GifRes
 {
 public:
-	GifRes(SkinRes* p);
+	GifRes(ResBundle* p);
 	~GifRes();
 
 	IGifRes*  GetIGifRes();
@@ -73,7 +73,7 @@ private:
 	IGifRes*  m_pIGifRes;
 	std::vector<GifResItem*>   m_vGifs;
 	UIApplication*       m_pUIApp;
-	SkinRes*  m_pSkinRes;
+	ResBundle*  m_pSkinRes;
 };
 
 

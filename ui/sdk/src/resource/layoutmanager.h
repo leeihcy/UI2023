@@ -8,11 +8,11 @@ namespace ui
 {
 class Object;
 struct UIElement;
-class SkinRes;
+class ResBundle;
 struct ILayoutWindowNodeList;
 struct ILayoutManager;
 struct IMessage;
-struct ISkinRes;
+struct IResBundle;
 
 
 //  延迟加载的布局配置
@@ -47,7 +47,7 @@ private:
 class LayoutManager
 {
 public:
-	LayoutManager(SkinRes*);
+	LayoutManager(ResBundle*);
 	~LayoutManager(void);
 	
     ILayoutManager&  GetILayoutManager();
@@ -86,9 +86,9 @@ public:
                 std::map<std::wstring, Object*>& listAllChild);
 
     static long  UIParseLayoutTagCallback(
-                IUIElement*, ISkinRes* pSkinRes);
+                IUIElement*, IResBundle* pSkinRes);
 	static long  UIParseLayoutConfigTagCallback(
-                IUIElement*, ISkinRes* pSkinRes);
+                IUIElement*, IResBundle* pSkinRes);
 	
 	// 编辑器专用函数
 	bool  LoadWindowNodeList(ILayoutWindowNodeList** pp);
@@ -109,7 +109,7 @@ private:
 	UIList<LayoutConfigItem*>  m_listLayoutConfig;  // 还未加载的布局项
 
 	// 对象属性
-	SkinRes*         m_pSkinRes;
+	ResBundle*         m_pSkinRes;
 };
 
 }

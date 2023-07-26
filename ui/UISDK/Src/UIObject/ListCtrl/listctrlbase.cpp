@@ -14,7 +14,7 @@
 #include "src/application/uiapplication.h"
 #include "src/Util\Gesture\gesturehelper.h"
 #include "src/Util\DPI\dpihelper.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 namespace ui
 {
 
@@ -85,7 +85,7 @@ ListCtrlBase::~ListCtrlBase()
     SAFE_RELEASE(m_pFocusRender);
 }
 
-HRESULT  ListCtrlBase::FinalConstruct(ISkinRes* p)
+HRESULT  ListCtrlBase::FinalConstruct(IResBundle* p)
 {
 	DO_PARENT_PROCESS(IListCtrlBase, IControl);
     if (FAILED(GetCurMsg()->lRet))

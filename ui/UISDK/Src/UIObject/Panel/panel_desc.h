@@ -11,7 +11,7 @@ public:
 		return &s;
 	}
 
-    virtual void  CreateInstance(UI::ISkinRes* p, void** pp) override
+    virtual void  CreateInstance(UI::IResBundle* p, void** pp) override
     {
         *pp = IPanel::CreateInstance(p);
     }
@@ -57,7 +57,7 @@ public:
 		return &s;
 	}
 
-	virtual void  CreateInstance(UI::ISkinRes* p, void** pp) override
+	virtual void  CreateInstance(UI::IResBundle* p, void** pp) override
 	{
 		*pp = IRoundPanel::CreateInstance(p);
 	}

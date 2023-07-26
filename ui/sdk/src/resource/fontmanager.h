@@ -18,7 +18,7 @@ public:
 class FontManager
 {
 public:
-	FontManager(SkinRes* p);
+	FontManager(ResBundle* p);
 	~FontManager(void);
    
     IFontManager&  GetIFontManager();
@@ -29,7 +29,7 @@ public:
 	int        GetFontCount();
 	IFontResItem*  GetFontItemInfo(int nIndex);
 	
-    static long  UIParseFontTagCallback(IUIElement*, ISkinRes* pSkinRes);
+    static long  UIParseFontTagCallback(IUIElement*, IResBundle* pSkinRes);
 private:
     long  ParseNewElement(UIElement* pElem);
     void  OnNewChild(UIElement* pElem, HDC);
@@ -44,7 +44,7 @@ private:
 
 	// ∂‘œÛ Ù–‘
 	FontRes   m_resFont;
-	SkinRes*  m_pSkinRes;
+	ResBundle*  m_pSkinRes;
 };
 
 }

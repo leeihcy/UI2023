@@ -8,7 +8,7 @@
 #include "src/Atl\image.h"
 #include "src/layout/layout.h"
 #include "src/Helper\topwindow\topwindowmanager.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "src/Util\dwm\dwmhelper.h"
 #include "src/Base\Message\message.h"
 #include "src/attribute/attribute.h"
@@ -83,7 +83,7 @@ WindowBase::~WindowBase()
 	SAFE_DELETE(m_pCallbackProxy);
 }
 
-HRESULT  WindowBase::FinalConstruct(ISkinRes* p)
+HRESULT  WindowBase::FinalConstruct(IResBundle* p)
 {
     DO_PARENT_PROCESS(IWindowBase, IPanel);
 

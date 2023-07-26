@@ -1,6 +1,6 @@
 #include "fontres.h"
 // #include "src/Renderlibrary/gdi/gdifont.h"
-#include "src/resource/skinres.h"
+#include "src/resource/res_bundle.h"
 #include "include/interface/iuires.h"
 
 namespace ui
@@ -59,7 +59,7 @@ int FontResItem::GetFontSize()
 	return FontHeight2Size(m_lf.lfHeight); 
 }
 
-IRenderFont* FontResItem::GetFont(SkinRes* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
+IRenderFont* FontResItem::GetFont(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
 {
 #if 0
 	switch(eRenderType)
@@ -103,7 +103,7 @@ bool FontResItem::IsMyRenderFont(IRenderFont* pRenderFont)
     return false;
 }
 
-FontRes::FontRes(SkinRes* pSkinRes)
+FontRes::FontRes(ResBundle* pSkinRes)
 {
     m_pSkinRes = pSkinRes;
     m_pIFontRes = nullptr;
@@ -204,7 +204,7 @@ bool  FontRes::GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, IRenderF
 		}
 	}
 
-	SkinRes* pParentRes = m_pSkinRes->GetParentSkinRes();
+	ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
 	if (pParentRes)
 	{
 		return pParentRes->GetFontRes().GetDefaultFont(eRenderType, ppFont);

@@ -866,7 +866,7 @@ bool ListItemBase::CreateRootPanel()
     }
 
     IListItemRootPanel* p = IListItemRootPanel::
-            CreateInstance(m_pListCtrlBase->GetISkinRes());
+            CreateInstance(m_pListCtrlBase->GetIResBundle());
     if (nullptr == p)
         return false;
 
@@ -1217,7 +1217,7 @@ void  ListItemBase::SetIconFromImageId(const wchar_t* szImageId)
     if (nullptr == m_pListCtrlBase)
         return;
 
-    ISkinRes*  pSkinRes = GetIListCtrlBase()->GetSkinRes();
+    IResBundle*  pSkinRes = GetIListCtrlBase()->GetSkinRes();
     if (nullptr == pSkinRes)
     {
         UIASSERT(0);
