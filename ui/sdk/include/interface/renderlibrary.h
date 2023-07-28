@@ -169,7 +169,7 @@ public:
 class RenderBitmapFactory
 {
 public:
-	static void CreateInstance(IUIApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut);
+	static void CreateInstance(IApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut);
 };
 
 #define FONTITEM_FLAG_UNDERLINE 0x01

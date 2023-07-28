@@ -370,7 +370,7 @@ void ScrollBarManager::SmoothScroll_Start()
     if (nullptr == m_pBindObject)
         return;
 
-    IUIApplication* pUIApp = m_pBindObject->GetUIApplication();
+    IApplication* pUIApp = m_pBindObject->GetUIApplication();
     if (nullptr == pUIApp)
         return;
 
@@ -392,7 +392,7 @@ void ScrollBarManager::SmoothScroll_Stop()
     if (nullptr == m_pBindObject)
         return;
 
-    IUIApplication* pUIApp = m_pBindObject->GetUIApplication();
+    IApplication* pUIApp = m_pBindObject->GetUIApplication();
     if (nullptr == pUIApp)
         return;
 

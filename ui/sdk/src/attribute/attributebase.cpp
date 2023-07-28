@@ -95,7 +95,7 @@ const wchar_t*  AttributeBase::GetGroupName()
 {
 	return m_strGroupName.c_str();
 }
-void  AttributeBase::SetUIApplication(UIApplication* p)
+void  AttributeBase::SetUIApplication(Application* p)
 {
 	m_pUIApplication = p;
 }
@@ -103,7 +103,7 @@ void  AttributeBase::SetSkinRes(ResBundle* p)
 {
 	m_pSkinRes = p;
 }
-UIApplication*  AttributeBase::GetUIApplication()
+Application*  AttributeBase::GetUIApplication()
 {
 	return m_pUIApplication;
 }

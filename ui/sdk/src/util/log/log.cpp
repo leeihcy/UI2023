@@ -1,88 +1,68 @@
-#include "log.h"
 #include "inc.h"
-#include <string>
 #include "include/util/log.h"
+#include <string>
 
-namespace ui
-{
+std::wstring LevelToString(const ui::LOG_LEVEL &l) {
+  static std::wstring strRet;
 
-std::wstring LevelToString(const ui::LOG_LEVEL& l)
-{
-	static std::wstring strRet;
+  switch (l) {
+  case ui::LOG_LEVEL_DEBUG:
+    return std::wstring(L" [DEBUG]   ");
 
-	switch (l)
-	{
-	case LOG_LEVEL_DEBUG:
-		return std::wstring(L" [DEBUG]   ");
+  case ui::LOG_LEVEL_INFO:
+    return std::wstring(L" [INFO]    ");
 
-	case LOG_LEVEL_INFO:
-		return std::wstring(L" [INFO]    ");
+  case ui::LOG_LEVEL_WARN:
+    return std::wstring(L" [WARN]    ");
 
-	case LOG_LEVEL_WARN:
-		return std::wstring(L" [WARN]    ");
+  case ui::LOG_LEVEL_ERROR:
+    return std::wstring(L" [ERROR]   ");
 
-	case LOG_LEVEL_ERROR:
-		return std::wstring(L" [ERROR]   ");
+  case ui::LOG_LEVEL_FATAL:
+    return std::wstring(L" [FATAL]   ");
 
-	case LOG_LEVEL_FATAL:
-		return std::wstring(L" [FATAL]   ");
-
-	default:
-		return std::wstring(L" [UNKNOWN] ");
-	}
+  default:
+    return std::wstring(L" [UNKNOWN] ");
+  }
 }
-void  __cdecl UILog(ui::LOG_LEVEL lLevel, const wchar_t* szFile, const wchar_t* szFunction, long lLine, const wchar_t* szFormat, ...)
-{
-#ifdef _DEBUG
-	// level
-	std::wstring strInfo;
-	strInfo.append(LevelToString(lLevel));
 
-	// content
-	va_list argList;
-	va_start(argList, szFormat);
+void __cdecl UILog(ui::LOG_LEVEL lLevel, const char *szFile,
+                    const char *szFunction, long lLine, const wchar_t *szFormat,
+                    ...) {
+  // level
+  std::wstring output;
+  output.append(LevelToString(lLevel));
 
-	int nLength = _vsctprintf(szFormat, argList) + 1;
-	wchar* pszFormatStack = (wchar*)_malloca(nLength*sizeof(wchar));
-	_vstprintf_s(pszFormatStack, nLength, szFormat, argList);
-	strInfo.append(pszFormatStack);
+  // content
+  va_list argList;
+  va_start(argList, szFormat);
 
-	_freea(pszFormatStack); 
-	va_end(argList);
-	strInfo.append(TEXT("\r\n"));
+  const int max_size = 10240;
+  for (int size = 256; size < max_size; size<<=1) {
+    // 直接在栈上分配
+    wchar_t *buffer = nullptr;
+    buffer = (wchar_t *)alloca(size*sizeof(wchar_t));
+    int ret = vswprintf(buffer, size, szFormat, argList);
+    if (ret < 0 || ret >= size) {
+      continue;
+    }
 
-#if 0
+    output.append(buffer);
+    break;
+  }
+  
+  va_end(argList);
+  output.append(L"\r\n");
+
 	// file name, line function
-	wchar szLine[16] = { 0 };
-	wprintf(szLine, TEXT("(%d) : "), lLine);
+	wchar_t buffer[1024] = { 0 };
+	swprintf(buffer, 1024, L"\t%s(%d) : %s\r\n", szFile, lLine, szFunction);
 
-	strInfo.append(TEXT("\t\t\t"));
-	strInfo.append(szFile);
-	strInfo.append(szLine);
-	strInfo.append(szFunction);
+	output.append(buffer);
 
-	strInfo.append(TEXT("\r\n"));
+#if defined(OS_WIN)
+  OutputDebugString(output.c_str());
+#else
+  wprintf(output.c_str());
 #endif
-	// output
-	OutputDebugString(strInfo.c_str());
-#endif
-}
-
-void  UIAPI __cdecl UILogA(
-	LOG_LEVEL lLevel,
-	const char* szFile,
-	const char* szFunction,
-	long lLine,
-	const char* szFormat,
-	...)
-{
-	// TODO:
-	
-}
-
-}
-
-void  __cdecl UILog2(ui::LOG_LEVEL lLevel, const char* szFile, const char* szFunction, long lLine, const wchar_t* szFormat, ...)
-{
-    // TODO:
 }

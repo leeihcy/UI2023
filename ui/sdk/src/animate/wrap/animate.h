@@ -5,14 +5,14 @@
 namespace ui
 {
 	class WaitForHandlesMgr;
-    class UIApplication;
+    class Application;
 
 	class AnimateHelper :
 		public uia::IAnimateTimerCallback,
 		public IWaitForHandleCallback
 	{
 	public:
-		AnimateHelper(UIApplication& app);
+		AnimateHelper(Application& app);
 		~AnimateHelper();
 
 		void  Init(WaitForHandlesMgr* p);
@@ -31,6 +31,6 @@ namespace ui
 	private:
 		WaitForHandlesMgr*  m_pWaitforHandle;
 		uia::IAnimateManager*  m_pAnimateMgr;
-		UIApplication&  m_uiApplication;
+		Application&  m_uiApplication;
 	};
 }

@@ -2,13 +2,13 @@
 
 namespace ui
 {
-	class UIApplication;
+	class Application;
 	struct ITextRenderBase;
 
 class TextRenderFactory
 {
 public:
-	TextRenderFactory(UIApplication& app);
+	TextRenderFactory(Application& app);
 	~TextRenderFactory();
 
 	void  Init();
@@ -38,7 +38,7 @@ public:
             long wParam, 
             long lParam);
 private:
-	UIApplication&  m_app;
+	Application&  m_app;
 
 	struct UITEXTRENDERBASE_CREATE_INFO
 	{

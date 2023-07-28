@@ -27,7 +27,7 @@ namespace ui
 		ResBundle*  GetImpl();
 		void  SetParentSkinRes(IResBundle*);
 
-		IUIApplication*  GetUIApplication();
+		IApplication*  GetUIApplication();
         IResourceManager&    GetResourceManager();
         IImageManager&   GetImageManager();
         IColorManager&   GetColorManager();
@@ -64,7 +64,7 @@ namespace ui
 		IResourceManager(ResourceManager*);
 		ResourceManager*  GetImpl();
 
-		IUIApplication*  GetUIApplication();
+		IApplication*  GetUIApplication();
 		void  ChangeSkinHLS(short h, short l, short s, int nFlag);
 		bool  Save(IResBundle* pSkinRes);
 

@@ -20,7 +20,7 @@
  */
 namespace ui {
 struct IResourceManager;
-class UIApplication;
+class Application;
 class IUISkinDescParse;
 
 class ResourceManager {
@@ -31,8 +31,8 @@ public:
 
 public:
   IResourceManager &GetIResourceManager();
-  UIApplication *GetUIApplication();
-  void SetUIApplication(UIApplication *pUIApp);
+  Application *GetUIApplication();
+  void SetUIApplication(Application *pUIApp);
 
   ResBundle& RootBundle() { return m_root_bundle; }
 
@@ -51,7 +51,7 @@ public:
 
 private:
   IResourceManager *m_pIResourceManager = nullptr;
-  UIApplication *m_pUIApplication = nullptr;
+  Application *m_pUIApplication = nullptr;
 
   // 数据持久层
   bool m_bDirty = false;

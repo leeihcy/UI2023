@@ -66,7 +66,7 @@ public:
     void  Save();
     void  Editor();
 
-    IUIApplication*  GetUIApplication();
+    IApplication*  GetUIApplication();
     SERIALIZEDATA*  GetSerializeData();
 
 public:

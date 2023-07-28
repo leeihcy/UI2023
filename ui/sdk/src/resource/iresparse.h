@@ -10,10 +10,10 @@ namespace ui
 	{
 	protected:
 		String   m_strDataSource;    // 数据源，如xml文件路径
-		IUIApplication*  m_pUIApp;   // UI实例
+		IApplication*  m_pUIApp;   // UI实例
 
 	public:
-		void  SetUIApplicationPtr(IUIApplication* p) { m_pUIApp = p; }
+		void  SetUIApplicationPtr(IApplication* p) { m_pUIApp = p; }
 		void  SetDataSource(const String& strDataSource) { m_strDataSource = strDataSource; }
 		void  Release(){ delete this; }
 		const String& GetDataSourceStringRef() { return m_strDataSource; }

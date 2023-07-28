@@ -4,17 +4,17 @@
 
 namespace ui
 {
-class UIApplication;
+class Application;
 #if defined(OS_WIN)
 // 创建一个隐藏消息窗口，用于实现post ui message
 class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
 {
 public:
-	ForwardPostMessageWindow(UIApplication* pUIApp) { m_pUIApplication = pUIApp; }
+	ForwardPostMessageWindow(Application* pUIApp) { m_pUIApplication = pUIApp; }
 	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0);
 
 protected:
-	UIApplication*  m_pUIApplication;
+	Application*  m_pUIApplication;
 };
 
 // 实现消息循环中等待HANDLE的功能

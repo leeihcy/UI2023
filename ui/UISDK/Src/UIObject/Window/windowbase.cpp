@@ -575,7 +575,7 @@ HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
 	s_create_wnd_data.AddCreateWndData(&m_thunk.cd, this);
 	{
 		m_hWnd = CreateDialogIndirect(
-					/*UIApplication::GetModuleInstance()*/g_hInstance, 
+					/*Application::GetModuleInstance()*/g_hInstance, 
 					(LPDLGTEMPLATE)hgbl, 
 					hWndOnwer, 
 					(DLGPROC)WindowBase::StartDialogProc); 

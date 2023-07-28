@@ -6,7 +6,7 @@ class KeyboardMgrBase;
 class WindowKeyboardMgr;
 class Object;
 class WindowBase;
-class UIApplication;
+class Application;
 
 struct GetObjectByPosExData
 {
@@ -30,9 +30,9 @@ public:
     static Object*  GetObjectByPosEx(GetObjectByPosExData* pData);
 
 public:
-    UIApplication*  GetUIApplication();
+    Application*  GetUIApplication();
     WindowBase*  GetWindowObject();
-    void  SetUIApplication(UIApplication* p);
+    void  SetUIApplication(Application* p);
 
     long  HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
     long  HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
@@ -114,7 +114,7 @@ private:
 	void  updateImeStatus();
 
 protected:
-    UIApplication*   m_pUIApplication;
+    Application*   m_pUIApplication;
     WindowBase&       m_oWindow;                  // 要处理的窗口对象
 
     Object*  m_pObjHover;                // 是否有对象处于鼠标下面

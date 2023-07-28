@@ -6,7 +6,7 @@ namespace ui
 class Object;
 class ListCtrlBase;
 class ListItemBase;
-class UIApplication;
+class Application;
 
 class ListCtrlMKMgrBase : public IMKMgr
 {
@@ -22,7 +22,7 @@ public:
     {
         return DoProcessItemMessage(pMsg, pItem);
     }
-    void  SetListCtrlBase(UIApplication* pUIApp, ListCtrlBase*  pCtrl);
+    void  SetListCtrlBase(Application* pUIApp, ListCtrlBase*  pCtrl);
 
     void  OnRemoveAll();
     void  OnRemoveItem(ListItemBase* pItem, bool* pbSelChanged);
@@ -127,7 +127,7 @@ protected:
 	bool  m_bKeepHoverWhenPress;  // 当按下时，鼠标移动不切换hoveritem。默认为true，特殊值如Menu为false
     bool  m_bMouseMoveReady;
 
-    UIApplication*  m_pUIApplication;
+    Application*  m_pUIApplication;
     ListCtrlBase*   m_pListCtrlBase;
 
     template<class T>

@@ -240,9 +240,9 @@ ResBundle* ResourceManager::GetActiveSkin()
 
 */
 
-UIApplication *ResourceManager::GetUIApplication() { return m_pUIApplication; }
+Application *ResourceManager::GetUIApplication() { return m_pUIApplication; }
 
-void ResourceManager::SetUIApplication(UIApplication *pUIApp) {
+void ResourceManager::SetUIApplication(Application *pUIApp) {
   m_pUIApplication = pUIApp;
 }
 

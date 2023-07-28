@@ -1181,7 +1181,7 @@ void  ListItemBase::SetIconFromFile(const wchar_t* szIconPath)
     if (nullptr == m_pListCtrlBase)
         return;
 
-    IUIApplication*  pUIApplication = GetIListCtrlBase()->GetUIApplication();
+    IApplication*  pUIApplication = GetIListCtrlBase()->GetUIApplication();
     if (nullptr == pUIApplication)
     {
         UIASSERT(0);
@@ -1232,7 +1232,7 @@ void  ListItemBase::SetIconFromImageId(const wchar_t* szImageId)
     if (!pRenderBitmap)
         return;
 
-    IUIApplication* pUIApp = pSkinRes->GetUIApplication();
+    IApplication* pUIApp = pSkinRes->GetUIApplication();
     pUIApp->CreateRenderBase(
         RENDER_TYPE_IMAGE, 
         GetIListCtrlBase(),

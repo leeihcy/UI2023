@@ -210,7 +210,7 @@ BOOL  ListCtrlMKMgrBase::DoProcessItemMessage(UIMSG* pMsg, ListItemBase* pItem)
     return TRUE;
 }
 
-void  ListCtrlMKMgrBase::SetListCtrlBase(UIApplication* pUIApp, ListCtrlBase*  pCtrl)
+void  ListCtrlMKMgrBase::SetListCtrlBase(Application* pUIApp, ListCtrlBase*  pCtrl)
 {
     m_pListCtrlBase = pCtrl;
     m_pUIApplication = pUIApp;

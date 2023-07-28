@@ -11,7 +11,7 @@ namespace uia
 }
 namespace ui
 {
-class UIApplication;
+class Application;
 struct ILayout;
 struct IUIEditor;
 struct IResBundle;      
@@ -38,11 +38,11 @@ struct TOOLTIPITEM;
 class TimerItem;
 
 
-struct UIAPI IUIApplication
+struct UIAPI IApplication
 {
-    IUIApplication();
-    ~IUIApplication();
-    UIApplication*  GetImpl();
+    IApplication();
+    ~IApplication();
+    Application*  GetImpl();
     void  Release();
 
     void Run();
@@ -106,7 +106,7 @@ struct UIAPI IUIApplication
 #if 0
     HDC   GetCacheDC();
     void  ReleaseCacheDC(HDC hDC);
-    HBITMAP  GetCacheBitmap(int nWidth, int nHeight);  // ×¢£º²»ÒªÊÍ·Å¸ÃHBITMAP£¬ÓÉÄÚ²¿Î¬»¤
+    HBITMAP  GetCacheBitmap(int nWidth, int nHeight);  // æ³¨ï¼šä¸è¦é‡Šæ”¾è¯¥HBITMAPï¼Œç”±å†…éƒ¨ç»´æŠ¤
     void  ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius);
 #endif
     bool  IsUnderXpOS();
@@ -119,30 +119,44 @@ struct UIAPI IUIApplication
     IWindowBase*  GetWindowBaseFromHWND(HWND hWnd);
 
 private:
-    UIApplication*  m_pImpl;
+    Application*  m_pImpl;
 };
 
-// ¸¨ÖúÀà
-class UIApplicationPtr
+// è¾…åŠ©ç±»
+class ApplicationPtr
 {
 public:
-    UIApplicationPtr() {
+    ApplicationPtr() {
         ui::CreateUIApplication(&m_p);
     }
-    ~UIApplicationPtr() {
-        m_p->Release();
+    ~ApplicationPtr() {
+        if (m_p) {
+            m_p->Release();
+            m_p = nullptr;
+        }
     }
-    IUIApplication* operator->() {
+    ApplicationPtr(const ApplicationPtr&) = delete;
+    ApplicationPtr& operator=(const ApplicationPtr&) = delete;
+
+    ApplicationPtr(ApplicationPtr&& o) {
+        m_p = o.m_p;
+        o.m_p = nullptr;
+    }
+
+    IApplication* operator->() {
         return m_p;
     }
-    operator IUIApplication* () const {
+    operator IApplication* () const {
+        return m_p;
+    }
+    IApplication* get() const {
         return m_p;
     }
 private:
-    IUIApplication* m_p;
+    IApplication* m_p;
 };
 
-struct /*UIAPI*/ SDKVersion
+struct UIAPI SDKVersion
 {
 	static int  GetMajor();
 	static int  GetMinor();

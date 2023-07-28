@@ -9,8 +9,7 @@
 // #include "irenderlayer.h"
 // #include "ipanel.h"
 
-namespace ui
-{
+namespace ui {
 #if 0
 struct IWindowMouseMgr;
 struct IWindowKeyboardMgr;
@@ -20,19 +19,21 @@ struct IWindowKeyboardMgr;
 //  处理一个同步移动窗口事件(添加、修改、删除)
 //		wparam:  SYNC_WINDOW_EVENT_TYPE
 //		lparam:  具体查看SYNC_WINDOW_EVENT_TYPE定义
-#define UI_WM_SYNC_WINDOW  (WM_USER+827)
+#define UI_WM_SYNC_WINDOW (WM_USER + 827)
 
-#define ANCHOR_NONE        0
-#define ANCHOR_LEFT        0x0001
-#define ANCHOR_RIGHT       0x0002
-#define ANCHOR_TOP         0x0004
-#define ANCHOR_BOTTOM      0x0008
-#define ANCHOR_OUT_LEFT    0x0010
-#define ANCHOR_OUT_RIGHT   0x0020
-#define ANCHOR_OUT_TOP     0x0040
-#define ANCHOR_OUT_BOTTOM  0x0080
-#define ANCHOR_CUSTOM      0x0100   // 发送UI_WM_SYNC_WINDOWPOSCHANGING消息给窗口，由窗口自行决定如何移动自己
-#define ANCHOR_CLIENTREGION  0x200  // 与host的客户区对齐，例如host是个普通边框窗口
+#define ANCHOR_NONE 0
+#define ANCHOR_LEFT 0x0001
+#define ANCHOR_RIGHT 0x0002
+#define ANCHOR_TOP 0x0004
+#define ANCHOR_BOTTOM 0x0008
+#define ANCHOR_OUT_LEFT 0x0010
+#define ANCHOR_OUT_RIGHT 0x0020
+#define ANCHOR_OUT_TOP 0x0040
+#define ANCHOR_OUT_BOTTOM 0x0080
+#define ANCHOR_CUSTOM                                                          \
+  0x0100 // 发送UI_WM_SYNC_WINDOWPOSCHANGING消息给窗口，由窗口自行决定如何移动自己
+#define ANCHOR_CLIENTREGION                                                    \
+  0x200 // 与host的客户区对齐，例如host是个普通边框窗口
 
 
 enum SYNC_WINDOW_EVENT_TYPE
@@ -71,11 +72,11 @@ struct  AnchorData
     }
 };
 
-#define SWDS_MASK_ANCHORTYPE    0x1
-#define SWDS_MASK_ANCHORDATA    0x2
-#define SWDS_MASK_ANCHORON      0x4
-#define SWDS_MASK_SYNC_VISIBLE  0x8
-#define SWDS_MASK_ALL           0xFFFF
+#define SWDS_MASK_ANCHORTYPE 0x1
+#define SWDS_MASK_ANCHORDATA 0x2
+#define SWDS_MASK_ANCHORON 0x4
+#define SWDS_MASK_SYNC_VISIBLE 0x8
+#define SWDS_MASK_ALL 0xFFFF
 
 struct  SyncWindowData
 {
@@ -180,25 +181,40 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 
 #endif
 
-
 class Window;
-struct UIAPI IWindow : public IObject
-{
+struct UIAPI IWindow : public IObject {
   void Create(const Rect &rect);
-  void SetTitle(const char* title);
+  void SetTitle(const char *title);
   void Show();
 
   ui::signal<void()> &DestroySignal();
-  ui::signal<void(SkCanvas&)> &PaintSignal();
-  
+  ui::signal<void(SkCanvas &)> &PaintSignal();
+
   UI_DECLARE_INTERFACE(Window)
   DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903")
 };
 
-#if 0
-extern "C"
-void UIAPI GetWindowNormalRect(HWND hWnd, RECT* prc);
-#endif
-}
+// 辅助类
+class WindowPtr {
+public:
+  WindowPtr(IResBundle *bundle) { m_p = IWindow::CreateInstance(bundle); }
+  ~WindowPtr() {
+    if (m_p) { m_p->Release(); }
+  }
+  WindowPtr(const WindowPtr&) = delete;
+  WindowPtr& operator=(const WindowPtr&) = delete;
 
-#endif  // _INCLUDED_IWINDOW_
+  IWindow *operator->() { return m_p; }
+  operator IWindow *() const { return m_p; }
+
+private:
+  IWindow *m_p;
+};
+
+// #if 0
+// extern "C"
+// void UIAPI GetWindowNormalRect(HWND hWnd, RECT* prc);
+// #endif
+} // namespace ui
+
+#endif // _INCLUDED_IWINDOW_

@@ -2,7 +2,7 @@
 #include <list>
 
 namespace ui {
-    class UIApplication;
+    class Application;
 }
 
 namespace uia
@@ -160,7 +160,7 @@ public:
 
     IAnimateManager*  GetIAnimateManager();
     void  SetTimerCallback(IAnimateTimerCallback*);
-	void  SetUIApplication(ui::UIApplication*);
+	void  SetUIApplication(ui::Application*);
 
 public:
 	int     GetFps() { return m_nFps; }
@@ -177,7 +177,7 @@ protected:
 protected:
     IAnimateManager*  m_pIAnimateManager;
     IAnimateTimerCallback*  m_pITimerCallback;
-	ui::UIApplication*  m_pUIApplication;
+	ui::Application*  m_pUIApplication;
 
 #if defined(OS_WIN)
 	LARGE_INTEGER     m_liPerFreq;     // 用于帧数计算

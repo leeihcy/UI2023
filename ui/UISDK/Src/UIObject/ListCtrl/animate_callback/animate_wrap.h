@@ -3,7 +3,7 @@
 
 namespace ui
 {
-    interface IUIApplication;
+    interface IApplication;
 }
 
 class AnimateImpl : public UIA::IAnimateEventCallback
@@ -40,7 +40,7 @@ protected:
     virtual UIA::E_ANIMATE_TICK_RESULT  OnTick(UIA::IStoryboard*) = 0;
 
     // 向派生类获取app接口
-    virtual UI::IUIApplication*  GetUIApplication() = 0;
+    virtual UI::IApplication*  GetUIApplication() = 0;
 
 protected:
     virtual void  OnAnimateEnd(UIA::IStoryboard*, UIA::E_ANIMATE_END_REASON) override;

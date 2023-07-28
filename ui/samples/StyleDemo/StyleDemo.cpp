@@ -18,7 +18,7 @@
 #pragma comment(lib, "uisdk.lib")
 //#pragma comment(lib, "uictrls.lib")
 
-UI::IUIApplication* g_pUIApplication = nullptr;
+UI::IApplication* g_pUIApplication = nullptr;
 UI::IResBundle* g_pSkinRes = nullptr;
 
 TCHAR  g_szAppDir[MAX_PATH] = {0};

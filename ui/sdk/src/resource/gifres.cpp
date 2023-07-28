@@ -8,7 +8,7 @@
 namespace ui
 {
 
-GifResItem::GifResItem(UIApplication* pUIApp)
+GifResItem::GifResItem(Application* pUIApp)
 {
 	m_pMapAttrib = nullptr;
 	m_pGifImage = nullptr;

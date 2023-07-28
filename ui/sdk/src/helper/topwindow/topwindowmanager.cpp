@@ -11,7 +11,7 @@
 
 namespace ui {
 
-TopWindowManager::TopWindowManager(UIApplication* p)
+TopWindowManager::TopWindowManager(Application* p)
 {
     m_pITopWindowManager = nullptr;
     m_pUIApplication = p;

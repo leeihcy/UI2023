@@ -57,7 +57,7 @@ void  AnimateManager::SetTimerCallback(IAnimateTimerCallback* p)
     m_pITimerCallback = p;
 }
 
-void  AnimateManager::SetUIApplication(ui::UIApplication* p)
+void  AnimateManager::SetUIApplication(ui::Application* p)
 {
 	m_pUIApplication = p;
 }

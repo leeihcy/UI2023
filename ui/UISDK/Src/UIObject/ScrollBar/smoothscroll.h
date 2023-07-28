@@ -89,7 +89,7 @@ public:
 
 
 public:
-    void  SetUIApplication(UIApplication* p);
+    void  SetUIApplication(Application* p);
     void  SetCallback(ISmoothScrollCallback* pCallback);
     bool  IsEnable();
     void  SetEnable(bool b);
@@ -116,7 +116,7 @@ protected:
     void  DestroyAnimate();
 
 private:
-    UIApplication*  m_pUIApplication;
+    Application*  m_pUIApplication;
     ISmoothScrollCallback*  m_pCallback;
 
 	// 从下至下滚动，还是从下至上

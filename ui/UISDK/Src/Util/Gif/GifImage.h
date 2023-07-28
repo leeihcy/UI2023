@@ -68,7 +68,7 @@ namespace ui
 interface IMessage;
 class GifImageBase;
 interface IStreamBufferReader;
-class UIApplication;
+class Application;
 
 struct Gif_TimerItem  // 计时器数据
 {
@@ -239,7 +239,7 @@ private:
 class GifImageRender : public IGifImageRender
 {
 public:
-	GifImageRender(GifImageBase* pGifImage, Gif_Timer_Notify* pNotify, UIApplication*  pUIApp);
+	GifImageRender(GifImageBase* pGifImage, Gif_Timer_Notify* pNotify, Application*  pUIApp);
 protected:
 	~GifImageRender();
 
@@ -281,7 +281,7 @@ protected:
 	GIF_DRAW_STATUS  m_nDrawStatus;   // 当前gif绘制状态:开始、暂停、停止
 
 	GifImageBase*    m_pGifImage;
-	UIApplication*   m_pUIApp;
+	Application*   m_pUIApp;
 	friend class     GifImageBase;
 	friend class     GifImage;
 };
@@ -308,7 +308,7 @@ public:  // 外部接口
     bool   SetTransparentColor(COLORREF colTransparent = GetSysColor(COLOR_BTNFACE));
 public:
 	
-	GifImageRender*  AddRender(Gif_Timer_Notify* pNotify, UIApplication*  pUIApp, int* pIndex = nullptr);
+	GifImageRender*  AddRender(Gif_Timer_Notify* pNotify, Application*  pUIApp, int* pIndex = nullptr);
 	bool   ModifyRender(Gif_Timer_Notify* pNotify, int nIndex=-1);
 	bool   DeleteRender(int nIndex=-1);
 

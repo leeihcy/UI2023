@@ -8,14 +8,14 @@ namespace ui
 class Object;
 class Window;
 class ResBundle;
-class UIApplication;
+class Application;
 struct ITopWindowManager;
 struct IWindowBase;
 
 class TopWindowManager
 {
 public:
-    TopWindowManager(UIApplication* p);
+    TopWindowManager(Application* p);
     ~TopWindowManager();
     ITopWindowManager*  GetITopWindowManager();
 
@@ -42,7 +42,7 @@ protected:
 private:
     ITopWindowManager*  m_pITopWindowManager;
 	std::list<Window*>  m_lTopWindowObject;
-    UIApplication*  m_pUIApplication;
+    Application*  m_pUIApplication;
 };
 }
 

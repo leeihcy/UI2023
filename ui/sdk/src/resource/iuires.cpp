@@ -674,7 +674,7 @@ void  IResBundle::SetParentSkinRes(IResBundle* p)
 	m_pImpl->SetParentSkinRes(p ? p->GetImpl() : nullptr);
 }
 
-IUIApplication*  IResBundle::GetUIApplication()  { return m_pImpl->GetUIApplication()->GetIUIApplication(); }
+IApplication*  IResBundle::GetUIApplication()  { return m_pImpl->GetUIApplication()->GetIUIApplication(); }
 IResourceManager&    IResBundle::GetResourceManager()    { return m_pImpl->GetSkinMgr().GetIResourceManager(); }
 IImageManager&   IResBundle::GetImageManager()   { return m_pImpl->GetImageManager().GetIImageManager(); }
 IColorManager&   IResBundle::GetColorManager()   { return m_pImpl->GetColorManager().GetIColorManager(); }
@@ -745,7 +745,7 @@ ResourceManager*  IResourceManager::GetImpl()
     return m_pImpl;
 }
 
-IUIApplication*  IResourceManager::GetUIApplication() 
+IApplication*  IResourceManager::GetUIApplication() 
 {
     return m_pImpl->GetUIApplication()->GetIUIApplication();
 }

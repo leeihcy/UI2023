@@ -22,7 +22,7 @@ public:
 	SkinBuilderRes(){m_pUIApp = NULL;};
 	~SkinBuilderRes() {Clear();}
 
-	void  SetUIApplication(IUIApplication* pUIApp){ m_pUIApp = pUIApp; }
+	void  SetUIApplication(IApplication* pUIApp){ m_pUIApp = pUIApp; }
 	void  AddOuterCtrlsDllPath(const String&  strDll);
 	OutCtrlDllItem*  FindOuterCtrlsDll(const String& strDll);
 	OutCtrlDllItem*  FindOuterCtrlsDll(HMODULE hModule);
@@ -31,7 +31,7 @@ public:
 	bool  Register(OutCtrlDllItem*);
 
 private:
-	IUIApplication*  m_pUIApp;
+	IApplication*  m_pUIApp;
 	std::vector<OutCtrlDllItem*>   m_vecOuterCtrlsDll;   // 外部控件所在的DLL，用于注册外部部件创建
 };
 

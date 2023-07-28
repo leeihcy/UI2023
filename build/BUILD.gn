@@ -19,9 +19,15 @@ config("compiler_defaults") {
   }
 
   if (current_os == "linux") {
-    cflags = [
+    cflags += [
       "-fPIC",
       "-pthread",
+    ]
+  }
+  if (is_linux || is_mac) {
+    # 默认函数不导出，通过添加xxAPI前缀导出。
+    cflags += [
+      "-fvisibility=hidden"
     ]
   }
 }

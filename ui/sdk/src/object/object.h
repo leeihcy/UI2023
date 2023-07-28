@@ -7,7 +7,7 @@
 namespace ui
 {
 class ResBundle;
-class UIApplication;
+class Application;
 class WindowBase;
 class Window;
 class Layer;
@@ -48,8 +48,8 @@ public:
 	void  SetDescription(IObjectDescription*);
 	IObjectDescription*  GetDescription();
 
-	UIApplication*  GetUIApplication();
-	IUIApplication*  GetIUIApplication();
+	Application*  GetUIApplication();
+	IApplication*  GetIUIApplication();
 	ResBundle*  GetSkinRes();
 	IResBundle*  GetIResBundle();
 	Window*  GetWindowObject();

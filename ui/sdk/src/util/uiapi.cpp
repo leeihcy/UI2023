@@ -12,12 +12,12 @@
 namespace ui
 {
  
-bool  CreateUIApplication(IUIApplication** pp)
+bool  CreateUIApplication(IApplication** pp)
 {
     if (!pp)
         return false;
 
-    IUIApplication* p = new IUIApplication;
+    IApplication* p = new IApplication;
     p->GetImpl()->x_Init();
 
     *pp = p;
@@ -72,7 +72,7 @@ void  UI_ExtendPath(String& strPath)
     {
         wchar szModulePath[MAX_PATH] = _T("");
 
-        GetModuleFileName(/*UIApplication::GetModuleInstance()*/g_hInstance, szModulePath, MAX_PATH);
+        GetModuleFileName(/*Application::GetModuleInstance()*/g_hInstance, szModulePath, MAX_PATH);
         wchar* szTemp = _tcsrchr(szModulePath, _T('\\'));
         if (szTemp)
             *(szTemp+1) = 0;

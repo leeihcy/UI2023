@@ -5,7 +5,7 @@
 #include "src/Renderlibrary\gdi\gdirender.h"
 #include "src/Base\Object\object.h"
 
-void RenderBitmapFactory::CreateInstance(IUIApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut)
+void RenderBitmapFactory::CreateInstance(IApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut)
 {
 	if (nullptr == ppOut)
 		return;
@@ -105,7 +105,7 @@ namespace ui
 {
 
 // IRenderTarget* 没有引用计数机制
-IRenderTarget*  UICreateRenderTarget(IUIApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eType, bool bNeedAlphaChannel)
+IRenderTarget*  UICreateRenderTarget(IApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eType, bool bNeedAlphaChannel)
 {
     IRenderTarget*  pRenderTarget = nullptr;
 
@@ -180,7 +180,7 @@ IRenderTarget*  UICreateRenderTarget(IUIApplication* pUIApp, GRAPHICS_RENDER_LIB
 }
 
 void  UICreateRenderBitmap(
-        IUIApplication*  pUIApp, 
+        IApplication*  pUIApp, 
         GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, 
         IMAGE_ITEM_TYPE eType, 
         IRenderBitmap** ppOut)

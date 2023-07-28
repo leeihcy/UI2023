@@ -29,7 +29,7 @@ bool  IRenderBase::IsThemeRender()
 {
     return __pImpl->IsThemeRender();
 }
-void  IRenderBase::SetObject(IUIApplication*  pUIApp, IObject* pObject)
+void  IRenderBase::SetObject(IApplication*  pUIApp, IObject* pObject)
 {
     Object* pObj = nullptr;
     if (pObject)

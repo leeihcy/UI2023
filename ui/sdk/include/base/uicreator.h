@@ -14,7 +14,7 @@
 
 namespace ui
 {
-struct IUIApplication;
+struct IApplication;
 struct IResBundle;
 struct UIMSG;
 
@@ -23,14 +23,14 @@ class ObjectCreator : public T
 {
 public: 
 	// 通用型
-	static void CreateInstance2(IResBundle* pSkinRes, void** pp)
+	static void CreateInstance2(IResBundle* pResBundle, void** pp)
 	{
-		*pp = (void*)ObjectCreator<T>::CreateInstance(pSkinRes);
+		*pp = (void*)ObjectCreator<T>::CreateInstance(pResBundle);
 	}
 	// 专用型
-	static T* CreateInstance(IResBundle* pSkinRes)
+	static T* CreateInstance(IResBundle* pResBundle)
 	{
-        if (!pSkinRes)
+        if (!pResBundle)
         {
 #ifdef _DEBUG
             DebugBreak();
@@ -43,7 +43,7 @@ public:
         if (0 != (UISendMessage(
                     p,
                     UI_MSG_FINALCONSTRUCT, 
-                    (long)pSkinRes)))
+                    (long)pResBundle)))
         {
             p->Release();
             return nullptr;
@@ -77,19 +77,19 @@ class ObjectNoImplCreator : public T
 {
 public: 
 	// 通用型
-	static void CreateInstance2(IResBundle* pSkinRes, void** pp)
+	static void CreateInstance2(IResBundle* pResBundle, void** pp)
 	{
-		*pp = (void*)ObjectNoImplCreator<T>::CreateInstance(pSkinRes);
+		*pp = (void*)ObjectNoImplCreator<T>::CreateInstance(pResBundle);
 	}
 	// 专用型
-	static T* CreateInstance(IResBundle* pSkinRes)
+	static T* CreateInstance(IResBundle* pResBundle)
 	{
 		T* p = new ObjectNoImplCreator<T>;
 
 		if (FAILED(UISendMessage(
 				p,
 				UI_MSG_FINALCONSTRUCT, 
-				(long)pSkinRes)))
+				(long)pResBundle)))
 		{
 			delete p;
 			return nullptr;

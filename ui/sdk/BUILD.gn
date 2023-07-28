@@ -7,8 +7,10 @@ shared_library("uisdk") {
       cflags += ["-g"]
     }
 
+    defines = ["UI_EXPORTS"]
+    
     if (use_linux_msgloop) {
-        defines = ["USE_LINUX_MSGLOOP"]
+        defines += ["USE_LINUX_MSGLOOP"]
     }
 
     include_dirs = [

@@ -4,6 +4,7 @@
 #include "../common.h"
 
 // 导入导出定义
+// linux默认所有函数都导出，添加编译参数 -fvisibility=hidden 控制默认不导出
 #if defined(OS_WIN)
     #ifdef UI_EXPORTS
     #define UIAPI __declspec(dllexport)
@@ -55,8 +56,8 @@ namespace ui
 #define  UI_DECLARE_INTERFACE(T)                            \
 public:                                                     \
 	typedef T ImplName;                                     \
-	static I##T* CreateInstance(ui::IResBundle* pSkinRes);    \
-	I##T(ui::E_BOOL_CREATE_IMPL);                               \
+	static I##T* CreateInstance(ui::IResBundle*);           \
+	I##T(ui::E_BOOL_CREATE_IMPL);                           \
     bool  nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook); \
 	T*  GetImpl();                                          
 	
@@ -118,16 +119,16 @@ protected:                                                  \
         }                                                   \
         else                                                \
         {                                                   \
-			m_pImpl = nullptr;                                 \
+			m_pImpl = nullptr;                              \
         }                                                   \
 	}                                                       \
 	T*  I##T::GetImpl()                                     \
 	{                                                       \
 		return static_cast<T*>(m_pImpl);                    \
 	}                                                       \
-	I##T* I##T::CreateInstance(ui::IResBundle* pSkinRes)          \
+	I##T* I##T::CreateInstance(ui::IResBundle* p)           \
 	{                                                       \
-		return ui::ObjectCreator<I##T>::CreateInstance(pSkinRes); \
+		return ui::ObjectCreator<I##T>::CreateInstance(p);  \
 	}                                                       \
     bool  I##T::nvProcessMessage(ui::UIMSG* pMsg, int nMsgMapID, bool bDoHook) \
     {                                                       \
@@ -198,7 +199,7 @@ enum SERIALIZEFLAG
 struct IMapAttribute;
 struct IListAttribute;
 struct IAttributeEditorProxy;
-struct IUIApplication;
+struct IApplication;
 struct IResBundle;
 
 struct SERIALIZEDATA
@@ -210,7 +211,7 @@ struct SERIALIZEDATA
 		IAttributeEditorProxy*  pAttributeEditorProxy;  // editor [in]
 	};
 
-	IUIApplication*  pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
+	IApplication*  pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
 	IResBundle*  pSkinRes;
 	const wchar*  szPrefix;      // 属性前缀
 	const wchar*  szParentKey;   // 父属性（仅用于editor），如bkg.render.type

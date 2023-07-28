@@ -183,11 +183,11 @@ IUICursor*  CursorResItem::GetCursor()
 			else if (m_strID == XML_CURSOR_IDC_HELP)
 				UICursor::CreateInstance2(IDC_HELP, nullptr, &m_pCursor);
 // 			else if (m_strID == XML_CURSOR_IDC_DRAG_SEPERATOR)
-// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_DRAG_SEPERATOR), /*UIApplication::GetModuleInstance()*/g_hInstance, &m_pCursor);
+// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_DRAG_SEPERATOR), /*Application::GetModuleInstance()*/g_hInstance, &m_pCursor);
 // 			else if (m_strID == XML_CURSOR_IDC_SPLITBAR_H)
-// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_SPLITBAR_H), /*UIApplication::GetModuleInstance()*/g_hInstance, &m_pCursor);
+// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_SPLITBAR_H), /*Application::GetModuleInstance()*/g_hInstance, &m_pCursor);
 // 			else if (m_strID == XML_CURSOR_IDC_SPLITBAR_V)
-// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_SPLITBAR_V), /*UIApplication::GetModuleInstance()*/g_hInstance, &m_pCursor);
+// 				UICursor::CreateInstance2(MAKEINTRESOURCE(IDC_CURSOR_SPLITBAR_V), /*Application::GetModuleInstance()*/g_hInstance, &m_pCursor);
 			else
 				return false;
 		}

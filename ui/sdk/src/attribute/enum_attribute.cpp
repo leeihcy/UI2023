@@ -99,7 +99,7 @@ bool EnumLayoutTypeCallback(long lType, const wchar_t* szName, long wParam, long
 // ...
 EnumAttribute*  EnumAttribute::FillLayoutTypeData()
 {
-    UIApplication*  pUIApp = GetUIApplication();
+    Application*  pUIApp = GetUIApplication();
     if (pUIApp)
 	    pUIApp->GetIUIApplication()->EnumLayoutType(EnumLayoutTypeCallback, (long)this, 0);
 

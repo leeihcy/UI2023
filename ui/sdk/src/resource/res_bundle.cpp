@@ -221,7 +221,7 @@ UIDocument* ResBundle::GetXmlDocByName(const wchar_t* szName)
 	return nullptr;
 }
 
-UIApplication*  ResBundle::GetUIApplication()  
+Application*  ResBundle::GetUIApplication()  
 { 
 	return m_mgrSkinRef.GetUIApplication();
 }

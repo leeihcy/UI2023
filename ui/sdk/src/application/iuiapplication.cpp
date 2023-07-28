@@ -14,38 +14,38 @@
 namespace ui 
 {
     
-IUIApplication::IUIApplication()
+IApplication::IApplication()
 {
-    m_pImpl = new UIApplication(this);
+    m_pImpl = new Application(this);
 }
-IUIApplication::~IUIApplication()
+IApplication::~IApplication()
 {
     SAFE_DELETE(m_pImpl);
 }
 
-void IUIApplication::Run() {
+void IApplication::Run() {
     m_pImpl->Run();
 }
-void  IUIApplication::Quit()
+void  IApplication::Quit()
 {
 	m_pImpl->Quit();
 }
 
 
-UIApplication*  IUIApplication::GetImpl() 
+Application*  IApplication::GetImpl() 
 { 
 	return m_pImpl;
 }
-void  IUIApplication::Release()
+void  IApplication::Release()
 {
 	delete this;
 }
 
-IResBundle* IUIApplication::RootBundle() {
+IResBundle* IApplication::RootBundle() {
     return m_pImpl->GetResourceManager().RootBundle().GetIResBundle();
 }
 
-IResBundle*  IUIApplication::LoadResBundle(const wchar_t* szSkinResPath)
+IResBundle*  IApplication::LoadResBundle(const wchar_t* szSkinResPath)
 {
     ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(szSkinResPath); 
 	if (p)
@@ -53,7 +53,7 @@ IResBundle*  IUIApplication::LoadResBundle(const wchar_t* szSkinResPath)
 	return nullptr;
 }
 
-IResBundle*  IUIApplication::LoadResBundle(long hInstance, int resId)
+IResBundle*  IApplication::LoadResBundle(long hInstance, int resId)
 {
 	ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(hInstance, resId); 
 	if (p)
@@ -61,89 +61,89 @@ IResBundle*  IUIApplication::LoadResBundle(long hInstance, int resId)
 	return nullptr;
 }
 
-void  IUIApplication::SetEditorMode(bool b)
+void  IApplication::SetEditorMode(bool b)
 {
 	m_pImpl->SetEditorMode(b); 
 }
-void  IUIApplication::SetUIEditorPtr(IUIEditor* p)
+void  IApplication::SetUIEditorPtr(IUIEditor* p)
 {
 	m_pImpl->SetUIEditorPtr(p); 
 }
 
-bool  IUIApplication::IsEditorMode()
+bool  IApplication::IsEditorMode()
 { 
 	return m_pImpl->IsEditorMode();
 }
-IUIEditor*  IUIApplication::GetUIEditorPtr()
+IUIEditor*  IApplication::GetUIEditorPtr()
 {
     return m_pImpl->GetUIEditorPtr(); 
 }
 
-IResourceManager&  IUIApplication::GetResourceManager()    
+IResourceManager&  IApplication::GetResourceManager()    
 { 
     return m_pImpl->GetResourceManager().GetIResourceManager();
 }
 
-ITopWindowManager*  IUIApplication::GetTopWindowMgr()
+ITopWindowManager*  IApplication::GetTopWindowMgr()
 {
     return m_pImpl->GetITopWindowMgr(); 
 }
-uia::IAnimateManager*  IUIApplication::GetAnimateManager()  
+uia::IAnimateManager*  IApplication::GetAnimateManager()  
 { 
     return m_pImpl->GetAnimateManager();
 }
-// IMessageFilterMgr*  IUIApplication::GetMessageFilterMgr()
+// IMessageFilterMgr*  IApplication::GetMessageFilterMgr()
 // {
 // 	return m_pImpl->GetMessageFilterMgr();
 // }
-IResBundle*  IUIApplication::GetDefaultSkinRes()
+IResBundle*  IApplication::GetDefaultSkinRes()
 {
     ResBundle* p = m_pImpl->GetDefaultSkinRes(); 
 	if (p)
 		return p->GetIResBundle();
 	return nullptr;
 }
-void  IUIApplication::RestoreRegisterUIObject()      
+void  IApplication::RestoreRegisterUIObject()      
 {
     m_pImpl->RestoreRegisterUIObject(); 
 }
-bool  IUIApplication::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
+bool  IApplication::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
 { 
     return m_pImpl->RegisterControlTagParseFunc(szTag, func); 
 }
-bool  IUIApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
+bool  IApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
 { 
     return m_pImpl->GetSkinTagParseFunc(szTag, pFunc);
 }
-bool  IUIApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc) 
+bool  IApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc) 
 { 
     return m_pImpl->GetControlTagParseFunc(szTag, pFunc);
 }
 
-IObject*  IUIApplication::CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes)
+IObject*  IApplication::CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes)
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
-IObject*  IUIApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes) 
+IObject*  IApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes) 
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
-bool  IUIApplication::RegisterUIObject(IObjectDescription* p)
+bool  IApplication::RegisterUIObject(IObjectDescription* p)
 {
     return m_pImpl->RegisterUIObject(p); 
 }
-void     IUIApplication::LoadUIObjectListToToolBox()         
+void     IApplication::LoadUIObjectListToToolBox()         
 {
     m_pImpl->LoadUIObjectListToToolBox(); 
 }
 
-bool  IUIApplication::RegisterUIRenderBaseCreateData(
+bool  IApplication::RegisterUIRenderBaseCreateData(
 	const wchar_t* szName, int nType, pfnUICreateRenderBasePtr pfunc) 
 {
     return m_pImpl->GetRenderBaseFactory().RegisterUIRenderBaseCreateData(szName, nType, pfunc); 
 }
 
-// bool  IUIApplication::CreateRenderBaseByName(
+// bool  IApplication::CreateRenderBaseByName(
 // 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
 // {
 //     IResBundle* pSkinRes = nullptr;
@@ -156,12 +156,12 @@ bool  IUIApplication::RegisterUIRenderBaseCreateData(
 // 		pSkinRes, szName, pObject, ppOut); 
 // }
 // 
-// const wchar_t*  IUIApplication::GetRenderBaseName(int nType)
+// const wchar_t*  IApplication::GetRenderBaseName(int nType)
 // {
 // 	return m_pImpl->GetRenderBaseFactory().GetRenderBaseName(nType);
 // }
 
-bool  IUIApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** ppOut) 
+bool  IApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** ppOut) 
 { 
     IResBundle* pSkinRes = nullptr;
     if (pObject)
@@ -171,18 +171,18 @@ bool  IUIApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase*
     return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType, pObject, ppOut);
 }
 
-void  IUIApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam, long lParam)
+void  IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetRenderBaseFactory().EnumRenderBaseName(callback, wParam, lParam);
 }
 
-bool  IUIApplication::RegisterUITextRenderBaseCreateData(
+bool  IApplication::RegisterUITextRenderBaseCreateData(
 	const wchar_t* szName, int nType,
     pfnUICreateTextRenderBasePtr pfunc) 
 { 
     return m_pImpl->GetTextRenderFactroy().RegisterUITextRenderBaseCreateData(szName, nType, pfunc); 
 }
-bool  IUIApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* pObject, ITextRenderBase** ppOut) 
+bool  IApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* pObject, ITextRenderBase** ppOut) 
 {
     IResBundle* pSkinRes = nullptr;
     if (pObject)
@@ -191,7 +191,7 @@ bool  IUIApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject*
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRenderBaseByName(pSkinRes, szName, pObject, ppOut);
 }
-bool  IUIApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRenderBase** ppOut) 
+bool  IApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRenderBase** ppOut) 
 { 
     IResBundle* pSkinRes = nullptr;
     if (pObject)
@@ -200,120 +200,120 @@ bool  IUIApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRen
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRender(pSkinRes, nType, pObject, ppOut); 
 }
-void  IUIApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback, long wParam, long lParam)
+void  IApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetTextRenderFactroy().EnumTextRenderBaseName(callback, wParam, lParam);
 }
 
-bool  IUIApplication::CreateLayoutByName(const wchar_t* szName, IObject* pObject, bool bCreateDefault, ILayout** ppOut) 
+bool  IApplication::CreateLayoutByName(const wchar_t* szName, IObject* pObject, bool bCreateDefault, ILayout** ppOut) 
 { 
     return m_pImpl->GetLayoutFactory().CreateByName(szName, pObject, bCreateDefault, ppOut); 
 }
-bool  IUIApplication::CreateLayout(int nType, IObject* pObject, ILayout** ppOut)
+bool  IApplication::CreateLayout(int nType, IObject* pObject, ILayout** ppOut)
 {
     return m_pImpl->GetLayoutFactory().Create(nType, pObject, ppOut);
 }
-void  IUIApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam)
+void  IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
 }
-// bool  IUIApplication::IsDialogMessage(MSG* pMsg) 
+// bool  IApplication::IsDialogMessage(MSG* pMsg) 
 // {
 //     return m_pImpl->IsDialogMessage(pMsg); 
 // }
-// void  IUIApplication::MsgHandleLoop(bool* pbQuitLoopRef)
+// void  IApplication::MsgHandleLoop(bool* pbQuitLoopRef)
 // { 
 //     m_pImpl->MsgHandleLoop(pbQuitLoopRef);
 // }
-// void  IUIApplication::RedrawTopWindows() 
+// void  IApplication::RedrawTopWindows() 
 // { 
 //     m_pImpl->RedrawTopWindows(); 
 // }
-// bool  IUIApplication::ShowToolTip(TOOLTIPITEM* pItem)
+// bool  IApplication::ShowToolTip(TOOLTIPITEM* pItem)
 // {
 //     return m_pImpl->ShowToolTip(pItem); 
 // }
-// void  IUIApplication::HideToolTip() 
+// void  IApplication::HideToolTip() 
 // { 
 //     m_pImpl->HideToolTip(); 
 // }
 
-// unsigned int*  IUIApplication::SetTimer(int nElapse, IMessage* pNotify)
+// unsigned int*  IApplication::SetTimer(int nElapse, IMessage* pNotify)
 // {
 //     return TimerHelper::GetInstance()->SetTimer(nElapse, pNotify);
 // }
-// unsigned int*  IUIApplication::SetTimer(
+// unsigned int*  IApplication::SetTimer(
 // 	int nElapse, std::function<bool(unsigned int*, TimerItem*)> func)
 // {
 // 	return TimerHelper::GetInstance()->SetTimer(nElapse, func);
 // }
-// unsigned int*  IUIApplication::SetTimer(int nElapse, TimerItem* pTimerItem)
+// unsigned int*  IApplication::SetTimer(int nElapse, TimerItem* pTimerItem)
 // {
 //     return TimerHelper::GetInstance()->SetTimer(nElapse, pTimerItem);
 // }
-// unsigned int*  IUIApplication::SetTimerById(
+// unsigned int*  IApplication::SetTimerById(
 // 	int nElapse, unsigned int* nId, IMessage* pNotify)
 // {
 //     return  TimerHelper::GetInstance()->SetTimerById(nElapse, nId, pNotify);
 // }
-// void  IUIApplication::KillTimer(unsigned int*& nTimerID)
+// void  IApplication::KillTimer(unsigned int*& nTimerID)
 // {
 //     TimerHelper::GetInstance()->KillTimer(nTimerID);
 // }
-// void  IUIApplication::KillTimerById(int nId, IMessage* pNotify)
+// void  IApplication::KillTimerById(int nId, IMessage* pNotify)
 // {
 //     TimerHelper::GetInstance()->KillTimerById(nId, pNotify);
 // }
-// void  IUIApplication::KillTimerByNotify(IMessage* pNotify)
+// void  IApplication::KillTimerByNotify(IMessage* pNotify)
 // {
 //     TimerHelper::GetInstance()->KillTimerByNotify(pNotify);
 // }
 // 
-// HDC  IUIApplication::GetCacheDC()
+// HDC  IApplication::GetCacheDC()
 // {
 //     return Image::GetCacheDC();
 // }
-// void  IUIApplication::ReleaseCacheDC(HDC hDC)
+// void  IApplication::ReleaseCacheDC(HDC hDC)
 // {
 //     return Image::ReleaseCacheDC(hDC);
 // }  
-// HBITMAP  IUIApplication::GetCacheBitmap(int nWidth, int nHeight)
+// HBITMAP  IApplication::GetCacheBitmap(int nWidth, int nHeight)
 // {
 //     return CacheBitmap::GetInstance()->Create(nWidth, nHeight);
 // }
-// void   IUIApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius)
+// void   IApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius)
 // {
 //     ::ShadowBlur(hBitmap, colorShadow, prcBlur, nRadius);
 // }
 
-// bool  IUIApplication::IsUnderXpOS() 
+// bool  IApplication::IsUnderXpOS() 
 // { 
 //     return m_pImpl->IsUnderXpOS();
 // }
-// bool  IUIApplication::IsVistaOrWin7etc() 
+// bool  IApplication::IsVistaOrWin7etc() 
 // { 
 //     return m_pImpl->IsVistaOrWin7etc();
 // }
-// bool  IUIApplication::IsAeroEnable()
+// bool  IApplication::IsAeroEnable()
 // {
 //     return DwmHelper::GetInstance()->IsEnable();
 // }
 
-// HWND  IUIApplication::GetForwardPostMessageWnd() 
+// HWND  IApplication::GetForwardPostMessageWnd() 
 // { 
 //     return m_pImpl->GetForwardPostMessageWnd();
 // }
 
-// bool  IUIApplication::IsGpuCompositeEnable()
+// bool  IApplication::IsGpuCompositeEnable()
 // {
 //     return m_pImpl->IsGpuCompositeEnable();
 // }
-// bool  IUIApplication::EnableGpuComposite()
+// bool  IApplication::EnableGpuComposite()
 // {
 //     return m_pImpl->EnableGpuComposite();
 // }
 
-// IWindowBase*  IUIApplication::GetWindowBaseFromHWND(HWND hWnd)
+// IWindowBase*  IApplication::GetWindowBaseFromHWND(HWND hWnd)
 // {
 //     return m_pImpl->GetTopWindowMgr()->GetWindowBase(hWnd);
 // }

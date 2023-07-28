@@ -26,11 +26,11 @@ Compositor::~Compositor()
 //     }
 }
 
-void  Compositor::SetUIApplication(UIApplication* p)
+void  Compositor::SetUIApplication(Application* p)
 {
     m_pUIApp = p;
 }
-UIApplication*  Compositor::GetUIApplication()
+Application*  Compositor::GetUIApplication()
 {
     return m_pUIApp;
 }

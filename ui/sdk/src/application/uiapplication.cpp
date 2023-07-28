@@ -20,7 +20,7 @@
 namespace ui {
 
 
-UIApplication::UIApplication(IUIApplication* p): 
+Application::Application(IApplication* p): 
     m_pUIApplication(p),
     // m_WndForwardPostMsg(this), 
     m_TopWindowMgr(this),
@@ -32,18 +32,20 @@ UIApplication::UIApplication(IUIApplication* p):
   ApplicationMac::Init();
 #endif
 }
-void UIApplication::Run() { m_message_loop.Run(); }
-void UIApplication::Quit() { m_message_loop.Quit(); }
+void Application::Run() { m_message_loop.Run(); }
+void Application::Quit() { m_message_loop.Quit(); }
 
 
-ResourceManager& UIApplication::GetResourceManager()
+ResourceManager& Application::GetResourceManager()
 {
 	return m_resource_manager;
 }
 
 
-void  UIApplication::x_Init()
+void  Application::x_Init()
 {
+    UI_LOG_INFO(L"Application Init");
+    
 #if defined(OS_WIN)
     //	::CoInitialize(0);
     HRESULT  hr = OleInitialize(0);  // 需要注册richedit的drag drop，因此用ole初始化
@@ -116,12 +118,12 @@ void  UIApplication::x_Init()
 #endif
 }
 
-ResBundle* UIApplication::GetDefaultSkinRes()
+ResBundle* Application::GetDefaultSkinRes()
 {
 	return m_resource_manager.GetDefaultSkinRes();
 }
 
-UIApplication::~UIApplication(void)
+Application::~Application(void)
 {
 	// 应用程序退出日志
 	UI_LOG_INFO( _T("\n\n------------  UI Quit ----------------\n"));
@@ -166,12 +168,12 @@ UIApplication::~UIApplication(void)
 #endif
 }
 
-ITopWindowManager* UIApplication::GetITopWindowMgr()
+ITopWindowManager* Application::GetITopWindowMgr()
 {
 	return m_TopWindowMgr.GetITopWindowManager();
 }
 
-uia::IAnimateManager* UIApplication::GetAnimateManager()
+uia::IAnimateManager* Application::GetAnimateManager()
 {
     return m_animate.GetAnimateManager();
 }
@@ -199,7 +201,7 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam, long lParam)
 **	See Also
 */
 #if defined(OS_WIN)
-void UIApplication::RegisterWndClass()
+void Application::RegisterWndClass()
 {
 	WNDCLASSEX wcex;
 	
@@ -242,7 +244,7 @@ void UIApplication::RegisterWndClass()
 	RegisterClassEx(&wcex);
 }
 
-bool UIApplication::IsUnderXpOS()
+bool Application::IsUnderXpOS()
 {
 	bool bUnderXpOs = true;;
 	if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId)
@@ -259,7 +261,7 @@ bool UIApplication::IsUnderXpOS()
 	return bUnderXpOs;
 }
 
-bool UIApplication::IsVistaOrWin7etc()
+bool Application::IsVistaOrWin7etc()
 {
 	bool bHighThanVista = true;;
 	if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId)
@@ -277,7 +279,7 @@ bool UIApplication::IsVistaOrWin7etc()
 }
 #endif
 
-bool  UIApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
+bool  Application::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
 {
     if (nullptr == szTag || nullptr == pFunc)
         return false;
@@ -290,7 +292,7 @@ bool  UIApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* 
     return true;
 }
 
-bool  UIApplication::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
+bool  Application::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
 {
     if (nullptr == szTag || nullptr == func)
         return false;
@@ -299,7 +301,7 @@ bool  UIApplication::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseC
     return true;
 }
 
-bool  UIApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc)
+bool  Application::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc)
 {
     if (nullptr == szTag || nullptr == pFunc)
         return false;
@@ -319,7 +321,7 @@ bool  UIApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseContro
 //      必须将该映射列表保存为动态数组。当第三方实现了一个UI类时，向app来注册其创建信息。
 //
 
-bool UIApplication::RegisterUIObject(IObjectDescription* pObjDesc)
+bool Application::RegisterUIObject(IObjectDescription* pObjDesc)
 {
 	if (!pObjDesc)
 		return false;
@@ -341,7 +343,7 @@ bool UIApplication::RegisterUIObject(IObjectDescription* pObjDesc)
 }
 
 
-void  UIApplication::ClearRegisterUIObject()
+void  Application::ClearRegisterUIObject()
 {
 #define vec_clear(type, var)                  \
     {                                         \
@@ -362,7 +364,7 @@ void  UIApplication::ClearRegisterUIObject()
 #endif
 }
 
-void UIApplication::RegisterDefaultUIObject()
+void Application::RegisterDefaultUIObject()
 {
 #if 0
     RegisterUIObject(PanelDescription::Get());
@@ -395,13 +397,13 @@ void UIApplication::RegisterDefaultUIObject()
 }
 
 // 用于编辑器中调整控件库的依赖
-void  UIApplication::RestoreRegisterUIObject()
+void  Application::RestoreRegisterUIObject()
 {
     ClearRegisterUIObject();
     RegisterDefaultUIObject();
 }
 
-IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, IResBundle* pSkinRes)
+IObject* Application::CreateUIObjectByName(const wchar_t* szXmlName, IResBundle* pSkinRes)
 {
 	if (!szXmlName)
 		return nullptr;
@@ -421,7 +423,7 @@ IObject* UIApplication::CreateUIObjectByName(const wchar_t* szXmlName, IResBundl
 	return nullptr;
 }
 
-IObject* UIApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pSkinRes)
+IObject* Application::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pSkinRes)
 {
     int nSize = (int)m_vecUIObjectDesc.size();
     for (int i = 0; i < nSize; i++)
@@ -438,7 +440,7 @@ IObject* UIApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pSk
     return nullptr;
 }
 #if 0
-BOOL UIApplication::IsDialogMessage(MSG* pMsg)
+BOOL Application::IsDialogMessage(MSG* pMsg)
 {
 	if (nullptr == pMsg)
 		return false;
@@ -515,7 +517,7 @@ BOOL UIApplication::IsDialogMessage(MSG* pMsg)
 //  WaitMessage();  这里并不会立即返回，xxx消息已被标识为旧消息。除非有一个新的
 //  消息到来才能使WaitMessage返回。
 //
-void  UIApplication::MsgHandleLoop(bool* pbQuitLoopRef)
+void  Application::MsgHandleLoop(bool* pbQuitLoopRef)
 {
 	unsigned int    dwRet = 0;
     unsigned int&   nCount = m_WaitForHandlesMgr.m_nHandleCount;
@@ -596,7 +598,7 @@ void  UIApplication::MsgHandleLoop(bool* pbQuitLoopRef)
 	return;
 }
 
-void  UIApplication::MsgHandleOnce()
+void  Application::MsgHandleOnce()
 {
 	MSG msg = {0};
 	while (::PeekMessage(&msg, nullptr, 0,0, PM_REMOVE))
@@ -617,23 +619,23 @@ void  UIApplication::MsgHandleOnce()
 }
 
 
-bool  UIApplication::ShowToolTip(TOOLTIPITEM* pItem)
+bool  Application::ShowToolTip(TOOLTIPITEM* pItem)
 {
 	bool bRet = m_ToolTipMgr.Show(pItem);
     return bRet;
 }
-void  UIApplication::HideToolTip()
+void  Application::HideToolTip()
 {
 	m_ToolTipMgr.Hide();
 }
 
-HWND  UIApplication::GetForwardPostMessageWnd()
+HWND  Application::GetForwardPostMessageWnd()
 {
 	return m_WndForwardPostMsg.m_hWnd;
 }
 
 // 加载UI3D.dll
-HMODULE  UIApplication::GetUID2DModule()
+HMODULE  Application::GetUID2DModule()
 {
 #if 0
     if (s_hUID2D)
@@ -663,7 +665,7 @@ HMODULE  UIApplication::GetUID2DModule()
 	return 0;
 }
 
-HMODULE  UIApplication::GetUID3DModule()
+HMODULE  Application::GetUID3DModule()
 {
 #if 0
 	if (s_hUID3D)
@@ -693,11 +695,11 @@ HMODULE  UIApplication::GetUID3DModule()
 	return 0;
 }
 
-bool  UIApplication::IsGpuCompositeEnable() 
+bool  Application::IsGpuCompositeEnable() 
 { 
     return m_bGpuEnable;    
 }
-bool  UIApplication::EnableGpuComposite()
+bool  Application::EnableGpuComposite()
 {
     if (m_bGpuEnable)
         return true;
@@ -733,7 +735,7 @@ bool  UIApplication::EnableGpuComposite()
 	return true;
 }
 
-void UIApplication::ShutdownGpuCompositor()
+void Application::ShutdownGpuCompositor()
 {
 	if (!m_bGpuEnable)
 		return;
@@ -755,7 +757,7 @@ void UIApplication::ShutdownGpuCompositor()
 #endif
 
 
-void UIApplication::LoadUIObjectListToToolBox()
+void Application::LoadUIObjectListToToolBox()
 {
     if (!m_pUIEditor)
         return;
@@ -767,7 +769,7 @@ void UIApplication::LoadUIObjectListToToolBox()
     }
 }
 
-bool  UIApplication::CreateRenderBaseByName(
+bool  Application::CreateRenderBaseByName(
 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
 {
     IResBundle* pSkinRes = nullptr;
@@ -785,7 +787,7 @@ bool  UIApplication::CreateRenderBaseByName(
 		pSkinRes, szName, pObject, ppOut); 
 }
 
-const wchar_t*  UIApplication::GetRenderBaseName(int nType)
+const wchar_t*  Application::GetRenderBaseName(int nType)
 {
 	return m_renderBaseFactory.GetRenderBaseName(nType);
 }

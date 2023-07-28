@@ -65,7 +65,7 @@ namespace ui
 	class Object;
 	struct UIAPI IObject : public IMessage
 	{
-		IUIApplication* GetUIApplication();
+		IApplication* GetUIApplication();
 		IResBundle*  GetSkinRes();
     #if 0
 		IWindowBase*  GetWindowObject();

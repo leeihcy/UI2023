@@ -20,7 +20,7 @@ public:
 
 protected:
     virtual bool  PreStart() override;
-    virtual UI::IUIApplication*  GetUIApplication() override;
+    virtual UI::IApplication*  GetUIApplication() override;
 	virtual void  PostEnd() override;
     
     // 由派生类调过来的。

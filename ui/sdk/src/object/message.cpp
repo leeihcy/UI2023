@@ -104,7 +104,7 @@ long UIPostMessage(HWND hForwardMsgWnd, UIMSG* pMsg, int nMsgMapID)
 }
 
 // 由于pMsg.pObjTo是一个Message类型，无法获取pUIApp指针，只能再增加一个参数
-long  UIPostMessage(IUIApplication* pUIApp, UIMSG* pMsg, int nMsgMapID)
+long  UIPostMessage(IApplication* pUIApp, UIMSG* pMsg, int nMsgMapID)
 {
     if (nullptr == pUIApp)
         return 0;
@@ -203,7 +203,7 @@ void Message::CopyNotifyTo(IMessage* pObjCopyTo)
 
 // 发送Notify消息到注册过Notify的对象.(修改为只通知给一个人.通知多个人太乱了)
 // 当bPost为true时，才需要pUIApp参数
-long Message::DoNotify(UIMSG* pMsg/*, bool bPost, IUIApplication* pUIApp*/)
+long Message::DoNotify(UIMSG* pMsg/*, bool bPost, IApplication* pUIApp*/)
 {
 //	IMessage* pNotifyObj = pMsg->pMsgTo;
 	int    nMsgMapID = 0;

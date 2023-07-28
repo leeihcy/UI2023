@@ -51,7 +51,7 @@ public:
     IGifImage();
     ~IGifImage();
 
-    void  CreateGifImpl(IUIApplication* pUIApp);
+    void  CreateGifImpl(IApplication* pUIApp);
     void  CreatePnglistGifImpl();
     GifImageBase*  GetImpl();
     void  SetImpl(GifImageBase* p);
@@ -60,7 +60,7 @@ public:
     bool  Load(const TCHAR* szPath, IMapAttribute* pMapAttrib=nullptr);
     bool  Destroy();
 
-    IGifImageRender*  AddRender(Gif_Timer_Notify* pNotify, IUIApplication*  pUIApp, int* pIndex = nullptr);
+    IGifImageRender*  AddRender(Gif_Timer_Notify* pNotify, IApplication*  pUIApp, int* pIndex = nullptr);
     bool  ModifyRender(Gif_Timer_Notify* pNotify, int nIndex=-1);
     bool  DeleteRender(int nIndex=-1);
 

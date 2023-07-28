@@ -1434,7 +1434,7 @@ IResBundle*  Object::GetIResBundle()
 	return m_pSkinRes->GetIResBundle();
 }
 
-UIApplication*  Object::GetUIApplication() 
+Application*  Object::GetUIApplication() 
 { 
 	UIASSERT(m_pSkinRes);
 	UIASSERT(m_pSkinRes->GetUIApplication());
@@ -1442,7 +1442,7 @@ UIApplication*  Object::GetUIApplication()
 	return m_pSkinRes->GetUIApplication();
 }
 
-IUIApplication*  Object::GetIUIApplication()
+IApplication*  Object::GetIUIApplication()
 {
 	UIASSERT(m_pSkinRes);
 	UIASSERT(m_pSkinRes->GetUIApplication());

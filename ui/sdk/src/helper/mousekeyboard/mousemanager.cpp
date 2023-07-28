@@ -333,7 +333,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 }
 
 
-void  WindowMouseMgr::SetUIApplication(UIApplication* p)
+void  WindowMouseMgr::SetUIApplication(Application* p)
 {
     m_pUIApplication = p;
 }
@@ -341,7 +341,7 @@ void  WindowMouseMgr::SetUIApplication(UIApplication* p)
 
 //////////////////////////////////////////////////////////////////////////
 
-UIApplication*  WindowMouseMgr::GetUIApplication()
+Application*  WindowMouseMgr::GetUIApplication()
 {
 	if (nullptr == m_oWindow)
 		return nullptr;

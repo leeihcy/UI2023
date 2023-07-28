@@ -11,7 +11,7 @@ public:
 	~GifTimerManager();
 
 public:
-	void  Init(UIApplication*  pUIApp);
+	void  Init(Application*  pUIApp);
 	void  AddItem(Gif_TimerItem*  pItem);
 	void  RemoveItem(int nId);
 
@@ -28,7 +28,7 @@ protected:
 	typedef  list<Gif_TimerItem*>::iterator  _MyIter;
 
 	list<Gif_TimerItem*>   m_listTimerItem;
-	UIApplication*  m_pUIApplication;
+	Application*  m_pUIApplication;
 	HANDLE  m_hTimer;
 };
 }

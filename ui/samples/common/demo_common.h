@@ -19,7 +19,7 @@ void  Demo_SetDllDir(__in LPCTSTR szAppDir)
 	SetDllDirectory(szUIDllPath2);
 }
 
-void  Demo_Log(UI::IUIApplication* pUIApp, __in LPCTSTR szAppDir)
+void  Demo_Log(UI::IApplication* pUIApp, __in LPCTSTR szAppDir)
 {
 	TCHAR szLogXml[MAX_PATH];
 	_tcscpy(szLogXml, szAppDir);
@@ -28,7 +28,7 @@ void  Demo_Log(UI::IUIApplication* pUIApp, __in LPCTSTR szAppDir)
 }
 
 UI::IResBundle*  Demo_LoadSkin(
-		UI::IUIApplication* pUIApp, 
+		UI::IApplication* pUIApp, 
 		__in LPCTSTR szAppDir)
 {
 	TCHAR szSkinPath[MAX_PATH];

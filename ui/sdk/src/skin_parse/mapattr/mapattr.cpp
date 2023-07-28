@@ -256,7 +256,7 @@ long  CMapAttribute::GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t
 //     const wchar_t* szPrefix,
 //     const wchar_t* szKey, 
 //     bool bErase,
-//     IUIApplication* pUIApp, 
+//     IApplication* pUIApp, 
 //     IObject* pBindObj, 
 //     IRenderBase** ppGet)
 // {

@@ -11,7 +11,7 @@
 namespace ui
 {
 class AttributeSerializer;
-class UIApplication;
+class Application;
 class Object;
 struct TEXTRENDERBASE_DRAWSTATE;
 

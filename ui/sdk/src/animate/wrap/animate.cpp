@@ -5,7 +5,7 @@
 
 namespace ui {
 
-AnimateHelper::AnimateHelper(UIApplication& app) : m_uiApplication(app)
+AnimateHelper::AnimateHelper(Application& app) : m_uiApplication(app)
 {
     m_pWaitforHandle = nullptr;
     m_pAnimateMgr = nullptr;

@@ -9,7 +9,7 @@
 
 namespace ui
 {
-class UIApplication;
+class Application;
 class Object;
 class ResourceManager;
 struct UIDocument;
@@ -45,7 +45,7 @@ public:
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 	IResBundle*        GetIResBundle();
-    UIApplication*   GetUIApplication();
+    Application*   GetUIApplication();
     IResourceManager&    GetIResourceManager();
 
 //     IImageManager*   GetIImageManager()   { return m_mgrImage.GetIImageManager(); }

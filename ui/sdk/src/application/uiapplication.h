@@ -33,12 +33,12 @@ class GifTimerManager;
 // class LayoutManager;
 struct IUIAutoTest;
 
-class UIApplication
+class Application
 {
 public:  
-    UIApplication(IUIApplication* p);
-    ~UIApplication();
-    IUIApplication*  GetIUIApplication() { return m_pUIApplication; }
+    Application(IApplication* p);
+    ~Application();
+    IApplication*  GetIUIApplication() { return m_pUIApplication; }
 
     void Run();
     void Quit();
@@ -139,7 +139,7 @@ private:
 
 private:
 
-    IUIApplication*     m_pUIApplication = nullptr;              // 对外提供的接口
+    IApplication*     m_pUIApplication = nullptr;              // 对外提供的接口
     // OSVERSIONINFOEX     m_osvi;                        // 操作系统版本
 	IUIEditor*          m_pUIEditor;                   // 外部的编辑器指针，用于消息通知和数据获取
 	IUIAutoTest*        m_pUIAutoTest;                 // 外部的自动化测试指针。

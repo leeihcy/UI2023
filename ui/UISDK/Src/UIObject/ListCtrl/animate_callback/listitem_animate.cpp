@@ -55,7 +55,7 @@ bool  ListItemAnimateImpl::IsEqual(ListItemAnimateImpl* p)
     return true;
 }
 
-UI::IUIApplication*  ListItemAnimateImpl::GetUIApplication()
+UI::IApplication*  ListItemAnimateImpl::GetUIApplication()
 {
     if (GetListCtrl())
         return GetListCtrl()->GetUIApplication();

@@ -2,7 +2,7 @@
 #define _IUIINTERFACE_H_
 #include "include/interface/imessage.h"
 
-// IUIApplication接口
+// IApplication接口
 namespace ui
 {
 	struct  IToolTipUI;
@@ -22,7 +22,7 @@ namespace ui
     struct  IObject;
 
 	// 句柄定义
-	struct IUIApplication;
+	struct IApplication;
 
     class TopWindowManager;
     struct UIAPI ITopWindowManager : public IRootInterface
@@ -59,7 +59,7 @@ namespace ui
 		virtual bool  SetTitle(const wchar_t* szText) = 0;
 		virtual bool  Show(HWND hWndParent) = 0;
 		virtual bool  Hide() = 0;
-		virtual bool  SetUIApplication(IUIApplication* p) = 0;
+		virtual bool  SetUIApplication(IApplication* p) = 0;
 		virtual void  OnSerialize(SERIALIZEDATA* pData) = 0;
 	};
 

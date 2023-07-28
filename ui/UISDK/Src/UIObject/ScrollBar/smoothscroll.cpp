@@ -24,7 +24,7 @@ SmoothScroll::~SmoothScroll()
     StopScroll();
 }
 
-void  SmoothScroll::SetUIApplication(UIApplication* p)
+void  SmoothScroll::SetUIApplication(Application* p)
 {
     m_pUIApplication = p;
 }

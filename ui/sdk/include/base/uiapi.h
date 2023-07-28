@@ -15,9 +15,9 @@ namespace ui
 	struct IResBundle;
 	struct IObject;
 	struct ILayout;
-	struct IUIApplication;
+	struct IApplication;
 
-	UIAPI bool  CreateUIApplication(IUIApplication** pp);
+	UIAPI bool  CreateUIApplication(IApplication** pp);
 
 	// UI对象创建函数
 	//typedef  long(*pfnUICreateRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
@@ -49,12 +49,12 @@ namespace ui
 
 	// 外部UI对象注册入口，由外部DLL实现该导出函数
 #define FUN_RegisterUIObject_NAME  "RegisterUIObject"
-	typedef  long(*funRegisterUIObjectPtr)(IUIApplication* p);
+	typedef  long(*funRegisterUIObjectPtr)(IApplication* p);
 
 
 	struct UIMSG;
 	struct IMessage;
- 	UIAPI long  UIPostMessage(IUIApplication* pUIApp, UIMSG* pMsg, int nMsgMapID = 0);
+ 	UIAPI long  UIPostMessage(IApplication* pUIApp, UIMSG* pMsg, int nMsgMapID = 0);
 	UIAPI long  UISendMessage(UIMSG* pMsg, int nMsgMapID = 0, bool* pbHandled = nullptr);
 	UIAPI long  UISendMessage(IMessage* pMsgTo, uint message, long wParam = 0, long lParam = 0,
 						uint nCode = 0, IMessage* pMsgFrom = nullptr, int nMsgMapID = 0, bool* pbHandled = nullptr);
@@ -69,7 +69,7 @@ namespace ui
 	// enum IMAGE_ITEM_TYPE;
 	// struct IRenderBitmap;
 	// UIAPI void  UICreateRenderBitmap(
-    //                 IUIApplication*  pUIApp,
+    //                 IApplication*  pUIApp,
     //                 GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, 
     //                 IMAGE_ITEM_TYPE eType, 
     //                 IRenderBitmap** ppOut);
@@ -77,7 +77,7 @@ namespace ui
     // struct IRenderTarget;
     // UIAPI IRenderTarget*  
     //     UICreateRenderTarget(
-    //                 IUIApplication* pUIApp,
+    //                 IApplication* pUIApp,
     //                 GRAPHICS_RENDER_LIBRARY_TYPE eType,
     //                 bool bNeedAlphaChannel);
 

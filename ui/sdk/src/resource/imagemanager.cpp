@@ -125,7 +125,7 @@ bool ImageManager::RemoveImageItem(const wchar* szId)
 	if (nullptr == szId)
 		return false;
 
-    UIApplication* pUIApp = m_pSkinRes->GetUIApplication();
+    Application* pUIApp = m_pSkinRes->GetUIApplication();
     if (!pUIApp->IsEditorMode())
     {
 	    if (false == m_resImage.RemoveImage(szId))

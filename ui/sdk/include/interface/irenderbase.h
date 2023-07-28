@@ -71,7 +71,7 @@ struct UIAPI IRenderBase : public IMessage
     void  CheckThemeChanged();
     bool  IsThemeRender();
 
-    void  SetObject(IUIApplication*  pUIApp, IObject* pObject);
+    void  SetObject(IApplication*  pUIApp, IObject* pObject);
     IObject*  GetObject();
 
     void  SetType(RENDER_TYPE nType);

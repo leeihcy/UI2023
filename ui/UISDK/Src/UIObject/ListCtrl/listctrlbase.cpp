@@ -253,7 +253,7 @@ void ListCtrlBase::RemoveItem(int nIndex)
 
 void  ListCtrlBase::DelayRemoveItem(ListItemBase* pItem)
 {
-    IUIApplication* pUIApplication = m_pIListCtrlBase->GetUIApplication();
+    IApplication* pUIApplication = m_pIListCtrlBase->GetUIApplication();
     if (nullptr == pUIApplication)
         return;
 

@@ -2,7 +2,7 @@
 #include "layer.h"
 namespace ui
 {
-    class UIApplication;
+    class Application;
 }
 
 #define MSG_INVALIDATE  161311307
@@ -16,9 +16,9 @@ public:
 	Compositor();
 	virtual ~Compositor();
 
-    void  SetUIApplication(UIApplication*);
+    void  SetUIApplication(Application*);
     void  SetWindowRender(WindowRender*);
-    UIApplication*  GetUIApplication();
+    Application*  GetUIApplication();
     bool  CreateRenderTarget(IRenderTarget** pp);
 
 	Layer*  CreateLayer();
@@ -41,7 +41,7 @@ protected:
     virtual void  virtualCommit(const RectArray& arrDirtyInWindow) = 0;
 
 protected:
-    UIApplication*  m_pUIApp;
+    Application*  m_pUIApp;
 
 	Layer*  m_pRootLayer;
 #if defined(OS_WIN)

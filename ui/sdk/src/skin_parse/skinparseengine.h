@@ -7,7 +7,7 @@ struct IUIElement;
 struct UIElement;
 struct SkinDataSource;
 class ResBundle;
-class UIApplication;
+class Application;
 
 class SkinParseEngine
 {
@@ -20,7 +20,7 @@ public:
 
     static long UIParseIncludeTagCallback(IUIElement*, IResBundle* pSkinRes);
 
-    UIApplication*  m_pUIApplication;
+    Application*  m_pUIApplication;
     ResBundle*  m_pSkinRes;
 };
 

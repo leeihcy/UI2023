@@ -7,7 +7,7 @@ namespace ui
 #define TOOLTIP_DELAY_SHOW_TIME    600
 #define TOOLTIP_AUTO_HIDE_TIME    (GetDoubleClickTime()*10)
 #define TOOLTIP_MAX_WIDTH  500/*256*/
-	class UIApplication;
+	class Application;
 
 //////////////////////////////////////////////////////////////////////////
 // TimerProc thunk
@@ -40,7 +40,7 @@ public:
 	ToolTipManager();
 	~ToolTipManager();
 
-	void   Init(UIApplication* p, IToolTipUI* pTooltipUI=nullptr);
+	void   Init(Application* p, IToolTipUI* pTooltipUI=nullptr);
 	void   Release();
 	bool   Hide();
 	bool   Show(TOOLTIPITEM* pItemInfo);
@@ -51,7 +51,7 @@ protected:
 protected:
 	IToolTipUI*        m_pToolTipUI;      // 就是控件的tooltip
 	ToolTipItem        m_tooltipItem;     // 当前正在显示或者正在等待显示的提示条信息
-    UIApplication*     m_pUIApplication;
+    Application*     m_pUIApplication;
 
 	enum TIMEOUT_TYPE
 	{

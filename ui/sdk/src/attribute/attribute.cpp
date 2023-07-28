@@ -86,7 +86,7 @@ void AttributeSerializer::DoAction() {
 }
 
 SERIALIZEDATA *AttributeSerializer::GetSerializeData() { return m_pData; }
-IUIApplication *AttributeSerializer::GetUIApplication() {
+IApplication *AttributeSerializer::GetUIApplication() {
   if (m_pData)
     return m_pData->pUIApplication;
 

@@ -302,7 +302,7 @@ Object*  LayoutManager::ParseElement(
 			IMessage* pNotifyTarget,
 			int flags)
 {
-    UIApplication*  pUIApp = m_pSkinRes->GetUIApplication();
+    Application*  pUIApp = m_pSkinRes->GetUIApplication();
 
     Object*  pObj = nullptr;
     std::wstring  bstrTagName = pUIElement->GetTagName();
@@ -442,7 +442,7 @@ void  LayoutManager::ReloadChildObjects(
             UIElement* pObjElement, 
             std::map<String, Object*>& mapNamedChildren)
 {
-    UIApplication*  pUIApp = m_pSkinRes->GetUIApplication();
+    Application*  pUIApp = m_pSkinRes->GetUIApplication();
     UIElementProxy childElem = pObjElement->FirstChild();
 
     // 遍历所有子对象

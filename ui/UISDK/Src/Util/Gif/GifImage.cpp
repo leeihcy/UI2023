@@ -33,7 +33,7 @@ UI::ImageWrap*  GIF_Frame::GetIImage()
 //////////////////////////////////////////////////////////////////////////
 #pragma region
 
-GifImageRender::GifImageRender(GifImageBase* pGifImage, Gif_Timer_Notify* pNotify, UIApplication*  pUIApp)
+GifImageRender::GifImageRender(GifImageBase* pGifImage, Gif_Timer_Notify* pNotify, Application*  pUIApp)
 {
 	m_pGifImage = pGifImage;
 	m_nCurFrameIndex = 0;
@@ -778,7 +778,7 @@ ImageWrap*  GifImageBase::GetFrameIImage( int nIndex )
 //	Return
 //		成功返回TRUE，失败返回FALSE
 //
-GifImageRender* GifImageBase::AddRender(Gif_Timer_Notify* pNotify, UIApplication*  pUIApp, int* pIndex)
+GifImageRender* GifImageBase::AddRender(Gif_Timer_Notify* pNotify, Application*  pUIApp, int* pIndex)
 {
 	if (nullptr == pNotify)
 		return nullptr;

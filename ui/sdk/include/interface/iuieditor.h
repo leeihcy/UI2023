@@ -26,7 +26,7 @@ namespace ui
 
 	struct  EditorAddObjectResData
 	{
-		IUIApplication*  pUIApp;
+		IApplication*  pUIApp;
 		IObject*  pParentObj;
 		IUIElement*  pParentXml;
 		bool  bNcChild;

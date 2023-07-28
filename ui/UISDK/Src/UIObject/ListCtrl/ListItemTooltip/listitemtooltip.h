@@ -50,7 +50,7 @@ protected:
 
 private:
     ListItemBase*  m_pListItem;
-    IUIApplication*  m_pUIApp;
+    IApplication*  m_pUIApp;
 
     int   m_nActiveIndex;
 

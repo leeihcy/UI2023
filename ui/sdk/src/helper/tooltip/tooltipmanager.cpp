@@ -176,7 +176,7 @@ public:
 
 	}
 	
-	virtual bool  SetUIApplication(IUIApplication* p)
+	virtual bool  SetUIApplication(IApplication* p)
 	{
         // 尽量少维护UIApp的引用计数
 		m_pUIApp = p;
@@ -234,7 +234,7 @@ protected:
 	HWND       m_hToolTip;
 	TOOLINFO   m_toolinfo;
 	bool       m_bUnderXpOs;  // 是否是XP系统。区别于WIN7，两者对于tooltip的显示有些区别
-	IUIApplication*  m_pUIApp;
+	IApplication*  m_pUIApp;
 };
 #pragma endregion
 //////////////////////////////////////////////////////////////////////////
@@ -250,7 +250,7 @@ ToolTipManager::~ToolTipManager()
 	this->Release();
 }
 
-void ToolTipManager::Init(UIApplication* p, IToolTipUI* pTooltipUI)
+void ToolTipManager::Init(Application* p, IToolTipUI* pTooltipUI)
 {
     m_pUIApplication = p;
 

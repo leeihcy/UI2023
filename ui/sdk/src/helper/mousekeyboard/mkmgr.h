@@ -4,7 +4,7 @@
 namespace ui
 {
 class Object;
-class UIApplication;
+class Application;
 class WindowBase;
 
     template <class T>

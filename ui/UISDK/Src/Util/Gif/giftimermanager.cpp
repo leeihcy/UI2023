@@ -17,7 +17,7 @@ GifTimerManager::~GifTimerManager()
 	}
 }
 
-void GifTimerManager::Init(UIApplication* pUIApp)
+void GifTimerManager::Init(Application* pUIApp)
 {
 	m_pUIApplication = pUIApp;
 }

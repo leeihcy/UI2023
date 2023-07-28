@@ -125,7 +125,7 @@ bool  AnimateImpl::Start(bool bBlock)
     UIASSERT(nullptr == m_pStoryboard);
 
     // 基类中信息不够，拿不到app，因此交给子类去完成
-    UI::IUIApplication* pUIApp = this->GetUIApplication();
+    UI::IApplication* pUIApp = this->GetUIApplication();
     if (!pUIApp)
         return false;
 

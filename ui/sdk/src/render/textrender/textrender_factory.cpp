@@ -5,7 +5,7 @@
 #include "src/application/uiapplication.h"
 
 namespace ui {
-TextRenderFactory::TextRenderFactory(UIApplication& app):m_app(app)
+TextRenderFactory::TextRenderFactory(Application& app):m_app(app)
 {
 
 }

@@ -75,9 +75,9 @@ HWND  IObject::GetHWND()
 	return __pImpl->GetHWND(); 
 }
 #endif
-IUIApplication* IObject::GetUIApplication()                
+IApplication* IObject::GetUIApplication()                
 {
-	UIApplication* p = __pImpl->GetUIApplication();
+	Application* p = __pImpl->GetUIApplication();
 	if (!p)
 		return nullptr;
 

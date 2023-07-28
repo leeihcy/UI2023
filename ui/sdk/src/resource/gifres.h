@@ -7,13 +7,13 @@ class GifImageBase;
 class ResBundle;
 struct IGifResItem;
 struct IGifRes;
-class UIApplication;
+class Application;
 class ImageData;
 
 class GifResItem
 {
 public:
-	GifResItem(UIApplication* pUIApp);
+	GifResItem(Application* pUIApp);
 	~GifResItem();
 
 	String&  GetIdRef();
@@ -40,7 +40,7 @@ public:
 public:
 	IMapAttribute*  m_pMapAttrib;
 	GifImageBase*   m_pGifImage;
-	UIApplication* m_pUIApp;
+	Application* m_pUIApp;
 	IGifResItem*    m_pIGifResItem;
 };
 
@@ -56,7 +56,7 @@ public:
 
 public:
 	GifResItem*  LoadItem(IMapAttribute* pMapAttrib, const String& strFullPath);
-	void SetUIApplication(UIApplication* p)
+	void SetUIApplication(Application* p)
 	{ m_pUIApp = p; }
 
 	int  GetGifCount(); 
@@ -72,7 +72,7 @@ public:
 private:
 	IGifRes*  m_pIGifRes;
 	std::vector<GifResItem*>   m_vGifs;
-	UIApplication*       m_pUIApp;
+	Application*       m_pUIApp;
 	ResBundle*  m_pSkinRes;
 };
 

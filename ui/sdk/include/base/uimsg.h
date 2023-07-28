@@ -989,13 +989,13 @@ namespace ui
 
 namespace ui
 {
-    struct IUIApplication;
+    struct IApplication;
     struct IUIEditor;
     struct IUIElement;
 }
 struct  CREATEBYEDITORDATA
 {
-    ui::IUIApplication*  pUIApp;
+    ui::IApplication*  pUIApp;
     ui::IUIEditor*  pEditor;
     ui::IUIElement*  pXml;
 };

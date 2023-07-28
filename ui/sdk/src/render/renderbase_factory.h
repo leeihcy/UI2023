@@ -1,13 +1,13 @@
 #pragma once
 namespace ui
 {	
-	class UIApplication;
+	class Application;
 	struct IRenderBase;
 
 class RenderBaseFactory
 {
 public:
-	RenderBaseFactory(UIApplication& app);
+	RenderBaseFactory(Application& app);
 	~RenderBaseFactory();
 
 	void  Init();
@@ -38,7 +38,7 @@ public:
             long lParam);
 
 private:
-	UIApplication&  m_app;
+	Application&  m_app;
 
 	struct UIRENDERBASE_CREATE_INFO
 	{

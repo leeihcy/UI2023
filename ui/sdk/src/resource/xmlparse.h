@@ -183,7 +183,7 @@ class IParseClassFactory
 public:
 
 #if 0
-	static IImageParse*  CreateImageParseInstance(IUIApplication* pUIApp, const String& strDataSource)  
+	static IImageParse*  CreateImageParseInstance(IApplication* pUIApp, const String& strDataSource)  
 	{ 
 		IImageParse* p = new CXmlImageParse(); 
 		p->SetDataSource(strDataSource);
@@ -191,7 +191,7 @@ public:
 		return p;
 	}
 
-	static IColorParse*  CreateColorParseInstance(IUIApplication* pUIApp, const String& strDataSource)  
+	static IColorParse*  CreateColorParseInstance(IApplication* pUIApp, const String& strDataSource)  
 	{ 
 		IColorParse* p = new CXmlColorParse(); 
 		p->SetDataSource(strDataSource);
@@ -199,7 +199,7 @@ public:
 		return p;
 	}
 
-	static IFontParse*  CreateFontParseInstance(IUIApplication* pUIApp, const String& strDataSource)  
+	static IFontParse*  CreateFontParseInstance(IApplication* pUIApp, const String& strDataSource)  
 	{ 
 		IFontParse* p = new CXmlFontParse(); 
 		p->SetDataSource(strDataSource);
@@ -207,7 +207,7 @@ public:
 		return p;
 	}
 
-	static IStyleParse*  CreateStyleParseInstance(IUIApplication* pUIApp, const String& strDataSource ) 
+	static IStyleParse*  CreateStyleParseInstance(IApplication* pUIApp, const String& strDataSource ) 
 	{ 
 		IStyleParse* p = new CXmlStyleParse(); 
 		p->SetDataSource(strDataSource);
@@ -215,7 +215,7 @@ public:
 		return p;
 	}
 
-	static ILayoutParse*  CreateLayoutParseInstance(IUIApplication* pUIApp, const String& strDataSource )
+	static ILayoutParse*  CreateLayoutParseInstance(IApplication* pUIApp, const String& strDataSource )
 	{ 
 		ILayoutParse* p = new CXmlLayoutParse(); 
 		p->SetDataSource(strDataSource);

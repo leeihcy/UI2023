@@ -6,7 +6,7 @@ namespace ui
 {
     class AttributeSerializer;
     class AttributeEditorProxy;
-	class UIApplication;
+	class Application;
 
     // 属性基类
     class AttributeBase
@@ -53,9 +53,9 @@ namespace ui
 
 		void  SetGroupName(const wchar_t* szGroupName);
 		const wchar_t*  GetGroupName();
-		void  SetUIApplication(UIApplication* p);
+		void  SetUIApplication(Application* p);
 		void  SetSkinRes(ResBundle* p);
-		UIApplication*  GetUIApplication();
+		Application*  GetUIApplication();
 
     protected:
         const wchar_t*  ConstructTempLPCTSTR(long lValue);
@@ -82,7 +82,7 @@ namespace ui
         bool  m_bReloadOnChanged;  
 
     protected:
-        UIApplication*  m_pUIApplication;
+        Application*  m_pUIApplication;
 		ResBundle*  m_pSkinRes;
     };
 }

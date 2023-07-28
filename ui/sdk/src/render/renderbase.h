@@ -6,7 +6,7 @@ namespace ui
 {
 	struct IRenderBase;
 	struct IRenderBitmap;
-	class UIApplication;
+	class Application;
     class ColorRes;
     class ImageRes;
     class ResBundle;
@@ -40,7 +40,7 @@ public:
     bool  IsThemeRender() {return m_nRenderType > RENDER_TYPE_THEME_FIRST && m_nRenderType < RENDER_TYPE_THEME_LAST; }
     void  CheckThemeChanged();
 
-	void     SetObject(UIApplication* pUIApp, Object* pObject) { m_pUIApplication = pUIApp; m_pObject = pObject; }
+	void     SetObject(Application* pUIApp, Object* pObject) { m_pUIApplication = pUIApp; m_pObject = pObject; }
     Object*  GetObject() { return m_pObject; }
 
 	void  SetRenderType( const RENDER_TYPE& nType ){ m_nRenderType = nType ; }
@@ -56,7 +56,7 @@ public:
 	const wchar_t*  _GetBitmapId(IRenderBitmap*& pBitmapRef);
 
 protected:
-    UIApplication*  m_pUIApplication;
+    Application*  m_pUIApplication;
     IRenderBase*     m_pIRenderBase;
 	long  m_lRef;
 

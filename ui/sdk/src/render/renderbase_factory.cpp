@@ -7,7 +7,7 @@
 
 namespace ui 
 {
-RenderBaseFactory::RenderBaseFactory(UIApplication& app) : m_app(app)
+RenderBaseFactory::RenderBaseFactory(Application& app) : m_app(app)
 {
 
 }

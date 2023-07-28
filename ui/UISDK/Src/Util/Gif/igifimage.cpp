@@ -21,7 +21,7 @@ IGifImage::~IGifImage()
     }
 }
 
-void  IGifImage::CreateGifImpl(IUIApplication* pUIApp)
+void  IGifImage::CreateGifImpl(IApplication* pUIApp)
 {
     if (nullptr == pUIApp)
         return;
@@ -57,7 +57,7 @@ bool  IGifImage::Destroy()
     return m_pImpl->Destroy();
 }
 
-IGifImageRender*  IGifImage::AddRender(Gif_Timer_Notify* pNotify,  IUIApplication*  pUIApp, int* pIndex)
+IGifImageRender*  IGifImage::AddRender(Gif_Timer_Notify* pNotify,  IApplication*  pUIApp, int* pIndex)
 {
 	return m_pImpl->AddRender(pNotify, pUIApp ? pUIApp->GetImpl():nullptr, pIndex);
 }
