@@ -7,8 +7,6 @@
 #include "interface/iwindow.h"
 #include "object/object.h"
 #include "src/layer/windowrender.h"
-#include <SkCanvas.h>
-#include <SkSurface.h>
 
 namespace ui {
 class Window;
@@ -26,7 +24,7 @@ struct WindowPlatform {
   virtual void ValidateRect(Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
   virtual bool IsWindowVisible() = 0;
-  virtual void Submit(sk_sp<SkSurface> sksurface) = 0;
+  virtual void Submit(IRenderTarget* pRT, const RECT* prect, int count) = 0;
 };
 
 class Window : public Object {
@@ -35,7 +33,7 @@ public:
   ~Window();
 
   UI_BEGIN_MSG_MAP()
-  // UIMSG_ERASEBKGND( OnEraseBkgnd )
+  UIMSG_ERASEBKGND( OnEraseBkgnd )
   // UIMSG_DM_GETDEFID( OnGetDefId )
   // UIMSG_DM_SETDEFID( OnSetDefId )
   // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
@@ -65,6 +63,7 @@ public:
 	bool  IsWindowVisible();
 
   virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
+  void Submit(IRenderTarget* pRT, const RECT* prect, int count);
   
 public:
   // platform回调
@@ -74,12 +73,12 @@ public:
   void onSize(int width, int height);
 
   signal<void()> &DestroySignal() { return m_signal_destroy; }
-  signal<void(SkCanvas &)> &PaintSignal() { return m_signal_paint; }
+  signal<void(IRenderTarget*)> &PaintSignal() { return m_signal_paint; }
 
 private:
-  void on_paint(SkCanvas &canvas);
-  void on_erase_bkgnd(SkCanvas &canvas);
-  void swap_buffer();
+  // void on_paint(SkCanvas &canvas);
+  // void on_erase_bkgnd(SkCanvas &canvas);
+  // void swap_buffer();
 
 protected:
   long FinalConstruct(IResBundle *p);
@@ -87,6 +86,7 @@ protected:
   void OnSerialize(SERIALIZEDATA *pData);
   // void OnSetDefId(IObject *pButton);
   // IObject *OnGetDefId();
+  void OnEraseBkgnd(IRenderTarget *);
 
 private:
   IWindow*  m_pIWindow;
@@ -94,8 +94,6 @@ private:
   // 平台相关函数。
   WindowPlatform *m_platform = nullptr;
 
-  // 渲染
-  sk_sp<SkSurface> m_sksurface;
   int m_width = 0;
   int m_height = 0;
 
@@ -108,7 +106,7 @@ private:
 
   // 事件定义
   signal<void()> m_signal_destroy;
-  signal<void(SkCanvas &)> m_signal_paint;
+  signal<void(IRenderTarget*)> m_signal_paint;
 };
 
 } // namespace ui

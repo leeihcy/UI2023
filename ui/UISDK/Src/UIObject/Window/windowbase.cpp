@@ -1363,43 +1363,6 @@ long  WindowBase::_OnGetObject( unsigned int uMsg, WPARAM wParam, LPARAM lParam,
 	return 0;
 }
 
-void  WindowBase::OnEraseBkgnd(IRenderTarget* pRenderTarget)
-{
-	if (nullptr == pRenderTarget)
-		return;
-
-	if (m_pBkgndRender || m_pForegndRender)
-	{
-        // 如果m_pBkgndRender没有处理，在这里调用系统过程
-		__super::OnEraseBkgnd(pRenderTarget);  
-	}
-	else
-	{
-#if 0 // 废弃。由xml去配置吧。在layered下面居然导致alpha通道混乱了
-
-		if (nullptr == m_oldWndProc)   // Dialog类型，直接填充系统背景色
-		{
-			CRect rc;
-			::GetClientRect(m_hWnd,&rc);
-
-            Color c(::GetSysColor(COLOR_BTNFACE));
-            c.a = 255;
-			pRenderTarget->DrawRect(&rc, &c);
-		}
-		else  // Window类型，直接调用系统过程
-		{
-			HDC hDC = pRenderTarget->GetHDC();
-            if (hDC)
-            {
-                // 与原始消息进行区分
-			    DefWindowProc(WM_ERASEBKGND, (WPARAM)hDC, 1);  
-            }
-		}
-
-#endif
-	}	
-}
-
 IMKMgr* WindowBase::virtualGetIMKMgr()
 {
     return static_cast<IMKMgr*>(&m_oMouseManager);

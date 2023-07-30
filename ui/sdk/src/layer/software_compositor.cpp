@@ -53,22 +53,10 @@ void SoftwareCompositor::virtualCommit(const RectArray &arrDirtyInWindow) {
   if (m_pWindowRender->m_window.virtualCommitReq())
     return;
 
-#if defined(OS_WIN)
-  HDC hDC = GetDC(m_hWnd);
-  for (uint i = 0; i < nCount; i++) {
-    RECT &rcInWindow = ((LPRECT)arrDirtyInWindow.GetArrayPtr2())[i];
-
-    Render2TargetParam param = {0};
-    param.xSrc = param.xDst = rcInWindow.left;
-    param.ySrc = param.yDst = rcInWindow.top;
-    param.wSrc = param.wDst = rcInWindow.right - rcInWindow.left;
-    param.hSrc = param.hDst = rcInWindow.bottom - rcInWindow.top;
-    m_pRootLayer->GetRenderTarget()->Render2DC(hDC, &param);
-  }
-  ReleaseDC(m_hWnd, hDC);
-#else
-
-#endif
+  m_pWindowRender->m_window.Submit(
+    m_pRootLayer->GetRenderTarget(), 
+    arrDirtyInWindow.GetArrayPtr2(), 
+    nCount);
 }
 
 void SoftwareCompositor::commit_recursion(Layer *p) {

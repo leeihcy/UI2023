@@ -83,11 +83,6 @@ void Window::onSize(int width, int height) {
   }
   m_width = width;
   m_height = height;
-  // printf("on size: %d %d\n", width, height);
-  // SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
-  //                                      kPremul_SkAlphaType, nullptr);
-  // SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
-  // m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
 
   // if (SIZE_MINIMIZED == wParam)
   //       return 0;
@@ -249,24 +244,13 @@ void Window::onPaint(Rect *dirty) {
     UI_LOG_DEBUG(L"Window onPaint full");
   }
 
-  // if (!m_sksurface) {
-  //   return;
-  // }
-
-  // SkCanvas *canvas = m_sksurface->getCanvas();
-  // on_erase_bkgnd(*canvas);
-  // on_paint(*canvas);
-
-  // m_sksurface->flushAndSubmit();
-  // swap_buffer();
-
   // m_window_render.OnPaint(dirty);
   m_window_render.InvalidateNow();
 }
 
-void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
-void Window::on_erase_bkgnd(SkCanvas &canvas) {}
-void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
+// void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
+// void Window::on_erase_bkgnd(SkCanvas &canvas) {}
+// void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
 
 bool Window::CreateUI(const wchar_t *szId) {
   if (!m_pSkinRes) {
@@ -338,6 +322,18 @@ void Window::SetGpuComposite(bool b) {
   // UI_LOG_DEBUG(TEXT("hard composite enable, window=0x%08x"), this);
 }
 
+
+void  Window::OnEraseBkgnd(IRenderTarget* pRenderTarget)
+{
+	if (nullptr == pRenderTarget)
+		return;
+
+  m_signal_paint.emit(pRenderTarget);
+  
+	SetMsgHandled(false);
+}
+
+
 #if 0
 long WindowBase::_OnPostMessage( unsigned int uMsg, long wParam, long lParam, BOOL& bHandled )
 {
@@ -372,5 +368,10 @@ void Window::DirectComposite() { assert(0 && "这个函数是否还需要继续�
 bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }
 
 bool Window::IsWindowVisible() { return m_platform->IsWindowVisible(); }
+
+void Window::Submit(IRenderTarget* pRT, const RECT* prect, int count)
+{
+  m_platform->Submit(pRT, prect, count);
+}
 
 } // namespace ui

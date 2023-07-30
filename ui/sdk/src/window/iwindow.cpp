@@ -8,7 +8,7 @@
 #include "src/resource/res_bundle.h"
 #endif
 
-using namespace ui;
+namespace ui {
 UI_IMPLEMENT_INTERFACE(Window, Object)
 
 void IWindow::Create(const Rect &rect) { __pImpl->Create(rect); }
@@ -16,9 +16,8 @@ void IWindow::SetTitle(const char *title) { __pImpl->SetTitle(title); }
 void IWindow::Show() { __pImpl->Show(); }
 
 ui::signal<void()> &IWindow::DestroySignal() { return __pImpl->DestroySignal(); }
-ui::signal<void(SkCanvas &)> &IWindow::PaintSignal() {
-  return __pImpl->PaintSignal();
-}
+signal<void(IRenderTarget*)> &IWindow::PaintSignal() { return __pImpl->PaintSignal(); }
+
 #if 0
 UI_IMPLEMENT_INTERFACE(WindowBase, Panel)
 UI_IMPLEMENT_INTERFACE(Window, WindowBase)
@@ -236,8 +235,6 @@ void  IWindowBase::UpdateDesktopLayout()
 }
 #endif
 #if 0
-namespace ui
-{
 	extern "C"
 		void GetWindowNormalRect(HWND hWnd, RECT* prc)
 	{
@@ -259,5 +256,6 @@ namespace ui
 			::GetWindowRect(hWnd, prc);
 		}
 	}
-}
 #endif
+
+}

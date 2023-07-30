@@ -4,96 +4,77 @@
 #include "src/window/window.h"
 // #include "Src/UIObject/ListCtrl/ListItemBase/listitembase.h"
 
-namespace ui
-{
+namespace ui {
 
-ObjectLayer::ObjectLayer(Object& o) : m_obj(o)
-{
-	m_pLayer = nullptr;
+ObjectLayer::ObjectLayer(Object &o) : m_obj(o) { m_pLayer = nullptr; }
+
+ObjectLayer::~ObjectLayer() { DestroyLayer(); }
+
+void ObjectLayer::CreateLayer() {
+  if (m_pLayer)
+    return;
+
+  WindowRender *pWndRender = nullptr;
+
+  Window *pWindow = m_obj.GetWindowObject();
+  if (pWindow)
+    pWndRender = &pWindow->GetWindowRender();
+
+  if (pWndRender) {
+    m_pLayer =
+        pWndRender->CreateLayer(static_cast<IObjectLayerContent *>(this));
+
+    RECT rcParent;
+    m_obj.GetParentRect(&rcParent);
+    if (!rcParent.IsEmpty())
+      OnSize(rcParent.Width(), rcParent.Height());
+
+    m_obj.OnLayerCreate();
+  } else {
+    // åœ¨resizeçš„æ—¶å€™åˆ›å»º
+    // UIASSERT(0);// æœ‰å¯èƒ½çª—å£æ­£åœ¨é€€äº†é”€æ¯æœŸé—´ï¼Œé€»è¾‘åˆè°ƒç”¨äº†ä¸€æ¬¡åŠ¨ç”»ã€‚
+  }
 }
 
-ObjectLayer::~ObjectLayer()
-{
-	DestroyLayer();
+void ObjectLayer::TryDestroyLayer() {
+  if (!m_pLayer)
+    return;
+
+  m_pLayer->TryDestroy();
 }
 
-void ObjectLayer::CreateLayer()
-{
-	if (m_pLayer)
-		return;
+void ObjectLayer::DestroyLayer() {
+  if (!m_pLayer)
+    return;
 
-	WindowRender* pWndRender = nullptr;
+  Layer *p = m_pLayer;
+  m_pLayer = nullptr;
 
-	Window* pWindow = m_obj.GetWindowObject();
-	if (pWindow)
-		pWndRender = &pWindow->GetWindowRender();
-
-	if (pWndRender)
-	{
-		m_pLayer = pWndRender->CreateLayer(static_cast<IObjectLayerContent*>(this));
-
-		RECT rcParent;
-		m_obj.GetParentRect(&rcParent);
-		if (!rcParent.IsEmpty())
-			OnSize(rcParent.Width(), rcParent.Height());
-
-		m_obj.OnLayerCreate();
-	}
-	else
-	{
-		// ÔÚresizeµÄÊ±ºò´´½¨
-		// UIASSERT(0);// ÓÐ¿ÉÄÜ´°¿ÚÕýÔÚÍËÁËÏú»ÙÆÚ¼ä£¬Âß¼­ÓÖµ÷ÓÃÁËÒ»´Î¶¯»­¡£
-	}
+  if (p)
+    p->Destroy();
 }
 
-void  ObjectLayer::TryDestroyLayer()
-{
-	if (!m_pLayer)
-		return;
-
-	m_pLayer->TryDestroy();
+void ObjectLayer::Draw(IRenderTarget *pRenderTarget) {
+  m_obj.DrawToLayer__(pRenderTarget);
 }
 
-void  ObjectLayer::DestroyLayer()
-{
-	if (!m_pLayer)
-		return;
+void ObjectLayer::GetWindowRect(RECT *prcOut) { m_obj.GetWindowRect(prcOut); }
 
-	Layer*  p = m_pLayer;
-	m_pLayer = nullptr;
-
-	if (p)
-		p->Destroy();
+void ObjectLayer::GetParentWindowRect(RECT *prcOut) {
+  if (m_obj.GetParentObject())
+    m_obj.GetParentObject()->GetWindowRect(
+        prcOut); // TODO: -->> visible part only
 }
 
-void  ObjectLayer::Draw(IRenderTarget* pRenderTarget) 
-{
-    m_obj.DrawToLayer__(pRenderTarget);
+void ObjectLayer::OnSize(uint nWidth, uint nHeight) {
+  if (m_pLayer) {
+    m_pLayer->OnSize(nWidth, nHeight);
+  }
 }
 
-void  ObjectLayer::GetWindowRect(RECT* prcOut) 
-{
-    m_obj.GetWindowRect(prcOut);
-}
-
-void  ObjectLayer::GetParentWindowRect(RECT* prcOut)
-{
-    if (m_obj.GetParentObject())
-        m_obj.GetParentObject()->GetWindowRect(prcOut);  // TODO: -->> visible part only
-}
-
-void  ObjectLayer::OnSize(uint nWidth, uint nHeight)
-{
-    if (m_pLayer)
-    {
-        m_pLayer->OnSize(nWidth, nHeight);
-    }
-}
-
-bool  ObjectLayer::IsChildOf(ILayerContent* pParentLayer)
-{
-    if (!pParentLayer)
-        return false;
+bool ObjectLayer::IsChildOf(ILayerContent *pParentLayer) {
+  if (!pParentLayer)
+    return false;
 
 #if 0
 	if (pParentLayer->Type() == LayerContentTypeObject)
@@ -118,116 +99,107 @@ bool  ObjectLayer::IsChildOf(ILayerContent* pParentLayer)
 		UIASSERT(0);
 	}
 #else
-    UIASSERT(false);
+  UIASSERT(false);
 #endif
-    return false;
+  return false;
 }
 
-bool  ObjectLayer::IsVisible()
-{
-    return m_obj.IsVisible();
+bool ObjectLayer::IsVisible() { return m_obj.IsVisible(); }
+
+// objectåœ¨å¯¹è±¡æ ‘ä¸­çš„ä½ç½®æ”¹å˜äº†ï¼ŒåŒæ­¥åˆ°åˆ†å±‚æ ‘ä¸Šé¢
+void ObjectLayer::OnObjPosInTreeChanged() {
+  UIASSERT(m_pLayer);
+
+  Layer *pParentLayer = m_pLayer->GetParent();
+  UIASSERT(pParentLayer);
+
+  m_pLayer->RemoveMeInTheTree();
+  pParentLayer->AddSubLayer(m_pLayer, GetNextLayer());
 }
 
-// objectÔÚ¶ÔÏóÊ÷ÖÐµÄÎ»ÖÃ¸Ä±äÁË£¬Í¬²½µ½·Ö²ãÊ÷ÉÏÃæ
-void  ObjectLayer::OnObjPosInTreeChanged()
-{
-    UIASSERT (m_pLayer);
-
-    Layer* pParentLayer = m_pLayer->GetParent();
-	UIASSERT(pParentLayer);
-
-    m_pLayer->RemoveMeInTheTree();
-    pParentLayer->AddSubLayer(m_pLayer, GetNextLayer());
+void ObjectLayer::OnLayerDestory() {
+  if (m_pLayer) // ç”±ObjectLayer::~ObjectLayer()è§¦å‘çš„ï¼Œä¸é€šçŸ¥
+  {
+    m_pLayer = nullptr;
+    m_obj.OnLayerDestory();
+  }
 }
 
-void  ObjectLayer::OnLayerDestory()
-{
-	if (m_pLayer)  // ÓÉObjectLayer::~ObjectLayer()´¥·¢µÄ£¬²»Í¨Öª
-	{
-		m_pLayer = nullptr;
-		m_obj.OnLayerDestory();
-	}
+Layer *ObjectLayer::GetParentLayer() {
+  Object *parent = m_obj.GetParentObject();
+  if (!parent)
+    return nullptr;
+
+  return parent->GetLayer();
 }
 
-Layer*  ObjectLayer::GetParentLayer()
-{
-	Object* parent = m_obj.GetParentObject();
-	if (!parent)
-		return nullptr;
-
-	return parent->GetLayer();
-}
-
-
-// Layer Tree Éú³É¹Ø¼üº¯Êý£¬²ÎÕÕwebkit£º
-// RenderLayer* RenderObject::findNextLayer(RenderLayer* parentLayer, RenderObject* startPoint, bool checkParent)
+// Layer Tree ç”Ÿæˆå…³é”®å‡½æ•°ï¼Œå‚ç…§webkitï¼š
+// RenderLayer* RenderObject::findNextLayer(RenderLayer* parentLayer,
+// RenderObject* startPoint, bool checkParent)
 // http://opensource.apple.com//source/WebCore/WebCore-658.28/rendering/RenderObject.cpp
-// »ñÈ¡pStartObjµÄlayerÓ¦¸Ã²åÈëÔÚpParentLayerµÄÄÄ¸öÎ»ÖÃ
-// ×¢£ºÕâÀï²¢Ã»ÓÐ´¦Àí×Ô¼ºµÄ×Ó¶ÔÏóÒÑ¾­ÓÐlayerÔÚpParentLayerÏÂÃæµÄÇé¿ö£¬ÐèÒªµ¥¶À´¦Àí
+// èŽ·å–pStartObjçš„layeråº”è¯¥æ’å…¥åœ¨pParentLayerçš„å“ªä¸ªä½ç½®
+// æ³¨ï¼šè¿™é‡Œå¹¶æ²¡æœ‰å¤„ç†è‡ªå·±çš„å­å¯¹è±¡å·²ç»æœ‰layeråœ¨pParentLayerä¸‹é¢çš„æƒ…å†µï¼Œéœ€è¦å•ç‹¬å¤„ç†
 // Layer*  Object::FindNextLayer(
-//             Layer* pParentLayer, 
+//             Layer* pParentLayer,
 //             Object* pStartObj,
 //             bool bCheckParent)
 // {
 //     if (!pParentLayer)
 //         return nullptr;
-//     
+//
 //     Layer* pThisLayer = m_pLayer ? m_pLayer->GetLayer() : nullptr;
-// 
-//     // ÕÒµ½Ò»¸öÍ¬¼¶µÄlayer£¬Õâ¸ö¶ÔÏóÊÇÔÚpStartObjµÄºóÃæ£¬Òò´Ë¿ÉÒÔ½«pStartObj
-//     // ¶ÔÓ¦µÄlayer²åÈëµ½Õâ¸ö¶ÔÏóµÄlayerÇ°Ãæ¡£
+//
+//     // æ‰¾åˆ°ä¸€ä¸ªåŒçº§çš„layerï¼Œè¿™ä¸ªå¯¹è±¡æ˜¯åœ¨pStartObjçš„åŽé¢ï¼Œå› æ­¤å¯ä»¥å°†pStartObj
+//     // å¯¹åº”çš„layeræ’å…¥åˆ°è¿™ä¸ªå¯¹è±¡çš„layerå‰é¢ã€‚
 //     if (pThisLayer && pThisLayer->GetParent() == pParentLayer)
 //         return pThisLayer;
-// 
-//     // Èç¹ûÕâ¸ö¶ÔÏóÃ»ÓÐlayer£¬ÔòÏòºóµÝ¹é±éÀú
+//
+//     // å¦‚æžœè¿™ä¸ªå¯¹è±¡æ²¡æœ‰layerï¼Œåˆ™å‘åŽé€’å½’éåŽ†
 //     if (!pThisLayer || pThisLayer == pParentLayer)
 //     {
-//         Object* p = pStartObj ? pStartObj->GetNextObject() : GetChildObject();
-//         for (; p; p = p->GetNextObject())
+//         Object* p = pStartObj ? pStartObj->GetNextObject() :
+//         GetChildObject(); for (; p; p = p->GetNextObject())
 //         {
 //             Layer* pReturn = p->FindNextLayer(
 //                 pParentLayer, nullptr, false);
-// 
+//
 //             if (pReturn)
 //                 return pReturn;
 //         }
 //     }
-// 
-//     // ÕÒµ½¶¥ÁË£¬Ã»ÓÐÆäËülayer
+//
+//     // æ‰¾åˆ°é¡¶äº†ï¼Œæ²¡æœ‰å…¶å®ƒlayer
 //     if (pThisLayer == pParentLayer)
 //         return nullptr;
-// 
-//     // ÏòÉÏÕÒ
+//
+//     // å‘ä¸Šæ‰¾
 //     if (m_pParent && bCheckParent)
 //         return m_pParent->FindNextLayer(pParentLayer, this, true);
-// 
+//
 //     return nullptr;
 // }
 
-// ÅÐ¶ÏË¼Â·£ºÕâ¸ö¶ÔÏóµÄÏÂÒ»¸ö²ã£¬Ö»»áÔÚÕâ¸ö¶ÔÏóµÄÏÂÒ»¸öObjectÖÐ³öÏÖ¡£
-Layer*  ObjectLayer::GetNextLayer()
-{
-	Layer* pParentLayer = GetParentLayer();
+// åˆ¤æ–­æ€è·¯ï¼šè¿™ä¸ªå¯¹è±¡çš„ä¸‹ä¸€ä¸ªå±‚ï¼Œåªä¼šåœ¨è¿™ä¸ªå¯¹è±¡çš„ä¸‹ä¸€ä¸ªObjectä¸­å‡ºçŽ°ã€‚
+Layer *ObjectLayer::GetNextLayer() {
+  Layer *pParentLayer = GetParentLayer();
 
-	Object* pNextTreeObject = m_obj.GetNextTreeItemObject();
-	while (pNextTreeObject)
-	{
-		Layer* pThisLayer = pNextTreeObject->GetSelfLayer();
+  Object *pNextTreeObject = m_obj.GetNextTreeItemObject();
+  while (pNextTreeObject) {
+    Layer *pThisLayer = pNextTreeObject->GetSelfLayer();
 
-		// ÕÒ»Øµ½¸¸layerÁË£¬ËµÃ÷×Ô¼º¾ÍÊÇ×îºóÒ»¸ö£¬Ã»ÓÐnext
-		if (pThisLayer && pThisLayer == pParentLayer)
-			return nullptr;
+    // æ‰¾å›žåˆ°çˆ¶layeräº†ï¼Œè¯´æ˜Žè‡ªå·±å°±æ˜¯æœ€åŽä¸€ä¸ªï¼Œæ²¡æœ‰next
+    if (pThisLayer && pThisLayer == pParentLayer)
+      return nullptr;
 
-		// ÔÚºóÃæµÄ½áµãÖÐ£¬ÕÒµ½ÁËÒ»¸öÍ¬¼¶²ã£¬²åÔÚËüµÄÇ°Ãæ 
-		if (pThisLayer && pThisLayer->GetParent() == pParentLayer)
-			return pThisLayer;
+    // åœ¨åŽé¢çš„ç»“ç‚¹ä¸­ï¼Œæ‰¾åˆ°äº†ä¸€ä¸ªåŒçº§å±‚ï¼Œæ’åœ¨å®ƒçš„å‰é¢
+    if (pThisLayer && pThisLayer->GetParent() == pParentLayer)
+      return pThisLayer;
 
-		// ·ñÔò¼ÌÐøÍùÏÂÒ»¸öÊ÷½áµã±éÀú
-		pNextTreeObject = pNextTreeObject->GetNextTreeItemObject();
-	}
+    // å¦åˆ™ç»§ç»­å¾€ä¸‹ä¸€ä¸ªæ ‘ç»“ç‚¹éåŽ†
+    pNextTreeObject = pNextTreeObject->GetNextTreeItemObject();
+  }
 
-	return nullptr;
+  return nullptr;
 }
 
-
-}
+} // namespace ui

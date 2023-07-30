@@ -102,7 +102,20 @@ void WindowPlatformWin::CenterWindow() {
 }
 
 
-void WindowPlatformWin::Submit(sk_sp<SkSurface> sksurface) {
+// void WindowPlatformWin::Submit(sk_sp<SkSurface> sksurface) {
+void WindowPlatformWin::Submit(IRenderTarget* pRT, const RECT* prect, int count) {
+  HDC hDC = GetDC(m_hWnd);
+  for (uint i = 0; i < count; i++) {
+    RECT &rcInWindow = prect[i];
+
+    Render2TargetParam param = {0};
+    param.xSrc = param.xDst = rcInWindow.left;
+    param.ySrc = param.yDst = rcInWindow.top;
+    param.wSrc = param.wDst = rcInWindow.right - rcInWindow.left;
+    param.hSrc = param.hDst = rcInWindow.bottom - rcInWindow.top;
+    m_pRootLayer->GetRenderTarget()->Render2DC(hDC, &param);
+  }
+  ReleaseDC(m_hWnd, hDC);
 }
 
 bool WindowPlatformWin::IsChildWindow()

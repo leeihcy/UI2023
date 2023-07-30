@@ -189,8 +189,8 @@ struct UIAPI IWindow : public IObject {
   void SetTitle(const char *title);
   void Show();
 
-  ui::signal<void()> &DestroySignal();
-  ui::signal<void(SkCanvas &)> &PaintSignal();
+  signal<void()> &DestroySignal();
+  signal<void(IRenderTarget*)> &PaintSignal();
 
   UI_DECLARE_INTERFACE(Window)
   UI_DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903");

@@ -1,5 +1,6 @@
 #include "window_mac.h"
 #import "Cocoa/Cocoa.h"
+#include "src/graphics/skia/skia_render.h"
 #include <string.h>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
@@ -121,29 +122,51 @@ void WindowPlatformMac::Show() {
   [m_window makeKeyAndOrderFront:NSApp];
 }
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
-void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
-  SkPixmap pm;
-  if (!sksurface->peekPixels(&pm)) {
-    return;
+
+// void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
+void WindowPlatformMac::Submit(IRenderTarget *pRT, const RECT *prect,
+                               int count) {
+  if (pRT->GetGraphicsRenderLibraryType() ==
+      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+    SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
+    SkSurface *surface = skiaRT->GetSkiaSurface();
+    if (!surface) {
+      return;
+    }
+    SkPixmap pm;
+    if (!surface->peekPixels(&pm)) {
+      return;
+    }
+
+    CGDataProviderRef ref = CGDataProviderCreateWithData(
+        NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+
+    CGBitmapInfo bitmapInfo = kCGImageAlphaNoneSkipLast;
+    //  bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
+    bitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst;
+
+    CGImageRef image = CGImageCreate(
+        pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace, bitmapInfo,
+        ref, NULL, true, kCGRenderingIntentDefault);
+
+    CGContext *context = [NSGraphicsContext currentContext].CGContext;
+
+    for (int i = 0; i < count; i++) {
+      const RECT& rc = prect[i];
+      NSRect nsrect;
+      nsrect.origin.x = rc.left;
+      nsrect.origin.y = rc.top;
+      nsrect.size.width = rc.right-rc.left;
+      nsrect.size.height = rc.bottom-rc.top;
+      CGImageRef part_image = CGImageCreateWithImageInRect(image,nsrect);
+
+      CGContextDrawImage(context, CGRectMake(0, 0, pm.width(), pm.height()),
+                        part_image);
+    }
   }
-
-  CGDataProviderRef ref = CGDataProviderCreateWithData(
-      NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
-  CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-
-  CGBitmapInfo bitmapInfo = kCGImageAlphaNoneSkipLast;
-  //  bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
-  bitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst;
-
-  CGImageRef image =
-      CGImageCreate(pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace,
-                    bitmapInfo, ref, NULL, true, kCGRenderingIntentDefault);
-
-  CGContext *context = [NSGraphicsContext currentContext].CGContext;
-  CGContextDrawImage(context, CGRectMake(0, 0, pm.width(), pm.height()), image);
 }
-void WindowPlatformMac::notifySize()
-{
+void WindowPlatformMac::notifySize() {
   m_ui_window.onSize(m_window.frame.size.width, m_window.frame.size.height);
 }
 
@@ -211,7 +234,7 @@ void WindowPlatformMac::notifySize()
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
   ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
-            (int)rect.size.height};
+                (int)rect.size.height};
   m_window->m_ui_window.onPaint(&r);
 }
 

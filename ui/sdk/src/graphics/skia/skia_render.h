@@ -1,4 +1,8 @@
 #pragma once
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkColorSpace.h>
+
 #include "include/interface/renderlibrary.h"
 // #include "Src\Util\RectArray\rectarray.h"
 // #include "gdibitmap.h"
@@ -70,6 +74,9 @@ public:
 
   virtual void Upload2Gpu(IGpuRenderLayer *p, RECT* prcArray, int nCount) override;
 
+public:
+  SkSurface* GetSkiaSurface() { return m_sksurface.get(); }
+
 protected:
   // void DrawBitmap(IRenderBitmap *hBitmap, int x, int y);
   // void DrawBitmap(IRenderBitmap *pBitmap, int xDest, int yDest, int wDest,
@@ -95,7 +102,11 @@ protected:
 
   // void update_clip_rgn();
 
+
 protected:
+  // 渲染
+  sk_sp<SkSurface> m_sksurface;
+
   // HDC m_hBindDC;
   // RenderBuffer *m_pRenderBuffer;
   bool m_bNeedAlphaChannel; // 需要渲染alpha通道

@@ -33,7 +33,7 @@ public:
   void Show() override;
   void Hide();
 
-  void Submit(sk_sp<SkSurface> sksurface) override;
+  void Submit(IRenderTarget* pRT, const RECT* prect, int count) override;
   void Invalidate();
 
   void RECT2Rect(RECT& r, Rect* prect);

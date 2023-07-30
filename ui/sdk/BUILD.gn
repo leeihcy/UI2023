@@ -18,8 +18,8 @@ shared_library("uisdk") {
         "//ui/sdk",
         "//ui/sdk/include",
         "//ui/sdk/src",
-        "//ui/3rd/skia/",
-        "//ui/3rd/skia/include/core/"
+        "//ui/3rd/skia/src/",
+        "//ui/3rd/skia/src/include/core/"
     ]
   
     lib_dirs = ["$root_build_dir/"]

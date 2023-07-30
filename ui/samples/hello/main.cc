@@ -8,13 +8,17 @@ void on_window_destroy(ui::IApplication *uiapp) {
   printf("on_window_destroy\n");
   uiapp->Quit();
 }
-// void on_window_paint(SkCanvas& canvas) {
-//     canvas.clear(SK_ColorRED);
+void on_window_paint(ui::IRenderTarget* pRT) {
+    // canvas.clear(SK_ColorRED);
 
-//     SkPaint paint;
-//     canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10,
-//     paint);
-// }
+    // SkPaint paint;
+    // canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10,
+    // paint);
+
+    ui::RECT rc = {100,100,200,200};
+    ui::Color c(255,0,255,255);
+    pRT->DrawRect(&rc, &c);
+}
 
 int main() {
   char version[32] = {0};
@@ -29,7 +33,7 @@ int main() {
   window->SetTitle("你好Hello!");
   window->Show();
   window->DestroySignal().connect(on_window_destroy, app.get());
-  // window->PaintSignal().connect(on_window_paint);
+  window->PaintSignal().connect(on_window_paint);
 
   app->Run();
 

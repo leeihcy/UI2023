@@ -9,6 +9,7 @@ struct IRenderTarget;
 class ImageData;
 struct IRenderFont;
 struct IGpuRenderLayer;
+struct RECT;
 
 class C9Region;
 

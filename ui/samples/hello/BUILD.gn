@@ -7,8 +7,8 @@ executable("hello") {
     include_dirs = [
         "//",
         "//ui",
-        "//ui/3rd/skia/",
-        "//ui/3rd/skia/include/core/",
+        "//ui/3rd/skia/src/",
+        "//ui/3rd/skia/src/include/core/",
         "//ui/sdk",
     ]
     sources = [
