@@ -11,7 +11,8 @@
 
 namespace ui {
 
-ResourceManager::ResourceManager() : m_root_bundle(*this) {
+ResourceManager::ResourceManager(Application &a)
+    : m_root_bundle(*this), m_pUIApplication(&a) {
   m_strLanguage = L"zh_cn";
   // m_strLanguage = TEXT("en_us");
 }
@@ -242,10 +243,6 @@ ResBundle* ResourceManager::GetActiveSkin()
 
 Application *ResourceManager::GetUIApplication() { return m_pUIApplication; }
 
-void ResourceManager::SetUIApplication(Application *pUIApp) {
-  m_pUIApplication = pUIApp;
-}
-
 // void  ChangeSkinTimerProc(unsigned int*, TimerItem* pItem)
 // {
 //     ResourceManager* pThis = (ResourceManager*)pItem->wParam;
@@ -282,7 +279,8 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
   if (!szPath)
     return nullptr;
 
-  UI_LOG_INFO(L"\n\n------------  LoadResBundle: %s ----------------\n", szPath);
+  UI_LOG_INFO(L"\n\n------------  LoadResBundle: %s ----------------\n",
+              szPath);
 
   wchar szSkinName[MAX_PATH] = {0};
   SKIN_PACKET_TYPE eSkinPackageType = SKIN_PACKET_TYPE_DIR;

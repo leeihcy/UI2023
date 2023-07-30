@@ -46,6 +46,9 @@ bool WindowPlatformMac::Create(const Rect &rect) {
   [m_window setAcceptsMouseMovedEvents:YES];
   [m_window setRestorable:NO];
 
+  // 主动触发一次，初始化相关render target
+  notifySize();
+
   // Window controller:
   //   NSWindowController *windowController =
   //       [[NSWindowController alloc] initWithWindow:m_window];
@@ -69,13 +72,55 @@ void WindowPlatformMac::SetTitle(const char *title) {
   }
 }
 
+void WindowPlatformMac::GetClientRect(Rect *prect) {
+  prect->x = m_window.contentLayoutRect.origin.x;
+  prect->y = m_window.contentLayoutRect.origin.y;
+  prect->width = m_window.contentLayoutRect.size.width;
+  prect->height = m_window.contentLayoutRect.size.height;
+}
+void WindowPlatformMac::GetWindowRect(Rect *prect) {
+  prect->x = m_window.frame.origin.x;
+  prect->y = m_window.frame.origin.y;
+  prect->width = m_window.frame.size.width;
+  prect->height = m_window.frame.size.height;
+}
+void SetWindowRect(Rect *prect) {
+  // // Given CG and NS's coordinate system, the "Y" position of a window is the
+  // Y coordinate
+  // // of the bottom of the window.
+  // int newBottom    = (int)([mWindow frame].size.height) + y;
+  // NSRect emptyRect = NSMakeRect(x, YCoordToFromCG(newBottom), 0, 0);
+  // [mWindow setFrameOrigin:[mWindow
+  // frameRectForContentRect:emptyRect].origin];
+
+  // [mWindow setContentSize:NSMakeSize(width, height)];
+  // return true;
+}
+void WindowPlatformMac::InvalidateRect(Rect *prect) {
+  if (!prect) {
+    [m_window.contentView display];
+    return;
+  }
+  NSRect rect;
+  rect.origin.x = prect->x;
+  rect.origin.y = prect->y;
+  rect.size.width = prect->width;
+  rect.size.height = prect->height;
+  [m_window.contentView displayRect:rect];
+}
+
+void WindowPlatformMac::ValidateRect(Rect *prect) {}
+
+bool WindowPlatformMac::IsChildWindow() { return m_window.parentWindow != nil; }
+bool WindowPlatformMac::IsWindowVisible() { return !!m_window.visible; }
+
 void WindowPlatformMac::Show() {
   [m_window orderFront:nil];
 
   [NSApp activateIgnoringOtherApps:YES];
   [m_window makeKeyAndOrderFront:NSApp];
 }
-
+void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
   SkPixmap pm;
   if (!sksurface->peekPixels(&pm)) {
@@ -97,6 +142,18 @@ void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
   CGContextDrawImage(context, CGRectMake(0, 0, pm.width(), pm.height()), image);
 }
+void WindowPlatformMac::notifySize()
+{
+  m_ui_window.onSize(m_window.frame.size.width, m_window.frame.size.height);
+}
+
+// NS's and CG's coordinate systems start at the bottom left, while OSWindow's
+// coordinate system starts at the top left. This function converts the Y
+// coordinate accordingly. static float YCoordToFromCG(float y)
+// {
+//     float screenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
+//     return screenHeight - y;
+// }
 
 } // namespace ui
 
@@ -111,9 +168,9 @@ void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
 - (void)windowDidResize:(NSNotification *)notification {
   NSView *view = m_window->window().contentView;
   // CGFloat scale = skwindow::GetBackingScaleFactor(view);
-  m_window->m_ui_window.onSize(view.bounds.size.width /* * scale*/,
-                               view.bounds.size.height /* * scale*/);
-  // fWindow->inval();
+  // m_window->m_ui_window.onSize(view.bounds.size.width /* * scale*/,
+  //                              view.bounds.size.height /* * scale*/);
+  m_window->notifySize();
 }
 
 - (BOOL)windowShouldClose:(NSWindow *)sender {
@@ -153,7 +210,9 @@ void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
-  m_window->m_ui_window.onPaint(nullptr);
+  ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
+            (int)rect.size.height};
+  m_window->m_ui_window.onPaint(&r);
 }
 
 @end

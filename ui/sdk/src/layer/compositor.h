@@ -1,57 +1,57 @@
 #pragma once
 #include "layer.h"
-namespace ui
-{
-    class Application;
-}
+#include "src/util/rect_array/rectarray.h"
+#include "include/common/weakptr/weakptr.h"
 
-#define MSG_INVALIDATE  161311307
-#define MSG_ASYNCTASK   175021413
+// #define MSG_INVALIDATE 161311307  Â åºŸå¼ƒï¼Œæ”¹ä¸ºä½¿ç”¨ messageloop posttask
+// #define MSG_ASYNCTASK 175021413  Â åºŸå¼ƒï¼Œæ”¹ä¸ºä½¿ç”¨ messageloop posttask
 
-namespace ui
-{
-class Compositor
-{
+namespace ui {
+class Application;
+
+class Compositor {
 public:
-	Compositor();
-	virtual ~Compositor();
+  Compositor();
+  virtual ~Compositor();
 
-    void  SetUIApplication(Application*);
-    void  SetWindowRender(WindowRender*);
-    Application*  GetUIApplication();
-    bool  CreateRenderTarget(IRenderTarget** pp);
+  void SetUIApplication(Application *);
+  void SetWindowRender(WindowRender *);
+  Application *GetUIApplication();
+  bool CreateRenderTarget(IRenderTarget **pp);
 
-	Layer*  CreateLayer();
-    void  SetRootLayer(Layer* pChanged);
-	Layer*  GetRootLayer();
+  Layer *CreateLayer();
+  void SetRootLayer(Layer *pChanged);
+  Layer *GetRootLayer();
 #if defined(OS_WIN)
-    void  BindHWND(HWND);
-    HWND  GetHWND();
+  void BindHWND(HWND);
+  HWND GetHWND();
 #endif
-    void  RequestInvalidate();
-    void  DoInvalidate();
-    void  Commit(const RectArray& arrDirtyInWindow);
+  void RequestInvalidate();
+  void _onRequestInvalidate();
+  void DoInvalidate();
+  void Commit(const RectArray &arrDirtyInWindow);
 
-    virtual void  UpdateDirty(RectArray& arrDirtyInWindow) = 0;
-    virtual void  Resize(uint nWidth, uint nSize) = 0;
+  virtual void UpdateDirty(RectArray &arrDirtyInWindow) = 0;
+  virtual void Resize(uint nWidth, uint nSize) = 0;
 
 protected:
-    virtual Layer*  virtualCreateLayer() = 0;
-    virtual void  virtualBindHWND(HWND) = 0;
-    virtual void  virtualCommit(const RectArray& arrDirtyInWindow) = 0;
+  virtual Layer *virtualCreateLayer() = 0;
+  virtual void virtualBindHWND(HWND) = 0;
+  virtual void virtualCommit(const RectArray &arrDirtyInWindow) = 0;
 
 protected:
-    Application*  m_pUIApp;
+  Application *m_pUIApp;
 
-	Layer*  m_pRootLayer;
+  Layer *m_pRootLayer;
 #if defined(OS_WIN)
-    HWND  m_hWnd;
-    WindowRender*  m_pWindowRender;
+  HWND m_hWnd;
 #endif
+  WindowRender *m_pWindowRender;
 
 private:
-    // ÏŞÖÆË¢ĞÂÊ±postmessageµÄ´ÎÊı¡£Èç¹ûÒÑ¾­postÁËÒ»¸ö£¬¾Í²»ÔÙpost
-    long  m_lPostInvalidateMsgRef;  
+  // é™åˆ¶åˆ·æ–°æ—¶postmessageçš„æ¬¡æ•°ã€‚å¦‚æœå·²ç»postäº†ä¸€ä¸ªï¼Œå°±ä¸å†post
+  long m_lPostInvalidateMsgRef;
+  weakptr_factory<Compositor> m_weakptr_factory = {this};
 };
 
-}
+} // namespace ui

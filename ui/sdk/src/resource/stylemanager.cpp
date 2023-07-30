@@ -315,7 +315,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
             const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
             if (nullptr == szText)
             {
-                UI_LOG_WARN( _T("Can't find the %s attribute of %s"), XML_ID, (BSTR)bstrTagName);
+                UI_LOG_WARN(L"Can't find the %s attribute of %s", XML_ID, bstrTagName.c_str());
                 delete pStyleItem;
                 break;
             }
@@ -330,7 +330,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
             const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
             if (nullptr == szText)
             {
-                UI_LOG_WARN( _T("Can't find the %s attribute of %s"), XML_ID, (BSTR)bstrTagName);
+                UI_LOG_WARN(L"Can't find the %s attribute of %s", XML_ID, bstrTagName.c_str());
                 delete pStyleItem;
                 break;
             }

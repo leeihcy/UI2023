@@ -1,93 +1,84 @@
-#include "include/inc.h"
 #include "topwindowmanager.h"
+#include "include/inc.h"
 
 #include "include/interface/iobject.h"
 #include "include/interface/iwindow.h"
-#include "src/layout/layout.h"
-#include "src/resource/res_bundle.h"
-#include "src/object/object.h"
-#include "src/window/window.h"
 #include "src/application/uiapplication.h"
+#include "src/layout/layout.h"
+#include "src/object/object.h"
+#include "src/resource/res_bundle.h"
+#include "src/window/window.h"
 
 namespace ui {
 
-TopWindowManager::TopWindowManager(Application* p)
-{
-    m_pITopWindowManager = nullptr;
-    m_pUIApplication = p;
+TopWindowManager::TopWindowManager(Application *p) {
+  m_pITopWindowManager = nullptr;
+  m_pUIApplication = p;
 }
-TopWindowManager::~TopWindowManager()
-{
-    SAFE_DELETE(m_pITopWindowManager);
-	UIASSERT(m_lTopWindowObject.empty())
+TopWindowManager::~TopWindowManager() {
+  SAFE_DELETE(m_pITopWindowManager);
+  UIASSERT(m_lTopWindowObject.empty());
 }
-ITopWindowManager*  TopWindowManager::GetITopWindowManager()
-{
-    if (nullptr == m_pITopWindowManager)
-        m_pITopWindowManager = new ITopWindowManager(this);
+ITopWindowManager *TopWindowManager::GetITopWindowManager() {
+  if (nullptr == m_pITopWindowManager)
+    m_pITopWindowManager = new ITopWindowManager(this);
 
-    return m_pITopWindowManager;
+  return m_pITopWindowManager;
 }
 
-long TopWindowManager::AddTopWindowObject(Window* pObj)
-{
-	if (nullptr == pObj)
-		return -1; //E_INVALIDARG;
+long TopWindowManager::AddTopWindowObject(Window *pObj) {
+  if (nullptr == pObj)
+    return -1; // E_INVALIDARG;
 
-	_MyIter  iter = m_lTopWindowObject.begin();
-	_MyIter  iterEnd = m_lTopWindowObject.end();
-	for (; iter!=iterEnd; iter++)
-	{
-		if (pObj == *iter)
-			return 0; // S_FALSE;
-	}
+  _MyIter iter = m_lTopWindowObject.begin();
+  _MyIter iterEnd = m_lTopWindowObject.end();
+  for (; iter != iterEnd; iter++) {
+    if (pObj == *iter)
+      return 0; // S_FALSE;
+  }
 
-	this->m_lTopWindowObject.push_back( pObj );
+  this->m_lTopWindowObject.push_back(pObj);
 
-	UI_LOG_DEBUG( _T("TopWindowManager::AddTopWindowObject, ID=%s"), pObj->GetId());
-	return 0;
+  UI_LOG_DEBUG(_T("TopWindowManager::AddTopWindowObject, ID=%s"),
+               pObj->GetId());
+  return 0;
 }
 
-long TopWindowManager::RemoveTopWindowObject(Window* pObj)
-{
-	if (nullptr == pObj)
-		return -1; // E_INVALIDARG;
+long TopWindowManager::RemoveTopWindowObject(Window *pObj) {
+  if (nullptr == pObj)
+    return -1; // E_INVALIDARG;
 
-	_MyIter  iter = m_lTopWindowObject.begin();
-	_MyIter  iterEnd = m_lTopWindowObject.end();
-	for(; iter!=iterEnd; iter++)
-	{
-		if (pObj == *iter)
-		{
-			m_lTopWindowObject.erase( iter );
+  _MyIter iter = m_lTopWindowObject.begin();
+  _MyIter iterEnd = m_lTopWindowObject.end();
+  for (; iter != iterEnd; iter++) {
+    if (pObj == *iter) {
+      m_lTopWindowObject.erase(iter);
 
-			UI_LOG_DEBUG( _T("TopWindowManager::RemoveTopWindowObject, ID=%s"), pObj->GetId());
-			return 0;
-		}
-	}
-	return -1; // E_FAIL;
+      UI_LOG_DEBUG(_T("TopWindowManager::RemoveTopWindowObject, ID=%s"),
+                   pObj->GetId());
+      return 0;
+    }
+  }
+  return -1; // E_FAIL;
 }
 
-void TopWindowManager::ClearTopWindowObject( )
-{
-	this->m_lTopWindowObject.clear();
+void TopWindowManager::ClearTopWindowObject() {
+  this->m_lTopWindowObject.clear();
 
-	UI_LOG_DEBUG( _T("TopWindowManager::ClearTopWindowObject ") );
+  UI_LOG_DEBUG(_T("TopWindowManager::ClearTopWindowObject "));
 }
 
 #if defined(OS_WIN)
-IWindow* TopWindowManager::GetWindow(HWND hWnd)
-{
-	_MyIter  iter = m_lTopWindowObject.begin();
-	_MyIter  iterEnd = m_lTopWindowObject.end();
-	for( ; iter!=iterEnd; iter++ )
-	{
-		Window* p = *iter;
-		if( p->GetHWND() == hWnd )
-			return p->GetIWindowBase();
-	}
+IWindow *TopWindowManager::GetWindow(HWND hWnd) {
+  _MyIter iter = m_lTopWindowObject.begin();
+  _MyIter iterEnd = m_lTopWindowObject.end();
+  for (; iter != iterEnd; iter++) {
+    Window *p = *iter;
+    if (p->GetHWND() == hWnd)
+      return p->GetIWindowBase();
+  }
 
-	return nullptr;
+  return nullptr;
 }
 #endif
 
@@ -111,7 +102,7 @@ void TopWindowManager::ChangeSkin(ResBundle* pNewSkinRes)
 			continue;
 
 		BOOL bChangeSkin = TRUE;
-		UISendMessage(pWindow, UI_MSG_SKINCHANGING, (WPARAM)&bChangeSkin, 0);
+		UISendMessage(pWindow, UI_MSG_SKINCHANGING, (long)&bChangeSkin, 0);
 		if (FALSE == bChangeSkin)
 		{
 			vecNotJoinChangeSkinWindows.push_back(pWindow);
@@ -196,39 +187,35 @@ void TopWindowManager::ChangeSkin(ResBundle* pNewSkinRes)
 //
 //	改变当前皮肤的色调
 //
-bool TopWindowManager::UpdateAllWindow( )
-{
-	_MyIter  iter = m_lTopWindowObject.begin();
-	_MyIter  iterEnd = m_lTopWindowObject.end();
+bool TopWindowManager::UpdateAllWindow() {
+  _MyIter iter = m_lTopWindowObject.begin();
+  _MyIter iterEnd = m_lTopWindowObject.end();
 
-	// 刷新窗口
-	for( iter = m_lTopWindowObject.begin(); iter!=iterEnd; iter++ )
-	{
-		Window* pWindow = *iter;
-        if (nullptr == pWindow)
-            continue;
+  // 刷新窗口
+  for (iter = m_lTopWindowObject.begin(); iter != iterEnd; iter++) {
+    Window *pWindow = *iter;
+    if (nullptr == pWindow)
+      continue;
 
-		pWindow->Invalidate();
-	}
-	return true;
+    pWindow->Invalidate();
+  }
+  return true;
 }
 
 //
 //	向所有的顶层窗口发送消息
 //
-void TopWindowManager::SendMessage2AllWnd(UIMSG* pMsg)
-{
-	_MyIter  iter = m_lTopWindowObject.begin();
-	_MyIter  iterEnd = m_lTopWindowObject.end();
-	for ( ; iter!=iterEnd; iter++)
-	{
-		 Window* pObj = *iter;
-         if (nullptr == pObj)
-             continue;
+void TopWindowManager::SendMessage2AllWnd(UIMSG *pMsg) {
+  _MyIter iter = m_lTopWindowObject.begin();
+  _MyIter iterEnd = m_lTopWindowObject.end();
+  for (; iter != iterEnd; iter++) {
+    Window *pObj = *iter;
+    if (nullptr == pObj)
+      continue;
 
-		 pMsg->pMsgTo = pObj->GetIMessage();
-		 UISendMessage(pMsg);
-	}
+    pMsg->pMsgTo = pObj->GetIMessage();
+    UISendMessage(pMsg);
+  }
 }
 // void  TopWindowManager::PostMessage2AllWnd(UIMSG* pMsg)
 // {
@@ -238,46 +225,45 @@ void TopWindowManager::SendMessage2AllWnd(UIMSG* pMsg)
 //         Window* pObj = *iter;
 //         if (nullptr == pObj)
 //             continue;
-// 
+//
 //         pMsg->pMsgTo = pObj->GetIMessage();
 //         ::UIPostMessage(m_pUIApplication->GetIUIApplication(), pMsg);
 //     }
 // }
-void  TopWindowManager::ForwardMessage2AllObj(UIMSG*  pMsg)
-{
-    _MyIter  iter = m_lTopWindowObject.begin();
-    for (; iter != m_lTopWindowObject.end(); iter++)
-    {
-        Window* pObj = *iter;
-        if (nullptr == pObj)
-            continue;
+void TopWindowManager::ForwardMessage2AllObj(UIMSG *pMsg) {
+  _MyIter iter = m_lTopWindowObject.begin();
+  for (; iter != m_lTopWindowObject.end(); iter++) {
+    Window *pObj = *iter;
+    if (nullptr == pObj)
+      continue;
 
-        pMsg->pMsgTo = pObj->GetIMessage();
-        UISendMessage(pMsg);
+    pMsg->pMsgTo = pObj->GetIMessage();
+    UISendMessage(pMsg);
 
-        pObj->ForwardMessageToChildObject(pObj, pMsg);
-    }
+    pObj->ForwardMessageToChildObject(pObj, pMsg);
+  }
 }
 
 //
 //	将一个对象的子对象打散，全放在一个list中用于重新布局，对于一个OBJ_CONTROL类型则不再拆分，它的child和本身属性一个整体
 //
-void TopWindowManager::GetAllChildIntoList(Object* pParent, std::list<Object*>& listObjects)
-{
-    if (nullptr == pParent)
-        return;
+void TopWindowManager::GetAllChildIntoList(Object *pParent,
+                                           std::list<Object *> &listObjects) {
+  if (nullptr == pParent)
+    return;
 
-    if (pParent->GetDescription() && OBJ_CONTROL == pParent->GetDescription()->GetMajorType())
-        return;
+  if (pParent->GetDescription() &&
+      OBJ_CONTROL == pParent->GetDescription()->GetMajorType())
+    return;
 
-	Object*  pChild = nullptr;
-	while ((pChild = pParent->EnumChildObject(pChild)))
-	{
-		listObjects.push_back(pChild);
+  Object *pChild = nullptr;
+  while ((pChild = pParent->EnumChildObject(pChild))) {
+    listObjects.push_back(pChild);
 
-        if (pParent->GetDescription() && OBJ_CONTROL != pParent->GetDescription()->GetMajorType())
-			this->GetAllChildIntoList(pChild, listObjects);
-	}
+    if (pParent->GetDescription() &&
+        OBJ_CONTROL != pParent->GetDescription()->GetMajorType())
+      this->GetAllChildIntoList(pChild, listObjects);
+  }
 }
 
-}
+} // namespace ui

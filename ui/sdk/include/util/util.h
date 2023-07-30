@@ -3,6 +3,7 @@
 
 namespace ui { 
 	class  C9Region;
+  struct RECT;
 
 	class  CTimeout;
 	struct ITimeoutCallback

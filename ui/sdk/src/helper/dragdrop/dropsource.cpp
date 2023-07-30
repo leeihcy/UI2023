@@ -73,7 +73,7 @@ ULONG STDMETHODCALLTYPE CDropSource::Release(void)
 //  or left button is raised before dragging starts. DRAGDROP_S_DROP 
 //  if a drop operation should occur. Otherwise 0.
 //
-HRESULT STDMETHODCALLTYPE CDropSource::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
+HRESULT STDMETHODCALLTYPE CDropSource::QueryContinueDrag(BOOL fEscapePressed, unsigned int grfKeyState)
 {
     if (fEscapePressed)
         return DRAGDROP_S_CANCEL;
@@ -87,7 +87,7 @@ HRESULT STDMETHODCALLTYPE CDropSource::QueryContinueDrag(BOOL fEscapePressed, DW
 
 // Return Value
 //  Returns DRAGDROP_S_USEDEFAULTCURSORS if dragging is in progress, NOERROR if it is not.
-HRESULT STDMETHODCALLTYPE CDropSource::GiveFeedback(DWORD dwEffect)
+HRESULT STDMETHODCALLTYPE CDropSource::GiveFeedback(unsigned int dwEffect)
 {
     // 通知 CDragFeedback 更新当前文本
     if (m_pDragFeedback)

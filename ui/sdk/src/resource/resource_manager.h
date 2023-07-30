@@ -25,14 +25,13 @@ class IUISkinDescParse;
 
 class ResourceManager {
 public:
-  ResourceManager();
+  ResourceManager(Application&);
   ~ResourceManager();
   void Destroy();
 
 public:
   IResourceManager &GetIResourceManager();
   Application *GetUIApplication();
-  void SetUIApplication(Application *pUIApp);
 
   ResBundle& RootBundle() { return m_root_bundle; }
 

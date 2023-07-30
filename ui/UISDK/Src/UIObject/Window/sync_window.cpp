@@ -46,13 +46,13 @@ void SyncWindow::_OnWindowPosChanging(LPWINDOWPOS lpWndPos, BOOL& bHandled)
     }
     if (lpWndPos->flags & SWP_NOMOVE && lpWndPos->flags & SWP_NOSIZE)
     {
-        // ²»¼ÓÕâ¸öÌõ¼şÅĞ¶Ï»áµ¼ÖÂHostWindowÔÚ´Ó×îĞ¡»¯»Ö¸´Ê±£¬SiteWindow²»¸úËæÒ»Æğ»Ö¸´
+        // ä¸åŠ è¿™ä¸ªæ¡ä»¶åˆ¤æ–­ä¼šå¯¼è‡´HostWindowåœ¨ä»æœ€å°åŒ–æ¢å¤æ—¶ï¼ŒSiteWindowä¸è·Ÿéšä¸€èµ·æ¢å¤
         bHandled = FALSE;
         return;
     }
 
     bHandled = TRUE;
-    // ÏÈÅĞ¶Ï×Ô¼ºµ±Ç°ÊÇ·ñ¸úËæÓÚÆäËü´°¿Ú£¬È»ºóÔÙ´¦Àí×Ô¼ºµÄÒÆ¶¯¡£
+    // å…ˆåˆ¤æ–­è‡ªå·±å½“å‰æ˜¯å¦è·Ÿéšäºå…¶å®ƒçª—å£ï¼Œç„¶åå†å¤„ç†è‡ªå·±çš„ç§»åŠ¨ã€‚
     if (m_hHostWnd)
     {
         if (this->OnSiteWindowPosChanging(lpWndPos))
@@ -69,7 +69,7 @@ void SyncWindow::_OnWindowPosChanging(LPWINDOWPOS lpWndPos, BOOL& bHandled)
     }
 }
 
-// Á¢¼´Í¬²½Ò»´Î£¬Ä£ÄâÒ»°Ñ´°¿Ú´óĞ¡¸Ä±ä
+// ç«‹å³åŒæ­¥ä¸€æ¬¡ï¼Œæ¨¡æ‹Ÿä¸€æŠŠçª—å£å¤§å°æ”¹å˜
 void SyncWindow::SyncNow()
 {
     WINDOWPOS wndPos = { 0 };
@@ -83,7 +83,7 @@ void SyncWindow::SyncNow()
     for (; iter != iterEnd; iter++)
     {
         HWND hWnd = iter->m_hWnd;
-        if (hWnd /*&& IsWindowVisible(hWnd)*/) //  ²»¿É¼ûÒ²Òª²Ù×÷
+        if (hWnd /*&& IsWindowVisible(hWnd)*/) //  ä¸å¯è§ä¹Ÿè¦æ“ä½œ
         {
             HDWP hdwpNull = nullptr;
             HandleWindowAnchor(hdwpNull, rc, *iter);
@@ -103,23 +103,23 @@ void SyncWindow::OnHostWindowPosChanging(LPWINDOWPOS lpWndPos)
 {
     if (m_bSendByDeferWindowPos)
     {
-        m_bSendByDeferWindowPos = false;  // DeferWindowPos´«µİ¹ıÀ´µÄÏûÏ¢£¬·ÅĞĞ¡£
+        m_bSendByDeferWindowPos = false;  // DeferWindowPosä¼ é€’è¿‡æ¥çš„æ¶ˆæ¯ï¼Œæ”¾è¡Œã€‚
         return;
     }
 
-    // ¼ÆËãµ±Ç°´°¿ÚµÄĞÂ×ø±ê´óĞ¡
+    // è®¡ç®—å½“å‰çª—å£çš„æ–°åæ ‡å¤§å°
     CRect rc;
     this->GetRectByWNDPOS(lpWndPos, &rc);
 
     do
     {
-        // ×¢£ºDeferWindowPos²»Ö§³ÖSWP_NOSENDCHANGING£¬»á±¨ÎŞĞ§²ÎÊı£¬Òò´ËÔÚÕâÀï²ÅÔö¼ÓÁËÒ»¸ö
-        //     bool ±äÁ¿À´·ÀÖ¹ËÀÑ­»·
+        // æ³¨ï¼šDeferWindowPosä¸æ”¯æŒSWP_NOSENDCHANGINGï¼Œä¼šæŠ¥æ— æ•ˆå‚æ•°ï¼Œå› æ­¤åœ¨è¿™é‡Œæ‰å¢åŠ äº†ä¸€ä¸ª
+        //     bool å˜é‡æ¥é˜²æ­¢æ­»å¾ªç¯
 
-        // ¼ÆËãĞèÒªÍ¬²½ÒÆ¶¯µÄ´°¿ÚÊıÁ¿ 
+        // è®¡ç®—éœ€è¦åŒæ­¥ç§»åŠ¨çš„çª—å£æ•°é‡ 
         int nCount = this->GetAvailableHWNDCount();
 
-        // +1 ×Ô¼º±¾ÉíµÄm_hWnd.£¨·Ö²ã´°¿Ú×Ô¼ºÎ¬»¤×Ô¼ºµÄ´óĞ¡¸Ä±ä£©
+        // +1 è‡ªå·±æœ¬èº«çš„m_hWnd.ï¼ˆåˆ†å±‚çª—å£è‡ªå·±ç»´æŠ¤è‡ªå·±çš„å¤§å°æ”¹å˜ï¼‰
         bool IsLayeredWindow = lpWndPos->flags & SWP_LAYEREDWINDOW_SIZEMOVE ? true : false;
         if (!IsLayeredWindow)
             nCount += 1;
@@ -129,7 +129,7 @@ void SyncWindow::OnHostWindowPosChanging(LPWINDOWPOS lpWndPos)
 
         if (!IsLayeredWindow)
         {
-            unsigned int nFlag = lpWndPos->flags & ~0x01000000;  // ?? ²»¹ıÂËµô¸Ã±ê¼Ç»áµ¼ÖÂDeferWindodwPosÊ§°Ü£¬²»ÖªµÀÎªÊ²Ã´
+            unsigned int nFlag = lpWndPos->flags & ~0x01000000;  // ?? ä¸è¿‡æ»¤æ‰è¯¥æ ‡è®°ä¼šå¯¼è‡´DeferWindodwPoså¤±è´¥ï¼Œä¸çŸ¥é“ä¸ºä»€ä¹ˆ
             hdwp = ::DeferWindowPos(hdwp,
                 m_hWnd,
                 lpWndPos->hwndInsertAfter,
@@ -140,7 +140,7 @@ void SyncWindow::OnHostWindowPosChanging(LPWINDOWPOS lpWndPos)
                 nFlag/*|SWP_NOSENDCHANGING*/);
             if (nullptr == hdwp)
             {
-                // HOST´°¿Ú×î´óĞ¡¡¢»¹Ô­µÄÊ±ºò»áÊ§°Ü
+                // HOSTçª—å£æœ€å¤§å°ã€è¿˜åŸçš„æ—¶å€™ä¼šå¤±è´¥
                 break;
             }
         }
@@ -170,19 +170,19 @@ void SyncWindow::OnHostWindowPosChanging(LPWINDOWPOS lpWndPos)
         BOOL bRet = EndDeferWindowPos(hdwp);
         UIASSERT(bRet);
 
-        // ×¢£ºÔÚÕâÀï²»ÄÜÌí¼ÓSWP_NOZORDER£¬·ñÔò»áµ¼ÖÂ´°¿ÚÍÏ×§Ê±Z´ÎĞò²»ÕıÈ·
-        lpWndPos->flags |= SWP_NOMOVE | SWP_NOSIZE; // ¾Ü¾ø±¾´ÎĞŞ¸Ä£¬Ê¹ÓÃDeferWindowPosµÄÏûÏ¢
+        // æ³¨ï¼šåœ¨è¿™é‡Œä¸èƒ½æ·»åŠ SWP_NOZORDERï¼Œå¦åˆ™ä¼šå¯¼è‡´çª—å£æ‹–æ‹½æ—¶Zæ¬¡åºä¸æ­£ç¡®
+        lpWndPos->flags |= SWP_NOMOVE | SWP_NOSIZE; // æ‹’ç»æœ¬æ¬¡ä¿®æ”¹ï¼Œä½¿ç”¨DeferWindowPosçš„æ¶ˆæ¯
 
         return;
     } while (0);
 
-    // Ê§°ÜÁË£¬µ÷ÓÃÄ¬ÈÏ¹ı³Ì
+    // å¤±è´¥äº†ï¼Œè°ƒç”¨é»˜è®¤è¿‡ç¨‹
     vector<SyncWindowData>::iterator  iter = m_vecAnchorItems.begin();
     vector<SyncWindowData>::iterator  iterEnd = m_vecAnchorItems.end();
     for (; iter != iterEnd; iter++)
     {
         HWND hWnd = iter->m_hWnd;
-        if (hWnd /*&& IsWindowVisible(hWnd)*/) //  ²»¿É¼ûÒ²Òª²Ù×÷
+        if (hWnd /*&& IsWindowVisible(hWnd)*/) //  ä¸å¯è§ä¹Ÿè¦æ“ä½œ
         {
             HDWP hdwpNull = nullptr;
             HandleWindowAnchor(hdwpNull, rc, *iter);
@@ -198,17 +198,17 @@ void SyncWindow::OnHostWindowPosChanging()
 
 bool SyncWindow::OnSiteWindowPosChanging(LPWINDOWPOS lpWndPos)
 {
-    if (m_bSendByDeferWindowPos)  // ±¾´ÎµÄÒÆ¶¯ÊÇÒòÎªHOSTµ÷ÓÃdeferwindowpos²úÉúµÄ£¬ºöÂÔ
+    if (m_bSendByDeferWindowPos)  // æœ¬æ¬¡çš„ç§»åŠ¨æ˜¯å› ä¸ºHOSTè°ƒç”¨deferwindowposäº§ç”Ÿçš„ï¼Œå¿½ç•¥
     {
         m_bSendByDeferWindowPos = false;
         return false;
     }
 
-    // Èç¹û²»ÊÇÕæµÄÔÚÓÃÊó±êÍÏ×§À­Éì£¬Ôò²»´¦Àí£¬ÀıÈç´°¿Ú¸Õ´´½¨£¬
-    // ÁíÍâ·Ö²ã´°¿ÚÔÚÍÏ×§¸Ä±ä´óĞ¡Ê±£¬Ä¿Ç°²»·¢ËÍENTERSIZEMOVEÏûÏ¢£¬¿ÉÒÔÖ±½Ó´¦Àí
+    // å¦‚æœä¸æ˜¯çœŸçš„åœ¨ç”¨é¼ æ ‡æ‹–æ‹½æ‹‰ä¼¸ï¼Œåˆ™ä¸å¤„ç†ï¼Œä¾‹å¦‚çª—å£åˆšåˆ›å»ºï¼Œ
+    // å¦å¤–åˆ†å±‚çª—å£åœ¨æ‹–æ‹½æ”¹å˜å¤§å°æ—¶ï¼Œç›®å‰ä¸å‘é€ENTERSIZEMOVEæ¶ˆæ¯ï¼Œå¯ä»¥ç›´æ¥å¤„ç†
     if (m_bSizeMove || lpWndPos->flags & SWP_LAYEREDWINDOW_SIZEMOVE)
     {
-        bool bSize = (lpWndPos->flags & SWP_NOSIZE) ? false : true;   // ¸Ã×Ö¶Î²»ÕıÈ·£¬¼´Ê¹Ö»ÍÏ¶¯´°¿Ú£¬Ò²Ã»ÓĞSWP_NOSIZE±êÖ¾
+        bool bSize = (lpWndPos->flags & SWP_NOSIZE) ? false : true;   // è¯¥å­—æ®µä¸æ­£ç¡®ï¼Œå³ä½¿åªæ‹–åŠ¨çª—å£ï¼Œä¹Ÿæ²¡æœ‰SWP_NOSIZEæ ‡å¿—
         bool bMove = (lpWndPos->flags & SWP_NOMOVE) ? false : true;
         if (!bSize && !bMove)
             return false;
@@ -231,7 +231,7 @@ bool SyncWindow::OnSiteWindowPosChanging(LPWINDOWPOS lpWndPos)
         }
         bool bRet = this->CheckRectAnchor(&rcHost, &rcSite, bSize, &data);
 
-        if (bRet)  // Õ³ÉÏÁË£¬ĞŞ¸Ä´°¿ÚµÄÎ»ÖÃ
+        if (bRet)  // ç²˜ä¸Šäº†ï¼Œä¿®æ”¹çª—å£çš„ä½ç½®
         {
             lpWndPos->x = rcSite.left;
             lpWndPos->y = rcSite.top;
@@ -245,14 +245,14 @@ bool SyncWindow::OnSiteWindowPosChanging(LPWINDOWPOS lpWndPos)
 }
 
 //
-// ÅĞ¶ÏÁ½¸öÇøÓòµÄÕ³ºÏ¹ØÏµ£¬Èç¹ûÕ³ÉÏ£¬ÔòĞŞ¸ÄprcSizeµÄÖµ
+// åˆ¤æ–­ä¸¤ä¸ªåŒºåŸŸçš„ç²˜åˆå…³ç³»ï¼Œå¦‚æœç²˜ä¸Šï¼Œåˆ™ä¿®æ”¹prcSizeçš„å€¼
 //
 // Return
-//    ·µ»ØÁ½¸öÇøÓòÊÇ·ñÕ³ºÏÉÏ
+//    è¿”å›ä¸¤ä¸ªåŒºåŸŸæ˜¯å¦ç²˜åˆä¸Š
 //
 // Remark
-//  Q1. Èç¹ûÇø·Ö±¾´ÎÊÇMOVE£¬»¹ÊÇSIZE£¿µ±Ç°´°¿ÚÏÖÔÚµÄ¸ßºÍ¿í£¬¶Ô±ÈlpWindowPosÖĞµÄ¸ßºÍ¿íÀ´¾ö¶¨ÏÖÔÚÊÇ·ñÊÇÔÚchange size.
-//      TODO: ¿ÉÄÜ»á²»×¼È·°É...
+//  Q1. å¦‚æœåŒºåˆ†æœ¬æ¬¡æ˜¯MOVEï¼Œè¿˜æ˜¯SIZEï¼Ÿå½“å‰çª—å£ç°åœ¨çš„é«˜å’Œå®½ï¼Œå¯¹æ¯”lpWindowPosä¸­çš„é«˜å’Œå®½æ¥å†³å®šç°åœ¨æ˜¯å¦æ˜¯åœ¨change size.
+//      TODO: å¯èƒ½ä¼šä¸å‡†ç¡®å§...
 //
 bool SyncWindow::CheckRectAnchor(const CRect* prcHost, CRect* prcSite, bool bChangeSize, SyncWindowData* pData)
 {
@@ -407,7 +407,7 @@ bool SyncWindow::CheckRectAnchor(const CRect* prcHost, CRect* prcSite, bool bCha
         }
     }
 
-    // ĞŞÕınAnchorTypeÖ»Í£¿¿ÁËÒ»¸ö·½Ïò£¬ÁíÒ»¸ö·½ÏòÃ»ÓĞ¸³ÖµµÄÎÊÌâ¡£
+    // ä¿®æ­£nAnchorTypeåªåœé äº†ä¸€ä¸ªæ–¹å‘ï¼Œå¦ä¸€ä¸ªæ–¹å‘æ²¡æœ‰èµ‹å€¼çš„é—®é¢˜ã€‚
     if (0 != nAnchorType)
     {
         pData->m_nMask |= SWDS_MASK_ANCHORTYPE | SWDS_MASK_ANCHORON | SWDS_MASK_ANCHORDATA;
@@ -488,7 +488,7 @@ HDWP SyncWindow::HandleWindowAnchor(HDWP& hdwp, const CRect& _rcSrcWindow, const
     w = rcThisWindow.Width();
     h = rcThisWindow.Height();
 
-    // ·ÖÎö¶ÔÆë·½Ê½
+    // åˆ†æå¯¹é½æ–¹å¼
     bool bLeft = rData.m_nAnchorType&ANCHOR_LEFT ? true : false;
     bool bRight = rData.m_nAnchorType&ANCHOR_RIGHT ? true : false;
     bool bTop = rData.m_nAnchorType&ANCHOR_TOP ? true : false;
@@ -558,15 +558,15 @@ HDWP SyncWindow::HandleWindowAnchor(HDWP& hdwp, const CRect& _rcSrcWindow, const
 
 void SyncWindow::_OnNcDestroy()
 {
-    // ×Ô¼º±»Ïú»ÙÊ±£¬¼ì²é¸úËæÇé¿ö
-    if (m_hHostWnd)  // Í¨ÖªËŞÖ÷´°¿ÚÒÆ³ı×Ô¼º
+    // è‡ªå·±è¢«é”€æ¯æ—¶ï¼Œæ£€æŸ¥è·Ÿéšæƒ…å†µ
+    if (m_hHostWnd)  // é€šçŸ¥å®¿ä¸»çª—å£ç§»é™¤è‡ªå·±
     {
         SyncWindowData data;
         data.m_hWnd = GetMyHWND();
         ::SendMessage(m_hHostWnd, UI_WM_SYNC_WINDOW, REMOVE_SYNC_WINDOW, (LPARAM)&data);
     }
 
-    // Í¨ÖªÆäËü¸úËæ×Ô¼ºµÄ´°¿Ú£¬ËŞÖ÷´°¿ÚÏú»ÙÁË
+    // é€šçŸ¥å…¶å®ƒè·Ÿéšè‡ªå·±çš„çª—å£ï¼Œå®¿ä¸»çª—å£é”€æ¯äº†
     this->ClearAnchorItem();
 }
 
@@ -619,19 +619,19 @@ bool SyncWindow::ModifyAnchorItem(const SyncWindowData& data)
     return true;
 }
 
-void SyncWindow::OnAddAnchorItem(HWND hHostWnd) // ×Ô¼º×÷Îª¸úËæÕß
+void SyncWindow::OnAddAnchorItem(HWND hHostWnd) // è‡ªå·±ä½œä¸ºè·Ÿéšè€…
 {
     UIASSERT(nullptr == m_hHostWnd);
     m_hHostWnd = hHostWnd;
 }
 
-void SyncWindow::OnRemoveAnchorItem(HWND hHostWnd) // ×Ô¼º×÷Îª¸úËæÕß
+void SyncWindow::OnRemoveAnchorItem(HWND hHostWnd) // è‡ªå·±ä½œä¸ºè·Ÿéšè€…
 {
     UIASSERT(hHostWnd == m_hHostWnd);
     m_hHostWnd = nullptr;
 }
 
-void SyncWindow::OnModifyAnchorItem(HWND hHostWnd) // ×Ô¼º×÷Îª¸úËæÕß
+void SyncWindow::OnModifyAnchorItem(HWND hHostWnd) // è‡ªå·±ä½œä¸ºè·Ÿéšè€…
 {
     UIASSERT(nullptr != m_hHostWnd);
 }
@@ -660,7 +660,7 @@ int SyncWindow::FindAnchorItem(HWND hWnd)
     return -1;
 }
 
-int SyncWindow::GetAvailableHWNDCount() // ·ÅÆúÅĞ¶ÏÊÇ·ñ¿É¼û¡£ÓĞÊ±²»¿É¼ûÒ²ĞèÒªµ÷Õû£¬Òª²»È»ÔÙÏÔÊ¾Ê±£¬Î»ÖÃ¾Í²»ÕıÈ·ÁË
+int SyncWindow::GetAvailableHWNDCount() // æ”¾å¼ƒåˆ¤æ–­æ˜¯å¦å¯è§ã€‚æœ‰æ—¶ä¸å¯è§ä¹Ÿéœ€è¦è°ƒæ•´ï¼Œè¦ä¸ç„¶å†æ˜¾ç¤ºæ—¶ï¼Œä½ç½®å°±ä¸æ­£ç¡®äº†
 {
     int nCount = 0;
     int nSize = (int)m_vecAnchorItems.size();

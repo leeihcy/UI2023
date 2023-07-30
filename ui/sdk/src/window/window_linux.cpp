@@ -468,4 +468,19 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
 #endif
 }
 
+void WindowPlatformLinux::InvalidateRect(Rect *prect) {
+  // TODO:
+}
+void WindowPlatformLinux::ValidateRect(Rect *prect) {
+  // TODO:
+}
+bool WindowPlatformLinux::IsChildWindow() {
+  // TODO:
+  return false;
+}
+bool WindowPlatformLinux::IsWindowVisible() {
+  // TODO:
+  return true;
+}
+
 } // namespace ui

@@ -29,9 +29,9 @@ namespace ui
 		virtual  HRESULT STDMETHODCALLTYPE QueryGetData(FORMATETC *pformatetc);
 		virtual  HRESULT STDMETHODCALLTYPE GetCanonicalFormatEtc(FORMATETC *pformatectIn, FORMATETC *pformatetcOut);
 		virtual  HRESULT STDMETHODCALLTYPE SetData(FORMATETC *pformatetc, STGMEDIUM *pmedium, BOOL fRelease);
-		virtual  HRESULT STDMETHODCALLTYPE EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc);
-		virtual  HRESULT STDMETHODCALLTYPE DAdvise(FORMATETC *pformatetc, DWORD advf, IAdviseSink *pAdvSink, DWORD *pdwConnection);
-		virtual  HRESULT STDMETHODCALLTYPE DUnadvise(DWORD dwConnection);
+		virtual  HRESULT STDMETHODCALLTYPE EnumFormatEtc(unsigned int dwDirection, IEnumFORMATETC **ppenumFormatEtc);
+		virtual  HRESULT STDMETHODCALLTYPE DAdvise(FORMATETC *pformatetc, unsigned int advf, IAdviseSink *pAdvSink, unsigned int *pdwConnection);
+		virtual  HRESULT STDMETHODCALLTYPE DUnadvise(unsigned int dwConnection);
 		virtual  HRESULT STDMETHODCALLTYPE EnumDAdvise(IEnumSTATDATA **ppenumAdvise);
 #pragma endregion
 

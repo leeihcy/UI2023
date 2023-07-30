@@ -32,7 +32,7 @@ public:
 	{
 		return L"Panel";
 	}
-	virtual const GUID&  GetGUID() override
+	virtual const GUID&  GetGuid() override
 	{
 		return __uuidof(IPanel);
 	}
@@ -65,7 +65,7 @@ public:
 	{
 		return L"RoundPanel";
 	}
-	virtual const GUID&  GetGUID() override
+	virtual const GUID&  GetGuid() override
 	{
 		return __uuidof(IRoundPanel);
 	}

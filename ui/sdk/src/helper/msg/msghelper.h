@@ -6,30 +6,30 @@ namespace ui
 {
 class Application;
 #if defined(OS_WIN)
-// ´´½¨Ò»¸öÒş²ØÏûÏ¢´°¿Ú£¬ÓÃÓÚÊµÏÖpost ui message
+// åˆ›å»ºä¸€ä¸ªéšè—æ¶ˆæ¯çª—å£ï¼Œç”¨äºå®ç°post ui message
 class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
 {
 public:
 	ForwardPostMessageWindow(Application* pUIApp) { m_pUIApplication = pUIApp; }
-	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID = 0);
+	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID = 0);
 
 protected:
 	Application*  m_pUIApplication;
 };
 
-// ÊµÏÖÏûÏ¢Ñ­»·ÖĞµÈ´ıHANDLEµÄ¹¦ÄÜ
+// å®ç°æ¶ˆæ¯å¾ªç¯ä¸­ç­‰å¾…HANDLEçš„åŠŸèƒ½
 class WaitForHandle
 {
 public:
-	WaitForHandle(HANDLE h, IWaitForHandleCallback* pCB, LPARAM l);
+	WaitForHandle(HANDLE h, IWaitForHandleCallback* pCB, long l);
 	HANDLE  GetHandle() { return m_hHandle; }
 	IWaitForHandleCallback* GetCB() { return m_pCallback; }
-	LPARAM  GetLParam() { return m_lParam; }
+	long  GetLParam() { return m_lParam; }
 
 protected:
 	HANDLE  m_hHandle;
 	IWaitForHandleCallback*  m_pCallback;
-	LPARAM  m_lParam;
+	long  m_lParam;
 };
  
 class WaitForHandlesMgr : public IWaitForHandlesMgr
@@ -43,7 +43,7 @@ public:
 
 	WaitForHandle* FindHandle(HANDLE h);
 	_MyIter FindHandleIter(HANDLE h);
-	bool  AddHandle(HANDLE h, IWaitForHandleCallback* pCB, LPARAM l);
+	bool  AddHandle(HANDLE h, IWaitForHandleCallback* pCB, long l);
 	bool  RemoveHandle(HANDLE h);
 	bool  UpdateHandleArray();
 	void  Do(HANDLE h);
@@ -54,7 +54,7 @@ protected:
 	list<WaitForHandle*>  m_list;
 public:
 	HANDLE*  m_pHandles;
-	DWORD    m_nHandleCount;  // ÒòÎªÒªÔÚwhileÑ­»·ÖĞµ÷ÓÃ£¬Òò´Ë×÷Îªpublic±äÁ¿Ö±½Óµ÷ÓÃ
+	unsigned int    m_nHandleCount;  // å› ä¸ºè¦åœ¨whileå¾ªç¯ä¸­è°ƒç”¨ï¼Œå› æ­¤ä½œä¸ºpublicå˜é‡ç›´æ¥è°ƒç”¨
 };
 
 class MessageFilterMgr : public IMessageFilterMgr

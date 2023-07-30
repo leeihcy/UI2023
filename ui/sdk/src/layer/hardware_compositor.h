@@ -1,6 +1,6 @@
 #pragma once
 #include "compositor.h"
-#if 1//ENABLE_HARDCOMPOSITION
+
 namespace ui
 {
 class GpuLayerCommitContext;
@@ -14,7 +14,7 @@ public:
 
     virtual void  virtualBindHWND(HWND) override;
 
-    virtual void  UpdateDirty(__out_opt  RectArray& arrDirtyInWindow) override;
+    virtual void  UpdateDirty(RectArray& arrDirtyInWindow) override;
     virtual void  virtualCommit(const RectArray& arrDirtyInWindow) override;
     virtual void  Resize(uint nWidth, uint nSize) override;
 
@@ -28,9 +28,8 @@ private:
     void  commit_recursion(Layer* p, GpuLayerCommitContext* pContext);
 
 private:
-    // ¥∞ø⁄Ωªªª¡¥
-    UI::IHardwareComposition*  m_pHardwareComposition;
+    // Á™óÂè£‰∫§Êç¢Èìæ
+    IHardwareComposition*  m_pHardwareComposition;
 };
 
 }
-#endif

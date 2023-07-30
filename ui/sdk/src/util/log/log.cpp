@@ -38,10 +38,10 @@ void __cdecl UILog(ui::LOG_LEVEL lLevel, const char *szFile,
   va_start(argList, szFormat);
 
   const int max_size = 10240;
-  for (int size = 256; size < max_size; size<<=1) {
+  for (int size = 64; size < max_size; size<<=2) {
     // 直接在栈上分配
     wchar_t *buffer = nullptr;
-    buffer = (wchar_t *)alloca(size*sizeof(wchar_t));
+    buffer = (wchar_t *)/*alloca*/malloc(size*sizeof(wchar_t));
     int ret = vswprintf(buffer, size, szFormat, argList);
     if (ret < 0 || ret >= size) {
       continue;

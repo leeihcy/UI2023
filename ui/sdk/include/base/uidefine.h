@@ -138,24 +138,23 @@ protected:                                                  \
 	// TODO: 优化调用形式。
 #define DO_PARENT_PROCESS(IMyInterface, IParentInterface) \
     static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0); \
-    SetMsgHandled(TRUE)
+    SetMsgHandled(true)
 
 	// 获取父类是否处理
 #define DO_PARENT_PROCESS2(IMyInterface, IParentInterface, bHandled) \
 	bHandled = static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0); \
-	SetMsgHandled(TRUE)
+	SetMsgHandled(true)
     
 // 获取返回值
 #define DO_PARENT_PROCESS3(IMyInterface, IParentInterface) \
 	(static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), 0, 0), \
-	SetMsgHandled(TRUE), GetCurMsg()->lRet);
+	SetMsgHandled(true), GetCurMsg()->lRet);
 
 #define DO_PARENT_PROCESS_MAPID(IMyInterface, IParentInterface, MsgMapId) \
     static_cast<IParentInterface*>(m_p##IMyInterface)->nvProcessMessage(GetCurMsg(), MsgMapId, 0); \
-    SetMsgHandled(TRUE)
+    SetMsgHandled(true)
 
 
-typedef RECT  REGION4;
 // inline  int RECTW(const RECT* prc) { return prc->right - prc->left; }
 // inline  int RECTH(const RECT* prc) { return prc->bottom - prc->top; }
 // inline  int RECTW(RECT& rc)  { return rc.right - rc.left; }

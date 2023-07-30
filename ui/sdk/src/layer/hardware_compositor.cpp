@@ -1,9 +1,9 @@
-#include "stdafx.h"
-#if 1//ENABLE_HARDCOMPOSITION
+#include "include/inc.h"
 #include "hardware_compositor.h"
 #include "hardware_layer.h"
-#include "../UICompositor/Inc/inc.h"
+#include "ui/UICompositor/Inc/inc.h"
 
+namespace ui {
 HardwareCompositor::HardwareCompositor()
 {
     m_pHardwareComposition = nullptr;
@@ -18,6 +18,7 @@ void  HardwareCompositor::virtualBindHWND(HWND hWnd)
 {
 	UIASSERT(!m_pHardwareComposition);
 
+#if defined(OS_WIN)
 	HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
 	if (!hModule)
 	{
@@ -36,6 +37,7 @@ void  HardwareCompositor::virtualBindHWND(HWND hWnd)
 	}
 
     m_pHardwareComposition = fn(m_hWnd);
+#endif
 }
 
 void  HardwareCompositor::Resize(uint nWidth, uint nSize)
@@ -50,9 +52,9 @@ Layer* HardwareCompositor::virtualCreateLayer()
     return new HardwareLayer();
 }
 
-// Ó²¼þºÏ³ÉÖ»ÄÜÊÇÃ¿¸ö²ã·Ö±ðÈ¥µ÷ÓÃupdatedirty£¬¶ø²»ÊÇÏñÈí¼þäÖÈ¾Ò»ÑùÓÉparent object±éÀúchildÊ±È¥µ÷ÓÃ
-// updatedirty¡£ÒòÎªÓ²¼þÏÂ¸¸layer¿ÉÄÜÃ»ÓÐdirty£¬¶ø×ÓlayerÓÐdirty.
-void  HardwareCompositor::UpdateDirty(__out_opt RectArray& arrDirtyInWindow)
+// ç¡¬ä»¶åˆæˆåªèƒ½æ˜¯æ¯ä¸ªå±‚åˆ†åˆ«åŽ»è°ƒç”¨updatedirtyï¼Œè€Œä¸æ˜¯åƒè½¯ä»¶æ¸²æŸ“ä¸€æ ·ç”±parent objectéåŽ†childæ—¶åŽ»è°ƒç”¨
+// updatedirtyã€‚å› ä¸ºç¡¬ä»¶ä¸‹çˆ¶layerå¯èƒ½æ²¡æœ‰dirtyï¼Œè€Œå­layeræœ‰dirty.
+void  HardwareCompositor::UpdateDirty(RectArray& arrDirtyInWindow)
 {
     if (!m_pRootLayer)
         return;
@@ -134,4 +136,5 @@ IGpuRenderLayer*  HardwareCompositor::CreateGpuLayerTexture()
 
     return pGpuTexture;
 }
-#endif
+
+}

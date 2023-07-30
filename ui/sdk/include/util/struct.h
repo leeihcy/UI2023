@@ -2,6 +2,7 @@
 #define _UI_STRUCT_H_
 
 #include "include/base/uidefine.h"
+#include "rect.h"
 
 struct IDataObject;
 

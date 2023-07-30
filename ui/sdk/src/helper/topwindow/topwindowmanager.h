@@ -10,7 +10,8 @@ class Window;
 class ResBundle;
 class Application;
 struct ITopWindowManager;
-struct IWindowBase;
+struct IWindow;
+struct UIMSG;
 
 class TopWindowManager
 {
@@ -27,8 +28,9 @@ public:
 	
 	void  ClearTopWindowObject( );
 	int   GetTopWindowCount() { return (int)m_lTopWindowObject.size(); }
-	IWindowBase* GetWindowBase(HWND hWnd); 
-				
+#if defined(OS_WIN)
+	IWindow* GetWindow(HWND hWnd); 
+#endif
 	// void  ChangeSkin(ResBundle* pNewSkinRes);
 	bool  UpdateAllWindow();
 

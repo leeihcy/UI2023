@@ -27,21 +27,21 @@ void  UIAPI __cdecl UILog(
 
 
 #define UI_LOG_LEVEL(level, format, ...) \
-			UILog(level, __FILE__, __FUNCTION__, __LINE__, format, #__VA_ARGS__)
+			UILog(level, __FILE__, __FUNCTION__, __LINE__, format, ##__VA_ARGS__)
 
 
-#define UI_LOG_DEBUG(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_DEBUG, format, __VA_ARGS__)
-#define UI_LOG_INFO(format, ... )    UI_LOG_LEVEL(ui::LOG_LEVEL_INFO,  format, __VA_ARGS__)
-#define UI_LOG_WARN(format, ... )    UI_LOG_LEVEL(ui::LOG_LEVEL_WARN,  format, __VA_ARGS__)
-#define UI_LOG_ERROR(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_ERROR, format, __VA_ARGS__)
-#define UI_LOG_FATAL(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_FATAL, format, __VA_ARGS__)
+#define UI_LOG_DEBUG(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
+#define UI_LOG_INFO(format, ... )    UI_LOG_LEVEL(ui::LOG_LEVEL_INFO,  format, ##__VA_ARGS__)
+#define UI_LOG_WARN(format, ... )    UI_LOG_LEVEL(ui::LOG_LEVEL_WARN,  format, ##__VA_ARGS__)
+#define UI_LOG_ERROR(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
+#define UI_LOG_FATAL(format, ... )   UI_LOG_LEVEL(ui::LOG_LEVEL_FATAL, format, ##__VA_ARGS__)
 
 #define UI_LOG_TEST  UI_LOG_DEBUG
 
-#define UI_LOG_DEBUGA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_DEBUG, format, __VA_ARGS__)
-#define UI_LOG_INFOA(format, ... )    UI_LOG_LEVELA(ui::LOG_LEVEL_INFO,  format, __VA_ARGS__)
-#define UI_LOG_WARNA(format, ... )    UI_LOG_LEVELA(ui::LOG_LEVEL_WARN,  format, __VA_ARGS__)
-#define UI_LOG_ERRORA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_ERROR, format, __VA_ARGS__)
-#define UI_LOG_FATALA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_FATAL, format, __VA_ARGS__)
+// #define UI_LOG_DEBUGA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_DEBUG, format, __VA_ARGS__)
+// #define UI_LOG_INFOA(format, ... )    UI_LOG_LEVELA(ui::LOG_LEVEL_INFO,  format, __VA_ARGS__)
+// #define UI_LOG_WARNA(format, ... )    UI_LOG_LEVELA(ui::LOG_LEVEL_WARN,  format, __VA_ARGS__)
+// #define UI_LOG_ERRORA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_ERROR, format, __VA_ARGS__)
+// #define UI_LOG_FATALA(format, ... )   UI_LOG_LEVELA(ui::LOG_LEVEL_FATAL, format, __VA_ARGS__)
 
 #endif

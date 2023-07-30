@@ -22,7 +22,7 @@ public:
 
 public:
     virtual void  SetDescription(HBITMAP hIcon, LPCWSTR szText) override;
-    virtual HRESULT  GiveFeedback(DWORD dwEffect) override;
+    virtual HRESULT  GiveFeedback(unsigned int dwEffect) override;
 
 private:
     void  RegisterDragBitmapWndClass();

@@ -48,7 +48,7 @@ void  CDragFeedback::SetDescription(HBITMAP hIcon, LPCWSTR szText)
 }
 
 // 由drop source调用，显示光标样式。此时更新描述文本
-HRESULT  CDragFeedback::GiveFeedback(DWORD dwEffect)
+HRESULT  CDragFeedback::GiveFeedback(unsigned int dwEffect)
 {
     if (m_strPrevDescription != m_strDescription)
     {
@@ -329,8 +329,8 @@ HWND  CDragFeedback::CreateDragImageWnd(HBITMAP hBitmap, int x, int y)
 
 long CALLBACK MouseProc(
 	int nCode,
-    WPARAM wParam,
-    LPARAM lParam
+    long wParam,
+    long lParam
 )
 {
     if (!g_pCurDragFeedback)
@@ -481,8 +481,8 @@ void  CDragFeedback::Unbind2DropSource(IDropSource* pDropSource)
 long UIDoDragDrop(
 		IDataObject* pDataObject, 
 		IDropSource* pDropSource, 
-		DWORD dwOKEffect,         
-		DWORD* pdwEffect,        
+		unsigned int dwOKEffect,         
+		unsigned int* pdwEffect,        
 		HBITMAP hbmpDragImage,
 		POINT ptOffset)
 {

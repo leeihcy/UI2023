@@ -11,7 +11,7 @@ HwndHost::HwndHost(IHwndHost* p):Control(p)
 	m_oldWndProc = nullptr;
 
 	OBJSTYLE s = {0};
-	s.default_reject_all_mouse_msg = 1;  // Ä¬ÈÏ²»½ÓÊÕÊó±êÏûÏ¢
+	s.default_reject_all_mouse_msg = 1;  // é»˜è®¤ä¸æŽ¥æ”¶é¼ æ ‡æ¶ˆæ¯
 	this->ModifyObjectStyle(&s, 0);
 
 	this->SetDescription(HwndHostDescription::Get());
@@ -26,10 +26,10 @@ HwndHost::~HwndHost()
 }
 
 // 
-//	×ÓÀà»¯´°¿Ú£¬Ìæ»»ËüµÄ´°¿Ú¹ý³Ì
+//	å­ç±»åŒ–çª—å£ï¼Œæ›¿æ¢å®ƒçš„çª—å£è¿‡ç¨‹
 //
 //	Return
-//		³É¹¦·µ»Øfalse£¬Ê§°Ü·µ»Øfalse
+//		æˆåŠŸè¿”å›žfalseï¼Œå¤±è´¥è¿”å›žfalse
 //
 bool HwndHost::SubclassWindow()
 {
@@ -46,10 +46,10 @@ bool HwndHost::SubclassWindow()
 }
 
 // 
-//	È¡Ïû×ÓÀà»¯´°¿Ú£¬»Ö¸´ËüµÄ´°¿Ú¹ý³Ì
+//	å–æ¶ˆå­ç±»åŒ–çª—å£ï¼Œæ¢å¤å®ƒçš„çª—å£è¿‡ç¨‹
 //
 //	Return
-//		³É¹¦·µ»Øfalse£¬Ê§°Ü·µ»Øfalse
+//		æˆåŠŸè¿”å›žfalseï¼Œå¤±è´¥è¿”å›žfalse
 //
 bool HwndHost::UnSubclassWindow()
 {
@@ -144,21 +144,21 @@ void  HwndHost::Attach(HWND hWnd)
 		this->SubclassWindow();
 	}
 
-	// Î»ÖÃÍ¬²½
+	// ä½ç½®åŒæ­¥
 	SyncPosition();
 }
 
 //
 //	[static] long CALLBACK _WndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 //
-//	±»ATLµÄthunkÌæ»»¹ýµÄ´°¿Ú¹ý³Ì
+//	è¢«ATLçš„thunkæ›¿æ¢è¿‡çš„çª—å£è¿‡ç¨‹
 //
-//	Parameter£º
+//	Parameterï¼š
 //		hwnd
-//			[in]	ÕâÀïÓÉÓÚ±»Ìæ»»¹ýÁË£¬ÕâÀïµÄhwndÊÇthisÖ¸Õë
+//			[in]	è¿™é‡Œç”±äºŽè¢«æ›¿æ¢è¿‡äº†ï¼Œè¿™é‡Œçš„hwndæ˜¯thisæŒ‡é’ˆ
 //
 //		uMsg,wParam,lParam
-//			[in]	ÏûÏ¢ÐÅÏ¢
+//			[in]	æ¶ˆæ¯ä¿¡æ¯
 //
 long  HwndHost::_WndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -179,7 +179,7 @@ long HwndHost::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 //
 //	[private] long WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 //
-//	´°¿Ú±»×ÓÀà»¯¹ýÖ®ºóµÄ´°¿Ú¹ý³Ì
+//	çª—å£è¢«å­ç±»åŒ–è¿‡ä¹‹åŽçš„çª—å£è¿‡ç¨‹
 //
 long	HwndHost::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -215,7 +215,7 @@ long	HwndHost::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 	case WM_NCDESTROY:
 		{
 			long lRet = DefWindowProc(uMsg,wParam,lParam);
-			this->UnSubclassWindow();  // »áÇå¿Õ oldwndproc£¬Òò´ËÏÈµ÷ÓÃÄ¬ÈÏ¹ý³Ì
+			this->UnSubclassWindow();  // ä¼šæ¸…ç©º oldwndprocï¼Œå› æ­¤å…ˆè°ƒç”¨é»˜è®¤è¿‡ç¨‹
 			m_hWnd = nullptr;
 			return lRet;
 		}
@@ -231,13 +231,13 @@ long	HwndHost::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
         {
             UIASSERT(m_pParent);
 
-            if (m_pDescription && m_pDescription->GetMajorType() == OBJ_WINDOW)  // Ö±½Ó·ÅÔÚÁË¸¸´°¿ÚÏÂÃæ
+            if (m_pDescription && m_pDescription->GetMajorType() == OBJ_WINDOW)  // ç›´æŽ¥æ”¾åœ¨äº†çˆ¶çª—å£ä¸‹é¢
             {
                 ::GetWindowRect(m_hWnd, &m_rcParent);
                 HWND hWndParent = ::GetParent(m_hWnd);
                 ::MapWindowPoints(nullptr, hWndParent, (LPPOINT)&m_rcParent, 2);
             }
-            else   // ÓÐ¿ÉÄÜÊÇ·ÅÔÚÁËÒ»¸öpanelÏÂÃæ
+            else   // æœ‰å¯èƒ½æ˜¯æ”¾åœ¨äº†ä¸€ä¸ªpanelä¸‹é¢
             {
                 RECT  rcWindow;
                 ::GetWindowRect(m_hWnd, &rcWindow);
@@ -269,8 +269,8 @@ void HwndHost::OnVisibleChanged(BOOL bVisible, IObject* pObjChanged)
 
 	if (bVisible)
 	{
-		// ÓÉÓÚÖ±½Óµ÷ÓÃthis->IsVisibleÊÇÅÐ¶ÏIsWindowVisible(m_hWnd)£¬µ¼ÖÂµÃµ½µÄÖµ²»ÕýÈ·
-		// Òò´ËÔÚÕâÀï²ÉÓÃÅÐ¶Ï¸¸´°¿ÚµÄ¿É¼û
+		// ç”±äºŽç›´æŽ¥è°ƒç”¨this->IsVisibleæ˜¯åˆ¤æ–­IsWindowVisible(m_hWnd)ï¼Œå¯¼è‡´å¾—åˆ°çš„å€¼ä¸æ­£ç¡®
+		// å› æ­¤åœ¨è¿™é‡Œé‡‡ç”¨åˆ¤æ–­çˆ¶çª—å£çš„å¯è§
 		if (m_pParent && m_pParent->IsVisible())
 		{
 			ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
@@ -278,8 +278,8 @@ void HwndHost::OnVisibleChanged(BOOL bVisible, IObject* pObjChanged)
 	}
 	else
 	{
-		//if (::IsWindowVisible(m_hWnd)) <-- ×¢£ºÕâÀï²»ÄÜ¼ÓÉÏÕâ¸öÅÐ¶Ï£¬ÒòÎªµ±ÔÚOnInitDialogÖÐÒþ²ØparentÊ±£¬HwndHost
-		//                                       µÄIsWindowVisible»á·µ»ØFALSE£¬µ¼ÖÂÅÐ¶Ï´íÎó
+		//if (::IsWindowVisible(m_hWnd)) <-- æ³¨ï¼šè¿™é‡Œä¸èƒ½åŠ ä¸Šè¿™ä¸ªåˆ¤æ–­ï¼Œå› ä¸ºå½“åœ¨OnInitDialogä¸­éšè—parentæ—¶ï¼ŒHwndHost
+		//                                       çš„IsWindowVisibleä¼šè¿”å›žFALSEï¼Œå¯¼è‡´åˆ¤æ–­é”™è¯¯
 		{
 			ShowWindow(m_hWnd, SW_HIDE);
 		}
@@ -329,7 +329,7 @@ void UI::HwndHost::SyncPosition()
 	if (!m_hWnd)
 		return;
 
-	// ×ª»¯Îª´°¿Ú×ø±ê£¬¶ø²»ÊÇ¸¸¶ÔÏó×ø±ê
+	// è½¬åŒ–ä¸ºçª—å£åæ ‡ï¼Œè€Œä¸æ˜¯çˆ¶å¯¹è±¡åæ ‡
 	CRect rcWindow;
 	this->GetWindowRect(&rcWindow);
 

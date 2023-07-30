@@ -145,7 +145,7 @@ ULONG STDMETHODCALLTYPE WindowDragDropMgr::Release(void)
 //////////////////////////////////////////////////////////////////////////
 // #include <shlobj.h>
 // #include <strsafe.h>
-HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragEnter(IDataObject *pDataObj, unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect)
 {
     m_pDragingDataObj = pDataObj;
 
@@ -164,7 +164,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragEnter(IDataObject *pDataObj, DW
     return DragMove(pDataObj, grfKeyState, pt, pdwEffect);    
 }
 
-HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragOver(unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect)
 {
     if (m_pDropTargetHelper)
     {
@@ -176,7 +176,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragOver(DWORD grfKeyState, POINTL 
 
 // Enteer/Over将调用DrawMove，因为好像这两种事件的处理是一样的
 HRESULT  WindowDragDropMgr::DragMove(IDataObject *pDataObj,
-                                     DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+                                     unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect)
 {
     Object*  pHoverObj = GetHoverObject2Drop();
 
@@ -235,7 +235,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragLeave(void)
     return lRet;
 }
 
-HRESULT STDMETHODCALLTYPE WindowDragDropMgr::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+HRESULT STDMETHODCALLTYPE WindowDragDropMgr::Drop(IDataObject *pDataObj, unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect)
 {
     if (m_pDropTargetHelper)
     {
@@ -266,8 +266,8 @@ HRESULT  WindowDragDropMgr::DoDropTargetNotify(Object* pHoverObj, DROPTARGETEVEN
 
     UIMSG  msg;
 	msg.message = UI_MSG_DROPTARGETEVENT;
-    msg.wParam = (WPARAM)eEventType;
-    msg.lParam = (LPARAM)pData;
+    msg.wParam = (long)eEventType;
+    msg.lParam = (long)pData;
 
     msg.pMsgTo = pHoverObj->GetIObject();
     UISendMessage(&msg);

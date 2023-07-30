@@ -1,11 +1,12 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
-#include "common.h"
-#include "interface/iwindow.h"
-#include "common/signalslot/signal.h"
 #include "base/uimsg.h"
+#include "common.h"
+#include "common/signalslot/signal.h"
+#include "interface/iwindow.h"
 #include "object/object.h"
+#include "src/layer/windowrender.h"
 #include <SkCanvas.h>
 #include <SkSurface.h>
 
@@ -17,34 +18,54 @@ struct WindowPlatform {
   virtual void Initialize() = 0;
   virtual void Release() = 0;
   virtual bool Create(const Rect &rect) = 0;
-  virtual void SetTitle(const char* title) = 0;
+  virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
+  virtual void GetClientRect(Rect *prect) = 0;
+  virtual void GetWindowRect(Rect *prect) = 0;
+  virtual void InvalidateRect(Rect* prect) = 0;
+  virtual void ValidateRect(Rect* prect) = 0;
+  virtual bool IsChildWindow() = 0;
+  virtual bool IsWindowVisible() = 0;
   virtual void Submit(sk_sp<SkSurface> sksurface) = 0;
 };
 
 class Window : public Object {
 public:
-  Window(IWindow* p);
+  Window(IWindow *p);
   ~Window();
 
-	UI_BEGIN_MSG_MAP()
-        // UIMSG_ERASEBKGND( OnEraseBkgnd )
-        // UIMSG_DM_GETDEFID( OnGetDefId )
-        // UIMSG_DM_SETDEFID( OnSetDefId )
-        // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
-        // UIMSG_QUERYINTERFACE( WindowBase )
-        // UIMSG_SERIALIZE( OnSerialize )
-        // UIMSG_FINALCONSTRUCT( FinalConstruct )
-        // UIMSG_PRECREATEWINDOW( PreCreateWindow )
-    // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
-    // UI_END_MSG_MAP_CHAIN_PARENT( Message )
-    UI_END_MSG_MAP()
+  UI_BEGIN_MSG_MAP()
+  // UIMSG_ERASEBKGND( OnEraseBkgnd )
+  // UIMSG_DM_GETDEFID( OnGetDefId )
+  // UIMSG_DM_SETDEFID( OnSetDefId )
+  // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
+  UIMSG_QUERYINTERFACE(Window)
+  UIMSG_SERIALIZE(OnSerialize)
+  UIMSG_FINALCONSTRUCT(FinalConstruct)
+  // UIMSG_PRECREATEWINDOW( PreCreateWindow )
+  // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
+  UI_END_MSG_MAP_CHAIN_PARENT(Object)
 
+  IWindow*   GetIWindow() { return m_pIWindow; }
+  WindowRender&  GetWindowRender() { return m_window_render; }
+
+public:
   void OnMessage();
   void Create(const Rect &rect);
-  void SetTitle(const char* title);
+  void SetTitle(const char *title);
   void Show();
 
+  bool CreateUI(const wchar_t *szId);
+
+	void  SetGpuComposite(bool b);
+	bool  IsGpuComposite();
+	void  DirectComposite();
+
+	bool  IsChildWindow();
+	bool  IsWindowVisible();
+
+  virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
+  
 public:
   // platform回调
   void onClose();
@@ -53,14 +74,23 @@ public:
   void onSize(int width, int height);
 
   signal<void()> &DestroySignal() { return m_signal_destroy; }
-  signal<void(SkCanvas&)> &PaintSignal() { return m_signal_paint; }
-  
-private:
-  void on_paint(SkCanvas& canvas);
-  void on_erase_bkgnd(SkCanvas& canvas);
-  void swap_buffer();
+  signal<void(SkCanvas &)> &PaintSignal() { return m_signal_paint; }
 
 private:
+  void on_paint(SkCanvas &canvas);
+  void on_erase_bkgnd(SkCanvas &canvas);
+  void swap_buffer();
+
+protected:
+  long FinalConstruct(IResBundle *p);
+  // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
+  void OnSerialize(SERIALIZEDATA *pData);
+  // void OnSetDefId(IObject *pButton);
+  // IObject *OnGetDefId();
+
+private:
+  IWindow*  m_pIWindow;
+
   // 平台相关函数。
   WindowPlatform *m_platform = nullptr;
 
@@ -69,9 +99,16 @@ private:
   int m_width = 0;
   int m_height = 0;
 
+  // 窗口的渲染放在这个对象里面，windowbase不负责渲染
+  WindowRender m_window_render;
+
+	WindowStyle  m_windowStyle;
+	
+  String  m_strConfigWindowText;   // 皮肤中配置的窗口标题
+
   // 事件定义
   signal<void()> m_signal_destroy;
-  signal<void(SkCanvas&)> m_signal_paint;
+  signal<void(SkCanvas &)> m_signal_paint;
 };
 
 } // namespace ui

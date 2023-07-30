@@ -90,7 +90,7 @@ class WindowBase;
     }
 
     template <class T>
-    void _OnMouseMove(Object* pObj, WPARAM wParam, LPARAM lParam, T* pThis)
+    void _OnMouseMove(Object* pObj, long wParam, long lParam, T* pThis)
     {
         // 将所有的情况都列出来进行判断
 
@@ -122,7 +122,7 @@ class WindowBase;
                     Object* pSaveHover = pThis->m_pObjHover;
                     pThis->SetHoverObject(pObj); // 先设置状态，再发送消息
 
-                    ::UISendMessage(pSaveHover, WM_MOUSELEAVE, (WPARAM) 0, 0);
+                    ::UISendMessage(pSaveHover, WM_MOUSELEAVE, (long) 0, 0);
                     if (pObj)
                     {
                         ::UISendMessage(pObj, WM_MOUSEMOVE, wParam, lParam);
@@ -199,7 +199,7 @@ class WindowBase;
     }
 
     template <class T>
-    void _OnLButtonDown(WPARAM wParam, LPARAM lParam, BOOL* pbHandled, T* pThis)
+    void _OnLButtonDown(long wParam, long lParam, BOOL* pbHandled, T* pThis)
     {
         if (pThis->m_pObjHover && pThis->m_pObjHover->IsEnable())
         {
@@ -226,7 +226,7 @@ class WindowBase;
     }
 
     template <class T>
-    void _OnLButtonDBClick(WPARAM wParam, LPARAM lParam, BOOL* pbHandled, T* pThis)
+    void _OnLButtonDBClick(long wParam, long lParam, BOOL* pbHandled, T* pThis)
     {
         BOOL bHandled = FALSE;
         if (pThis->m_pObjPress)
@@ -268,7 +268,7 @@ class WindowBase;
 
 
     template <class T>
-    void _OnLButtonUp(WPARAM w, LPARAM l, T* pThis)
+    void _OnLButtonUp(long w, long l, T* pThis)
     {
         if (pThis->m_pObjPress)
         {

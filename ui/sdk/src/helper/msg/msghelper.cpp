@@ -4,7 +4,7 @@
 
 namespace ui {
 #if defined(OS_WIN)
-BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, long& lResult, DWORD dwMsgMapID)
+BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID)
 {
 	if (UI_MSG_POSTMESSAGE == uMsg)
 	{
@@ -48,7 +48,7 @@ BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg
 	return FALSE;
 }
 
-WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback* pCB, LPARAM l)
+WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback* pCB, long l)
 {
 	m_hHandle = h;
 	m_pCallback = pCB;
@@ -103,7 +103,7 @@ list<WaitForHandle*>::iterator WaitForHandlesMgr::FindHandleIter(HANDLE h)
 
 	return m_list.end();
 }
-bool WaitForHandlesMgr::AddHandle(HANDLE h, IWaitForHandleCallback* pCB, LPARAM l)
+bool WaitForHandlesMgr::AddHandle(HANDLE h, IWaitForHandleCallback* pCB, long l)
 {
 	if (nullptr == h || nullptr == pCB)
 		return false;

@@ -1,7 +1,7 @@
 #include "object_layer.h"
 #include "object.h"
 // #include "src/layer/windowrender.h"
-// #include "Src/UIObject/Window/windowbase.h"
+#include "src/window/window.h"
 // #include "Src/UIObject/ListCtrl/ListItemBase/listitembase.h"
 
 namespace ui
@@ -21,12 +21,12 @@ void ObjectLayer::CreateLayer()
 {
 	if (m_pLayer)
 		return;
-#if 0
+
 	WindowRender* pWndRender = nullptr;
 
-	WindowBase* pWindow = m_obj.GetWindowObject();
+	Window* pWindow = m_obj.GetWindowObject();
 	if (pWindow)
-		pWndRender = pWindow->GetWindowRender();
+		pWndRender = &pWindow->GetWindowRender();
 
 	if (pWndRender)
 	{
@@ -34,7 +34,7 @@ void ObjectLayer::CreateLayer()
 
 		RECT rcParent;
 		m_obj.GetParentRect(&rcParent);
-		if (!IsRectEmpty(&rcParent))
+		if (!rcParent.IsEmpty())
 			OnSize(rcParent.Width(), rcParent.Height());
 
 		m_obj.OnLayerCreate();
@@ -44,9 +44,6 @@ void ObjectLayer::CreateLayer()
 		// 在resize的时候创建
 		// UIASSERT(0);// 有可能窗口正在退了销毁期间，逻辑又调用了一次动画。
 	}
-#else
-    UIASSERT(0);
-#endif
 }
 
 void  ObjectLayer::TryDestroyLayer()

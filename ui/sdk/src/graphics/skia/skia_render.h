@@ -1,0 +1,112 @@
+#pragma once
+#include "include/interface/renderlibrary.h"
+// #include "Src\Util\RectArray\rectarray.h"
+// #include "gdibitmap.h"
+// #include "gdibrush.h"
+// #include "gdifont.h"
+// #include "gdipen.h"
+
+namespace ui {
+class RenderBuffer;
+
+class SkiaRenderTarget : public IRenderTarget {
+public:
+  SkiaRenderTarget(bool bNeedAlphaChannel);
+  virtual ~SkiaRenderTarget();
+  virtual void Release() override;
+  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() override {
+    return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+  }
+  virtual bool IsRenderAlphaChannel() override { return m_bNeedAlphaChannel; }
+
+  // virtual HDC GetHDC();
+  // virtual void ReleaseHDC(HDC hDC);
+  // virtual void BindHDC(HDC hDC);
+  // virtual HDC GetBindHDC();
+  virtual bool CreateRenderBuffer(IRenderTarget *pSrcRT) override;
+  virtual bool ResizeRenderBuffer(unsigned int nWidth, unsigned int nHeight) override;
+  virtual void GetRenderBufferData(ImageData *pData) override;
+  // virtual void BindHWND(HWND hWnd) { /*UIASSERT(0);*/ /*不支持*/}
+
+  virtual void SetMetaClipRegion(RECT* prc, uint nrcCount) override;
+  virtual void PushRelativeClipRect(const RECT*) override;
+  virtual void PopRelativeClipRect() override;
+  virtual bool IsRelativeRectInClip(const RECT*) override;
+  virtual void SetOrigin(int x, int y) override;
+  virtual void OffsetOrigin(int x, int y) override;
+  virtual void GetOrigin(int *px, int *py) override;
+
+  virtual bool BeginDraw() override;
+  virtual void EndDraw() override;
+  virtual void Clear(RECT *prc) override;
+  virtual void Save(const wchar_t *szPath) override;
+  virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) override {};
+  virtual void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
+
+  virtual void FillRgn(HRGN, ui::Color *pColor) override;
+  virtual void DrawRect(RECT* lprc, ui::Color *pColor) override;
+  virtual void TileRect(RECT* lprc, IRenderBitmap *hBitmap) override;
+  virtual void Rectangle(RECT* lprc, ui::Color *pColBorder,
+                         ui::Color *pColBack, int nBorder, bool bNullBack) override;
+  virtual void DrawFocusRect(RECT* lprc) override;
+  virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) override;
+  virtual void DrawPolyline(POINT *lppt, int nCount, IRenderPen *) override;
+  virtual void GradientFillH(RECT* lprc, COLORREF colFrom, COLORREF colTo) override;
+  virtual void GradientFillV(RECT* lprc, COLORREF colFrom, COLORREF colTo) override;
+  virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
+                      IRenderTarget *pSrcHDC, int xSrc, int ySrc, unsigned int dwRop) override;
+  virtual void ImageList_Draw(IRenderBitmap *hBitmap, int x, int y, int col,
+                              int row, int cx, int cy) override;
+  virtual void DrawBitmap(IRenderBitmap *hBitmap, DRAWBITMAPPARAM *pParam) override;
+  //	virtual void  DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree,
+  //DRAWBITMAPPARAM* pParam);
+  virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) override;
+  static void DrawBitmapEx(HDC hDC, IRenderBitmap *hBitmap,
+                           DRAWBITMAPPARAM *pParam);
+
+  virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) override;
+  virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) override;
+  virtual IRenderBrush *CreateSolidBrush(Color *pColor) override;
+
+  virtual void Upload2Gpu(IGpuRenderLayer *p, RECT* prcArray, int nCount) override;
+
+protected:
+  // void DrawBitmap(IRenderBitmap *hBitmap, int x, int y);
+  // void DrawBitmap(IRenderBitmap *pBitmap, int xDest, int yDest, int wDest,
+  //                 int hDest, int xSrc, int ySrc);
+  // void DrawBitmap(IRenderBitmap *hBitmap, int xDest, int yDest, int nDestWidth,
+  //                 int nDestHeight, int xSrc, int ySrc, int nSrcWidth,
+  //                 int nSrcHeight);
+  // void DrawBitmap(IRenderBitmap *hBitmap, int xDest, int yDest, int nDestWidth,
+  //                 int nDestHeight, int xSrc, int ySrc, int nSrcWidth,
+  //                 int nSrcHeight, C9Region *p9Region);
+
+  // void draw_string_normal(HFONT hFont, RECT* prcText, DRAWTEXTPARAM *pParam);
+  // void draw_string_halo(HFONT hFont, const RECT &rcText,
+  //                       DRAWTEXTPARAM *pParam);
+  // void draw_string_endalphamask(HFONT hFont, RECT* prcText,
+  //                               DRAWTEXTPARAM *pParam);
+
+  // void FixAlpha0To255(HDC hDC, const RECT* lpRect);
+  // void FillAlpha255(HDC hDC, const RECT* lpRect);
+  // void FillAlphaValue(HDC hDC, const RECT* lpRect, long);
+  // void InverseAlpha(HDC hDC, const RECT* lpRect);
+  // void _FixAlpha(HDC hDC, const RECT* lpRect, util::FixAlphaMode e, long wParam);
+
+  // void update_clip_rgn();
+
+protected:
+  // HDC m_hBindDC;
+  // RenderBuffer *m_pRenderBuffer;
+  bool m_bNeedAlphaChannel; // 需要渲染alpha通道
+
+  // long m_lDrawingRef; // 标识外部调用了几次BeginDraw，解决嵌套调用出现的一些问题
+
+  // // 剪裁数据
+  // RectArray m_arrayMetaClipRegion;
+  // stack<RECT> m_stackClipRect;
+
+  // POINT m_ptOffset; // 用于调试时查看当前HDC偏移量
+};
+
+} // namespace ui

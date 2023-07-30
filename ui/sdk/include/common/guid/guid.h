@@ -53,9 +53,9 @@ static Guid GUID_NULL = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
 
 #define __guid(Class) Class::__GUID()
 
-#define DEFINE_CLASS_GUID(guid_string)                                         \
+#define UI_DEFINE_CLASS_GUID(guid_string)                                      \
   static const Guid &__GUID() {                                                \
-    static Guid s = Guid::build(guid_string);                                               \
+    static Guid s = Guid::build(guid_string);                                  \
     return s;                                                                  \
   }
 

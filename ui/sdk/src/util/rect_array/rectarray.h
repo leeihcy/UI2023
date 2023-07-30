@@ -1,47 +1,46 @@
 #pragma once
+#include "include/util/rect.h"
 
 namespace ui {
-class RectArray
-{
+class RectArray {
 public:
-    RectArray();
-    ~RectArray();
-    RectArray(RectArray& o);
-    RectArray& operator=(const RectArray& o);
+  RectArray();
+  ~RectArray();
+  RectArray(RectArray &o);
+  RectArray &operator=(const RectArray &o);
 
-    RECT*  GetArrayPtr();
-    const RECT*  GetArrayPtr2() const;
-    RECT*  GetRectPtrAt(uint nIndex);
-    uint  GetCount() const;
-    void  AddRect(const RECT*);
+  RECT *GetArrayPtr();
+  const RECT *GetArrayPtr2() const;
+  RECT *GetRectPtrAt(uint nIndex);
+  uint GetCount() const;
+  void AddRect(const RECT *);
 
-    void  Destroy();
-    void  CopyFrom(const RectArray* po);
-    void  CopyFromArray(const RECT* pArray, uint nCount);
-    void  SetSize(uint nCount);
-    bool  SetAt(uint nIndex, RECT*  pValue);
-    void  Offset(int x, int y);
-    
-    // Ìí¼ÓÒ»¸öÔàÇøÓò£¬ºÏ²¢µ½ÏÖÓĞµÄÊı×éµ±ÖĞ¡£
-    void  UnionDirtyRect(const RECT* prc);
+  void Destroy();
+  void CopyFrom(const RectArray *po);
+  void CopyFromArray(const RECT *pArray, uint nCount);
+  void SetSize(uint nCount);
+  bool SetAt(uint nIndex, RECT *pValue);
+  void Offset(int x, int y);
 
-    // ÔËĞĞÍêÖ®ºó£¬m_prcArrayµÄ´óĞ¡Óëm_nCount¿ÉÄÜ²»Æ¥Åä
-    bool  IntersectRect(const RECT* prc, bool OnlyTest=false);
+  // æ·»åŠ ä¸€ä¸ªè„åŒºåŸŸï¼Œåˆå¹¶åˆ°ç°æœ‰çš„æ•°ç»„å½“ä¸­ã€‚
+  void UnionDirtyRect(const RECT *prc);
+
+  // è¿è¡Œå®Œä¹‹åï¼Œm_prcArrayçš„å¤§å°ä¸m_nCountå¯èƒ½ä¸åŒ¹é…
+  bool IntersectRect(const RECT *prc, bool OnlyTest = false);
 #if defined(OS_WIN)
-    HRGN  CreateRgn();
+  HRGN CreateRgn();
 #endif
-    void  GetUnionRect(RECT* prc);
+  void GetUnionRect(RECT *prc);
 
-    enum {
-        STACK_SIZE = 3
-    };
+  enum { STACK_SIZE = 3 };
+
 private:
-    // ÓÅÏÈÊ¹ÓÃÕ»Êı×é£¬·Å²»ÏÂÊ±ÔÙÊ¹ÓÃ¶ÑÊı×é¡£ÀàËÆÓÚstringÀà
-    RECT  m_stackArray[STACK_SIZE];
-    RECT*  m_heapArray;
+  // ä¼˜å…ˆä½¿ç”¨æ ˆæ•°ç»„ï¼Œæ”¾ä¸ä¸‹æ—¶å†ä½¿ç”¨å †æ•°ç»„ã€‚ç±»ä¼¼äºstringç±»
+  RECT m_stackArray[STACK_SIZE];
+  RECT *m_heapArray;
 
-    // ×¢£ºm_nCountĞ¡ÓÚµÈÓÚm_prcArrayµÄÊµ¼Ê´óĞ¡£¬¼ûIntersectRect
-    uint   m_nCount;
-	uint   m_nCapacity;  // TODO
+  // æ³¨ï¼šm_nCountå°äºç­‰äºm_prcArrayçš„å®é™…å¤§å°ï¼Œè§IntersectRect
+  uint m_nCount;
+  uint m_nCapacity; // TODO
 };
-}
+} // namespace ui

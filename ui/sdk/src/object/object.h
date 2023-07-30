@@ -31,9 +31,9 @@ public:
 		// UIMSG_ERASEBKGND(OnEraseBkgnd)
 		// UIMSG_HITTEST(OnHitTest)
 		// UIMSG_VISIBLE_CHANGED(OnVisibleChanged)
-		// UIMSG_SERIALIZE(OnSerialize)
-		// UIMSG_FINALCONSTRUCT(FinalConstruct)
-		// UIMSG_FINALRELEASE(FinalRelease)
+		UIMSG_SERIALIZE(OnSerialize)
+		UIMSG_FINALCONSTRUCT(FinalConstruct)
+		UIMSG_FINALRELEASE(FinalRelease)
 	UI_END_MSG_MAP()
 
 public:

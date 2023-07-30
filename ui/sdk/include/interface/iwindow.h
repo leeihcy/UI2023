@@ -98,16 +98,6 @@ struct  SyncWindowData
     }
 };
 
-// window style
-typedef struct tagWindowStyle
-{
-	bool  destroyed : 1;       // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
-	bool  attach : 1;          // 表示该窗口是attach的，创建、销毁由外部来控制
-	bool  setcreaterect : 1;   // 创建窗口时指定了窗口大小，不用再进行窗口布局了
-	bool  dialog_noresize : 1; // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
-	bool  hard_composite: 1;   // 本窗口使用硬件合成 
-}WindowStyle;
-
 // 用于外部业务实现者处理窗口消息。
 // 外部不再要求从IWindowBase派生，只需要实现IWindowMessageCallback接口即可。
 struct IWindowDelegate
@@ -181,6 +171,18 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 
 #endif
 
+
+// window style
+typedef struct tagWindowStyle
+{
+	bool  destroyed : 1;       // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
+	bool  attach : 1;          // 表示该窗口是attach的，创建、销毁由外部来控制
+	bool  setcreaterect : 1;   // 创建窗口时指定了窗口大小，不用再进行窗口布局了
+	bool  dialog_noresize : 1; // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
+	bool  hard_composite: 1;   // 本窗口使用硬件合成 
+}WindowStyle;
+
+
 class Window;
 struct UIAPI IWindow : public IObject {
   void Create(const Rect &rect);
@@ -191,7 +193,7 @@ struct UIAPI IWindow : public IObject {
   ui::signal<void(SkCanvas &)> &PaintSignal();
 
   UI_DECLARE_INTERFACE(Window)
-  DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903")
+  UI_DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903");
 };
 
 // 辅助类

@@ -5,7 +5,7 @@
 #include "Src/Layer/software_layer.h"
 
 // WHERE_NOONE_CAN_SEE_ME
-#define WINDOWS_MINIMIZED_POINT  -32000  // ´°¿Ú×îĞ¡»¯ºó£¬window´«µİ¸øÎÒÃÇµÄÎ»ÖÃ
+#define WINDOWS_MINIMIZED_POINT  -32000  // çª—å£æœ€å°åŒ–åï¼Œwindowä¼ é€’ç»™æˆ‘ä»¬çš„ä½ç½®
 namespace ui
 {
 
@@ -45,7 +45,7 @@ void  LayeredWindowWrap::GetWindowPos()
 }
 
 
-// Ä£ÄâÍÏ×§´°¿ÚÀ­Éì¹ı³Ì
+// æ¨¡æ‹Ÿæ‹–æ‹½çª—å£æ‹‰ä¼¸è¿‡ç¨‹
 void  LayeredWindowWrap::OnLButtonDown(unsigned int nHitTest)
 {
     OnEnterSizeMove(nHitTest);
@@ -68,7 +68,7 @@ void  LayeredWindowWrap::OnMouseMove(unsigned int nFlags, POINT point)
     int oldCX = m_sizeWindow.cx;
     int oldCY = m_sizeWindow.cy;
 
-    // ¼ÆËã´°¿ÚµÄĞÂ×ø±ê (×¢£º¶ÔÓÚÏò×ó/ÉÏÀ­ÉìÊ±£¬Èç¹ûÏŞÖÆÁË×î´ó¿í/¸ß£¬ÔòÔÚ¼ÆËã×ø±êÊ±ĞèÒª°´ÕÕ×î´ó¿í/¸ßÀ´¼ÆËã£¬¶ø²»ÊÇÊó±êÎ»ÖÃ)
+    // è®¡ç®—çª—å£çš„æ–°åæ ‡ (æ³¨ï¼šå¯¹äºå‘å·¦/ä¸Šæ‹‰ä¼¸æ—¶ï¼Œå¦‚æœé™åˆ¶äº†æœ€å¤§å®½/é«˜ï¼Œåˆ™åœ¨è®¡ç®—åæ ‡æ—¶éœ€è¦æŒ‰ç…§æœ€å¤§å®½/é«˜æ¥è®¡ç®—ï¼Œè€Œä¸æ˜¯é¼ æ ‡ä½ç½®)
     switch(m_nHitTestFlag)
     {
     case HTLEFT:
@@ -167,7 +167,7 @@ void  LayeredWindowWrap::OnMouseMove(unsigned int nFlags, POINT point)
         break;
     }
 
-    // ÏŞÖÆ´°¿Ú´óĞ¡
+    // é™åˆ¶çª—å£å¤§å°
     if (m_pWindow->m_nMaxWidth != NDEF && m_sizeWindow.cx > m_pWindow->m_nMaxWidth)
         m_sizeWindow.cx = m_pWindow->m_nMaxWidth;
     if (m_pWindow->m_nMaxHeight != NDEF && m_sizeWindow.cy > m_pWindow->m_nMaxHeight)
@@ -183,12 +183,12 @@ void  LayeredWindowWrap::OnMouseMove(unsigned int nFlags, POINT point)
     }
 
 
-    //m_pWindow->SetCanRedraw(false);  // »º´æ±»Çå¿Õ£¬·ÀÖ¹´ËÆÚ¼äÓĞobject redraw,Ìá½»µ½´°¿ÚÊ±£¬Êı¾İ²»ÍêÕû¡£
+    //m_pWindow->SetCanRedraw(false);  // ç¼“å­˜è¢«æ¸…ç©ºï¼Œé˜²æ­¢æ­¤æœŸé—´æœ‰object redraw,æäº¤åˆ°çª—å£æ—¶ï¼Œæ•°æ®ä¸å®Œæ•´ã€‚
     //m_pWindow->CreateDoubleBuffer(m_sizeWindow.cx, m_sizeWindow.cy);
     m_pWindow->notify_WM_SIZE(0, m_sizeWindow.cx, m_sizeWindow.cy);
 
-    // ×¢Òâ£ºm_rcParentµÄ¸üĞÂÇ§Íò²»ÄÜÊ¹ÓÃGetWindowRect¡£ÒòÎª´°¿ÚµÄ´óĞ¡ÏÖÔÚ¾ÍÃ»ÓĞ±ä
-    //       ËùÒÔÕâÀïÒ²¾ÍÃ»ÓĞ²ÉÓÃSendMessage(WM_SIZE)µÄ·½·¨
+    // æ³¨æ„ï¼šm_rcParentçš„æ›´æ–°åƒä¸‡ä¸èƒ½ä½¿ç”¨GetWindowRectã€‚å› ä¸ºçª—å£çš„å¤§å°ç°åœ¨å°±æ²¡æœ‰å˜
+    //       æ‰€ä»¥è¿™é‡Œä¹Ÿå°±æ²¡æœ‰é‡‡ç”¨SendMessage(WM_SIZE)çš„æ–¹æ³•
     SetRect(&m_pWindow->m_rcParent, 0,0, m_sizeWindow.cx, m_sizeWindow.cy);
 
     m_pWindow->SetConfigWidth(m_sizeWindow.cx);
@@ -199,11 +199,11 @@ void  LayeredWindowWrap::OnMouseMove(unsigned int nFlags, POINT point)
     //m_pWindow->SetCanRedraw(true);
     m_pWindow->Invalidate();
 
-    // Ä£Äâ´°¿Ú´óĞ¡¸Ä±äÏûÏ¢
-    // PS: 20130108 17:07 ½«ÏûÏ¢·¢ËÍµÄÊ±»úÒÆµ½OnSizeÖ®ºó¡£
-    //     Ö÷ÒªÊÇÒòÎªÔÚOnSizeÖĞ£¬»á´¥·¢richeditµÄsetcaretposÍ¨Öª£¬È»ºó´ËÊ±´°¿ÚµÄ´óĞ¡»¹Ã»ÓĞÕæÕı¸Ä±ä£¬
-    //     Òò´ËÔÚCCaretWindow::SetCaretPosÖĞµ÷ÓÃMapWindowPoints»ñÈ¡µ½µÄ¹â±êÆÁÄ»Î»ÖÃ»¹ÊÇ¾ÉµÄ£¬µ¼ÖÂ¹â±ê
-    //     ¸úËæ´°¿ÚÒÆ¶¯Ê§°Ü¡£Òò´Ë½«CCaretWindow::OnSyncWindowPosChangingÑÓºóÀ´ĞŞÕıÕâ¸öÎÊÌâ¡£
+    // æ¨¡æ‹Ÿçª—å£å¤§å°æ”¹å˜æ¶ˆæ¯
+    // PS: 20130108 17:07 å°†æ¶ˆæ¯å‘é€çš„æ—¶æœºç§»åˆ°OnSizeä¹‹åã€‚
+    //     ä¸»è¦æ˜¯å› ä¸ºåœ¨OnSizeä¸­ï¼Œä¼šè§¦å‘richeditçš„setcaretposé€šçŸ¥ï¼Œç„¶åæ­¤æ—¶çª—å£çš„å¤§å°è¿˜æ²¡æœ‰çœŸæ­£æ”¹å˜ï¼Œ
+    //     å› æ­¤åœ¨CCaretWindow::SetCaretPosä¸­è°ƒç”¨MapWindowPointsè·å–åˆ°çš„å…‰æ ‡å±å¹•ä½ç½®è¿˜æ˜¯æ—§çš„ï¼Œå¯¼è‡´å…‰æ ‡
+    //     è·Ÿéšçª—å£ç§»åŠ¨å¤±è´¥ã€‚å› æ­¤å°†CCaretWindow::OnSyncWindowPosChangingå»¶åæ¥ä¿®æ­£è¿™ä¸ªé—®é¢˜ã€‚
     {
         MSG  msg;
         msg.hwnd = GetHWND();
@@ -262,8 +262,8 @@ void  LayeredWindowWrap::OnExitSizeMove()
     SendMessage(GetHWND(), WM_EXITSIZEMOVE, 0, 0);
 }
 
-// µ±´°¿Ú×îĞ¡»¯ÁËµÄÊ±ºò£¬Èç¹ûÔÙ´ÎÓÃÔ­point/size, Commit£¬»áµ¼ÖÂ´°¿ÚÓÖ»Ö¸´µ½×îĞ¡»¯Ö®Ç°µÄÎ»ÖÃ
-// Òò´ËÔö¼ÓÒ»¸ö±êÖ¾£¬Èç¹û´°¿Ú×îĞ¡»¯ÁË£¬Ôò²»ĞŞ¸Ä´°¿ÚÎ»ÖÃ£¬½öÔÚÔ­´°¿Ú´óĞ¡ÉÏÃæÌá½»
+// å½“çª—å£æœ€å°åŒ–äº†çš„æ—¶å€™ï¼Œå¦‚æœå†æ¬¡ç”¨åŸpoint/size, Commitï¼Œä¼šå¯¼è‡´çª—å£åˆæ¢å¤åˆ°æœ€å°åŒ–ä¹‹å‰çš„ä½ç½®
+// å› æ­¤å¢åŠ ä¸€ä¸ªæ ‡å¿—ï¼Œå¦‚æœçª—å£æœ€å°åŒ–äº†ï¼Œåˆ™ä¸ä¿®æ”¹çª—å£ä½ç½®ï¼Œä»…åœ¨åŸçª—å£å¤§å°ä¸Šé¢æäº¤
 bool  LayeredWindowWrap::IsMinimized()
 {
     if (m_ptWindow.x == WINDOWS_MINIMIZED_POINT && m_ptWindow.y == WINDOWS_MINIMIZED_POINT)
@@ -280,8 +280,8 @@ bool LayeredWindowWrap::Commit()
 	Layer*  pLayer = m_pWindow->GetLayer();
 	IRenderTarget* pRenderTarget = pLayer->GetRenderTarget();
 
-	// TBD: ´°¿Ú»¹²»¿É¼û£¨ComboBoxµÄlistbox£©£¬µ«´¥·¢ÁËinvalidate²Ù×÷£¬»áµ¼ÖÂupdate layered windowÊ§°Ü
-	// ÕâÀïÏÈÕâÃ´´¦Àí¡£
+	// TBD: çª—å£è¿˜ä¸å¯è§ï¼ˆComboBoxçš„listboxï¼‰ï¼Œä½†è§¦å‘äº†invalidateæ“ä½œï¼Œä¼šå¯¼è‡´update layered windowå¤±è´¥
+	// è¿™é‡Œå…ˆè¿™ä¹ˆå¤„ç†ã€‚
 	if (m_sizeWindow.cx <= 0 ||
 		m_sizeWindow.cy <= 0)
 		return true;
@@ -294,16 +294,16 @@ bool LayeredWindowWrap::Commit()
 
     BLENDFUNCTION bf;
     bf.BlendOp     = AC_SRC_OVER ;
-    bf.AlphaFormat = AC_SRC_ALPHA;        // AC_SRC_ALPHA »áµ¼ÖÂ´°¿Ú±»Â§¿Õ,AC_SRC_OVER²»Ê¹ÓÃÍ¸Ã÷
+    bf.AlphaFormat = AC_SRC_ALPHA;        // AC_SRC_ALPHA ä¼šå¯¼è‡´çª—å£è¢«æ‚ç©º,AC_SRC_OVERä¸ä½¿ç”¨é€æ˜
     bf.BlendFlags  = 0;                   // Must be zero. 
-	bf.SourceConstantAlpha = (byte)m_pWindow->GetLayer()->GetOpacity();         // 0~255 Í¸Ã÷¶È
+	bf.SourceConstantAlpha = (byte)m_pWindow->GetLayer()->GetOpacity();         // 0~255 é€æ˜åº¦
     // 
     // 	if (bf.SourceConstantAlpha != 255)
     // 	{
     // 		nFlag &= ~ULW_OPAQUE;
     // 		nFlag |= ULW_ALPHA;
     // 	}
-    // [×¢]£ºÔÚxp¡¢win7²»Ê¹ÓÃ×ÀÃæÖ÷ÌâµÄÇé¿öÏÂ£¬COLOR½«ÓĞÎÊÌâ£¬Òò´Ë½¨ÒéÈ«²¿Ê¹ÓÃPNGÀ´ÊµÏÖÍ¸Ã÷
+    // [æ³¨]ï¼šåœ¨xpã€win7ä¸ä½¿ç”¨æ¡Œé¢ä¸»é¢˜çš„æƒ…å†µä¸‹ï¼ŒCOLORå°†æœ‰é—®é¢˜ï¼Œå› æ­¤å»ºè®®å…¨éƒ¨ä½¿ç”¨PNGæ¥å®ç°é€æ˜
     // 	else if (m_pWindow->m_eCurrentTransparentMode & WINDOW_TRANSPARENT_MODE_MASKCOLOR) 
     // 	{
     // 		if (m_pWindow->m_pColMask)
@@ -313,14 +313,14 @@ bool LayeredWindowWrap::Commit()
     // 		}
     // 	}
 
-    // 1. ×îĞ¡»¯ÁËÒ²ÒªË¢ĞÂ£¬·ñÔò×î»¹Ô­Ö®ºó»á·¢ÏÖ»­Ãæ²»Á¬¹áÁË¡£ÒòÎªÔÚÏÔÊ¾³öÀ´µÄÄÇÒ»Ë²¼ä£¬»¹ÊÇ×îĞ¡»¯Ç°µÄ»­Ãæ
-    // 2. µ±m_sizeWindow´óÓÚmemDC´óĞ¡Ê±£¬»áµ¼ÖÂ»æÍ¼Ê§°Ü£¬²¢ÇÒÖ±½ÓÒÔµ±Ç°»­ÃæµÄ×îºóÒ»ÏñËØ²¢0 alpha½øĞĞÆ½ÆÌ£¬Æ½ÆÌÃæ»ıÎªmemDC´óĞ¡£¬µ«´°¿ÚÎªsizeWindow´óĞ¡
+    // 1. æœ€å°åŒ–äº†ä¹Ÿè¦åˆ·æ–°ï¼Œå¦åˆ™æœ€è¿˜åŸä¹‹åä¼šå‘ç°ç”»é¢ä¸è¿è´¯äº†ã€‚å› ä¸ºåœ¨æ˜¾ç¤ºå‡ºæ¥çš„é‚£ä¸€ç¬é—´ï¼Œè¿˜æ˜¯æœ€å°åŒ–å‰çš„ç”»é¢
+    // 2. å½“m_sizeWindowå¤§äºmemDCå¤§å°æ—¶ï¼Œä¼šå¯¼è‡´ç»˜å›¾å¤±è´¥ï¼Œå¹¶ä¸”ç›´æ¥ä»¥å½“å‰ç”»é¢çš„æœ€åä¸€åƒç´ å¹¶0 alphaè¿›è¡Œå¹³é“ºï¼Œå¹³é“ºé¢ç§¯ä¸ºmemDCå¤§å°ï¼Œä½†çª—å£ä¸ºsizeWindowå¤§å°
     BOOL  bRet = ::UpdateLayeredWindow(
         GetHWND(),
 		nullptr, 
         IsMinimized() ? nullptr : &m_ptWindow, 
         &m_sizeWindow, 
-        pRenderTarget->GetHDC(), // TODO: ¿¼ÂÇd2dÌá½»·½Ê½
+        pRenderTarget->GetHDC(), // TODO: è€ƒè™‘d2dæäº¤æ–¹å¼
         &ptMemDC, dwColorMask, &bf, nFlag); 
 	UIASSERT(bRet);
 
@@ -329,10 +329,10 @@ bool LayeredWindowWrap::Commit()
 
 
 //
-// ¶ÔÓÚ·Ö²ã´°¿Ú£¬ÔÚÏÔÊ¾µÄÊ±ºòĞèÒªÖØĞÂ¸üĞÂÒ»´Î¡£ÒòÎªµ±·Ö²ã´°¿ÚÒş²ØµÄÊ±ºòÄÚ´æÎ»Í¼Ã»ÓĞµÃµ½¸üĞÂ£¬invisible falseºó£¬Ö±½ÓreturnÁË
+// å¯¹äºåˆ†å±‚çª—å£ï¼Œåœ¨æ˜¾ç¤ºçš„æ—¶å€™éœ€è¦é‡æ–°æ›´æ–°ä¸€æ¬¡ã€‚å› ä¸ºå½“åˆ†å±‚çª—å£éšè—çš„æ—¶å€™å†…å­˜ä½å›¾æ²¡æœ‰å¾—åˆ°æ›´æ–°ï¼Œinvisible falseåï¼Œç›´æ¥returnäº†
 //
-// ×¢£ºÔÚÕâÀïÃ»ÓĞÊ¹ÓÃÏìÓ¦WM_SHOWWINDOWÀ´Í¨¹ı·Ö²ã´°¿ÚË¢ĞÂ£¬ÒòÎªÔÚÏìÓ¦WM_SHOWWINDOWµÄÊ±ºò£¬IsWindowVisible»¹ÊÇFALSE
-//     Òò´Ë¸ÄÓÃOnWindowPosChangedÀ´µÃµ½´°¿ÚÏÔÊ¾µÄÊ±»ú£¬Í¨¹ı·Ö²ã´°¿ÚË¢ĞÂ
+// æ³¨ï¼šåœ¨è¿™é‡Œæ²¡æœ‰ä½¿ç”¨å“åº”WM_SHOWWINDOWæ¥é€šè¿‡åˆ†å±‚çª—å£åˆ·æ–°ï¼Œå› ä¸ºåœ¨å“åº”WM_SHOWWINDOWçš„æ—¶å€™ï¼ŒIsWindowVisibleè¿˜æ˜¯FALSE
+//     å› æ­¤æ”¹ç”¨OnWindowPosChangedæ¥å¾—åˆ°çª—å£æ˜¾ç¤ºçš„æ—¶æœºï¼Œé€šè¿‡åˆ†å±‚çª—å£åˆ·æ–°
 //   
 // long LayeredWindowWrap::_OnWindowPosChanging( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 // {
@@ -347,14 +347,14 @@ bool LayeredWindowWrap::Commit()
 // }
 // void  LayeredWindowWrap::OnWindowPosChanging(LPWINDOWPOS lpWndPos)
 // {
-//     // 	if (lpWndPos->flags & SWP_SHOWWINDOW)  // ´°¿ÚÏÔÊ¾£¨´°¿ÚÒş²ØÊ±£¬DrawObject»áÊ§°Ü£©
+//     // 	if (lpWndPos->flags & SWP_SHOWWINDOW)  // çª—å£æ˜¾ç¤ºï¼ˆçª—å£éšè—æ—¶ï¼ŒDrawObjectä¼šå¤±è´¥ï¼‰
 //     // 	{
 //     // 		this->RedrawObject(m_pWindow, TRUE);
 //     // 	}
 // }
 
 //
-//	Í¨Öª·Ö²ã´°¿ÚĞÂµÄÎ»ÖÃºÍ´óĞ¡
+//	é€šçŸ¥åˆ†å±‚çª—å£æ–°çš„ä½ç½®å’Œå¤§å°
 //
 long LayeredWindowWrap::_OnWindowPosChanged(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -374,7 +374,7 @@ long  LayeredWindowWrap::_OnSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam
 
 void  LayeredWindowWrap::OnWindowPosChanged(LPWINDOWPOS lpWndPos)
 {
-    // ×îĞ¡»¯ÁË£¬½ö±£´æÒ»ÏÂm_ptWindow£¬ÓÃÓÚºóÃæÅĞ¶ÏÊÇ·ñÊÇ×îĞ¡»¯£¬²»ĞŞ¸Äm_sizeWindow£¨²»ºÃ´¦Àí£©
+    // æœ€å°åŒ–äº†ï¼Œä»…ä¿å­˜ä¸€ä¸‹m_ptWindowï¼Œç”¨äºåé¢åˆ¤æ–­æ˜¯å¦æ˜¯æœ€å°åŒ–ï¼Œä¸ä¿®æ”¹m_sizeWindowï¼ˆä¸å¥½å¤„ç†ï¼‰
     if (lpWndPos->x == WINDOWS_MINIMIZED_POINT && lpWndPos->y == WINDOWS_MINIMIZED_POINT)
     {
         m_ptWindow.x = WINDOWS_MINIMIZED_POINT;
@@ -382,7 +382,7 @@ void  LayeredWindowWrap::OnWindowPosChanged(LPWINDOWPOS lpWndPos)
     }
     else
     {
-        // Õâ¸ö´óĞ¡ÊÇ´°¿ÚµÄ´óĞ¡£¬²»ÊÇ¿Í»§ÇøµÄ´óĞ¡£¬Òò´Ë±ØĞëÖØĞÂµ÷ÓÃgetclientrectÀ´»ñÈ¡
+        // è¿™ä¸ªå¤§å°æ˜¯çª—å£çš„å¤§å°ï¼Œä¸æ˜¯å®¢æˆ·åŒºçš„å¤§å°ï¼Œå› æ­¤å¿…é¡»é‡æ–°è°ƒç”¨getclientrectæ¥è·å–
 //         if (!(lpWndPos->flags & SWP_NOMOVE))
 //         {
 //             m_ptWindow.x = lpWndPos->x;
@@ -399,7 +399,7 @@ void  LayeredWindowWrap::OnWindowPosChanged(LPWINDOWPOS lpWndPos)
             GetWindowPos();
         }
 
-        if (lpWndPos->flags & SWP_SHOWWINDOW)  // ´°¿ÚÏÔÊ¾£¨´°¿ÚÒş²ØÊ±£¬DrawObject»áÊ§°Ü£©
+        if (lpWndPos->flags & SWP_SHOWWINDOW)  // çª—å£æ˜¾ç¤ºï¼ˆçª—å£éšè—æ—¶ï¼ŒDrawObjectä¼šå¤±è´¥ï¼‰
         {
             ::InvalidateRect(GetHWND(), nullptr, TRUE);
         }
@@ -413,7 +413,7 @@ long LayeredWindowWrap::_OnCancelMode( unsigned int uMsg, WPARAM wParam, LPARAM 
     return 0;
 }
 
-// ·Ö²ã´°¿Ú²»Ê¹ÓÃNCÄÇÌ×ÍÏ×§»úÖÆ£¬²»Æ½»¬
+// åˆ†å±‚çª—å£ä¸ä½¿ç”¨NCé‚£å¥—æ‹–æ‹½æœºåˆ¶ï¼Œä¸å¹³æ»‘
 long  LayeredWindowWrap::_OnNcHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return HTCLIENT;
@@ -435,7 +435,7 @@ long  LayeredWindowWrap::_OnSetCursor(unsigned int uMsg, WPARAM wParam, LPARAM l
 }
 
 //	
-//  ÁíÍâUpdateLayeredWindowÖ§³Ö¸üÆ½»¬µÄ´°¿ÚÀ­ÉìĞ§¹û£¬Òò´Ë¶ÔÓÚ·Ö²ã´°¿ÚµÄÀ­ÉìÊÇÁíÍâÒ»Ì×Âß¼­ÊµÏÖµÄ
+//  å¦å¤–UpdateLayeredWindowæ”¯æŒæ›´å¹³æ»‘çš„çª—å£æ‹‰ä¼¸æ•ˆæœï¼Œå› æ­¤å¯¹äºåˆ†å±‚çª—å£çš„æ‹‰ä¼¸æ˜¯å¦å¤–ä¸€å¥—é€»è¾‘å®ç°çš„
 //
 void LayeredWindowWrap::OnLButtonDown(unsigned int nFlags, POINT pt)
 {
@@ -476,20 +476,20 @@ void  LayeredWindowWrap::Enable(bool b)
 
     if (b)
     {
-        // Ê¹ÓÃ·Ö²ã´°¿ÚµÄ»°£¬¾Í²»ÒªÔÙÏÔÊ¾´°¿ÚÒõÓ°ÁË¡££¨³¡¾°£º²Ëµ¥´°¿ÚÄ¬ÈÏÊÇ´øSHADOWµÄ£¬Ê¹ÓÃ·Ö²ã´°¿ÚÊ±¾Í²»ĞèÒªÕâ¸öÒõÓ°ÁË£¬×Ô¼ºÄ£Äâ¼´¿É£©
+        // ä½¿ç”¨åˆ†å±‚çª—å£çš„è¯ï¼Œå°±ä¸è¦å†æ˜¾ç¤ºçª—å£é˜´å½±äº†ã€‚ï¼ˆåœºæ™¯ï¼šèœå•çª—å£é»˜è®¤æ˜¯å¸¦SHADOWçš„ï¼Œä½¿ç”¨åˆ†å±‚çª—å£æ—¶å°±ä¸éœ€è¦è¿™ä¸ªé˜´å½±äº†ï¼Œè‡ªå·±æ¨¡æ‹Ÿå³å¯ï¼‰
         SetClassLongPtr(hWnd, GCL_STYLE, GetClassLongPtr(hWnd, GCL_STYLE)&~CS_DROPSHADOW);
         SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 
         UpdateLayeredCaptionWindowRgn();
-        // SetWindowRgn(hWnd, nullptr, FALSE);   // È¡Ïû´°¿ÚµÄÒìĞÎ£¬ÓÉ·Ö²ã´°¿Ú×Ô¼ºÀ´´¦Àí¡£·Ö²ã´°¿Ú½ö»áÊÕµ½Ò»¸öWINDOWPOSCHANGEDÏûÏ¢£¬µ«SWP_NOSIZE£¬
-        // Òò´Ë»¹ĞèÒªÁíÍâ·¢ËÍÒ»¸ö´°¿Ú´óĞ¡µÄÏûÏ¢¸æËß·Ö²ã´°¿Úµ±Ç°´óĞ¡
+        // SetWindowRgn(hWnd, nullptr, FALSE);   // å–æ¶ˆçª—å£çš„å¼‚å½¢ï¼Œç”±åˆ†å±‚çª—å£è‡ªå·±æ¥å¤„ç†ã€‚åˆ†å±‚çª—å£ä»…ä¼šæ”¶åˆ°ä¸€ä¸ªWINDOWPOSCHANGEDæ¶ˆæ¯ï¼Œä½†SWP_NOSIZEï¼Œ
+        // å› æ­¤è¿˜éœ€è¦å¦å¤–å‘é€ä¸€ä¸ªçª—å£å¤§å°çš„æ¶ˆæ¯å‘Šè¯‰åˆ†å±‚çª—å£å½“å‰å¤§å°
     }
     else
     {
-        // ×¢£ºÖ±½ÓÈ¥³ıWS_EX_LAYEREDÊôĞÔ£¬»áµ¼ÖÂ´°¿ÚÏÈ±äºÚ£¬È»ºóÔÙË¢ĞÂÒ»´Î¡£
-        //     Òò´ËÔÚÕâÀïÈ¥³ı·Ö²ãÊôĞÔÖ®ºó£¬Ö±½Ó½«mem bitmapµÄÄÚÈİÏÈ»­µ½´°¿ÚÉÏÀ´¹æ±ÜÕâ¸öÎÊÌâ¡£
-        //     Í¬Ê±ÎªÁË½â¾ö»­µ½´°¿ÚÉÏµÄÄÚÈİÓĞrgnÒÔÍâµÄ²¿·Ö£¬ÔÚÈ¥³ı·Ö²ãÊôĞÔÖ®Ç°£¬ÏÈ¼ÆËã
-        //     ´°¿ÚµÄĞÎ×´
+        // æ³¨ï¼šç›´æ¥å»é™¤WS_EX_LAYEREDå±æ€§ï¼Œä¼šå¯¼è‡´çª—å£å…ˆå˜é»‘ï¼Œç„¶åå†åˆ·æ–°ä¸€æ¬¡ã€‚
+        //     å› æ­¤åœ¨è¿™é‡Œå»é™¤åˆ†å±‚å±æ€§ä¹‹åï¼Œç›´æ¥å°†mem bitmapçš„å†…å®¹å…ˆç”»åˆ°çª—å£ä¸Šæ¥è§„é¿è¿™ä¸ªé—®é¢˜ã€‚
+        //     åŒæ—¶ä¸ºäº†è§£å†³ç”»åˆ°çª—å£ä¸Šçš„å†…å®¹æœ‰rgnä»¥å¤–çš„éƒ¨åˆ†ï¼Œåœ¨å»é™¤åˆ†å±‚å±æ€§ä¹‹å‰ï¼Œå…ˆè®¡ç®—
+        //     çª—å£çš„å½¢çŠ¶
 
         m_pWindow->UpdateWindowRgn();
         SetWindowLongPtr(hWnd, GWL_EXSTYLE, GetWindowLongPtr(hWnd, GWL_EXSTYLE) & ~WS_EX_LAYERED);
@@ -500,7 +500,7 @@ void  LayeredWindowWrap::Enable(bool b)
         ReleaseDC(hWnd, hDC);
     }
 
-	// È¡Ïû´°¿ÚÒìĞÎ  TEST IT!
+	// å–æ¶ˆçª—å£å¼‚å½¢  TEST IT!
 	if (b)
 	{
 		SetWindowRgn(hWnd, nullptr, FALSE);
@@ -518,7 +518,7 @@ ILayeredWindowWrap*  LayeredWindowWrap::GetILayeredWindowWrap()
 
 void  LayeredWindowWrap::UpdateRgn()
 {
-	// ³¢ÊÔĞŞ¸ÄÎª½öÔÚ³õÊ¼»¯µÄÊ±ºòÉèÖÃÒ»´Î¡£
+	// å°è¯•ä¿®æ”¹ä¸ºä»…åœ¨åˆå§‹åŒ–çš„æ—¶å€™è®¾ç½®ä¸€æ¬¡ã€‚
 //     HWND hWnd = GetHWND();
 //     RECT rc;
 //     GetWindowRect(hWnd, &rc);
@@ -533,14 +533,14 @@ bool  LayeredWindowWrap::UpdateLayeredCaptionWindowRgn()
 	HWND hWnd = GetHWND();
     if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_CAPTION)
     {
-        // SetWindowRgn(nullptr)²»¹ÜÓÃ£¬ÒÀÈ»»áÓĞ±êÌâÀ¸µÄÔ²½Ç
+        // SetWindowRgn(nullptr)ä¸ç®¡ç”¨ï¼Œä¾ç„¶ä¼šæœ‰æ ‡é¢˜æ çš„åœ†è§’
         RECT rc;
         GetWindowRect(hWnd, &rc);
         ::OffsetRect(&rc, -rc.left, -rc.top);
 
        HRGN hRgn = CreateRectRgnIndirect(&rc);
        SetWindowRgn(hWnd, hRgn, TRUE);
-        // SAFE_DELETE_GDIOBJECT(hRgn);   // TODO: MSDNÉÏ±íÊ¾²»ĞèÒªÏú»Ù¸Ã¶ÔÏó
+        // SAFE_DELETE_GDIOBJECT(hRgn);   // TODO: MSDNä¸Šè¡¨ç¤ºä¸éœ€è¦é”€æ¯è¯¥å¯¹è±¡
        return true;
     }
 

@@ -21,12 +21,21 @@ public:
   void Destroy();
 
   void SetTitle(const char* title) override;
+  void GetClientRect(Rect *prect) override;
+  void GetWindowRect(Rect *prect) override;
+  void SetWindowRect(Rect *prect);
+  void InvalidateRect(Rect* prect) override;
+  void ValidateRect(Rect* prect) override;
+  bool IsChildWindow() override;
+  bool IsWindowVisible() override;
   void Show() override;
+  void Hide();
 
   void Submit(sk_sp<SkSurface> sksurface) override;
 
 public:
   NSWindow* window() { return m_window; }
+  void notifySize();
   
 private:
   NSWindow *m_window = nullptr;

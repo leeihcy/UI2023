@@ -26,12 +26,12 @@ protected:
 
 protected:
     // IDropTarget Interface 
-    virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-    virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+    virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect);
+    virtual HRESULT STDMETHODCALLTYPE DragOver(unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect);
     virtual HRESULT STDMETHODCALLTYPE DragLeave(void);
-    virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+    virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect);
 
-    HRESULT  DragMove(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+    HRESULT  DragMove(IDataObject *pDataObj, unsigned int grfKeyState, POINTL pt, unsigned int *pdwEffect);
     HRESULT  DoDropTargetNotify(Object* pHoverObj, DROPTARGETEVENT_TYPE eEventType, DROPTARGETEVENT_DATA* pData);
 
     Object*  GetHoverObject2Drop();

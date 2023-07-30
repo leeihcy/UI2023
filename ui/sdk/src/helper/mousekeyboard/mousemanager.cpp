@@ -119,7 +119,7 @@ void WindowMouseMgr::OnObjectVisibleChangeInd(Object* pObj, bool bVisible)
             (pObj == m_pFocusObject || pObj->IsMyChild(m_pFocusObject, true)))
         {
             m_pFocusObject->SetFocus(false);
-            ::UISendMessage(m_pFocusObject, WM_KILLFOCUS, (WPARAM)pObj, 0);
+            ::UISendMessage(m_pFocusObject, WM_KILLFOCUS, (long)pObj, 0);
             m_pFocusObject = nullptr;
 
             this->Tab_2_NextControl();
@@ -286,7 +286,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 				continue;
 		}
 
-        LONG_PTR nHitTest = UISendMessage(pChild, UI_MSG_HITTEST, (WPARAM)&ptHitTest, (LPARAM)&ptInChild);
+        LONG_PTR nHitTest = UISendMessage(pChild, UI_MSG_HITTEST, (long)&ptHitTest, (long)&ptInChild);
         if (HTNOWHERE == nHitTest)
 			continue;
         
@@ -355,7 +355,7 @@ WindowBase* WindowMouseMgr::GetWindowObject()
 }
 
 
-long  WindowMouseMgr::HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::HandleMessage(unsigned int msg, long w, long l, BOOL* pbHandled)
 {
     switch (msg)
     {
@@ -381,7 +381,7 @@ long  WindowMouseMgr::HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* 
 //The low-order word specifies the x-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area. 
 //The high-order word specifies the y-coordinate of the cursor. The coordinate is relative to the upper-left corner of the client area. 
 //
-long WindowMouseMgr::HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long WindowMouseMgr::HandleMouseMessage(unsigned int msg, long w, long l, BOOL* pbHandled)
 {
     if (this->m_pObjMouseCapture)
     {
@@ -424,7 +424,7 @@ long WindowMouseMgr::HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BO
                 HWND hWnd = m_oWindow.GetHWND();
 				if (GetCapture() != hWnd)             // 鼠标拖拽时不变，例如从EDIT中拖拽出来
 			    {
-				    ::PostMessage(hWnd, WM_SETCURSOR, (WPARAM)hWnd, MAKELPARAM(HTCLIENT,1));  // hiword 0表示弹出菜单
+				    ::PostMessage(hWnd, WM_SETCURSOR, (long)hWnd, MAKELPARAM(HTCLIENT,1));  // hiword 0表示弹出菜单
 			    }
             }
 			return lRet;
@@ -475,7 +475,7 @@ long WindowMouseMgr::HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BO
 	return 0L;
 }
 
-long  WindowMouseMgr::HandleKeyboardMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::HandleKeyboardMessage(unsigned int msg, long w, long l, BOOL* pbHandled)
 {
     if (this->m_pObjKeyboardCapture)
     {
@@ -525,7 +525,7 @@ long  WindowMouseMgr::HandleKeyboardMessage(unsigned int msg, WPARAM w, LPARAM l
     return 0L;
 }
 
-long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, long wParam, long lParam, BOOL& bHandled)
 {
     bHandled = FALSE;
 	
@@ -547,11 +547,11 @@ long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, WPARAM wParam, LPARAM
 
         UI::GESTURENOTIFYSTRUCT* pStruct = (UI::GESTURENOTIFYSTRUCT*)lParam;  pStruct;
 
-		DWORD  panWant = GC_PAN |
+		unsigned int  panWant = GC_PAN |
 						 GC_PAN_WITH_SINGLE_FINGER_VERTICALLY |   						 
 						 GC_PAN_WITH_GUTTER |                     
 						 GC_PAN_WITH_INERTIA;
-		DWORD  panBlock = GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY;  // 暂不开启横向触摸PAN，用于支持ListItemDragDrop
+		unsigned int  panBlock = GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY;  // 暂不开启横向触摸PAN，用于支持ListItemDragDrop
         // TODO: 扩展，其它控件可能需要横向pan
 
 		UI::GESTURECONFIG  gc[] = //{0, GC_ALLGESTURES, 0};
@@ -573,7 +573,7 @@ long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, WPARAM wParam, LPARAM
     return 0;
 }
 
-Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, WPARAM wParam)
+Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, long wParam)
 {
     MapWindowPoints(nullptr, m_oWindow.GetHWND(), &ptScreen, 1);
     Object* p = GetObjectByPos(&m_oWindow, &ptScreen, nullptr);
@@ -588,7 +588,7 @@ Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, WPARAM wParam)
     return nullptr;
 }
 
-BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
+BOOL  WindowMouseMgr::OnGesture(long lParam)
 {
 	// 本次消息通知滚动距离
 	static POINT lastPoint = {0};
@@ -622,7 +622,7 @@ BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
             if (bFirstGesture)
             {
                 POINT pt = {gi.ptsLocation.x, gi.ptsLocation.y};
-                m_pObjGesture = GetGestureTargetObject(pt, (WPARAM)&gi);
+                m_pObjGesture = GetGestureTargetObject(pt, (long)&gi);
             }
 			else
 			{
@@ -650,7 +650,7 @@ BOOL  WindowMouseMgr::OnGesture(LPARAM lParam)
 					m_pObjGesture->GetIMessage(),
 					msg,
 					MAKEWPARAM((short)xOffset, (short)yOffset),
-					(LPARAM)&gi);
+					(long)&gi);
 
 				if (lRet > 0)
 					bHandled = TRUE;
@@ -714,7 +714,7 @@ long WindowMouseMgr::OnMouseLeave( int vkFlag, int xPos, int yPos )
 	return TRUE;
 }
 
-long WindowMouseMgr::OnCancelMode(WPARAM w, LPARAM l)
+long WindowMouseMgr::OnCancelMode(long w, long l)
 {
 	if (m_pObjPress != nullptr)
 	{
@@ -730,7 +730,7 @@ long WindowMouseMgr::OnCancelMode(WPARAM w, LPARAM l)
 }
 
 
-long WindowMouseMgr::OnLButtonDown( WPARAM w, LPARAM l, BOOL* pbHandled)
+long WindowMouseMgr::OnLButtonDown( long w, long l, BOOL* pbHandled)
 {
     // 保存本次点击位于，用于过滤双击事件
     m_posPrevClick = l;
@@ -747,7 +747,7 @@ long WindowMouseMgr::OnLButtonDown( WPARAM w, LPARAM l, BOOL* pbHandled)
 	return 0L;
 }
 
-long WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
+long WindowMouseMgr::OnLButtonUp( long w, long l)
 {
     // 为了防止在对象在处理WM_LBUTTONUP消息时MouseManager的状态发生了改变,先保存状态
     Object*  pSaveObjPress = m_pObjPress;
@@ -780,7 +780,7 @@ long WindowMouseMgr::OnLButtonUp( WPARAM w, LPARAM l)
 	return 0L;
 }
 
-long WindowMouseMgr::OnLButtonDBClick( WPARAM w,LPARAM l, BOOL* pbHandled )
+long WindowMouseMgr::OnLButtonDBClick( long w,long l, BOOL* pbHandled )
 {
     if (!AdjustDoubleClickMessage(l))
         return OnLButtonDown(w, l, pbHandled);
@@ -799,7 +799,7 @@ long WindowMouseMgr::OnLButtonDBClick( WPARAM w,LPARAM l, BOOL* pbHandled )
 	return 0;
 }
 
-long WindowMouseMgr::OnRButtonDown( WPARAM w,LPARAM l )
+long WindowMouseMgr::OnRButtonDown( long w,long l )
 {
     if (FALSE == this->m_bMouseMoveReady)
     {
@@ -824,7 +824,7 @@ long WindowMouseMgr::OnRButtonDown( WPARAM w,LPARAM l )
 	
 	return 0;
 }
-long WindowMouseMgr::OnRButtonUp( WPARAM w,LPARAM l )
+long WindowMouseMgr::OnRButtonUp( long w,long l )
 {
 	if (m_pObjRPress)
 	{
@@ -839,7 +839,7 @@ long WindowMouseMgr::OnRButtonUp( WPARAM w,LPARAM l )
 	return 0;
 }
 
-long  WindowMouseMgr::OnMButtonDown(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonDown(long w,long l)
 {
     if (FALSE == this->m_bMouseMoveReady)
         HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);
@@ -853,7 +853,7 @@ long  WindowMouseMgr::OnMButtonDown(WPARAM w,LPARAM l)
 
     return 0;
 }
-long  WindowMouseMgr::OnMButtonDBClick(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonDBClick(long w,long l)
 {
     if (FALSE == this->m_bMouseMoveReady)
         HandleMouseMessage(WM_MOUSEMOVE, 0, l, nullptr);
@@ -866,7 +866,7 @@ long  WindowMouseMgr::OnMButtonDBClick(WPARAM w,LPARAM l)
     }
     return 0;
 }
-long  WindowMouseMgr::OnMButtonUp(WPARAM w,LPARAM l)
+long  WindowMouseMgr::OnMButtonUp(long w,long l)
 {
     if (m_pObjMPress)
     {
@@ -927,7 +927,7 @@ void WindowMouseMgr::OnKillFocus(HWND hFocusWnd)
     if (p)  // 给Focus对象发送焦点消息，但不重置m_pFocusObject。例如鼠标点到桌面上导致的失焦
     {
         p->SetFocus(false);
-        ::UISendMessage(p, WM_KILLFOCUS, (WPARAM)nullptr, (LPARAM)0);
+        ::UISendMessage(p, WM_KILLFOCUS, (long)nullptr, (long)0);
     }
 
     // 当鼠标是点在了本窗口上面的一个HOSTWND里的子窗口时，重置m_pFocusObject，否则鼠标再点回m_pFocusObject时将没反应
@@ -944,7 +944,7 @@ void WindowMouseMgr::OnSetFocus()
     if (m_pFocusObject && !m_pFocusObject->IsFocus())
     {
         m_pFocusObject->SetFocus(true);
-        ::UISendMessage(m_pFocusObject, WM_SETFOCUS, (WPARAM)GetOldFocusObject(), (LPARAM)0);  // 这里的GetOldFocusObject对应于
+        ::UISendMessage(m_pFocusObject, WM_SETFOCUS, (long)GetOldFocusObject(), (long)0);  // 这里的GetOldFocusObject对应于
     }
     else
     {
@@ -953,7 +953,7 @@ void WindowMouseMgr::OnSetFocus()
 	updateImeStatus();
 }
 
-BOOL WindowMouseMgr::OnSetCursor( WPARAM w,LPARAM l )
+BOOL WindowMouseMgr::OnSetCursor( long w,long l )
 {
     Object* pObj = m_pObjPress;
     if (nullptr == pObj)
@@ -1065,7 +1065,7 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
             Object* pFocusObj = GetFocusObject();
             if (pFocusObj)
             {
-                long lr = UISendMessage(pFocusObj->GetIMessage(), WM_GETDLGCODE, pMsg->wParam, (LPARAM)pMsg);
+                long lr = UISendMessage(pFocusObj->GetIMessage(), WM_GETDLGCODE, pMsg->wParam, (long)pMsg);
                 if (lr & DLGC_WANTTAB)
                     return FALSE;
             }
@@ -1102,7 +1102,7 @@ BOOL WindowMouseMgr::IsDialogMessage(MSG* pMsg)
             if (m_pFocusObject)
             {
                 // 例如在多行编辑框中回车
-				LONG_PTR codeFocus = UISendMessage(m_pFocusObject, WM_GETDLGCODE, 0, (LPARAM)pMsg);
+				LONG_PTR codeFocus = UISendMessage(m_pFocusObject, WM_GETDLGCODE, 0, (long)pMsg);
                 if (codeFocus & (DLGC_WANTMESSAGE|DLGC_WANTALLKEYS))
                     return FALSE;
             }
@@ -1316,12 +1316,12 @@ void WindowMouseMgr::SetFocusObject(Object* pObj)
     if (m_pFocusObject)
     {
         m_pFocusObject->SetFocus(false);
-        ::UISendMessage(m_pFocusObject, WM_KILLFOCUS, (WPARAM)pObj, 0);
+        ::UISendMessage(m_pFocusObject, WM_KILLFOCUS, (long)pObj, 0);
     }
     if (pObj)
     {
         pObj->SetFocus(true);
-        ::UISendMessage(pObj, WM_SETFOCUS, (WPARAM)m_pFocusObject, 0);
+        ::UISendMessage(pObj, WM_SETFOCUS, (long)m_pFocusObject, 0);
     }
     m_pFocusObject = pObj;
 
@@ -1347,7 +1347,7 @@ void  WindowMouseMgr::updateImeStatus()
 	}
 }
 
-BOOL WindowMouseMgr::OnChar(WPARAM w, LPARAM l)
+BOOL WindowMouseMgr::OnChar(long w, long l)
 {	
     if (this->m_pFocusObject)
     {
@@ -1357,7 +1357,7 @@ BOOL WindowMouseMgr::OnChar(WPARAM w, LPARAM l)
     return FALSE;
 }
 
-BOOL WindowMouseMgr::OnKeyDown(unsigned int nMsg, WPARAM w,LPARAM l)
+BOOL WindowMouseMgr::OnKeyDown(unsigned int nMsg, long w,long l)
 {
     if (this->m_pFocusObject)
     {
@@ -1367,7 +1367,7 @@ BOOL WindowMouseMgr::OnKeyDown(unsigned int nMsg, WPARAM w,LPARAM l)
 
     return FALSE;
 }
-BOOL WindowMouseMgr::OnKeyUp(WPARAM w,LPARAM l)
+BOOL WindowMouseMgr::OnKeyUp(long w,long l)
 {
     if (this->m_pFocusObject)
     {
@@ -1378,7 +1378,7 @@ BOOL WindowMouseMgr::OnKeyUp(WPARAM w,LPARAM l)
     return FALSE;
 }
 
-long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
+long WindowMouseMgr::OnMouseWheel(long w, long l)
 {
     // 先询问当前的press obj，能否进行mouse wheel分发
     if (m_pObjPress)
@@ -1419,7 +1419,7 @@ long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
     return 0;
 }
 
-long  WindowMouseMgr::OnImeMsg(unsigned int uMsg, WPARAM w, LPARAM l, BOOL* pbHandled)
+long  WindowMouseMgr::OnImeMsg(unsigned int uMsg, long w, long l, BOOL* pbHandled)
 {
     if (this->m_pFocusObject)
     {
@@ -1433,7 +1433,7 @@ long  WindowMouseMgr::OnImeMsg(unsigned int uMsg, WPARAM w, LPARAM l, BOOL* pbHa
 // 跑到控件B上双击了。因此对双击事件做一个过滤。
 //
 // return: true是一个双击事件, false做为单击事件处理
-bool  WindowMouseMgr::AdjustDoubleClickMessage(LPARAM l)
+bool  WindowMouseMgr::AdjustDoubleClickMessage(long l)
 {
     if (m_posPrevClick == l)
         return true;

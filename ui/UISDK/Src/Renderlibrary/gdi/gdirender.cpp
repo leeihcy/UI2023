@@ -11,6 +11,7 @@ GdiRenderTarget::GdiRenderTarget(bool bNeedAlphaChannel)
     m_pRenderBuffer = nullptr;
     m_ptOffset.x = m_ptOffset.y = 0;
 }
+
 GdiRenderTarget::~GdiRenderTarget()
 {
     SAFE_DELETE(m_pRenderBuffer);
@@ -22,7 +23,7 @@ void  GdiRenderTarget::Release()
     delete this;
 }
 
-// ¸ÃHDC²»ĞèÒªÊÍ·Å 
+// è¯¥HDCä¸éœ€è¦é‡Šæ”¾ 
 HDC GdiRenderTarget::GetBindHDC()
 {
 	return m_hBindDC;
@@ -32,7 +33,7 @@ HDC GdiRenderTarget::GetBindHDC()
 HRGN GdiRenderTarget::GetClipRgn()
 {
 	HRGN hRgn = ::CreateRectRgn(0,0,0,0);
-	if( 1 != ::GetClipRgn(GetHDC(), hRgn) )  // ¿Õ»òÕßÊ§°Ü
+	if( 1 != ::GetClipRgn(GetHDC(), hRgn) )  // ç©ºæˆ–è€…å¤±è´¥
 	{
 		::DeleteObject(hRgn);
 		hRgn = nullptr;
@@ -306,9 +307,9 @@ void  GdiRenderTarget::ReleaseHDC(HDC hDC)
 }
 
 //
-// Èç¹ûĞèÒªÍ¬Ê±»æÖÆÁ½¸öitemÏî£¬Ôò¿ÉÒÔÌá¹©Á½¸öRECT½øĞĞ²Ã¼ô
+// å¦‚æœéœ€è¦åŒæ—¶ç»˜åˆ¶ä¸¤ä¸ªitemé¡¹ï¼Œåˆ™å¯ä»¥æä¾›ä¸¤ä¸ªRECTè¿›è¡Œè£å‰ª
 //
-// bClearÖ÷ÒªÊÇÓÃÓÚ·Ö²ã´°¿ÚÖĞµÄÍ¸Ã÷±³¾°
+// bClearä¸»è¦æ˜¯ç”¨äºåˆ†å±‚çª—å£ä¸­çš„é€æ˜èƒŒæ™¯
 //
 bool GdiRenderTarget::BeginDraw()
 {
@@ -359,10 +360,10 @@ void  GdiRenderTarget::DrawString(IRenderFont* pRenderFont, DRAWTEXTPARAM* pPara
 
     CRect rcText(pParam->prc);
 
-	// µ¥ĞĞ¾ÓÖĞ£¬¶àĞĞÈ«¾Ó×ó(³¡¾°£ºmsgboxÖĞµÄÎÄ±¾ÄÚÈİ£©
+	// å•è¡Œå±…ä¸­ï¼Œå¤šè¡Œå…¨å±…å·¦(åœºæ™¯ï¼šmsgboxä¸­çš„æ–‡æœ¬å†…å®¹ï¼‰
 
 
-    // ¶àĞĞµÄ´¹Ö±¾ÓÖĞ£¬DrawText²»Ö§³Ö£¬´úÂëµ÷Õû»æÖÆÎ»ÖÃ
+    // å¤šè¡Œçš„å‚ç›´å±…ä¸­ï¼ŒDrawTextä¸æ”¯æŒï¼Œä»£ç è°ƒæ•´ç»˜åˆ¶ä½ç½®
     if ((pParam->nFormatFlag & DT_VCENTER))
     {
 		if ((pParam->nFormatFlag & DT_WORDBREAK))
@@ -377,7 +378,7 @@ void  GdiRenderTarget::DrawString(IRenderFont* pRenderFont, DRAWTEXTPARAM* pPara
 		}
 		else
 		{
-			pParam->nFormatFlag |= DT_SINGLELINE; // vcenter±ØĞëÓësinglineÒ»ÆğÊ¹ÓÃ
+			pParam->nFormatFlag |= DT_SINGLELINE; // vcenterå¿…é¡»ä¸singlineä¸€èµ·ä½¿ç”¨
 		}
     }
 
@@ -417,7 +418,7 @@ void  GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect& rcText, DRAWTE
 {
 	UIASSERT(0);
 #if 0
-	// ÒõÓ°Õ¼ÓÃµÄ¿Õ¼ä£¬»á±ÈÎÄ±¾¸ü´óÒ»Ğ©¡£Òò´ËÒª´´½¨¸ü´óÒ»µãµÄ»º´æÍ¼Æ¬
+	// é˜´å½±å ç”¨çš„ç©ºé—´ï¼Œä¼šæ¯”æ–‡æœ¬æ›´å¤§ä¸€äº›ã€‚å› æ­¤è¦åˆ›å»ºæ›´å¤§ä¸€ç‚¹çš„ç¼“å­˜å›¾ç‰‡
 	int  sizeShadow = pParam->wParam;
 	if (sizeShadow < 0 || sizeShadow > 0xff)
 		return;
@@ -439,14 +440,14 @@ void  GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect& rcText, DRAWTE
     COLORREF colorShadow = pParam->bkcolor.GetGDIValue();
     COLORREF oldColor = ::SetTextColor(hMemDC, colorShadow);
 
-    // ÎÄ×Ö»á½«255->0£¬Òò´ËÔÙinverseÒ»´Î£¬¼´¿ÉÄÃµ½Ö»ÓĞÎÄ×ÖµÄÄÚ´æÍ¼Æ¬
+    // æ–‡å­—ä¼šå°†255->0ï¼Œå› æ­¤å†inverseä¸€æ¬¡ï¼Œå³å¯æ‹¿åˆ°åªæœ‰æ–‡å­—çš„å†…å­˜å›¾ç‰‡
     FillAlpha255(hMemDC, &rcMemText);
-    // ÒõÓ°
+    // é˜´å½±
     ::DrawText(hMemDC, pParam->szText, wcslen(pParam->szText), 
         (RECT*)&rcMemText, pParam->nFormatFlag);
     InverseAlpha(hMemDC, &rcMemText);
 
-    // Ä£ºı£¨ShadowBlurÖ»¹ØĞÄalpha channel£©
+    // æ¨¡ç³Šï¼ˆShadowBluråªå…³å¿ƒalpha channelï¼‰
     ShadowBlur(hMemBmp, pParam->bkcolor.GetGDIValue(), &rcMem, pParam->wParam);
     // recursive_blur<> blur;
     // blur.blur(hMemBmp, (double)pParam->wParam, &rc, 0);
@@ -465,7 +466,7 @@ void  GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect& rcText, DRAWTE
     ::SelectObject(hMemDC, hOldBmp);
     ::DeleteDC(hMemDC);
 
-    // Êµ¼ÊÎÄ×Ö
+    // å®é™…æ–‡å­—
     COLORREF color = pParam->color.GetGDIValue();
     oldColor = ::SetTextColor(hDC, color);
     hOldFont = (HFONT)::SelectObject(hDC, hFont);
@@ -486,10 +487,10 @@ void  GdiRenderTarget::draw_string_endalphamask(
 {
 	UIASSERT(0);
 #if 0
-    // Ö»Ö§³Öµ¥ĞĞÎÄ±¾
+    // åªæ”¯æŒå•è¡Œæ–‡æœ¬
     pParam->nFormatFlag |= DT_SINGLELINE;
 
-    // ²»ÓÃÔÙÏÔÊ¾...ÁË£¬ÓÃĞé»¯´úÌæ
+    // ä¸ç”¨å†æ˜¾ç¤º...äº†ï¼Œç”¨è™šåŒ–ä»£æ›¿
     pParam->nFormatFlag &= ~DT_END_ELLIPSIS;
 
     int nWidth = prcText->right-prcText->left;
@@ -497,7 +498,7 @@ void  GdiRenderTarget::draw_string_endalphamask(
     uint nTextLength = wcslen(pParam->szText);
     HDC hDC = GetHDC();
 
-    // Èç¹ûÖ¸¶¨µÄÇøÓòÄÚÄÜ¹»ÏÔÊ¾ÏÂÕâĞ©ÎÄ±¾£¬Ö±½Ó»æÖÆ¼´¿É
+    // å¦‚æœæŒ‡å®šçš„åŒºåŸŸå†…èƒ½å¤Ÿæ˜¾ç¤ºä¸‹è¿™äº›æ–‡æœ¬ï¼Œç›´æ¥ç»˜åˆ¶å³å¯
     {
         HFONT hOldFont = (HFONT)::SelectObject(hDC, hFont);
         SIZE s = {0};
@@ -521,10 +522,10 @@ void  GdiRenderTarget::draw_string_endalphamask(
     HFONT hOldFont = (HFONT)::SelectObject(hMemDC, hFont);
     COLORREF oldColor = ::SetTextColor(hMemDC, color);
     
-    // clear type×ÖÌåĞèÒª±³¾°½øĞĞ»ìºÏ£¬½«Ô­ÄÚÈİ¿½±´¹ıÀ´
+    // clear typeå­—ä½“éœ€è¦èƒŒæ™¯è¿›è¡Œæ··åˆï¼Œå°†åŸå†…å®¹æ‹·è´è¿‡æ¥
     ::BitBlt(hMemDC, 0, 0, nWidth, nHeight, hDC, pParam->prc->left, pParam->prc->top, SRCCOPY);
 
-    // ÎÄ×Ö»á½«255->0£¬Òò´ËÔÙinverseÒ»´Î£¬¼´¿ÉÄÃµ½Ö»ÓĞÎÄ×ÖµÄÄÚ´æÍ¼Æ¬
+    // æ–‡å­—ä¼šå°†255->0ï¼Œå› æ­¤å†inverseä¸€æ¬¡ï¼Œå³å¯æ‹¿åˆ°åªæœ‰æ–‡å­—çš„å†…å­˜å›¾ç‰‡
     FillAlpha255(hMemDC, &rcMem);
     ::DrawText(
         hMemDC, 
@@ -534,12 +535,12 @@ void  GdiRenderTarget::draw_string_endalphamask(
         pParam->nFormatFlag);
     InverseAlpha(hMemDC, &rcMem);
 
-    // ÏÈĞ´ËÀÎª30px½¥±äÇø°É
+    // å…ˆå†™æ­»ä¸º30pxæ¸å˜åŒºå§
     int end_alpha_mask_range = 30;
     if (end_alpha_mask_range > rcMem.Width())
         end_alpha_mask_range = rcMem.Width();
 
-    // ¶ÔÄ©Î²×ö½¥±ä´¦Àí¡£
+    // å¯¹æœ«å°¾åšæ¸å˜å¤„ç†ã€‚
     if (end_alpha_mask_range > 0)
     {
         RECT rc = rcMem;
@@ -560,7 +561,7 @@ void  GdiRenderTarget::draw_string_endalphamask(
         }
     }
 
-    // alpha blendÒªÇóÔ¤³Ë
+    // alpha blendè¦æ±‚é¢„ä¹˜
     util::PreMultiAlpha(hMemBmp, &rcMem,
         CacheBitmap::GetInstance()->IsTopdowmBitmap());
 
@@ -631,7 +632,7 @@ void GdiRenderTarget::DrawRect(LPRECT lprc, UI::Color* pColor)
 
     HDC hDC = GetHDC();
 
-    // Ô¤³ËºóµÄÑÕÉ«
+    // é¢„ä¹˜åçš„é¢œè‰²
     COLORREF gdicolor = pColor->GetGDIValue();
 
     if (pColor->a == 255)
@@ -642,7 +643,7 @@ void GdiRenderTarget::DrawRect(LPRECT lprc, UI::Color* pColor)
 
         FillAlphaValue(hDC, lprc, 255);
 
-        // GetGDIValueÖĞÒÑ¾­Ô¤³Ë¹ıÁË
+        // GetGDIValueä¸­å·²ç»é¢„ä¹˜è¿‡äº†
     //     if (pColor->a != 255)
     //     {
     //         HBITMAP hBitmap = (HBITMAP)GetCurrentObject(hDC, OBJ_BITMAP);
@@ -685,8 +686,8 @@ void GdiRenderTarget::TileRect(LPRECT lprc, IRenderBitmap* pRenderBitmap)
 }
 
 //
-// ×¢£ºÓÉÓÚ¿Ø¼ş»æÖÆÊ±ÒÑ¾­±»²Ã¼ôÁËÇøÓò£¬Õâ½«µ¼ÖÂÊ¹ÓÃpen»æÖÆ±ß¿òÊ±£¬ÓĞÒ»²¿·Ö»æÖÆ³öÀ´µÄ
-//     ±ß¿òÎ»ÓÚ¿Ø¼şÍâÃæ¶ø±»¼ô²Ã¡£
+// æ³¨ï¼šç”±äºæ§ä»¶ç»˜åˆ¶æ—¶å·²ç»è¢«è£å‰ªäº†åŒºåŸŸï¼Œè¿™å°†å¯¼è‡´ä½¿ç”¨penç»˜åˆ¶è¾¹æ¡†æ—¶ï¼Œæœ‰ä¸€éƒ¨åˆ†ç»˜åˆ¶å‡ºæ¥çš„
+//     è¾¹æ¡†ä½äºæ§ä»¶å¤–é¢è€Œè¢«å‰ªè£ã€‚
 //
 void GdiRenderTarget::Rectangle(LPRECT lprc, UI::Color* pColBorder, UI::Color* pColBack, int nBorder, bool bNullBack)
 {
@@ -757,7 +758,7 @@ void GdiRenderTarget::DrawLine(int x1, int y1, int x2, int y2, IRenderPen* pPen)
 	::MoveToEx(hDC, x1, y1, nullptr);
 	::LineTo(hDC, x2, y2);
 
-	// TODO: ÕâÀïÄ¬ÈÏÊÇ1pxµÄpen
+	// TODO: è¿™é‡Œé»˜è®¤æ˜¯1pxçš„pen
 	RECT rc = {x1, y1, x2+1, y2+1};
 	FillAlphaValue(hDC, &rc, 255);
 
@@ -907,7 +908,7 @@ void GdiRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap* pBitmap, DRAWBITMAPPA
 	IRenderBitmap* p = (IRenderBitmap*)pBitmap;
 	if (p->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDI)
 	{
-		if (p->GetGraphicsRenderLibraryType() == GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS) // ĞèÒª¿¹¾â³İµÄÇé¿ö
+		if (p->GetGraphicsRenderLibraryType() == GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS) // éœ€è¦æŠ—é”¯é½¿çš„æƒ…å†µ
 		{
 			UIASSERT(0);
 			//GdiplusRenderTarget::DrawBitmapEx(hDC, p, pParam);
@@ -943,7 +944,7 @@ void GdiRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap* pBitmap, DRAWBITMAPPA
 		}
 		else
 		{
-			// gdiµÄÀ­Éì»æÖÆ²»Ö§³Ö¿¹¾â³İ£¬»»gdiplusÀ´ÊµÏÖ
+			// gdiçš„æ‹‰ä¼¸ç»˜åˆ¶ä¸æ”¯æŒæŠ—é”¯é½¿ï¼Œæ¢gdiplusæ¥å®ç°
 			Gdiplus::Graphics g(hDC);
 			Gdiplus::Bitmap bmp(
 				pImage->GetWidth(),
@@ -1113,19 +1114,19 @@ void GdiRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap* pBitmap, DRAWBITMAPPA
 			double tan_x_y_image = (double)pParam->wSrc / (double)pParam->hSrc;
 			double tan_x_y_dest = (double)pParam->wDest / (double)pParam->hDest;
 
-			if( tan_x_y_image > tan_x_y_dest ) // ºáÏòÕ¼Âú
+			if( tan_x_y_image > tan_x_y_dest ) // æ¨ªå‘å æ»¡
 			{
 				wImage = pParam->wDest;
 				hImage = (int)((double)wImage/tan_x_y_image);
 			}
-			else   // ×İÏòÕ¼Âú
+			else   // çºµå‘å æ»¡
 			{
 				hImage = pParam->hDest;
 				wImage = (int)(hImage*tan_x_y_image);
 			}
 		}
 
-		// ¼ÆËãÍ¼Æ¬ÏÔÊ¾Î»ÖÃ
+		// è®¡ç®—å›¾ç‰‡æ˜¾ç¤ºä½ç½®
 		int xDisplayPos = pParam->xDest + (pParam->wDest-wImage)/2;
 		int yDisplayPos = pParam->yDest + (pParam->hDest-hImage)/2;
 
@@ -1218,23 +1219,23 @@ void GdiRenderTarget::DrawBitmap(IRenderBitmap* pRenderBitmap,
 #if 0
 //
 //
-// ÈÆ×ÅÍ¼Æ¬ÖĞĞÄĞı×ªnDegree¶È»æÖÆÍ¼Æ¬
+// ç»•ç€å›¾ç‰‡ä¸­å¿ƒæ—‹è½¬nDegreeåº¦ç»˜åˆ¶å›¾ç‰‡
 // 
 //
-// Ê¹ÓÃSetWorldTransformÒ²¿ÉÒÔÊµÏÖĞı×ªµÈĞ§¹û£¬¾ßÌåMSDNÊÇÓĞExample
+// ä½¿ç”¨SetWorldTransformä¹Ÿå¯ä»¥å®ç°æ—‹è½¬ç­‰æ•ˆæœï¼Œå…·ä½“MSDNæ˜¯æœ‰Example
 //
 // The SetWorldTransform function sets a two-dimensional linear transformation between 
 // world space and page space for the specified device context. This transformation can 
 // be used to scale, rotate, shear, or translate graphics output.
 //
-// µãÕó×ª»»¹«Ê½ 
+// ç‚¹é˜µè½¬æ¢å…¬å¼ 
 //  newx = x * eM11 + y * eM21 + eDx 
 //  newy = x * eM12 + y * eM22 + eDy 
-//  ÆäÖĞeM11ºÍeM22ÊÇ½Ç¶ÈµÄÓàÏÒÖµ£¬eM21ÊÇ½Ç¶ÈµÄÕıÏÒ£¬eM12ÊÇeM21µÄ¸ºÖµ¡£
+//  å…¶ä¸­eM11å’ŒeM22æ˜¯è§’åº¦çš„ä½™å¼¦å€¼ï¼ŒeM21æ˜¯è§’åº¦çš„æ­£å¼¦ï¼ŒeM12æ˜¯eM21çš„è´Ÿå€¼ã€‚
 //
-// [×¢1] Èç¹ûhDCÊÇÒ»¸öMemDCµÄ»°£¬Ôò±ØĞëÔÚ»æÖÆÍêÖ®ºóµ÷ÓÃModifyWorldTransform(hMemDC, nullptr, MWT_IDENTITY);
-//       ·ñÔò¸ÃmemdcÌá½»µ½´°¿ÚDCÉÏµÄÄÚÈİ½«²»ÕıÈ·
-// [×¢2] Ä¬ÈÏÕâĞ©Ğı×ª¶¼ÊÇ»ù±¾(0,0)×ø±êµÄ£¬µ«¸Ãº¯ÊıÒªÊµÏÖµÄÄ¿±êÊÇ»ù±¾×ÔÉíÖĞĞÄĞı×ª
+// [æ³¨1] å¦‚æœhDCæ˜¯ä¸€ä¸ªMemDCçš„è¯ï¼Œåˆ™å¿…é¡»åœ¨ç»˜åˆ¶å®Œä¹‹åè°ƒç”¨ModifyWorldTransform(hMemDC, nullptr, MWT_IDENTITY);
+//       å¦åˆ™è¯¥memdcæäº¤åˆ°çª—å£DCä¸Šçš„å†…å®¹å°†ä¸æ­£ç¡®
+// [æ³¨2] é»˜è®¤è¿™äº›æ—‹è½¬éƒ½æ˜¯åŸºæœ¬(0,0)åæ ‡çš„ï¼Œä½†è¯¥å‡½æ•°è¦å®ç°çš„ç›®æ ‡æ˜¯åŸºæœ¬è‡ªèº«ä¸­å¿ƒæ—‹è½¬
 //
 void GdiRenderTarget::DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree, DRAWBITMAPPARAM* pParam)
 {
@@ -1248,34 +1249,34 @@ void GdiRenderTarget::DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree, DRAW
 	Image* pImage =  ((GDIRenderBitmap*)p)->GetBitmap();
 	if (pImage)
 	{
-		POINT ptCenter = {pParam->xDest+pParam->wDest/2, pParam->yDest+pParam->hDest/2};  // Í¼Æ¬Ä¿±êÇøÓòµÄÖĞĞÄ£¬ÈÆ¸ÃµãĞı×ª£¬¶ø²»ÊÇÄ¬ÈÏÊÇ£¨0£¬0£©×ø±êĞı×ª
+		POINT ptCenter = {pParam->xDest+pParam->wDest/2, pParam->yDest+pParam->hDest/2};  // å›¾ç‰‡ç›®æ ‡åŒºåŸŸçš„ä¸­å¿ƒï¼Œç»•è¯¥ç‚¹æ—‹è½¬ï¼Œè€Œä¸æ˜¯é»˜è®¤æ˜¯ï¼ˆ0ï¼Œ0ï¼‰åæ ‡æ—‹è½¬
 
 		double fAngle =  M_PI * nDegree / 180; // (2*pi *nDegree)/360 ; 
 		float cosAngle = (float)cos(fAngle);
 		float sinAngle = (float)sin(fAngle);
 
-#if 0  // Ê¹ÓÃPlgBlt»æÖÆµÄÍ¼Æ¬½«ÎŞ·¨Ê¹ÓÃAlpha£¬Òò´Ë·ÅÆú
+#if 0  // ä½¿ç”¨PlgBltç»˜åˆ¶çš„å›¾ç‰‡å°†æ— æ³•ä½¿ç”¨Alphaï¼Œå› æ­¤æ”¾å¼ƒ
 
-		POINT ptOri[3] = // Ä¿±ê»æÖÆ×ø±ê£¨Î´Ğı×ªÇ°£©
+		POINT ptOri[3] = // ç›®æ ‡ç»˜åˆ¶åæ ‡ï¼ˆæœªæ—‹è½¬å‰ï¼‰
 		{
 			{pParam->xDest, pParam->yDest}, 
 			{pParam->xDest+pParam->wDest, pParam->yDest}, 
 			{pParam->xDest, pParam->yDest+pParam->hDest}
 		};
-		POINT ptOriToCenter[3] = // Ïà¶ÔÓÚÍ¼Æ¬ÖĞĞÄÎ»ÖÃ
+		POINT ptOriToCenter[3] = // ç›¸å¯¹äºå›¾ç‰‡ä¸­å¿ƒä½ç½®
 		{
 			{ptOri[0].x - ptCenter.x, ptOri[0].y - ptCenter.y},
 			{ptOri[1].x - ptCenter.x, ptOri[1].y - ptCenter.y},
 			{ptOri[2].x - ptCenter.x, ptOri[2].y - ptCenter.y}
 		};
 
-		POINT ptArg[3] = {0};  // ¼ÆËãĞı×ªºóµÄÆ½ĞĞËÄ±ßĞĞµÄÇ°Èı¸ö×ø±êÎ»ÖÃ
+		POINT ptArg[3] = {0};  // è®¡ç®—æ—‹è½¬åçš„å¹³è¡Œå››è¾¹è¡Œçš„å‰ä¸‰ä¸ªåæ ‡ä½ç½®
 		for (int i = 0; i < 3; i++)
 		{
 			ptArg[i].x = (int)(ptOriToCenter[i].x*cosAngle + ptOriToCenter[i].y*sinAngle); 
 			ptArg[i].y = (int)(ptOriToCenter[i].y*cosAngle - ptOriToCenter[i].x*sinAngle);
 
-			// »Ö¸´ÎªÏà¶ÔÓÚ£¨0£¬0£©×ø±ê
+			// æ¢å¤ä¸ºç›¸å¯¹äºï¼ˆ0ï¼Œ0ï¼‰åæ ‡
 			ptArg[i].x += ptCenter.x;
 			ptArg[i].y += ptCenter.y;
 		}
@@ -1417,15 +1418,15 @@ void  GdiRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam* pP
 		Matrix44  matrix(pParam->pTransform3d);
 		RECT rcSrc = {pParam->xSrc, pParam->ySrc, pParam->xSrc+pParam->wSrc, pParam->ySrc+pParam->hSrc};
 
-		// ÉèÖÃÎÆÀíÓ³Éä×ø±ê
+		// è®¾ç½®çº¹ç†æ˜ å°„åæ ‡
 		QUAD quad;
-		matrix.MapRect2Quad(&rcSrc, &quad);  // ±ä»»
+		matrix.MapRect2Quad(&rcSrc, &quad);  // å˜æ¢
 		textmapping.SetQuad(&quad, &rcSrc);
 
-		// ÉèÖÃÎÆÀí×ø±ê
+		// è®¾ç½®çº¹ç†åæ ‡
 		textmapping.SetTextureRect(&rcSrc);
 
-		// ÉèÖÃÎÆÀí(src)ºÍÄ¿±ê»º´æ(dest)
+		// è®¾ç½®çº¹ç†(src)å’Œç›®æ ‡ç¼“å­˜(dest)
 		ImageData  srcBuffer;
 		this->GetRenderBufferData(&srcBuffer);
 		textmapping.SetSrcBuffer(&srcBuffer);
@@ -1434,7 +1435,7 @@ void  GdiRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam* pP
 		pGdiDst->GetRenderBufferData(&dstBuffer);
 		textmapping.SetDstBuffer(&dstBuffer);
 
-		// äÖÈ¾Î»ÖÃºÍ¼ô²ÃÇøÓò
+		// æ¸²æŸ“ä½ç½®å’Œå‰ªè£åŒºåŸŸ
 		POINT  ptOffsetDst;
 		pGdiDst->GetOrigin((int*)&ptOffsetDst.x, (int*)&ptOffsetDst.y);
 		POINT ptDraw = {ptOffsetDst.x + pParam->xDst, ptOffsetDst.y + pParam->yDst};
@@ -1466,8 +1467,8 @@ void  GdiRenderTarget::Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCoun
     }
 }
 
-// gdi»æÖÆÎÄ±¾²»´øalphaÍ¨µÀ£¬gdi+ÎÄ±¾ÎÊÌâÓÖ±È½Ï¶à¡£
-// ¾ö¶¨£¬ÄÜ²»²ÉÓÃgdi+»­ÎÄ±¾¾Í²»²ÉÓÃ
+// gdiç»˜åˆ¶æ–‡æœ¬ä¸å¸¦alphaé€šé“ï¼Œgdi+æ–‡æœ¬é—®é¢˜åˆæ¯”è¾ƒå¤šã€‚
+// å†³å®šï¼Œèƒ½ä¸é‡‡ç”¨gdi+ç”»æ–‡æœ¬å°±ä¸é‡‡ç”¨
 void  GdiRenderTarget::FixAlpha0To255(HDC hDC, LPCRECT lpRect)
 {
     _FixAlpha(hDC, lpRect, util::SET_ALPHA_255_IF_ALPHA_IS_0, 0);

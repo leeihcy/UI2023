@@ -2,16 +2,20 @@
 #define _UI_COMPOSITOR_H_
 
 // UISDK 只依赖于接口，UICompsitor工程依赖于UISDK工程
+#if defined(OS_WIN)
 #ifdef UICOMPOSITOR_EXPORTS
 #define UICOMPOSITOR_API __declspec(dllexport)
 #else
 #define UICOMPOSITOR_API __declspec(dllimport)
 #endif
+#else
+#define UICOMPOSITOR_API 
+#endif
 
 namespace ui
 {
 
-// interface  IUICompositor
+// struct  IUICompositor
 // {
 //     virtual void  Upload() = 0;
 //     virtual void  SetNeedCommit() = 0;
@@ -27,12 +31,12 @@ namespace ui
 		byte* pFirstLineBits;
 		bool hasAlphaChannel;
 
-		LPRECT prcArray;
-		UINT nCount;
+		RECT* prcArray;
+		unsigned int nCount;
 	};
 
-interface IGpuRenderLayer;
-interface IHardwareComposition
+struct IGpuRenderLayer;
+struct IHardwareComposition
 {
 	virtual void  Release() = 0;
     virtual IGpuRenderLayer*  CreateLayerTexture() = 0;
@@ -40,7 +44,7 @@ interface IHardwareComposition
 
     virtual bool  BeginCommit() = 0;
     virtual void  EndCommit() = 0;
-    virtual void  Resize(UINT nWidth, UINT nHeight) = 0;
+    virtual void  Resize(unsigned int nWidth, unsigned int nHeight) = 0;
 };
 
 class GpuLayerCommitContext
@@ -72,7 +76,7 @@ inline GpuLayerCommitContext::GpuLayerCommitContext()
 	m_xOffset = 0;
 	m_yOffset = 0;
 
-	SetRectEmpty(&m_rcClip);
+	m_rcClip.SetEmpty();
 
 	m_fAlpha = 1.0f;
 	m_bTransformValid = false;
@@ -106,15 +110,15 @@ inline void  GpuLayerCommitContext::ClipRect(RECT* prc)
 	if (!prc)
 		return;
 
-	IntersectRect(&m_rcClip, prc, &m_rcClip);
+	m_rcClip.Intersect(*prc, &m_rcClip);
 }
 
 inline void  GpuLayerCommitContext::SetClipRect(RECT* prc)
 {
 	if (prc)
-		CopyRect(&m_rcClip, prc);
+		m_rcClip.CopyFrom(*prc);
 	else
-		SetRectEmpty(&m_rcClip);
+		m_rcClip.SetEmpty();
 }
 
 inline void  GpuLayerCommitContext::MultiAlpha(byte alpha)
@@ -131,7 +135,7 @@ inline void  GpuLayerCommitContext::MultiAlpha(byte alpha)
 	m_fAlpha *= alpha/255.0f;
 }
 
-interface IGpuRenderLayer
+struct IGpuRenderLayer
 {
     virtual void  Release() = 0;
 
@@ -146,7 +150,7 @@ interface IGpuRenderLayer
 		float* pMatrixTransform) = 0;
 
     virtual void  UploadHBITMAP(UploadGpuBitmapInfo& info) = 0;
-    virtual void  Resize(UINT nWidth, UINT nHeight) = 0;
+    virtual void  Resize(unsigned int nWidth, unsigned int nHeight) = 0;
 };
 
 
@@ -163,6 +167,6 @@ extern "C" UICOMPOSITOR_API long  UIStartupGpuCompositor();
 extern "C" UICOMPOSITOR_API long  UIShutdownGpuCompositor();
 
 extern "C" UICOMPOSITOR_API 
-	IHardwareComposition*  UICreateHardwareComposition(HWND hWnd);
+	ui::IHardwareComposition*  UICreateHardwareComposition(HWND hWnd);
 
 #endif

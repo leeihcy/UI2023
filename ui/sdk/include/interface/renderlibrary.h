@@ -2,283 +2,282 @@
 #define _UI_RENDERLIBRARY_H_
 #include "include/util/color.h"
 
-namespace ui
-{
+namespace ui {
 struct IRenderFont;
 struct IRenderPen;
 struct IRenderTarget;
 class ImageData;
 struct IRenderFont;
-struct IGpuRenderLayer;    
+struct IGpuRenderLayer;
 
 class C9Region;
 
-// »æÖÆÍ¼Æ¬µÄÍ³Ò»²ÎÊı£¬±ÜÃâĞèÒªÖØĞ´¶à¸öDrawBitmapº¯Êı
-enum DRAW_BITMAP_FLAG{
-    // ×´Ì¬Î»
-	DRAW_BITMAP_DISABLE = 0x0001,
+// ç»˜åˆ¶å›¾ç‰‡çš„ç»Ÿä¸€å‚æ•°ï¼Œé¿å…éœ€è¦é‡å†™å¤šä¸ªDrawBitmapå‡½æ•°
+enum DRAW_BITMAP_FLAG {
+  // çŠ¶æ€ä½
+  DRAW_BITMAP_DISABLE = 0x0001,
 
-    // ÀàĞÍÎ»
-	DRAW_BITMAP_BITBLT  = 0x00010000,
-	DRAW_BITMAP_STRETCH = 0x00020000,
-	DRAW_BITMAP_TILE    = 0x00040000,
-	DRAW_BITMAP_CENTER  = 0x00080000,
-	DRAW_BITMAP_ADAPT   = 0x00100000,
-	DRAW_BITMAP_STRETCH_BORDER     = 0x00200000,  // Ö»À­Éì±ß¿ò£¬²»»æÖÆÖĞ¼ä
-    DRAW_BITMAP_BITBLT_RIGHTTOP    = 0x00400000,  // ½«Í¼Æ¬»æÖÆÔÚÓÒÉÏ½Ç¶ÔÆë
-    DRAW_BITMAP_BITBLT_LEFTBOTTOM  = 0x00800000,  // ½«Í¼Æ¬»æÖÆÔÚÓÒÏÂ½Ç¶ÔÆë
-    DRAW_BITMAP_BITBLT_RIGHTBOTTOM = 0x01000000,  // ½«Í¼Æ¬»æÖÆÔÚÓÒÏÂ½Ç¶ÔÆë
-	DRAW_BITMAP_BITBLT_LEFTVCENTER = 0x02000000,  // ½«Í¼Æ¬»æÖÆÔÚ×óÖĞ¶ÔÆë
-    DRAW_BITMAP_STRETCH_ROUNDCORNER = 0x04000000, // Ô²½ÇÀ­Éì
-	DRAW_BITMAP_STRETCH_DISABLE_AA = 0x08000000,  // À­ÉìÊ±²»ĞèÒª²åÖµ£¬Èç¶şÎ¬ÂëÏñËØµÄÀ­Éì
+  // ç±»å‹ä½
+  DRAW_BITMAP_BITBLT = 0x00010000,
+  DRAW_BITMAP_STRETCH = 0x00020000,
+  DRAW_BITMAP_TILE = 0x00040000,
+  DRAW_BITMAP_CENTER = 0x00080000,
+  DRAW_BITMAP_ADAPT = 0x00100000,
+  DRAW_BITMAP_STRETCH_BORDER = 0x00200000,  // åªæ‹‰ä¼¸è¾¹æ¡†ï¼Œä¸ç»˜åˆ¶ä¸­é—´
+  DRAW_BITMAP_BITBLT_RIGHTTOP = 0x00400000, // å°†å›¾ç‰‡ç»˜åˆ¶åœ¨å³ä¸Šè§’å¯¹é½
+  DRAW_BITMAP_BITBLT_LEFTBOTTOM = 0x00800000, // å°†å›¾ç‰‡ç»˜åˆ¶åœ¨å³ä¸‹è§’å¯¹é½
+  DRAW_BITMAP_BITBLT_RIGHTBOTTOM = 0x01000000, // å°†å›¾ç‰‡ç»˜åˆ¶åœ¨å³ä¸‹è§’å¯¹é½
+  DRAW_BITMAP_BITBLT_LEFTVCENTER = 0x02000000, // å°†å›¾ç‰‡ç»˜åˆ¶åœ¨å·¦ä¸­å¯¹é½
+  DRAW_BITMAP_STRETCH_ROUNDCORNER = 0x04000000, // åœ†è§’æ‹‰ä¼¸
+  DRAW_BITMAP_STRETCH_DISABLE_AA =
+      0x08000000, // æ‹‰ä¼¸æ—¶ä¸éœ€è¦æ’å€¼ï¼Œå¦‚äºŒç»´ç åƒç´ çš„æ‹‰ä¼¸
 };
 
+typedef struct tagDRAWBITMAPPARAM {
+  tagDRAWBITMAPPARAM() {
+    memset(this, 0, sizeof(tagDRAWBITMAPPARAM));
+    nAlpha = 255;
+    nFlag = DRAW_BITMAP_BITBLT;
+  }
 
-typedef struct tagDRAWBITMAPPARAM
-{
-	tagDRAWBITMAPPARAM() { memset(this, 0, sizeof(tagDRAWBITMAPPARAM)); nAlpha = 255; nFlag = DRAW_BITMAP_BITBLT;}
+  int nFlag;
 
-	int    nFlag;  
+  int xDest;
+  int yDest;
+  int wDest; // ç›®æ ‡ç»˜åˆ¶çš„èŒƒå›´ï¼Œå½“ä¸éœ€è¦æ‹‰ä¼¸æ—¶ï¼Œä¸ä½¿ç”¨
+  int hDest; // ç›®æ ‡ç»˜åˆ¶çš„èŒƒå›´ï¼Œå½“ä¸éœ€è¦æ‹‰ä¼¸æ—¶ï¼Œä¸ä½¿ç”¨
+  int xSrc;
+  int ySrc;
+  int wSrc;
+  int hSrc;
+  C9Region *pRegion; // ä¸éœ€è¦æ‹‰ä¼¸æ—¶ï¼Œä¸ä½¿ç”¨
+  unsigned char nAlpha;
 
-	int    xDest;
-	int    yDest;
-	int    wDest;  // Ä¿±ê»æÖÆµÄ·¶Î§£¬µ±²»ĞèÒªÀ­ÉìÊ±£¬²»Ê¹ÓÃ
-	int    hDest;  // Ä¿±ê»æÖÆµÄ·¶Î§£¬µ±²»ĞèÒªÀ­ÉìÊ±£¬²»Ê¹ÓÃ
-	int    xSrc;
-	int    ySrc;
-	int    wSrc;
-	int    hSrc;
-	C9Region* pRegion;   // ²»ĞèÒªÀ­ÉìÊ±£¬²»Ê¹ÓÃ
-	unsigned char   nAlpha;
+  // out param
+  RECT *prcRealDraw; // å›¾ç‰‡çœŸæ­£ç»˜åˆ¶çš„åŒºåŸŸã€‚å½“prcRealDrawä¸ä¸ºç©ºæ—¶è¡¨ç¤ºéœ€è¦è·å–
 
-    // out param
-    RECT*  prcRealDraw;   // Í¼Æ¬ÕæÕı»æÖÆµÄÇøÓò¡£µ±prcRealDraw²»Îª¿ÕÊ±±íÊ¾ĞèÒª»ñÈ¡
+} DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
-}DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
+typedef struct tagDRAWTEXTPARAM {
+  tagDRAWTEXTPARAM() {
+    nFormatFlag = 0;
+    nEffectFlag = 0;
+    color.a = 255;
+    szText = nullptr;
+    prc = nullptr;
+    bkcolor.a = 255;
+    wParam = lParam = 0;
+  }
 
-typedef struct tagDRAWTEXTPARAM
-{
-    tagDRAWTEXTPARAM() {
-        nFormatFlag = 0;
-        nEffectFlag = 0;
-        color.a = 255;
-        szText = nullptr;
-        prc = nullptr;
-        bkcolor.a = 255;
-        wParam = lParam = 0;
-    }
+  int nFormatFlag; // å¯¹é½æ ‡å¿—ï¼ŒåŒDrawText flag
+  int nEffectFlag; // ç‰¹æ•ˆæ ‡å¿—
 
-    int  nFormatFlag;    // ¶ÔÆë±êÖ¾£¬Í¬DrawText flag
-    int  nEffectFlag;    // ÌØĞ§±êÖ¾
+  ui::Color color;
+  const wchar_t *szText;
+  const RECT *prc;
 
-    ui::Color  color;
-    const wchar_t*  szText;
-    const RECT*  prc;
+  // ç‰¹æ•ˆä¸­å¯èƒ½ä¼šä½¿ç”¨åˆ°çš„å‚æ•°
+  Color bkcolor;
+  long wParam;
+  long lParam;
+} DRAWTEXTPARAM, *LPDRAWTEXTPARAM;
 
-    // ÌØĞ§ÖĞ¿ÉÄÜ»áÊ¹ÓÃµ½µÄ²ÎÊı
-    Color   bkcolor;
-    long  wParam;  
-    long  lParam; 
-}DRAWTEXTPARAM, *LPDRAWTEXTPARAM;
-
-enum TEXT_EFFECT
-{
-    TEXT_EFFECT_NONE = 0,
-    TEXT_EFFECT_HALO = 1,   // ¹âÈ¦Ğ§¹û bkcolorÖ¸¶¨¹âÔÎÑÕÉ«¡£wParam¸ßË¹Ä£ºı°ë¾¶ÏµÍ³
-    TEXT_EFFECT_ENDALPHAMASK = 2, // µ±Ö¸¶¨ÇøÓòÏÔÊ¾²»ÏÂÊ±£¬½«ÎÄ±¾µÄÄ©Î²½øĞĞĞé»¯¡£±ÜÃâÊ¹ÓÃ...ÕâÖÖĞÎÊ½ÌåÑé²»ÊÇºÜºÃ¡£
+enum TEXT_EFFECT {
+  TEXT_EFFECT_NONE = 0,
+  TEXT_EFFECT_HALO = 1, // å…‰åœˆæ•ˆæœ bkcoloræŒ‡å®šå…‰æ™•é¢œè‰²ã€‚wParamé«˜æ–¯æ¨¡ç³ŠåŠå¾„ç³»ç»Ÿ
+  TEXT_EFFECT_ENDALPHAMASK =
+      2, // å½“æŒ‡å®šåŒºåŸŸæ˜¾ç¤ºä¸ä¸‹æ—¶ï¼Œå°†æ–‡æœ¬çš„æœ«å°¾è¿›è¡Œè™šåŒ–ã€‚é¿å…ä½¿ç”¨...è¿™ç§å½¢å¼ä½“éªŒä¸æ˜¯å¾ˆå¥½ã€‚
 };
 
-struct  Render2TargetParam
-{
-    int xDst;
-    int yDst;
-    int wDst;
-    int hDst;
-    int xSrc;
-    int ySrc;
-    int wSrc;
-    int hSrc;
-    bool bAlphaBlend;
-    unsigned char opacity;
+struct Render2TargetParam {
+  int xDst;
+  int yDst;
+  int wDst;
+  int hDst;
+  int xSrc;
+  int ySrc;
+  int wSrc;
+  int hSrc;
+  bool bAlphaBlend;
+  unsigned char opacity;
 
-	// pTransfrom2dºÍpTransform3dÖĞÖ»ÓĞÒ»¸öÓĞĞ§
-// 	LPMATRIX33  pTransform2d;   // 2d±ä»»
-// 	LPMATRIX44  pTransform3d;   // 3d±ä»»
+  // pTransfrom2då’ŒpTransform3dä¸­åªæœ‰ä¸€ä¸ªæœ‰æ•ˆ
+  // 	LPMATRIX33  pTransform2d;   // 2då˜æ¢
+  // 	LPMATRIX44  pTransform3d;   // 3då˜æ¢
 };
 
-struct IRenderResource
-{
-    virtual ~IRenderResource() {};
-    virtual GRAPHICS_RENDER_LIBRARY_TYPE  GetGraphicsRenderLibraryType() = 0;
-    virtual void  SetOutRef(IRenderResource** ppOutRef) = 0;
-    virtual long  AddRef() = 0;
-    virtual long  Release() = 0;
+struct IRenderResource {
+  virtual ~IRenderResource(){};
+  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
+  virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
+  virtual long AddRef() = 0;
+  virtual long Release() = 0;
 };
 
-enum RENDER_BITMAP_LOAD_FLAG
-{
-    RENDER_BITMAP_LOAD_FLAG_NONE = 0,
-    RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL = 1,
-    RENDER_BITMAP_LOAD_DPI_ADAPT = 2,
+enum RENDER_BITMAP_LOAD_FLAG {
+  RENDER_BITMAP_LOAD_FLAG_NONE = 0,
+  RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL = 1,
+  RENDER_BITMAP_LOAD_DPI_ADAPT = 2,
 
-	// dpi ÎÄ¼şÒÑ¾­±»·Å´óµÄÏµÊı´æÔÚ¸ß8Î»ÉÏÃæ£¬ÀıÈç¼ÓÔØÒ»ÕÅ@2xµÄÍ¼Æ¬Ê±£¬±êÖ¾Î»Îª
-	// (2 << 24) | DPI_ADAPT
+  // dpi æ–‡ä»¶å·²ç»è¢«æ”¾å¤§çš„ç³»æ•°å­˜åœ¨é«˜8ä½ä¸Šé¢ï¼Œä¾‹å¦‚åŠ è½½ä¸€å¼ @2xçš„å›¾ç‰‡æ—¶ï¼Œæ ‡å¿—ä½ä¸º
+  // (2 << 24) | DPI_ADAPT
 };
-struct IRenderBitmap : public IRenderResource
-{
-	virtual bool  LoadFromFile(const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;
-    virtual bool  LoadFromData(unsigned char* pData, int nSize, RENDER_BITMAP_LOAD_FLAG e) = 0;
+struct IRenderBitmap : public IRenderResource {
+  virtual bool LoadFromFile(const wchar_t *szPath,
+                            RENDER_BITMAP_LOAD_FLAG e) = 0;
+  virtual bool LoadFromData(unsigned char *pData, int nSize,
+                            RENDER_BITMAP_LOAD_FLAG e) = 0;
 
-	virtual bool  Create(int nWidth, int nHeight) = 0;
-    virtual void  Destroy() = 0;
-	virtual int   GetWidth() = 0;
-	virtual int   GetHeight() = 0;
-	virtual int   GetBPP() = 0;
-	virtual COLORREF GetAverageColor() { return 0; }
+  virtual bool Create(int nWidth, int nHeight) = 0;
+  virtual void Destroy() = 0;
+  virtual int GetWidth() = 0;
+  virtual int GetHeight() = 0;
+  virtual int GetBPP() = 0;
+  virtual COLORREF GetAverageColor() { return 0; }
 
-    virtual void  Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/) {};
-    virtual HBITMAP  Detach() { return 0; }
+  virtual void Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/){};
+  virtual HBITMAP Detach() { return 0; }
 
-	virtual unsigned char* LockBits() = 0;
-	virtual void  UnlockBits() = 0;
+  virtual unsigned char *LockBits() = 0;
+  virtual void UnlockBits() = 0;
 
-	virtual bool  SaveBits(ImageData* pImageData) = 0;
-	virtual bool  ChangeHSL(const ImageData* pOriginImageData, short h, short s, short l, int nFlag) = 0;
-	virtual IMAGE_ITEM_TYPE  GetImageType() = 0;
+  virtual bool SaveBits(ImageData *pImageData) = 0;
+  virtual bool ChangeHSL(const ImageData *pOriginImageData, short h, short s,
+                         short l, int nFlag) = 0;
+  virtual IMAGE_ITEM_TYPE GetImageType() = 0;
 };
 
-struct IImageListRenderBitmap : public IRenderBitmap
-{
+struct IImageListRenderBitmap : public IRenderBitmap {
 public:
-	virtual int  GetItemWidth() = 0;
-	virtual int  GetItemHeight() = 0;
-	virtual int  GetItemCount() = 0;
-	virtual IMAGELIST_LAYOUT_TYPE GetLayoutType() = 0;
-    virtual void  SetItemCount(int) = 0;
-    virtual void  SetLayoutType(IMAGELIST_LAYOUT_TYPE) = 0;
-	virtual bool GetIndexPos(int nIndex, POINT* pPoint) = 0;
+  virtual int GetItemWidth() = 0;
+  virtual int GetItemHeight() = 0;
+  virtual int GetItemCount() = 0;
+  virtual IMAGELIST_LAYOUT_TYPE GetLayoutType() = 0;
+  virtual void SetItemCount(int) = 0;
+  virtual void SetLayoutType(IMAGELIST_LAYOUT_TYPE) = 0;
+  virtual bool GetIndexPos(int nIndex, POINT *pPoint) = 0;
 };
 
-struct IImageIconRenderBitmap : public IRenderBitmap
-{
+struct IImageIconRenderBitmap : public IRenderBitmap {
 public:
-    virtual SIZE  GetDrawSize() = 0;
-    virtual void  SetDrawSize(SIZE* ps) = 0;
+  virtual SIZE GetDrawSize() = 0;
+  virtual void SetDrawSize(SIZE *ps) = 0;
 };
 
-class RenderBitmapFactory
-{
+class RenderBitmapFactory {
 public:
-	static void CreateInstance(IApplication* pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType, IMAGE_ITEM_TYPE eType, IRenderBitmap** ppOut);
+  static void CreateInstance(IApplication *pUIApp,
+                             GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
+                             IMAGE_ITEM_TYPE eType, IRenderBitmap **ppOut);
 };
 
 #define FONTITEM_FLAG_UNDERLINE 0x01
-#define FONTITEM_FLAG_BOLD      0x02
-#define	FONTITEM_FLAG_ITALIC    0x04
+#define FONTITEM_FLAG_BOLD 0x02
+#define FONTITEM_FLAG_ITALIC 0x04
 #define FONTITEM_FLAG_STRIKEOUT 0X08
 
-struct IRenderFont : public IRenderResource
-{
+struct IRenderFont : public IRenderResource {
 public:
-	virtual bool  Load( LOGFONT* plogfont ) = 0;
-	virtual bool  ModifyFont(LOGFONT* plogfont) = 0;
+  virtual bool Load(LOGFONT *plogfont) = 0;
+  virtual bool ModifyFont(LOGFONT *plogfont) = 0;
 
-	virtual void  Attach(HFONT hFont) = 0;
-	virtual HFONT Detach() = 0;
-	virtual bool  IsAttach() = 0;
+  virtual void Attach(HFONT hFont) = 0;
+  virtual HFONT Detach() = 0;
+  virtual bool IsAttach() = 0;
 
-	virtual unsigned int  GetCaretHeight( ) = 0;
-	virtual SIZE  MeasureString( const wchar_t* szText, int nLimitWidth = -1 ) = 0;
+  virtual unsigned int GetCaretHeight() = 0;
+  virtual SIZE MeasureString(const wchar_t *szText, int nLimitWidth = -1) = 0;
 
-	virtual HFONT GetHFONT() = 0;
-	virtual bool  GetLogFont(LOGFONT* plf) = 0;
+  virtual HFONT GetHFONT() = 0;
+  virtual bool GetLogFont(LOGFONT *plf) = 0;
 
-	enum FontType
-	{
-		CREATE,
-		ATTACH,
-	};
+  enum FontType {
+    CREATE,
+    ATTACH,
+  };
 };
 
-struct IRenderPen : public IRenderResource
-{
+struct IRenderPen : public IRenderResource {
 public:
-	virtual  bool  CreateSolidPen(int nWidth, Color* pColor) = 0;
-	virtual  bool  CreateDotPen(int nWidth, Color* pColor) = 0;
+  virtual bool CreateSolidPen(int nWidth, Color *pColor) = 0;
+  virtual bool CreateDotPen(int nWidth, Color *pColor) = 0;
 };
 
-struct IRenderBrush : public IRenderResource
-{
+struct IRenderBrush : public IRenderResource {
 public:
-	virtual  bool  CreateSolidBrush(Color* pColor) = 0;
+  virtual bool CreateSolidBrush(Color *pColor) = 0;
 };
 
 //
-// IRenderTargetµÄ¼¸ÖÖäÖÈ¾·½Ê½£º
-// 1. µ÷ÓÃBindHDC£¬½«Ä¿±ê»æÖÆÔÚ¸ÃHDCÉÏÃæ
-// 2. µ÷ÓÃCreateRenderBuffer£¬½«Ä¿±ê»æÖÆÔÚ×Ô¼ºµÄÄÚ²¿»º´æµ±ÖĞ
+// IRenderTargetçš„å‡ ç§æ¸²æŸ“æ–¹å¼ï¼š
+// 1. è°ƒç”¨BindHDCï¼Œå°†ç›®æ ‡ç»˜åˆ¶åœ¨è¯¥HDCä¸Šé¢
+// 2. è°ƒç”¨CreateRenderBufferï¼Œå°†ç›®æ ‡ç»˜åˆ¶åœ¨è‡ªå·±çš„å†…éƒ¨ç¼“å­˜å½“ä¸­
 //
-struct IRenderTarget
-{
-	virtual ~IRenderTarget() {};
-	virtual void     Release() = 0;  // delete this;
+struct IRenderTarget {
+  virtual ~IRenderTarget(){};
+  virtual void Release() = 0; // delete this;
 
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
-    virtual bool  IsRenderAlphaChannel() = 0;
+  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
+  virtual bool IsRenderAlphaChannel() = 0;
 
-	virtual void  BindHDC(HDC hDC) = 0;
-	virtual HDC   GetBindHDC() = 0;
-	virtual bool  CreateRenderBuffer(IRenderTarget*  pSrcRT) = 0;  
-    virtual bool  ResizeRenderBuffer(unsigned int nWidth, unsigned int nHeight) = 0;
-	virtual void  GetRenderBufferData(ImageData*  pData) = 0;
-    virtual HDC   GetHDC() = 0;
-    virtual void  ReleaseHDC(HDC hDC) = 0;
-    virtual void  BindHWND(HWND hWnd) = 0;  // ½öD2DÓĞÓÃ
+  // virtual void BindHDC(HDC hDC) = 0;
+  // virtual HDC GetBindHDC() = 0;
+  virtual bool CreateRenderBuffer(IRenderTarget *pSrcRT) = 0;
+  virtual bool ResizeRenderBuffer(unsigned int nWidth,
+                                  unsigned int nHeight) = 0;
+  virtual void GetRenderBufferData(ImageData *pData) = 0;
+  // virtual HDC GetHDC() = 0;
+  // virtual void ReleaseHDC(HDC hDC) = 0;
+  // virtual void BindHWND(HWND hWnd) = 0; // ä»…D2Dæœ‰ç”¨
 
-    virtual bool  BeginDraw() = 0;
-    virtual void  EndDraw() = 0;
-    virtual void  Clear(RECT* prc) = 0;
-    virtual void  Save(const wchar_t*  szPath) = 0;
-    virtual void  Render2DC(HDC hDC, Render2TargetParam* pParam) = 0;
-    virtual void  Render2Target(IRenderTarget* pDst, Render2TargetParam*  pParam) = 0;
+  virtual bool BeginDraw() = 0;
+  virtual void EndDraw() = 0;
+  virtual void Clear(RECT *prc) = 0;
+  virtual void Save(const wchar_t *szPath) = 0;
+  virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) = 0;
+  virtual void Render2Target(IRenderTarget *pDst,
+                             Render2TargetParam *pParam) = 0;
 
-    virtual void  SetMetaClipRegion(RECT* prc, unsigned int nrcCount) = 0;
-    virtual void  PushRelativeClipRect(const RECT*) = 0;
-    virtual void  PopRelativeClipRect() = 0;
-    virtual bool  IsRelativeRectInClip(const RECT*) = 0;
-    virtual void  SetOrigin(int x, int y) = 0;
-    virtual void  OffsetOrigin(int x, int y) = 0;
-    virtual void  GetOrigin(int* px, int* py) = 0;
+  virtual void SetMetaClipRegion(RECT *prc, unsigned int nrcCount) = 0;
+  virtual void PushRelativeClipRect(const RECT *) = 0;
+  virtual void PopRelativeClipRect() = 0;
+  virtual bool IsRelativeRectInClip(const RECT *) = 0;
+  virtual void SetOrigin(int x, int y) = 0;
+  virtual void OffsetOrigin(int x, int y) = 0;
+  virtual void GetOrigin(int *px, int *py) = 0;
 
-    virtual IRenderPen*    CreateSolidPen(int nWidth, Color* pColor) = 0;
-    virtual IRenderPen*    CreateDotPen(int nWidth, Color* pColor) = 0; 
-    virtual IRenderBrush*  CreateSolidBrush(Color* pColor) = 0;
+  virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) = 0;
+  virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) = 0;
+  virtual IRenderBrush *CreateSolidBrush(Color *pColor) = 0;
 
-	virtual void  FillRgn(HRGN hRgn, ui::Color* pColor) = 0;
-	virtual void  DrawRect(RECT* lprc, ui::Color* pColor) = 0;
-	virtual void  TileRect(RECT* lprc, IRenderBitmap*) = 0;
-	virtual void  Rectangle(RECT* lprc, ui::Color* pColBorder, ui::Color* pColBack, int nBorder, bool bNullBack) = 0;
-	virtual void  DrawFocusRect(RECT* lprc) = 0;
-	virtual void  DrawLine(int x1, int y1, int x2, int y2, IRenderPen*) = 0;
-	virtual void  DrawPolyline(POINT* lppt, int nCount, IRenderPen*) = 0;
-	virtual void  GradientFillH(RECT* lprc, COLORREF colFrom, COLORREF colTo) = 0;
-	virtual void  GradientFillV(RECT* lprc, COLORREF colFrom, COLORREF colTo) = 0;
-	virtual void  BitBlt(int xDest, int yDest, int wDest, int hDest, IRenderTarget* pSrcHDC, int xSrc, int ySrc, unsigned int dwRop ) = 0;
-	virtual void  ImageList_Draw(IRenderBitmap* , int x, int y, int col, int row, int cx, int cy) = 0;
-	virtual void  DrawBitmap(IRenderBitmap* , DRAWBITMAPPARAM* pParam) = 0;
-    virtual void  DrawString(IRenderFont* pFont, DRAWTEXTPARAM* pParam) = 0;
+  virtual void FillRgn(HRGN hRgn, ui::Color *pColor) = 0;
+  virtual void DrawRect(RECT *lprc, ui::Color *pColor) = 0;
+  virtual void TileRect(RECT *lprc, IRenderBitmap *) = 0;
+  virtual void Rectangle(RECT *lprc, ui::Color *pColBorder, ui::Color *pColBack,
+                         int nBorder, bool bNullBack) = 0;
+  virtual void DrawFocusRect(RECT *lprc) = 0;
+  virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) = 0;
+  virtual void DrawPolyline(POINT *lppt, int nCount, IRenderPen *) = 0;
+  virtual void GradientFillH(RECT *lprc, COLORREF colFrom, COLORREF colTo) = 0;
+  virtual void GradientFillV(RECT *lprc, COLORREF colFrom, COLORREF colTo) = 0;
+  virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
+                      IRenderTarget *pSrcHDC, int xSrc, int ySrc,
+                      unsigned int dwRop) = 0;
+  virtual void ImageList_Draw(IRenderBitmap *, int x, int y, int col, int row,
+                              int cx, int cy) = 0;
+  virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
+  virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) = 0;
 
-    virtual void  Upload2Gpu(IGpuRenderLayer* p, RECT* prcArray, int nCount) = 0;
+  virtual void Upload2Gpu(IGpuRenderLayer *p, RECT *prcArray, int nCount) = 0;
 };
 
-struct IUICursor
-{
-    virtual long  AddRef() = 0;
-    virtual long  Release() = 0;
+struct IUICursor {
+  virtual long AddRef() = 0;
+  virtual long Release() = 0;
 
-    virtual HCURSOR  GetCursor() = 0;
+  virtual HCURSOR GetCursor() = 0;
 };
 
-}
+} // namespace ui
 
 #endif // _UI_RENDERLIBRARY_H_

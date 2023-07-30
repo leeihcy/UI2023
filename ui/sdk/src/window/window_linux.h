@@ -21,9 +21,13 @@ public:
   void SetBorderless(bool no_border = true);
   void SetMinMaxSize(int wMin, int hMin, int wMax, int hMax);
   void SetWindowRect(int x, int y, int width, int height);
-  void GetClientRect(Rect *prect);
-  void GetWindowRect(Rect *prect);
+  void GetClientRect(Rect *prect) override;
+  void GetWindowRect(Rect *prect) override;
   void CenterWindow();
+  void InvalidateRect(Rect* prect) override;
+  void ValidateRect(Rect* prect) override;
+  bool IsChildWindow() override;
+  bool IsWindowVisible() override;
   ::Window GetParentWindow();
 
   void Attach(::Window window);

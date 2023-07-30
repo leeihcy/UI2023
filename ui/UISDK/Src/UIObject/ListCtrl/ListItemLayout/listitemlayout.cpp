@@ -31,8 +31,8 @@ void  ListCtrlLayoutMgr::SetLayout(IListCtrlLayout* p)
     m_pLayout = p;
 }
 
-//	¸üÐÂ´ÓpStart¿ªÊ¼ºóÃæµÄÃ¿Ò»¸öitemµÄ m_rcParent£¬±ÈÈçÐÂ²åÈëÒ»¸öpItem
-//  ¸Ãº¯Êý½ö¸üÐÂÃ¿Ò»¸öitemµÄrect£¬²»¹Ü¹ö¶¯ÌõµÄÏÔÒþ
+//	æ›´æ–°ä»ŽpStartå¼€å§‹åŽé¢çš„æ¯ä¸€ä¸ªitemçš„ m_rcParentï¼Œæ¯”å¦‚æ–°æ’å…¥ä¸€ä¸ªpItem
+//  è¯¥å‡½æ•°ä»…æ›´æ–°æ¯ä¸€ä¸ªitemçš„rectï¼Œä¸ç®¡æ»šåŠ¨æ¡çš„æ˜¾éš
 bool  ListCtrlLayoutMgr::Arrange(IListItemBase* pStartToArrange, SIZE* pSizeContent) 
 {
     if (nullptr == m_pLayout)
@@ -82,7 +82,7 @@ void ListCtrlItemSimpleLayout::Arrange(IListItemBase* pStartToArrange, SIZE* pSi
 
     ListItemBase* pItem = pIItem->GetImpl();
     ListItemBase* pPrevItem = pItem->GetPrevVisibleItem();
-    if (nullptr == pPrevItem)   // µÚÒ»¸ö
+    if (nullptr == pPrevItem)   // ç¬¬ä¸€ä¸ª
     {
         CRect rc(0, 0, nWidth, nItemHeight);
         pItem->SetParentRect(&rc);
@@ -135,7 +135,7 @@ void ListCtrlItemSimpleLayout::Measure(SIZE* pSize)
     pSize->cx = nMaxWidth;
     pSize->cy = nVisibleCount*nItemHeight;
 
-    // ¼ÓÉÏÐÐ¼äÏ¶
+    // åŠ ä¸Šè¡Œé—´éš™
     if (nVisibleCount > 1)
         pSize->cy += (nVisibleCount-1) * m_pIListCtrlBase->GetVertSpacing();
 
@@ -171,7 +171,7 @@ void  ListCtrlItemVariableHeightLayout::Measure(SIZE* pSize)
 
     pSize->cx = nMaxWidth;
 
-    // ¼ÓÉÏÐÐ¼äÏ¶
+    // åŠ ä¸Šè¡Œé—´éš™
     if (nVisibleCount > 1)
         pSize->cy += (nVisibleCount-1) * m_pIListCtrlBase->GetVertSpacing();
 }
@@ -212,7 +212,7 @@ void ListCtrlItemVariableHeightLayout::Arrange(IListItemBase* pStartToArrange, S
 
     ListItemBase* pItem = pIItem->GetImpl();
     ListItemBase* pPrevItem = pItem->GetPrevVisibleItem();
-    if (nullptr == pPrevItem)   // µÚÒ»¸ö
+    if (nullptr == pPrevItem)   // ç¬¬ä¸€ä¸ª
     {
         SIZE s = {0};
         pItem->GetDesiredSize(&s);
@@ -371,10 +371,10 @@ void  ListCtrlItemFixHeightFlowLayout::Arrange(IListItemBase* pStartToArrange, S
         SIZE sizeItem = {0};
         pItem->GetIListItemBase()->GetDesiredSize(&sizeItem);
 
-        if (xCursor != 0)  // ²»ÊÇ¸ÃÐÐµÚÒ»¸ö£¬¼ÓÉÏ¼ä¾à
+        if (xCursor != 0)  // ä¸æ˜¯è¯¥è¡Œç¬¬ä¸€ä¸ªï¼ŒåŠ ä¸Šé—´è·
             xCursor += m_nItemSpace;
 
-        if (sizeItem.cx > (nCtrlWidth-xCursor) && xCursor != 0)  // Ð¡ÓÚ±¾ÐÐÊ£Óà¿í¶È£¬»»ÐÐ
+        if (sizeItem.cx > (nCtrlWidth-xCursor) && xCursor != 0)  // å°äºŽæœ¬è¡Œå‰©ä½™å®½åº¦ï¼Œæ¢è¡Œ
         {
             yCursor += nItemHeight + m_nLineSpace;
             xCursor = 0;
@@ -425,13 +425,13 @@ void  ListCtrlItemFixHeightFlowLayout::Measure(SIZE* pSize)
 		SIZE sizeItem = {0};
 		pItem->GetIListItemBase()->GetDesiredSize(&sizeItem);
 
-		if (xCursor != 0)  // ²»ÊÇ¸ÃÐÐµÚÒ»¸ö£¬¼ÓÉÏ¼ä¾à
+		if (xCursor != 0)  // ä¸æ˜¯è¯¥è¡Œç¬¬ä¸€ä¸ªï¼ŒåŠ ä¸Šé—´è·
 			xCursor += nItemSpace;
 
 		if (yCursor == 0)
 			yCursor = sizeItem.cy;
 
-		if (sizeItem.cx > (nMaxWidth-xCursor) && xCursor != 0)  // Ð¡ÓÚ±¾ÐÐÊ£Óà¿í¶È£¬»»ÐÐ
+		if (sizeItem.cx > (nMaxWidth-xCursor) && xCursor != 0)  // å°äºŽæœ¬è¡Œå‰©ä½™å®½åº¦ï¼Œæ¢è¡Œ
 		{
 			yCursor += sizeItem.cy + m_nLineSpace;
 
@@ -480,8 +480,8 @@ void  ListCtrlItemVariableHeightFlowLayout::CurrentLineItems::AddSingleLineItem(
     m_nxCursor = 0;
 }
 
-// in: µ±Ç°ÐÐµÄÆðÊ¼¸ß¶È
-// out: ·µ»ØÏÂÒ»ÐÐµÄ³¬Ê¼¸ß¶È
+// in: å½“å‰è¡Œçš„èµ·å§‹é«˜åº¦
+// out: è¿”å›žä¸‹ä¸€è¡Œçš„è¶…å§‹é«˜åº¦
 void ListCtrlItemVariableHeightFlowLayout::CurrentLineItems::CommitLine()
 {
     size_t  size = m_vecItems.size();
@@ -510,7 +510,7 @@ void  ListCtrlItemVariableHeightFlowLayout::Arrange(IListItemBase* pStartToArran
     int  nItemSpace = (int)UISendMessage(m_pIListCtrlBase, UI_LCM_LAYOUT_GET_ITEMSPACE, 0,0,0,0,UI_MSGMAPID_LC_LAYOUT);
     int  nLineSpace = (int)UISendMessage(m_pIListCtrlBase, UI_LCM_LAYOUT_GET_LINESPACE, 0,0,0,0,UI_MSGMAPID_LC_LAYOUT);
 
-    CurrentLineItems  lineop;   // ¼ÇÂ¼Ò»ÐÐµÄÐÅÏ¢
+    CurrentLineItems  lineop;   // è®°å½•ä¸€è¡Œçš„ä¿¡æ¯
     lineop.SetHSpace(nItemSpace);
     lineop.SetVSpace(nLineSpace);
     lineop.SetCtrlWidth(rcClient.Width());
@@ -533,12 +533,12 @@ void  ListCtrlItemVariableHeightFlowLayout::Arrange(IListItemBase* pStartToArran
         SIZE sizeItem = {0};
         pItem->GetIListItemBase()->GetDesiredSize(&sizeItem);
 
-        //         if (sizeItem.cx == UI_LISTCTRL_LAYOUT_HORZ_REMAINLINE)  // ÌîÂúµ±Ç°ÐÐ
+        //         if (sizeItem.cx == UI_LISTCTRL_LAYOUT_HORZ_REMAINLINE)  // å¡«æ»¡å½“å‰è¡Œ
         //         {
         //             UIASSERT(0 && "todo:");
         //         }
         //         else 
-        if (sizeItem.cx == UI_LISTCTRL_LAYOUT_HORZ_SINGLELINE)  // ÁíÆðÒ»ÐÐ£¬ÌîÂú
+        if (sizeItem.cx == UI_LISTCTRL_LAYOUT_HORZ_SINGLELINE)  // å¦èµ·ä¸€è¡Œï¼Œå¡«æ»¡
         {
             lineop.AddSingleLineItem(pItem, sizeItem.cy);
         }
@@ -550,7 +550,7 @@ void  ListCtrlItemVariableHeightFlowLayout::Arrange(IListItemBase* pStartToArran
         pItem = pItem->GetNextVisibleItem();
     }
 
-    // Ê£Óà²¿·Ö
+    // å‰©ä½™éƒ¨åˆ†
     lineop.CommitLine();
 
     lineop.GetContentSize(pSizeContent);

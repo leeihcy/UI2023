@@ -64,7 +64,7 @@ public:
     void  SetBorderColor(int nColorIndex);
 
     // 由于改成每次重新获取颜色值，因此不需要响应主题改变的消息
-	// virtual const TCHAR* GetThemeName() { return nullptr; }
+	// virtual const wchar_t* GetThemeName() { return nullptr; }
 	// virtual void  OnThemeChanged();
 
 public:

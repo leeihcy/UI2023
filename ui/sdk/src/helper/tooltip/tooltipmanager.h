@@ -46,7 +46,7 @@ public:
 	bool   Show(TOOLTIPITEM* pItemInfo);
 
 protected:
-    virtual void OnTimeout(long lId, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnTimeout(long lId, long wParam, long lParam) override;
 
 protected:
 	IToolTipUI*        m_pToolTipUI;      // 就是控件的tooltip

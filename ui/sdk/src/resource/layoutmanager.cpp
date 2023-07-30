@@ -330,13 +330,13 @@ Object*  LayoutManager::ParseElement(
 
 			if (eParseRet == ParseControl_Failed)
             {
-                UI_LOG_ERROR(_T("Parse Object:  %s Failed."), (BSTR)bstrTagName);    
+                UI_LOG_ERROR(L"Parse Object:  %s Failed.", bstrTagName.c_str());    
 				return nullptr;
             }
         }
         else
         {
-			UI_LOG_ERROR(_T("CreateObject Failed. name=%s"), (BSTR)bstrTagName);
+			UI_LOG_ERROR(_T("CreateObject Failed. name=%s"), bstrTagName.c_str());
 			return nullptr;
         }
     }

@@ -412,8 +412,8 @@ void  AnimateManager::OnTick()
 #if defined(OS_WIN)
 VOID CALLBACK TimerAPCProc(
 			   LPVOID lpArgToCompletionRoutine,
-			   DWORD dwTimerLowValue,
-			   DWORD dwTimerHighValue
+			   unsigned int dwTimerLowValue,
+			   unsigned int dwTimerHighValue
 						   )
 {
 	//AnimateManager*  pThis = (AnimateManager*)lpArgToCompletionRoutine;
@@ -467,7 +467,7 @@ static void  restore_timer_resolution(HMODULE& hModuleWinmm)
 
 void  /*VSYNC_API*/ WaitForVerticalBlank();
 
-void CALLBACK TimerProc(HWND, unsigned int, UINT_PTR, DWORD)
+void CALLBACK TimerProc(HWND, unsigned int, UINT_PTR, unsigned int)
 {
 	g_pAnimateManager->OnTick();
 }

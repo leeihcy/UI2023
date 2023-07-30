@@ -21,9 +21,21 @@ shared_library("uisdk") {
         "//ui/3rd/skia/",
         "//ui/3rd/skia/include/core/"
     ]
+  
+    lib_dirs = ["$root_build_dir/"]
 
-    lib_dirs = ["../3rd/skia/lib"]
+    # 将依赖库拷贝到out/debug目录下
     libs = ["skia"]
+    copy("lib_deps") {
+      sources = ["//ui/3rd/skia/src/out/dylib/libskia.dylib"]
+      outputs = ["$root_build_dir/"]
+      
+    }
+
+    # 直接在当前目录查找libskia.dylib
+    ldflags = [
+      "-rpath", ".",
+    ]
 
     cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     sources = [
@@ -32,7 +44,6 @@ shared_library("uisdk") {
         # "//ui/3rd/zip/ziputil.cpp",
         "//ui/3rd/pugixml/pugixml.cpp",
 
-        
         "include/common/math/math.cpp",
         "include/common/math/matrix.cpp",
         "include/common/math/quad.cpp",
@@ -60,6 +71,8 @@ shared_library("uisdk") {
         "src/attribute/size_attribute.cpp",
         "src/attribute/string_attribute.cpp",
         "src/attribute/textrenderbase_attribute.cpp",
+        "src/graphics/renderlibrary.cpp",
+        "src/graphics/skia/skia_render.cpp",
         "src/helper/iuiinterface.cpp",
         "src/helper/topwindow/topwindowmanager.cpp",
         "src/helper/version/versionhelper.cpp",
@@ -67,6 +80,11 @@ shared_library("uisdk") {
         "src/layer/layer.cpp",
         "src/layer/ilayer.cpp",
         "src/layer/transform3d.cpp",
+        "src/layer/windowrender.cpp",
+        "src/layer/hardware_compositor.cpp",
+        "src/layer/software_compositor.cpp",
+        "src/layer/hardware_layer.cpp",
+        "src/layer/software_layer.cpp",
         "src/layout/averagelayout.cpp",
         "src/layout/canvaslayout.cpp",
         "src/layout/cardlayout.cpp",
@@ -152,7 +170,7 @@ shared_library("uisdk") {
             "src/application//application_mac.mm",
         ]
         # skia Mac 依赖
-        ldflags = [
+        ldflags += [
             "-framework", "CoreFoundation",
             "-framework", "CoreGraphics",
             "-framework", "CoreText",

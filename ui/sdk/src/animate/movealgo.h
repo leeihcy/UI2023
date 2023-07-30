@@ -98,7 +98,7 @@ public:
         // #ifdef _DEBUG
         //     {
         //         static int s_tprev = 0;
-        //         TCHAR szText[64] = _T("");
+        //         wchar_t szText[64] = _T("");
         //         wprintf(szText, _T("%d\n"), t-s_tprev);
         //         s_tprev = t;
         //         ::OutputDebugString(szText);

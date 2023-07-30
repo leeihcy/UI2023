@@ -37,7 +37,7 @@ public:
         UIASSERT(0);
 		return L"";
 	}
-	virtual const Guid&  GetGUID() override
+	virtual const Guid&  GetGuid() override
 	{
         UIASSERT(0);
 		return Guid::Null();

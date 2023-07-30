@@ -20,8 +20,8 @@ public:
 
 public:
     // IDropSource Interface
-    virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState);
-    virtual HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect);
+    virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, unsigned int grfKeyState);
+    virtual HRESULT STDMETHODCALLTYPE GiveFeedback(unsigned int dwEffect);
 
     // IDropSourceEx
     virtual void  SetDragFeedback(IDragFeedback* p) override;

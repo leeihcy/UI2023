@@ -7,6 +7,7 @@ namespace ui
 {
 struct IRenderTarget;
 class WindowRender;
+struct RECT;
 
 // 用于UIEditor窗口编辑时实时刷新
 struct IWindowCommitListener

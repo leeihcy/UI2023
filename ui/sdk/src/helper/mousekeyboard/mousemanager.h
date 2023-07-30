@@ -34,10 +34,10 @@ public:
     WindowBase*  GetWindowObject();
     void  SetUIApplication(Application* p);
 
-    long  HandleMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    long  HandleMouseMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    long  HandleKeyboardMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL* pbHandled);
-    long  HandleTouchMessage(unsigned int msg, WPARAM w, LPARAM l, BOOL& bHandled);
+    long  HandleMessage(unsigned int msg, long w, long l, BOOL* pbHandled);
+    long  HandleMouseMessage(unsigned int msg, long w, long l, BOOL* pbHandled);
+    long  HandleKeyboardMessage(unsigned int msg, long w, long l, BOOL* pbHandled);
+    long  HandleTouchMessage(unsigned int msg, long w, long l, BOOL& bHandled);
     BOOL     IsDialogMessage(MSG* pMsg);
 
 	void  ClearStateDirect();
@@ -72,44 +72,44 @@ public:
 protected:
     long  OnMouseMove (int vkFlag, int xPos, int yPos);
     long  OnMouseLeave(int vkFlag, int xPos, int yPos);
-    long  OnCancelMode(WPARAM, LPARAM );
-    long  OnLButtonDown(WPARAM, LPARAM, BOOL* pbHandled);
-    long  OnLButtonUp (WPARAM, LPARAM);
-    long  OnRButtonDown(WPARAM,LPARAM);
-    long  OnRButtonUp  (WPARAM,LPARAM);
-    long  OnLButtonDBClick(WPARAM,LPARAM, BOOL* pbHandled);
-    long  OnMButtonDown(WPARAM,LPARAM);
-    long  OnMButtonDBClick(WPARAM,LPARAM);
-    long  OnMButtonUp  (WPARAM,LPARAM);
-    long  OnImeMsg(unsigned int, WPARAM, LPARAM, BOOL* pbHandled);
+    long  OnCancelMode(long, long );
+    long  OnLButtonDown(long, long, BOOL* pbHandled);
+    long  OnLButtonUp (long, long);
+    long  OnRButtonDown(long,long);
+    long  OnRButtonUp  (long,long);
+    long  OnLButtonDBClick(long,long, BOOL* pbHandled);
+    long  OnMButtonDown(long,long);
+    long  OnMButtonDBClick(long,long);
+    long  OnMButtonUp  (long,long);
+    long  OnImeMsg(unsigned int, long, long, BOOL* pbHandled);
     void  OnKillFocus(HWND hWndFocus);
     void  OnSetFocus();
-    BOOL  OnSetCursor(WPARAM,LPARAM);
+    BOOL  OnSetCursor(long,long);
     void  OnNcDestroy();
-    BOOL  OnChar(WPARAM,LPARAM);
-    BOOL  OnKeyDown(unsigned int nMsg, WPARAM,LPARAM);
-    BOOL  OnKeyUp(WPARAM,LPARAM);
-    long  OnMouseWheel(WPARAM, LPARAM);
-    BOOL  OnGesture(LPARAM hGestureInfo);
+    BOOL  OnChar(long,long);
+    BOOL  OnKeyDown(unsigned int nMsg, long,long);
+    BOOL  OnKeyUp(long,long);
+    long  OnMouseWheel(long, long);
+    BOOL  OnGesture(long hGestureInfo);
     
     template <class T>
     friend void _SetHoverObject(Object* pNewHoverObj, T* pThis);
     template <class T>
     friend void _SetPressObject(Object* pNewHoverObj, T* pThis);
     template <class T>
-    friend void _OnMouseMove(Object* pObj, WPARAM wParam, LPARAM lParam, T* pThis);
+    friend void _OnMouseMove(Object* pObj, long wParam, long lParam, T* pThis);
     template <class T>
     friend void _OnMouseLeave(T* pThis);
     template <class T>
-    friend void _OnLButtonDown(WPARAM wParam, LPARAM lParam, BOOL* pbHandled, T* pThis);
+    friend void _OnLButtonDown(long wParam, long lParam, BOOL* pbHandled, T* pThis);
     template <class T>
-    friend void _OnLButtonDBClick(WPARAM wParam, LPARAM lParam, BOOL* pbHandled, T* pThis);
+    friend void _OnLButtonDBClick(long wParam, long lParam, BOOL* pbHandled, T* pThis);
     template <class T>
-    friend void _OnLButtonUp(WPARAM w, LPARAM l, T* pThis);
+    friend void _OnLButtonUp(long w, long l, T* pThis);
 
 private:
-    bool  AdjustDoubleClickMessage(LPARAM l);
-    Object*  GetGestureTargetObject(POINT ptScreen, WPARAM wParam);
+    bool  AdjustDoubleClickMessage(long l);
+    Object*  GetGestureTargetObject(POINT ptScreen, long wParam);
 
 	void  updateImeStatus();
 
@@ -134,7 +134,7 @@ protected:
     int   m_nKeyboardCaptureNotifyMsgId;
     int   m_nMouseCaptureNotifyMsgId;
 
-    LPARAM  m_posPrevClick;           // 如果双击的位置与上一次单击的位置不一样，则认为这次是一个单击事件，而不是双击事件
+    long  m_posPrevClick;           // 如果双击的位置与上一次单击的位置不一样，则认为这次是一个单击事件，而不是双击事件
 
     BOOL  m_bMouseTrack;              // 是否需要监测鼠标离开m_pWnd了
     BOOL  m_bMouseMoveReady;          // 用于解决经常会出现的场景：还没使用MOUSEMOVE获取hover obj，就收到了一个BUTTONDOWN的消息，

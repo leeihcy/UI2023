@@ -32,7 +32,7 @@ public:
 	{
 		return L"ScrollPanel";
 	}
-	virtual const GUID&  GetGUID() override
+	virtual const GUID&  GetGuid() override
 	{
 		return __uuidof(IScrollPanel);
 	}

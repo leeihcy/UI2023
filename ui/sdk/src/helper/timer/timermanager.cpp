@@ -127,7 +127,7 @@ void  TimerHelper::KillTimerByNotify(IMessage* pNotify)
     }
 }
 
-VOID CALLBACK  TimerHelper::TimerProc( HWND hwnd, unsigned int uMsg, UINT_PTR idEvent,	DWORD dwTime )
+VOID CALLBACK  TimerHelper::TimerProc( HWND hwnd, unsigned int uMsg, UINT_PTR idEvent,	unsigned int dwTime )
 {
     TimerHelper::GetInstance()->OnTimer(idEvent);
 }
@@ -147,7 +147,7 @@ void  TimerHelper::OnTimer(UINT_PTR idEvent)
 	int nRepeatCount = ti.nRepeatCount;
     if (ti.pNotify)
     {
-        ::UISendMessage(ti.pNotify, WM_TIMER, idEvent, (LPARAM)&ti);
+        ::UISendMessage(ti.pNotify, WM_TIMER, idEvent, (long)&ti);
     }
 	else if (ti.pProc)
 	{

@@ -239,27 +239,17 @@
 //
 #define UI_MSG_QUERYINTERFACE 165312200
 
-#if defined(OS_WIN)
 #define UIMSG_QUERYINTERFACE(className)               \
     if (uMsg == UI_MSG_QUERYINTERFACE)                \
     {                                                 \
         SetMsgHandled(true);                          \
-        if (IsEqualIID(*(const IID*)wParam, __uuidof(I##className)))  \
+        if (__guid(I##className) == (*(const Guid*)wParam))  \
         {                                             \
             SetMsgHandled(true);                      \
             lResult = (long)(void*)m_pI##className;\
             return true;                              \
         }                                             \
     }
-#else
-#define UIMSG_QUERYINTERFACE(className)               \
-    if (uMsg == UI_MSG_QUERYINTERFACE)                \
-    {                                                 \
-        SetMsgHandled(true);                          \
-        UIASSERT(false);                              \
-        return false;                                 \
-    }
-#endif
 
 // void*  QueryInterface(const IID* pIID);
 #define UIMSG_QUERYINTERFACE2(className)              \

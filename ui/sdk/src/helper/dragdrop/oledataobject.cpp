@@ -217,7 +217,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::SetData(FORMATETC *pformatetc, STGMEDIU
 }
 
 // 在OleSetClipboard, SetClipboardFormats时将会调用
-HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppenumFormatEtc)
+HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(unsigned int dwDirection, IEnumFORMATETC **ppenumFormatEtc)
 {
 	if (nullptr == ppenumFormatEtc)
 		return E_INVALIDARG;
@@ -230,11 +230,11 @@ HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(DWORD dwDirection, IEnumF
 }
 
 // 数据改变的通知机制，不实现
-HRESULT STDMETHODCALLTYPE OleDataObject::DAdvise(FORMATETC *pformatetc, DWORD advf, IAdviseSink *pAdvSink, DWORD *pdwConnection)
+HRESULT STDMETHODCALLTYPE OleDataObject::DAdvise(FORMATETC *pformatetc, unsigned int advf, IAdviseSink *pAdvSink, unsigned int *pdwConnection)
 {
 return E_NOTIMPL;
 }
-HRESULT STDMETHODCALLTYPE OleDataObject::DUnadvise(DWORD dwConnection)
+HRESULT STDMETHODCALLTYPE OleDataObject::DUnadvise(unsigned int dwConnection)
 {
 return E_NOTIMPL;
 }

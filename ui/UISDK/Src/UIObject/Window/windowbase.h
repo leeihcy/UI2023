@@ -15,9 +15,9 @@ class ResBundle;
 interface IRenderFont;
 
 // 
-//	ÓÃÓÚÔÚ´´½¨´°¿ÚµÄÊ±ºò£¬À¹½ØµÚÒ»¸ö´°¿ÚÏûÏ¢£¬²¢½øĞĞ×ÓÀà»¯
+//	ç”¨äºåœ¨åˆ›å»ºçª—å£çš„æ—¶å€™ï¼Œæ‹¦æˆªç¬¬ä¸€ä¸ªçª—å£æ¶ˆæ¯ï¼Œå¹¶è¿›è¡Œå­ç±»åŒ–
 //
-class CREATE_WND_DATA  // µÈÍ¬ÓÚ ATL ÖĞµÄ_ATL_WIN_MODULE70
+class CREATE_WND_DATA  // ç­‰åŒäº ATL ä¸­çš„_ATL_WIN_MODULE70
 {
 public:
 	CREATE_WND_DATA();
@@ -32,7 +32,7 @@ private:
 	_AtlCreateWndData* m_pCreateWndList;
 };
 
-// Íâ²¿ÏûÏ¢»Øµ÷°ü×°¡£Í¨¹ıhookµÄ·½Ê½ÊµÏÖ
+// å¤–éƒ¨æ¶ˆæ¯å›è°ƒåŒ…è£…ã€‚é€šè¿‡hookçš„æ–¹å¼å®ç°
 class CWindowMessageHookProxy : public IMessage
 {
 public:
@@ -96,7 +96,7 @@ public:
     WindowBase(IWindowBase* p);
     ~WindowBase();
 
-    // WndProcµÄÔ­Ê¼ÏûÏ¢´¦Àí   // ¾­¹ıvirtualÀ©Õ¹ÁË
+    // WndProcçš„åŸå§‹æ¶ˆæ¯å¤„ç†   // ç»è¿‡virtualæ‰©å±•äº†
     VIRTUAL_BEGIN_MSG_MAP(WindowBase) 
         MESSAGE_HANDLER( WM_ERASEBKGND,           _OnEraseBkgnd )
         MESSAGE_HANDLER( WM_PAINT,                _OnPaint )
@@ -160,7 +160,7 @@ public:
 #endif
     END_MSG_MAP()
 
-    // UIÊÂ¼şµÄÏûÏ¢´¦Àí
+    // UIäº‹ä»¶çš„æ¶ˆæ¯å¤„ç†
 	UI_BEGIN_MSG_MAP()
         UIMSG_ERASEBKGND( OnEraseBkgnd )
         UIMSG_DM_GETDEFID( OnGetDefId )
@@ -172,9 +172,7 @@ public:
         UIMSG_PRECREATEWINDOW( PreCreateWindow )
      UI_END_MSG_MAP_CHAIN_PARENT( Panel )
 
-    IWindowBase*   GetIWindowBase() { return m_pIWindowBase; }
-    WindowRender*  GetWindowRender() { return &m_oWindowRender; }
-
+    
 public:
 	operator   HWND() const;
     HWND       GetHWND();
@@ -194,8 +192,6 @@ public:
 	void  Detach();
 	void  SetWindowMessageCallback(IWindowDelegate*);
 
-	BOOL  IsChildWindow();
-	BOOL  IsWindowVisible();
 	void  ShowWindow();
 	void  HideWindow();
     void  SetActive(bool b);
@@ -220,14 +216,11 @@ public:
     Object*  GetObjectByPos(Object* pObjParent, POINT* pt, bool bSkinBuilderInvoke=false);
     void  SetFocusObject(Object* pObj);
 
-    // »ñÈ¡×ÖÌåÁ÷³Ì£ºÏÈ»ñÈ¡×Ô¼ºµÄm_pTextRender£¬Èç¹ûÃ»ÓĞÔòµ÷ÓÃ×Ô¼ºµÄm_pWindowµÄGetRenderFont
+    // è·å–å­—ä½“æµç¨‹ï¼šå…ˆè·å–è‡ªå·±çš„m_pTextRenderï¼Œå¦‚æœæ²¡æœ‰åˆ™è°ƒç”¨è‡ªå·±çš„m_pWindowçš„GetRenderFont
     IRenderFont*  GetWindowDefaultRenderFont();
 	void  SetDefaultRenderFont(const wchar_t*);
 	const wchar_t*  GetDefaultRenderFontId();
 
-	void  SetGpuComposite(bool b);
-	bool  IsGpuComposite();
-	void  DirectComposite();
 
 	void  SaveMemBitmap(TCHAR* szFile);
 	void  AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha);
@@ -243,8 +236,6 @@ protected:
     HMONITOR  GetPrimaryMonitor();
     
 public:
-	virtual bool  virtualCommitReq() { return false; }  // Ö÷ÒªÊÇ·Ö²ã´°¿ÚµÄÊµÏÖÓëÆÕÍ¨´°¿Ú²»Ò»ÖÂ
-
     virtual void  virtualInnerInitWindow();
 	
 	virtual void  SetObjectPos( int x, int y, int cx, int cy, int nFlag=0) override;
@@ -255,12 +246,6 @@ public:
 	virtual IMKMgr* virtualGetIMKMgr() override;
 
 protected:
-    HRESULT    FinalConstruct(IResBundle* p);
-    BOOL       PreCreateWindow(CREATESTRUCT* pcs) { return TRUE; }
-	void       OnSerialize(SERIALIZEDATA* pData);
-    void       OnSetDefId(IObject* pButton);
-    IObject*   OnGetDefId();
-
 	virtual BOOL  PreTranslateMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, long* pRet);
 	
 #pragma region // message handle
@@ -268,7 +253,7 @@ public:
 	static long CALLBACK  StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 	static long CALLBACK  StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );\
 protected:
-	static CREATE_WND_DATA  s_create_wnd_data;    // ´´½¨´°¿ÚÊ±£¬À¹½ØµÚÒ»¸ö´°¿ÚÏûÏ¢£¬½«HWND->this
+	static CREATE_WND_DATA  s_create_wnd_data;    // åˆ›å»ºçª—å£æ—¶ï¼Œæ‹¦æˆªç¬¬ä¸€ä¸ªçª—å£æ¶ˆæ¯ï¼Œå°†HWND->this
 	static long CALLBACK ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 	long  StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog );
 	long  WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam );
@@ -311,40 +296,36 @@ private:
 
 
 public:
-	HWND  m_hWnd;               // ´°¿Ú¾ä±ú
+	HWND  m_hWnd;               // çª—å£å¥æŸ„
 
 protected:
-    IWindowBase*  m_pIWindowBase;
-    CWndProcThunk  m_thunk;          // ATLÖĞµÄTHUNK£¬ÓÃÓÚ½«Ò»¸ö´°¿Ú¹ı³Ì×÷³É×Ô¼ºµÄ³ÉÔ±º¯Êı
-	WNDPROC  m_oldWndProc;           // ¸Ã´°¿ÚµÄÔ­Ê¼´°¿Ú¹ı³Ì
+    CWndProcThunk  m_thunk;          // ATLä¸­çš„THUNKï¼Œç”¨äºå°†ä¸€ä¸ªçª—å£è¿‡ç¨‹ä½œæˆè‡ªå·±çš„æˆå‘˜å‡½æ•°
+	WNDPROC  m_oldWndProc;           // è¯¥çª—å£çš„åŸå§‹çª—å£è¿‡ç¨‹
 
     SyncWindow       m_syncWindow;
-    WindowDragDropMgr      m_oDragDropManager;   // ÍÏ×§¹ÜÀíÆ÷
-	WindowMouseMgr         m_oMouseManager;      // Êó±êÏûÏ¢´¦ÀíÆ÷
-    WindowRender           m_oWindowRender;      // ´°¿ÚµÄäÖÈ¾·ÅÔÚÕâ¸ö¶ÔÏóÀïÃæ£¬windowbase²»¸ºÔğäÖÈ¾
+    WindowDragDropMgr      m_oDragDropManager;   // æ‹–æ‹½ç®¡ç†å™¨
+	WindowMouseMgr         m_oMouseManager;      // é¼ æ ‡æ¶ˆæ¯å¤„ç†å™¨
+    WindowRender           m_oWindowRender;      // çª—å£çš„æ¸²æŸ“æ”¾åœ¨è¿™ä¸ªå¯¹è±¡é‡Œé¢ï¼Œwindowbaseä¸è´Ÿè´£æ¸²æŸ“
 
 	CWindowMessageHookProxy*  m_pCallbackProxy;
 
-	bool  m_bDoModal;                // Ä£Ì¬´°¿ÚÊı¾İ
+	bool  m_bDoModal;                // æ¨¡æ€çª—å£æ•°æ®
 	bool  m_bEndModal;
 	INT_PTR  m_lDoModalReturn;
 
-	WindowStyle  m_windowStyle;
-	
-    String  m_strConfigWindowText;   // Æ¤·ôÖĞÅäÖÃµÄ´°¿Ú±êÌâ
 
-	bool  m_bFirsetEraseBkgnd;       // TODO: ½â¾öµÚÒ»´ÎÏÔÊ¾´°¿ÚÊ±£¬»áÉÁË¸Ò»ÏÂºÚÉ«µÄÎÊÌâ.
+	bool  m_bFirsetEraseBkgnd;       // TODO: è§£å†³ç¬¬ä¸€æ¬¡æ˜¾ç¤ºçª—å£æ—¶ï¼Œä¼šé—ªçƒä¸€ä¸‹é»‘è‰²çš„é—®é¢˜.
 
-    // »úÖÆ£ºÈç¹û¿Ø¼şÃ»ÓĞÅäÖÃ×ÖÌåÊ±£¬Ä¬ÈÏÈ¡´°¿ÚµÄ×ÖÌå£¬¼´m_pDefaultFont
+    // æœºåˆ¶ï¼šå¦‚æœæ§ä»¶æ²¡æœ‰é…ç½®å­—ä½“æ—¶ï¼Œé»˜è®¤å–çª—å£çš„å­—ä½“ï¼Œå³m_pDefaultFont
     //
-    // 1. µ±xmlÖĞÅäÖÃÁË´°¿Ú×ÖÌåÊ±£¬m_hFontÎªxmlÖĞµÄ×ÖÌå¡£
-    // 2. µ±Ã»ÓĞÅäÖÃ×ÖÌåÊ±£¬Ê¹ÓÃ´°¿Ú×ÖÌå¡£
-    // 3. µ±´°¿Ú×ÖÌåÒ²Ã»Ê±£¬Ê¹ÓÃUI Font Res Ä¬ÈÏ×ÖÌå
-    // 4. ×îºóÔò³¢ÊÔÊ¹ÓÃsystem default font.
+    // 1. å½“xmlä¸­é…ç½®äº†çª—å£å­—ä½“æ—¶ï¼Œm_hFontä¸ºxmlä¸­çš„å­—ä½“ã€‚
+    // 2. å½“æ²¡æœ‰é…ç½®å­—ä½“æ—¶ï¼Œä½¿ç”¨çª—å£å­—ä½“ã€‚
+    // 3. å½“çª—å£å­—ä½“ä¹Ÿæ²¡æ—¶ï¼Œä½¿ç”¨UI Font Res é»˜è®¤å­—ä½“
+    // 4. æœ€ååˆ™å°è¯•ä½¿ç”¨system default font.
 	IRenderFont*  m_pDefaultFont;    
 	
 public:
-	// ÊÂ¼ş
+	// äº‹ä»¶
 	signal_mc<long>  size_changed;
     signal_mc<bool&> on_close;
 };

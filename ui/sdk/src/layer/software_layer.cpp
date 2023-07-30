@@ -1,9 +1,8 @@
-#include "stdafx.h"
 #include "software_layer.h"
 #include "compositor.h"
-#include "Inc/Interface/renderlibrary.h"
+#include "include/interface/renderlibrary.h"
 
-
+namespace ui {
 SoftwareLayer::SoftwareLayer()
 {
 }
@@ -42,8 +41,10 @@ void  SoftwareLayer::UpdateDirty()
 
 #ifdef _DEBUGx
 	static int i = 0;
-	TCHAR szPath[100];
+	wchar_t szPath[100];
 	wprintf(szPath, L"D:\\test\\%d.png", i++);
 	pRenderTarget->Save(szPath);
 #endif
+}
+
 }

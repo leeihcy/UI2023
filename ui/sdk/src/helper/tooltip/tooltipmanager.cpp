@@ -59,7 +59,7 @@ public:
 		m_toolinfo.lpszText  = _T("leeihcy")/*LPSTR_TEXTCALLBACK*/;
 		m_toolinfo.rect.left = m_toolinfo.rect.top = m_toolinfo.rect.bottom = m_toolinfo.rect.right = 0; 
 
-		::SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (LPARAM)&m_toolinfo);
+		::SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (long)&m_toolinfo);
 		::SendMessage(m_hToolTip, TTM_SETMAXTIPWIDTH, 0, TOOLTIP_MAX_WIDTH);   // 备注：该属性如果不和6.0控件一起使用的话，在碰到一个很长的单词时，将无视max width，仅显示一行(仅win7下有效)。
 
 		// Deleted. 该设置仅对默认情况下的宋体字体有效，其它字体没有作用。
@@ -73,12 +73,12 @@ public:
 // 			if (m_bUnderXpOs)
 // 			{
 // 				RECT rc = {1,3,0,0};
-// 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (LPARAM)&rc);
+// 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (long)&rc);
 // 			}
 // 			else
 // 			{
 // 				RECT rc = {2,3,0,0};
-// 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (LPARAM)&rc);
+// 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (long)&rc);
 // 			}
 // 		}
 
@@ -105,10 +105,10 @@ public:
 
 			if (m_hFont)
 			{
-				::SendMessage(m_hToolTip, WM_SETFONT, (WPARAM)m_hFont, 0);
+				::SendMessage(m_hToolTip, WM_SETFONT, (long)m_hFont, 0);
 
 				RECT rcMargin;
-				::SendMessage(m_hToolTip, TTM_GETMARGIN, 0, (LPARAM)(LPRECT)&rcMargin);
+				::SendMessage(m_hToolTip, TTM_GETMARGIN, 0, (long)(LPRECT)&rcMargin);
 				int a= 0;
 			}
 		}
@@ -135,8 +135,8 @@ public:
 		String strTooltipText;
 		FixStringWordBreakUnderXP(szText, strTooltipText);
 
-		m_toolinfo.lpszText = (TCHAR*)strTooltipText.c_str();
-		::SendMessage(m_hToolTip, TTM_UPDATETIPTEXTW, 0, (LPARAM)&m_toolinfo );
+		m_toolinfo.lpszText = (wchar_t*)strTooltipText.c_str();
+		::SendMessage(m_hToolTip, TTM_UPDATETIPTEXTW, 0, (long)&m_toolinfo );
 		return true;
 	}
 	virtual bool  SetTitle(const wchar_t* szText) 
@@ -157,14 +157,14 @@ public:
 		POINT pt;
 		::GetCursorPos(&pt);
 		::SendMessage(m_hToolTip, TTM_TRACKPOSITION, 0, MAKELPARAM(pt.x, pt.y+22));
-		::SendMessage(m_hToolTip, TTM_TRACKACTIVATE, (WPARAM)TRUE, (LPARAM)&m_toolinfo );
+		::SendMessage(m_hToolTip, TTM_TRACKACTIVATE, (long)TRUE, (long)&m_toolinfo );
 		return true;
 	}
 	virtual bool  Hide()
 	{
         if (m_hToolTip && IsWindowVisible(m_hToolTip))
         {
-		    ::SendMessage(this->m_hToolTip, TTM_TRACKACTIVATE, (WPARAM)FALSE, (LPARAM)&this->m_toolinfo );
+		    ::SendMessage(this->m_hToolTip, TTM_TRACKACTIVATE, (long)FALSE, (long)&this->m_toolinfo );
         }
 
 		// TODO: 清理其它信息，如标题、图标等，避免下次弹出来时，还显示本次的数据
@@ -213,13 +213,13 @@ protected:
 		{
 			// 计算一行文本中的字符数
 			param.uiLengthDrawn = 0;
-			DrawTextEx(hDC, (TCHAR*)(szText+nStart), nLength-nStart, &rcLimit, nDrawTextFlag, &param);
+			DrawTextEx(hDC, (wchar_t*)(szText+nStart), nLength-nStart, &rcLimit, nDrawTextFlag, &param);
 
 			strOut.append(szText+nStart, param.uiLengthDrawn);
 			nStart += param.uiLengthDrawn;
 
 			// 手动添加换行符
-			TCHAR cLast = szText[nStart-1];
+			wchar_t cLast = szText[nStart-1];
 			if (cLast != _T('\r') && cLast != _T('\n') && nStart < nLength)
 			{
 				strOut.append(_T("\n"));
@@ -317,7 +317,7 @@ bool ToolTipManager::Hide()
 	return true;
 }
 
-void ToolTipManager::OnTimeout(long lId, WPARAM wParam, LPARAM lParam)
+void ToolTipManager::OnTimeout(long lId, long wParam, long lParam)
 {
 	if (nullptr == m_pToolTipUI)
 		return;
@@ -352,8 +352,8 @@ void ToolTipManager::OnTimeout(long lId, WPARAM wParam, LPARAM lParam)
         if (UISendMessage(
                 m_tooltipItem.pNotifyObj, 
                 UI_MSG_GET_TOOLTIPINFO, 
-                (WPARAM)&m_tooltipItem,
-                (LPARAM)m_pToolTipUI)
+                (long)&m_tooltipItem,
+                (long)m_pToolTipUI)
                 )
         {
 		    m_pToolTipUI->Show(nullptr);

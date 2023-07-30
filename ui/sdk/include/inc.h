@@ -10,6 +10,8 @@
 #include "include/base/uicreator.h"
 #include "include/base/xmldefine.h"
 
+#include "include/util/rect.h"
+
 #include "include/interface/imessage.h"
 // #include "Interface/iobject.h"
 // #include "Interface/ipanel.h"

@@ -1,17 +1,18 @@
 #include "uiapplication.h"
 
 #include "inc.h"
-#include "private_inc.h"
 #include "include/interface/iobject.h"
-#include "src/resource/imagemanager.h"
+#include "include/interface/iuiautotest.h"
+#include "private_inc.h"
 #include "src/resource/colormanager.h"
 #include "src/resource/fontmanager.h"
-#include "src/resource/stylemanager.h"
-#include "src/resource/layoutmanager.h"
 #include "src/resource/i18nmanager.h"
+#include "src/resource/imagemanager.h"
+#include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
+#include "src/resource/stylemanager.h"
 #include "src/skin_parse/skinparseengine.h"
-#include "include/interface/iuiautotest.h"
+#include "src/window/window_desc.h"
 
 #if defined(OS_MAC)
 #include "application_mac.h"
@@ -19,15 +20,11 @@
 
 namespace ui {
 
-
-Application::Application(IApplication* p): 
-    m_pUIApplication(p),
-    // m_WndForwardPostMsg(this), 
-    m_TopWindowMgr(this),
-	m_renderBaseFactory(*this),
-	m_textRenderFactroy(*this), 
-	m_animate(*this) 
-{
+Application::Application(IApplication *p)
+    : m_pUIApplication(p),
+      // m_WndForwardPostMsg(this),
+      m_TopWindowMgr(this), m_renderBaseFactory(*this),
+      m_textRenderFactroy(*this), m_animate(*this), m_resource_manager(*this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif
@@ -35,28 +32,23 @@ Application::Application(IApplication* p):
 void Application::Run() { m_message_loop.Run(); }
 void Application::Quit() { m_message_loop.Quit(); }
 
-
-ResourceManager& Application::GetResourceManager()
-{
-	return m_resource_manager;
+ResourceManager &Application::GetResourceManager() {
+  return m_resource_manager;
 }
 
+void Application::x_Init() {
+  UI_LOG_INFO(L"Application Init");
 
-void  Application::x_Init()
-{
-    UI_LOG_INFO(L"Application Init");
-    
 #if defined(OS_WIN)
-    //	::CoInitialize(0);
-    HRESULT  hr = OleInitialize(0);  // 需要注册richedit的drag drop，因此用ole初始化
-	(hr);
+  //	::CoInitialize(0);
+  HRESULT hr = OleInitialize(0); // 需要注册richedit的drag drop，因此用ole初始化
+  (hr);
 #endif
 
-#if 0
-    m_bEditorMode = false;
-    m_pUIEditor = nullptr;
+  m_bEditorMode = false;
+  m_pUIEditor = nullptr;
 
-    m_resource_manager.SetUIApplication(this);
+#if 0
     m_animate.Init(&m_WaitForHandlesMgr);
 
 	m_pGifTimerMgr = nullptr;
@@ -89,18 +81,19 @@ void  Application::x_Init()
 
     // 针对layer window防止无响应时窗口变黑
     //DisableProcessWindowsGhosting();
-
     m_bGpuEnable = false;
+#endif
 
-    // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
-    GetDpi();
+  // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
+  GetDpi();
 
-    RegisterDefaultUIObject(); 
-    RegisterWndClass();
-	
+  RegisterDefaultUIObject();
+
+  m_pUIAutoTest = nullptr;
+#if 0
+  RegisterWndClass();
 	HMODULE h = LoadLibrary(L"python36.dll");
 	// 加载自动化测试模块
-	m_pUIAutoTest = nullptr;
 	HMODULE hAutoTest = ::LoadLibrary(TEXT("UIAutomator.dll"));
 	if (hAutoTest)
 	{
@@ -118,31 +111,32 @@ void  Application::x_Init()
 #endif
 }
 
-ResBundle* Application::GetDefaultSkinRes()
-{
-	return m_resource_manager.GetDefaultSkinRes();
+ResBundle *Application::GetDefaultSkinRes() {
+  return m_resource_manager.GetDefaultSkinRes();
 }
+MessageLoop &Application::GetMessageLoop() { return m_message_loop; }
 
-Application::~Application(void)
-{
-	// 应用程序退出日志
-	UI_LOG_INFO( _T("\n\n------------  UI Quit ----------------\n"));
+Application::~Application(void) {
+  // 应用程序退出日志
+  UI_LOG_INFO(_T("------------  UI Quit ----------------"));
 
-	if (m_pUIAutoTest) {
-		m_pUIAutoTest->Release();
-	}
+  if (m_pUIAutoTest) {
+    m_pUIAutoTest->Release();
+  }
 #if 0
 	this->m_ToolTipMgr.Release();  // 保证顶层窗口计数为0
 #endif
 #ifdef _DEBUG
-	int nCount = this->m_TopWindowMgr.GetTopWindowCount();
-	if (0 != nCount)   // <-- 该方法有可能还是不准，有可能窗口被销毁了，但窗口对象还没有析构
-	{
-		UI_LOG_WARN(_T("UI_Exit TopWindowCount=%d"),nCount);  
-	}
+  int nCount = this->m_TopWindowMgr.GetTopWindowCount();
+  if (0 !=
+      nCount) // <--
+              // 该方法有可能还是不准，有可能窗口被销毁了，但窗口对象还没有析构
+  {
+    UI_LOG_WARN(_T("UI_Exit TopWindowCount=%d"), nCount);
+  }
 #endif
 
-    ClearRegisterUIObject();
+  ClearRegisterUIObject();
 
 #if 0
 	if (m_WndForwardPostMsg.IsWindow())
@@ -150,11 +144,11 @@ Application::~Application(void)
 		m_WndForwardPostMsg.DestroyWindow();
 	}
 #endif
-	m_resource_manager.Destroy();
+  m_resource_manager.Destroy();
 
-	m_pUIEditor = nullptr;
+  m_pUIEditor = nullptr;
 
-    m_animate.UnInit();
+  m_animate.UnInit();
 
 #if 0
 	SAFE_DELETE(m_pGifTimerMgr);
@@ -168,23 +162,21 @@ Application::~Application(void)
 #endif
 }
 
-ITopWindowManager* Application::GetITopWindowMgr()
-{
-	return m_TopWindowMgr.GetITopWindowManager();
+ITopWindowManager *Application::GetITopWindowMgr() {
+  return m_TopWindowMgr.GetITopWindowManager();
 }
 
-uia::IAnimateManager* Application::GetAnimateManager()
-{
-    return m_animate.GetAnimateManager();
+uia::IAnimateManager *Application::GetAnimateManager() {
+  return m_animate.GetAnimateManager();
 }
 
 #if defined(OS_WIN)
 //	一个空的窗口过程，因为UI这个窗口类的窗口过程最终要被修改成为一个类的成员函数，
 //  因此这里的窗口过程只是用来填充WNDCLASS参数。
 //
-long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam, long lParam)
-{
-	return ::DefWindowProc( hWnd, message, wParam, lParam );
+long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam,
+                      long lParam) {
+  return ::DefWindowProc(hWnd, message, wParam, lParam);
 }
 #endif
 /*
@@ -201,243 +193,222 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam, long lParam)
 **	See Also
 */
 #if defined(OS_WIN)
-void Application::RegisterWndClass()
-{
-	WNDCLASSEX wcex;
-	
-	// 注册UI普通窗口类
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style			= /*CS_HREDRAW | CS_VREDRAW |*/CS_DBLCLKS;  // <-- 分层窗口最大化时收不到redraw消息，因此直接在OnSize中刷新
-	wcex.lpfnWndProc	= WindowBase::StartWindowProc;//WndProc;   改用windows默认的窗口过程
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= 0;//::AfxGetInstanceHandle();;
-	wcex.hIcon			= 0;//LoadIcon(0, MAKEINTRESOURCE(IDR_MAINFRAME));
-	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1); // 2014.5.21 将背景置为nullptr，解决aero磨砂窗口从最小化还原时，会先显示白色背景，再刷新内容的闪烁问题（触发了WM_NCCALCSIZE内部估计会做COPY操作）
-	wcex.lpszMenuName	= nullptr;
-	wcex.lpszClassName	= WND_CLASS_NAME;
-	wcex.hIconSm		= 0;//LoadIcon(0, MAKEINTRESOURCE(IDR_MAINFRAME));
-	RegisterClassEx(&wcex);
+void Application::RegisterWndClass() {
+  WNDCLASSEX wcex;
 
-	// 注册用于实现动画的窗口类
-	wcex.lpszClassName  = WND_ANIMATE_CLASS_NAME;
-	wcex.lpfnWndProc    = ::DefWindowProc;
-	RegisterClassEx(&wcex);
+  // 注册UI普通窗口类
+  wcex.cbSize = sizeof(WNDCLASSEX);
+  wcex.style =    /*CS_HREDRAW | CS_VREDRAW |*/
+      CS_DBLCLKS; // <--
+                  // 分层窗口最大化时收不到redraw消息，因此直接在OnSize中刷新
+  wcex.lpfnWndProc =
+      WindowBase::StartWindowProc; // WndProc;   改用windows默认的窗口过程
+  wcex.cbClsExtra = 0;
+  wcex.cbWndExtra = 0;
+  wcex.hInstance = 0; //::AfxGetInstanceHandle();;
+  wcex.hIcon = 0;     // LoadIcon(0, MAKEINTRESOURCE(IDR_MAINFRAME));
+  wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+  wcex.hbrBackground =
+      (HBRUSH)(COLOR_WINDOW +
+               1); // 2014.5.21
+                   // 将背景置为nullptr，解决aero磨砂窗口从最小化还原时，会先显示白色背景，再刷新内容的闪烁问题（触发了WM_NCCALCSIZE内部估计会做COPY操作）
+  wcex.lpszMenuName = nullptr;
+  wcex.lpszClassName = WND_CLASS_NAME;
+  wcex.hIconSm = 0; // LoadIcon(0, MAKEINTRESOURCE(IDR_MAINFRAME));
+  RegisterClassEx(&wcex);
 
+  // 注册用于实现动画的窗口类
+  wcex.lpszClassName = WND_ANIMATE_CLASS_NAME;
+  wcex.lpfnWndProc = ::DefWindowProc;
+  RegisterClassEx(&wcex);
 
-	// 注册用于实现菜单，弹出式列表框的窗口(带阴影/不带阴影)
-	wcex.lpszClassName  = WND_POPUP_CONTROL_SHADOW_NAME;
-	wcex.style          = CS_DROPSHADOW;
-	wcex.lpfnWndProc    = WindowBase::StartWindowProc;;
-	RegisterClassEx(&wcex);
+  // 注册用于实现菜单，弹出式列表框的窗口(带阴影/不带阴影)
+  wcex.lpszClassName = WND_POPUP_CONTROL_SHADOW_NAME;
+  wcex.style = CS_DROPSHADOW;
+  wcex.lpfnWndProc = WindowBase::StartWindowProc;
+  ;
+  RegisterClassEx(&wcex);
 
-	wcex.lpszClassName  = WND_POPUP_CONTROL_NAME;
-	wcex.style          = 0;
-	wcex.lpfnWndProc    = WindowBase::StartWindowProc;;
-	RegisterClassEx(&wcex);
+  wcex.lpszClassName = WND_POPUP_CONTROL_NAME;
+  wcex.style = 0;
+  wcex.lpfnWndProc = WindowBase::StartWindowProc;
+  ;
+  RegisterClassEx(&wcex);
 
-	// 拖拽时显示的图片窗口
-	wcex.lpszClassName  = WND_DRAGBITMAPWND_CLASS_NAME;
-	wcex.style          = 0;
-	wcex.lpfnWndProc    = DefWindowProc;
-	RegisterClassEx(&wcex);
+  // 拖拽时显示的图片窗口
+  wcex.lpszClassName = WND_DRAGBITMAPWND_CLASS_NAME;
+  wcex.style = 0;
+  wcex.lpfnWndProc = DefWindowProc;
+  RegisterClassEx(&wcex);
 }
 
-bool Application::IsUnderXpOS()
-{
-	bool bUnderXpOs = true;;
-	if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId)
-	{
-		if (m_osvi.dwMajorVersion >= 6)
-		{
-			bUnderXpOs = false;
-		}
-	}
-	else
-	{
-		bUnderXpOs = false;
-	}
-	return bUnderXpOs;
+bool Application::IsUnderXpOS() {
+  bool bUnderXpOs = true;
+  ;
+  if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId) {
+    if (m_osvi.dwMajorVersion >= 6) {
+      bUnderXpOs = false;
+    }
+  } else {
+    bUnderXpOs = false;
+  }
+  return bUnderXpOs;
 }
 
-bool Application::IsVistaOrWin7etc()
-{
-	bool bHighThanVista = true;;
-	if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId)
-	{
-		if (m_osvi.dwMajorVersion < 6)
-		{
-			bHighThanVista = false;
-		}
-	}
-	else
-	{
-		bHighThanVista = false;
-	}
-	return bHighThanVista;
+bool Application::IsVistaOrWin7etc() {
+  bool bHighThanVista = true;
+  ;
+  if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId) {
+    if (m_osvi.dwMajorVersion < 6) {
+      bHighThanVista = false;
+    }
+  } else {
+    bHighThanVista = false;
+  }
+  return bHighThanVista;
 }
 #endif
 
-bool  Application::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
-{
-    if (nullptr == szTag || nullptr == pFunc)
-        return false;
+bool Application::GetSkinTagParseFunc(const wchar_t *szTag,
+                                      pfnParseSkinTag *pFunc) {
+  if (nullptr == szTag || nullptr == pFunc)
+    return false;
 
-    UISKINTAGPARSE_DATA::iterator iter = m_mapSkinTagParseData.find(szTag);
-    if (iter == m_mapSkinTagParseData.end())
-        return false;
+  UISKINTAGPARSE_DATA::iterator iter = m_mapSkinTagParseData.find(szTag);
+  if (iter == m_mapSkinTagParseData.end())
+    return false;
 
-    *pFunc = iter->second;
-    return true;
+  *pFunc = iter->second;
+  return true;
 }
 
-bool  Application::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
-{
-    if (nullptr == szTag || nullptr == func)
-        return false;
+bool Application::RegisterControlTagParseFunc(const wchar_t *szTag,
+                                              pfnParseControlTag func) {
+  if (nullptr == szTag || nullptr == func)
+    return false;
 
-    m_mapControlTagParseData[szTag] = func;
-    return true;
+  m_mapControlTagParseData[szTag] = func;
+  return true;
 }
 
-bool  Application::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc)
-{
-    if (nullptr == szTag || nullptr == pFunc)
-        return false;
+bool Application::GetControlTagParseFunc(const wchar_t *szTag,
+                                         pfnParseControlTag *pFunc) {
+  if (nullptr == szTag || nullptr == pFunc)
+    return false;
 
-    UICONTROLTAGPARSE_DATA::iterator iter = m_mapControlTagParseData.find(szTag);
-    if (iter == m_mapControlTagParseData.end())
-        return false;
+  UICONTROLTAGPARSE_DATA::iterator iter = m_mapControlTagParseData.find(szTag);
+  if (iter == m_mapControlTagParseData.end())
+    return false;
 
-    *pFunc = iter->second;
-    return true;
+  *pFunc = iter->second;
+  return true;
 }
 
 //
 //	为了实现UI对象的创建（从字符串来创建其对应的类），在app类中保存了所有UI对象的创建信息。
 //
-//	注: 如果仅仅采用在UICreateObject中添加映射列表，无法处理第三方实现一个UI对象的情况，因些
+//	注:
+//如果仅仅采用在UICreateObject中添加映射列表，无法处理第三方实现一个UI对象的情况，因些
 //      必须将该映射列表保存为动态数组。当第三方实现了一个UI类时，向app来注册其创建信息。
 //
 
-bool Application::RegisterUIObject(IObjectDescription* pObjDesc)
-{
-	if (!pObjDesc)
-		return false;
-	
-	int nSize = (int)m_vecUIObjectDesc.size();
-	for (int i = 0; i < nSize; i++)
-	{
-		m_vecUIObjectDesc[i];
-		if (m_vecUIObjectDesc[i] == pObjDesc)
-		{
-			UI_LOG_WARN(_T("register duplicate. name=%s"), 
-                pObjDesc->GetTagName());
-			return false;
-		}
-	}
+bool Application::RegisterUIObject(IObjectDescription *pObjDesc) {
+  if (!pObjDesc)
+    return false;
 
-	m_vecUIObjectDesc.push_back(pObjDesc);
-	return true;
-}
-
-
-void  Application::ClearRegisterUIObject()
-{
-#define vec_clear(type, var)                  \
-    {                                         \
-        type::iterator iter = var.begin();    \
-        for ( ; iter != var.end(); iter++ )   \
-            SAFE_DELETE(*iter);               \
-        var.clear();                          \
+  int nSize = (int)m_vecUIObjectDesc.size();
+  for (int i = 0; i < nSize; i++) {
+    m_vecUIObjectDesc[i];
+    if (m_vecUIObjectDesc[i] == pObjDesc) {
+      UI_LOG_WARN(_T("register duplicate. name=%s"), pObjDesc->GetTagName());
+      return false;
     }
+  }
 
-    m_vecUIObjectDesc.clear();
-
-#if 0
-	m_renderBaseFactory.Clear();
-	m_textRenderFactroy.Clear();
-	m_layoutFactory.Clear();
-#else
-    UIASSERT(0);
-#endif
+  m_vecUIObjectDesc.push_back(pObjDesc);
+  return true;
 }
 
-void Application::RegisterDefaultUIObject()
-{
+void Application::ClearRegisterUIObject() {
+#define vec_clear(type, var)                                                   \
+  {                                                                            \
+    type::iterator iter = var.begin();                                         \
+    for (; iter != var.end(); iter++)                                          \
+      SAFE_DELETE(*iter);                                                      \
+    var.clear();                                                               \
+  }
+
+  m_vecUIObjectDesc.clear();
+
+  m_renderBaseFactory.Clear();
+  m_textRenderFactroy.Clear();
+  m_layoutFactory.Clear();
+}
+
+void Application::RegisterDefaultUIObject() {
+  RegisterUIObject(WindowDescription::Get());
 #if 0
-    RegisterUIObject(PanelDescription::Get());
-	RegisterUIObject(RoundPanelDescription::Get());
-	RegisterUIObject(ScrollPanelDescription::Get());
-    RegisterUIObject(WindowDescription::Get());
-    RegisterUIObject(CustomWindowDescription::Get());
-    RegisterUIObject(HwndHostDescription::Get());
-//    RegisterUIObject(ScrollPanelDescription::Get());
-#else
-    UIASSERT(0);
+  RegisterUIObject(PanelDescription::Get());
+  RegisterUIObject(RoundPanelDescription::Get());
+  RegisterUIObject(ScrollPanelDescription::Get());
+  RegisterUIObject(CustomWindowDescription::Get());
+  RegisterUIObject(HwndHostDescription::Get());
+    //  RegisterUIObject(ScrollPanelDescription::Get());
 #endif
 
-    m_mapSkinTagParseData[XML_IMG] = ImageManager::UIParseImageTagCallback;
-    m_mapSkinTagParseData[XML_COLOR] = ColorManager::UIParseColorTagCallback;
-    m_mapSkinTagParseData[XML_FONT] = FontManager::UIParseFontTagCallback;
-    m_mapSkinTagParseData[XML_STYLE] = StyleManager::UIParseStyleTagCallback;
-    m_mapSkinTagParseData[XML_LAYOUT] = LayoutManager::UIParseLayoutTagCallback;
-	m_mapSkinTagParseData[XML_LAYOUTCONFIG] = LayoutManager::UIParseLayoutConfigTagCallback;
-    m_mapSkinTagParseData[XML_INCLUDE] = SkinParseEngine::UIParseIncludeTagCallback;
-	m_mapSkinTagParseData[XML_I18N] = I18nManager::UIParseI18nTagCallback;
+  m_mapSkinTagParseData[XML_IMG] = ImageManager::UIParseImageTagCallback;
+  m_mapSkinTagParseData[XML_COLOR] = ColorManager::UIParseColorTagCallback;
+  m_mapSkinTagParseData[XML_FONT] = FontManager::UIParseFontTagCallback;
+  m_mapSkinTagParseData[XML_STYLE] = StyleManager::UIParseStyleTagCallback;
+  m_mapSkinTagParseData[XML_LAYOUT] = LayoutManager::UIParseLayoutTagCallback;
+  m_mapSkinTagParseData[XML_LAYOUTCONFIG] =
+      LayoutManager::UIParseLayoutConfigTagCallback;
+  m_mapSkinTagParseData[XML_INCLUDE] =
+      SkinParseEngine::UIParseIncludeTagCallback;
+  m_mapSkinTagParseData[XML_I18N] = I18nManager::UIParseI18nTagCallback;
 
-#if 0
-	m_renderBaseFactory.Init();
-	m_textRenderFactroy.Init();
-	m_layoutFactory.Init();
-#else
-    UIASSERT(0);
-#endif
+  m_renderBaseFactory.Init();
+  m_textRenderFactroy.Init();
+  m_layoutFactory.Init();
 }
 
 // 用于编辑器中调整控件库的依赖
-void  Application::RestoreRegisterUIObject()
-{
-    ClearRegisterUIObject();
-    RegisterDefaultUIObject();
+void Application::RestoreRegisterUIObject() {
+  ClearRegisterUIObject();
+  RegisterDefaultUIObject();
 }
 
-IObject* Application::CreateUIObjectByName(const wchar_t* szXmlName, IResBundle* pSkinRes)
-{
-	if (!szXmlName)
-		return nullptr;
-
-    int nSize = (int)m_vecUIObjectDesc.size();
-    for (int i = 0; i < nSize; i++)
-    {
-        if (0 == wcscmp(szXmlName, m_vecUIObjectDesc[i]->GetTagName()))
-        {
-            IObject* p = nullptr;
-            m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void**)&p);
-            return p;
-        }
-    }
-
-    UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed. name=%s"), szXmlName);
-	return nullptr;
-}
-
-IObject* Application::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pSkinRes)
-{
-    int nSize = (int)m_vecUIObjectDesc.size();
-    for (int i = 0; i < nSize; i++)
-    {
-        if (clsid == m_vecUIObjectDesc[i]->GetGUID())
-        {
-            IObject* p = nullptr;
-            m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void**)&p);
-            return p;
-        }
-    }
-
-    UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed."));
+IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
+                                           IResBundle *pSkinRes) {
+  if (!szXmlName)
     return nullptr;
+
+  int nSize = (int)m_vecUIObjectDesc.size();
+  for (int i = 0; i < nSize; i++) {
+    if (0 == wcscmp(szXmlName, m_vecUIObjectDesc[i]->GetTagName())) {
+      IObject *p = nullptr;
+      m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void **)&p);
+      return p;
+    }
+  }
+
+  UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed. name=%s"), szXmlName);
+  return nullptr;
+}
+
+IObject *Application::CreateUIObjectByClsid(const Guid &clsid,
+                                            IResBundle *pSkinRes) {
+  int nSize = (int)m_vecUIObjectDesc.size();
+  for (int i = 0; i < nSize; i++) {
+    if (clsid == m_vecUIObjectDesc[i]->GetGuid()) {
+      IObject *p = nullptr;
+      m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void **)&p);
+      return p;
+    }
+  }
+
+  UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed."));
+  return nullptr;
 }
 #if 0
 BOOL Application::IsDialogMessage(MSG* pMsg)
@@ -694,102 +665,90 @@ HMODULE  Application::GetUID3DModule()
 #endif
 	return 0;
 }
-
-bool  Application::IsGpuCompositeEnable() 
-{ 
-    return m_bGpuEnable;    
-}
-bool  Application::EnableGpuComposite()
-{
-    if (m_bGpuEnable)
-        return true;
-
-    if (!IsVistaOrWin7etc())
-	{
-		UI_LOG_ERROR(TEXT("EnableGpuComposite Failed. OS Version mistake"));
-		return false;
-	}
-
-	HMODULE hModule = LoadLibrary(L"UICompositor.dll");
-	if (!hModule)
-	{
-		UI_LOG_ERROR(TEXT("LoadLibrary UICompositor Failed. Error=%d"),
-			GetLastError());
-		return false;
-	}
-
-	typedef long  (*pfnUIStartupGpuCompositor)();
-	pfnUIStartupGpuCompositor fn = (pfnUIStartupGpuCompositor)
-		::GetProcAddress(hModule, "UIStartupGpuCompositor");
-
-	if (!fn)
-	{
-		UI_LOG_ERROR(TEXT("UIStartupGpuCompositor Failed"));
-		return false;
-	}
-
-	fn();
-	UI_LOG_INFO(TEXT("GpuCompositor Enable."));
-
-	m_bGpuEnable = true;
-	return true;
-}
-
-void Application::ShutdownGpuCompositor()
-{
-	if (!m_bGpuEnable)
-		return;
-
-	HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
-	if (!hModule)
-		return;
-
-	typedef long(*pfnUIShutdownGpuCompositor)();
-	pfnUIShutdownGpuCompositor fn = (pfnUIShutdownGpuCompositor)
-		::GetProcAddress(hModule, "UIShutdownGpuCompositor");
-
-	if (!fn)
-		return;
-
-	fn();
-	m_bGpuEnable = false;
-}
 #endif
 
+bool Application::IsGpuCompositeEnable() { return m_bGpuEnable; }
+bool Application::EnableGpuComposite() {
+  if (m_bGpuEnable)
+    return true;
+#if defined(OS_WIN)
+  if (!IsVistaOrWin7etc()) {
+    UI_LOG_ERROR(TEXT("EnableGpuComposite Failed. OS Version mistake"));
+    return false;
+  }
 
-void Application::LoadUIObjectListToToolBox()
-{
-    if (!m_pUIEditor)
-        return;
+  HMODULE hModule = LoadLibrary(L"UICompositor.dll");
+  if (!hModule) {
+    UI_LOG_ERROR(TEXT("LoadLibrary UICompositor Failed. Error=%d"),
+                 GetLastError());
+    return false;
+  }
 
-    UIOBJ_CREATE_DATA::iterator iter = m_vecUIObjectDesc.begin();
-    for (; iter != m_vecUIObjectDesc.end(); iter++)
-    {
-        m_pUIEditor->OnToolBox_AddObject((*iter));
-    }
+  typedef long (*pfnUIStartupGpuCompositor)();
+  pfnUIStartupGpuCompositor fn = (pfnUIStartupGpuCompositor)::GetProcAddress(
+      hModule, "UIStartupGpuCompositor");
+
+  if (!fn) {
+    UI_LOG_ERROR(TEXT("UIStartupGpuCompositor Failed"));
+    return false;
+  }
+
+  fn();
+  UI_LOG_INFO(TEXT("GpuCompositor Enable."));
+#endif
+
+  m_bGpuEnable = true;
+  return true;
 }
 
-bool  Application::CreateRenderBaseByName(
-		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
-{
-    IResBundle* pSkinRes = nullptr;
-	if (pObject)
-	{
-		pSkinRes = pObject->GetSkinRes();
-	}
-	else
-	{
-		ResBundle* p = GetDefaultSkinRes();
-		pSkinRes = p ? p->GetIResBundle() : nullptr;
-	}
+void Application::ShutdownGpuCompositor() {
+  if (!m_bGpuEnable)
+    return;
 
-    return m_renderBaseFactory.CreateRenderBaseByName(
-		pSkinRes, szName, pObject, ppOut); 
+#if defined(OS_WIN)
+  HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
+  if (!hModule)
+    return;
+
+  typedef long (*pfnUIShutdownGpuCompositor)();
+  pfnUIShutdownGpuCompositor fn = (pfnUIShutdownGpuCompositor)::GetProcAddress(
+      hModule, "UIShutdownGpuCompositor");
+
+  if (!fn)
+    return;
+
+  fn();
+#endif
+  m_bGpuEnable = false;
 }
 
-const wchar_t*  Application::GetRenderBaseName(int nType)
-{
-	return m_renderBaseFactory.GetRenderBaseName(nType);
+void Application::LoadUIObjectListToToolBox() {
+  if (!m_pUIEditor)
+    return;
+
+  UIOBJ_CREATE_DATA::iterator iter = m_vecUIObjectDesc.begin();
+  for (; iter != m_vecUIObjectDesc.end(); iter++) {
+    m_pUIEditor->OnToolBox_AddObject((*iter));
+  }
+}
+
+bool Application::CreateRenderBaseByName(const wchar_t *szName,
+                                         IObject *pObject,
+                                         IRenderBase **ppOut) {
+  IResBundle *pSkinRes = nullptr;
+  if (pObject) {
+    pSkinRes = pObject->GetSkinRes();
+  } else {
+    ResBundle *p = GetDefaultSkinRes();
+    pSkinRes = p ? p->GetIResBundle() : nullptr;
+  }
+
+  return m_renderBaseFactory.CreateRenderBaseByName(pSkinRes, szName, pObject,
+                                                    ppOut);
+}
+
+const wchar_t *Application::GetRenderBaseName(int nType) {
+  return m_renderBaseFactory.GetRenderBaseName(nType);
 }
 
 } // namespace ui
