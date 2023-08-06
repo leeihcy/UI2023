@@ -1,6 +1,6 @@
 #pragma once
 #include "include/interface/irenderlayer.h"
-#include "src/util/rect_array/rectarray.h"
+#include "src/util/rectregion/rectregion.h"
 #include "transform3d.h"
 
 namespace ui {
@@ -115,7 +115,7 @@ public:
   void InvalidateForLayerAnimate(bool bUpdateNow = false);
   void Invalidate(const RECT *prcDirtyInLayer);
   void Invalidate(const RECT *prcArray, uint nCount);
-  void CopyDirtyRect(RectArray &arr);
+  void CopyDirtyRect(RectRegion* arr);
 
   void SetContent(ILayerContent *);
   ILayerContent *GetContent();
@@ -183,7 +183,7 @@ protected:
 
   //
   SIZE m_size;
-  RectArray m_dirtyRectangles;
+  RectRegion m_dirtyRectangles;
 
   ILayerContent *m_pLayerContent;
 

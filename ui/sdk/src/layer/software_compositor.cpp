@@ -11,12 +11,12 @@ Layer *SoftwareCompositor::virtualCreateLayer() { return new SoftwareLayer; }
 void SoftwareCompositor::virtualBindHWND(HWND) {}
 
 // 软件渲染需要返回脏区域的窗口坐标，用于增量提交到最终窗口上面
-void SoftwareCompositor::UpdateDirty(RectArray &arrDirtyInWindow) {
+void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   if (!m_pRootLayer)
     return;
 
   // 先返回当前窗口脏区域
-  m_pRootLayer->CopyDirtyRect(arrDirtyInWindow);
+  m_pRootLayer->CopyDirtyRect(outArrDirtyInWindow);
 
   // 更新各个层
   m_pRootLayer->UpdateDirty();
@@ -41,19 +41,21 @@ void SoftwareCompositor::update_dirty_recursion(Layer *p) {
   }
 }
 
-void SoftwareCompositor::virtualCommit(const RectArray &arrDirtyInWindow) {
+void SoftwareCompositor::virtualCommit(const RectRegion &arrDirtyInWindow) {
   if (!m_pRootLayer)
     return;
 
   uint nCount = arrDirtyInWindow.GetCount();
-  if (!nCount)
+  if (!nCount) {
+    UI_LOG_WARN(L"commit but no dirty area");
     return;
+  }
 
   // 给分层窗口提交的机会。
   if (m_pWindowRender->m_window.virtualCommitReq())
     return;
 
-  m_pWindowRender->m_window.Submit(
+  m_pWindowRender->m_window.Commit(
     m_pRootLayer->GetRenderTarget(), 
     arrDirtyInWindow.GetArrayPtr2(), 
     nCount);

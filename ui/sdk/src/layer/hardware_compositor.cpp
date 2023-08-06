@@ -54,7 +54,7 @@ Layer* HardwareCompositor::virtualCreateLayer()
 
 // 硬件合成只能是每个层分别去调用updatedirty，而不是像软件渲染一样由parent object遍历child时去调用
 // updatedirty。因为硬件下父layer可能没有dirty，而子layer有dirty.
-void  HardwareCompositor::UpdateDirty(RectArray& arrDirtyInWindow)
+void  HardwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow)
 {
     if (!m_pRootLayer)
         return;
@@ -83,7 +83,7 @@ void  HardwareCompositor::update_dirty_recursion(Layer* p)
     }
 }
 
-void  HardwareCompositor::virtualCommit(const RectArray& arrDirtyInWindow) 
+void  HardwareCompositor::virtualCommit(const RectRegion& arrDirtyInWindow) 
 {
     // FillRect(hDC, prcInWindow, (HBRUSH)GetStockObject(GRAY_BRUSH));
 

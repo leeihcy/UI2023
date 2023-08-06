@@ -1,7 +1,8 @@
 #include "compositor.h"
 #include "include/inc.h"
-#include "windowrender.h"
 #include "src/application/uiapplication.h"
+#include "src/window/window.h"
+#include "windowrender.h"
 
 namespace ui {
 Compositor::Compositor() {
@@ -61,6 +62,9 @@ void Compositor::RequestInvalidate() {
   //     m_lPostInvalidateMsgRef++;
   //   }
   // #endif
+  // UI_LOG_DEBUG(L"RequestInvalidate");
+
+  // m_pWindowRender->m_window.Invalidate(nullptr);
 
   if (m_lPostInvalidateMsgRef == 0) {
     weakptr<Compositor> ptr = m_weakptr_factory.get();
@@ -70,20 +74,41 @@ void Compositor::RequestInvalidate() {
   }
 }
 
-void Compositor::_onRequestInvalidate() { DoInvalidate(); }
-
-void Compositor::DoInvalidate() {
+void Compositor::_onRequestInvalidate() {
+  // UI_LOG_DEBUG(L"_onRequestInvalidate");
+  UpdateAndCommit();
   m_lPostInvalidateMsgRef = 0;
-  RectArray arrDirtyInWindow;
-  this->UpdateDirty(arrDirtyInWindow);
+}
 
-  if (!m_pWindowRender->CanCommit())
+void Compositor::UpdateAndCommit() {
+  RectRegion arrDirtyInWindow;
+  this->UpdateDirty(&arrDirtyInWindow);
+
+  if (!m_pWindowRender->CanCommit()) {
+    UI_LOG_WARN(L"can not commit now");
     return;
+  }
 
   this->Commit(arrDirtyInWindow);
 }
 
-void Compositor::Commit(const RectArray &arrDirtyInWindow) {
+void Compositor::UpdateAndCommit(RECT* rcCommitEx)
+{
+  RectRegion arrDirtyInWindow;
+  this->UpdateDirty(&arrDirtyInWindow);
+
+  if (!m_pWindowRender->CanCommit()) {
+    UI_LOG_WARN(L"can not commit now");
+    return;
+  }
+
+  // if (rcCommitEx) {
+  //   arrDirtyInWindow.Add(rcCommitEx);
+  // }
+  this->Commit(arrDirtyInWindow);
+}
+
+void Compositor::Commit(const RectRegion &arrDirtyInWindow) {
   IWindowCommitListener *pListener = m_pWindowRender->GetCommitListener();
   if (pListener) {
     pListener->PreCommit(arrDirtyInWindow.GetArrayPtr2(),
@@ -96,6 +121,7 @@ void Compositor::Commit(const RectArray &arrDirtyInWindow) {
   } else {
     this->virtualCommit(arrDirtyInWindow);
   }
+  // UI_LOG_INFO(L"commit\n\n");
 }
 
 bool Compositor::CreateRenderTarget(IRenderTarget **pp) {

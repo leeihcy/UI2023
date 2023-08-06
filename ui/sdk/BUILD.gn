@@ -27,7 +27,7 @@ shared_library("uisdk") {
     # 将依赖库拷贝到out/debug目录下
     libs = ["skia"]
     copy("lib_deps") {
-      sources = ["//ui/3rd/skia/src/out/dylib/libskia.dylib"]
+      sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
       outputs = ["$root_build_dir/"]
       
     }
@@ -143,7 +143,7 @@ shared_library("uisdk") {
         "src/util/struct.cpp",
         "src/util/util.cpp",
         "src/util/uiapi.cpp",
-        "src/util/rect_array/rectarray.cpp",
+        "src/util/rectregion/rectregion.cpp",
         "src/window/window.cpp",
         "src/window/iwindow.cpp",
     ]
@@ -178,87 +178,49 @@ shared_library("uisdk") {
             "-framework", "Cocoa",
         ]
     }
-}
 
-group("sdk") {
-    deps = [
-        ":uisdk"
-    ]
+
+    # 单元测试
+    if (is_debug) {
+      defines += ["UI_UNITTEST"]
+      sources += [
+        "test/test_entry.cpp",
+        "include/common/signalslot/signalslot_unittest.cpp",
+        "include/common/weakptr/weakptr_unittest.cpp",
+        "src/message_loop/message_loop_unittest.cpp",
+        "src/util/rectregion/rectregion_unittest.cpp",
+      ]
+    }
 }
 
 #######################################
 
-config("unittest_common") {
+executable("uisdk_unittest") {
+  deps = [
+    "//ui/sdk:uisdk"
+  ]
+
+  cflags = []
   if (is_debug) {
     cflags = ["-g"]
   }
+  include_dirs = [
+    "//ui/sdk",
+  ]
+  sources = [
+    "test/test_main.cpp"
+  ]
 }
 
-executable("signalslot_unittest") {
-    include_dirs = [
-        "//ui/sdk/include",
-    ]
-    public_configs = [":unittest_common"]
-    sources = ["include/common/signalslot/signalslot_unittest.cpp"]
-}
-executable("weakptr_unittest") {
-    include_dirs = [
-        "//ui/sdk/include",
-    ]
-    public_configs = [":unittest_common"]
-    sources = ["include/common/weakptr/weakptr_unittest.cpp"]
-}
-executable("message_loop_unittest") {
-    include_dirs = [
-        "//ui/sdk/include",
-    ]
-    if (use_linux_msgloop) {
-        defines = ["USE_LINUX_MSGLOOP"]
-    }
 
-    public_configs = [":unittest_common"]
-    libs = ["glib-2.0"]
-    cflags = exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
-    sources = [
-        "src/message_loop/message_loop.cpp",
-        "src/message_loop/message_loop_unittest.cpp"
-    ]
-    if (is_linux || use_linux_msgloop) {
-        sources += [
-            "src/window/linux/display.cpp",
-            "src/message_loop/message_loop_linux.cpp"
-            ]
-        libs += [
-            "glib-2.0",
-            "x11"
-        ]
-    }
-    else if (is_mac) {
-        sources += [
-            "src/message_loop/message_loop_mac.mm",
-        ]
-    }
-
-
-    if (is_mac) {
-        sources += [
-            "src/application/application_mac.mm",
-        ]
-        # skia Mac 依赖
-        ldflags = [
-            "-framework", "CoreFoundation",
-            "-framework", "CoreGraphics",
-            "-framework", "CoreText",
-            "-framework", "CoreServices",
-            "-framework", "Cocoa",
-        ]
-    }
+group("sdk") {
+  deps = [
+    ":uisdk"
+  ]
 }
 
-group("unittest") {
-    deps = [
-        ":signalslot_unittest",
-        ":weakptr_unittest",
-        ":message_loop_unittest"
-    ]
+group("sdk_test") {
+  deps = [
+    ":uisdk_unittest"
+  ]
 }

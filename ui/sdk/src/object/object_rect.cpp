@@ -10,13 +10,13 @@
 
 namespace ui {
 
-void Object::ParentClientPoint2ChildPoint(Object *pObjChild, const POINT *pt,
-                                          POINT *pOut) {
+void Object::ParentClientPoint2ChildPoint(Object *pObjChild, const Point *pt,
+                                          Point *pOut) {
   pOut->x = pt->x - pObjChild->m_rcParent.left;
   pOut->y = pt->y - pObjChild->m_rcParent.top;
 }
-void Object::ObjectPoint2ObjectClientPoint(Object *pObj, const POINT *pt,
-                                           POINT *pOut) {
+void Object::ObjectPoint2ObjectClientPoint(Object *pObj, const Point *pt,
+                                           Point *pOut) {
   REGION4 rcNonClient = {0};
   pObj->GetNonClientRegion(&rcNonClient);
 
@@ -29,14 +29,14 @@ void Object::ObjectPoint2ObjectClientPoint(Object *pObj, const POINT *pt,
     pOut->y += yOffset;
   }
 }
-void Object::ObjectPoint2ObjectNonClientPoint(Object *pObj, const POINT *pt,
-                                              POINT *pOut) {
+void Object::ObjectPoint2ObjectNonClientPoint(Object *pObj, const Point *pt,
+                                              Point *pOut) {
   pOut->x = pt->x - pObj->m_rcBorder.left;
   pOut->y = pt->y - pObj->m_rcBorder.left;
 }
 void Object::ObjectRect2ObjectClientRect(Object *pObj, const RECT *prc,
                                          RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ObjectPoint2ObjectClientPoint(pObj, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
@@ -66,7 +66,7 @@ void Object::ObjectRect2WindowRect(Object *pObj, const RECT *prcObj,
 }
 
 void Object::ParentClientPoint2ChildClientPoint(Object *pObjChild,
-                                                const POINT *pt, POINT *pOut) {
+                                                const Point *pt, Point *pOut) {
   ParentClientPoint2ChildPoint(pObjChild, pt, pOut);
   if (!pObjChild->IsNcObject()) {
     ObjectPoint2ObjectClientPoint(pObjChild, pOut, pOut);
@@ -74,15 +74,15 @@ void Object::ParentClientPoint2ChildClientPoint(Object *pObjChild,
 }
 void Object::ParentClientRect2ChildClientRect(Object *pObjChild,
                                               const RECT *prc, RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ParentClientPoint2ChildClientPoint(pObjChild, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
             pt.y + (prc->bottom - prc->top));
 }
-void Object::ParentPoint2ChildPoint(Object *pObjChild, const POINT *pt,
-                                    POINT *pOut) {
-  POINT ptTemp;
+void Object::ParentPoint2ChildPoint(Object *pObjChild, const Point *pt,
+                                    Point *pOut) {
+  Point ptTemp;
   if (pObjChild->IsNcObject()) {
     ObjectPoint2ObjectNonClientPoint(pObjChild->m_pParent, pt, &ptTemp);
   } else {
@@ -93,7 +93,7 @@ void Object::ParentPoint2ChildPoint(Object *pObjChild, const POINT *pt,
 
 void Object::ParentRect2ChildRect(Object *pObjChild, const RECT *prc,
                                   RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ParentPoint2ChildPoint(pObjChild, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
@@ -101,22 +101,22 @@ void Object::ParentRect2ChildRect(Object *pObjChild, const RECT *prc,
 }
 
 void Object::ChildPoint2ParentClientPoint(Object *pObjChild,
-                                          const POINT *ptChild, POINT *ptOut) {
+                                          const Point *ptChild, Point *ptOut) {
   ptOut->x = ptChild->x + pObjChild->m_rcParent.left;
   ptOut->y = ptChild->y + pObjChild->m_rcParent.top;
 }
 
 void Object::ChildRect2ParentClientRect(Object *pObjChild, const RECT *prc,
                                         RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ChildPoint2ParentClientPoint(pObjChild, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
             pt.y + (prc->bottom - prc->top));
 }
 
-void Object::ObjectClientPoint2ObjectPoint(Object *pObj, const POINT *ptChild,
-                                           POINT *ptOut) {
+void Object::ObjectClientPoint2ObjectPoint(Object *pObj, const Point *ptChild,
+                                           Point *ptOut) {
   REGION4 rcNonClient = {0};
   pObj->GetNonClientRegion(&rcNonClient);
 
@@ -132,15 +132,15 @@ void Object::ObjectClientPoint2ObjectPoint(Object *pObj, const POINT *ptChild,
 
 void Object::ObjectClientRect2ObjectRect(Object *pObj, const RECT *prc,
                                          RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ObjectClientPoint2ObjectPoint(pObj, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
             pt.y + (prc->bottom - prc->top));
 }
 
-void Object::ChildPoint2ParentPoint(Object *pObjChild, const POINT *ptChild,
-                                    POINT *ptOut) {
+void Object::ChildPoint2ParentPoint(Object *pObjChild, const Point *ptChild,
+                                    Point *ptOut) {
   ChildPoint2ParentClientPoint(pObjChild, ptChild, ptOut);
   if (!pObjChild->IsNcObject()) {
     ObjectClientPoint2ObjectPoint(pObjChild->m_pParent, ptOut, ptOut);
@@ -149,7 +149,7 @@ void Object::ChildPoint2ParentPoint(Object *pObjChild, const POINT *ptChild,
 
 void Object::ChildRect2ParentRect(Object *pObjChild, const RECT *prc,
                                   RECT *pOut) {
-  POINT pt = {prc->left, prc->top};
+  Point pt = {prc->left, prc->top};
   ChildPoint2ParentPoint(pObjChild, &pt, &pt);
 
   pOut->Set(pt.x, pt.y, pt.x + (prc->right - prc->left),
@@ -157,8 +157,8 @@ void Object::ChildRect2ParentRect(Object *pObjChild, const RECT *prc,
 }
 
 // 要绘制该对象之前，获取该对象在窗口中的实际位置，用于设置偏移量和裁剪区
-POINT Object::GetWindowPoint() {
-  POINT pt = {0, 0};
+Point Object::GetWindowPoint() {
+  Point pt = {0, 0};
 
   Object *pObjParent = nullptr;
   Object *pObjChild = this;
@@ -173,7 +173,7 @@ POINT Object::GetWindowPoint() {
 void Object::GetWindowRect(RECT *lprc) {
   UIASSERT(lprc);
 
-  POINT pt = this->GetWindowPoint();
+  Point pt = this->GetWindowPoint();
   lprc->Set(pt.x, pt.y, pt.x + GetWidth(), pt.y + GetHeight());
 }
 
@@ -214,17 +214,17 @@ bool Object::GetScrollRange(int *pxRange, int *pyRange) {
 }
 
 // 2014.3.28将窗口坐标转换成对象内部坐标，在有旋转变换等情况下，需要进行坐标变换
-void Object::WindowPoint2ObjectPoint(const POINT *ptWindow, POINT *ptObj,
+void Object::WindowPoint2ObjectPoint(const Point *ptWindow, Point *ptObj,
                                      bool bCalcTransform) {
   if (nullptr == ptObj || nullptr == ptWindow)
     return;
 
   if (false == bCalcTransform) {
-    POINT pt = this->GetWindowPoint();
+    Point pt = this->GetWindowPoint();
     ptObj->x = ptWindow->x - pt.x;
     ptObj->y = ptWindow->y - pt.y;
   } else {
-    POINT pt = *ptWindow;
+    Point pt = *ptWindow;
 
     Object *pObjParent = nullptr;
 
@@ -255,20 +255,20 @@ void Object::WindowPoint2ObjectPoint(const POINT *ptWindow, POINT *ptObj,
   }
 }
 
-void Object::WindowPoint2ObjectClientPoint(const POINT *ptWindow,
-                                           POINT *ptClient,
+void Object::WindowPoint2ObjectClientPoint(const Point *ptWindow,
+                                           Point *ptClient,
                                            bool bCalcTransform) {
   if (nullptr == ptClient || nullptr == ptWindow)
     return;
 
-  POINT pt = {0};
+  Point pt = {0};
   WindowPoint2ObjectPoint(ptWindow, &pt, bCalcTransform);
   ObjectPoint2ObjectClientPoint(this, &pt, ptClient);
 }
 
 void Object::WindowRect2ObjectClientRect(const RECT *rcWindow, RECT *rcObj) {
-  POINT ptWindow = {rcWindow->left, rcWindow->top};
-  POINT ptClient = {0};
+  Point ptWindow = {rcWindow->left, rcWindow->top};
+  Point ptClient = {0};
 
   this->WindowPoint2ObjectClientPoint(&ptWindow, &ptClient, false);
   rcObj->left = ptClient.x;
@@ -277,8 +277,8 @@ void Object::WindowRect2ObjectClientRect(const RECT *rcWindow, RECT *rcObj) {
   rcObj->bottom = rcObj->top + (rcWindow->bottom - rcWindow->top);
 }
 void Object::WindowRect2ObjectRect(const RECT *rcWindow, RECT *rcObj) {
-  POINT ptWindow = {rcWindow->left, rcWindow->top};
-  POINT ptObj = {0};
+  Point ptWindow = {rcWindow->left, rcWindow->top};
+  Point ptObj = {0};
 
   this->WindowPoint2ObjectPoint(&ptWindow, &ptObj, false);
   rcObj->left = ptObj.x;

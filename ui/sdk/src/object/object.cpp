@@ -464,7 +464,7 @@ void Object::SetBorderRegion(RECT *prc) { m_rcBorder.CopyFrom(*prc); }
 // }
 
 //
-//	[public] [virtual]  unsigned int HitTest( POINT* ptInParent )
+//	[public] [virtual]  unsigned int HitTest( Point* ptInParent )
 //
 //	Parameters
 //		ptInParent
@@ -479,7 +479,7 @@ void Object::SetBorderRegion(RECT *prc) { m_rcBorder.CopyFrom(*prc); }
 //		你这个位置处于我什么部位。同时给Object配备一个RECT，来表示每一个对象的范围，因为大部分时候使用的都是RECT区域。
 //
 
-unsigned int Object::OnHitTest(POINT *ptInParent, POINT *ptInChild) {
+unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
   bool bIn = false;
 
   // 	if (this->m_hRgn)
@@ -493,7 +493,7 @@ unsigned int Object::OnHitTest(POINT *ptInParent, POINT *ptInChild) {
 #if defined(OS_WIN)
   Layer *layer = GetSelfLayer();
   if (layer) {
-    POINT ptObj = {ptInParent->x - m_rcParent.left,
+    Point ptObj = {ptInParent->x - m_rcParent.left,
                    ptInParent->y - m_rcParent.top};
 
     layer->MapView2Layer(&ptObj);
@@ -993,7 +993,7 @@ void Object::SetEnable(bool b, bool bNoitfy) {
 
 #if defined(OS_WIN)
     // 重新发送鼠标消息，例如鼠标正好位于该控件上面，则需要将该控件设置为hover，否则点击无效
-    POINT pt = {0, 0};
+    Point pt = {0, 0};
     ::GetCursorPos(&pt);
     HWND hWnd = GetHWND();
     ::MapWindowPoints(nullptr, hWnd, &pt, 1);
@@ -1498,7 +1498,7 @@ unsigned int  Object::CalcContrastTextColor()
 }
 #endif
 
-Object *Object::GetObjectByPos(POINT *pt) {
+Object *Object::GetObjectByPos(Point *pt) {
 #if defined(OS_WIN)
   WindowBase *pWindow = GetWindowObject();
   if (nullptr == pWindow)

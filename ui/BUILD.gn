@@ -10,7 +10,7 @@ group("ui") {
 
 group("unittest") {
     deps = [
-        "sdk:unittest"
+        "sdk:sdk_test"
     ]
 }
 

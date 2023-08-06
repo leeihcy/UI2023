@@ -49,8 +49,8 @@ public:
   void SetCommitListener(IWindowCommitListener *);
   IWindowCommitListener *GetCommitListener();
 
-  void InvalidateNow();
-  void OnPaint(Rect *prcInvalid);
+  void UpdateAndCommit();
+  void Commit(Rect *prcInvalid);
   Layer *CreateLayer(IObjectLayerContent *);
   Layer *CreateLayer(IListItemLayerContent *);
   void RequestInvalidate();

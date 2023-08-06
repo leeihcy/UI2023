@@ -140,7 +140,7 @@ public:
 	void  InitDefaultAttrib();
 
 	void  SetOutRef(void** ppOutRef);
-	Object*  GetObjectByPos(POINT* pt);
+	Object*  GetObjectByPos(Point* pt);
 	bool  SetMouseCapture(int nNotifyMsgId);
 	bool  ReleaseMouseCapture();
 	bool  SetKeyboardCapture(int nNotifyMsgId);
@@ -171,7 +171,7 @@ public:
 	void  SetObjectPos(const RECT* prc, int nFlag);
 
 	void  GetParentRect(RECT* prc);
-	POINT  GetWindowPoint();
+	Point  GetWindowPoint();
 	void  GetWindowRect(RECT* lprc);
 	bool  GetRectInWindow(RECT* prc, bool bOnlyVisiblePart);
 	void  GetClientRectInObject(RECT* prc);
@@ -261,32 +261,32 @@ public:
 	void  SetMinHeight(int);
 
 	bool  IntersectWindowRect(const RECT* prcWindow, RECT* prcIntersectWnd, RECT* prcIntersectObj);
-	void  WindowPoint2ObjectPoint(const POINT* ptWindow, POINT* ptObj, bool bCalcTransform);
-	void  WindowPoint2ObjectClientPoint(const POINT* ptWindow, POINT* ptClient, bool bCalcTransform);
+	void  WindowPoint2ObjectPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
+	void  WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptClient, bool bCalcTransform);
 	void  WindowRect2ObjectClientRect(const RECT* rcWindow, RECT* rcObj);
 	void  WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj);
 
-	static void  ParentClientPoint2ChildPoint(Object* pObjChild, const POINT* pt, POINT* pOut);
+	static void  ParentClientPoint2ChildPoint(Object* pObjChild, const Point* pt, Point* pOut);
 
-	static void  ObjectPoint2ObjectClientPoint(Object* pObj, const POINT* pt, POINT* pOut);
-	static void  ObjectPoint2ObjectNonClientPoint(Object* pObj, const POINT* pt, POINT* pOut);
+	static void  ObjectPoint2ObjectClientPoint(Object* pObj, const Point* pt, Point* pOut);
+	static void  ObjectPoint2ObjectNonClientPoint(Object* pObj, const Point* pt, Point* pOut);
 	static void  ObjectRect2ObjectClientRect(Object* pObj, const RECT* prc, RECT* pOut);
 	static void  ObjectClientRect2WindowRect(Object* pObj, const RECT* prcClient, RECT* prcWnd);
 	static void  ObjectRect2WindowRect(Object* pObj, const RECT* prcObj, RECT* prcWnd);
 
-	static void  ParentClientPoint2ChildClientPoint(Object* pObjChild, const POINT* pt, POINT* pOut);
+	static void  ParentClientPoint2ChildClientPoint(Object* pObjChild, const Point* pt, Point* pOut);
 	static void  ParentClientRect2ChildClientRect(Object* pObjChild, const RECT* prc, RECT* pOut);
 
-	static void  ParentPoint2ChildPoint(Object* pObjChild, const POINT* pt, POINT* pOut);
+	static void  ParentPoint2ChildPoint(Object* pObjChild, const Point* pt, Point* pOut);
 	static void  ParentRect2ChildRect(Object* pObjChild, const RECT* prc, RECT* pOut);
 
-	static void  ChildPoint2ParentClientPoint(Object* pObjChild, const POINT* ptChild, POINT*  ptOut);
+	static void  ChildPoint2ParentClientPoint(Object* pObjChild, const Point* ptChild, Point*  ptOut);
 	static void  ChildRect2ParentClientRect(Object* pObjChild, const RECT* prc, RECT*  pOut);
 
-	static void  ObjectClientPoint2ObjectPoint(Object*  pObj, const POINT* ptChild, POINT*  ptOut);
+	static void  ObjectClientPoint2ObjectPoint(Object*  pObj, const Point* ptChild, Point*  ptOut);
 	static void  ObjectClientRect2ObjectRect(Object*  pObj, const RECT* prc, RECT*  pOut);
 
-	static void  ChildPoint2ParentPoint(Object* pObjChild, const POINT* ptChild, POINT*  ptOut);
+	static void  ChildPoint2ParentPoint(Object* pObjChild, const Point* ptChild, Point*  ptOut);
 	static void  ChildRect2ParentRect(Object* pObjChild, const RECT* prc, RECT*  pOut);
 
 	// 动画属性
@@ -311,7 +311,7 @@ public:
 protected:
 	long  FinalConstruct(IResBundle* pSkinRes);
 	void  FinalRelease();
-	unsigned int  OnHitTest(POINT* ptInParent, POINT* ptInChild);
+	unsigned int  OnHitTest(Point* ptInParent, Point* ptInChild);
 	void  OnVisibleChanged(bool bVisible, IObject* pObjChanged);
 	void  OnSerialize(SERIALIZEDATA* pData);
 	void  OnEraseBkgnd(IRenderTarget* pRenderTarget);

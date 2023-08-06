@@ -169,8 +169,8 @@ namespace ui
 		void  ClientRect2ObjectRect(const RECT* rcClient, RECT* rcObj);
 		void  ClientRect2WindowRect(const RECT* rcClient, RECT* rcWnd);
 		void  WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj);
-		void  WindowPoint2ObjectPoint(const POINT* ptWindow, POINT* ptObj, bool bCalcTransform);
-		void  WindowPoint2ObjectClientPoint(const POINT* ptWindow, POINT* ptObj, bool bCalcTransform);
+		void  WindowPoint2ObjectPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
+		void  WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
 
 		ITextRenderBase*  GetTextRender();
 		IRenderFont*  GetRenderFont();

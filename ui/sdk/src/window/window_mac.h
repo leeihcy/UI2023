@@ -24,13 +24,12 @@ public:
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
   void SetWindowRect(Rect *prect);
-  void InvalidateRect(Rect* prect) override;
-  void ValidateRect(Rect* prect) override;
+  void Invalidate(const Rect* prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   void Show() override;
   void Hide();
-  void Submit(IRenderTarget* pRT, const RECT* prect, int count) override;
+  void Commit(IRenderTarget* pRT, const RECT* prect, int count) override;
 
 public:
   NSWindow* window() { return m_window; }

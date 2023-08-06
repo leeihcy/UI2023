@@ -92,9 +92,9 @@ void Window::onSize(int width, int height) {
   m_platform->GetWindowRect(&rcWindow);
   m_platform->GetClientRect(&rcParent);
 
-  UI_LOG_DEBUG(L"Window Size parent={%d,%d, %d,%d}, window={%d,%d, %d,%d}",
-               rcParent.x, rcParent.y, rcParent.width, rcParent.height,
-               rcWindow.x, rcWindow.y, rcWindow.width, rcWindow.height);
+  // UI_LOG_DEBUG(L"Window Size parent={%d,%d, %d,%d}, window={%d,%d, %d,%d}",
+  //              rcParent.x, rcParent.y, rcParent.width, rcParent.height,
+  //              rcWindow.x, rcWindow.y, rcWindow.width, rcWindow.height);
 
   m_rcParent.CopyFrom(rcParent);
 
@@ -109,13 +109,14 @@ void Window::onSize(int width, int height) {
 #endif
 
   m_window_render.OnWindowSize(width, height);
-
   // 注：这里不要调用InvalidateRect。对于CustomWindow窗口拉大时，当前窗口的RGN还是老的设置，
   //     导致接收到WM_PAINT时的ps.rcPaint也被该老RGN剪裁，因此刷新区域不完整。这
   //     也导致接下来的CustomWindow::UpdateWindowRgn拿到的窗口背景不完整，计算剪裁
   //     区域错误。
   // 因此这里还是直接调用了窗口的UpdateObject
   //::InvalidateRect(m_hWnd, nullptr, FALSE);
+
+
   if (m_window_render.CanCommit()) {
     // 如果!cancommit，有可能是窗口刚创建时的初始化，直接走WM_PAINT消息
     // 然后由windowrender解除cancommit限制
@@ -126,127 +127,38 @@ void Window::onSize(int width, int height) {
     // size改变，如果只延迟刷新，会导致自己的缓存被清空，但父窗口刷新时子窗口也要刷新，
     // 最后导致将自己的空缓存提交上去了，然后再延时刷新，界面又正常。
     // 因此这里不能延时刷新
-    if (m_objStyle.initialized && IsWindowVisible()) {
-      m_window_render.InvalidateNow();
-    }
-    m_platform->ValidateRect(nullptr);
+    //TODO:if (m_objStyle.initialized && IsWindowVisible()) {
+      // m_window_render.InvalidateNow();
+    //TODO:}
+    // m_platform->ValidateRect(nullptr);
   } else {
-    m_platform->InvalidateRect(nullptr);
+    m_platform->Invalidate(nullptr);
   }
 }
 
 void Window::onClose() {}
 void Window::onDestroy() { m_signal_destroy.emit(); }
 
-#if 0
-
-// 该消息已在WM_PAINT中分发。
-// 为了实现无闪烁的绘制，必须将所有的绘制代码放在一个地方处理，要么在WM_ERASEBKGND，要么在WM_PAINT
-// 但WM_ERASEBKGND不是每次都会触发的（在处理异形窗口时出现该问题），因此考虑将绘制代码都放在WM_PAINT中处理
-// 
-// 如果 lParam == 0，则表示是系统自己发出来的消息，由于系统消息会导致和WM_PAINT DC不一致，从而产生闪烁
-// 因此将WM_ERASEBKGND消息放在WM_PAINT中由我们自己发出，并且将lParam置为非0
-long WindowBase::_OnEraseBkgnd( unsigned int uMsg, long wParam, long lParam, BOOL& bHandled )
-{
-	bHandled = FALSE;
-	if (0 == lParam)
-	{
-		bHandled = TRUE;
-		if (m_bFirsetEraseBkgnd)
-		{
-			m_bFirsetEraseBkgnd = false;
-
-
-            // 分层窗口不处理。场景：
-            // 在窗口创建完成后，设置分层窗口的大小，此时在这里又触发了分层窗口刷新，导致
-            // 窗口大小被修改为旧的大小，新的windowposchanged/onsize消息无效
-            if (!(GetWindowLongPtr(m_hWnd, GWL_EXSTYLE) & WS_EX_LAYERED))
-            {
-                m_oWindowRender.InvalidateNow();
-            }
-
-			// 如果什么也不做，会导致窗口第一次显示时，窗口先显示一次黑色，例如combobox.listbox/menu
-			// 如果直接调用DefWindowProc会导致窗口显示白色，但最终显示的界面不一定就是白色的，也会导致闪烁
-            // 因此在这里先做一次全量绘制
-			// DefWindowProc(uMsg, wParam, lParam); 
-
-            // Bug 2014.3.7 在分层窗口中，第一次触发该函数时，有这种情况:
-            //   ShowWindow(SW_SHOW);
-            //   SetWidowPos(x, y, cx, cy);
-            // 结果在SetWindowPos中触发第一次erasebkgnd，但还没有走到windowposchanging中，导致
-            // layeredwindow::commit中使用旧的窗口位置提交分层窗口，新的窗口位置无效（但分层窗口中
-            // 保存的仍然是x,y,下一次刷新才能更新到正确位置)，因此将ValidateRect(nullptr)注掉，避免出现这种问题
-            // 
-		}
-		
-		return 1;   // 对于Dialog类型，需要返回1来阻止系统默认绘制
-	}
-	return 0;
-}
-
-//
-// [注]分层窗口的InvalidateRect，拿到的ps.rcPaint永远是空的
-//
-long WindowBase::_OnPaint( unsigned int uMsg, long wParam,long lParam, BOOL& bHandled )
-{
-	PAINTSTRUCT ps;
-	HDC  hDC = nullptr;
-	RECT rcInvalid = {0};
-
-	if (0 == wParam)
-	{
-		hDC = ::BeginPaint(this->m_hWnd ,&ps);
-		rcInvalid = ps.rcPaint;
-
-		if (IsRectEmpty(&rcInvalid) && 
-			GetWindowLongPtr(m_hWnd, GWL_EXSTYLE)&WS_EX_LAYERED)
-		{
-			GetClientRect(m_hWnd, &rcInvalid);
-		}
-	}
-	else
-	{
-		GetClipBox(hDC, &rcInvalid);
-        if (IsRectEmpty(&rcInvalid))
-        {
-            GetClientRect(m_hWnd, &rcInvalid);
-        }
-	}
-
-	if (!IsRectEmpty(&rcInvalid))
-	{
-// 		if (m_bFirstTimePaintWindow)
-// 		{
-// 			m_bFirstTimePaintWindow = false;
-// 			m_oWindowRender.SetCanCommit(true);
-// 		}
-
-        // 2016.3.12 现在WM_PAINT一般都由操作系统触发，例如非透明主题下的刷新。
-        // UISDK不建议再走WM_PAINT。因此这里再响应WM_PAINT时，直接提交缓存，不
-        // 再刷新
-        m_oWindowRender.OnPaint(hDC, &rcInvalid);
-	}
-	
-	if(0 == wParam)
-	{
-		EndPaint(m_hWnd,&ps);
-	}
-	
-	return 1;  //  在_OnPaint中返回0，会导致dialog类型的窗口，被其它窗口覆盖后移出来刷新异常!!!
-}
-#endif
-
 void Window::onPaint(Rect *dirty) {
-  if (dirty) {
-    UI_LOG_DEBUG(L"Window onPaint {%d,%d, %d,%d}", dirty->x, dirty->y,
-                 dirty->width, dirty->height);
-  } else {
-    UI_LOG_DEBUG(L"Window onPaint full");
-  }
+  // if (dirty) {
+  //   UI_LOG_DEBUG(L"Window onPaint {%d,%d, %d,%d}", dirty->x, dirty->y,
+  //                dirty->width, dirty->height);
+  // } else {
+  //   UI_LOG_DEBUG(L"Window onPaint full");
+  // }
 
-  // m_window_render.OnPaint(dirty);
-  m_window_render.InvalidateNow();
+  // if (dirty) {
+  //   RECT rc;
+  //   rc.CopyFrom(*dirty);
+  //   m_objLayer.GetLayer()->Invalidate(&rc);
+  // } else {
+  //   m_objLayer.GetLayer()->Invalidate(nullptr);
+  // }
+  m_window_render.Commit(dirty);
+  // m_window_render.InvalidateNow();
 }
+
+void Window::Invalidate(const Rect *prc) { m_platform->Invalidate(prc); }
 
 // void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
 // void Window::on_erase_bkgnd(SkCanvas &canvas) {}
@@ -322,17 +234,14 @@ void Window::SetGpuComposite(bool b) {
   // UI_LOG_DEBUG(TEXT("hard composite enable, window=0x%08x"), this);
 }
 
-
-void  Window::OnEraseBkgnd(IRenderTarget* pRenderTarget)
-{
-	if (nullptr == pRenderTarget)
-		return;
+void Window::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
+  if (nullptr == pRenderTarget)
+    return;
 
   m_signal_paint.emit(pRenderTarget);
-  
-	SetMsgHandled(false);
-}
 
+  SetMsgHandled(false);
+}
 
 #if 0
 long WindowBase::_OnPostMessage( unsigned int uMsg, long wParam, long lParam, BOOL& bHandled )
@@ -369,9 +278,8 @@ bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }
 
 bool Window::IsWindowVisible() { return m_platform->IsWindowVisible(); }
 
-void Window::Submit(IRenderTarget* pRT, const RECT* prect, int count)
-{
-  m_platform->Submit(pRT, prect, count);
+void Window::Commit(IRenderTarget *pRT, const RECT *prect, int count) {
+  m_platform->Commit(pRT, prect, count);
 }
 
 } // namespace ui

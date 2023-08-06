@@ -4,7 +4,7 @@
 #include <SkColorSpace.h>
 
 #include "include/interface/renderlibrary.h"
-// #include "Src\Util\RectArray\rectarray.h"
+// #include "Src\Util\RectRegion\rectarray.h"
 // #include "gdibitmap.h"
 // #include "gdibrush.h"
 // #include "gdifont.h"
@@ -105,6 +105,8 @@ protected:
 
 protected:
   // 渲染
+  // SkBitmap m_bitmap;
+
   sk_sp<SkSurface> m_sksurface;
 
   // HDC m_hBindDC;
@@ -114,7 +116,7 @@ protected:
   // long m_lDrawingRef; // 标识外部调用了几次BeginDraw，解决嵌套调用出现的一些问题
 
   // // 剪裁数据
-  // RectArray m_arrayMetaClipRegion;
+  // RectRegion m_arrayMetaClipRegion;
   // stack<RECT> m_stackClipRect;
 
   // POINT m_ptOffset; // 用于调试时查看当前HDC偏移量

@@ -4,6 +4,7 @@
 
 using namespace ui;
 
+namespace {
 int STACK[10] = { 0 };
 int FETCH(int index) {
     int value = STACK[index];
@@ -88,12 +89,9 @@ void test_slot() {
         assert(FETCH(0) == 0);
     }
 }
-
+}
 void weakptr_unittest() {
     test_destructor();
     test_slot();
 }
 
-int main() {
-    weakptr_unittest();
-}

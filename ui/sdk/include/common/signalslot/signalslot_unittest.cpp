@@ -5,6 +5,7 @@
 
 using namespace ui;
 
+namespace {
 int STACK[10] = {0};
 int FETCH(int index) {
   int value = STACK[index];
@@ -317,7 +318,7 @@ void test_pass_slot_as_arg() {
   invoke_move(bind_slot(foo));
 }
 
-void signalslot_unittest() {
+void test_signalslot() {
   test_slot_function();
   test_slot_method();
   test_slot_lambda();
@@ -353,9 +354,8 @@ void test_vector_save_base_class() {
   vec.push_back(B());
   assert(vec[0].d == 1);
 }
-
-int main() {
+}
+void signalslot_unittest() {
   test_vector_save_base_class();
-
-  signalslot_unittest();
+  test_signalslot();
 }

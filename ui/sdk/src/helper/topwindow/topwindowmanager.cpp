@@ -197,7 +197,7 @@ bool TopWindowManager::UpdateAllWindow() {
     if (nullptr == pWindow)
       continue;
 
-    pWindow->Invalidate();
+    pWindow->Invalidate(nullptr);
   }
   return true;
 }

@@ -1,6 +1,6 @@
 #include "include/inc.h"
 #include "skia_render.h"
-
+#include "include/util/log.h"
 
 namespace ui {
 
@@ -59,11 +59,20 @@ bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {
 
 bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
                                           unsigned int height) {
+  // if (m_sksurface) {
+  //   return true;
+  // }
   printf("ResizeRenderBuffer: %d %d\n", width, height);
   SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
-                                       kPremul_SkAlphaType, nullptr);
+                                       kPremul_SkAlphaType);
   SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
+
   m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
+
+
+  // test，还没刷新界面，就直接commit的话，会出现全黄色。
+   SkCanvas *canvas = m_sksurface->getCanvas();
+  canvas->clear(SK_ColorYELLOW);
 
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
@@ -93,10 +102,17 @@ void SkiaRenderTarget::EndDraw() {
 
 void SkiaRenderTarget::Clear(RECT *prc) {
   if (!m_sksurface) {
+    UI_LOG_WARN(L"no sksurface");
     return;
   }
   SkCanvas *canvas = m_sksurface->getCanvas();
-  canvas->clear(SK_ColorRED);
+  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
+  static int i= 0; 
+  i++;
+  if (i >= 3){ i = 0;}
+  canvas->clear(colors[i]);
+  printf("clear render \n");
+  // UI_LOG_INFO(L"clear render");
 }
 
 void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,

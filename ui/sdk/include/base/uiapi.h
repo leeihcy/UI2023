@@ -2,6 +2,7 @@
 #define _UI_API_H_
 
 #include "include/base/xmldefine.h"
+#include "include/base/uidefine.h"
 #include "include/common.h"
 
 namespace ui {
@@ -83,5 +84,6 @@ UIAPI long GetDpi();
 UIAPI long ScaleByDpi(long x);
 #define dpi(x) ui::ScaleByDpi(x)
 
+UIAPI void UIUnitTest();
 } // namespace ui
 #endif

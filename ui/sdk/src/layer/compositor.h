@@ -1,6 +1,6 @@
 #pragma once
 #include "layer.h"
-#include "src/util/rect_array/rectarray.h"
+#include "src/util/rectregion/rectregion.h"
 #include "include/common/weakptr/weakptr.h"
 
 // #define MSG_INVALIDATE 161311307   废弃，改为使用 messageloop posttask
@@ -28,16 +28,17 @@ public:
 #endif
   void RequestInvalidate();
   void _onRequestInvalidate();
-  void DoInvalidate();
-  void Commit(const RectArray &arrDirtyInWindow);
+  void UpdateAndCommit();
+  void UpdateAndCommit(RECT* rcCommitEx);
+  void Commit(const RectRegion &arrDirtyInWindow);
 
-  virtual void UpdateDirty(RectArray &arrDirtyInWindow) = 0;
+  virtual void UpdateDirty(RectRegion* outArrDirtyInWindow) = 0;
   virtual void Resize(uint nWidth, uint nSize) = 0;
 
 protected:
   virtual Layer *virtualCreateLayer() = 0;
   virtual void virtualBindHWND(HWND) = 0;
-  virtual void virtualCommit(const RectArray &arrDirtyInWindow) = 0;
+  virtual void virtualCommit(const RectRegion &arrDirtyInWindow) = 0;
 
 protected:
   Application *m_pUIApp;

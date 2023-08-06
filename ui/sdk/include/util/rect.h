@@ -1,5 +1,6 @@
 #ifndef _UI_SDK_INCLUDE_UTIL_RECT_H_
 #define _UI_SDK_INCLUDE_UTIL_RECT_H_
+#include <algorithm>
 
 namespace ui {
 
@@ -50,7 +51,7 @@ struct RECT : public RectLTRB {
     this->right = p.x + p.width;
     this->bottom = p.y + p.height;
   }
-  bool PtIn(const POINT &pt) {
+  bool PtIn(const Point &pt) {
     return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;
   }
   bool Intersect(const RECT &rc, RECT *out) {
@@ -67,6 +68,8 @@ struct RECT : public RectLTRB {
              std::max(rc.top, top), std::min(rc.bottom, bottom));
     return true;
   }
+
+  // 简单合并成一个大的区域，可能会增加无用的区域。
   void Union(const RECT &rc, RECT *out) {
     if (!out) {
       return;

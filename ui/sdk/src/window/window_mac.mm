@@ -1,6 +1,9 @@
 #include "window_mac.h"
 #import "Cocoa/Cocoa.h"
 #include "src/graphics/skia/skia_render.h"
+#include "../../../3rd/skia/src/include/utils/mac/SkCGUtils.h"
+#include "../../../3rd/skia/src/include/core/SkBitmap.h"
+#include "../../../3rd/skia/src/src/utils/mac/SkUniqueCFRef.h"
 #include <string.h>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
@@ -97,7 +100,7 @@ void SetWindowRect(Rect *prect) {
   // [mWindow setContentSize:NSMakeSize(width, height)];
   // return true;
 }
-void WindowPlatformMac::InvalidateRect(Rect *prect) {
+void WindowPlatformMac::Invalidate(const Rect *prect) {
   if (!prect) {
     [m_window.contentView display];
     return;
@@ -109,8 +112,6 @@ void WindowPlatformMac::InvalidateRect(Rect *prect) {
   rect.size.height = prect->height;
   [m_window.contentView displayRect:rect];
 }
-
-void WindowPlatformMac::ValidateRect(Rect *prect) {}
 
 bool WindowPlatformMac::IsChildWindow() { return m_window.parentWindow != nil; }
 bool WindowPlatformMac::IsWindowVisible() { return !!m_window.visible; }
@@ -124,8 +125,15 @@ void WindowPlatformMac::Show() {
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 
 // void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
-void WindowPlatformMac::Submit(IRenderTarget *pRT, const RECT *prect,
+void WindowPlatformMac::Commit(IRenderTarget *pRT, const RECT *prect,
                                int count) {
+                                printf("1\n");
+  CGContext *context = [NSGraphicsContext currentContext].CGContext;
+  if (!context) {
+    printf("context is nullptr\n");
+    return;
+  }
+
   if (pRT->GetGraphicsRenderLibraryType() ==
       GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
     SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
@@ -133,6 +141,29 @@ void WindowPlatformMac::Submit(IRenderTarget *pRT, const RECT *prect,
     if (!surface) {
       return;
     }
+
+    // printf("2\n");
+    // SkBitmap bm;
+    // surface->readPixels(bm, 0, 0);
+    // printf("3\n");
+    // // SkCGDrawBitmap(context, bm, 0, 0);
+    // SkUniqueCFRef<CGImageRef> img(SkCreateCGImageRef(bm));
+
+    // int x = 0;
+    // int y = 0;
+    // auto* cg = context;
+    // if (img) {
+    //     CGRect r = CGRectMake(0, 0, bm.width(), bm.height());
+
+    //     CGContextSaveGState(cg);
+    //     CGContextTranslateCTM(cg, x, r.size.height + y);
+    //     CGContextScaleCTM(cg, 1, -1);
+
+    //     CGContextDrawImage(cg, r, img.get());
+
+    //     CGContextRestoreGState(cg);
+    // }
+
     SkPixmap pm;
     if (!surface->peekPixels(&pm)) {
       return;
@@ -150,22 +181,28 @@ void WindowPlatformMac::Submit(IRenderTarget *pRT, const RECT *prect,
         pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace, bitmapInfo,
         ref, NULL, true, kCGRenderingIntentDefault);
 
-    CGContext *context = [NSGraphicsContext currentContext].CGContext;
-
     for (int i = 0; i < count; i++) {
-      const RECT& rc = prect[i];
+      const RECT &rc = prect[i];
       NSRect nsrect;
       nsrect.origin.x = rc.left;
       nsrect.origin.y = rc.top;
-      nsrect.size.width = rc.right-rc.left;
-      nsrect.size.height = rc.bottom-rc.top;
-      CGImageRef part_image = CGImageCreateWithImageInRect(image,nsrect);
+      nsrect.size.width = rc.right - rc.left;
+      nsrect.size.height = rc.bottom - rc.top;
+      CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
-      CGContextDrawImage(context, CGRectMake(0, 0, pm.width(), pm.height()),
-                        part_image);
+    static int count = 0;
+    // count ++;
+    if (count < 100) {
+      CGContextDrawImage(context, nsrect, //CGRectMake(0, 0, pm.width(), pm.height()),
+                         part_image);
     }
+      printf("commit \n");
+      CGImageRelease(part_image);
+    }
+    CGImageRelease(image);
   }
 }
+
 void WindowPlatformMac::notifySize() {
   m_ui_window.onSize(m_window.frame.size.width, m_window.frame.size.height);
 }
@@ -232,7 +269,7 @@ void WindowPlatformMac::notifySize() {
 
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-
+  printf("nsview draw rect\n\n");
   ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
                 (int)rect.size.height};
   m_window->m_ui_window.onPaint(&r);

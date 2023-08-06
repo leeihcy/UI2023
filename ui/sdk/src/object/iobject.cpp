@@ -701,7 +701,7 @@ void  IObject::GetParentRect(RECT* prc)
 	__pImpl->GetParentRect(prc); 
 }
 
-// POINT  IObject::GetRealPosInWindow()                                              
+// Point  IObject::GetRealPosInWindow()                                              
 // { 
 //     return __pImpl->GetWindowPoint(); 
 // }
@@ -713,15 +713,15 @@ void  IObject::WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj)
 {
     __pImpl->WindowRect2ObjectRect(rcWindow, rcObj); 
 }
-void  IObject::WindowPoint2ObjectPoint(const POINT* ptWindow, POINT* ptObj, bool bCalcTransform)      
+void  IObject::WindowPoint2ObjectPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform)      
 {
     __pImpl->WindowPoint2ObjectPoint(ptWindow, ptObj, bCalcTransform); 
 }
-void  IObject::WindowPoint2ObjectClientPoint(const POINT* ptWindow, POINT* ptObj, bool bCalcTransform)
+void  IObject::WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform)
 { 
     __pImpl->WindowPoint2ObjectClientPoint(ptWindow, ptObj, bCalcTransform); 
 }
-// void  IObject::ObjectPoint2ObjectClientPoint(const POINT* ptWindow, POINT* ptObj) 
+// void  IObject::ObjectPoint2ObjectClientPoint(const Point* ptWindow, Point* ptObj) 
 // {
 //     Object::ObjectPoint2ObjectClientPoint(__pImpl, ptWindow, ptObj); 
 // }

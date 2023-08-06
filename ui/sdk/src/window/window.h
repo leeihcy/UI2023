@@ -20,11 +20,10 @@ struct WindowPlatform {
   virtual void Show() = 0;
   virtual void GetClientRect(Rect *prect) = 0;
   virtual void GetWindowRect(Rect *prect) = 0;
-  virtual void InvalidateRect(Rect* prect) = 0;
-  virtual void ValidateRect(Rect* prect) = 0;
+  virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
   virtual bool IsWindowVisible() = 0;
-  virtual void Submit(IRenderTarget* pRT, const RECT* prect, int count) = 0;
+  virtual void Commit(IRenderTarget* pRT, const RECT* prect, int count) = 0;
 };
 
 class Window : public Object {
@@ -59,11 +58,12 @@ public:
 	bool  IsGpuComposite();
 	void  DirectComposite();
 
+  void  Invalidate(const Rect*);
 	bool  IsChildWindow();
 	bool  IsWindowVisible();
 
   virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
-  void Submit(IRenderTarget* pRT, const RECT* prect, int count);
+  void Commit(IRenderTarget* pRT, const RECT* prect, int count);
   
 public:
   // platform回调

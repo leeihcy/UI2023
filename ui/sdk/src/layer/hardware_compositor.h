@@ -14,8 +14,8 @@ public:
 
     virtual void  virtualBindHWND(HWND) override;
 
-    virtual void  UpdateDirty(RectArray& arrDirtyInWindow) override;
-    virtual void  virtualCommit(const RectArray& arrDirtyInWindow) override;
+    virtual void  UpdateDirty(RectRegion* outArrDirtyInWindow) override;
+    virtual void  virtualCommit(const RectRegion& arrDirtyInWindow) override;
     virtual void  Resize(uint nWidth, uint nSize) override;
 
     virtual Layer*  virtualCreateLayer() override;

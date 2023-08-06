@@ -351,31 +351,29 @@ Compositor *WindowRender::get_create_compositor() {
   return m_pCompositor;
 }
 
-void WindowRender::InvalidateNow() {
+void WindowRender::UpdateAndCommit() {
   if (!m_pCompositor)
     return;
 
-#ifdef _DEBUGx
-  StopWatch w;
-  w.Start();
-  m_pCompositor->DoInvalidate();
-  UI_LOG_DEBUG(L"compositor cost: %d", (int)w.Now__());
-#else
-  m_pCompositor->DoInvalidate();
-#endif
+  m_pCompositor->UpdateAndCommit();
 }
-void WindowRender::OnPaint(Rect *prcInvalid) {
+void WindowRender::Commit(Rect *prcInvalid) {
   if (!prcInvalid) {
     UIASSERT(0);
     return;
   }
 
+  // 如果有脏区域，还是需要先刷新，再提交
+  // 例如SIZE变化，进行异步刷新时，重新创建了RenderTarget，然后就来了一个WM_PAINT消息，
+  // 但此时还没有刷新layer，不能直接提交一个空的rendertarget缓存到窗口上！
+
+
   if (m_pCompositor) {
-    RectArray arr;
+    RectRegion arr;
 
     RECT r;
     r.CopyFrom(*prcInvalid);
-    arr.AddRect(&r);
+    arr.AddRect(r);
 
     m_pCompositor->Commit(arr);
   }
