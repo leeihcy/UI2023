@@ -17,7 +17,7 @@ public:
     virtual void  UpdateByRect() override;
     virtual void  Serialize(SERIALIZEDATA* pData) override;
     virtual LAYOUTTYPE  GetLayoutType() override { return LAYOUT_TYPE_VERT; }
-    virtual SIZE  CalcDesiredSize()override ;
+    virtual Size  CalcDesiredSize()override ;
     virtual bool  IsSizedByContent()override;
 
 public:
@@ -50,7 +50,7 @@ public:
 	VertLayout();
     ~VertLayout();
 
-    virtual SIZE  Measure() override;
+    virtual Size  Measure() override;
 	virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
 	virtual void  Serialize(SERIALIZEDATA* pData) override;
     virtual void  ChildObjectVisibleChanged(IObject* pObj) override;

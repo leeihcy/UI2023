@@ -188,7 +188,7 @@ enum VISIBILITY_TYPE
 
 #define XML_RENDER_THEME_DISABLE          L"render.theme.disable"    // 是否强制使用无主题的渲染
 #define XML_RENDER_COLOR                  L"render.color"            // 填充颜色
-#define XML_RENDER_BORDER                 L"render.border"           // 边框大小 RECT
+#define XML_RENDER_BORDER                 L"render.border"           // 边框大小 Rect
 #define XML_RENDER_BORDERCOLOR            L"render.border.color"     // 边框颜色
 #define XML_RENDER_COLORFROM              L"render.color.from"       // 渐变起始色
 #define XML_RENDER_COLORTO                L"render.color.to"         // 渐变终点色

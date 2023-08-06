@@ -75,7 +75,7 @@ void WindowPlatformLinux::Attach(::Window window) {
   this->initGC();
   this->initEvent();
 
-  // RECT rc;
+  // Rect rc;
   // GetWindowRect(&rc);
   // resize(rc.width(), rc.height());
 

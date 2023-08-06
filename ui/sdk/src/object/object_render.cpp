@@ -28,7 +28,7 @@ HBITMAP  Object::TakeSnapshot()
     pRenderTarget->BindHDC(hDC);
     pRenderTarget->BeginDraw();
     {
-        RECT rcRenderRegion(0, 0, GetWidth(), GetHeight());
+        Rect rcRenderRegion(0, 0, GetWidth(), GetHeight());
         RenderContext  context(&rcRenderRegion, &rcRenderRegion, true);
         this->RealDrawObject(pRenderTarget, context);
     }
@@ -64,7 +64,7 @@ HBITMAP  Object::TakeBkgndSnapshot()
         // 检查祖父对象中有没有不透明的，从该父对象画起
         Object*  pObjAncestorFirst2DrawBkgnd = nullptr;
         Object*  pChild = this;
-        RECT    rcInAncestor(0, 0, GetWidth(), GetHeight());
+        Rect    rcInAncestor(0, 0, GetWidth(), GetHeight());
         while (pObjAncestorFirst2DrawBkgnd = this->EnumParentObject(pObjAncestorFirst2DrawBkgnd))
         {
             ChildRect2ParentRect(pChild, &rcInAncestor, &rcInAncestor);
@@ -78,8 +78,8 @@ HBITMAP  Object::TakeBkgndSnapshot()
         if (nullptr == pObjAncestorFirst2DrawBkgnd)
             pObjAncestorFirst2DrawBkgnd = GetWindowObject();
 
-        RECT  rcClip(0, 0, GetWidth(), GetHeight());
-        RECT  rcCurrentClip(&rcInAncestor);
+        Rect  rcClip(0, 0, GetWidth(), GetHeight());
+        Rect  rcCurrentClip(&rcInAncestor);
         rcCurrentClip.OffsetRect(-rcInAncestor.left*2, -rcInAncestor.top*2);
         RenderContext  context(&rcClip, &rcCurrentClip, false);
         context.m_ptOffset.x = rcCurrentClip.left;
@@ -128,7 +128,7 @@ void Object::DoPostPaint(IRenderTarget* pRenderTarget, RenderContext context)
 
 void Object::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
   if (m_pBkgndRender) {
-    RECT rc = {0, 0, this->GetWidth(), this->GetHeight()};
+    Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
     m_pBkgndRender->DrawState(pRenderTarget, &rc, 0);
   }
 }
@@ -146,11 +146,11 @@ void Object::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
 // 4. 实践过程中，很多开发人员对刷新不了解，不知道什么时候需要调刷新
 //
 void Object::Invalidate() {
-  RECT rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
+  Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
   Invalidate(&rc);
 }
 
-void Object::Invalidate(const RECT *prcObj) {
+void Object::Invalidate(const Rect *prcObj) {
   if (!prcObj)
     return;
 
@@ -163,14 +163,14 @@ void Object::Invalidate(const RECT *prcObj) {
 
   Object &layerObj = pLayer->GetObjet();
 
-  RECT rc = {0};
+  Rect rc = {0};
   if (!CalcRectInAncestor(&layerObj, prcObj, true, &rc))
     return;
 
   pLayer->GetLayer()->Invalidate(&rc);
 }
 
-void Object::Invalidate(RECT *prcObjArray, int nCount) {
+void Object::Invalidate(Rect *prcObjArray, int nCount) {
   for (int i = 0; i < nCount; i++) {
     this->Invalidate(prcObjArray + i);
   }
@@ -184,8 +184,8 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   this->virtualOnPostDrawObjectErasebkgnd();
 
   // 2. 客户区，更新裁剪、偏移
-  RECT rcObj = {0, 0, m_rcParent.width(), m_rcParent.height()};
-  RECT rcClient;
+  Rect rcObj = {0, 0, m_rcParent.width(), m_rcParent.height()};
+  Rect rcClient;
   this->GetClientRectInObject(&rcClient);
 
   int xOffset = 0, yOffset = 0;
@@ -260,7 +260,7 @@ void Object::DrawChildObject__(IRenderTarget *pRenderTarget,
       pRenderTarget->PushRelativeClipRect(&pChild->m_rcParent);
 
     // save,m_rcParent在绘制过程中可能被修改
-    POINT ptOffset = {pChild->m_rcParent.left, pChild->m_rcParent.top};
+    Point ptOffset = {pChild->m_rcParent.left, pChild->m_rcParent.top};
     pRenderTarget->OffsetOrigin(ptOffset.x, ptOffset.y);
 
     if (pChildLayer /* && pChildLayer->GetType() == Layer_Software*/) {

@@ -1,6 +1,6 @@
 #ifndef _UI_IXMLWRAP_H_
 #define _UI_IXMLWRAP_H_
-#include "base/uidefine.h"
+#include "include/macro/uidefine.h"
 
 namespace ui
 {

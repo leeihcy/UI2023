@@ -1,9 +1,9 @@
 #include "window_mac.h"
+#include "../../../3rd/skia/src/include/core/SkBitmap.h"
+#include "../../../3rd/skia/src/include/utils/mac/SkCGUtils.h"
+#include "../../../3rd/skia/src/src/utils/mac/SkUniqueCFRef.h"
 #import "Cocoa/Cocoa.h"
 #include "src/graphics/skia/skia_render.h"
-#include "../../../3rd/skia/src/include/utils/mac/SkCGUtils.h"
-#include "../../../3rd/skia/src/include/core/SkBitmap.h"
-#include "../../../3rd/skia/src/src/utils/mac/SkUniqueCFRef.h"
 #include <string.h>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
@@ -77,16 +77,16 @@ void WindowPlatformMac::SetTitle(const char *title) {
 }
 
 void WindowPlatformMac::GetClientRect(Rect *prect) {
-  prect->x = m_window.contentLayoutRect.origin.x;
-  prect->y = m_window.contentLayoutRect.origin.y;
-  prect->width = m_window.contentLayoutRect.size.width;
-  prect->height = m_window.contentLayoutRect.size.height;
+  prect->left = m_window.contentLayoutRect.origin.x;
+  prect->right = m_window.contentLayoutRect.origin.y;
+  prect->right = prect->left + m_window.contentLayoutRect.size.width;
+  prect->bottom = prect->top + m_window.contentLayoutRect.size.height;
 }
 void WindowPlatformMac::GetWindowRect(Rect *prect) {
-  prect->x = m_window.frame.origin.x;
-  prect->y = m_window.frame.origin.y;
-  prect->width = m_window.frame.size.width;
-  prect->height = m_window.frame.size.height;
+  prect->left = m_window.frame.origin.x;
+  prect->right = m_window.frame.origin.y;
+  prect->right = prect->left + m_window.frame.size.width;
+  prect->bottom = prect->top + m_window.frame.size.height;
 }
 void SetWindowRect(Rect *prect) {
   // // Given CG and NS's coordinate system, the "Y" position of a window is the
@@ -106,10 +106,10 @@ void WindowPlatformMac::Invalidate(const Rect *prect) {
     return;
   }
   NSRect rect;
-  rect.origin.x = prect->x;
-  rect.origin.y = prect->y;
-  rect.size.width = prect->width;
-  rect.size.height = prect->height;
+  rect.origin.x = prect->left;
+  rect.origin.y = prect->top;
+  rect.size.width = prect->width();
+  rect.size.height = prect->height();
   [m_window.contentView displayRect:rect];
 }
 
@@ -125,12 +125,10 @@ void WindowPlatformMac::Show() {
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 
 // void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
-void WindowPlatformMac::Commit(IRenderTarget *pRT, const RECT *prect,
+void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
                                int count) {
-                                printf("1\n");
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
   if (!context) {
-    printf("context is nullptr\n");
     return;
   }
 
@@ -182,7 +180,7 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const RECT *prect,
         ref, NULL, true, kCGRenderingIntentDefault);
 
     for (int i = 0; i < count; i++) {
-      const RECT &rc = prect[i];
+      const Rect &rc = prect[i];
       NSRect nsrect;
       nsrect.origin.x = rc.left;
       nsrect.origin.y = rc.top;
@@ -190,13 +188,13 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const RECT *prect,
       nsrect.size.height = rc.bottom - rc.top;
       CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
-    static int count = 0;
-    // count ++;
-    if (count < 100) {
-      CGContextDrawImage(context, nsrect, //CGRectMake(0, 0, pm.width(), pm.height()),
-                         part_image);
-    }
-      printf("commit \n");
+      static int count = 0;
+      // count ++;
+      if (count < 100) {
+        CGContextDrawImage(context,
+                           nsrect, // CGRectMake(0, 0, pm.width(), pm.height()),
+                           part_image);
+      }
       CGImageRelease(part_image);
     }
     CGImageRelease(image);
@@ -269,7 +267,6 @@ void WindowPlatformMac::notifySize() {
 
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-  printf("nsview draw rect\n\n");
   ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
                 (int)rect.size.height};
   m_window->m_ui_window.onPaint(&r);

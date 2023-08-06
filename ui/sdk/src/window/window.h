@@ -1,7 +1,7 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
-#include "base/uimsg.h"
+#include "include/macro/uimsg.h"
 #include "common.h"
 #include "common/signalslot/signal.h"
 #include "interface/iwindow.h"
@@ -23,7 +23,7 @@ struct WindowPlatform {
   virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
   virtual bool IsWindowVisible() = 0;
-  virtual void Commit(IRenderTarget* pRT, const RECT* prect, int count) = 0;
+  virtual void Commit(IRenderTarget* pRT, const Rect* prect, int count) = 0;
 };
 
 class Window : public Object {
@@ -63,7 +63,7 @@ public:
 	bool  IsWindowVisible();
 
   virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
-  void Commit(IRenderTarget* pRT, const RECT* prect, int count);
+  void Commit(IRenderTarget* pRT, const Rect* prect, int count);
   
 public:
   // platform回调

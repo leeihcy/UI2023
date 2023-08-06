@@ -1,13 +1,15 @@
 #ifndef _UI_SDK_COMMON_GUID_H_
 #define _UI_SDK_COMMON_GUID_H_
+#include <string.h>
+#include <assert.h>
 
 namespace ui {
 
 struct Guid {
-  unsigned int Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char Data4[8];
+  unsigned int data1;
+  unsigned short data2;
+  unsigned short data3;
+  unsigned char data4[8];
 
   static Guid &Null() {
     static Guid s = {0};
@@ -23,29 +25,37 @@ struct Guid {
       return c - '0';
     }
     if (c >= 'A' && c <= 'F') {
-      return c - 'A';
+      return c - 'A' + 10;
     }
     if (c >= 'a' && c <= 'f') {
-      return c - 'a';
+      return c - 'a' + 10;
     }
     return 0;
   }
-  static Guid build(const char guid_string[37]) {
+  static Guid Build(const char guid_string[37]) {
     Guid guid;
+    memset(&guid, 0, sizeof(guid));
+
     for (int i = 0; i < 8; ++i) {
-      guid.Data1 = (guid.Data1 << 4) | parse_hex(guid_string[i]);
+      guid.data1 = (guid.data1 << 4) | parse_hex(guid_string[i]);
     }
     assert(guid_string[8] == '-');
     for (int i = 9; i < 13; ++i) {
-      guid.Data2 = (guid.Data2 << 4) | parse_hex(guid_string[i]);
+      guid.data2 = (guid.data2 << 4) | parse_hex(guid_string[i]);
     }
     assert(guid_string[13] == '-');
     for (int i = 14; i < 18; ++i) {
-      guid.Data3 = (guid.Data3 << 4) | parse_hex(guid_string[i]);
+      guid.data3 = (guid.data3 << 4) | parse_hex(guid_string[i]);
     }
     assert(guid_string[18] == '-');
+    guid.data4[0] = (parse_hex(guid_string[19]) << 4) | parse_hex(guid_string[20]);
+    guid.data4[1] = (parse_hex(guid_string[21]) << 4) | parse_hex(guid_string[22]);
+    
     assert(guid_string[23] == '-');
-    // TODO:
+    for (int i = 2, j = 24; i < 8; i++, j+=2) {
+      guid.data4[i] = (parse_hex(guid_string[j]) << 4) | parse_hex(guid_string[j+1]);
+    }
+
     return guid;
   }
 };
@@ -55,7 +65,7 @@ static Guid GUID_NULL = {0, 0, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
 
 #define UI_DEFINE_CLASS_GUID(guid_string)                                      \
   static const Guid &__GUID() {                                                \
-    static Guid s = Guid::build(guid_string);                                  \
+    static Guid s = Guid::Build(guid_string);                                  \
     return s;                                                                  \
   }
 

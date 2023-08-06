@@ -131,21 +131,21 @@ void  Transform3D::set_pos(int x, int y)
 // 	m_matrix.CopyTo(pMatrix);
 // }
 
-void  Transform3D::mappoint_layer_2_view(POINT* ptInLayer)
+void  Transform3D::mappoint_layer_2_view(Point* ptInLayer)
 {
 	m_matrix.MapPoint(ptInLayer, ptInLayer);
 }
-void  Transform3D::mappoint_view_2_layer(POINT* ptInLayer)
+void  Transform3D::mappoint_view_2_layer(Point* ptInLayer)
 {
 	m_matrixInverse.ProjectPoint(ptInLayer, ptInLayer);
 }
 
-// void  Transform3D::maprect_layer_2_view(__in RECT* rcInLayer, __out QUAD* pqInView)
+// void  Transform3D::maprect_layer_2_view(__in Rect* rcInLayer, __out QUAD* pqInView)
 // {
-// 	POINT& ptA = pqInView->ptA;
-// 	POINT& ptB = pqInView->ptB;
-// 	POINT& ptC = pqInView->ptC;
-// 	POINT& ptD = pqInView->ptD;
+// 	Point& ptA = pqInView->ptA;
+// 	Point& ptB = pqInView->ptB;
+// 	Point& ptC = pqInView->ptC;
+// 	Point& ptD = pqInView->ptD;
 // 
 // 	ptA.x = rcInLayer->left;
 // 	ptA.y = rcInLayer->top;
@@ -201,7 +201,7 @@ void  Transform3D::update()
 	m_matrix.Inverse(&m_matrixInverse);
 
 #ifdef _DEBUGx
-	POINT pt= {50,50};
+	Point pt= {50,50};
 	mappoint_view_2_layer(&pt);
 	mappoint_layer_2_view(&pt);
 	UIASSERT(pt.x == 50 && pt.y == 50);

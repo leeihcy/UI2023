@@ -11,9 +11,9 @@ namespace ui {
 
 #if 0
 
-SIZE  DockLayout::MeasureChildObject()
+Size  DockLayout::MeasureChildObject()
 {
-	SIZE size = {0,0};
+	Size size = {0,0};
 
 	// 1. 先获取center对象的SIZE
 	Object*  pCenterObj = nullptr;
@@ -61,10 +61,10 @@ SIZE  DockLayout::MeasureChildObject()
 			XML_LAYOUT_DOCK_DOCK_RIGHT == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
-			if (s.cy > size.cy)
-				size.cy = s.cy;
-			size.cx += s.cx;
+			Size s = pChild->GetDesiredSize();
+			if (s.height > size.height)
+				size.height = s.height;
+			size.width += s.width;
 		}
 		else
 #if 1
@@ -74,10 +74,10 @@ SIZE  DockLayout::MeasureChildObject()
 			 XML_LAYOUT_DOCK_DOCK_BOTTOM == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
-			if (s.cx > size.cx)
-				size.cx = s.cx;
-			size.cy += s.cy;
+			Size s = pChild->GetDesiredSize();
+			if (s.width > size.width)
+				size.width = s.width;
+			size.height += s.height;
 		}
 
 		else
@@ -123,16 +123,16 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 		if (XML_LAYOUT_DOCK_DOCK_LEFT == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
+			Size s = pChild->GetDesiredSize();
 			
-			RECT rcObj( 
+			Rect rcObj( 
 				nComsumeLeft             +  pChild->GetMarginL(), 
 				nComsumeTop              +  pChild->GetMarginT(), 
-				nComsumeLeft + s.cx      -  pChild->GetMarginR(), 
+				nComsumeLeft + s.width      -  pChild->GetMarginR(), 
 				nHeight - nComsumeBottom -  pChild->GetMarginB());
 			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
 
-			nComsumeLeft += s.cx;
+			nComsumeLeft += s.width;
 		}
 		else
 #if 1
@@ -141,16 +141,16 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 		if (XML_LAYOUT_DOCK_DOCK_RIGHT == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
+			Size s = pChild->GetDesiredSize();
 			
-			RECT rcObj( 
-				nWidth - nComsumeRight - s.cx  +  pChild->GetMarginL(), 
+			Rect rcObj( 
+				nWidth - nComsumeRight - s.width  +  pChild->GetMarginL(), 
 				nComsumeTop                    +  pChild->GetMarginT(), 
 				nWidth - nComsumeRight         -  pChild->GetMarginR(), 
 				nHeight - nComsumeBottom       -  pChild->GetMarginB());
 			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
 
-			nComsumeRight += s.cx;
+			nComsumeRight += s.width;
 		}
 		else
 #if 1
@@ -159,16 +159,16 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 		if (XML_LAYOUT_DOCK_DOCK_TOP == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
+			Size s = pChild->GetDesiredSize();
 
-			RECT rcObj( 
+			Rect rcObj( 
 				nComsumeLeft            +  pChild->GetMarginL() , 
 				nComsumeTop             +  pChild->GetMarginT() , 
 				nWidth - nComsumeRight  -  pChild->GetMarginR() , 
-				nComsumeTop + s.cy      -  pChild->GetMarginB() );
+				nComsumeTop + s.height      -  pChild->GetMarginB() );
 			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
 
-			nComsumeTop += s.cy;
+			nComsumeTop += s.height;
 		}
 		else
 #if 1
@@ -177,16 +177,16 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 		if (XML_LAYOUT_DOCK_DOCK_BOTTOM == strDock)
 #endif
 		{
-			SIZE s = pChild->GetDesiredSize();
+			Size s = pChild->GetDesiredSize();
 
-			RECT rcObj(
+			Rect rcObj(
 				nComsumeLeft                    +  pChild->GetMarginL() , 
-				nHeight - nComsumeBottom - s.cy +  pChild->GetMarginT() , 
+				nHeight - nComsumeBottom - s.height +  pChild->GetMarginT() , 
 				nWidth - nComsumeRight          -  pChild->GetMarginR() , 
 				nHeight - nComsumeBottom        -  pChild->GetMarginB() );
 			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
 
-			nComsumeBottom += s.cy;	 
+			nComsumeBottom += s.height;	 
 		}
 		else  // 其他都归为center对象
 		{
@@ -217,7 +217,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
 #if defined(OS_WIN)
   if (pWindow->IsChildWindow()) {
     HWND hWndParent = GetParent(pWindow->m_hWnd);
-    RECT rc;
+    Rect rc;
     ::GetClientRect(hWndParent, &rc);
 
     int nCX = rc.Width();
@@ -241,10 +241,10 @@ void DesktopLayout::Arrange(Window *pWindow) {
   right = pParam->GetConfigRight();
   bottom = pParam->GetConfigBottom();
 
-  SIZE s = pWindow->GetDesiredSize(); // 获得的SIZE包括了MARGIN的大小
-                                      // s.cx=margin.left+width+margin.right
+  Size s = pWindow->GetDesiredSize(); // 获得的SIZE包括了MARGIN的大小
+                                      // s.width=margin.left+width+margin.right
                                       // #ifdef _DEBUG
-                                      //     if (s.cx == 0 && s.cy == 0)
+                                      //     if (s.width == 0 && s.height == 0)
                                       //     {
   //         UI_LOG_WARN(TEXT("GetDesiredSize
   //         返回窗口大小为0，检查是否配置了窗口的widht/height"));
@@ -255,8 +255,8 @@ void DesktopLayout::Arrange(Window *pWindow) {
   // nCXScreen = ::GetSystemMetrics( SM_CXSCREEN );
   // nCYScreen = ::GetSystemMetrics( SM_CYSCREEN );
 
-  RECT rcParent;
-  RECT rcLimit;
+  Rect rcParent;
+  Rect rcLimit;
   rcParent.SetRectEmpty();
   rcLimit.SetRectEmpty();
 
@@ -282,7 +282,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
         SystemParametersInfo(SPI_GETWORKAREA, 0, &rcLimit, 0);
       }
     } else {
-      POINT pt = {0};
+      Point pt = {0};
       GetCursorPos(&pt);
 
       MONITORINFO mi = {sizeof(mi), 0};
@@ -297,11 +297,11 @@ void DesktopLayout::Arrange(Window *pWindow) {
 
   // 如果同时指定了left/right,则忽略width属性
   if (left != NDEF && right != NDEF) {
-    s.cx = rcParent.Width() - left - right;
+    s.width = rcParent.Width() - left - right;
   }
   // 如果同时指定了top/bottom，则忽略height属性
   if (top != NDEF && bottom != NDEF) {
-    s.cy = rcParent.Height() - top - bottom;
+    s.height = rcParent.Height() - top - bottom;
   }
 
   // 再次确认最小最大尺寸
@@ -309,14 +309,14 @@ void DesktopLayout::Arrange(Window *pWindow) {
   int minHeight = pWindow->GetMinHeight();
   int maxWidth = pWindow->GetMinWidth();
   int maxHeight = pWindow->GetMaxHeight();
-  if (minWidth > 0 && s.cx < minWidth)
-    s.cx = minWidth;
-  if (minHeight > 0 && s.cy < minHeight)
-    s.cy = minHeight;
-  if (maxWidth > 0 && s.cx > maxWidth)
-    s.cx = maxWidth;
-  if (maxHeight > 0 && s.cy > maxHeight)
-    s.cy = maxHeight;
+  if (minWidth > 0 && s.width < minWidth)
+    s.width = minWidth;
+  if (minHeight > 0 && s.height < minHeight)
+    s.height = minHeight;
+  if (maxWidth > 0 && s.width > maxWidth)
+    s.width = maxWidth;
+  if (maxHeight > 0 && s.height > maxHeight)
+    s.height = maxHeight;
 
   // 计算出坐标
   if (left != NDEF) {
@@ -324,11 +324,11 @@ void DesktopLayout::Arrange(Window *pWindow) {
     x += pWindow->GetMarginL();
   } else {
     if (right != NDEF) {
-      x = rcParent.right - right - s.cx; // right是指窗口右侧距离屏幕右侧的距离
+      x = rcParent.right - right - s.width; // right是指窗口右侧距离屏幕右侧的距离
       x -= pWindow->GetMarginR();
     } else {
       // 居中
-      x = rcParent.left + (rcParent.Width() - s.cx) / 2;
+      x = rcParent.left + (rcParent.Width() - s.width) / 2;
     }
   }
   if (top != NDEF) {
@@ -336,29 +336,29 @@ void DesktopLayout::Arrange(Window *pWindow) {
     y += pWindow->GetMarginT();
   } else {
     if (bottom != NDEF) {
-      y = rcParent.bottom - bottom - s.cy; // 同right
+      y = rcParent.bottom - bottom - s.height; // 同right
       y -= pWindow->GetMarginB();
     } else {
       // 居中
-      y = rcParent.top + (rcParent.Height() - s.cy) / 2;
+      y = rcParent.top + (rcParent.Height() - s.height) / 2;
     }
   }
 
   // 限制在屏幕之内
   if (x < rcLimit.left)
     x = rcLimit.left;
-  else if (x + s.cx > rcLimit.right)
-    x = rcLimit.right - s.cx;
+  else if (x + s.width > rcLimit.right)
+    x = rcLimit.right - s.width;
 
   if (y < rcLimit.top)
     y = rcLimit.top;
-  else if (y + s.cy > rcLimit.bottom)
-    y = rcLimit.bottom - s.cy;
+  else if (y + s.height > rcLimit.bottom)
+    y = rcLimit.bottom - s.height;
 
-  RECT rcClientOld, rcClientNew;
+  Rect rcClientOld, rcClientNew;
   GetClientRect(pWindow->m_hWnd, &rcClientOld);
 
-  pWindow->SetObjectPos(x, y, s.cx, s.cy, SWP_NOREDRAW);
+  pWindow->SetObjectPos(x, y, s.width, s.height, SWP_NOREDRAW);
 
   // 解决如果窗口大小没有发生改变，改变窗口没有收到WM_SIZE时，手动布局一次
   GetClientRect(pWindow->m_hWnd, &rcClientNew);

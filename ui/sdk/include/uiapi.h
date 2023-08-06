@@ -1,9 +1,9 @@
 #ifndef _UI_API_H_
 #define _UI_API_H_
 
-#include "include/base/xmldefine.h"
-#include "include/base/uidefine.h"
 #include "include/common.h"
+#include "include/macro/xmldefine.h"
+#include "include/macro/uidefine.h"
 
 namespace ui {
 

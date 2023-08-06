@@ -15,15 +15,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 namespace ui {
-void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pObj, COLORREF color, const RECT& rBorder)
+void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pObj, COLORREF color, const Rect& rBorder)
 {
     IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
     if (nullptr == pRenderTarget)
         return ;
 
-    // »æÖÆ±ß¿ò£¬ÓÉÓÚÖ±½Óµ÷ÓÃRectangle´´½¨Ö¸¶¨¿í¶ÈµÄPENºó½øĞĞ»æÖÆ£¬»áµ¼ÖÂPENµÄ
-    // Ò»°ëÇøÓòÎ»ÓÚ¿Ø¼ş¼ô²ÃÇøÓòÍâÃæ¡£Òò´ËÔÚÕâÀïÓÃFillRectÀ´ÊµÏÖ±ß¿òµÄ»æÖÆ¡£
-    // Í¬Ê±Ò²Ö§³ÖÁËµ±¸÷¸ö±ß¿ò´óĞ¡²»Ò»ÖÂÊ±µÄ»æÖÆ
+    // ç»˜åˆ¶è¾¹æ¡†ï¼Œç”±äºç›´æ¥è°ƒç”¨Rectangleåˆ›å»ºæŒ‡å®šå®½åº¦çš„PENåè¿›è¡Œç»˜åˆ¶ï¼Œä¼šå¯¼è‡´PENçš„
+    // ä¸€åŠåŒºåŸŸä½äºæ§ä»¶å‰ªè£åŒºåŸŸå¤–é¢ã€‚å› æ­¤åœ¨è¿™é‡Œç”¨FillRectæ¥å®ç°è¾¹æ¡†çš„ç»˜åˆ¶ã€‚
+    // åŒæ—¶ä¹Ÿæ”¯æŒäº†å½“å„ä¸ªè¾¹æ¡†å¤§å°ä¸ä¸€è‡´æ—¶çš„ç»˜åˆ¶
 
 #if 0
     if (nullptr == pObj)
@@ -34,7 +34,7 @@ void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pOb
 #ifdef _DEBUG
     if (rBorder.left==0 && rBorder.right==0 && rBorder.top==0 && rBorder.bottom==0)
     {
-        UI_LOG_WARN(_T("%s Ö¸¶¨ÁËborder color£¬µ«Ã»ÓĞÅäÖÃborder"), FUNC_NAME);
+        UI_LOG_WARN(_T("%s æŒ‡å®šäº†border colorï¼Œä½†æ²¡æœ‰é…ç½®border"), FUNC_NAME);
     }
 #endif
 #endif
@@ -43,26 +43,26 @@ void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pOb
     c.a = 255;
     if (0 != rBorder.left)
     {
-        RECT rcLeft = pDrawStruct->rc;
+        Rect rcLeft = pDrawStruct->rc;
         rcLeft.right = rcLeft.left+rBorder.left;
         
         pRenderTarget->DrawRect(&rcLeft, &c);
     }
     if (0 != rBorder.top)
     {
-        RECT rcTop = pDrawStruct->rc;
+        Rect rcTop = pDrawStruct->rc;
         rcTop.bottom = rcTop.top+rBorder.top;
         pRenderTarget->DrawRect(&rcTop, &c);
     }
     if (0 != rBorder.right)
     {
-        RECT rcRight = pDrawStruct->rc;
+        Rect rcRight = pDrawStruct->rc;
         rcRight.left = rcRight.right-rBorder.right;
         pRenderTarget->DrawRect(&rcRight, &c);
     }
     if (0 != rBorder.bottom)
     {
-        RECT rcBottom = pDrawStruct->rc;
+        Rect rcBottom = pDrawStruct->rc;
         rcBottom.top = rcBottom.bottom - rBorder.bottom;
         pRenderTarget->DrawRect(&rcBottom, &c);
     }
@@ -93,7 +93,7 @@ void ColorRender::SetBorderColor(COLORREF col)
     SAFE_RELEASE(m_pBorderColor);
     m_pBorderColor = Color::CreateInstance(col);
 }
-void  ColorRender::SetBorderRegion(const RECT* prc)
+void  ColorRender::SetBorderRegion(const Rect* prc)
 {
     if (nullptr == prc)
     {
@@ -209,9 +209,9 @@ void SysColorRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 		pRenderTarget->DrawRect(&pDrawStruct->rc, &c);
     }
 
-	// »æÖÆ±ß¿ò£¬ÓÉÓÚÖ±½Óµ÷ÓÃRectangle´´½¨Ö¸¶¨¿í¶ÈµÄPENºó½øĞĞ»æÖÆ£¬»áµ¼ÖÂPENµÄ
-	// Ò»°ëÇøÓòÎ»ÓÚ¿Ø¼ş¼ô²ÃÇøÓòÍâÃæ¡£Òò´ËÔÚÕâÀïÓÃFillRectÀ´ÊµÏÖ±ß¿òµÄ»æÖÆ¡£
-	// Í¬Ê±Ò²Ö§³ÖÁËµ±¸÷¸ö±ß¿ò´óĞ¡²»Ò»ÖÂÊ±µÄ»æÖÆ
+	// ç»˜åˆ¶è¾¹æ¡†ï¼Œç”±äºç›´æ¥è°ƒç”¨Rectangleåˆ›å»ºæŒ‡å®šå®½åº¦çš„PENåè¿›è¡Œç»˜åˆ¶ï¼Œä¼šå¯¼è‡´PENçš„
+	// ä¸€åŠåŒºåŸŸä½äºæ§ä»¶å‰ªè£åŒºåŸŸå¤–é¢ã€‚å› æ­¤åœ¨è¿™é‡Œç”¨FillRectæ¥å®ç°è¾¹æ¡†çš„ç»˜åˆ¶ã€‚
+	// åŒæ—¶ä¹Ÿæ”¯æŒäº†å½“å„ä¸ªè¾¹æ¡†å¤§å°ä¸ä¸€è‡´æ—¶çš„ç»˜åˆ¶
 
 	if (-1 == m_nBorderColorIndex)
 		return;
@@ -223,25 +223,25 @@ void SysColorRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 // 	m_pObject->GetBorderRegion(&rBorder);
 // 	if (0 != rBorder.left)
 // 	{
-// 		RECT rcLeft = *prc;
+// 		Rect rcLeft = *prc;
 // 		rcLeft.right = rBorder.left;
 // 		pRenderTarget->FillRect(&rcLeft, colorborder);
 // 	}
 // 	if (0 != rBorder.top)
 // 	{
-// 		RECT rcTop = *prc;
+// 		Rect rcTop = *prc;
 // 		rcTop.bottom = rBorder.top;
 // 		pRenderTarget->FillRect(&rcTop, colorborder);
 // 	}
 // 	if (0 != rBorder.right)
 // 	{
-// 		RECT rcRight = *prc;
+// 		Rect rcRight = *prc;
 // 		rcRight.left = rcRight.right-rBorder.right;
 // 		pRenderTarget->FillRect(&rcRight, colorborder);
 // 	}
 // 	if (0 != rBorder.bottom)
 // 	{
-// 		RECT rcBottom = *prc;
+// 		Rect rcBottom = *prc;
 // 		rcBottom.top = rcBottom.bottom - rBorder.bottom;
 // 		pRenderTarget->FillRect(&rcBottom, colorborder);
 // 	}
@@ -296,7 +296,7 @@ void GradientRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 	if(nullptr == pRenderTarget || nullptr == m_pColorFrom || nullptr == m_pColorTo)
 		return;
 
-	RECT rc = {0,0, this->m_pObject->GetWidth(), this->m_pObject->GetHeight()};
+	Rect rc = {0,0, this->m_pObject->GetWidth(), this->m_pObject->GetHeight()};
 
 	if (m_nGradientDir == RENDER_COLOR_GRADIENT_DIR_H)
 	{
@@ -395,7 +395,7 @@ void  ColorListRender::LoadBkColor(const wchar_t* szText)
     int nCount = (int)vColors.size();
 
     if (0 == m_nCount)
-        this->SetCount(nCount); //  Èç¹ûÎ´ÏÔÊ¾Ö¸¶¨count£¬Ôò×Ô¶¯È¡ÕâÀïµÄ´óĞ¡
+        this->SetCount(nCount); //  å¦‚æœæœªæ˜¾ç¤ºæŒ‡å®šcountï¼Œåˆ™è‡ªåŠ¨å–è¿™é‡Œçš„å¤§å°
 
     for (int i = 0; i < m_nCount && i < nCount; i++ )
     {
@@ -434,7 +434,7 @@ void  ColorListRender::LoadBorderColor(const wchar_t* szText)
     int nCount = (int)vColors.size();
 
     if (0 == m_nCount)
-        this->SetCount(nCount); //  Èç¹ûÎ´ÏÔÊ¾Ö¸¶¨count£¬Ôò×Ô¶¯È¡ÕâÀïµÄ´óĞ¡
+        this->SetCount(nCount); //  å¦‚æœæœªæ˜¾ç¤ºæŒ‡å®šcountï¼Œåˆ™è‡ªåŠ¨å–è¿™é‡Œçš„å¤§å°
 
     for (int i = 0; i < m_nCount && i < nCount; i++ )
     {
@@ -495,14 +495,14 @@ void ColorListRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 	if (nRealState >= m_nCount)
 		nRealState = 0;
 
-	if (nullptr == m_vBorderColor[nRealState])   // ²»»æÖÆ±ß¿ò
+	if (nullptr == m_vBorderColor[nRealState])   // ä¸ç»˜åˆ¶è¾¹æ¡†
 	{
 		if (m_vBkColor[nRealState])
 		{
 			pRenderTarget->DrawRect(&pDrawStruct->rc, m_vBkColor[nRealState]);
 		}
 	}
-	else                           // »æÖÆ±ß¿ò
+	else                           // ç»˜åˆ¶è¾¹æ¡†
 	{
 		if (m_vBkColor[nRealState])
 			pRenderTarget->Rectangle(&pDrawStruct->rc, m_vBorderColor[nRealState], m_vBkColor[nRealState], 1, false);

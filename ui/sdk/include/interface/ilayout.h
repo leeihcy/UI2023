@@ -1,7 +1,8 @@
 #ifndef _ILAYOUT_H_
 #define _ILAYOUT_H_
-#include "include/base/uidefine.h"
-#include "ui/sdk/include/base/xmldefine.h"
+#include "include/macro/uidefine.h"
+#include "include/util/rect.h"
+#include "ui/sdk/include/macro/xmldefine.h"
 namespace ui
 {
 class Object;
@@ -14,9 +15,9 @@ struct ILayoutParam : public IRootInterface
     virtual void  Release() = 0;
 
     //  在布局前，计算控件期望的大小
-    virtual SIZE  CalcDesiredSize() = 0;
+    virtual Size  CalcDesiredSize() = 0;
 
-    // 由当前坐标RECT反推出布局参数
+    // 由当前坐RectT反推出布局参数
     virtual void  UpdateByRect() = 0;
 
     // 序列化
@@ -103,7 +104,7 @@ struct ILayout : public IRootInterface
     virtual void  Release() = 0;
     
     virtual LAYOUTTYPE  GetLayoutType() = 0;
-    virtual SIZE  Measure() = 0;
+    virtual Size  Measure() = 0;
     virtual void  Arrange(IObject* pObjToArrage=nullptr) = 0;
     virtual void  Serialize(SERIALIZEDATA* pData) = 0;
     virtual ILayoutParam*  CreateLayoutParam(IObject* pObj) = 0;  

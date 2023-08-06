@@ -52,7 +52,7 @@ HRESULT  CDragFeedback::GiveFeedback(unsigned int dwEffect)
 {
     if (m_strPrevDescription != m_strDescription)
     {
-        POINT pt;
+        Point pt;
         ::GetCursorPos(&pt);
         UpdateTextWnd(m_hIcon, m_strDescription.c_str(), pt.x+14, pt.y+16);
     }
@@ -86,9 +86,9 @@ HRESULT  CDragFeedback::GiveFeedback(unsigned int dwEffect)
     }
 }
 
-void  CDragFeedback::Create(HBITMAP hDragImage, POINT ptOffset)
+void  CDragFeedback::Create(HBITMAP hDragImage, Point ptOffset)
 {
-    POINT pt = {0};
+    Point pt = {0};
     GetCursorPos(&pt);
     pt.x -= ptOffset.x;
     pt.y -= ptOffset.y;
@@ -170,12 +170,12 @@ void  CDragFeedback::UpdateTextWnd(
     // 测量
     HDC hDC = CreateCompatibleDC(nullptr);
     HFONT hOldFont = (HFONT)SelectObject(hDC, m_hFont);
-    SIZE sizeText = {0};
+    Size sizeText = {0};
     GetTextExtentPoint32(hDC, szText, (int)wcslen(szText), &sizeText);
     SelectObject(hDC, hOldFont);
     DeleteDC(hDC);
 
-	SIZE sizeWnd = sizeText;
+	Size sizeWnd = sizeText;
 
 	const int icon_text_margin = 3;
 	unsigned int nIconW = 0;
@@ -235,7 +235,7 @@ void  CDragFeedback::UpdateTextWnd(
 
     // 文字 
     SetBkMode(hDC, TRANSPARENT);
-    RECT rcText = {0, 0, sizeWnd.cx, sizeWnd.cy};
+    Rect rcText = {0, 0, sizeWnd.cx, sizeWnd.cy};
     rcText.left += padding.left;
     rcText.top += padding.top;
     rcText.right -= padding.right;
@@ -274,8 +274,8 @@ void  CDragFeedback::UpdateTextWnd(
     }
 
     // 提交到屏幕
-    POINT ptSrc = {0, 0};
-    POINT ptDst = {x, y};
+    Point ptSrc = {0, 0};
+    Point ptDst = {x, y};
     BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
     UpdateLayeredWindow(m_hTextWnd, nullptr, 
 			&ptDst, &sizeWnd, hDC,
@@ -295,8 +295,8 @@ HWND  CDragFeedback::CreateDragImageWnd(HBITMAP hBitmap, int x, int y)
 	BITMAP bm = {sizeof(bm)};
 	GetObject(hBitmap, sizeof(bm), &bm);
 
-	POINT ptDst = {x, y};
-	SIZE  sizeDst = {bm.bmWidth, bm.bmHeight};
+	Point ptDst = {x, y};
+	Size  sizeDst = {bm.bmWidth, bm.bmHeight};
 
 	HWND hWnd = CreateWindowEx(
 		WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_TOPMOST|WS_EX_TOOLWINDOW, 
@@ -313,7 +313,7 @@ HWND  CDragFeedback::CreateDragImageWnd(HBITMAP hBitmap, int x, int y)
 
 	ShowWindow(hWnd, SW_SHOWNOACTIVATE);
 
-	POINT ptSrc = {0, 0};
+	Point ptSrc = {0, 0};
 	HDC hDC = CreateCompatibleDC(nullptr);
 	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hDC, hBitmap);
 	BLENDFUNCTION bf = {AC_SRC_OVER, 0, 180, AC_SRC_ALPHA};
@@ -349,7 +349,7 @@ long CALLBACK MouseProc(
 	return CallNextHookEx(hHook, nCode, wParam, lParam);
 }
 
-void  CDragFeedback::OnMouseMove(POINT pt)
+void  CDragFeedback::OnMouseMove(Point pt)
 {
     if (!m_hImageWnd)
         return;
@@ -484,7 +484,7 @@ long UIDoDragDrop(
 		unsigned int dwOKEffect,         
 		unsigned int* pdwEffect,        
 		HBITMAP hbmpDragImage,
-		POINT ptOffset)
+		Point ptOffset)
 {
     CDragFeedback  feedback;
     feedback.Create(hbmpDragImage, ptOffset);

@@ -28,11 +28,11 @@ void  GdiplusRenderTarget::Release()
     delete this;
 }
 
-#if 0  // Ğ§ÂÊÌ«µÍ£¬·ÏÆú
+#if 0  // æ•ˆç‡å¤ªä½ï¼ŒåºŸå¼ƒ
 //
 //	Remark
-//		µ÷ÓÃGraphicsµÄGetHDC£¬»ñÈ¡µ½µÄHDC²»»á¼Ì³ĞGraphicsµÄÈÎºÎÊôĞÔ£¬Òò´ËĞèÒªÎÒÃÇ×Ô¼ºÔÙÉèÖÃÒ»´ÎÊôĞÔ
-//		ÓÉÓÚFONT¡¢text colorÊôĞÔÒÆµ½DrawStringÖĞµ±³¡ÉèÖÃ£¬Òò´ËÕâÁ½¸öÊôĞÔÃ»ÓĞÉèÖÃ
+//		è°ƒç”¨Graphicsçš„GetHDCï¼Œè·å–åˆ°çš„HDCä¸ä¼šç»§æ‰¿Graphicsçš„ä»»ä½•å±æ€§ï¼Œå› æ­¤éœ€è¦æˆ‘ä»¬è‡ªå·±å†è®¾ç½®ä¸€æ¬¡å±æ€§
+//		ç”±äºFONTã€text colorå±æ€§ç§»åˆ°DrawStringä¸­å½“åœºè®¾ç½®ï¼Œå› æ­¤è¿™ä¸¤ä¸ªå±æ€§æ²¡æœ‰è®¾ç½®
 //
 //		MSDN:
 //			Any state changes you make to the device context between GetHDC and ReleaseHDC will 
@@ -40,7 +40,7 @@ void  GdiplusRenderTarget::Release()
 //
 HDC GdiplusRenderTarget::GetHDC()
 {
-	UI_LOG_DEBUG(_T("%s advise: ¸Ãº¯ÊıĞ§ÂÊÌ«µÍ£¬×îºÃ²»Òªµ÷ÓÃ"), FUNC_NAME);
+	UI_LOG_DEBUG(_T("%s advise: è¯¥å‡½æ•°æ•ˆç‡å¤ªä½ï¼Œæœ€å¥½ä¸è¦è°ƒç”¨"), FUNC_NAME);
 
 	if (NULL == m_pGraphics)
 		return NULL;
@@ -50,7 +50,7 @@ HDC GdiplusRenderTarget::GetHDC()
 
 	Gdiplus::Region r;
 	m_pGraphics->GetClip(&r);
-	HRGN hRgn = r.GetHRGN(m_pGraphics);  // ±ØĞëÔÚGetHDCÇ°Ãæ»ñÈ¡£¬·ñÔògraphics½«´¦ÓÚbusy×´Ì¬
+	HRGN hRgn = r.GetHRGN(m_pGraphics);  // å¿…é¡»åœ¨GetHDCå‰é¢è·å–ï¼Œå¦åˆ™graphicså°†å¤„äºbusyçŠ¶æ€
 
 	HDC hDC = m_pGraphics->GetHDC();
 
@@ -69,15 +69,15 @@ void GdiplusRenderTarget::ReleaseHDC( HDC hDC)
 }
 #endif  
 
-// [×¢]£º»¹´æÔÚÒ»¸öÎÊÌâ£¬²ÉÓÃgdiplus»æÖÆ³öµÄĞı×ªÍ¼Ïñ±ßÔµÍ¸Ã÷ÏñËØ»á¸ü°µ£¨d2d/d3d¾Í±È½Ï´¿£©£¬Ê²Ã´Ô­Òò
+// [æ³¨]ï¼šè¿˜å­˜åœ¨ä¸€ä¸ªé—®é¢˜ï¼Œé‡‡ç”¨gdiplusç»˜åˆ¶å‡ºçš„æ—‹è½¬å›¾åƒè¾¹ç¼˜é€æ˜åƒç´ ä¼šæ›´æš—ï¼ˆd2d/d3då°±æ¯”è¾ƒçº¯ï¼‰ï¼Œä»€ä¹ˆåŸå› 
 void  InitGraphics(Gdiplus::Graphics& g)
 {
-	g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic); // ¿¹¾â³İ images are scaled or rotated
-	g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);   //  ¿¹¾â³İ lines and curves
-	g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);  // Ïû³ı¿¹¾â³İ²úÉúµÄ±ßÔµĞéÏß
+	g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic); // æŠ—é”¯é½¿ images are scaled or rotated
+	g.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);   //  æŠ—é”¯é½¿ lines and curves
+	g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);  // æ¶ˆé™¤æŠ—é”¯é½¿äº§ç”Ÿçš„è¾¹ç¼˜è™šçº¿
 
-    // ×¢: ÔÚÀ­ÉìÒ»ÕÅ´¿Í¼Ê±£¬Èç¹ûÓÉÓÚ¿¹¾â³İµ¼ÖÂµÄ±ßÔµĞé»¯ÏÖÏó£¬
-    //     ¿ÉÒÔÔÚ»æÖÆÊ±¼ÓÉÏSetWrapModeÀ´½â¾ö
+    // æ³¨: åœ¨æ‹‰ä¼¸ä¸€å¼ çº¯å›¾æ—¶ï¼Œå¦‚æœç”±äºæŠ—é”¯é½¿å¯¼è‡´çš„è¾¹ç¼˜è™šåŒ–ç°è±¡ï¼Œ
+    //     å¯ä»¥åœ¨ç»˜åˆ¶æ—¶åŠ ä¸ŠSetWrapModeæ¥è§£å†³
 //     Gdiplus::ImageAttributes  attr;
 //     attr.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
 }
@@ -98,7 +98,7 @@ void  GdiplusRenderTarget::ReleaseHDC(HDC hDC)
 {
 }
 
-// ¸ÃHDC²»ĞèÒªÊÍ·Å 
+// è¯¥HDCä¸éœ€è¦é‡Šæ”¾ 
 HDC GdiplusRenderTarget::GetBindHDC()
 {
 	return m_hBindDC;
@@ -113,7 +113,7 @@ HRGN GdiplusRenderTarget::GetClipRgn()
 // 	return region.GetHRGN(m_pGraphics);
 
     HRGN hRgn = ::CreateRectRgn(0,0,0,0);
-    if (1 != ::GetClipRgn(GetHDC(), hRgn))  // ¿Õ»òÕßÊ§°Ü
+    if (1 != ::GetClipRgn(GetHDC(), hRgn))  // ç©ºæˆ–è€…å¤±è´¥
     {
         ::DeleteObject(hRgn);
         hRgn = NULL;
@@ -121,14 +121,14 @@ HRGN GdiplusRenderTarget::GetClipRgn()
     return hRgn;
 }
 
-// ²»ÄÜÖ»ÉèÖÃhDCµÄ¼ô²Ã£¬·ñÔòµ÷ÓÃgdiplus»æÖÆ£¨ÈçÇøÓò£©Ê±½«³¬³ö
-// µ«gdiplusµÄÇøÓòÉèÖÃĞ§¹ûÕ¦¾ÍÕâÃ´µÍÄØ
+// ä¸èƒ½åªè®¾ç½®hDCçš„å‰ªè£ï¼Œå¦åˆ™è°ƒç”¨gdiplusç»˜åˆ¶ï¼ˆå¦‚åŒºåŸŸï¼‰æ—¶å°†è¶…å‡º
+// ä½†gdiplusçš„åŒºåŸŸè®¾ç½®æ•ˆæœå’‹å°±è¿™ä¹ˆä½å‘¢
 int GdiplusRenderTarget::SelectClipRgn( HRGN hRgn, int nMode)
 {
     if (RGN_COPY == nMode && NULL != hRgn)
         ::SelectClipRgn(GetHDC(), hRgn);
     else
-        ::ExtSelectClipRgn(GetHDC(), hRgn, nMode);  // ÎªgdiÀàĞÍ´øalphaÍ¨µÀµÄÎ»Í¼»æÖÆ×¼±¸µÄ
+        ::ExtSelectClipRgn(GetHDC(), hRgn, nMode);  // ä¸ºgdiç±»å‹å¸¦alphaé€šé“çš„ä½å›¾ç»˜åˆ¶å‡†å¤‡çš„
 
     Gdiplus::Status s = Gdiplus::Ok;
 #if 0
@@ -141,7 +141,7 @@ int GdiplusRenderTarget::SelectClipRgn( HRGN hRgn, int nMode)
 		return (int)s;
 	}
 
-// 	Gdiplus::Region* pRegion = Gdiplus::Region::FromHRGN(hRgn);   // ×¢Òâ£ºÔÚÕâÀïÇ§Íò²»ÒªÊ¹ÓÃRegion¶ÔÏó½øĞĞsetclip£¬·ñÔò»áµ¼ÖÂµ±Ç°µÄclip¸úËævieworg¶øÆ«ÒÆ
+// 	Gdiplus::Region* pRegion = Gdiplus::Region::FromHRGN(hRgn);   // æ³¨æ„ï¼šåœ¨è¿™é‡Œåƒä¸‡ä¸è¦ä½¿ç”¨Regionå¯¹è±¡è¿›è¡Œsetclipï¼Œå¦åˆ™ä¼šå¯¼è‡´å½“å‰çš„clipè·Ÿéšvieworgè€Œåç§»
 // 	if (NULL == pRegion)
 // 		return ERROR;
 
@@ -176,7 +176,7 @@ int GdiplusRenderTarget::SelectClipRgn( HRGN hRgn, int nMode)
 		break;
 	}
 
-	s = m_pGraphics->SetClip(hRgn,mode);  // Ğ§ÂÊ·Ç³£µÍ£ºÓÅ»¯£¡
+	s = m_pGraphics->SetClip(hRgn,mode);  // æ•ˆç‡éå¸¸ä½ï¼šä¼˜åŒ–ï¼
 	SAFE_DELETE_GDIOBJECT(hRgnTemp);
 #endif
 //	delete pRegion;
@@ -243,7 +243,7 @@ BOOL GdiplusRenderTarget::OffsetViewportOrgEx( int xOffset, int yOffset, LPPOINT
 // 		lpPoint->y = round(m.OffsetY());
 // 	}
 
-	::OffsetViewportOrgEx(GetHDC(), xOffset, yOffset, lpPoint);  // ÎªgdiÀàĞÍ´øalphaÍ¨µÀµÄÎ»Í¼»æÖÆ×¼±¸µÄ
+	::OffsetViewportOrgEx(GetHDC(), xOffset, yOffset, lpPoint);  // ä¸ºgdiç±»å‹å¸¦alphaé€šé“çš„ä½å›¾ç»˜åˆ¶å‡†å¤‡çš„
 
 #ifdef _DEBUG
 	::GetViewportOrgEx(GetHDC(), &m_ptOffset);
@@ -266,7 +266,7 @@ BOOL GdiplusRenderTarget::SetViewportOrgEx( int x, int y, LPPOINT lpPoint )
 // 		lpPoint->y = round(m.OffsetY());
 // 	}
 
-	::SetViewportOrgEx(GetHDC(), x, y, lpPoint);  // ÎªgdiÀàĞÍ´øalphaÍ¨µÀµÄÎ»Í¼»æÖÆ×¼±¸µÄ
+	::SetViewportOrgEx(GetHDC(), x, y, lpPoint);  // ä¸ºgdiç±»å‹å¸¦alphaé€šé“çš„ä½å›¾ç»˜åˆ¶å‡†å¤‡çš„
 
 #ifdef _DEBUG
 	::GetViewportOrgEx(GetHDC(), &m_ptOffset);
@@ -431,13 +431,13 @@ void GdiplusRenderTarget::BindHDC(HDC hDC)
 	m_hBindDC = hDC;
 
 // 	HBITMAP hMemBitmap = (HBITMAP) GetCurrentObject(m_hDC, OBJ_BITMAP);
-// 	//	m_pGdiMemBitmap = new Gdiplus::Bitmap(hMemBitmap,NULL);  // ÕâÖÖ·½Ê½ÓÉÓÚÊÇÖØĞÂ´´½¨Ò»ÕÅÎ»Í¼£¬»á´óÁ¿ÏûºÄÄÚ´æ¡£
+// 	//	m_pGdiMemBitmap = new Gdiplus::Bitmap(hMemBitmap,NULL);  // è¿™ç§æ–¹å¼ç”±äºæ˜¯é‡æ–°åˆ›å»ºä¸€å¼ ä½å›¾ï¼Œä¼šå¤§é‡æ¶ˆè€—å†…å­˜ã€‚
 // 
 // 	DIBSECTION  dibSection;
 // 	GetObject(hMemBitmap, sizeof(DIBSECTION), &dibSection);
 // 
 // 	BYTE* pBits = (BYTE*)dibSection.dsBm.bmBits;
-// 	pBits += (dibSection.dsBm.bmHeight-1)*dibSection.dsBm.bmWidthBytes;  // ½«Ö¸ÕëÒÆµ½µÚÒ»ĞĞÊı¾İÎ»ÖÃ
+// 	pBits += (dibSection.dsBm.bmHeight-1)*dibSection.dsBm.bmWidthBytes;  // å°†æŒ‡é’ˆç§»åˆ°ç¬¬ä¸€è¡Œæ•°æ®ä½ç½®
 // 	m_pGdiMemBitmap = new Gdiplus::Bitmap(dibSection.dsBm.bmWidth, dibSection.dsBm.bmHeight, -dibSection.dsBm.bmWidthBytes, PixelFormat32bppARGB, (BYTE*)pBits);
 }
 
@@ -477,20 +477,20 @@ bool  GdiplusRenderTarget::BeginDraw()
 //    HDC hDC = GetHDC();
 	if (0 == m_lDrawingRef)
 	{
-        // ²ÉÓÃÕâÖÖ·½Ê½´´½¨³öÀ´µÄgraphics£¬ÔÙµ÷ÓÃgethdc£¬·µ»ØµÄ¾ÍÊÇÔ­Ê¼µÄhDC£¬ÎŞ·¨Ê¹ÓÃalphaÍ¨µÀ
+        // é‡‡ç”¨è¿™ç§æ–¹å¼åˆ›å»ºå‡ºæ¥çš„graphicsï¼Œå†è°ƒç”¨gethdcï¼Œè¿”å›çš„å°±æ˜¯åŸå§‹çš„hDCï¼Œæ— æ³•ä½¿ç”¨alphaé€šé“
 		//	m_pGraphics = Gdiplus::Graphics::FromHDC(hDC);   
 
-        // Ê¹ÓÃÄÚ´æÍ¼Æ¬´´½¨³öÀ´µÄgraphics£¬ÔÙµ÷ÓÃgethdc£¬¾ÍÄÜÈÃHDCÊ¹ÓÃalphaÍ¨µÀ <-- ·ÅÆú£¡Ğ§ÂÊÌ«µÍ¡£Ö±½ÓÊ¹ÓÃHDC´´½¨°É
+        // ä½¿ç”¨å†…å­˜å›¾ç‰‡åˆ›å»ºå‡ºæ¥çš„graphicsï¼Œå†è°ƒç”¨gethdcï¼Œå°±èƒ½è®©HDCä½¿ç”¨alphaé€šé“ <-- æ”¾å¼ƒï¼æ•ˆç‡å¤ªä½ã€‚ç›´æ¥ä½¿ç”¨HDCåˆ›å»ºå§
 		// m_pGraphics = new Gdiplus::Graphics(hDC/*m_pGdiMemBitmap*/);  
 
-        // ÆôÓÃGDIPLUSµÄcleartype¹¦ÄÜ
+        // å¯ç”¨GDIPLUSçš„cleartypeåŠŸèƒ½
         // m_pGraphics->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAliasGridFit);
-        // Ïû³ı¾â³İÄ£Ê½
+        // æ¶ˆé™¤é”¯é½¿æ¨¡å¼
         // m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
         // m_pGraphics->SetPixelOffsetMode(PixelOffsetModeHighQuality);
 
-		// ÅĞ¶ÏHDCÊÇ·ñ±»ÉèÖÃ¹ıÁËMetaRgn . ps. removed 20130206 ÔÚÏÔÊ¾flashÊ±£¬»áÆµ·±µ÷ÓÃBeginDraw»æÖÆ£¬²âÊÔÖĞ·¢ÏÖ
-		// SelectClipRgnÖĞµÄSetClip»áµ¼ÖÂĞ§ÂÊ´ó´óµÄÏÂ½µ¡£ÒòÎªÉèÖÃmeta rgnÊÇÎªÁË¼Ó¿ìËÙ¶ÈµÄ£¬½á¹ûÈ´±äµÄ¸üÂıÁË
+		// åˆ¤æ–­HDCæ˜¯å¦è¢«è®¾ç½®è¿‡äº†MetaRgn . ps. removed 20130206 åœ¨æ˜¾ç¤ºflashæ—¶ï¼Œä¼šé¢‘ç¹è°ƒç”¨BeginDrawç»˜åˆ¶ï¼Œæµ‹è¯•ä¸­å‘ç°
+		// SelectClipRgnä¸­çš„SetClipä¼šå¯¼è‡´æ•ˆç‡å¤§å¤§çš„ä¸‹é™ã€‚å› ä¸ºè®¾ç½®meta rgnæ˜¯ä¸ºäº†åŠ å¿«é€Ÿåº¦çš„ï¼Œç»“æœå´å˜çš„æ›´æ…¢äº†
 // 		HRGN hRgnMeta = CreateRectRgn(0,0,0,0);
 // 		if (::GetMetaRgn(hDC, hRgnMeta))
 // 		{
@@ -600,9 +600,9 @@ int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, un
 	colText.SetValue(Gdiplus::Color::MakeARGB(254,GetRValue(col), GetGValue(col), GetBValue(col)));
 	Gdiplus::SolidBrush textBrush(colText);
 
-    // ÆôÓÃGDIPLUSµÄcleartype¹¦ÄÜ
+    // å¯ç”¨GDIPLUSçš„cleartypeåŠŸèƒ½
     // m_pGraphics->SetTextRenderingHint(Gdiplus::TextRenderingHintAntiAlias);
-    // Ïû³ı¾â³İÄ£Ê½
+    // æ¶ˆé™¤é”¯é½¿æ¨¡å¼
     // m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
     // m_pGraphics->SetPixelOffsetMode(PixelOffsetModeHighQuality);
 
@@ -646,7 +646,7 @@ void  GdiplusRenderTarget::DrawString(IRenderFont* pFont, DRAWTEXTPARAM* pParam)
 // 	m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingModeInvalid);
 //  m_pGraphics->SetPixelOffsetMode(PixelOffsetModeHighQuality);
 
-// Gdiplus ÎÄ×ÖÌØĞ§ http://www.codeproject.com/Articles/42529/Outline-Text
+// Gdiplus æ–‡å­—ç‰¹æ•ˆ http://www.codeproject.com/Articles/42529/Outline-Text
 /*static*/
 void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, DRAWTEXTPARAM* pParam)
 {
@@ -678,7 +678,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
     Gdiplus::Color colText;
     byte a = pParam->color.a;
     if (a >= 254)
-        a = 254;  // ·ÀÖ¹´©Í¸
+        a = 254;  // é˜²æ­¢ç©¿é€
 
     colText.SetValue(Gdiplus::Color::MakeARGB(a, pParam->color.r, pParam->color.g, pParam->color.b));
     Gdiplus::SolidBrush textBrush(colText);
@@ -720,7 +720,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
 
         HBITMAP hMemBmp = CacheBitmap::GetInstance()->Create(nWidth, nHeight);
         HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMemDC, hMemBmp);
-        //CacheBitmap::GetInstance()->Clear(0 , &rcMem);, Create»áÇå0
+        //CacheBitmap::GetInstance()->Clear(0 , &rcMem);, Createä¼šæ¸…0
 
         {
         Gdiplus::Graphics gMem(hMemDC);
@@ -731,11 +731,11 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         Gdiplus::Color colorTextShadow;
         byte a = pParam->bkcolor.a;
         if (a >= 254)
-            a = 254;  // ·ÀÖ¹´©Í¸
+            a = 254;  // é˜²æ­¢ç©¿é€
         colorTextShadow.SetValue(Gdiplus::Color::MakeARGB(a, pParam->bkcolor.r, pParam->bkcolor.g, pParam->bkcolor.b));
         Gdiplus::SolidBrush textShadowBrush(colorTextShadow);
 
-        // ÒõÓ°
+        // é˜´å½±
         gMem.DrawString(
             pParam->szText,
             -1/*wcslen(szText)*/,
@@ -744,13 +744,13 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
             &format,
             &textShadowBrush);
 
-        // aggÄ£ºı
+        // aggæ¨¡ç³Š
 //          recursive_blur<recursive_blur_calc_rgba<> > blur;
 //          blur.blur(hMemBmp, (double)pParam->wParam, (LPRECT)&rcMem, 0);
-        // webkitÄ£ºı
+        // webkitæ¨¡ç³Š
         ShadowBlur(hMemBmp, pParam->bkcolor.GetGDIValue(), &rcMem, pParam->wParam);
 
-        // ÎÄ×Ö
+        // æ–‡å­—
         gMem.DrawString(
             pParam->szText,
             -1/*wcslen(szText)*/,
@@ -851,11 +851,11 @@ void GdiplusRenderTarget::FillRgn(HRGN hRgn, UI::Color* pColor)
 }
 
 
-// ÔÚ¸øgdiplusÉèÖÃÁËÏû³ı¾â³İÄ£Ê½ºó£¬»áµ¼ÖÂ»æÖÆ³öÀ´µÄrect·¶Î§²»¾«È·£¬ÓĞĞé±ßĞ§¹û¡£
+// åœ¨ç»™gdiplusè®¾ç½®äº†æ¶ˆé™¤é”¯é½¿æ¨¡å¼åï¼Œä¼šå¯¼è‡´ç»˜åˆ¶å‡ºæ¥çš„rectèŒƒå›´ä¸ç²¾ç¡®ï¼Œæœ‰è™šè¾¹æ•ˆæœã€‚
 // m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-// ÀıÈçÒ»¸ö10*10µÄ¾ØĞÎ£¬¾Í»­³ö11*11µÄĞ§¹û£¬²¢ÇÒËÄÖÜÓĞ1pxµÄĞé±ßÓÃÓÚ¿¹¾â³İ
+// ä¾‹å¦‚ä¸€ä¸ª10*10çš„çŸ©å½¢ï¼Œå°±ç”»å‡º11*11çš„æ•ˆæœï¼Œå¹¶ä¸”å››å‘¨æœ‰1pxçš„è™šè¾¹ç”¨äºæŠ—é”¯é½¿
 //
-// 2014.11.28 --> µ÷ÓÃg.SetPixelOffsetMode(PixelOffsetModeHighQuality);¿É½â¾ö¸ÃÎÊÌâ
+// 2014.11.28 --> è°ƒç”¨g.SetPixelOffsetMode(PixelOffsetModeHighQuality);å¯è§£å†³è¯¥é—®é¢˜
 //
 void GdiplusRenderTarget::DrawRect(LPRECT lprc, UI::Color* pColor)
 {
@@ -897,13 +897,13 @@ void GdiplusRenderTarget::TileRect(LPRECT lprc, IRenderBitmap* hBitmap)
         lprc->left, lprc->top, RECTW(lprc), RECTH(lprc));
 }
 
-// Gdiplus off-by-1 error/bug£¬µ÷ÓÃDrawRectangle»­³öÀ´µÄ¾ØĞÎÆ«´ó
+// Gdiplus off-by-1 error/bugï¼Œè°ƒç”¨DrawRectangleç”»å‡ºæ¥çš„çŸ©å½¢åå¤§
 //
 // The reason that the DrawRectangle() method draws a rectangle too wide and too tall, is that the Pen is Top-Left Aligned by default. This results in the top-left edge of the pen aligning itself to the specified bounds and, therefore, produces a Rectangle whose outer edge extends outside the bounds by the width of the pen. To get the pen to draw inside the rectangle you need to decrease the size of the rectangle by the width of the pen.
 // Setting Pen.Alignment to Inside should cause the Pen to draw inside the rectangle, but for a 1 pixel width pen, this setting has no affect. This is the real Bug.
 void  FixDrawRectangle(Gdiplus::Graphics& g, LPCRECT prc, Gdiplus::Color& color, int nPenWidth=1)
 {
-	// Gdiplus::SmoothingModeAntiAliasÈÔÈ»»á½«ÏñËØÀ©´ó1px¡£Òò´ËÖ±½ÓÊ¹ÓÃSmoothingModeDefault
+	// Gdiplus::SmoothingModeAntiAliasä»ç„¶ä¼šå°†åƒç´ æ‰©å¤§1pxã€‚å› æ­¤ç›´æ¥ä½¿ç”¨SmoothingModeDefault
 	Gdiplus::SmoothingMode eOldSmoothMode = g.GetSmoothingMode();
     Gdiplus::PixelOffsetMode eOldPixelOffsetMode = g.GetPixelOffsetMode();
 
@@ -912,9 +912,9 @@ void  FixDrawRectangle(Gdiplus::Graphics& g, LPCRECT prc, Gdiplus::Color& color,
 
 	Gdiplus::Pen pen(color, (Gdiplus::REAL)nPenWidth);
 
-	// ÒòÎªpenÄ¬ÈÏµÄ»æÖÆ·½Ê½ÊÇalign center£¬Òò´Ë¶ÔÓÚÒ»¸öpen width=2£¬´óĞ¡Îª10*10µÄ¾ØĞÎ
-	// ÎªÆäÃè±ßÊ±£¬ÀïÍâ¸÷»­Ò»ÏñËØ£¬Òò´Ë¾ÍĞÎ³ÉÁËÒ»¸ö (-1, -1, 11, 11) µÄ¾ØĞÎ¡£
-	// ¶ÔÓÚÕâÖÖÇé¿ö£¬½«penµÄ¶ÔÆë·½Ê½ĞŞ¸ÄÎªÄÚ¶ÔÆë¼´¿É¡£
+	// å› ä¸ºpené»˜è®¤çš„ç»˜åˆ¶æ–¹å¼æ˜¯align centerï¼Œå› æ­¤å¯¹äºä¸€ä¸ªpen width=2ï¼Œå¤§å°ä¸º10*10çš„çŸ©å½¢
+	// ä¸ºå…¶æè¾¹æ—¶ï¼Œé‡Œå¤–å„ç”»ä¸€åƒç´ ï¼Œå› æ­¤å°±å½¢æˆäº†ä¸€ä¸ª (-1, -1, 11, 11) çš„çŸ©å½¢ã€‚
+	// å¯¹äºè¿™ç§æƒ…å†µï¼Œå°†pençš„å¯¹é½æ–¹å¼ä¿®æ”¹ä¸ºå†…å¯¹é½å³å¯ã€‚
 	if (nPenWidth > 1)
 	{
 		pen.SetAlignment(Gdiplus::PenAlignmentInset);
@@ -925,7 +925,7 @@ void  FixDrawRectangle(Gdiplus::Graphics& g, LPCRECT prc, Gdiplus::Color& color,
 				prc->bottom-prc->top  
 			);  
 	}
-	// penwidth==1Ê±£¬Ê¹ÓÃinsert¶ÔÆë²»¹ÜÓÃ¡£Ô­ÒòÎ´Öª¡£
+	// penwidth==1æ—¶ï¼Œä½¿ç”¨insertå¯¹é½ä¸ç®¡ç”¨ã€‚åŸå› æœªçŸ¥ã€‚
 	else
 	{
 		g.DrawRectangle(&pen,   
@@ -1045,7 +1045,7 @@ void GdiplusRenderTarget::GradientFillV(LPRECT lprc, COLORREF colFrom, COLORREF 
 void GdiplusRenderTarget::BitBlt(int xDest, int yDest, int wDest, int hDest, IRenderTarget* pSrcHDC, int xSrc, int ySrc, DWORD dwRop)
 {
 	UIASSERT(0);
-	// TODO: ¸Ãº¯Êı»¹»á±»µ÷ÓÃÂğ
+	// TODO: è¯¥å‡½æ•°è¿˜ä¼šè¢«è°ƒç”¨å—
 
 // 	if (NULL == pSrcHDC)
 // 		return;
@@ -1284,7 +1284,7 @@ void GdiplusRenderTarget::ImageList_Draw( IRenderBitmap* hBitmap, int x, int y, 
 // 	if (ySrc > pBitmap->GetHeight())
 // 		return false;
 
-	//	m_pGraphics->DrawImage(pBitmap, x,y,xSrc,ySrc, cx,cy, Gdiplus::UnitPixel);  <-- Ê¹ÓÃÕâ¸ö°æ±¾»áµ¼ÖÂÍ¼Æ¬±»·Å´ó...Ô­ÒòÎ´Öª
+	//	m_pGraphics->DrawImage(pBitmap, x,y,xSrc,ySrc, cx,cy, Gdiplus::UnitPixel);  <-- ä½¿ç”¨è¿™ä¸ªç‰ˆæœ¬ä¼šå¯¼è‡´å›¾ç‰‡è¢«æ”¾å¤§...åŸå› æœªçŸ¥
 	Gdiplus::RectF rcDst( (Gdiplus::REAL)x, (Gdiplus::REAL)y, (Gdiplus::REAL)cx, (Gdiplus::REAL)cy);
     Gdiplus::Graphics  g(GetHDC());
 	InitGraphics(g);
@@ -1308,7 +1308,7 @@ void GdiplusRenderTarget::DrawBitmap(IRenderBitmap* hBitmap, DRAWBITMAPPARAM* pP
 	GdiplusRenderTarget::DrawBitmapEx(GetHDC(), p, pParam);
 }
 
-// [×¢]:ÕâÀïµÄalpha»æÖÆĞ§ÂÊºÜµÍ£¬ÌØ±ğÊÇÔÚÊµÏÖ¶¯»­½¥±äĞ§¹ûÊ±£¬Ğ§¹ûºÜ²»ºÃ£¬×îºÃ»¹ÊÇÓÃgdiµÄalpha blend
+// [æ³¨]:è¿™é‡Œçš„alphaç»˜åˆ¶æ•ˆç‡å¾ˆä½ï¼Œç‰¹åˆ«æ˜¯åœ¨å®ç°åŠ¨ç”»æ¸å˜æ•ˆæœæ—¶ï¼Œæ•ˆæœå¾ˆä¸å¥½ï¼Œæœ€å¥½è¿˜æ˜¯ç”¨gdiçš„alpha blend
 void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAPPARAM* pParam)
 {
 	if (p->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS)
@@ -1321,7 +1321,7 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
     Gdiplus::Graphics  g(hBindDC);
 	InitGraphics(g);
 
-	// ÀûÓÃÑÕÉ«¾ØÕóÀ´Ö±½Ó»æÖÆ»Ò¶ÈÍ¼
+	// åˆ©ç”¨é¢œè‰²çŸ©é˜µæ¥ç›´æ¥ç»˜åˆ¶ç°åº¦å›¾
 	Gdiplus::ImageAttributes* pImageAttribute = NULL;
 	Gdiplus::ImageAttributes  imageAttribute;
 
@@ -1429,19 +1429,19 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
 			double tan_x_y_image = (double)pParam->wSrc / (double)pParam->hSrc;
 			double tan_x_y_dest = (double)pParam->wDest / (double)pParam->hDest;
 
-			if (tan_x_y_image > tan_x_y_dest) // ºáÏòÕ¼Âú
+			if (tan_x_y_image > tan_x_y_dest) // æ¨ªå‘å æ»¡
 			{
 				wImage = pParam->wDest;
 				hImage = (int)((double)wImage/tan_x_y_image);
 			}
-			else   // ×İÏòÕ¼Âú
+			else   // çºµå‘å æ»¡
 			{
 				hImage = pParam->hDest;
 				wImage = (int)(hImage*tan_x_y_image);
 			}
 		}
 
-		// ¼ÆËãÍ¼Æ¬ÏÔÊ¾Î»ÖÃ
+		// è®¡ç®—å›¾ç‰‡æ˜¾ç¤ºä½ç½®
 		int xDisplayPos = pParam->xDest + (pParam->wDest-wImage)/2;
 		int yDisplayPos = pParam->yDest + (pParam->hDest-hImage)/2;
 
@@ -1482,7 +1482,7 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
         HBITMAP hCacheBitmap = CacheBitmap::GetInstance()->Create(pParam->wDest, pParam->hDest);
         HBITMAP hOldBitmap = (HBITMAP)::SelectObject(hDC, hCacheBitmap);
 
-        // »æÖÆµ½ÁÙÊ±Î»ÖÃ
+        // ç»˜åˆ¶åˆ°ä¸´æ—¶ä½ç½®
         {
             Gdiplus::Graphics g(hDC);
 			InitGraphics(g);
@@ -1490,13 +1490,13 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
             Gdiplus::ImageAttributes attr;
             if (!pImageAttribute)
                 pImageAttribute = &attr;
-            pImageAttribute->SetWrapMode(Gdiplus::WrapModeTileFlipXY);   // ²»¼ÓÕâ¾ä±ßÔµ»æÖÆ³öÀ´ÓĞÎÊÌâ
+            pImageAttribute->SetWrapMode(Gdiplus::WrapModeTileFlipXY);   // ä¸åŠ è¿™å¥è¾¹ç¼˜ç»˜åˆ¶å‡ºæ¥æœ‰é—®é¢˜
 
             GdiplusRenderTarget::DrawBitmap(&g, p, 0, 0, pParam->wDest, pParam->hDest,
                 pParam->xSrc, pParam->ySrc, pParam->wSrc, pParam->hSrc, pParam->pRegion, true, pImageAttribute);
         }
 
-        // Ô²½Ç´¦Àí
+        // åœ†è§’å¤„ç†
         int& w = pParam->wDest;
         int& h = pParam->hDest;
         if (w > 8 && h > 8)
@@ -1506,7 +1506,7 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
             byte* pBits = (byte*)bm.bmBits;
             int   nPitch = bm.bmWidthBytes;
 
-            // 25%Í¸
+            // 25%é€
             POINT ptAlpha0[4] = { {0, 0}, {w-1, 0}, {0, h-1}, {w-1, h-1} };
             for (int i = 0; i < 4; i++)
             {
@@ -1521,7 +1521,7 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
                 *pAlpha = a;                    // a
             }
 
-            // 50%Í¸
+            // 50%é€
             POINT ptAlpha1[8] = { {1, 0}, {w-2, 0}, {0, 1}, {w-1,1},  {0, h-2}, {w-1, h-2}, {1, h-1}, {w-2, h-1} };
             for (int i = 0; i < 8; i++)
             {
@@ -1552,7 +1552,7 @@ void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAP
             }
         }
 
-        // Ìá½»
+        // æäº¤
         BLENDFUNCTION bf = {AC_SRC_OVER, 0, pParam->nAlpha, AC_SRC_ALPHA};
         AlphaBlend(hBindDC, pParam->xDest, pParam->yDest, w, h, hDC, 0, 0, w, h, bf);
 
@@ -1659,9 +1659,9 @@ void  GdiplusRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam
 
 		Gdiplus::Graphics  gDst(pGdipDst->GetHDC());
 		InitGraphics(gDst);
-		gDst.MultiplyTransform(&matrix); // Óëµ±Ç°µÄÆ«ÒÆ¾ØÕóÏà³Ë
+		gDst.MultiplyTransform(&matrix); // ä¸å½“å‰çš„åç§»çŸ©é˜µç›¸ä¹˜
 
-		// ÓÉÓÚGdiµÄ±ä»»²»´ø¿¹¾â³İ£¬Òò´ËÊ¹ÓÃgdiplusµÄ·½Ê½À´ÊµÏÖ 
+		// ç”±äºGdiçš„å˜æ¢ä¸å¸¦æŠ—é”¯é½¿ï¼Œå› æ­¤ä½¿ç”¨gdiplusçš„æ–¹å¼æ¥å®ç° 
 		Gdiplus::Bitmap*  pBitmap = new Gdiplus::Bitmap(
 				imageData.m_nWidth, 
 				imageData.m_nHeight,
@@ -1693,15 +1693,15 @@ void  GdiplusRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam
 		Matrix44  matrix(pParam->pTransform3d);
 		RECT rcSrc = {pParam->xSrc, pParam->ySrc, pParam->xSrc+pParam->wSrc, pParam->ySrc+pParam->hSrc};
 
-		// ÉèÖÃÎÆÀíÓ³Éä×ø±ê
+		// è®¾ç½®çº¹ç†æ˜ å°„åæ ‡
 		QUAD quad;
-		matrix.MapRect2Quad(&rcSrc, &quad);  // ±ä»»
+		matrix.MapRect2Quad(&rcSrc, &quad);  // å˜æ¢
 		textmapping.SetQuad(&quad, &rcSrc);
 
-		// ÉèÖÃÎÆÀí×ø±ê
+		// è®¾ç½®çº¹ç†åæ ‡
 		textmapping.SetTextureRect(&rcSrc);
 
-		// ÉèÖÃÎÆÀí(src)ºÍÄ¿±ê»º´æ(dest)
+		// è®¾ç½®çº¹ç†(src)å’Œç›®æ ‡ç¼“å­˜(dest)
 		ImageData  srcBuffer;
 		this->GetRenderBufferData(&srcBuffer);
 		textmapping.SetSrcBuffer(&srcBuffer);
@@ -1710,7 +1710,7 @@ void  GdiplusRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam
 		pGdipDst->GetRenderBufferData(&dstBuffer);
 		textmapping.SetDstBuffer(&dstBuffer);
 
-		// äÖÈ¾Î»ÖÃºÍ¼ô²ÃÇøÓò¡£ ²Î¼ûObject::DrawChildObjectµÄ¼ô²Ã´¦Àí·½Ê½
+		// æ¸²æŸ“ä½ç½®å’Œå‰ªè£åŒºåŸŸã€‚ å‚è§Object::DrawChildObjectçš„å‰ªè£å¤„ç†æ–¹å¼
 		POINT  ptOffsetDst;
 		pGdipDst->GetOrigin((int*)&ptOffsetDst.x, (int*)&ptOffsetDst.y);
 		POINT ptDraw = {ptOffsetDst.x + pParam->xDst, ptOffsetDst.y + pParam->yDst};

@@ -1,6 +1,6 @@
 #ifndef _UI_IANIMATE_H_
 #define _UI_IANIMATE_H_
-#include "include/base/uidefine.h"
+#include "include/macro/uidefine.h"
 
 namespace uia
 {

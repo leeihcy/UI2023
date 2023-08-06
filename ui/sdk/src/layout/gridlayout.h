@@ -16,7 +16,7 @@ public:
     virtual void  UpdateByRect();
     virtual void  Serialize(SERIALIZEDATA* pData);
     virtual LAYOUTTYPE  GetLayoutType() { return LAYOUT_TYPE_GRID; }
-    virtual SIZE  CalcDesiredSize();
+    virtual Size  CalcDesiredSize();
     virtual bool  IsSizedByContent();
 
 public:
@@ -67,7 +67,7 @@ public:
 	~GridLayout();
 
     virtual void  Serialize(SERIALIZEDATA*) override;
-    virtual SIZE  Measure() override;
+    virtual Size  Measure() override;
     virtual void  DoArrage(IObject* pObjToArrage=nullptr) override;
     virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
 

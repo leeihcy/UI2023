@@ -82,7 +82,7 @@ void WindowPlatformWin::GetClientRect(Rect *prect) {
     return;
   }
 
-  RECT rc;
+  Rect rc;
   ::GetClientRect(m_hWnd, &rc);
   RECT2Rect(rc, prect);
 }
@@ -92,7 +92,7 @@ void WindowPlatformWin::GetWindowRect(Rect *prect) {
     return;
   }
 
-  RECT rc;
+  Rect rc;
   ::GetWindowRect(m_hWnd, &rc);
   RECT2Rect(rc, prect);
 }
@@ -103,10 +103,10 @@ void WindowPlatformWin::CenterWindow() {
 
 
 // void WindowPlatformWin::Submit(sk_sp<SkSurface> sksurface) {
-void WindowPlatformWin::Submit(IRenderTarget* pRT, const RECT* prect, int count) {
+void WindowPlatformWin::Submit(IRenderTarget* pRT, const Rect* prect, int count) {
   HDC hDC = GetDC(m_hWnd);
   for (uint i = 0; i < count; i++) {
-    RECT &rcInWindow = prect[i];
+    Rect &rcInWindow = prect[i];
 
     Render2TargetParam param = {0};
     param.xSrc = param.xDst = rcInWindow.left;
@@ -135,7 +135,7 @@ bool  WindowPlatformWin::IsWindowVisible()
 	return ::IsWindowVisible(m_hWnd);
 }
 
-void WindowPlatformWin::RECT2Rect(RECT& r, Rect* prect)
+void WindowPlatformWin::RECT2Rect(Rect& r, Rect* prect)
 {
   prect->x = r.left;
   prect->y = r.top;
@@ -151,7 +151,7 @@ long WindowPlatformWin::_OnPaint( unsigned int uMsg, long wParam,long lParam, BO
 {
 	PAINTSTRUCT ps;
 	HDC  hDC = nullptr;
-	RECT rcInvalid = {0};
+	Rect rcInvalid = {0};
 
 	if (0 == wParam)
 	{

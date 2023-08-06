@@ -8,16 +8,19 @@ struct Point {
   int x;
   int y;
 };
+
 struct Size {
   int width;
   int height;
 };
-struct Rect {
+
+struct RectXYWH {
   int x;
   int y;
   int width;
   int height;
 };
+
 struct RectLTRB {
   int left;
   int top;
@@ -25,7 +28,17 @@ struct RectLTRB {
   int bottom;
 };
 
-struct RECT : public RectLTRB {
+struct Rect : public RectLTRB {
+
+  static Rect MakeLTRB(int l, int t, int r, int b) {
+    Rect rect = {l,t,r,b};
+    return rect;
+  }
+  static Rect MakeXYWH(int x, int y, int w, int h) {
+    Rect rect = {x,y,x+w,y+h};
+    return rect;
+  }
+
   void SetEmpty() {
     this->left = 0;
     this->top = 0;
@@ -39,22 +52,16 @@ struct RECT : public RectLTRB {
     right = r;
     bottom = b;
   }
-  void CopyFrom(const RECT &p) {
+  void CopyFrom(const Rect &p) {
     this->left = p.left;
     this->top = p.top;
     this->right = p.right;
     this->bottom = p.bottom;
   }
-  void CopyFrom(const Rect &p) {
-    this->left = p.x;
-    this->top = p.y;
-    this->right = p.x + p.width;
-    this->bottom = p.y + p.height;
-  }
   bool PtIn(const Point &pt) {
     return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;
   }
-  bool Intersect(const RECT &rc, RECT *out) {
+  bool Intersect(const Rect &rc, Rect *out) {
     if (!out) {
       return false;
     }
@@ -70,7 +77,7 @@ struct RECT : public RectLTRB {
   }
 
   // 简单合并成一个大的区域，可能会增加无用的区域。
-  void Union(const RECT &rc, RECT *out) {
+  void Union(const Rect &rc, Rect *out) {
     if (!out) {
       return;
     }
@@ -90,12 +97,12 @@ struct RECT : public RectLTRB {
   int Width() const { return width(); }
   int height() const { return bottom - top; }
   int Height() const { return height(); }
-  bool operator==(const RECT &rc) {
-    return memcmp(this, &rc, sizeof(RECT)) == 0;
+  bool operator==(const Rect &rc) {
+    return memcmp(this, &rc, sizeof(Rect)) == 0;
   }
 };
 
-typedef RECT REGION4;
+typedef Rect REGION4;
 
 } // namespace ui
 #endif

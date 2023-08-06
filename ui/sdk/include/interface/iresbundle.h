@@ -1,7 +1,7 @@
 #ifndef _UI_ISKINRES_H_
 #define _UI_ISKINRES_H_
 
-#include "include/base/uidefine.h"
+#include "include/macro/uidefine.h"
 
 namespace ui
 {

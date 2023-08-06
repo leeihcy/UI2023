@@ -41,9 +41,9 @@ void  AverageLayout::Serialize(SERIALIZEDATA* pData)
     pMapAttrib->GetAttr_int(XML_LAYOUT_AVERAGE_GAP, true, &m_nGap);
 }
 
-SIZE  AverageLayout::Measure()
+Size  AverageLayout::Measure()
 {
-	SIZE  size = {0,0};
+	Size  size = {0,0};
 
 	// 通过子控件来获取自己所需要的大小
 	Object*  pChild = nullptr;
@@ -60,21 +60,21 @@ SIZE  AverageLayout::Measure()
             continue;
         }
 
-		SIZE  s = pChild->GetDesiredSize();
+		Size  s = pChild->GetDesiredSize();
 		
 
 		switch (this->direction)
 		{
 		case LAYOUT_AVERAGE_H:
-			size.cx += s.cx + m_nGap;
-			if (size.cy < s.cy)
-				size.cy = s.cy;
+			size.width += s.width + m_nGap;
+			if (size.height < s.height)
+				size.height = s.height;
 			break;
 
 		case LAYOUT_AVERAGE_V:
-			size.cy += s.cy + m_nGap;
-			if (size.cx < s.cx)
-				size.cx = s.cx;
+			size.height += s.height + m_nGap;
+			if (size.width < s.width)
+				size.width = s.width;
 			break;
 		}
 	}
@@ -90,7 +90,7 @@ void  AverageLayout::DoArrage(IObject* pIObjToArrage)
     int  nDiff = 0;  // 用于解决整除误差。导致没有占满整行。
 
     // 计算平均宽高
-    RECT rcClient;
+    Rect rcClient;
     m_pPanel->GetClientRectInObject(&rcClient);
     int  nPanelWidth  = rcClient.Width();  //m_pPanel->GetWidth();
     int  nPanelHeight = rcClient.Height(); //m_pPanel->GetHeight();
@@ -126,7 +126,7 @@ void  AverageLayout::DoArrage(IObject* pIObjToArrage)
 		{    
 		case LAYOUT_AVERAGE_H:
             {
-                RECT  rcChild;
+                Rect  rcChild;
                 rcChild.left = nConsume1;
                 rcChild.right = rcChild.left + nAverageSize;
                 rcChild.top = 0;
@@ -144,7 +144,7 @@ void  AverageLayout::DoArrage(IObject* pIObjToArrage)
 
 		case LAYOUT_AVERAGE_V:
             {
-                RECT  rcChild;
+                Rect  rcChild;
                 rcChild.top = nConsume1;
                 rcChild.bottom = rcChild.top + nAverageSize;
                 rcChild.left = 0;
@@ -164,7 +164,7 @@ void  AverageLayout::DoArrage(IObject* pIObjToArrage)
 }
 
 
-void  AverageLayout::ArrangeObject_H(Object* pChildObj, RECT* prc)
+void  AverageLayout::ArrangeObject_H(Object* pChildObj, Rect* prc)
 {
     pChildObj->SetObjectPos(
         prc->left + pChildObj->GetMarginL(), 
@@ -175,7 +175,7 @@ void  AverageLayout::ArrangeObject_H(Object* pChildObj, RECT* prc)
 }
 
 
-void  AverageLayout::ArrangeObject_V(Object* pChildObj, RECT* prc)
+void  AverageLayout::ArrangeObject_V(Object* pChildObj, Rect* prc)
 {
     pChildObj->SetObjectPos(
         prc->left + pChildObj->GetMarginL(), 

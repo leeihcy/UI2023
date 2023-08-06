@@ -14,20 +14,12 @@
 
 namespace ui {
 WindowRender::WindowRender(Window &w) : m_window(w) {
-  m_eGRL = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
-  m_lRefCanCommit = 0;
-
-  m_pIWindowRender = nullptr;
   //	m_pHardwareComposition = nullptr;
-  //    m_bNeedRebuildGpuLayerTree = true;
-  m_bNeedAlphaChannel = true;
-
-  m_pCompositor = nullptr;
-  m_pCommitListener = nullptr;
+  //  m_bNeedRebuildGpuLayerTree = true;
 }
 
 WindowRender::~WindowRender() {
-  SAFE_DELETE(m_pCompositor);
+  SAFE_DELETE(m_compositor);
   SAFE_DELETE(m_pIWindowRender);
   //	SAFE_RELEASE(m_pHardwareComposition);
 }
@@ -42,13 +34,198 @@ IWindowRender *WindowRender::GetIWindowRender() {
 void WindowRender::OnSerialize(SERIALIZEDATA *pData) {
   AttributeSerializer s(pData, TEXT("WindowRender"));
 
-  s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(long *)&m_eGRL)
+  s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(long *)&m_grl_type)
       ->FillGraphicsRenderLibraryData()
       ->SetDefault(GRAPHICS_RENDER_LIBRARY_TYPE_GDI);
 
-  s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_bNeedAlphaChannel)
+  s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
       ->SetDefault(true);
 }
+
+// IRenderTarget* 没有引用计数机制
+// 但仍然采用Release进行释放（delete）
+bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
+  if (!pp)
+    return false;
+
+  *pp = UICreateRenderTarget(m_window.GetIUIApplication(), m_grl_type,
+                             m_need_alpha_channel);
+  return true;
+}
+
+void WindowRender::OnWindowSize(unsigned int nWidth, unsigned int nHeight) {
+  if (m_compositor)
+    m_compositor->Resize(nWidth, nHeight);
+}
+void WindowRender::OnWindowPaint(const Rect &dirty) {
+  // 由窗口自动触发的更新，只要直接提交缓存到窗口即可。
+  // 但如果有脏区域，还是要处理一下。
+
+  if (!CanCommit()) {
+    UI_LOG_WARN(L"can not commit now");
+    return;
+  }
+  if (!m_compositor) {
+    return;
+  }
+
+  RectRegion arrDirtyInWindow;
+  m_compositor->UpdateDirty(&arrDirtyInWindow);
+
+  arrDirtyInWindow.Union(dirty);
+  m_compositor->Commit(arrDirtyInWindow);
+}
+
+void WindowRender::SetCanCommit(bool b) {
+  if (b)
+    m_can_commit--;
+  else
+    m_can_commit++;
+}
+
+bool WindowRender::CanCommit() { return 0 == m_can_commit; }
+
+void WindowRender::SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE type) {
+  // 仅在窗口创建之前设置有用
+  m_grl_type = type;
+}
+GRAPHICS_RENDER_LIBRARY_TYPE WindowRender::GetGraphicsRenderType() {
+  return m_grl_type;
+}
+bool WindowRender::GetRequireAlphaChannel() { return m_need_alpha_channel; }
+
+Layer *WindowRender::CreateLayer(IObjectLayerContent *pContent) {
+  if (!pContent)
+    return nullptr;
+
+  Object &obj = pContent->GetObject();
+  Layer *pNewLayer = get_create_compositor()->CreateLayer();
+  pNewLayer->SetContent(pContent);
+
+  if (!m_compositor->GetRootLayer()) {
+    m_compositor->SetRootLayer(pNewLayer);
+    return pNewLayer;
+  }
+
+  // 获取父layer
+  Layer *pParentLayer = pContent->GetParentLayer();
+  if (!pParentLayer) {
+    // 有根结点，但没父结点？
+    UIASSERT(0);
+    pParentLayer = m_compositor->GetRootLayer();
+  }
+
+  // 计算这个layer应该插入在layer tree的哪个位置，需要与object tree对应
+  Layer *pNextLayer = pContent->GetNextLayer();
+  pParentLayer->AddSubLayer(pNewLayer, pNextLayer);
+
+  // 整理子对象的layer
+  Layer *p = pParentLayer->GetFirstChild();
+  while (p) {
+    if (p != pNewLayer) {
+      ILayerContent *pLayerContent = p->GetContent();
+
+      // 发现自己的子对象，替换它，并将它作为自己的子layer
+      if (pLayerContent && pLayerContent->IsChildOf(pContent)) {
+        p->MoveLayer2NewParentEnd(pParentLayer, pNewLayer);
+      }
+    }
+    p = p->GetNext();
+  }
+
+  return pNewLayer;
+}
+
+Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
+  if (!pContent)
+    return nullptr;
+
+  ListItemBase &item = pContent->GetListItem();
+  Layer *pNewLayer = get_create_compositor()->CreateLayer();
+  pNewLayer->SetContent(pContent);
+
+  if (!m_compositor->GetRootLayer()) {
+    m_compositor->SetRootLayer(pNewLayer);
+    return pNewLayer;
+  }
+
+  // 获取父layer
+  Layer *pParentLayer = pContent->GetParentLayer();
+  if (!pParentLayer) {
+    // 有根结点，但没父结点？
+    UIASSERT(0);
+    pParentLayer = m_compositor->GetRootLayer();
+  }
+
+  // 计算这个layer应该插入在layer tree的哪个位置，需要与object tree对应
+  Layer *pNextLayer = pContent->GetNextLayer();
+  pParentLayer->AddSubLayer(pNewLayer, pNextLayer);
+
+  // 整理子对象的layer
+  Layer *p = pParentLayer->GetFirstChild();
+  while (p) {
+    if (p != pNewLayer) {
+      ILayerContent *pLayerContent = p->GetContent();
+
+      // 发现自己的子对象，替换它，并将它作为自己的子layer
+      if (pLayerContent && pLayerContent->IsChildOf(pContent)) {
+        p->MoveLayer2NewParentEnd(pParentLayer, pNewLayer);
+      }
+    }
+    p = p->GetNext();
+  }
+
+  return pNewLayer;
+}
+
+Compositor *WindowRender::get_create_compositor() {
+  if (!m_compositor) {
+    if (m_window.IsGpuComposite()) {
+      m_compositor = new HardwareCompositor();
+    } else {
+      m_compositor = new SoftwareCompositor;
+    }
+    m_compositor->SetUIApplication(m_window.GetUIApplication());
+    m_compositor->SetWindowRender(this);
+
+#if defined(OS_WIN)
+    m_compositor->BindHWND(m_window.GetHWND());
+#endif
+  }
+
+  return m_compositor;
+}
+
+void WindowRender::UpdateAndCommit() {
+  if (!m_compositor)
+    return;
+
+  m_compositor->UpdateAndCommit();
+}
+#if defined(OS_WIN)
+void WindowRender::BindHWND(HWND hWnd) {
+  if (m_compositor)
+    m_compositor->BindHWND(hWnd);
+}
+#endif
+
+// void  WindowRender::UpdateWindow(HDC hDC, Rect* prcDamageArray, uint nCount)
+// {
+//     Rect rcClient;
+//     if (!prcDamageArray)
+//     {
+// 		::GetClientRect(m_pWindow->m_hWnd, &rcClient);
+// 		prcDamageArray = &rcClient;
+// 		nCount = 1;
+// 	}
+//
+// 	RenderLayer* pRenderLayer = m_pWindow->GetRenderLayer2();
+// 	if (!pRenderLayer)
+// 		return;
+//
+// 	pRenderLayer->UpdateLayer(prcDamageArray, nCount);
+// 	Commit(hDC, prcDamageArray, nCount);
+// }
 
 // IGpuRenderLayer*  WindowRender::CreateGpuLayerTexture(RenderLayer* p)
 // {
@@ -81,60 +258,13 @@ void WindowRender::OnSerialize(SERIALIZEDATA *pData) {
 //         m_bNeedRebuildGpuLayerTree = true;
 //     }
 // }
-
-// IRenderTarget* 没有引用计数机制
-// 但仍然采用Release进行释放（delete）
-bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
-  if (!pp)
-    return false;
-
-  *pp = UICreateRenderTarget(m_window.GetIUIApplication(), m_eGRL,
-                             m_bNeedAlphaChannel);
-  return true;
-}
-
-// void  WindowRender::UpdateWindow(HDC hDC, RECT* prcDamageArray, uint nCount)
-// {
-//     RECT rcClient;
-//     if (!prcDamageArray)
-//     {
-// 		::GetClientRect(m_pWindow->m_hWnd, &rcClient);
-// 		prcDamageArray = &rcClient;
-// 		nCount = 1;
-// 	}
-//
-// 	RenderLayer* pRenderLayer = m_pWindow->GetRenderLayer2();
-// 	if (!pRenderLayer)
-// 		return;
-//
-// 	pRenderLayer->UpdateLayer(prcDamageArray, nCount);
-// 	Commit(hDC, prcDamageArray, nCount);
-// }
-
-void WindowRender::OnWindowSize(unsigned int nWidth, unsigned int nHeight) {
-  //     if (m_pHardwareComposition)
-  //         m_pHardwareComposition->Resize(nWidth, nHeight);
-
-  if (m_pCompositor)
-    m_pCompositor->Resize(nWidth, nHeight);
-}
-
-void WindowRender::SetCanCommit(bool b) {
-  if (b)
-    m_lRefCanCommit--;
-  else
-    m_lRefCanCommit++;
-}
-
-bool WindowRender::CanCommit() { return 0 == m_lRefCanCommit; }
-
 // void  WindowRender::DrawIncrement()
 // {
-//     m_pCompositor->UpdateDirty(nullptr);
+//     m_compositor->UpdateDirty(nullptr);
 //
 // }
 //
-// void  WindowRender::Commit(HDC hDC, RECT* prc, int nCount)
+// void  WindowRender::Commit(HDC hDC, Rect* prc, int nCount)
 // {
 //     if (!CanCommit())
 //         return;
@@ -160,7 +290,7 @@ bool WindowRender::CanCommit() { return 0 == m_lRefCanCommit; }
 //         {
 //             RenderLayer*  pRootLayer = m_pWindow->GetRenderLayer2();
 //
-// 			RECT rcClip;
+// 			Rect rcClip;
 // 			::GetClientRect(m_pWindow->GetHWND(), &rcClip);
 //
 // 			GpuLayerCommitContext context;
@@ -224,7 +354,7 @@ bool WindowRender::CanCommit() { return 0 == m_lRefCanCommit; }
 // //             pGpuLayerTexture->ClearChildren();
 // //             pParentLayer->AddChild(pGpuLayerTexture);
 // // #ifdef _DEBUG
-// //             POINT pt = pChild->GetWindowPoint();
+// //             Point pt = pChild->GetWindowPoint();
 // //             pGpuLayerTexture->SetWindowPos(pt.x, pt.y);
 // // #endif
 // //             rebuildCompositingLayerTree(pChild, pGpuLayerTexture);
@@ -240,161 +370,26 @@ bool WindowRender::CanCommit() { return 0 == m_lRefCanCommit; }
 //     }
 // }
 
-void WindowRender::SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE eTpye) {
-  // 仅在窗口创建之前设置有用
-  m_eGRL = eTpye;
-}
-GRAPHICS_RENDER_LIBRARY_TYPE WindowRender::GetGraphicsRenderType() {
-  return m_eGRL;
-}
-bool WindowRender::GetRequireAlphaChannel() { return m_bNeedAlphaChannel; }
+// void WindowRender::Commit(Rect *prcInvalid) {
+//   if (!prcInvalid) {
+//     UIASSERT(0);
+//     return;
+//   }
 
-Layer *WindowRender::CreateLayer(IObjectLayerContent *pContent) {
-  if (!pContent)
-    return nullptr;
+//   // 如果有脏区域，还是需要先刷新，再提交
+//   //
+//   例如SIZE变化，进行异步刷新时，重新创建了RenderTarget，然后就来了一个WM_PAINT消息，
+//   // 但此时还没有刷新layer，不能直接提交一个空的rendertarget缓存到窗口上！
 
-  Object &obj = pContent->GetObject();
-  Layer *pNewLayer = get_create_compositor()->CreateLayer();
-  pNewLayer->SetContent(pContent);
+//   if (m_compositor) {
+//     RectRegion arr;
 
-  if (!m_pCompositor->GetRootLayer()) {
-    m_pCompositor->SetRootLayer(pNewLayer);
-    return pNewLayer;
-  }
+//     Rect r;
+//     r.CopyFrom(*prcInvalid);
+//     arr.AddRect(r);
 
-  // 获取父layer
-  Layer *pParentLayer = pContent->GetParentLayer();
-  if (!pParentLayer) {
-    // 有根结点，但没父结点？
-    UIASSERT(0);
-    pParentLayer = m_pCompositor->GetRootLayer();
-  }
-
-  // 计算这个layer应该插入在layer tree的哪个位置，需要与object tree对应
-  Layer *pNextLayer = pContent->GetNextLayer();
-  pParentLayer->AddSubLayer(pNewLayer, pNextLayer);
-
-  // 整理子对象的layer
-  Layer *p = pParentLayer->GetFirstChild();
-  while (p) {
-    if (p != pNewLayer) {
-      ILayerContent *pLayerContent = p->GetContent();
-
-      // 发现自己的子对象，替换它，并将它作为自己的子layer
-      if (pLayerContent && pLayerContent->IsChildOf(pContent)) {
-        p->MoveLayer2NewParentEnd(pParentLayer, pNewLayer);
-      }
-    }
-    p = p->GetNext();
-  }
-
-  return pNewLayer;
-}
-
-Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
-  if (!pContent)
-    return nullptr;
-
-  ListItemBase &item = pContent->GetListItem();
-  Layer *pNewLayer = get_create_compositor()->CreateLayer();
-  pNewLayer->SetContent(pContent);
-
-  if (!m_pCompositor->GetRootLayer()) {
-    m_pCompositor->SetRootLayer(pNewLayer);
-    return pNewLayer;
-  }
-
-  // 获取父layer
-  Layer *pParentLayer = pContent->GetParentLayer();
-  if (!pParentLayer) {
-    // 有根结点，但没父结点？
-    UIASSERT(0);
-    pParentLayer = m_pCompositor->GetRootLayer();
-  }
-
-  // 计算这个layer应该插入在layer tree的哪个位置，需要与object tree对应
-  Layer *pNextLayer = pContent->GetNextLayer();
-  pParentLayer->AddSubLayer(pNewLayer, pNextLayer);
-
-  // 整理子对象的layer
-  Layer *p = pParentLayer->GetFirstChild();
-  while (p) {
-    if (p != pNewLayer) {
-      ILayerContent *pLayerContent = p->GetContent();
-
-      // 发现自己的子对象，替换它，并将它作为自己的子layer
-      if (pLayerContent && pLayerContent->IsChildOf(pContent)) {
-        p->MoveLayer2NewParentEnd(pParentLayer, pNewLayer);
-      }
-    }
-    p = p->GetNext();
-  }
-
-  return pNewLayer;
-}
-
-Compositor *WindowRender::get_create_compositor() {
-  if (!m_pCompositor) {
-    if (m_window.IsGpuComposite()) {
-      m_pCompositor = new HardwareCompositor();
-    } else {
-      m_pCompositor = new SoftwareCompositor;
-    }
-    m_pCompositor->SetUIApplication(m_window.GetUIApplication());
-    m_pCompositor->SetWindowRender(this);
-
-#if defined(OS_WIN)
-    m_pCompositor->BindHWND(m_window.GetHWND());
-#endif
-  }
-
-  return m_pCompositor;
-}
-
-void WindowRender::UpdateAndCommit() {
-  if (!m_pCompositor)
-    return;
-
-  m_pCompositor->UpdateAndCommit();
-}
-void WindowRender::Commit(Rect *prcInvalid) {
-  if (!prcInvalid) {
-    UIASSERT(0);
-    return;
-  }
-
-  // 如果有脏区域，还是需要先刷新，再提交
-  // 例如SIZE变化，进行异步刷新时，重新创建了RenderTarget，然后就来了一个WM_PAINT消息，
-  // 但此时还没有刷新layer，不能直接提交一个空的rendertarget缓存到窗口上！
-
-
-  if (m_pCompositor) {
-    RectRegion arr;
-
-    RECT r;
-    r.CopyFrom(*prcInvalid);
-    arr.AddRect(r);
-
-    m_pCompositor->Commit(arr);
-  }
-}
-
-void WindowRender::RequestInvalidate() {
-  if (m_pCompositor) {
-    m_pCompositor->RequestInvalidate();
-  }
-}
-#if defined(OS_WIN)
-void WindowRender::BindHWND(HWND hWnd) {
-  if (m_pCompositor)
-    m_pCompositor->BindHWND(hWnd);
-}
-#endif
-void WindowRender::SetCommitListener(IWindowCommitListener *p) {
-  m_pCommitListener = p;
-}
-IWindowCommitListener *WindowRender::GetCommitListener() {
-  return m_pCommitListener;
-}
+//     m_compositor->Commit(arr);
+//   }
+// }
 
 } // namespace ui

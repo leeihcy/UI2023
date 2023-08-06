@@ -281,7 +281,7 @@ void  IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wPar
 // {
 //     return CacheBitmap::GetInstance()->Create(nWidth, nHeight);
 // }
-// void   IApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius)
+// void   IApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, Rect* prcBlur, int nRadius)
 // {
 //     ::ShadowBlur(hBitmap, colorShadow, prcBlur, nRadius);
 // }

@@ -31,7 +31,7 @@ namespace ui
 		byte* pFirstLineBits;
 		bool hasAlphaChannel;
 
-		RECT* prcArray;
+		Rect* prcArray;
 		unsigned int nCount;
 	};
 
@@ -54,8 +54,8 @@ public:
 	~GpuLayerCommitContext();
 
 	void  SetOffset(int x, int y);
-	void  ClipRect(RECT* prc);
-	void  SetClipRect(RECT* prc);
+	void  ClipRect(Rect* prc);
+	void  SetClipRect(Rect* prc);
 	//void  MultiMatrix(float* matrix16);
     void  MultiAlpha(byte alpha);
 
@@ -63,7 +63,7 @@ public:
 	int  m_xOffset;
 	int  m_yOffset;
 
-	RECT  m_rcClip;
+	Rect  m_rcClip;
     float  m_fAlpha;
 
 	bool   m_bTransformValid;
@@ -105,7 +105,7 @@ inline void  GpuLayerCommitContext::SetOffset(int x, int y)
 	m_yOffset = y;
 }
 
-inline void  GpuLayerCommitContext::ClipRect(RECT* prc)
+inline void  GpuLayerCommitContext::ClipRect(Rect* prc)
 {
 	if (!prc)
 		return;
@@ -113,7 +113,7 @@ inline void  GpuLayerCommitContext::ClipRect(RECT* prc)
 	m_rcClip.Intersect(*prc, &m_rcClip);
 }
 
-inline void  GpuLayerCommitContext::SetClipRect(RECT* prc)
+inline void  GpuLayerCommitContext::SetClipRect(Rect* prc)
 {
 	if (prc)
 		m_rcClip.CopyFrom(*prc);

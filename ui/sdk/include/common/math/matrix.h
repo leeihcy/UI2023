@@ -4,7 +4,7 @@
 #include "rect.h"
 #include "quad.h"
 
-#include "include/base/uidefine.h"
+#include "include/macro/uidefine.h"
 
 // “ª∏ˆ3D±‰ªª≤‚ ‘Õ¯“≥
 // http://ie.microsoft.com/testdrive/Graphics/hands-on-css3/hands-on_3d-transforms.htm
@@ -71,8 +71,8 @@ public:
 
 	Matrix33&  Multiply(MATRIX33& m);
 
-	void  MapPoint(POINT* pt, POINT* ptTransform);
-	void  UnMapPoint(POINT* ptTransform, POINT* pt);
+	void  MapPoint(Point* pt, Point* ptTransform);
+	void  UnMapPoint(Point* ptTransform, Point* pt);
 };
 
 class UIAPI Matrix44 : public MATRIX44
@@ -102,16 +102,16 @@ public:
 	void  ToMatrix33(LPMATRIX33 p);
 	void  MakeAffine();
 	
-	bool  ProjectPoint(POINT* pt, POINT* pOut);
+	bool  ProjectPoint(Point* pt, Point* pOut);
 
 	void  Map(float x, float y, float& resultX, float& resultY);
 	void  Map(float x, float y, float z, float& resultX, float& resultY, float& resultZ);
-	void  MapPoint(POINT* pt, POINT* pOut);
-	void  MapPoint(POINT pIn, POINTF2* pOut);
+	void  MapPoint(Point* pt, Point* pOut);
+	void  MapPoint(Point pIn, POINTF2* pOut);
 	void  MapPoint(POINTF2 pIn, POINTF2* pOut);
 	void  MapPoint(POINTF3 pIn, POINTF3* pOut);
 	void  MapRect2Quad(RECTF* prc, QUADF* pQuad);
-	void  MapRect2Quad(RECT* prc, QUAD* pQuad);
+	void  MapRect2Quad(Rect* prc, QUAD* pQuad);
 };
 
 }

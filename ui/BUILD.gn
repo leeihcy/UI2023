@@ -2,7 +2,8 @@ import("//build/config/common.gni")
 
 group("ui") {
     deps = [
-        "sdk:sdk"
+        "sdk:sdk",
+        "svg:uisvg",
     ]
 }
 

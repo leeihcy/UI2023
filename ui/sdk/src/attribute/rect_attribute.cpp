@@ -29,7 +29,7 @@ RectAttribute::~RectAttribute()
 
 void  RectAttribute::SetBindValue(void* p)
 {
-    m_pBindValue = (RECT*)p;
+    m_pBindValue = (Rect*)p;
 }
 
 // void  RectAttribute::SetBindFuction(void* _this, void* _setter, void* _getter)
@@ -38,13 +38,13 @@ void  RectAttribute::SetBindValue(void* p)
 //     this->_setter = (pfnRectSetter)_setter;
 //     this->_getter = (pfnRectGetter)_getter;
 // }
-void RectAttribute::Bind(slot<void(RECT*)>&& s, slot<void(RECT*)>&& g)
+void RectAttribute::Bind(slot<void(Rect*)>&& s, slot<void(Rect*)>&& g)
 {
-    m_setter.connect(std::forward<slot<void(RECT*)>>(s));
-    m_getter.connect(std::forward<slot<void(RECT*)>>(g));
+    m_setter.connect(std::forward<slot<void(Rect*)>>(s));
+    m_getter.connect(std::forward<slot<void(Rect*)>>(g));
 }
 
-RectAttribute*  RectAttribute::SetDefault(RECT* prc)
+RectAttribute*  RectAttribute::SetDefault(Rect* prc)
 {
 	if (prc)
         m_rcDefault.CopyFrom(*prc);
@@ -58,7 +58,7 @@ RectAttribute*  RectAttribute::SetDefault(RECT* prc)
 // 注：不能直接写：b = _getter();
 //     这样的结果是将RectAttribute的this又mov到ecx了
 //
-void  RectAttribute::get(RECT* prc)
+void  RectAttribute::get(Rect* prc)
 {
     if (m_pBindValue)
     {
@@ -91,7 +91,7 @@ void  RectAttribute::get(RECT* prc)
     }
 }
 
-void  RectAttribute::set(RECT* prc)
+void  RectAttribute::set(Rect* prc)
 {
     if (!prc)
         prc = &m_rcDefault;
@@ -125,7 +125,7 @@ void  RectAttribute::set(RECT* prc)
 
 const wchar_t*  RectAttribute::Get()
 {
-	RECT rc = {0};
+	Rect rc = {0};
     get(&rc);
 
 	wchar_t* szText = GetTempBuffer(64);
@@ -137,7 +137,7 @@ const wchar_t*  RectAttribute::Get()
 
 void  RectAttribute::Set(const wchar_t* szValue)
 {
-	RECT rc = {0};
+	Rect rc = {0};
 	if (util::TranslateRECT(szValue, &rc, XML_SEPARATOR))
 	{
 		set(&rc);
@@ -155,7 +155,7 @@ void  RectAttribute::Reset()
 
 bool  RectAttribute::IsDefaultValue()
 {
-	RECT rc = {0};
+	Rect rc = {0};
 	get(&rc);
 
 	return m_rcDefault == rc ? true:false;

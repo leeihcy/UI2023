@@ -76,7 +76,7 @@ void  IRenderBase::Serialize(SERIALIZEDATA* pData)
     UISendMessage(static_cast<IMessage*>(this), UI_MSG_SERIALIZE, (long)pData);
 }
 
-void  IRenderBase::DrawState(IRenderTarget* p, const RECT* prc, int nState)
+void  IRenderBase::DrawState(IRenderTarget* p, const Rect* prc, int nState)
 {
     RENDERBASE_DRAWSTATE drawstate = {0};
     drawstate.pRenderTarget = p;
@@ -87,9 +87,9 @@ void  IRenderBase::DrawState(IRenderTarget* p, const RECT* prc, int nState)
 
     UISendMessage(static_cast<IMessage*>(this), UI_MSG_RENDERBASE_DRAWSTATE, (long)&drawstate, 0);
 };
-SIZE  IRenderBase::GetDesiredSize() 
+Size  IRenderBase::GetDesiredSize() 
 { 
-    SIZE s = {0,0}; 
+    Size s = {0,0}; 
     UISendMessage(static_cast<IMessage*>(this), UI_MSG_GETDESIREDSIZE, (long)&s, 0);
 
     return s; 

@@ -93,11 +93,11 @@ void HardwareLayer::upload_2_gpu() {
     m_pGpuTexture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
                         ->CreateGpuLayerTexture();
     if (m_pGpuTexture) {
-      m_pGpuTexture->Resize(m_size.cx, m_size.cy);
+      m_pGpuTexture->Resize(m_size.width, m_size.height);
     }
   }
 
-  RECT rc = {0, 0, (int)m_size.cx, (int)m_size.cy};
+  Rect rc = {0, 0, (int)m_size.width, (int)m_size.height};
   m_pRenderTarget->Upload2Gpu(m_pGpuTexture, &rc, 1);
 }
 
@@ -115,14 +115,14 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
     return;
 
 #if defined(OS_WIn)
-  RECT rcWnd;
+  Rect rcWnd;
   m_pLayerContent->GetWindowRect(&rcWnd);
   if (rcWnd.IsEmpty())
     return;
 
   pContext->SetOffset(rcWnd.left, rcWnd.top);
 
-  RECT rcParentWnd = {0};
+  Rect rcParentWnd = {0};
   if (m_bClipLayerInParentObj && m_pCompositor->GetRootLayer() != this) {
     m_pLayerContent->GetParentWindowRect(&rcParentWnd);
   } else {
@@ -150,7 +150,7 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
 #endif
 }
 
-void HardwareLayer::MapView2Layer(POINT *pPoint) {
+void HardwareLayer::MapView2Layer(Point *pPoint) {
   if (!m_transfrom3d.is_identity()) {
     m_transfrom3d.mappoint_view_2_layer(pPoint);
   }

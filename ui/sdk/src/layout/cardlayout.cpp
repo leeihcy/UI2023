@@ -9,26 +9,26 @@ CardLayout::CardLayout()
 {
 }
 
-SIZE  CardLayout::Measure()
+Size  CardLayout::Measure()
 {
-    SIZE size = {0,0};
+    Size size = {0,0};
 
     Object*  pChild = nullptr;
     while ((pChild = this->m_pPanel->EnumChildObject(pChild)))
     {
-        SIZE  s = pChild->GetDesiredSize();
+        Size  s = pChild->GetDesiredSize();
 
-        if (size.cx < s.cx)
-            size.cx = s.cx;
-        if (size.cy < s.cy)
-            size.cy = s.cy;
+        if (size.width < s.width)
+            size.width = s.width;
+        if (size.height < s.height)
+            size.height = s.height;
     }
     return size;
 }
 void  CardLayout::DoArrage(IObject* pIObjToArrage)
 {
     // 调用该函数时，自己的大小已经被求出来了
-    RECT rcClient;
+    Rect rcClient;
     m_pPanel->GetClientRectInObject(&rcClient);
     int  nWidth  = rcClient.Width();  //m_pPanel->GetWidth();
     int  nHeight = rcClient.Height(); //m_pPanel->GetHeight();
@@ -43,7 +43,7 @@ void  CardLayout::DoArrage(IObject* pIObjToArrage)
         if (pObjToArrage && pObjToArrage != pChild)
             continue;
 
-        RECT rcChildObj ;
+        Rect rcChildObj ;
         int nChildW = nWidth;// - pChild->GetMarginW();
         int nChildH = nHeight;// - pChild->GetMarginH();
         rcChildObj.Set(0, 0, nChildW, nChildH );

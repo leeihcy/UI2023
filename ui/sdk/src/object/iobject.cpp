@@ -105,7 +105,7 @@ void  IObject::SetObjectPos(int x, int y, int cx, int cy, int nFlag)
 { 
 	__pImpl->SetObjectPos(x, y, cx, cy, nFlag);
 }
-void  IObject::SetObjectPos(const RECT* prc, int nFlag)          
+void  IObject::SetObjectPos(const Rect* prc, int nFlag)          
 {
 	__pImpl->SetObjectPos(prc, nFlag);
 }
@@ -636,11 +636,11 @@ void  IObject::Invalidate()
 {
 	__pImpl->Invalidate();
 }
-void  IObject::Invalidate(const RECT* prcObj)
+void  IObject::Invalidate(const Rect* prcObj)
 {
 	__pImpl->Invalidate(prcObj);
 }
-void  IObject::Invalidate(RECT* prcObj, int nCount)
+void  IObject::Invalidate(Rect* prcObj, int nCount)
 {
 	__pImpl->Invalidate(prcObj, nCount);
 }
@@ -648,7 +648,7 @@ void  IObject::Invalidate(RECT* prcObj, int nCount)
 // { 
 //     __pImpl->UpdateObject(bUpdateNow); 
 // }
-// void  IObject::UpdateObjectEx(RECT* prcObjArray, int nCount, bool bUpdateNow) 
+// void  IObject::UpdateObjectEx(Rect* prcObjArray, int nCount, bool bUpdateNow) 
 // { 
 //     __pImpl->UpdateObjectEx(prcObjArray, nCount, bUpdateNow); 
 // }
@@ -684,19 +684,19 @@ void  IObject::GetPaddingRegion(REGION4* prc){ __pImpl->GetPaddingRegion(prc); }
 void  IObject::SetPaddingRegion(REGION4* prc){ __pImpl->SetPaddingRegion(prc); }
 void  IObject::SetMarginRegion(REGION4* prc) { __pImpl->SetMarginRegion(prc); }
 void  IObject::GetMarginRegion(REGION4* prc) { __pImpl->GetMarginRegion(prc); }
-void  IObject::GetClientRectInObject(RECT* prc)        
+void  IObject::GetClientRectInObject(Rect* prc)        
 { 
 	__pImpl->GetClientRectInObject(prc); 
 }
-void  IObject::GetObjectClientRect(RECT* prc) 
+void  IObject::GetObjectClientRect(Rect* prc) 
 {
 	__pImpl->GetObjectClientRect(prc); 
 }
-void  IObject::GetClientRectInWindow(RECT* prc)
+void  IObject::GetClientRectInWindow(Rect* prc)
 { 
 	__pImpl->GetClientRectInWindow(prc); 
 }
-void  IObject::GetParentRect(RECT* prc)       
+void  IObject::GetParentRect(Rect* prc)       
 { 
 	__pImpl->GetParentRect(prc); 
 }
@@ -705,11 +705,11 @@ void  IObject::GetParentRect(RECT* prc)
 // { 
 //     return __pImpl->GetWindowPoint(); 
 // }
-void  IObject::GetWindowRect(RECT* prc)                                          
+void  IObject::GetWindowRect(Rect* prc)                                          
 { 
     __pImpl->GetWindowRect(prc);
 }
-void  IObject::WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj)
+void  IObject::WindowRect2ObjectRect(const Rect* rcWindow, Rect* rcObj)
 {
     __pImpl->WindowRect2ObjectRect(rcWindow, rcObj); 
 }
@@ -725,15 +725,15 @@ void  IObject::WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptObj
 // {
 //     Object::ObjectPoint2ObjectClientPoint(__pImpl, ptWindow, ptObj); 
 // }
-void  IObject::ClientRect2ObjectRect(const RECT* rcClient, RECT* rcObj)           
+void  IObject::ClientRect2ObjectRect(const Rect* rcClient, Rect* rcObj)           
 {
     Object::ObjectClientRect2ObjectRect(__pImpl, rcClient, rcObj); 
 }
-// void  IObject::ObjectRect2ClientRect(const RECT* rcObj, RECT* rcClient)
+// void  IObject::ObjectRect2ClientRect(const Rect* rcObj, Rect* rcClient)
 // {
 //     Object::ObjectRect2ObjectClientRect(__pImpl, rcObj, rcClient);
 // }
-void  IObject::ClientRect2WindowRect(const RECT* rcClient, RECT* rcWnd)
+void  IObject::ClientRect2WindowRect(const Rect* rcClient, Rect* rcWnd)
 {
 	Object::ObjectClientRect2WindowRect(__pImpl, rcClient, rcWnd);
 }
@@ -746,15 +746,15 @@ void  IObject::ClientRect2WindowRect(const RECT* rcClient, RECT* rcWnd)
 // {
 // 	return __pImpl->GetScrollRange(pxRange, pyRange); 
 // }
-// bool  IObject::GetRectInWindow(RECT* prc, bool bVisiblePart)      
+// bool  IObject::GetRectInWindow(Rect* prc, bool bVisiblePart)      
 // {
 // 	return __pImpl->GetRectInWindow(prc, bVisiblePart);
 // }
-// bool  IObject::GetRectInLayer(RECT* prc, bool bVisiblePart)        
+// bool  IObject::GetRectInLayer(Rect* prc, bool bVisiblePart)        
 // { 
 // 	return __pImpl->GetRectInLayer(prc, bVisiblePart); 
 // }
-// bool  IObject::GetVisibleClientRectInLayer(RECT* prc)
+// bool  IObject::GetVisibleClientRectInLayer(Rect* prc)
 // { 
 // 	return __pImpl->GetVisibleClientRectInLayer(prc);
 // }
@@ -925,7 +925,7 @@ void  IObject::GetMapAttribute(IMapAttribute** ppMapAttribute)
 { 
 	__pImpl->GetMapAttribute(ppMapAttribute); 
 }
-SIZE  IObject::GetDesiredSize()
+Size  IObject::GetDesiredSize()
 { 
 	return __pImpl->GetDesiredSize(); 
 }

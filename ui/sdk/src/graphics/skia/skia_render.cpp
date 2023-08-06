@@ -21,15 +21,15 @@ void SkiaRenderTarget::Release() { delete this; }
 // 	return m_hBindDC;
 // }
 
-void SkiaRenderTarget::SetMetaClipRegion(RECT *prc, uint nrcCount) {}
+void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {}
 
-void SkiaRenderTarget::PushRelativeClipRect(const RECT *prc) {
+void SkiaRenderTarget::PushRelativeClipRect(const Rect *prc) {
   UIASSERT(false);
 }
 
 void SkiaRenderTarget::PopRelativeClipRect() { UIASSERT(false); }
 
-bool SkiaRenderTarget::IsRelativeRectInClip(const RECT *prc) {
+bool SkiaRenderTarget::IsRelativeRectInClip(const Rect *prc) {
   UIASSERT(false);
   return false;
 }
@@ -42,7 +42,7 @@ void SkiaRenderTarget::OffsetOrigin(int x, int y) {
   // m_ptOffset.x += x;
   // m_ptOffset.y += y;
 
-  // POINT pt = {0};
+  // Point pt = {0};
   // ::SetViewportOrgEx(GetHDC(), m_ptOffset.x, m_ptOffset.y, &pt);
 }
 void SkiaRenderTarget::GetOrigin(int *px, int *py) {
@@ -62,7 +62,6 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
   // if (m_sksurface) {
   //   return true;
   // }
-  printf("ResizeRenderBuffer: %d %d\n", width, height);
   SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
                                        kPremul_SkAlphaType);
   SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
@@ -71,9 +70,10 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
 
 
   // test，还没刷新界面，就直接commit的话，会出现全黄色。
-   SkCanvas *canvas = m_sksurface->getCanvas();
+#if defined(DEBUG)
+  SkCanvas *canvas = m_sksurface->getCanvas();
   canvas->clear(SK_ColorYELLOW);
-
+#endif
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
   return true;
@@ -100,19 +100,13 @@ void SkiaRenderTarget::EndDraw() {
   // swap_buffer();
 }
 
-void SkiaRenderTarget::Clear(RECT *prc) {
+void SkiaRenderTarget::Clear(Rect *prc) {
   if (!m_sksurface) {
     UI_LOG_WARN(L"no sksurface");
     return;
   }
   SkCanvas *canvas = m_sksurface->getCanvas();
-  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
-  static int i= 0; 
-  i++;
-  if (i >= 3){ i = 0;}
-  canvas->clear(colors[i]);
-  printf("clear render \n");
-  // UI_LOG_INFO(L"clear render");
+  canvas->clear(SK_ColorTRANSPARENT);
 }
 
 void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,
@@ -124,7 +118,7 @@ void SkiaRenderTarget::FillRgn(HRGN hRgn, ui::Color *pColor) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::DrawRect(RECT *lprc, ui::Color *pColor) {
+void SkiaRenderTarget::DrawRect(Rect *lprc, ui::Color *pColor) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   SkRect skrect;
@@ -138,30 +132,30 @@ void SkiaRenderTarget::DrawRect(RECT *lprc, ui::Color *pColor) {
   canvas->drawRect(skrect, paint);
 }
 
-void SkiaRenderTarget::TileRect(RECT *lprc, IRenderBitmap *pRenderBitmap) {
+void SkiaRenderTarget::TileRect(Rect *lprc, IRenderBitmap *pRenderBitmap) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::Rectangle(RECT *lprc, ui::Color *pColBorder,
+void SkiaRenderTarget::Rectangle(Rect *lprc, ui::Color *pColBorder,
                                  ui::Color *pColBack, int nBorder,
                                  bool bNullBack) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::DrawFocusRect(RECT *lprc) { UIASSERT(false); }
+void SkiaRenderTarget::DrawFocusRect(Rect *lprc) { UIASSERT(false); }
 void SkiaRenderTarget::DrawLine(int x1, int y1, int x2, int y2,
                                 IRenderPen *pPen) {
   UIASSERT(false);
 }
-void SkiaRenderTarget::DrawPolyline(POINT *lppt, int nCount, IRenderPen *pPen) {
+void SkiaRenderTarget::DrawPolyline(Point *lppt, int nCount, IRenderPen *pPen) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::GradientFillH(RECT *lprc, COLORREF colFrom,
+void SkiaRenderTarget::GradientFillH(Rect *lprc, COLORREF colFrom,
                                      COLORREF colTo) {
   //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
 }
-void SkiaRenderTarget::GradientFillV(RECT *lprc, COLORREF colFrom,
+void SkiaRenderTarget::GradientFillV(Rect *lprc, COLORREF colFrom,
                                      COLORREF colTo) {
   //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
 }
@@ -233,7 +227,7 @@ void SkiaRenderTarget::Save(const wchar_t *szPath) {
   // }
 }
 
-void SkiaRenderTarget::Upload2Gpu(IGpuRenderLayer *p, RECT *prcArray,
+void SkiaRenderTarget::Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray,
                                   int nCount) {
   // if (m_pRenderBuffer)
   // {

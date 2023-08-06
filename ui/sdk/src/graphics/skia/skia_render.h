@@ -32,31 +32,31 @@ public:
   virtual void GetRenderBufferData(ImageData *pData) override;
   // virtual void BindHWND(HWND hWnd) { /*UIASSERT(0);*/ /*不支持*/}
 
-  virtual void SetMetaClipRegion(RECT* prc, uint nrcCount) override;
-  virtual void PushRelativeClipRect(const RECT*) override;
+  virtual void SetMetaClipRegion(Rect* prc, uint nrcCount) override;
+  virtual void PushRelativeClipRect(const Rect*) override;
   virtual void PopRelativeClipRect() override;
-  virtual bool IsRelativeRectInClip(const RECT*) override;
+  virtual bool IsRelativeRectInClip(const Rect*) override;
   virtual void SetOrigin(int x, int y) override;
   virtual void OffsetOrigin(int x, int y) override;
   virtual void GetOrigin(int *px, int *py) override;
 
   virtual bool BeginDraw() override;
   virtual void EndDraw() override;
-  virtual void Clear(RECT *prc) override;
+  virtual void Clear(Rect *prc) override;
   virtual void Save(const wchar_t *szPath) override;
   virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) override {};
   virtual void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
 
   virtual void FillRgn(HRGN, ui::Color *pColor) override;
-  virtual void DrawRect(RECT* lprc, ui::Color *pColor) override;
-  virtual void TileRect(RECT* lprc, IRenderBitmap *hBitmap) override;
-  virtual void Rectangle(RECT* lprc, ui::Color *pColBorder,
+  virtual void DrawRect(Rect* lprc, ui::Color *pColor) override;
+  virtual void TileRect(Rect* lprc, IRenderBitmap *hBitmap) override;
+  virtual void Rectangle(Rect* lprc, ui::Color *pColBorder,
                          ui::Color *pColBack, int nBorder, bool bNullBack) override;
-  virtual void DrawFocusRect(RECT* lprc) override;
+  virtual void DrawFocusRect(Rect* lprc) override;
   virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) override;
-  virtual void DrawPolyline(POINT *lppt, int nCount, IRenderPen *) override;
-  virtual void GradientFillH(RECT* lprc, COLORREF colFrom, COLORREF colTo) override;
-  virtual void GradientFillV(RECT* lprc, COLORREF colFrom, COLORREF colTo) override;
+  virtual void DrawPolyline(Point *lppt, int nCount, IRenderPen *) override;
+  virtual void GradientFillH(Rect* lprc, COLORREF colFrom, COLORREF colTo) override;
+  virtual void GradientFillV(Rect* lprc, COLORREF colFrom, COLORREF colTo) override;
   virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
                       IRenderTarget *pSrcHDC, int xSrc, int ySrc, unsigned int dwRop) override;
   virtual void ImageList_Draw(IRenderBitmap *hBitmap, int x, int y, int col,
@@ -72,7 +72,7 @@ public:
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) override;
   virtual IRenderBrush *CreateSolidBrush(Color *pColor) override;
 
-  virtual void Upload2Gpu(IGpuRenderLayer *p, RECT* prcArray, int nCount) override;
+  virtual void Upload2Gpu(IGpuRenderLayer *p, Rect* prcArray, int nCount) override;
 
 public:
   SkSurface* GetSkiaSurface() { return m_sksurface.get(); }
@@ -88,17 +88,17 @@ protected:
   //                 int nDestHeight, int xSrc, int ySrc, int nSrcWidth,
   //                 int nSrcHeight, C9Region *p9Region);
 
-  // void draw_string_normal(HFONT hFont, RECT* prcText, DRAWTEXTPARAM *pParam);
-  // void draw_string_halo(HFONT hFont, const RECT &rcText,
+  // void draw_string_normal(HFONT hFont, Rect* prcText, DRAWTEXTPARAM *pParam);
+  // void draw_string_halo(HFONT hFont, const Rect &rcText,
   //                       DRAWTEXTPARAM *pParam);
-  // void draw_string_endalphamask(HFONT hFont, RECT* prcText,
+  // void draw_string_endalphamask(HFONT hFont, Rect* prcText,
   //                               DRAWTEXTPARAM *pParam);
 
-  // void FixAlpha0To255(HDC hDC, const RECT* lpRect);
-  // void FillAlpha255(HDC hDC, const RECT* lpRect);
-  // void FillAlphaValue(HDC hDC, const RECT* lpRect, long);
-  // void InverseAlpha(HDC hDC, const RECT* lpRect);
-  // void _FixAlpha(HDC hDC, const RECT* lpRect, util::FixAlphaMode e, long wParam);
+  // void FixAlpha0To255(HDC hDC, const Rect* lpRect);
+  // void FillAlpha255(HDC hDC, const Rect* lpRect);
+  // void FillAlphaValue(HDC hDC, const Rect* lpRect, long);
+  // void InverseAlpha(HDC hDC, const Rect* lpRect);
+  // void _FixAlpha(HDC hDC, const Rect* lpRect, util::FixAlphaMode e, long wParam);
 
   // void update_clip_rgn();
 
@@ -117,9 +117,9 @@ protected:
 
   // // 剪裁数据
   // RectRegion m_arrayMetaClipRegion;
-  // stack<RECT> m_stackClipRect;
+  // stack<Rect> m_stackClipRect;
 
-  // POINT m_ptOffset; // 用于调试时查看当前HDC偏移量
+  // Point m_ptOffset; // 用于调试时查看当前HDC偏移量
 };
 
 } // namespace ui

@@ -1,5 +1,5 @@
 #pragma once
-#include "include/base/xmldefine.h"
+#include "include/macro/xmldefine.h"
 //#pragma comment(lib, "UICompositor.lib")
 
 //
@@ -21,7 +21,7 @@ struct IObjectLayerContent;
 struct IListItemLayerContent;
 struct SERIALIZEDATA;
 struct IRenderTarget;
-struct RECT;
+struct Rect;
 struct Rect;
 
 class WindowRender {
@@ -37,41 +37,39 @@ public:
 #endif
   void OnSerialize(SERIALIZEDATA *pData);
   void OnWindowSize(unsigned int nWidth, unsigned int nHeight);
+  void OnWindowPaint(const Rect& dirty);
 
   bool CreateRenderTarget(IRenderTarget **pp);
 
   bool GetRequireAlphaChannel();
-  void SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE eTpye);
+  void SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE type);
   GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderType();
+
   void SetCanCommit(bool b);
   bool CanCommit();
-
-  void SetCommitListener(IWindowCommitListener *);
-  IWindowCommitListener *GetCommitListener();
-
   void UpdateAndCommit();
-  void Commit(Rect *prcInvalid);
+
   Layer *CreateLayer(IObjectLayerContent *);
   Layer *CreateLayer(IListItemLayerContent *);
-  void RequestInvalidate();
 
 private:
   Compositor *get_create_compositor();
 
 public:
-  IWindowRender *m_pIWindowRender;
-  GRAPHICS_RENDER_LIBRARY_TYPE m_eGRL;
   Window& m_window;
 
-  long m_lRefCanCommit;
+private:
+  IWindowRender *m_pIWindowRender = nullptr;
+
+  GRAPHICS_RENDER_LIBRARY_TYPE m_grl_type = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+  Compositor *m_compositor = nullptr;
+
+  // 阻塞刷新窗口
+  long m_can_commit = 0;
 
   // 该窗口的渲染是否需要alpha通道。不再根据graphics render lib
   // type来决定。由用户自己设置
-  bool m_bNeedAlphaChannel;
-
-private:
-  Compositor *m_pCompositor;
-  IWindowCommitListener *m_pCommitListener;
+  bool m_need_alpha_channel = true;
 };
 
 } // namespace ui

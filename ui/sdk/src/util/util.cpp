@@ -319,7 +319,7 @@ namespace ui {
             return TranslateRGB(szColor);
 		}
 
-		bool  TranslateRECT(const wchar_t* szRect, RECT* pRect, wchar szSep)
+		bool  TranslateRECT(const wchar_t* szRect, Rect* pRect, wchar szSep)
 		{
 			if (nullptr == szRect)
 				return false;
@@ -350,7 +350,7 @@ namespace ui {
 			return true;
 		}
 
-		bool TranslateSIZE(const wchar_t* szText, SIZE* pSize, wchar szSep)
+		bool TranslateSIZE(const wchar_t* szText, Size* pSize, wchar szSep)
 		{
 			if (nullptr == szText)
 				return false;
@@ -362,16 +362,16 @@ namespace ui {
 
 			if (nSize >= 2)
 			{
-				pSize->cx = wtoi(pEnum->GetText(0));
-				pSize->cy = wtoi(pEnum->GetText(1));
+				pSize->width = wtoi(pEnum->GetText(0));
+				pSize->height = wtoi(pEnum->GetText(1));
 			}
 			else if (1 == nSize)
 			{
-				pSize->cx = pSize->cy = wtoi(pEnum->GetText(0));
+				pSize->width = pSize->height = wtoi(pEnum->GetText(0));
 			}
 			else
 			{
-				pSize->cx = pSize->cy = 0;
+				pSize->width = pSize->height = 0;
 			}
 
 			SAFE_RELEASE(pEnum);
@@ -380,7 +380,7 @@ namespace ui {
 
 
         // 用于将一个RECT缩小一个PADDING/MARGIN的大小
-        void DeflatRect(RECT* pfc, const RECT* pDeflatRc)
+        void DeflatRect(Rect* pfc, const Rect* pDeflatRc)
         {
             pfc->left += pDeflatRc->left;
             pfc->top += pDeflatRc->top;
@@ -526,10 +526,10 @@ namespace ui {
 			if (bm.bmBitsPixel != 32)
 				return false;
 
-			RECT rcDest;
+			Rect rcDest;
 			if (pData->lprc)
 			{
-				RECT rcBitmap = {0, 0, bm.bmWidth, bm.bmHeight};
+				Rect rcBitmap = {0, 0, bm.bmWidth, bm.bmHeight};
 				if (false == ::IntersectRect(&rcDest, &rcBitmap, pData->lprc))
 					return false;
 			}
@@ -690,7 +690,7 @@ namespace ui {
 			util::FixAlphaData data = { 0 };
 			data.hDC = pRenderTarget->GetHDC();
 
-			RECT  rc = { 0 };
+			Rect  rc = { 0 };
 			GetClipBox(data.hDC, &rc);
 
 			int x = 0; int y = 0;

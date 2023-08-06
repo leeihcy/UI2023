@@ -72,12 +72,12 @@ public:
 // 		{
 // 			if (m_bUnderXpOs)
 // 			{
-// 				RECT rc = {1,3,0,0};
+// 				Rect rc = {1,3,0,0};
 // 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (long)&rc);
 // 			}
 // 			else
 // 			{
-// 				RECT rc = {2,3,0,0};
+// 				Rect rc = {2,3,0,0};
 // 				::SendMessage(this->m_hToolTip, TTM_SETMARGIN, 0, (long)&rc);
 // 			}
 // 		}
@@ -107,7 +107,7 @@ public:
 			{
 				::SendMessage(m_hToolTip, WM_SETFONT, (long)m_hFont, 0);
 
-				RECT rcMargin;
+				Rect rcMargin;
 				::SendMessage(m_hToolTip, TTM_GETMARGIN, 0, (long)(LPRECT)&rcMargin);
 				int a= 0;
 			}
@@ -154,7 +154,7 @@ public:
 			Create();
 		}
 
-		POINT pt;
+		Point pt;
 		::GetCursorPos(&pt);
 		::SendMessage(m_hToolTip, TTM_TRACKPOSITION, 0, MAKELPARAM(pt.x, pt.y+22));
 		::SendMessage(m_hToolTip, TTM_TRACKACTIVATE, (long)TRUE, (long)&m_toolinfo );
@@ -202,7 +202,7 @@ protected:
 
 		int   nStart  = 0;
 		int   nLength = (int)src.length(); 
-		RECT  rcLimit = {0,0, TOOLTIP_MAX_WIDTH, 1};  // 将高度设置为1，保证DrawTextEx只计算第一行文本的字符数
+		Rect  rcLimit = {0,0, TOOLTIP_MAX_WIDTH, 1};  // 将高度设置为1，保证DrawTextEx只计算第一行文本的字符数
 		unsigned int  nDrawTextFlag = DT_EDITCONTROL|DT_WORDBREAK/*|DT_NOFULLWIDTHCHARBREAK*/;
 
 		DRAWTEXTPARAMS  param;

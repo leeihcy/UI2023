@@ -106,7 +106,7 @@ public:
     virtual void  SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap);
 
 private:
-    SIZE  m_sizeDraw;
+    Size  m_sizeDraw;
 };
 
 //

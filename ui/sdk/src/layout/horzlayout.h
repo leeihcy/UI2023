@@ -16,7 +16,7 @@ public:
     virtual void  UpdateByRect() override;
     virtual void  Serialize(SERIALIZEDATA* pData) override;
     virtual LAYOUTTYPE  GetLayoutType() override { return LAYOUT_TYPE_HORZ; }
-    virtual SIZE  CalcDesiredSize() override;
+    virtual Size  CalcDesiredSize() override;
     virtual bool  IsSizedByContent() override;
 
 public:
@@ -50,7 +50,7 @@ public:
 	HorzLayout();
     ~HorzLayout();
 
-    virtual SIZE  Measure() override;
+    virtual Size  Measure() override;
 	virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
 	virtual void  Serialize(SERIALIZEDATA* pData) override;
     virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
@@ -59,8 +59,8 @@ public:
     virtual void  SetSpace(int n) override;
 
 protected:
-    void  ArrangeObject_Left(Object* pChildObj, int& nLeftCustom, int& nRightCustom, SIZE size);
-    void  ArrangeObject_Right(Object* pChildObj, int& nLeftCustom, int& nRightCustom, SIZE size);
+    void  ArrangeObject_Left(Object* pChildObj, int& nLeftCustom, int& nRightCustom, Size size);
+    void  ArrangeObject_Right(Object* pChildObj, int& nLeftCustom, int& nRightCustom, Size size);
 
     void  LoadGap(long);
     long  SaveGap();

@@ -398,7 +398,7 @@ void Object::ClearMapAttribute() {
 // 设置padding的值，同时更新非客户区的大小
 void Object::SetPaddingRegion(REGION4 *prc) { m_rcPadding.CopyFrom(*prc); }
 
-void Object::SetBorderRegion(RECT *prc) { m_rcBorder.CopyFrom(*prc); }
+void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 
 // void*  Object::QueryInterface(const IID* pIID)
 // {
@@ -498,7 +498,7 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
 
     layer->MapView2Layer(&ptObj);
 
-    RECT rcObj = {0, 0, m_rcParent.Width(), m_rcParent.Height()};
+    Rect rcObj = {0, 0, m_rcParent.Width(), m_rcParent.Height()};
     if (PtInRect(&rcObj, ptObj)) {
       if (ptInChild)
         *ptInChild = ptObj;
@@ -1451,7 +1451,7 @@ unsigned int  Object::CalcContrastTextColor()
     if (nullptr == hBitmap)
         return 0;
 
-    RECT rcLayer;
+    Rect rcLayer;
     GetRectInWindow(&rcLayer, true);
 
     Image  image;

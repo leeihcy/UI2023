@@ -8,16 +8,16 @@ void on_window_destroy(ui::IApplication *uiapp) {
   printf("on_window_destroy\n");
   uiapp->Quit();
 }
-void on_window_paint(ui::IRenderTarget* pRT) {
-    // canvas.clear(SK_ColorRED);
-
-    // SkPaint paint;
-    // canvas.drawRoundRect(SkRect::MakeLTRB(100, 100, 300, 300), 10, 10,
-    // paint);
-
-    ui::RECT rc = {100,100,200,200};
-    ui::Color c(255,0,255,255);
-    pRT->DrawRect(&rc, &c);
+void on_window_paint(ui::IRenderTarget *pRT) {
+  ui::Color colors[3] = {ui::Color(255, 0, 0, 255), ui::Color(0, 255, 0, 255),
+                         ui::Color(0, 0, 255, 255)};
+  static int i = 0;
+  i++;
+  if (i >= 3) {
+    i = 0;
+  }
+  ui::Rect rc = {100, 100, 200, 200};
+  pRT->DrawRect(&rc, &colors[i]);
 }
 
 int main() {

@@ -69,13 +69,13 @@ To memfun_cast(From memfunc)
 // typedef void  (__thiscall *pfnLongSetter)(long);
 // typedef long  (__thiscall *pfnLongGetter)();
 
-// typedef void  (__thiscall *pfnRectSetter)(RECT*);
-// typedef void  (__thiscall *pfnRectGetter)(RECT*);
+// typedef void  (__thiscall *pfnRectSetter)(Rect*);
+// typedef void  (__thiscall *pfnRectGetter)(Rect*);
 
-// typedef void  (__thiscall *pfnSizeSetter)(SIZE*);
-// typedef void  (__thiscall *pfnSizeGetter)(SIZE*);
-// typedef void  (__thiscall *pfnPointSetter)(POINT*);
-// typedef void  (__thiscall *pfnPointGetter)(POINT*);
+// typedef void  (__thiscall *pfnSizeSetter)(Size*);
+// typedef void  (__thiscall *pfnSizeGetter)(Size*);
+// typedef void  (__thiscall *pfnPointSetter)(Point*);
+// typedef void  (__thiscall *pfnPointGetter)(Point*);
 
 // typedef void  (__thiscall *pfn9RegionSetter)(C9Region*);
 // typedef void  (__thiscall *pfn9RegionGetter)(C9Region*);
@@ -346,10 +346,10 @@ struct UIAPI AttributeSerializerWrap
     IEnumAttribute*  AddEnum(const wchar_t* szKey, long& lBindValue);
     // IEnumAttribute*  AddEnum(const wchar_t* szKey, void* _this, pfnLongSetter s, pfnLongGetter g);
 
-	IRectAttribute*  AddRect(const wchar_t*, RECT& rcBindValue);
+	IRectAttribute*  AddRect(const wchar_t*, Rect& rcBindValue);
 	// IRectAttribute*  AddRect(const wchar_t*, void* _this, pfnRectSetter s, pfnRectGetter g);
 
-	ISizeAttribute*  AddSize(const wchar_t*, SIZE& sBindValue);
+	ISizeAttribute*  AddSize(const wchar_t*, Size& sBindValue);
 	// ISizeAttribute*  AddSize(const wchar_t*, void* _this, pfnSizeSetter s, pfnSizeGetter g);
 
 	IColorAttribute*  AddColor(const wchar_t*, Color*& pBindValue);

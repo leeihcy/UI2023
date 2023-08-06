@@ -48,8 +48,8 @@ struct UIAPI ITextRenderBase : public IMessage {
   TEXT_EFFECT GetTextEffect();
   void SetDrawTextParam(long w, long l);
 
-  SIZE GetDesiredSize(const wchar_t *szText, int nLimitWidth = -1);
-  void DrawState(IRenderTarget *pRenderTarget, const RECT *prc, int nState,
+  Size GetDesiredSize(const wchar_t *szText, int nLimitWidth = -1);
+  void DrawState(IRenderTarget *pRenderTarget, const Rect *prc, int nState,
                  const wchar_t *szText, int nDrawTextFlag = -1);
   void Init();
   void CheckSkinTextureChanged();

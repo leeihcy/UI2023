@@ -75,7 +75,7 @@ namespace ui
 
 	struct IFlashInvalidateListener
 	{
-		virtual void OnInvalidateRect(const RECT*, bool) = 0;
+		virtual void OnInvalidateRect(const Rect*, bool) = 0;
 	};
 	struct IPreTranslateMessage  // IMessageFilter 被系统其它地方已经定义过了
 	{

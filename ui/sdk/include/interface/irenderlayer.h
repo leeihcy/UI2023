@@ -1,19 +1,20 @@
 #ifndef _UI_IRENDERLAYER_H_
 #define _UI_IRENDERLAYER_H_
 #include "ianimate.h"
-#include "include/base/xmldefine.h"
+#include "include/macro/xmldefine.h"
 
 namespace ui
 {
 struct IRenderTarget;
 class WindowRender;
-struct RECT;
+struct Point;
+struct Rect;
 
 // 用于UIEditor窗口编辑时实时刷新
 struct IWindowCommitListener
 {
-    virtual void PreCommit(const RECT * dirtyarray, int count) = 0;
-    virtual void PostCommit(const RECT * dirtyarray, int count) = 0;
+    virtual void PreCommit(const Rect * dirtyarray, int count) = 0;
+    virtual void PostCommit(const Rect * dirtyarray, int count) = 0;
 };
 
 struct UIAPI IWindowRender
@@ -24,7 +25,7 @@ public:
 
     WindowRender*  GetImpl();
     void  SetCanCommit(bool b);
-    //void  Commit(HDC hDC, RECT* prc, int nCount=1);
+    //void  Commit(HDC hDC, Rect* prc, int nCount=1);
     void  InvalidateNow();
 
     GRAPHICS_RENDER_LIBRARY_TYPE  GetGraphicsRenderType();
@@ -32,8 +33,8 @@ public:
     bool  GetRequireAlphaChannel();
 	//void  SetNeedRebuildCompositingLayerTree();
     
-    void  SetCommitListener(IWindowCommitListener*);
-    IWindowCommitListener*  GetCommitListener();
+    // void  SetCommitListener(IWindowCommitListener*);
+    // IWindowCommitListener*  GetCommitListener();
 
 private:
     WindowRender*  m_pWindowRenderImpl;
@@ -147,10 +148,10 @@ struct IRenderLayerTransform2
 	virtual void  set_size(int w, int h) = 0;
 	virtual void  set_pos(int x, int y) = 0;
 
-	virtual void  mappoint_layer_2_view(POINT* ptInLayer) = 0;
-	virtual void  mappoint_view_2_layer(POINT* ptInLayer) = 0;
+	virtual void  mappoint_layer_2_view(Point* ptInLayer) = 0;
+	virtual void  mappoint_view_2_layer(Point* ptInLayer) = 0;
 // 	virtual void  maprect_layer_2_view(
-// 		__in RECT* rcInLayer, __out QUAD* pqInView) = 0;
+// 		__in Rect* rcInLayer, __out QUAD* pqInView) = 0;
 };
 
 // struct IRenderLayerTransform2D : public IRenderLayerTransform2

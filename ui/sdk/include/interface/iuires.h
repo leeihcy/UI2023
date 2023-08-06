@@ -1,8 +1,8 @@
 #ifndef _IUIRES_H_
 #define _IUIRES_H_
 
-#include "base/uidefine.h"
-#include "base/xmldefine.h"
+#include "include/macro/uidefine.h"
+#include "include/macro/xmldefine.h"
 
 namespace ui
 {

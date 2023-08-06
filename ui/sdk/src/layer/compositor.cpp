@@ -12,7 +12,7 @@ Compositor::Compositor() {
   m_hWnd = nullptr;
 #endif
   m_pWindowRender = nullptr;
-  m_lPostInvalidateMsgRef = 0;
+  m_request_invalidate_ref = 0;
 }
 
 Compositor::~Compositor() {
@@ -57,27 +57,27 @@ HWND Compositor::GetHWND() { return m_hWnd; }
 void Compositor::RequestInvalidate() {
   // #if defined(OS_WIN)
   //   UIASSERT(m_hWnd);
-  //   if (m_lPostInvalidateMsgRef == 0) {
+  //   if (m_request_invalidate_ref == 0) {
   //     ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, MSG_INVALIDATE, 0);
-  //     m_lPostInvalidateMsgRef++;
+  //     m_request_invalidate_ref++;
   //   }
   // #endif
   // UI_LOG_DEBUG(L"RequestInvalidate");
 
   // m_pWindowRender->m_window.Invalidate(nullptr);
 
-  if (m_lPostInvalidateMsgRef == 0) {
+  if (m_request_invalidate_ref == 0) {
     weakptr<Compositor> ptr = m_weakptr_factory.get();
     m_pUIApp->GetMessageLoop().PostTask(
         Slot(&Compositor::_onRequestInvalidate, ptr));
-    m_lPostInvalidateMsgRef++;
+    m_request_invalidate_ref++;
   }
 }
 
 void Compositor::_onRequestInvalidate() {
   // UI_LOG_DEBUG(L"_onRequestInvalidate");
   UpdateAndCommit();
-  m_lPostInvalidateMsgRef = 0;
+  m_request_invalidate_ref = 0;
 }
 
 void Compositor::UpdateAndCommit() {
@@ -92,40 +92,30 @@ void Compositor::UpdateAndCommit() {
   this->Commit(arrDirtyInWindow);
 }
 
-void Compositor::UpdateAndCommit(RECT* rcCommitEx)
-{
-  RectRegion arrDirtyInWindow;
-  this->UpdateDirty(&arrDirtyInWindow);
-
-  if (!m_pWindowRender->CanCommit()) {
-    UI_LOG_WARN(L"can not commit now");
-    return;
-  }
-
-  // if (rcCommitEx) {
-  //   arrDirtyInWindow.Add(rcCommitEx);
-  // }
-  this->Commit(arrDirtyInWindow);
-}
 
 void Compositor::Commit(const RectRegion &arrDirtyInWindow) {
-  IWindowCommitListener *pListener = m_pWindowRender->GetCommitListener();
-  if (pListener) {
-    pListener->PreCommit(arrDirtyInWindow.GetArrayPtr2(),
+  if (m_commit_listener) {
+    m_commit_listener->PreCommit(arrDirtyInWindow.GetArrayPtr2(),
                          arrDirtyInWindow.GetCount());
 
     this->virtualCommit(arrDirtyInWindow);
 
-    pListener->PostCommit(arrDirtyInWindow.GetArrayPtr2(),
+    m_commit_listener->PostCommit(arrDirtyInWindow.GetArrayPtr2(),
                           arrDirtyInWindow.GetCount());
   } else {
     this->virtualCommit(arrDirtyInWindow);
   }
-  // UI_LOG_INFO(L"commit\n\n");
 }
 
 bool Compositor::CreateRenderTarget(IRenderTarget **pp) {
   return m_pWindowRender->CreateRenderTarget(pp);
+}
+
+void Compositor::SetCommitListener(IWindowCommitListener *p) {
+  m_commit_listener = p;
+}
+IWindowCommitListener *Compositor::GetCommitListener() {
+  return m_commit_listener;
 }
 
 void Compositor::SetWindowRender(WindowRender *p) { m_pWindowRender = p; }

@@ -104,9 +104,9 @@ const wchar_t*  ITextRenderBase::_SaveColor(Color*& pColor)
 	return __pImpl->_SaveColor(pColor);
 }
 
-SIZE  ITextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
+Size  ITextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
 {
-//     SIZE s = {0,0}; 
+//     Size s = {0,0}; 
 // 
 //     GETDESIREDSIZEINFO info;
 //     info.nLimitWidth = nLimitWidth;
@@ -119,7 +119,7 @@ SIZE  ITextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
 }
 void  ITextRenderBase::DrawState(
         IRenderTarget* pRenderTarget, 
-		const RECT* prc,
+		const Rect* prc,
         int nState, 
         const wchar_t* szText, 
         int nDrawTextFlag)
@@ -127,7 +127,7 @@ void  ITextRenderBase::DrawState(
     TEXTRENDERBASE_DRAWSTATE drawstate = {0};
     drawstate.ds_renderbase.pRenderTarget = pRenderTarget;
     if (prc) {
-        memcpy(&drawstate.ds_renderbase.rc, prc, sizeof(RECT));
+        memcpy(&drawstate.ds_renderbase.rc, prc, sizeof(Rect));
     }
     drawstate.ds_renderbase.nState = nState;
 

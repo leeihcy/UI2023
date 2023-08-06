@@ -17,27 +17,27 @@ public:
     virtual bool  IsDefaultValue() override;
     void  SetBindValue(void*) override;
     // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
-    void Bind(slot<void(RECT*)>&& s, slot<void(RECT*)>&& g);
+    void Bind(slot<void(Rect*)>&& s, slot<void(Rect*)>&& g);
 
 public:
-	RectAttribute*  SetDefault(RECT*);
+	RectAttribute*  SetDefault(Rect*);
     IRectAttribute*  GetIRectAttribute();
 
 private:
-    void  get(RECT*);
-    void  set(RECT*);
+    void  get(Rect*);
+    void  set(Rect*);
 
 private:
     IRectAttribute*  m_pIRectAttribute;
 
-    RECT*  m_pBindValue;
-    RECT   m_rcDefault;
+    Rect*  m_pBindValue;
+    Rect   m_rcDefault;
 
     // void*   _this;
     // pfnRectSetter  _setter;
     // pfnRectGetter  _getter;
-    signal<void(RECT*)> m_setter;
-    signal<void(RECT*)> m_getter;
+    signal<void(Rect*)> m_setter;
+    signal<void(Rect*)> m_getter;
 };
 
 AttributeBase*  CreateRectAttribute();

@@ -1,97 +1,93 @@
 #ifndef _UI_IMESSAGE_H_
 #define _UI_IMESSAGE_H_
-#include <string.h>
-#include "../base/uidefine.h"
 #include "include/common/guid/guid.h"
+#include "include/macro/uidefine.h"
+#include "include/uicreator.h"
+#include <string.h>
 
-namespace ui
-{
-struct  IMessage;
+namespace ui {
+struct IMessage;
 
 struct MSG {
 #if defined(OS_WIN)
-    HWND hWnd;
+  HWND hWnd;
 #else
-    long hWnd;
+  long hWnd;
 #endif
-    uint message;
-    long wParam;
-    long lParam;
+  uint message;
+  long wParam;
+  long lParam;
 };
 
-// ÏûÏ¢½á¹¹¶¨Òå¡£ÏµÍ³¿Ø¼şÈÔÈ»Ê¹uiSG£¬µ«UI¿Ø¼şÊ¹ÓÃUIMsg½øĞĞ´úÂë
-struct UIMSG : public MSG
-{
-    UIMSG() { memset(this, 0, sizeof(UIMSG)); }
+// æ¶ˆæ¯ç»“æ„å®šä¹‰ã€‚ç³»ç»Ÿæ§ä»¶ä»ç„¶ä½¿uiSGï¼Œä½†UIæ§ä»¶ä½¿ç”¨UIMsgè¿›è¡Œä»£ç 
+struct UIMSG : public MSG {
+  UIMSG() { memset(this, 0, sizeof(UIMSG)); }
 
-    IMessage*   pMsgFrom;    // ÏûÏ¢·¢ËÍÕß
-    IMessage*   pMsgTo;      // ÏûÏ¢½ÓÊÜÕß 
-    uint        nCode;       // Õë¶Ô WM_COMMAND,WM_NOTIFY
-	long        lRet;        // ÏûÏ¢´¦Àí½áÊøºóµÄ·µ»ØÖµ
-    bool        bHandled;    // ¸ÃÏûÏ¢ÊÇ·ñÒÑ±»´¦Àí¹ı
+  IMessage *pMsgFrom; // æ¶ˆæ¯å‘é€è€…
+  IMessage *pMsgTo;   // æ¶ˆæ¯æ¥å—è€…
+  uint nCode;         // é’ˆå¯¹ WM_COMMAND,WM_NOTIFY
+  long lRet;          // æ¶ˆæ¯å¤„ç†ç»“æŸåçš„è¿”å›å€¼
+  bool bHandled;      // è¯¥æ¶ˆæ¯æ˜¯å¦å·²è¢«å¤„ç†è¿‡
 };
-
-
 
 class Message;
-struct UIAPI IMessage
-{
-    IMessage(E_BOOL_CREATE_IMPL);
-    bool  ProcessMessage(UIMSG* pMsg, int nMsgMapID=0, bool bDoHook=false);
-    void  Release();
-	
-	bool    IsMsgHandled()const;
-	void    SetMsgHandled(bool b);
-	UIMSG*  GetCurMsg();
-	void    SetCurMsg(UIMSG* p);
-	bool    DoHook(UIMSG* pMsg, int nMsgMapID);
+struct UIAPI IMessage {
+  IMessage(E_BOOL_CREATE_IMPL);
+  bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
+  void Release();
+
+  bool IsMsgHandled() const;
+  void SetMsgHandled(bool b);
+  UIMSG *GetCurMsg();
+  void SetCurMsg(UIMSG *p);
+  bool DoHook(UIMSG *pMsg, int nMsgMapID);
 
 protected:
-    friend class Message;  
-    virtual ~IMessage();  // Ğéº¯Êı1. ±£Ö¤ÕıÈ·ÊÍ·ÅÕû¸ö¶ÔÏó
+  friend class Message;
+  virtual ~IMessage(); // è™šå‡½æ•°1. ä¿è¯æ­£ç¡®é‡Šæ”¾æ•´ä¸ªå¯¹è±¡
 private:
-    virtual bool  virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook);  // Ğéº¯Êı2. ÏûÏ¢´¦Àí
-	virtual void  virtual_delete_this();  // ÓÉUIObjCreator¸ºÔğÊµÏÖ
+  virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID,
+                                     bool bDoHook); // è™šå‡½æ•°2. æ¶ˆæ¯å¤„ç†
+  virtual void virtual_delete_this(); // ç”±UIObjCreatorè´Ÿè´£å®ç°
 
 public:
-	Message*  GetImpl();
-    void  ClearNotify();
-    void  SetNotify(IMessage* pObj, int nMsgMapID);
-	long  DoNotify(UIMSG* pMsg);
-    IMessage*  GetNotifyObj();
-	void  CopyNotifyTo(IMessage* pObjCopyTo);
+  Message *GetImpl();
+  void ClearNotify();
+  void SetNotify(IMessage *pObj, int nMsgMapID);
+  long DoNotify(UIMSG *pMsg);
+  IMessage *GetNotifyObj();
+  void CopyNotifyTo(IMessage *pObjCopyTo);
 
-    void  AddHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify );
-    void  RemoveHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify );
-    void  RemoveHook(IMessage* pObj );
-    void  ClearHook();
+  void AddHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
+  void RemoveHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
+  void RemoveHook(IMessage *pObj);
+  void ClearHook();
 
-    void  AddDelayRef(void** pp);
-    void  RemoveDelayRef(void** pp);
+  void AddDelayRef(void **pp);
+  void RemoveDelayRef(void **pp);
 
-    void*  QueryInterface(const Guid& iid);
+  void *QueryInterface(const Guid &iid);
+
 protected:
-    Message*   m_pImpl;
+  Message *m_pImpl;
 };
 
-
-// ÓÉÍâ²¿µÄÀà¼Ì³Ğ£¬ÓÃÓÚÖ§³ÖÏûÏ¢Ó³Éäºê¶¨Òå
-class UIAPI MessageProxy
-{
+// ç”±å¤–éƒ¨çš„ç±»ç»§æ‰¿ï¼Œç”¨äºæ”¯æŒæ¶ˆæ¯æ˜ å°„å®å®šä¹‰
+class UIAPI MessageProxy {
 public:
-	MessageProxy(IMessage* p);
-	virtual ~MessageProxy();
+  MessageProxy(IMessage *p);
+  virtual ~MessageProxy();
 
-	bool    IsMsgHandled()const;
-	void    SetMsgHandled(bool b);
-	UIMSG*  GetCurMsg();
-	void    SetCurMsg(UIMSG* p);
-	bool    DoHook(UIMSG* pMsg, int nMsgMapID);
+  bool IsMsgHandled() const;
+  void SetMsgHandled(bool b);
+  UIMSG *GetCurMsg();
+  void SetCurMsg(UIMSG *p);
+  bool DoHook(UIMSG *pMsg, int nMsgMapID);
 
 protected:
-	Message*  m_pImpl;
+  Message *m_pImpl;
 };
 
-}
+} // namespace ui
 
-#endif  // _UI_IMESSAGE_H_
+#endif // _UI_IMESSAGE_H_

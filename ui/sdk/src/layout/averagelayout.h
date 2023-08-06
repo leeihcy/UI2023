@@ -22,13 +22,13 @@ public:
 	AverageLayout();
     ~AverageLayout();
 
-    virtual SIZE  Measure() override;
+    virtual Size  Measure() override;
 	virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
 	virtual void  Serialize(SERIALIZEDATA*) override;
     virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
 
-    void  ArrangeObject_H(Object* pChildObj, RECT* prc);
-    void  ArrangeObject_V(Object* pChildObj, RECT* prc);
+    void  ArrangeObject_H(Object* pChildObj, Rect* prc);
+    void  ArrangeObject_V(Object* pChildObj, Rect* prc);
 
 public:
 	LAYOUT_AVERAGE_DIRECTION  direction;    // 堆栈排布的方向

@@ -4,11 +4,12 @@
 #include "include/common.h"
 #include "include/common/guid/guid.h"
 
-#include "include/base/uidefine.h"
-#include "include/base/uimsg.h"
-#include "include/base/uiapi.h"
-#include "include/base/uicreator.h"
-#include "include/base/xmldefine.h"
+#include "include/uicreator.h"
+#include "include/uiapi.h"
+
+#include "include/macro/uidefine.h"
+#include "include/macro/uimsg.h"
+#include "include/macro/xmldefine.h"
 
 #include "include/util/rect.h"
 

@@ -99,11 +99,11 @@ void Window::onSize(int width, int height) {
   m_rcParent.CopyFrom(rcParent);
 
   if (GetConfigWidth() > 0)
-    SetConfigWidth(rcWindow.width);
+    SetConfigWidth(rcWindow.width());
   if (GetConfigHeight() > 0)
-    SetConfigHeight(rcWindow.height);
+    SetConfigHeight(rcWindow.height());
 
-  notify_WM_SIZE(0, rcParent.width, rcParent.height);
+  notify_WM_SIZE(0, rcParent.width(), rcParent.height());
 #if 0
   size_changed.emit((long)wParam);
 #endif
@@ -148,13 +148,19 @@ void Window::onPaint(Rect *dirty) {
   // }
 
   // if (dirty) {
-  //   RECT rc;
+  //   Rect rc;
   //   rc.CopyFrom(*dirty);
   //   m_objLayer.GetLayer()->Invalidate(&rc);
   // } else {
   //   m_objLayer.GetLayer()->Invalidate(nullptr);
   // }
-  m_window_render.Commit(dirty);
+  if (dirty) {
+    m_window_render.OnWindowPaint(*dirty);
+  } else {
+    Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
+    m_window_render.OnWindowPaint(rc);
+  }
+  
   // m_window_render.InvalidateNow();
 }
 
@@ -244,31 +250,31 @@ void Window::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
 }
 
 #if 0
-long WindowBase::_OnPostMessage( unsigned int uMsg, long wParam, long lParam, BOOL& bHandled )
-{
-	bHandled = FALSE;
-  if (wParam == MSG_ASYNCTASK)
-	{
-		std::function<void(WindowBase*)>* callback = 
-			(std::function<void(WindowBase*)>*)lParam;
+// long WindowBase::_OnPostMessage( unsigned int uMsg, long wParam, long lParam, BOOL& bHandled )
+// {
+// 	bHandled = FALSE;
+//   if (wParam == MSG_ASYNCTASK)
+// 	{
+// 		std::function<void(WindowBase*)>* callback = 
+// 			(std::function<void(WindowBase*)>*)lParam;
 
-		(*callback)(this);
+// 		(*callback)(this);
 
-		delete callback;
-	}
-	return 0;
-}
+// 		delete callback;
+// 	}
+// 	return 0;
+// }
 
-void  WindowBase::AsyncTask(std::function<void(WindowBase*)> callback)
-{
-	if (!callback)
-		return;
+// void  WindowBase::AsyncTask(std::function<void(WindowBase*)> callback)
+// {
+// 	if (!callback)
+// 		return;
 
-	std::function<void(WindowBase*)>* param =
-		new std::function<void(WindowBase*)>(callback);
+// 	std::function<void(WindowBase*)>* param =
+// 		new std::function<void(WindowBase*)>(callback);
 
-	::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, MSG_ASYNCTASK, (long)param);
-}
+// 	::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, MSG_ASYNCTASK, (long)param);
+// }
 #endif
 
 bool Window::IsGpuComposite() { return m_windowStyle.hard_composite; }
@@ -278,7 +284,7 @@ bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }
 
 bool Window::IsWindowVisible() { return m_platform->IsWindowVisible(); }
 
-void Window::Commit(IRenderTarget *pRT, const RECT *prect, int count) {
+void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
   m_platform->Commit(pRT, prect, count);
 }
 

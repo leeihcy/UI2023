@@ -2,16 +2,29 @@
 #define _UI_SDK_COMMON_H_
 #include <string>
 
-namespace ui
-{
+namespace ui {
+
+// 导入导出定义
+// linux默认所有函数都导出，添加编译参数 -fvisibility=hidden 控制默认不导出
+#if defined(OS_WIN)
+#ifdef UI_EXPORTS
+#define UIAPI __declspec(dllexport)
+#else
+#define UIAPI __declspec(dllimport)
+#endif
+#else
+#ifdef UI_EXPORTS
+#define UIAPI __attribute__((visibility("default")))
+#else
+#define UIAPI
+#endif
+#endif
 
 using byte = unsigned char;
 using ushort = unsigned short;
 using uint = unsigned int;
 using ulong = unsigned long;
 using wchar = wchar_t;
-
-
 
 #if defined(OS_WIN)
 #else
@@ -27,65 +40,57 @@ using wchar = wchar_t;
 #define HTERROR -2
 #define HTTRANSPARENT -1
 #define HTNOWHERE 0
-#define HTCLIENT  1
-#define HTCAPTION  2
-#define HTSYSMENU  3
-#define HTGROWBOX  4
-#define HTSIZE  HTGROWBOX
-#define HTMENU  5
-#define HTHSCROLL  6
-#define HTVSCROLL  7
-#define HTMINBUTTON  8
-#define HTMAXBUTTON  9
+#define HTCLIENT 1
+#define HTCAPTION 2
+#define HTSYSMENU 3
+#define HTGROWBOX 4
+#define HTSIZE HTGROWBOX
+#define HTMENU 5
+#define HTHSCROLL 6
+#define HTVSCROLL 7
+#define HTMINBUTTON 8
+#define HTMAXBUTTON 9
 #define HTLEFT 10
-#define HTRIGHT  11
+#define HTRIGHT 11
 #define HTTOP 12
 #define HTTOPLEFT 13
 #define HTTOPRIGHT 14
-#define HTBOTTOM  15
-#define HTBOTTOMLEFT  16
-#define HTBOTTOMRIGHT  17
-#define HTBORDER  18
-#define HTREDUCE  HTMINBUTTON
-#define HTZOOM  HTMAXBUTTON
+#define HTBOTTOM 15
+#define HTBOTTOMLEFT 16
+#define HTBOTTOMRIGHT 17
+#define HTBORDER 18
+#define HTREDUCE HTMINBUTTON
+#define HTZOOM HTMAXBUTTON
 #define HTSIZEFIRST HTLEFT
-#define HTSIZELAST  HTBOTTOMRIGHT
-#define HTOBJECT  19
-#define HTCLOSE  20
+#define HTSIZELAST HTBOTTOMRIGHT
+#define HTOBJECT 19
+#define HTCLOSE 20
 
-struct SIZE {
-    long cx;
-    long cy;
-};
-struct POINT {
-    long x;
-    long y;
-};
 #define LF_FACESIZE 32
-typedef struct tagLOGFONT { 
-  long lfHeight; 
-  long lfWidth; 
-  long lfEscapement; 
-  long lfOrientation; 
-  long lfWeight; 
-  unsigned char lfItalic; 
-  unsigned char lfUnderline; 
-  unsigned char lfStrikeOut; 
-  unsigned char lfCharSet; 
-  unsigned char lfOutPrecision; 
-  unsigned char lfClipPrecision; 
-  unsigned char lfQuality; 
-  unsigned char lfPitchAndFamily; 
-  wchar_t lfFaceName[LF_FACESIZE]; 
-} LOGFONT; 
+typedef struct tagLOGFONT {
+  long lfHeight;
+  long lfWidth;
+  long lfEscapement;
+  long lfOrientation;
+  long lfWeight;
+  unsigned char lfItalic;
+  unsigned char lfUnderline;
+  unsigned char lfStrikeOut;
+  unsigned char lfCharSet;
+  unsigned char lfOutPrecision;
+  unsigned char lfClipPrecision;
+  unsigned char lfQuality;
+  unsigned char lfPitchAndFamily;
+  wchar_t lfFaceName[LF_FACESIZE];
+} LOGFONT;
 #define FW_NORMAL 400
 #define FW_BOLD 700
 
 #define WM_MOVE 0x0003
 #define WM_SIZE 0x0005
-#define WM_PAINT 0x000F 
-#define WM_QUIT 0x0012 
-#define WM_ERASEBKGND 0x0014 
+#define WM_PAINT 0x000F
+#define WM_QUIT 0x0012
+#define WM_ERASEBKGND 0x0014
 #define WM_THEMECHANGED 0x031A
 
 #define SWP_NOMOVE 1
@@ -97,7 +102,7 @@ typedef struct tagLOGFONT {
 #define DT_END_ELLIPSIS 2
 #define DT_VCENTER 4
 #define DT_NOPREFIX 8
-#define DT_BOTTOM  0x10
+#define DT_BOTTOM 0x10
 #define DT_WORDBREAK 0x20
 #define DT_CENTER 0x40
 #define DT_EDITCONTROL 0x80
@@ -111,13 +116,15 @@ typedef struct tagLOGFONT {
 #define __stdcall
 #endif
 
-#define GetRValue(rgb)   ((unsigned char) (rgb)) 
-#define GetGValue(rgb)   ((unsigned char) (((unsigned short) (rgb)) >> 8)) 
-#define GetBValue(rgb)   ((unsigned short) ((rgb) >> 16)) 
-#define RGB(r,g,b)  ((unsigned char)r | ((unsigned char)g << 8) | ((unsigned char)b << 16))
+#define GetRValue(rgb) ((unsigned char)(rgb))
+#define GetGValue(rgb) ((unsigned char)(((unsigned short)(rgb)) >> 8))
+#define GetBValue(rgb) ((unsigned short)((rgb) >> 16))
+#define RGB(r, g, b)                                                           \
+  ((unsigned char)r | ((unsigned char)g << 8) | ((unsigned char)b << 16))
 
-#define MAKELONG(a, b) ((long) (((short) (a)) | ((unsigned int) ((short) (b))) << 16))
-#define MAKELPARAM(l, h) ((long) MAKELONG(l, h))
+#define MAKELONG(a, b)                                                         \
+  ((long)(((short)(a)) | ((unsigned int)((short)(b))) << 16))
+#define MAKELPARAM(l, h) ((long)MAKELONG(l, h))
 
 #define wcsicmp wcscasecmp
 
@@ -128,84 +135,74 @@ typedef struct tagLOGFONT {
 //  remark: __FILE__ ...这些都是char*类型的
 //
 #ifdef ASSERT
-#undef ASSERT  // 避免使用ASSERT，请使用UIASSERT
+#undef ASSERT // 避免使用ASSERT，请使用UIASSERT
 #endif
 
 #ifdef _DEBUG
-#define UIASSERT(x)   \
-	if(!(x))                          \
-	{                                 \
-		char szInfo[2048] = "";       \
-		sprintf_s(szInfo, 2047, "UIASSERT expr(%s) %s(L%d) ## %s\r\n", #x, __FILE__, __LINE__, __FUNCTION__ );  \
-		::OutputDebugStringA(szInfo); \
-		DebugBreak(); \
-	} 
+#define UIASSERT(x)                                                            \
+  if (!(x)) {                                                                  \
+    char szInfo[2048] = "";                                                    \
+    sprintf_s(szInfo, 2047, "UIASSERT expr(%s) %s(L%d) ## %s\r\n", #x,         \
+              __FILE__, __LINE__, __FUNCTION__);                               \
+    ::OutputDebugStringA(szInfo);                                              \
+    DebugBreak();                                                              \
+  }
 #else
-#define UIASSERT(x)  assert(x)
+#define UIASSERT(x) assert(x)
 #endif
 
-
-	
 // 常用缩写定义
-#define SAFE_DELETE(p) \
-	if (p) \
-{ \
-	delete (p); \
-	(p) = NULL; \
-}
+#define SAFE_DELETE(p)                                                         \
+  if (p) {                                                                     \
+    delete (p);                                                                \
+    (p) = NULL;                                                                \
+  }
 
-#define SAFE_ARRAY_DELETE(p) \
-	if (p) \
-{ \
-	delete[] (p); \
-	(p) = NULL; \
-}
+#define SAFE_ARRAY_DELETE(p)                                                   \
+  if (p) {                                                                     \
+    delete[](p);                                                               \
+    (p) = NULL;                                                                \
+  }
 
-#define SAFE_RELEASE(p) \
-	if (p) \
-{ \
-	(p)->Release(); \
-	(p) = NULL; \
-}
+#define SAFE_RELEASE(p)                                                        \
+  if (p) {                                                                     \
+    (p)->Release();                                                            \
+    (p) = NULL;                                                                \
+  }
 
-#define SAFE_RELEASE2(p) \
-	if (p) \
-{ \
-	(p).Release(); \
-	(p) = NULL; \
-}
+#define SAFE_RELEASE2(p)                                                       \
+  if (p) {                                                                     \
+    (p).Release();                                                             \
+    (p) = NULL;                                                                \
+  }
 
-#define SAFE_DELETE_GDIOBJECT(h) \
-{\
-	if (h)\
-	{\
-		/*bool b = */::DeleteObject(h);\
-		/*if (0 == b) UIASSERT(b);*/ \
-		(h) = NULL;\
-	}\
-}
+#define SAFE_DELETE_GDIOBJECT(h)                                               \
+  {                                                                            \
+    if (h) {                                                                   \
+      /*bool b = */ ::DeleteObject(h);                                         \
+      /*if (0 == b) UIASSERT(b);*/                                             \
+      (h) = NULL;                                                              \
+    }                                                                          \
+  }
 
 // #ifdef _UNICODE
-	typedef std::wstring String;
+typedef std::wstring String;
 // #else
 //     typedef std::string  String;
 // #endif
 
-
-inline int _round(const float& f)
-{
-	if (f < 0.0f)
-		return int(f - 0.5f);
-	else
-		return int(f + 0.5f);
+inline int _round(const float &f) {
+  if (f < 0.0f)
+    return int(f - 0.5f);
+  else
+    return int(f + 0.5f);
 }
-inline int _round(const double& f)
-{
-	if (f < 0.0f)
-		return int(f - 0.5);
-	else
-		return int(f + 0.5);
+inline int _round(const double &f) {
+  if (f < 0.0f)
+    return int(f - 0.5);
+  else
+    return int(f + 0.5);
 }
 
-}
+} // namespace ui
 #endif

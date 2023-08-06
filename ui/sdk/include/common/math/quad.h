@@ -23,10 +23,10 @@ struct QUAD
 
         struct
         {
-            POINT  ptA;
-            POINT  ptB;
-            POINT  ptC;
-            POINT  ptD;
+            Point  ptA;
+            Point  ptB;
+            Point  ptC;
+            Point  ptD;
         };
 
         struct
@@ -79,11 +79,11 @@ struct QUADF
 class Quad : public QUAD
 {
 public:
-    void  SetByRect(RECT* prc);
-    void  Offset(POINT pt);
+    void  SetByRect(Rect* prc);
+    void  Offset(Point pt);
     void  Offset(int x, int y);
-    void  GetBoundRect2(RECT* prc);
-	void  GetBoundRect(RECT* prc);
+    void  GetBoundRect2(Rect* prc);
+	void  GetBoundRect(Rect* prc);
 };
 
 class QuadF : public QUADF

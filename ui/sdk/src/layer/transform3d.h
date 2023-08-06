@@ -24,9 +24,9 @@ public:
 					float fZ) override;
 	virtual void  set_pos(int x, int y) override;
 	virtual void  set_size(int w, int h) override;
-	virtual void  mappoint_layer_2_view(POINT* ptInLayer) override;
-	virtual void  mappoint_view_2_layer(POINT* ptInLayer) override;
-	//virtual void  maprect_layer_2_view(__in RECT* rcInLayer, __out QUAD* pqInView);
+	virtual void  mappoint_layer_2_view(Point* ptInLayer) override;
+	virtual void  mappoint_view_2_layer(Point* ptInLayer) override;
+	//virtual void  maprect_layer_2_view(__in Rect* rcInLayer, __out QUAD* pqInView);
 
     virtual void  set_backface_visibility(bool b) override;
     virtual bool  get_backface_visibility() override;

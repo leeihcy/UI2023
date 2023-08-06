@@ -158,7 +158,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragEnter(IDataObject *pDataObj, un
 
     if (m_pDropTargetHelper)
     {
-        m_pDropTargetHelper->DragEnter(m_pWindowBase->m_hWnd, pDataObj, (POINT*)&pt, DROPEFFECT_NONE/**pdwEffect*/);
+        m_pDropTargetHelper->DragEnter(m_pWindowBase->m_hWnd, pDataObj, (Point*)&pt, DROPEFFECT_NONE/**pdwEffect*/);
     }
 
     return DragMove(pDataObj, grfKeyState, pt, pdwEffect);    
@@ -168,7 +168,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::DragOver(unsigned int grfKeyState, 
 {
     if (m_pDropTargetHelper)
     {
-        m_pDropTargetHelper->DragOver((POINT*)&pt, *pdwEffect);
+        m_pDropTargetHelper->DragOver((Point*)&pt, *pdwEffect);
     }
 
     return DragMove(m_pDragingDataObj, grfKeyState, pt, pdwEffect);
@@ -239,7 +239,7 @@ HRESULT STDMETHODCALLTYPE WindowDragDropMgr::Drop(IDataObject *pDataObj, unsigne
 {
     if (m_pDropTargetHelper)
     {
-        m_pDropTargetHelper->Drop(pDataObj, (POINT*)&pt, *pdwEffect);
+        m_pDropTargetHelper->Drop(pDataObj, (Point*)&pt, *pdwEffect);
     }
 
     DROPTARGETEVENT_DATA data = {pDataObj, grfKeyState, pt, pdwEffect};

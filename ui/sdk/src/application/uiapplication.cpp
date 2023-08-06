@@ -37,7 +37,7 @@ ResourceManager &Application::GetResourceManager() {
 }
 
 void Application::x_Init() {
-  UI_LOG_INFO(L"Application Init");
+  UI_LOG_INFO("Application Init");
 
 #if defined(OS_WIN)
   //	::CoInitialize(0);
@@ -118,7 +118,7 @@ MessageLoop &Application::GetMessageLoop() { return m_message_loop; }
 
 Application::~Application(void) {
   // 应用程序退出日志
-  UI_LOG_INFO(_T("------------  UI Quit ----------------"));
+  UI_LOG_INFO("------------  UI Quit ----------------");
 
   if (m_pUIAutoTest) {
     m_pUIAutoTest->Release();
@@ -620,7 +620,7 @@ HMODULE  Application::GetUID2DModule()
 
     if (!s_hUID2D)
     {
-        UI_LOG_INFO(_T("%s Load UI3D.dll Failed. Error code = %d"), FUNC_NAME, GetLastError());
+        UI_LOG_INFOA("%s Load UI3D.dll Failed. Error code = %d"), FUNC_NAME, GetLastError();
     }
     else
     {
@@ -694,7 +694,7 @@ bool Application::EnableGpuComposite() {
   }
 
   fn();
-  UI_LOG_INFO(TEXT("GpuCompositor Enable."));
+  UI_LOG_INFOA("GpuCompositor Enable.");
 #endif
 
   m_bGpuEnable = true;

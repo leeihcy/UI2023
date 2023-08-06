@@ -1,7 +1,7 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
 
-#include "../base/uidefine.h"
+#include "include/macro/uidefine.h"
 #include "../common/signalslot/signal.h"
 #include "iobject.h"
 #include <SkCanvas.h>
@@ -125,17 +125,17 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
     bool  IsDoModal();
     void  CenterWindow(HWND hWndCenter = nullptr);
     void  CenterWindow(HMONITOR hMonitor = nullptr);
-	void  GetWindowNormalRect(RECT* prc);
-	void  SetWindowNormalRect(const RECT* prc);
+	void  GetWindowNormalRect(Rect* prc);
+	void  SetWindowNormalRect(const Rect* prc);
 	void  UpdateDesktopLayout();
 
     void  SetFocusObject(IObject* pObj);
 	void  SetPressObject(IObject* pObj);
     IObject*  GetHoverObject();
     IObject*  GetPressObject();
-    IObject*  GetObjectByPos(IObject* pObjParent, POINT* pt, bool bSkinBuilderInvoke=false);
+    IObject*  GetObjectByPos(IObject* pObjParent, Point* pt, bool bSkinBuilderInvoke=false);
 
-    bool  Create(const wchar_t* szID, HWND hWndParent=nullptr, RECT* prc=nullptr, long lStyle = 0, long lExStyle = 0);
+    bool  Create(const wchar_t* szID, HWND hWndParent=nullptr, Rect* prc=nullptr, long lStyle = 0, long lExStyle = 0);
     bool  Attach(HWND hWnd, const wchar_t* szID);
     void  Detach();
 	INT_PTR  DoModal(const wchar_t* szID, HWND hWndParent, bool canResize);
@@ -147,16 +147,16 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 	void  ChangeSkinLayout(const wchar_t* szLayoutId);
 
     void  SaveMemBitmap(wchar* szFile);
-	void  AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha);
-	void  BitBltMemBitmap(HDC hDC, RECT* prc);
+	void  AlphaBlendMemBitmap(HDC hDC, Rect* prc, int alpha);
+	void  BitBltMemBitmap(HDC hDC, Rect* prc);
     void  EnableDwmTransition(bool b);
 	void  EnableGpuComposite(bool b);
 	bool  IsGpuComposite();
 	void  DirectComposite();
 	void  SetWindowMessageCallback(IWindowDelegate*);
 
-    void  CalcWindowSizeByClientSize( SIZE sizeClient, SIZE* pSizeWindow );
-    void  CalcClientRectByWindowRect( RECT* rcWindow, RECT* rcClient );
+    void  CalcWindowSizeByClientSize( Size sizeClient, Size* pSizeWindow );
+    void  CalcClientRectByWindowRect( Rect* rcWindow, Rect* rcClient );
 
 //     bool  AddAnchorItem(const SyncWindowData& data);
 //     void  HideAllAnchorItem();
@@ -215,7 +215,7 @@ private:
 
 // #if 0
 // extern "C"
-// void UIAPI GetWindowNormalRect(HWND hWnd, RECT* prc);
+// void UIAPI GetWindowNormalRect(HWND hWnd, Rect* prc);
 // #endif
 } // namespace ui
 

@@ -2,8 +2,8 @@
 #define _IUIAPPLICATION_H_
 #include <functional>
 #include "include/common/guid/guid.h"
-#include "include/base/uidefine.h"
-#include "include/base/uiapi.h"
+#include "include/macro/uidefine.h"
+#include "include/uiapi.h"
 
 namespace uia
 {
@@ -107,7 +107,7 @@ struct UIAPI IApplication
     HDC   GetCacheDC();
     void  ReleaseCacheDC(HDC hDC);
     HBITMAP  GetCacheBitmap(int nWidth, int nHeight);  // 注：不要释放该HBITMAP，由内部维护
-    void  ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius);
+    void  ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, Rect* prcBlur, int nRadius);
 #endif
     bool  IsUnderXpOS();
     bool  IsVistaOrWin7etc();

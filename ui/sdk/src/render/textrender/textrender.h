@@ -30,8 +30,8 @@ public:
 	long  Release();
 
     void  Serialize(AttributeSerializer* ps);
-    void  OnGetDesiredSize(SIZE* pSize, GETDESIREDSIZEINFO* pInfo);
-    SIZE  GetDesiredSize(const wchar_t* szText, int nLimitWidth=-1);
+    void  OnGetDesiredSize(Size* pSize, GETDESIREDSIZEINFO* pInfo);
+    Size  GetDesiredSize(const wchar_t* szText, int nLimitWidth=-1);
 
 public:
     void  SetRenderFont(IRenderFont* pFont) {}

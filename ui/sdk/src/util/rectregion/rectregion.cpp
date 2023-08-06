@@ -26,21 +26,21 @@ RectRegion &RectRegion::operator=(const RectRegion &o) {
   return *this;
 }
 
-RECT *RectRegion::GetArrayPtr() {
+Rect *RectRegion::GetArrayPtr() {
   if (m_heapArray)
     return m_heapArray;
 
   return m_stackArray;
 }
 
-const RECT *RectRegion::GetArrayPtr2() const {
+const Rect *RectRegion::GetArrayPtr2() const {
   if (m_heapArray)
     return m_heapArray;
 
   return m_stackArray;
 }
 
-RECT *RectRegion::GetRectPtrAt(unsigned int nIndex) {
+Rect *RectRegion::GetRectPtrAt(unsigned int nIndex) {
   UIASSERT(nIndex < m_nCount);
   if (nIndex >= m_nCount) {
     return nullptr;
@@ -72,23 +72,23 @@ void RectRegion::CopyFrom(const RectRegion *po) {
   CopyFromArray(((RectRegion *)po)->GetArrayPtr(), po->m_nCount);
 }
 
-void RectRegion::CopyFromArray(const RECT *pArray, unsigned int nCount) {
+void RectRegion::CopyFromArray(const Rect *pArray, unsigned int nCount) {
   Destroy();
   if (nCount > STACK_SIZE) {
-    m_heapArray = new RECT[nCount];
+    m_heapArray = new Rect[nCount];
     m_nCapacity = nCount;
-    memcpy(m_heapArray, pArray, sizeof(RECT) * nCount);
+    memcpy(m_heapArray, pArray, sizeof(Rect) * nCount);
   } else if (nCount) {
-    memcpy(m_stackArray, pArray, sizeof(RECT) * nCount);
+    memcpy(m_stackArray, pArray, sizeof(Rect) * nCount);
   }
   m_nCount = nCount;
 }
 
-void RectRegion::AddRect(const RECT &rc) {
+void RectRegion::AddRect(const Rect &rc) {
   if (m_nCount >= STACK_SIZE || m_heapArray) {
     long nCount = m_nCount;
-    RECT *pHeap = new RECT[nCount + 1];
-    memcpy(pHeap, GetArrayPtr(), m_nCount * sizeof(RECT));
+    Rect *pHeap = new Rect[nCount + 1];
+    memcpy(pHeap, GetArrayPtr(), m_nCount * sizeof(Rect));
     (pHeap + m_nCount)->CopyFrom(rc);
 
     Destroy();
@@ -106,13 +106,13 @@ void RectRegion::SetSize(unsigned int nCount) {
   m_nCount = nCount;
 
   if (nCount > STACK_SIZE) {
-    m_heapArray = new RECT[nCount];
+    m_heapArray = new Rect[nCount];
     m_nCapacity = nCount;
-    memset(m_heapArray, 0, sizeof(RECT) * nCount);
+    memset(m_heapArray, 0, sizeof(Rect) * nCount);
   }
 }
 
-bool RectRegion::SetAt(unsigned int nIndex, RECT *pValue) {
+bool RectRegion::SetAt(unsigned int nIndex, Rect *pValue) {
   if (nIndex >= m_nCount)
     return false;
   if (!pValue)
@@ -129,11 +129,11 @@ void RectRegion::Offset(int x, int y) {
 }
 
 // 运行完之后，m_heapArray的大小与m_nCount可能不匹配
-bool RectRegion::IntersectRect(const RECT *prc, bool OnlyTest) {
+bool RectRegion::IntersectRect(const Rect *prc, bool OnlyTest) {
   if (0 == m_nCount)
     return false;
 
-  RECT temp = {0};
+  Rect temp = {0};
   unsigned int nNewCount = 0;
 
   for (unsigned int i = 0; i < m_nCount; i++) {
@@ -170,13 +170,13 @@ bool RectRegion::IntersectRect(const RECT *prc, bool OnlyTest) {
 }
 
 // 简单合并策略，会扩大脏区域范围
-void RectRegion::UnionSimple(const RECT& rc)
+void RectRegion::UnionSimple(const Rect& rc)
 {
   // 1. 检测有没有重叠项，或者有交集的项
-  RECT rcTemp = {0};
+  Rect rcTemp = {0};
   bool has_intersect = false;
   for (unsigned int i = 0; i < m_nCount; i++) {
-    RECT *prcTest = GetRectPtrAt(i);
+    Rect *prcTest = GetRectPtrAt(i);
 
     if (!prcTest->Intersect(rc, &rcTemp))
       continue;
@@ -193,7 +193,7 @@ void RectRegion::UnionSimple(const RECT& rc)
 }
 
 // 场景：窗口脏区域逻辑
-void RectRegion::Union(const RECT &rc) {
+void RectRegion::Union(const Rect &rc) {
   if (rc.IsEmpty()) {
     return;
   }
@@ -207,9 +207,9 @@ void RectRegion::Union(const RECT &rc) {
   // 1. 将所有纵坐标进行排序
   std::set<int> y_scanlines;
 
-  std::vector<RECT> all_rects;
+  std::vector<Rect> all_rects;
   for (unsigned int i = 0; i < m_nCount; i++) {
-    RECT *prc = GetRectPtrAt(i);
+    Rect *prc = GetRectPtrAt(i);
     y_scanlines.insert(prc->top);
     y_scanlines.insert(prc->bottom);
     all_rects.push_back(*GetRectPtrAt(i));
@@ -230,9 +230,9 @@ void RectRegion::Union(const RECT &rc) {
     y1 = y2;
     y2 = *iter;
 
-    std::vector<RECT> horz_rects;
+    std::vector<Rect> horz_rects;
     // 3. 从左到右扫描
-    for (RECT &i : all_rects) {
+    for (Rect &i : all_rects) {
       if (i.bottom <= y1) {
         continue;
       }
@@ -246,11 +246,11 @@ void RectRegion::Union(const RECT &rc) {
 }
 
 // 添加同一水平线的矩形，如果能合并则合并
-void RectRegion::add_rects_same_topbottom(std::vector<RECT> &horz_rects) {
+void RectRegion::add_rects_same_topbottom(std::vector<Rect> &horz_rects) {
   if (horz_rects.empty()) {
     return;
   }
-  auto lambda_sort = [](const RECT &r1, const RECT &r2) -> bool {
+  auto lambda_sort = [](const Rect &r1, const Rect &r2) -> bool {
     return r2.left > r1.left;
   };
 
@@ -258,9 +258,9 @@ void RectRegion::add_rects_same_topbottom(std::vector<RECT> &horz_rects) {
   std::sort(horz_rects.begin(), horz_rects.end(), lambda_sort);
 
   auto xiter = horz_rects.begin();
-  RECT rc_left = *xiter;
+  Rect rc_left = *xiter;
   for (++xiter; xiter != horz_rects.end(); ++xiter) {
-    RECT &rc_compare = *xiter;
+    Rect &rc_compare = *xiter;
     if (rc_compare.left > rc_left.right) {
       // 两个矩形不相连
       add_rect_and_merge_vert(rc_left);
@@ -285,9 +285,9 @@ void RectRegion::add_rects_same_topbottom(std::vector<RECT> &horz_rects) {
 
 // 添加一个矩形。
 // 如果这个矩形和已有的矩形上下能完全重合起来，则合并
-void RectRegion::add_rect_and_merge_vert(RECT& rc) {
+void RectRegion::add_rect_and_merge_vert(Rect& rc) {
   for (unsigned int i = 0; i < m_nCount; i++) {
-    RECT *prc = GetRectPtrAt(i);
+    Rect *prc = GetRectPtrAt(i);
     if (prc->bottom != rc.top) {
       // 由于是从上往下扫描的，只需要判断是否和已有的区域bottom一致即可。
       continue;
@@ -310,26 +310,26 @@ HRGN RectRegion::CreateRgn() {
   }
 
   RGNDATA *pRgnData =
-      (RGNDATA *)new BYTE[sizeof(RGNDATAHEADER) + m_nCount * sizeof(RECT)];
+      (RGNDATA *)new BYTE[sizeof(RGNDATAHEADER) + m_nCount * sizeof(Rect)];
   memset(pRgnData, 0, sizeof(RGNDATAHEADER));
   pRgnData->rdh.dwSize = sizeof(RGNDATAHEADER);
   pRgnData->rdh.iType = RDH_RECTANGLES;
   pRgnData->rdh.nCount = m_nCount;
-  pRgnData->rdh.nRgnSize = m_nCount * sizeof(RECT);
+  pRgnData->rdh.nRgnSize = m_nCount * sizeof(Rect);
 
-  RECT *prcBuffer = (RECT *)pRgnData->Buffer;
+  Rect *prcBuffer = (Rect *)pRgnData->Buffer;
   for (unsigned int k = 0; k < m_nCount; k++) {
     CopyRect(prcBuffer + k, GetRectPtrAt(k));
   }
   HRGN hRgn = ::ExtCreateRegion(
-      nullptr, sizeof(RGNDATAHEADER) + m_nCount * sizeof(RECT), pRgnData);
+      nullptr, sizeof(RGNDATAHEADER) + m_nCount * sizeof(Rect), pRgnData);
   delete[] pRgnData;
 
   return hRgn;
 }
 #endif
 
-void RectRegion::GetUnionRect(RECT *prc) {
+void RectRegion::GetUnionRect(Rect *prc) {
   prc->SetEmpty();
   for (unsigned int i = 0; i < m_nCount; i++) {
     GetRectPtrAt(i)->Union(*prc, prc);

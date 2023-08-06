@@ -19,7 +19,7 @@ class Window;
 class DockLayout : public Layout
 {
 public:
-	virtual SIZE  MeasureChildObject();
+	virtual Size  MeasureChildObject();
 	virtual void  ArrangeChildObject(Object* pObjToArrage = nullptr);
 };
 
@@ -186,15 +186,15 @@ public:
 
     }
 
-	virtual SIZE  CalcDesiredSize()
+	virtual Size  CalcDesiredSize()
     {
-        SIZE s = {0, 0};
+        Size s = {0, 0};
 
         if (m_pObj)
         {
             // 计算 margin 的大小
-            s.cx += m_pObj->GetMarginW();
-            s.cy += m_pObj->GetMarginH();
+            s.width += m_pObj->GetMarginW();
+            s.height += m_pObj->GetMarginH();
         }
 
         return s;

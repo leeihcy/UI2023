@@ -25,8 +25,8 @@ protected:
   virtual bool IsChildOf(ILayerContent *) override;
   virtual bool IsVisible() override;
   virtual void Draw(ui::IRenderTarget *) override;
-  virtual void GetWindowRect(RECT *prcOut) override;
-  virtual void GetParentWindowRect(RECT *prcOut) override;
+  virtual void GetWindowRect(Rect *prcOut) override;
+  virtual void GetParentWindowRect(Rect *prcOut) override;
   virtual void OnLayerDestory() override;
   virtual Layer *GetParentLayer() override;
   virtual Layer *GetNextLayer() override;

@@ -29,7 +29,7 @@ public:
   bool IsWindowVisible() override;
   void Show() override;
   void Hide();
-  void Commit(IRenderTarget* pRT, const RECT* prect, int count) override;
+  void Commit(IRenderTarget* pRT, const Rect* prect, int count) override;
 
 public:
   NSWindow* window() { return m_window; }

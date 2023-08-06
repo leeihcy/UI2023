@@ -208,14 +208,14 @@ const wchar_t*  TextRenderBase::_SaveColor(Color*& pColor)
     return szBuffer;
 }
 
-void  TextRenderBase::OnGetDesiredSize(SIZE* pSize, GETDESIREDSIZEINFO* pInfo)
+void  TextRenderBase::OnGetDesiredSize(Size* pSize, GETDESIREDSIZEINFO* pInfo)
 {
     *pSize = GetDesiredSize(pInfo->szText, pInfo->nLimitWidth);
 }
 
-SIZE TextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
+Size TextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
 {
-    SIZE s = {0,0};
+    Size s = {0,0};
     IRenderFont* pFont = m_pITextRenderBase->GetRenderFont();
     if (pFont)
         s = pFont->MeasureString(szText, nLimitWidth);

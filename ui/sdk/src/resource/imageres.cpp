@@ -6,7 +6,7 @@
 // #ina clude "src/Renderlibrary\gdiplus\gdiplusbitmap.h"
 #include "src/resource/res_bundle.h"
 // #include "Inc\Util\iimage.h"
-#include "include/base/xmldefine.h"
+#include "include/macro/xmldefine.h"
 #include "include/interface/iuires.h"
 #include "src/skin_parse/datasource/skindatasource.h"
 #include "src/util/DPI/dpihelper.h"
@@ -405,8 +405,8 @@ void  ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap)
 ImageIconResItem::ImageIconResItem()
 {
     m_eType = IMAGE_ITEM_TYPE_ICON;
-    m_sizeDraw.cx = 16;
-    m_sizeDraw.cx = 16;
+    m_sizeDraw.width = 16;
+    m_sizeDraw.height = 16;
 }
 
 IImageResItem*  ImageIconResItem::GetIImageResItem()
@@ -420,8 +420,8 @@ void  ImageIconResItem::SetAttribute(IMapAttribute* pMapAttrib)
 {
     ImageResItem::SetAttribute(pMapAttrib);
 
-    pMapAttrib->GetAttr_int(XML_IMAGE_ICON_WIDTH,  true, (int*)&m_sizeDraw.cx);
-    pMapAttrib->GetAttr_int(XML_IMAGE_ICON_HEIGHT, true, (int*)&m_sizeDraw.cy);
+    pMapAttrib->GetAttr_int(XML_IMAGE_ICON_WIDTH,  true, (int*)&m_sizeDraw.width);
+    pMapAttrib->GetAttr_int(XML_IMAGE_ICON_HEIGHT, true, (int*)&m_sizeDraw.height);
 }
 
 void  ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap)

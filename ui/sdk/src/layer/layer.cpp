@@ -29,7 +29,7 @@ Layer::Layer() : m_iLayer(this) {
   m_pNext = nullptr;
   m_pPrev = nullptr;
 
-  m_size.cx = m_size.cy = 0;
+  m_size.width = m_size.height = 0;
   m_pLayerContent = nullptr;
   m_bClipLayerInParentObj = true;
   m_nCurrentStoryboardCount = 0;
@@ -110,18 +110,18 @@ void Layer::InvalidateForLayerAnimate(bool bUpdateNow) {
   }
 }
 
-void Layer::Invalidate(const RECT *prcDirtyInLayer, uint nCount) {
+void Layer::Invalidate(const Rect *prcDirtyInLayer, uint nCount) {
   for (uint i = 0; i < nCount; i++)
     Invalidate(prcDirtyInLayer + i);
 }
 
-void Layer::Invalidate(const RECT *prcDirtyInLayer) {
-  RECT rcDirty = {0};
+void Layer::Invalidate(const Rect *prcDirtyInLayer) {
+  Rect rcDirty = {0};
 
   if (!prcDirtyInLayer) {
     m_dirtyRectangles.Destroy();
 
-    rcDirty.Set(0, 0, m_size.cx, m_size.cy);
+    rcDirty.Set(0, 0, m_size.width, m_size.height);
     m_dirtyRectangles.AddRect(rcDirty);
   } else {
     if (prcDirtyInLayer->IsEmpty())
@@ -134,10 +134,10 @@ void Layer::Invalidate(const RECT *prcDirtyInLayer) {
   // 如果是软件渲染，向上冒泡
   if (m_pParent && GetType() == Layer_Software) {
     // rcDirty 转换成 父layer位置，并由父layer去请求合成
-    RECT rcParent = {0};
+    Rect rcParent = {0};
     m_pParent->m_pLayerContent->GetParentWindowRect(&rcParent);
 
-    RECT rcSelf = {0};
+    Rect rcSelf = {0};
     m_pLayerContent->GetWindowRect(&rcSelf);
 
     rcDirty.Offset(rcSelf.left - rcParent.left, rcSelf.top - rcParent.top);
@@ -234,8 +234,8 @@ Layer *Layer::GetNext() { return m_pNext; }
 Layer *Layer::GetFirstChild() { return m_pFirstChild; }
 
 void Layer::OnSize(uint nWidth, uint nHeight) {
-  m_size.cx = nWidth;
-  m_size.cy = nHeight;
+  m_size.width = nWidth;
+  m_size.height = nHeight;
   Invalidate(nullptr);
 
   if (!m_pRenderTarget) {
@@ -644,7 +644,7 @@ void Layer::OnAnimateEnd(uia::IStoryboard *pStoryboard,
     // 偏移类动画结束后，将偏移量转嫁到控件位置坐标上面..z轴仍然保留，如果有的话
     Object *obj = GetLayerContentObject();
     if (obj) {
-      RECT rcParent = {0};
+      Rect rcParent = {0};
       obj->GetParentRect(&rcParent);
 
       obj->SetObjectPos(rcParent.left + (int)m_xTranslate,

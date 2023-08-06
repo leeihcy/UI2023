@@ -1,4 +1,4 @@
-#include "include/base/uidefine.h"
+#include "include/macro/uidefine.h"
 #include <iostream>
 
 // 整个UISDK中的单元测试用例入口
@@ -7,6 +7,7 @@
 void signalslot_unittest();
 void weakptr_unittest();
 void rect_region_unittest();
+void guid_unittest();
 
 namespace ui {
 
@@ -14,8 +15,9 @@ void _UIUnitTest() {
 #if 0
   signalslot_unittest();
   weakptr_unittest();
-#endif
   rect_region_unittest();
+#endif
+  guid_unittest();
 }
 
 UIAPI void UIUnitTest() {

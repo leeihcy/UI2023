@@ -24,7 +24,7 @@ void ObjectLayer::CreateLayer() {
     m_pLayer =
         pWndRender->CreateLayer(static_cast<IObjectLayerContent *>(this));
 
-    RECT rcParent;
+    Rect rcParent;
     m_obj.GetParentRect(&rcParent);
     if (!rcParent.IsEmpty())
       OnSize(rcParent.Width(), rcParent.Height());
@@ -58,9 +58,9 @@ void ObjectLayer::Draw(IRenderTarget *pRenderTarget) {
   m_obj.DrawToLayer__(pRenderTarget);
 }
 
-void ObjectLayer::GetWindowRect(RECT *prcOut) { m_obj.GetWindowRect(prcOut); }
+void ObjectLayer::GetWindowRect(Rect *prcOut) { m_obj.GetWindowRect(prcOut); }
 
-void ObjectLayer::GetParentWindowRect(RECT *prcOut) {
+void ObjectLayer::GetParentWindowRect(Rect *prcOut) {
   if (m_obj.GetParentObject())
     m_obj.GetParentObject()->GetWindowRect(
         prcOut); // TODO: -->> visible part only

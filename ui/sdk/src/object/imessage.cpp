@@ -1,6 +1,6 @@
 #include "interface/imessage.h"
-#include "base/uiapi.h"
-#include "base/uimsg.h"
+#include "include/uiapi.h"
+#include "include/macro/uimsg.h"
 #include "message.h"
 
 namespace ui {

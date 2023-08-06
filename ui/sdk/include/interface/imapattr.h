@@ -30,12 +30,12 @@ struct IMapAttribute
     virtual long  GetAttr_int(const wchar_t* szPrefix, const wchar_t* szKey, bool bErase, int* pnGet) = 0;
     virtual long  GetAttr_intarray(const wchar_t* szKey, bool bErase, int* pIntArray, unsigned int nSize) = 0;
     virtual long  GetAttr_intarray(const wchar_t* szPrefix, const wchar_t* szKey, bool bErase, int* pIntArray, unsigned int nSize) = 0;
-	virtual long  GetAttr_REGION4(const wchar_t* szPrefix, const wchar_t* szKey, bool bErase, RECT* prcGet) = 0;
+	virtual long  GetAttr_REGION4(const wchar_t* szPrefix, const wchar_t* szKey, bool bErase, Rect* prcGet) = 0;
     virtual long  GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t* szKey, bool bErase, C9Region* pRegion) = 0;
 
 	virtual bool  AddAttr(const wchar_t* szKey, const wchar_t* szValue) = 0;
 	virtual bool  AddAttr_bool(const wchar_t* szKey, bool bValue) = 0;
-	virtual bool  AddAttr_REGION4(const wchar_t* szKey, RECT* pr) = 0;
+	virtual bool  AddAttr_REGION4(const wchar_t* szKey, Rect* pr) = 0;
 	virtual bool  AddAttr_int(const wchar_t* szKey, int nValue) = 0;
 
     virtual void  BeginEnum() = 0;

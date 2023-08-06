@@ -242,9 +242,9 @@ void  GridLayout::Serialize(SERIALIZEDATA* pData)
 }
 
 
-SIZE  GridLayout::Measure()
+Size  GridLayout::Measure()
 {
-	SIZE size = {0,0};
+	Size size = {0,0};
 
 	int nGridRows = (int)this->heights.size();
 	int nGridCols = (int)this->widths.size();
@@ -291,7 +291,7 @@ SIZE  GridLayout::Measure()
 			continue;
 		}
 
-		SIZE s = pChild->GetDesiredSize();
+		Size s = pChild->GetDesiredSize();
 		
 		// 设置对象所在列的宽度
 		if (nnGridColspan == 1)
@@ -302,13 +302,13 @@ SIZE  GridLayout::Measure()
 				break;
 
 			case GWHT_ASTERISK:  // 该列是平分大小，在这里先取这一列的最大值，在Arrange里面会再具体赋值
-				if( s.cx > widths[nCol].last )
-					widths[nCol].last = s.cx;
+				if( s.width > widths[nCol].last )
+					widths[nCol].last = s.width;
 				break;
 
 			case GWHT_AUTO:      // 该列是自动大小，那么取这一列的最大值
-				if (s.cx > widths[nCol].last)
-					widths[nCol].last = s.cx;
+				if (s.width > widths[nCol].last)
+					widths[nCol].last = s.width;
 				break;
 
 			default:
@@ -326,13 +326,13 @@ SIZE  GridLayout::Measure()
 				break;
 
 			case GWHT_ASTERISK:  // 该行是平分大小，在这里先取这一行的最大值，在Arrange里面会再具体赋值
-				if (s.cy > heights[nRow].last)
-					heights[nRow].last = s.cy;
+				if (s.height > heights[nRow].last)
+					heights[nRow].last = s.height;
 				break;
 
 			case GWHT_AUTO:      // 该行是自动大小，那么去这一行的最大值
-				if (s.cy > heights[nRow].last)
-					heights[nRow].last = s.cy;
+				if (s.height > heights[nRow].last)
+					heights[nRow].last = s.height;
 				break;
 
 			default:
@@ -395,11 +395,11 @@ SIZE  GridLayout::Measure()
 	// 返回panel需要的大小
 	for (int i = 0; i < nGridCols; i++)
 	{
-		size.cx += widths[i].last;
+		size.width += widths[i].last;
 	}
 	for (int i = 0; i < nGridRows; i++)
 	{
-		size.cy += heights[i].last;
+		size.height += heights[i].last;
 	}
 
     return size;
@@ -409,7 +409,7 @@ void  GridLayout::DoArrage(IObject* pObjToArrage)
 	// 调用该函数时，自己的大小已经被求出来了
 
 	// 先求出GRID的宽度和高度，后面对各个子对象的布局都是先基于GRID的
-	RECT rcClient;
+	Rect rcClient;
 	m_pPanel->GetClientRectInObject(&rcClient);
 	int  nWidth  = rcClient.Width();  //m_pPanel->GetWidth();
 	int  nHeight = rcClient.Height(); //m_pPanel->GetHeight();
@@ -464,17 +464,17 @@ void  GridLayout::DoArrage(IObject* pObjToArrage)
 			continue ;
 		}
 
-		SIZE s = pChild->GetDesiredSize();
+		Size s = pChild->GetDesiredSize();
 
 		if (widths[nCol].type == GWHT_AUTO)
 		{
-			if( widths[nCol].last < s.cx )
-				widths[nCol].last = s.cx;
+			if( widths[nCol].last < s.width )
+				widths[nCol].last = s.width;
 		}
 		if (heights[nRow].type == GWHT_AUTO)
 		{
-			if (heights[nRow].last < s.cy)
-				heights[nRow].last = s.cy;
+			if (heights[nRow].last < s.height)
+				heights[nRow].last = s.height;
 		}
 	}
 	
@@ -549,17 +549,17 @@ void  GridLayout::DoArrage(IObject* pObjToArrage)
 		// (0,0)   -> (0,0,widths[0],heights[0])
 		// (1,1)   -> (widths[0],heights[0],widths[0]+widths[1],heights[0]+heights[1] )
 
-		RECT  rcObjectInGrid;
+		Rect  rcObjectInGrid;
 		rcObjectInGrid.left   = this->getColPos( nCol );
 		rcObjectInGrid.right  = this->getColPos( nCol + nnGridColspan );
 		rcObjectInGrid.top    = this->getRowPos( nRow );
 		rcObjectInGrid.bottom = this->getRowPos( nRow + nnGridRowspan );
 
-		RECT rc;
+		Rect rc;
 		rc.CopyFrom(rcObjectInGrid);
 		rc.Offset(this->m_pPanel->GetPaddingL(), this->m_pPanel->GetPaddingT());
 
- 		RECT rcMargin;
+ 		Rect rcMargin;
  		pChild->GetMarginRegion(&rcMargin);
  		util::DeflatRect(&rc, &rcMargin);
 
@@ -654,7 +654,7 @@ GridLayoutParam::~GridLayoutParam()
 
 void  GridLayoutParam::UpdateByRect()
 {
-    RECT  rcParent;
+    Rect  rcParent;
     m_pObj->GetParentRect(&rcParent);
 
     if (m_nConfigWidth >= 0)
@@ -685,9 +685,9 @@ void  GridLayoutParam::Serialize(SERIALIZEDATA* pData)
         ->AddFlag(LAYOUT_ITEM_ALIGN_VCENTER, XML_LAYOUT_ITEM_ALIGN_VCENTER);
 }
 
-SIZE  GridLayoutParam::CalcDesiredSize()
+Size  GridLayoutParam::CalcDesiredSize()
 {
-    SIZE size = {0,0};
+    Size size = {0,0};
 
     bool bWidthNotConfiged = m_nConfigWidth == AUTO ? true:false;
     bool bHeightNotConfiged = m_nConfigHeight == AUTO ? true:false;;
@@ -699,19 +699,19 @@ SIZE  GridLayoutParam::CalcDesiredSize()
 
         // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
         if (this->m_nConfigWidth != AUTO)
-            size.cx = this->m_nConfigWidth;
+            size.width = this->m_nConfigWidth;
         if (this->m_nConfigHeight!= AUTO)
-            size.cy = this->m_nConfigHeight;
+            size.height = this->m_nConfigHeight;
     }
     else
     {
-        size.cx = this->m_nConfigWidth;
-        size.cy = this->m_nConfigHeight;
+        size.width = this->m_nConfigWidth;
+        size.height = this->m_nConfigHeight;
     }
 
     // 计算 margin 的大小
-//     size.cx += m_pObj->GetMarginW();
-//     size.cy += m_pObj->GetMarginH();
+//     size.width += m_pObj->GetMarginW();
+//     size.height += m_pObj->GetMarginH();
 
     return size;
 }

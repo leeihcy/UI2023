@@ -114,7 +114,7 @@ void  ImageRender::SetColor(Color c)
 
 void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 {
-    RECT* prc = &pDrawStruct->rc;
+    Rect* prc = &pDrawStruct->rc;
 
 	if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_ALL)
     {
@@ -124,7 +124,7 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
         pDrawStruct->pRenderTarget->DrawRect(prc, &c);
     }
 
-    RECT rcRealDraw = {0, 0, 0, 0};
+    Rect rcRealDraw = {0, 0, 0, 0};
 	if (m_pBitmap)
 	{
 		DRAWBITMAPPARAM param;
@@ -170,7 +170,7 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 
         // Top
         {
-            RECT rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
+            Rect rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
             if (rc.Width() > 0 && rc.Height() > 0)
             {
                 pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
@@ -178,7 +178,7 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
         }
         // Left
         {
-            RECT rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
+            Rect rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
             if (rc.Width() > 0 && rc.Height() > 0)
             {
                 pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
@@ -186,7 +186,7 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
         }
         // Right
         {
-            RECT rc = {rcRealDraw.right, rcRealDraw.top, prc->right, rcRealDraw.bottom};
+            Rect rc = {rcRealDraw.right, rcRealDraw.top, prc->right, rcRealDraw.bottom};
             if (rc.Width() > 0 && rc.Height() > 0)
             {
                 pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
@@ -194,7 +194,7 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
         }
         // Bottom
         {
-            RECT rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
+            Rect rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
             if (rc.Width() > 0 && rc.Height() > 0)
             {
                 pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
@@ -202,14 +202,14 @@ void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
         }
     }
 }
-void  ImageRender::GetDesiredSize(SIZE* pSize)
+void  ImageRender::GetDesiredSize(Size* pSize)
 {
-	pSize->cx = pSize->cy = 0;
+	pSize->width = pSize->height = 0;
 	if (nullptr == m_pBitmap)
 		return;
 
-	pSize->cx = m_pBitmap->GetWidth();
-	pSize->cy = m_pBitmap->GetHeight();
+	pSize->width = m_pBitmap->GetWidth();
+	pSize->height = m_pBitmap->GetHeight();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -246,28 +246,28 @@ void  ImageListItemRender::OnSerialize(SERIALIZEDATA* pData)
 		{
 			m_pImageList = static_cast<IImageListRenderBitmap*>(m_pBitmap);
 
-			POINT pt = {0,0};
+			Point pt = {0,0};
 			m_pImageList->GetIndexPos(m_nImagelistIndex, &pt);
 			m_rcSrc.left = pt.x;
 			m_rcSrc.top = pt.y;
 
-			SIZE s;
+			Size s;
 			this->GetDesiredSize(&s);
-			m_rcSrc.right = m_rcSrc.left + s.cx;
-			m_rcSrc.bottom = m_rcSrc.top + s.cy;
+			m_rcSrc.right = m_rcSrc.left + s.width;
+			m_rcSrc.bottom = m_rcSrc.top + s.height;
 		}
 	}
 }
 
-void  ImageListItemRender::GetDesiredSize(SIZE* pSize)
+void  ImageListItemRender::GetDesiredSize(Size* pSize)
 {
-	pSize->cx = 0;
-    pSize->cy = 0;
+	pSize->width = 0;
+    pSize->height = 0;
 	if (nullptr == m_pImageList )
 		return;
 
-	pSize->cx = m_pImageList->GetItemWidth();
-	pSize->cy = m_pImageList->GetItemHeight();
+	pSize->width = m_pImageList->GetItemWidth();
+	pSize->height = m_pImageList->GetItemHeight();
 }
 
 void  ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
@@ -281,14 +281,14 @@ void  ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 
     if (-1 == m_nImagelistIndex && m_pImageList)
     {
-        POINT pt = {0, 0};
-        SIZE  s = {0, 0};
+        Point pt = {0, 0};
+        Size  s = {0, 0};
 
         if (false == m_pImageList->GetIndexPos(pDrawStruct->nState, &pt))
             return;
         this->GetDesiredSize(&s);
 
-		m_rcSrc.Set(pt.x, pt.y, pt.x+s.cx, pt.y+s.cy);
+		m_rcSrc.Set(pt.x, pt.y, pt.x+s.width, pt.y+s.height);
     }
 
 	SetMsgHandled(false);
@@ -458,7 +458,7 @@ void  ImageListRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 		return;
 
     IRenderTarget*  pRenderTarget = pDrawStruct->pRenderTarget;
-    RECT rc = pDrawStruct->rc;
+    Rect rc = pDrawStruct->rc;
     int&  nState = pDrawStruct->nState;
 
 	int nRenderState = (pDrawStruct->nState) & RENDER_STATE_MASK;
@@ -556,7 +556,7 @@ void  ImageListRender::CreateAnimate(int nFrom, int nTo)
 #endif
 }
 
-void  ImageListRender::DrawIndexWidthAlpha(IRenderTarget* pRenderTarget, const RECT* prc, int nIndex, byte bAlpha)
+void  ImageListRender::DrawIndexWidthAlpha(IRenderTarget* pRenderTarget, const Rect* prc, int nIndex, byte bAlpha)
 {
 	if (nullptr == m_pImageList)
 		return;
@@ -578,7 +578,7 @@ void  ImageListRender::DrawIndexWidthAlpha(IRenderTarget* pRenderTarget, const R
 		param.pRegion = &m_9Region;
 	param.nAlpha = bAlpha;
 
-	POINT pt = {0, 0};
+	Point pt = {0, 0};
 	m_pImageList->GetIndexPos(nRealIndex, &pt);
 	param.xSrc = pt.x;
 	param.ySrc = pt.y;
@@ -595,14 +595,14 @@ void  ImageListRender::DrawIndexWidthAlpha(IRenderTarget* pRenderTarget, const R
 	pRenderTarget->DrawBitmap(m_pImageList, &param);
 }
 
-void  ImageListRender::GetDesiredSize(SIZE* pSize)
+void  ImageListRender::GetDesiredSize(Size* pSize)
 {
-	pSize->cx = pSize->cy = 0;
+	pSize->width = pSize->height = 0;
 	if (nullptr == m_pImageList)
 		return;
 
-	pSize->cx = m_pImageList->GetItemWidth();
-	pSize->cy = m_pImageList->GetItemHeight();
+	pSize->width = m_pImageList->GetItemWidth();
+	pSize->height = m_pImageList->GetItemHeight();
 }
 
 int  ImageListRender::GetItemWidth()

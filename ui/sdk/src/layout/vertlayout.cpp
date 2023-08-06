@@ -41,9 +41,9 @@ void  VertLayout::SetSpace(int n)
     m_nSpace = n;
 }
 
-SIZE  VertLayout::Measure()
+Size  VertLayout::Measure()
 {
-	SIZE s = { 0 };
+	Size s = { 0 };
 
 	int nMaxWidth = 0;
 
@@ -60,21 +60,21 @@ SIZE  VertLayout::Measure()
 
 		if (pParam->m_eHeightType == AUTO)
 		{
-			s.cy += pChild->GetDesiredSize().cy;
+			s.height += pChild->GetDesiredSize().height;
 		}
         else
 		{
-			s.cy += pParam->m_nConfigHeight;
+			s.height += pParam->m_nConfigHeight;
 		} 
 
-		RECT rMargin = { 0 };
+		Rect rMargin = { 0 };
 		pChild->GetMarginRegion(&rMargin); 
-		s.cy += rMargin.top + rMargin.bottom;
+		s.height += rMargin.top + rMargin.bottom;
 
 		int nWidth = rMargin.left + rMargin.right;
         if (pParam->m_eWidthType == AUTO)
 		{
-			nWidth += pChild->GetDesiredSize().cx;
+			nWidth += pChild->GetDesiredSize().width;
 		}
 		else 
 		{
@@ -84,7 +84,7 @@ SIZE  VertLayout::Measure()
 
         nMaxWidth = std::max(nMaxWidth, nWidth);
 	}
-	s.cx = nMaxWidth;
+	s.width = nMaxWidth;
 
 	return s;
 }
@@ -104,10 +104,10 @@ void  VertLayout::DoArrage(IObject* /*pIObjToArrage*/)
 		return;
 
 	// 父控件内间距
-	RECT rcPadding = { 0 };
+	Rect rcPadding = { 0 };
 	m_pPanel->GetPaddingRegion(&rcPadding);
 
-	RECT rcParent;
+	Rect rcParent;
 	m_pPanel->GetObjectClientRect(&rcParent);
 
 	std::vector<ObjLayoutInfo>  vecInfo(nChildCount);
@@ -149,10 +149,10 @@ void  VertLayout::DoArrage(IObject* /*pIObjToArrage*/)
 
 		if (pParam->IsSizedByContent())
 		{
-			SIZE s = pChild->GetDesiredSize();
+			Size s = pChild->GetDesiredSize();
 
-			nObjWidth = s.cx;// - pChild->GetMarginW();
-			nObjHeight = s.cy;// - pChild->GetMarginH();
+			nObjWidth = s.width;// - pChild->GetMarginW();
+			nObjHeight = s.height;// - pChild->GetMarginH();
 		}
 
         if (pParam->m_eHeightType == WH_AVG)
@@ -223,10 +223,10 @@ void  VertLayout::DoArrage(IObject* /*pIObjToArrage*/)
 		if (pChild->IsSelfCollapsed())
 			continue;
 
-		RECT rMargin = { 0 };
+		Rect rMargin = { 0 };
 		pChild->GetMarginRegion(&rMargin);
 
-		RECT rcObj;
+		Rect rcObj;
 
 		// 如果是平均宽度，为其宽度赋值
         if (pParam->m_eHeightType == WH_AVG)
@@ -324,7 +324,7 @@ VertLayoutParam::~VertLayoutParam()
 
 void  VertLayoutParam::UpdateByRect()
 {
-    RECT  rcParent;
+    Rect  rcParent;
     m_pObj->GetParentRect(&rcParent);
 
     if (m_nConfigWidth >= 0)
@@ -410,9 +410,9 @@ long  VertLayoutParam::GetConfigLayoutFlags()
     return m_nConfigLayoutFlags;
 }
 
-SIZE  VertLayoutParam::CalcDesiredSize()
+Size  VertLayoutParam::CalcDesiredSize()
 {
-    SIZE size = {0,0};
+    Size size = {0,0};
 
     if (IsSizedByContent())
     {
@@ -421,19 +421,19 @@ SIZE  VertLayoutParam::CalcDesiredSize()
 
         // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
         if (this->m_eWidthType != AUTO)
-            size.cx = this->m_nConfigWidth;
+            size.width = this->m_nConfigWidth;
         if (this->m_eHeightType != AUTO)
-            size.cy = this->m_nConfigHeight;
+            size.height = this->m_nConfigHeight;
     }
     else
     {
-        size.cx = this->m_nConfigWidth;
-        size.cy = this->m_nConfigHeight;
+        size.width = this->m_nConfigWidth;
+        size.height = this->m_nConfigHeight;
     }
 
     // 计算 margin 的大小
-//     size.cx += m_pObj->GetMarginW();
-//     size.cy += m_pObj->GetMarginH();
+//     size.width += m_pObj->GetMarginW();
+//     size.height += m_pObj->GetMarginH();
 
     return size;
 }

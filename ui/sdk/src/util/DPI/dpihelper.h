@@ -11,7 +11,7 @@
 //   LOWORD:  X DPI
 // lParam:
 //   窗口期望的新位置
-//   RECT* const prcNewWindow = (RECT*)lParam;
+//   Rect* const prcNewWindow = (Rect*)lParam;
 //#define WM_DPICHANGED      0x02E0
 //
 

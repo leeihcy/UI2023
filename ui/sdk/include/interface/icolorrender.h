@@ -8,7 +8,7 @@ class ColorRender;
 struct UIAPI IColorRender : public IRenderBase {
   void SetBkColor(COLORREF col);
   void SetBorderColor(COLORREF col);
-  void SetBorderRegion(const RECT *prc);
+  void SetBorderRegion(const Rect *prc);
 
   UI_DEFINE_CLASS_GUID("A3AE0787-D67E-40A2-8AFE-2B6783A55DAF");
   UI_DECLARE_INTERFACE(ColorRender);

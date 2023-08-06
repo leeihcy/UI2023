@@ -109,10 +109,10 @@ namespace ui
         void  InsertChild(IObject* pObj, IObject* pInsertAfter);
 
 		void  Invalidate();
-		void  Invalidate(const RECT* prcObj);
-		void  Invalidate(RECT* prcObj, int nCount);
+		void  Invalidate(const Rect* prcObj);
+		void  Invalidate(Rect* prcObj, int nCount);
 		void  SetObjectPos(int x, int y, int cx, int cy, int nFlag);
-		void  SetObjectPos(const RECT* prc, int nFlag);
+		void  SetObjectPos(const Rect* prc, int nFlag);
 
 		bool  IsVisible();
 		bool  IsCollapsed();
@@ -141,9 +141,9 @@ namespace ui
 		int   GetZOrder();                                 
 		void  SortChildByZorder();
 
-		void  GetParentRect(RECT* prc);
-		void  GetWindowRect(RECT* prc);
-		SIZE  GetDesiredSize();
+		void  GetParentRect(Rect* prc);
+		void  GetWindowRect(Rect* prc);
+		Size  GetDesiredSize();
 		int   GetWidth();
 		int   GetHeight();
 		int   GetMaxWidth();
@@ -163,12 +163,12 @@ namespace ui
 		void  GetNonClientRegion(REGION4* prc);
 		void  SetExtNonClientRegion(REGION4* prc);
 		void  GetExtNonClientRegion(REGION4* prc);
-		void  GetClientRectInObject(RECT* prc);
-		void  GetObjectClientRect(RECT* prc);
-        void  GetClientRectInWindow(RECT* prc);
-		void  ClientRect2ObjectRect(const RECT* rcClient, RECT* rcObj);
-		void  ClientRect2WindowRect(const RECT* rcClient, RECT* rcWnd);
-		void  WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj);
+		void  GetClientRectInObject(Rect* prc);
+		void  GetObjectClientRect(Rect* prc);
+        void  GetClientRectInWindow(Rect* prc);
+		void  ClientRect2ObjectRect(const Rect* rcClient, Rect* rcObj);
+		void  ClientRect2WindowRect(const Rect* rcClient, Rect* rcWnd);
+		void  WindowRect2ObjectRect(const Rect* rcWindow, Rect* rcObj);
 		void  WindowPoint2ObjectPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
 		void  WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
 

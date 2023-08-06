@@ -1,9 +1,6 @@
 #ifndef _UI_CREATOR_H_
 #define _UI_CREATOR_H_
 
-#include "uidefine.h"
-#include "uimsg.h"
-
 //////////////////////////////////////////////////////////////////////////
 //
 //    对象创建者，为了支持在对象创建和销毁的时候能调用虚函数，要求所有对象
@@ -16,6 +13,45 @@ namespace ui {
 struct IApplication;
 struct IResBundle;
 struct UIMSG;
+
+enum E_BOOL_CREATE_IMPL {
+  CREATE_IMPL_FALSE = 0,
+  CREATE_IMPL_TRUE = 1,
+};
+
+//
+//  在UICreateInstance时调用，给对象一次在构造中初始化对象并返回成功失败的方法
+//
+//  message : UI_WM_FINALCONSTRUCT
+//  code : NA
+//  wparam : IResBundle*,对象所属资源包
+//
+#define UI_MSG_FINALCONSTRUCT 168252120
+// long  FinalConstruct(IResBundle* p);
+#define UIMSG_FINALCONSTRUCT(func)                                             \
+  if (uMsg == UI_MSG_FINALCONSTRUCT) {                                         \
+    SetMsgHandled(true);                                                       \
+    lResult = func((ui::IResBundle *)wParam);                                  \
+    if (IsMsgHandled())                                                        \
+      return true;                                                             \
+  }
+//
+//  在~UIObjCreator中调用，给对象在析构前调用虚函数的方法
+//
+//  message : UI_WM_FINALRELEASE
+//  code : NA
+//  wparam : NA
+//  lparam : NA
+//
+#define UI_MSG_FINALRELEASE 168252121
+// void  FinalRelease();
+#define UIMSG_FINALRELEASE(func)                                               \
+  if (uMsg == UI_MSG_FINALRELEASE) {                                           \
+    SetMsgHandled(true);                                                       \
+    func();                                                                    \
+    if (IsMsgHandled())                                                        \
+      return true;                                                             \
+  }
 
 template <class T> class ObjectCreator : public T {
 public:

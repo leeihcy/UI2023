@@ -31,14 +31,14 @@ public:
 public:
 	void  SetBkColor(COLORREF col);
     void  SetBorderColor(COLORREF col);
-    void  SetBorderRegion(const RECT* prc);
+    void  SetBorderRegion(const Rect* prc);
 
 public:
     IColorRender*  m_pIColorRender;
 
 	Color*  m_pBkColor;
     Color*  m_pBorderColor;
-    RECT  m_rcBorder;
+    Rect  m_rcBorder;
 };
 
 // 特用于某些控件需要使用系统主题颜色背景，当系统主题改变时，相应的颜色也需要改变 

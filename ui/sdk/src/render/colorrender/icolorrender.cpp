@@ -17,7 +17,7 @@ void  IColorRender::SetBorderColor(COLORREF col)
 {
     return __pImpl->SetBorderColor(col);
 }
-void  IColorRender::SetBorderRegion(const RECT* prc)
+void  IColorRender::SetBorderRegion(const Rect* prc)
 {
     __pImpl->SetBorderRegion(prc);
 }

@@ -2,7 +2,7 @@
 #include "quad.h"
 
 namespace ui {
-void Quad::SetByRect(RECT* prc)
+void Quad::SetByRect(Rect* prc)
 {
 	Ax = Dx = prc->left;
 	Bx = Cx = prc->right;
@@ -12,7 +12,7 @@ void Quad::SetByRect(RECT* prc)
 	Az = Bz = Cz = Dz = 0.0f;
 }
 
-void  Quad::Offset(POINT pt)
+void  Quad::Offset(Point pt)
 {
 	Offset(pt.x, pt.y);
 }
@@ -30,7 +30,7 @@ void  Quad::Offset(int x, int y)
 	Dx += x;
 	Dy += y;
 }
-void  Quad::GetBoundRect2(RECT* prc)
+void  Quad::GetBoundRect2(Rect* prc)
 {
 	GetBoundRect(prc);
 
@@ -38,7 +38,7 @@ void  Quad::GetBoundRect2(RECT* prc)
 	prc->right++;
 	prc->bottom++;
 }
-void  Quad::GetBoundRect(RECT* prc)
+void  Quad::GetBoundRect(Rect* prc)
 {
 	prc->left   = std::min(std::min(std::min(Ax,Bx),Cx),Dx);
 	prc->top    = std::min(std::min(std::min(Ay,By),Cy),Dy);

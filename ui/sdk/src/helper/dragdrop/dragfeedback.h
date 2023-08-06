@@ -11,9 +11,9 @@ public:
     CDragFeedback();
     ~CDragFeedback();
 
-    void  Create(HBITMAP hDragImage, POINT ptOffset);
+    void  Create(HBITMAP hDragImage, Point ptOffset);
     void  Destroy();
-    void  OnMouseMove(POINT pt);
+    void  OnMouseMove(Point pt);
 
     void  Bind2DataObject(IDataObject* p);
     void  Unbind2DataObject(IDataObject* p);
@@ -38,7 +38,7 @@ private:
     HWND   m_hTextWnd;    // 拖拽的文字描述窗口
     HFONT  m_hFont;
 
-    POINT  m_ptOffset;
+    Point  m_ptOffset;
     String  m_strDescription;
 	HBITMAP  m_hIcon;     // 仅引用，不负责销毁
 

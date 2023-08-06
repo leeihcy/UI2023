@@ -9,7 +9,7 @@ struct IRenderTarget;
 class ImageData;
 struct IRenderFont;
 struct IGpuRenderLayer;
-struct RECT;
+struct Rect;
 
 class C9Region;
 
@@ -55,7 +55,7 @@ typedef struct tagDRAWBITMAPPARAM {
   unsigned char nAlpha;
 
   // out param
-  RECT *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
+  Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
 
 } DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
@@ -75,7 +75,7 @@ typedef struct tagDRAWTEXTPARAM {
 
   ui::Color color;
   const wchar_t *szText;
-  const RECT *prc;
+  const Rect *prc;
 
   // 特效中可能会使用到的参数
   Color bkcolor;
@@ -156,13 +156,13 @@ public:
   virtual IMAGELIST_LAYOUT_TYPE GetLayoutType() = 0;
   virtual void SetItemCount(int) = 0;
   virtual void SetLayoutType(IMAGELIST_LAYOUT_TYPE) = 0;
-  virtual bool GetIndexPos(int nIndex, POINT *pPoint) = 0;
+  virtual bool GetIndexPos(int nIndex, Point *pPoint) = 0;
 };
 
 struct IImageIconRenderBitmap : public IRenderBitmap {
 public:
-  virtual SIZE GetDrawSize() = 0;
-  virtual void SetDrawSize(SIZE *ps) = 0;
+  virtual Size GetDrawSize() = 0;
+  virtual void SetDrawSize(Size *ps) = 0;
 };
 
 class RenderBitmapFactory {
@@ -187,7 +187,7 @@ public:
   virtual bool IsAttach() = 0;
 
   virtual unsigned int GetCaretHeight() = 0;
-  virtual SIZE MeasureString(const wchar_t *szText, int nLimitWidth = -1) = 0;
+  virtual Size MeasureString(const wchar_t *szText, int nLimitWidth = -1) = 0;
 
   virtual HFONT GetHFONT() = 0;
   virtual bool GetLogFont(LOGFONT *plf) = 0;
@@ -233,16 +233,16 @@ struct IRenderTarget {
 
   virtual bool BeginDraw() = 0;
   virtual void EndDraw() = 0;
-  virtual void Clear(RECT *prc) = 0;
+  virtual void Clear(Rect *prc) = 0;
   virtual void Save(const wchar_t *szPath) = 0;
   virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) = 0;
   virtual void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) = 0;
 
-  virtual void SetMetaClipRegion(RECT *prc, unsigned int nrcCount) = 0;
-  virtual void PushRelativeClipRect(const RECT *) = 0;
+  virtual void SetMetaClipRegion(Rect *prc, unsigned int nrcCount) = 0;
+  virtual void PushRelativeClipRect(const Rect *) = 0;
   virtual void PopRelativeClipRect() = 0;
-  virtual bool IsRelativeRectInClip(const RECT *) = 0;
+  virtual bool IsRelativeRectInClip(const Rect *) = 0;
   virtual void SetOrigin(int x, int y) = 0;
   virtual void OffsetOrigin(int x, int y) = 0;
   virtual void GetOrigin(int *px, int *py) = 0;
@@ -252,15 +252,15 @@ struct IRenderTarget {
   virtual IRenderBrush *CreateSolidBrush(Color *pColor) = 0;
 
   virtual void FillRgn(HRGN hRgn, ui::Color *pColor) = 0;
-  virtual void DrawRect(RECT *lprc, ui::Color *pColor) = 0;
-  virtual void TileRect(RECT *lprc, IRenderBitmap *) = 0;
-  virtual void Rectangle(RECT *lprc, ui::Color *pColBorder, ui::Color *pColBack,
+  virtual void DrawRect(Rect *lprc, ui::Color *pColor) = 0;
+  virtual void TileRect(Rect *lprc, IRenderBitmap *) = 0;
+  virtual void Rectangle(Rect *lprc, ui::Color *pColBorder, ui::Color *pColBack,
                          int nBorder, bool bNullBack) = 0;
-  virtual void DrawFocusRect(RECT *lprc) = 0;
+  virtual void DrawFocusRect(Rect *lprc) = 0;
   virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) = 0;
-  virtual void DrawPolyline(POINT *lppt, int nCount, IRenderPen *) = 0;
-  virtual void GradientFillH(RECT *lprc, COLORREF colFrom, COLORREF colTo) = 0;
-  virtual void GradientFillV(RECT *lprc, COLORREF colFrom, COLORREF colTo) = 0;
+  virtual void DrawPolyline(Point *lppt, int nCount, IRenderPen *) = 0;
+  virtual void GradientFillH(Rect *lprc, COLORREF colFrom, COLORREF colTo) = 0;
+  virtual void GradientFillV(Rect *lprc, COLORREF colFrom, COLORREF colTo) = 0;
   virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
                       IRenderTarget *pSrcHDC, int xSrc, int ySrc,
                       unsigned int dwRop) = 0;
@@ -269,7 +269,7 @@ struct IRenderTarget {
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) = 0;
 
-  virtual void Upload2Gpu(IGpuRenderLayer *p, RECT *prcArray, int nCount) = 0;
+  virtual void Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray, int nCount) = 0;
 };
 
 struct IUICursor {

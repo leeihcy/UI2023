@@ -208,7 +208,7 @@ void WindowMouseMgr::OnObjectRemoveInd(Object* pObj)
 //		该位置下的对象，没有则返回空
 //
 Object* WindowMouseMgr::GetObjectByPos(
-		Object* pObjParent, POINT* ptParent, __out POINT* ptOutInObj)
+		Object* pObjParent, Point* ptParent, __out Point* ptOutInObj)
 {
 	GetObjectByPosExData  data = {0};
 	data.pObjParent = pObjParent;
@@ -221,7 +221,7 @@ Object* WindowMouseMgr::GetObjectByPos(
 }
 
 Object*  WindowMouseMgr::GetObjectByPos_UIEditor(
-		Object* pObjParent, POINT* ptParent, __out POINT* ptOutInObj)
+		Object* pObjParent, Point* ptParent, __out Point* ptOutInObj)
 {
 	GetObjectByPosExData  data = {0};
 	data.pObjParent = pObjParent;
@@ -240,12 +240,12 @@ Object*  WindowMouseMgr::GetObjectByPos_UIEditor(
 Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 {
 	Object*  pObjParent = pData->pObjParent;
-	POINT*  ptParent = pData->ptParent;
-	POINT*  ptOutInObj = pData->ptOutInObj;
+	Point*  ptParent = pData->ptParent;
+	Point*  ptOutInObj = pData->ptOutInObj;
 
     Object*  pHitObj = nullptr;
-    POINT  ptHitTest = *ptParent;
-    POINT  ptInChild = {0};
+    Point  ptHitTest = *ptParent;
+    Point  ptInChild = {0};
 
     Object* pChild = nullptr;
 
@@ -263,7 +263,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 			ptHitTest.x -= rcNonClient.left;
 			ptHitTest.y -= rcNonClient.top;
 
-			POINT ptOffset = {0,0};
+			Point ptOffset = {0,0};
 			if (pObjParent->GetScrollOffset((int*)&ptOffset.x, (int*)&ptOffset.y))
 			{
 				ptHitTest.x += ptOffset.x;
@@ -294,7 +294,7 @@ Object*  WindowMouseMgr::GetObjectByPosEx(GetObjectByPosExData* pData)
 
 		if (pData->bTestDecendant)
 		{
-			POINT  ptInHitChild = {0};
+			Point  ptInHitChild = {0};
 
 			GetObjectByPosExData data = {0};
 			data.pObjParent = pHitObj;
@@ -573,7 +573,7 @@ long  WindowMouseMgr::HandleTouchMessage(unsigned int msg, long wParam, long lPa
     return 0;
 }
 
-Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, long wParam)
+Object*  WindowMouseMgr::GetGestureTargetObject(Point ptScreen, long wParam)
 {
     MapWindowPoints(nullptr, m_oWindow.GetHWND(), &ptScreen, 1);
     Object* p = GetObjectByPos(&m_oWindow, &ptScreen, nullptr);
@@ -591,9 +591,9 @@ Object*  WindowMouseMgr::GetGestureTargetObject(POINT ptScreen, long wParam)
 BOOL  WindowMouseMgr::OnGesture(long lParam)
 {
 	// 本次消息通知滚动距离
-	static POINT lastPoint = {0};
+	static Point lastPoint = {0};
 	// 这一次手势到目前为止的总滚动距离
-	static SIZE overpan = {0};
+	static Size overpan = {0};
 	static ULONGLONG lastArguments = 0;
 
 	HWND hWnd = m_oWindow.GetHWND();
@@ -621,7 +621,7 @@ BOOL  WindowMouseMgr::OnGesture(long lParam)
 
             if (bFirstGesture)
             {
-                POINT pt = {gi.ptsLocation.x, gi.ptsLocation.y};
+                Point pt = {gi.ptsLocation.x, gi.ptsLocation.y};
                 m_pObjGesture = GetGestureTargetObject(pt, (long)&gi);
             }
 			else
@@ -690,8 +690,8 @@ long WindowMouseMgr::OnMouseMove( int vkFlag, int xPos, int yPos )
     this->m_bMouseMoveReady = TRUE;
 
 	// 1. 判断当前鼠标位置
-	POINT pt = { xPos, yPos };
-    POINT ptInObj = {0};
+	Point pt = { xPos, yPos };
+    Point ptInObj = {0};
 
 	Object* pObj = this->GetObjectByPos(&m_oWindow, &pt, &ptInObj);
 
@@ -765,7 +765,7 @@ long WindowMouseMgr::OnLButtonUp( long w, long l)
         _OnLButtonUp(w, l, this);
 
         // 如果这个时候鼠标离开了控件，发送MOUSELEAVE消息. 这个时候鼠标位置可能已经重新变化了，需要重新获取
-        POINT ptCursorNow;
+        Point ptCursorNow;
         GetCursorPos(&ptCursorNow);
         ::MapWindowPoints(nullptr, m_oWindow.GetHWND(), &ptCursorNow, 1);
 

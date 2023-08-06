@@ -3,9 +3,6 @@
 #include "src/util/rectregion/rectregion.h"
 #include "include/common/weakptr/weakptr.h"
 
-// #define MSG_INVALIDATE 161311307   废弃，改为使用 messageloop posttask
-// #define MSG_ASYNCTASK 175021413   废弃，改为使用 messageloop posttask
-
 namespace ui {
 class Application;
 
@@ -29,12 +26,14 @@ public:
   void RequestInvalidate();
   void _onRequestInvalidate();
   void UpdateAndCommit();
-  void UpdateAndCommit(RECT* rcCommitEx);
   void Commit(const RectRegion &arrDirtyInWindow);
 
   virtual void UpdateDirty(RectRegion* outArrDirtyInWindow) = 0;
   virtual void Resize(uint nWidth, uint nSize) = 0;
 
+  void SetCommitListener(IWindowCommitListener *);
+  IWindowCommitListener *GetCommitListener();
+  
 protected:
   virtual Layer *virtualCreateLayer() = 0;
   virtual void virtualBindHWND(HWND) = 0;
@@ -50,8 +49,10 @@ protected:
   WindowRender *m_pWindowRender;
 
 private:
+  IWindowCommitListener *m_commit_listener = nullptr;
+
   // 限制刷新时postmessage的次数。如果已经post了一个，就不再post
-  long m_lPostInvalidateMsgRef;
+  long m_request_invalidate_ref;
   weakptr_factory<Compositor> m_weakptr_factory = {this};
 };
 

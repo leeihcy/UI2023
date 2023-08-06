@@ -1,0 +1,39 @@
+shared_library("uisvg") {
+    cflags = []
+    if (is_debug) {
+      cflags += ["-g"]
+    }
+
+    defines = ["UI_SVG_EXPORTS"]
+    include_dirs = [
+        "//",
+        "//ui/svg",
+    ]
+  
+    lib_dirs = ["$root_build_dir/"]
+    deps = [
+      "//ui/sdk:uisdk"
+    ]
+
+    # 直接在当前目录查找libuisdk
+    ldflags = [
+      "-rpath", ".",
+    ]
+
+    sources = [
+    ]
+
+    # 单元测试
+    if (is_debug) {
+      defines += ["UI_UNITTEST"]
+      sources += [
+      ]
+    }
+}
+
+ 
+group("svg") {
+  deps = [
+    ":uisvg"
+  ]
+}

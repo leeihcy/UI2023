@@ -22,7 +22,7 @@ void  IWindowRender::SetCanCommit(bool b)
 {
 	m_pWindowRenderImpl->SetCanCommit(b);
 }
-// void  IWindowRender::Commit(HDC hDC, RECT* prc, int nCount)
+// void  IWindowRender::Commit(HDC hDC, Rect* prc, int nCount)
 // {
 //     m_pWindowRenderImpl->Commit(hDC, prc, nCount);
 // }

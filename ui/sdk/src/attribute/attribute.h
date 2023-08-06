@@ -100,13 +100,13 @@ public:
     EnumAttribute*  AddEnum(const wchar_t*, slot<void(long)>&& s, slot<long()>&& g);
 
 
-	RectAttribute*  AddRect(const wchar_t*, RECT& rcBindValue);
+	RectAttribute*  AddRect(const wchar_t*, Rect& rcBindValue);
 	// RectAttribute*  AddRect(const wchar_t*, void* _this, pfnRectSetter s, pfnRectGetter g);
-    RectAttribute*  AddRect(const wchar_t*, slot<void(RECT*)>&& s, slot<void(RECT*)>&& g);
+    RectAttribute*  AddRect(const wchar_t*, slot<void(Rect*)>&& s, slot<void(Rect*)>&& g);
 
-	SizeAttribute*  AddSize(const wchar_t*, SIZE& sBindValue);
+	SizeAttribute*  AddSize(const wchar_t*, Size& sBindValue);
 	// SizeAttribute*  AddSize(const wchar_t*, void* _this, pfnSizeSetter s, pfnSizeGetter g);
-    SizeAttribute*  AddSize(const wchar_t*, slot<void(SIZE*)>&& s, slot<void(SIZE*)>&& g);
+    SizeAttribute*  AddSize(const wchar_t*, slot<void(Size*)>&& s, slot<void(Size*)>&& g);
 
 	Region9Attribute*  Add9Region(const wchar_t*, C9Region& rBindValue);
 	// Region9Attribute*  Add9Region(const wchar_t*, void* _this, pfnRectSetter s, pfnRectGetter g);

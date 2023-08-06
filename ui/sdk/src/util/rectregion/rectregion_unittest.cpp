@@ -11,7 +11,7 @@ void test_union() {
 
   // 单个区域
   {
-    RECT r1 = { 10, 10, 20, 20};
+    Rect r1 = { 10, 10, 20, 20};
     region.Union(r1);
     assert(region.GetCount() == 1);
   }
@@ -29,8 +29,8 @@ void test_union() {
   region.Destroy();
   assert(region.GetCount() == 0);
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 10, 30, 20, 40};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 10, 30, 20, 40};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 2);
@@ -48,12 +48,12 @@ void test_union() {
   //     
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 20, 10, 30, 20};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 20, 10, 30, 20};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 1);
-    RECT r3 = {10, 10, 30, 20};
+    Rect r3 = {10, 10, 30, 20};
     assert(*region.GetRectPtrAt(0) == r3);
   }
 
@@ -67,12 +67,12 @@ void test_union() {
   //   
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 19, 10, 30, 20};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 19, 10, 30, 20};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 1);
-    RECT r3 = {10, 10, 30, 20};
+    Rect r3 = {10, 10, 30, 20};
     assert(*region.GetRectPtrAt(0) == r3);
   }
 
@@ -86,8 +86,8 @@ void test_union() {
   //   
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 11, 11, 19, 19};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 11, 11, 19, 19};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 1);
@@ -104,15 +104,15 @@ void test_union() {
   // 
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 19, 11, 30, 19};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 19, 11, 30, 19};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 3);
 
-    RECT result1 = {10,10, 20, 11};
-    RECT result2 = {10,11, 30, 19};
-    RECT result3 = {10,19, 20, 20};
+    Rect result1 = {10,10, 20, 11};
+    Rect result2 = {10,11, 30, 19};
+    Rect result3 = {10,19, 20, 20};
     assert(*region.GetRectPtrAt(0) == result1);
     assert(*region.GetRectPtrAt(1) == result2);
     assert(*region.GetRectPtrAt(2) == result3);
@@ -128,15 +128,15 @@ void test_union() {
   //
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 15, 15, 30, 30};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 15, 15, 30, 30};
     region.Union(r1);
     region.Union(r2);
     assert(region.GetCount() == 3);
 
-    RECT result1 = {10,10, 20, 15};
-    RECT result2 = {10,15, 30, 20};
-    RECT result3 = {15,20, 30, 30};
+    Rect result1 = {10,10, 20, 15};
+    Rect result2 = {10,15, 30, 20};
+    Rect result3 = {15,20, 30, 30};
     assert(*region.GetRectPtrAt(0) == result1);
     assert(*region.GetRectPtrAt(1) == result2);
     assert(*region.GetRectPtrAt(2) == result3);
@@ -154,19 +154,19 @@ void test_union() {
   //
   region.Destroy();
   {
-    RECT r1 = { 10, 10, 20, 20};
-    RECT r2 = { 30,  5, 50, 25};
-    RECT r3 = { 15, 15, 40, 30};
+    Rect r1 = { 10, 10, 20, 20};
+    Rect r2 = { 30,  5, 50, 25};
+    Rect r3 = { 15, 15, 40, 30};
     region.Union(r1);
     region.Union(r2);
     region.Union(r3);
     assert(region.GetCount() == 5);
 
-    RECT result1 = {30, 5, 50, 15};
-    RECT result2 = {10, 10, 20, 15};
-    RECT result3 = {10, 15, 50, 20};
-    RECT result4 = {15, 20, 50, 25};
-    RECT result5 = {15, 25, 40, 30};
+    Rect result1 = {30, 5, 50, 15};
+    Rect result2 = {10, 10, 20, 15};
+    Rect result3 = {10, 15, 50, 20};
+    Rect result4 = {15, 20, 50, 25};
+    Rect result5 = {15, 25, 40, 30};
     assert(*region.GetRectPtrAt(0) == result1);
     assert(*region.GetRectPtrAt(1) == result2);
     assert(*region.GetRectPtrAt(2) == result3);

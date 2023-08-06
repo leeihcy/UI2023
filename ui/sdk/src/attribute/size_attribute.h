@@ -17,27 +17,27 @@ public:
     virtual bool  IsDefaultValue() override;
     void  SetBindValue(void*) override;
     // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
-    void Bind(slot<void(SIZE*)>&& s, slot<void(SIZE*)>&& g);
+    void Bind(slot<void(Size*)>&& s, slot<void(Size*)>&& g);
 
 public:
-	SizeAttribute*  SetDefault(SIZE*);
+	SizeAttribute*  SetDefault(Size*);
     ISizeAttribute*  GetISizeAttribute();
 
 private:
-    void  get(SIZE*);
-    void  set(SIZE*);
+    void  get(Size*);
+    void  set(Size*);
 
 private:
     ISizeAttribute*  m_pISizeAttribute;
 
-    SIZE*  m_pBindValue;
-    SIZE   m_sizeDefault;
+    Size*  m_pBindValue;
+    Size   m_sizeDefault;
 
     // void*   _this;
     // pfnSizeSetter  _setter;
     // pfnSizeGetter  _getter;
-    signal<void(SIZE*)>  m_setter;
-    signal<void(SIZE*)>  m_getter;
+    signal<void(Size*)>  m_setter;
+    signal<void(Size*)>  m_getter;
 };
 
 AttributeBase*  CreateSizeAttribute();

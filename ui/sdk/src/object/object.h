@@ -66,8 +66,8 @@ public:
 	void  OnLayerCreate();
 
 	void  Invalidate();
-	void  Invalidate(const RECT* prcObj);
-	void  Invalidate(RECT* prcObjArray, int nCount);
+	void  Invalidate(const Rect* prcObj);
+	void  Invalidate(Rect* prcObjArray, int nCount);
 	void  DrawToLayer__(IRenderTarget* pRenderTarget);
 	void  DrawChildObject__(IRenderTarget* pRenderTarget, Object* pChildStart);
 	
@@ -162,21 +162,21 @@ public:
 	const wchar_t*  SaveForegndRender();
 	const wchar_t*  SaveTextRender();
 
-	SIZE  GetDesiredSize();
+	Size  GetDesiredSize();
 	void  UpdateLayout();
 	//void  UpdateMyLayout();
 	void  UpdateLayoutPos();
 	void  UpdateObjectNonClientRegion();
 	virtual void  SetObjectPos(int x, int y, int cx, int cy, int nFlag = 0);
-	void  SetObjectPos(const RECT* prc, int nFlag);
+	void  SetObjectPos(const Rect* prc, int nFlag);
 
-	void  GetParentRect(RECT* prc);
+	void  GetParentRect(Rect* prc);
 	Point  GetWindowPoint();
-	void  GetWindowRect(RECT* lprc);
-	bool  GetRectInWindow(RECT* prc, bool bOnlyVisiblePart);
-	void  GetClientRectInObject(RECT* prc);
-	void  GetObjectClientRect(RECT* prc);
-	bool  CalcRectInAncestor(Object*  pObjAncestor, const RECT* prcObjPart, bool bCalcVisible, RECT* prcOut);
+	void  GetWindowRect(Rect* lprc);
+	bool  GetRectInWindow(Rect* prc, bool bOnlyVisiblePart);
+	void  GetClientRectInObject(Rect* prc);
+	void  GetObjectClientRect(Rect* prc);
+	bool  CalcRectInAncestor(Object*  pObjAncestor, const Rect* prcObjPart, bool bCalcVisible, Rect* prcOut);
 	bool  GetScrollOffset(int* pxOffset, int* pyOffset);
 	bool  GetScrollRange(int* pxRange, int* pyRange);
 
@@ -214,7 +214,7 @@ public:
 	int   GetBorderT() { return m_rcBorder.top; }
 	int   GetBorderR() { return m_rcBorder.right; }
 	int   GetBorderB() { return m_rcBorder.bottom; }
-	void  SetBorderRegion(RECT* prc);
+	void  SetBorderRegion(Rect* prc);
 	void  GetBorderRegion(REGION4* prc) { 
         prc->CopyFrom(m_rcBorder);
     }
@@ -245,8 +245,8 @@ public:
 	void  SetExtNonClientRegion(REGION4* prc) { m_rcExtNonClient.CopyFrom(*prc); }
 	void  GetExtNonClientRegion(REGION4* prc) { prc->CopyFrom(m_rcExtNonClient); }
 
-	void  GetClientRectInParent(RECT* prc);
-	void  GetClientRectInWindow(RECT* prc);
+	void  GetClientRectInParent(Rect* prc);
+	void  GetClientRectInWindow(Rect* prc);
 	int   GetWidth();
 	int   GetHeight();
 	int   GetWidthWithMargins();
@@ -260,34 +260,34 @@ public:
 	void  SetMinWidth(int);
 	void  SetMinHeight(int);
 
-	bool  IntersectWindowRect(const RECT* prcWindow, RECT* prcIntersectWnd, RECT* prcIntersectObj);
+	bool  IntersectWindowRect(const Rect* prcWindow, Rect* prcIntersectWnd, Rect* prcIntersectObj);
 	void  WindowPoint2ObjectPoint(const Point* ptWindow, Point* ptObj, bool bCalcTransform);
 	void  WindowPoint2ObjectClientPoint(const Point* ptWindow, Point* ptClient, bool bCalcTransform);
-	void  WindowRect2ObjectClientRect(const RECT* rcWindow, RECT* rcObj);
-	void  WindowRect2ObjectRect(const RECT* rcWindow, RECT* rcObj);
+	void  WindowRect2ObjectClientRect(const Rect* rcWindow, Rect* rcObj);
+	void  WindowRect2ObjectRect(const Rect* rcWindow, Rect* rcObj);
 
 	static void  ParentClientPoint2ChildPoint(Object* pObjChild, const Point* pt, Point* pOut);
 
 	static void  ObjectPoint2ObjectClientPoint(Object* pObj, const Point* pt, Point* pOut);
 	static void  ObjectPoint2ObjectNonClientPoint(Object* pObj, const Point* pt, Point* pOut);
-	static void  ObjectRect2ObjectClientRect(Object* pObj, const RECT* prc, RECT* pOut);
-	static void  ObjectClientRect2WindowRect(Object* pObj, const RECT* prcClient, RECT* prcWnd);
-	static void  ObjectRect2WindowRect(Object* pObj, const RECT* prcObj, RECT* prcWnd);
+	static void  ObjectRect2ObjectClientRect(Object* pObj, const Rect* prc, Rect* pOut);
+	static void  ObjectClientRect2WindowRect(Object* pObj, const Rect* prcClient, Rect* prcWnd);
+	static void  ObjectRect2WindowRect(Object* pObj, const Rect* prcObj, Rect* prcWnd);
 
 	static void  ParentClientPoint2ChildClientPoint(Object* pObjChild, const Point* pt, Point* pOut);
-	static void  ParentClientRect2ChildClientRect(Object* pObjChild, const RECT* prc, RECT* pOut);
+	static void  ParentClientRect2ChildClientRect(Object* pObjChild, const Rect* prc, Rect* pOut);
 
 	static void  ParentPoint2ChildPoint(Object* pObjChild, const Point* pt, Point* pOut);
-	static void  ParentRect2ChildRect(Object* pObjChild, const RECT* prc, RECT* pOut);
+	static void  ParentRect2ChildRect(Object* pObjChild, const Rect* prc, Rect* pOut);
 
 	static void  ChildPoint2ParentClientPoint(Object* pObjChild, const Point* ptChild, Point*  ptOut);
-	static void  ChildRect2ParentClientRect(Object* pObjChild, const RECT* prc, RECT*  pOut);
+	static void  ChildRect2ParentClientRect(Object* pObjChild, const Rect* prc, Rect*  pOut);
 
 	static void  ObjectClientPoint2ObjectPoint(Object*  pObj, const Point* ptChild, Point*  ptOut);
-	static void  ObjectClientRect2ObjectRect(Object*  pObj, const RECT* prc, RECT*  pOut);
+	static void  ObjectClientRect2ObjectRect(Object*  pObj, const Rect* prc, Rect*  pOut);
 
 	static void  ChildPoint2ParentPoint(Object* pObjChild, const Point* ptChild, Point*  ptOut);
-	static void  ChildRect2ParentRect(Object* pObjChild, const RECT* prc, RECT*  pOut);
+	static void  ChildRect2ParentRect(Object* pObjChild, const Rect* prc, Rect*  pOut);
 
 	// 动画属性
 	unsigned char GetOpacity() const;
@@ -362,11 +362,11 @@ protected:
 #endif
 
 #pragma region //坐标相关数据
-	RECT   m_rcParent;              // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
-	RECT   m_rcExtNonClient;        // 扩展的非客户区，与border、padding共同做为对象的非客户区。
-	RECT   m_rcMargin;
-	RECT   m_rcPadding;
-	RECT   m_rcBorder;
+	Rect   m_rcParent;              // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
+	Rect   m_rcExtNonClient;        // 扩展的非客户区，与border、padding共同做为对象的非客户区。
+	Rect   m_rcMargin;
+	Rect   m_rcPadding;
+	Rect   m_rcBorder;
 	//HRGN     m_hRgn;                  // （未使用）如果该对象是一个不规则区域，必须设置该值，该值对window类型对象无效. rgn是相对于窗口左上角的。
 	ILayoutParam*  m_pLayoutParam;      // 布局参数。由Object负责释放
 #pragma endregion

@@ -194,7 +194,7 @@ Matrix33& Matrix33::Scale(float sx, float sy)
 	return *this;
 }
 
-void  Matrix33::MapPoint(POINT* pt, POINT* ptTransform)
+void  Matrix33::MapPoint(Point* pt, Point* ptTransform)
 {
 	float x = (float)pt->x;
 	float y = (float)pt->y;
@@ -217,7 +217,7 @@ void  Matrix33::MapPoint(POINT* pt, POINT* ptTransform)
 //     x = -----------------
 //         m11*m22 - m12*m21
 //  
-void  Matrix33::UnMapPoint(POINT* ptTransform, POINT* pt)
+void  Matrix33::UnMapPoint(Point* ptTransform, Point* pt)
 {
 	// 使用行列式解二元一次方程
 	float b1 = (float)ptTransform->x - m31;
@@ -696,7 +696,7 @@ Matrix44&  Matrix44::Rotate(float x, float y, float z)
 	return *this;
 }
 
-void  Matrix44::MapPoint(POINT* pt, POINT* ptTransform)
+void  Matrix44::MapPoint(Point* pt, Point* ptTransform)
 {
 	float fx, fy;
 	this->Map((float)pt->x, (float)pt->y, fx, fy);
@@ -725,7 +725,7 @@ void  Matrix44::MapPoint(POINT* pt, POINT* ptTransform)
 //
 // 将屏幕上的点(z=0)映射到该矩阵变换后的一个平面上，用于鼠标hittest
 //
-bool  Matrix44::ProjectPoint(POINT* pt, POINT* pOut)
+bool  Matrix44::ProjectPoint(Point* pt, Point* pOut)
 {
 	if (m33 == 0) // 90度的平面，不可见。
 	{
@@ -755,7 +755,7 @@ bool  Matrix44::ProjectPoint(POINT* pt, POINT* pOut)
 	return true;
 }
 
-void  Matrix44::MapPoint(POINT pIn, POINTF2* pOut)
+void  Matrix44::MapPoint(Point pIn, POINTF2* pOut)
 {
 	POINTF2  point = {(float)pIn.x, (float)pIn.y};
 	MapPoint(point, pOut);
@@ -837,7 +837,7 @@ void  Matrix44::MapRect2Quad(RECTF* prc, QUADF* pQuad)
 	Map(prc->left,  prc->bottom,  pQuad->Dx, pQuad->Dy);
 }
 
-void  Matrix44::MapRect2Quad(RECT* prc, QUAD* pQuad)
+void  Matrix44::MapRect2Quad(Rect* prc, QUAD* pQuad)
 {
 	RectF rc(prc);
 	QuadF quadf;

@@ -19,7 +19,7 @@ public:
     CardLayout();
 
     virtual void  Serialize(SERIALIZEDATA*) override{};
-    virtual SIZE  Measure() override;
+    virtual Size  Measure() override;
     virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
     virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
 };

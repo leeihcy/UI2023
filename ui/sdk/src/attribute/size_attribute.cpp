@@ -15,7 +15,7 @@ SizeAttribute::SizeAttribute()
 {
     m_pISizeAttribute = nullptr;
     m_pBindValue = nullptr;
-    m_sizeDefault.cx = m_sizeDefault.cy = 0;
+    m_sizeDefault.width = m_sizeDefault.height = 0;
 
     // _this = nullptr;
     // _setter = nullptr;
@@ -29,7 +29,7 @@ SizeAttribute::~SizeAttribute()
 
 void  SizeAttribute::SetBindValue(void* p)
 {
-    m_pBindValue = (SIZE*)p;
+    m_pBindValue = (Size*)p;
 }
 
 // void  SizeAttribute::SetBindFuction(void* _this, void* _setter, void* _getter)
@@ -38,22 +38,22 @@ void  SizeAttribute::SetBindValue(void* p)
 //     this->_setter = (pfnSizeSetter)_setter;
 //     this->_getter = (pfnSizeGetter)_getter;
 // }
-void SizeAttribute::Bind(slot<void(SIZE*)>&& s, slot<void(SIZE*)>&& g)
+void SizeAttribute::Bind(slot<void(Size*)>&& s, slot<void(Size*)>&& g)
 {
-    m_setter.connect(std::forward<slot<void(SIZE*)>>(s));
-    m_getter.connect(std::forward<slot<void(SIZE*)>>(g));
+    m_setter.connect(std::forward<slot<void(Size*)>>(s));
+    m_getter.connect(std::forward<slot<void(Size*)>>(g));
 }
 
-SizeAttribute*  SizeAttribute::SetDefault(SIZE* pSize)
+SizeAttribute*  SizeAttribute::SetDefault(Size* pSize)
 {
 	if (pSize)
 	{
-		m_sizeDefault.cx = pSize->cx;
-		m_sizeDefault.cy = pSize->cy;
+		m_sizeDefault.width = pSize->width;
+		m_sizeDefault.height = pSize->height;
 	}
 	else
 	{
-		m_sizeDefault.cx = m_sizeDefault.cy = 0;
+		m_sizeDefault.width = m_sizeDefault.height = 0;
 	}
 
 	return this;
@@ -63,12 +63,12 @@ SizeAttribute*  SizeAttribute::SetDefault(SIZE* pSize)
 // 注：不能直接写：b = _getter();
 //     这样的结果是将SizeAttribute的this又mov到ecx了
 //
-void  SizeAttribute::get(SIZE* psize)
+void  SizeAttribute::get(Size* psize)
 {
     if (m_pBindValue)
     {
-		psize->cx = m_pBindValue->cx;
-		psize->cy = m_pBindValue->cy;
+		psize->width = m_pBindValue->width;
+		psize->height = m_pBindValue->height;
     }
 //     else if (_getter && _this)
 //     {
@@ -92,17 +92,17 @@ void  SizeAttribute::get(SIZE* psize)
     }
     else
     {
-		psize->cx = m_sizeDefault.cx;
-		psize->cy = m_sizeDefault.cy;
+		psize->width = m_sizeDefault.width;
+		psize->height = m_sizeDefault.height;
     }
 }
 
-void  SizeAttribute::set(SIZE* psize)
+void  SizeAttribute::set(Size* psize)
 {
     if (m_pBindValue)
     {
-		m_pBindValue->cx = psize->cx;
-		m_pBindValue->cy = psize->cy;
+		m_pBindValue->width = psize->width;
+		m_pBindValue->height = psize->height;
     }
 //     else if (_setter && _this)
 //     {
@@ -129,18 +129,18 @@ void  SizeAttribute::set(SIZE* psize)
 
 const wchar_t*  SizeAttribute::Get()
 {
-	SIZE s = {0};
+	Size s = {0};
     get(&s);
 
 	wchar_t* szText = GetTempBuffer(64);
-	wprintf(szText, TEXT("%d,%d"), s.cx, s.cy);
+	wprintf(szText, TEXT("%d,%d"), s.width, s.height);
     
     return szText;
 }
 
 void  SizeAttribute::Set(const wchar_t* szValue)
 {
-	SIZE s = {0};
+	Size s = {0};
 	if (util::TranslateSIZE(szValue, &s, XML_SEPARATOR))
 	{
 		set(&s);
@@ -154,10 +154,10 @@ void  SizeAttribute::Reset()
 
 bool  SizeAttribute::IsDefaultValue()
 {
-	SIZE s = {0};
+	Size s = {0};
 	get(&s);
 
-	if (s.cx == m_sizeDefault.cx && s.cy == m_sizeDefault.cy)
+	if (s.width == m_sizeDefault.width && s.height == m_sizeDefault.height)
 		return true;
 	else
 		return false;

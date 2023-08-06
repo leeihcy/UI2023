@@ -33,10 +33,10 @@ public:
   void Show() override;
   void Hide();
 
-  void Submit(IRenderTarget* pRT, const RECT* prect, int count) override;
+  void Submit(IRenderTarget* pRT, const Rect* prect, int count) override;
   void Invalidate();
 
-  void RECT2Rect(RECT& r, Rect* prect);
+  void RECT2Rect(Rect& r, Rect* prect);
 private:
   ui::Window &m_ui_window;
   HWND m_hWnd;

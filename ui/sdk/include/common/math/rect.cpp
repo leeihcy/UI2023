@@ -7,12 +7,12 @@ RectF::RectF()
 {
 	left = top = right = bottom = 0;
 }
-RectF::RectF(const RECT* prc)
+RectF::RectF(const Rect* prc)
 {
 	Set(prc);
 }
 
-void  RectF::Set(const RECT* prc)
+void  RectF::Set(const Rect* prc)
 {
 	left = (float)prc->left;
 	top = (float)prc->top;

@@ -43,7 +43,7 @@ public:
 protected:
     void  OnSerialize(SERIALIZEDATA* pData);
     void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
-	void  GetDesiredSize(SIZE* pSize);
+	void  GetDesiredSize(Size* pSize);
 
 private:
 	void  LoadBitmap(const wchar_t* szBitmapId)
@@ -69,7 +69,7 @@ protected:
 	IRenderBitmap*    m_pBitmap;
 	Color*    m_pColorBk;
 	C9Region  m_Region;   // 拉伸绘制时才用
-    RECT  m_rcSrc;     // 绘制区域(为空表示未设置)，有可能只是绘制图片的一部分.子类可以通过修改该值实现某些需求
+    Rect  m_rcSrc;     // 绘制区域(为空表示未设置)，有可能只是绘制图片的一部分.子类可以通过修改该值实现某些需求
     BKCOLOR_FILL_TYPE  m_eBkColorFillType;
 	long   m_nImageDrawType;
     long  m_nAlpha;
@@ -94,7 +94,7 @@ public:
 
 
 	void  OnSerialize(SERIALIZEDATA* pData);
-	void  GetDesiredSize(SIZE* pSize);
+	void  GetDesiredSize(Size* pSize);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
 protected:
@@ -139,7 +139,7 @@ public:
 	
 	void  OnSerialize(SERIALIZEDATA* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
-	void  GetDesiredSize(SIZE* pSize);
+	void  GetDesiredSize(Size* pSize);
     //virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard*) override;
 
 	int   GetItemWidth();
@@ -148,7 +148,7 @@ public:
 
 	int   GetStateIndex(int nState);
 protected:
-	void  DrawIndexWidthAlpha(IRenderTarget*, const RECT* prc, int nIndex, byte bAlpha);
+	void  DrawIndexWidthAlpha(IRenderTarget*, const Rect* prc, int nIndex, byte bAlpha);
     void  CreateAnimate(int nFrom, int nTo);
     void  DestroyAnimate();
 

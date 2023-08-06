@@ -260,7 +260,7 @@ EnumAttribute*  AttributeSerializer::AddEnum(const wchar_t* szKey,
 }
 
 RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey,
-                                            RECT &rcBindValue) {
+                                            Rect &rcBindValue) {
   return static_cast<RectAttribute *>(
       Add(ATTRIBUTE_TYPE_RECT, szKey, &rcBindValue));
 }
@@ -269,19 +269,19 @@ RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey,
 //   return static_cast<RectAttribute *>(
 //       Add(ATTRIBUTE_TYPE_RECT, szKey, _this, s, g));
 // }
-RectAttribute*  AttributeSerializer::AddRect(const wchar_t* szKey, slot<void(RECT*)>&& s, slot<void(RECT*)>&& g)
+RectAttribute*  AttributeSerializer::AddRect(const wchar_t* szKey, slot<void(Rect*)>&& s, slot<void(Rect*)>&& g)
 {
     RectAttribute* p = static_cast<RectAttribute *>(
       Add(ATTRIBUTE_TYPE_RECT, szKey, nullptr));
 
     if (p) {
-        p->Bind(std::forward<slot<void(RECT*)>>(s), std::forward<slot<void(RECT*)>>(g));
+        p->Bind(std::forward<slot<void(Rect*)>>(s), std::forward<slot<void(Rect*)>>(g));
     }
     return p;
 }
 
 SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey,
-                                            SIZE &sBindValue) {
+                                            Size &sBindValue) {
   return static_cast<SizeAttribute *>(
       Add(ATTRIBUTE_TYPE_SIZE, szKey, &sBindValue));
 }
@@ -290,12 +290,12 @@ SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey,
 //   return static_cast<SizeAttribute *>(
 //       Add(ATTRIBUTE_TYPE_SIZE, szKey, _this, s, g));
 // }
-SizeAttribute*  AttributeSerializer::AddSize(const wchar_t* szKey, slot<void(SIZE*)>&& s, slot<void(SIZE*)>&& g)
+SizeAttribute*  AttributeSerializer::AddSize(const wchar_t* szKey, slot<void(Size*)>&& s, slot<void(Size*)>&& g)
 {
    SizeAttribute* p = static_cast<SizeAttribute *>(
       Add(ATTRIBUTE_TYPE_SIZE, szKey, nullptr));   
     if (p) {
-        p->Bind(std::forward<slot<void(SIZE*)>>(s), std::forward<slot<void(SIZE*)>>(g));
+        p->Bind(std::forward<slot<void(Size*)>>(s), std::forward<slot<void(Size*)>>(g));
     }
     return p;
 }

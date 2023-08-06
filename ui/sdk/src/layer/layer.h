@@ -68,9 +68,9 @@ struct ILayerContent {
   virtual void Draw(ui::IRenderTarget *) = 0;
 
   // 获取自己的窗口坐标，用于合成
-  virtual void GetWindowRect(RECT *prcOut) = 0;
+  virtual void GetWindowRect(Rect *prcOut) = 0;
   // 获取layer对象的父控件（不是父layer）的窗口坐标。例如要将layer剪裁到父控件以内
-  virtual void GetParentWindowRect(RECT *prcOut) = 0;
+  virtual void GetParentWindowRect(Rect *prcOut) = 0;
 
   // 用于获取自己在Object tree中的位置，对应到Layer tree中的位置
   virtual Layer *GetParentLayer() = 0;
@@ -113,8 +113,8 @@ public:
 
   void PostCompositorRequest();
   void InvalidateForLayerAnimate(bool bUpdateNow = false);
-  void Invalidate(const RECT *prcDirtyInLayer);
-  void Invalidate(const RECT *prcArray, uint nCount);
+  void Invalidate(const Rect *prcDirtyInLayer);
+  void Invalidate(const Rect *prcArray, uint nCount);
   void CopyDirtyRect(RectRegion* arr);
 
   void SetContent(ILayerContent *);
@@ -154,7 +154,7 @@ public:
   float GetZTranslate();
 
   virtual void UpdateDirty() {}
-  virtual void MapView2Layer(POINT *pPoint){};
+  virtual void MapView2Layer(Point *pPoint){};
   virtual LayerType GetType() = 0;
 
 protected:
@@ -182,7 +182,7 @@ protected:
   Layer *m_pPrev;
 
   //
-  SIZE m_size;
+  Size m_size;
   RectRegion m_dirtyRectangles;
 
   ILayerContent *m_pLayerContent;

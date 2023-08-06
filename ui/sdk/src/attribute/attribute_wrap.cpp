@@ -677,7 +677,7 @@ IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, long& lB
 //     return p->GetIEnumAttribute();
 // }
 
-IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, RECT& rcBindValue)
+IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, Rect& rcBindValue)
 {
 	RectAttribute* p = m_pImpl->AddRect(szKey, rcBindValue);
 	if (!p)
@@ -694,7 +694,7 @@ IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, RECT& rc
 // 	return p->GetIRectAttribute();
 // }
 
-ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, SIZE& sBindValue)
+ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, Size& sBindValue)
 {
 	SizeAttribute* p = m_pImpl->AddSize(szKey, sBindValue);
 	if (!p)

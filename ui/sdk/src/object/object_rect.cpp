@@ -34,8 +34,8 @@ void Object::ObjectPoint2ObjectNonClientPoint(Object *pObj, const Point *pt,
   pOut->x = pt->x - pObj->m_rcBorder.left;
   pOut->y = pt->y - pObj->m_rcBorder.left;
 }
-void Object::ObjectRect2ObjectClientRect(Object *pObj, const RECT *prc,
-                                         RECT *pOut) {
+void Object::ObjectRect2ObjectClientRect(Object *pObj, const Rect *prc,
+                                         Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ObjectPoint2ObjectClientPoint(pObj, &pt, &pt);
 
@@ -43,9 +43,9 @@ void Object::ObjectRect2ObjectClientRect(Object *pObj, const RECT *prc,
             pt.y + (prc->bottom - prc->top));
 }
 
-void Object::ObjectClientRect2WindowRect(Object *pObj, const RECT *prcClient,
-                                         RECT *prcWnd) {
-  RECT rcClientInWnd;
+void Object::ObjectClientRect2WindowRect(Object *pObj, const Rect *prcClient,
+                                         Rect *prcWnd) {
+  Rect rcClientInWnd;
   pObj->GetClientRectInWindow(&rcClientInWnd);
 
   prcWnd->left = rcClientInWnd.left + prcClient->left;
@@ -54,9 +54,9 @@ void Object::ObjectClientRect2WindowRect(Object *pObj, const RECT *prcClient,
   prcWnd->bottom = prcWnd->top + (prcClient->bottom - prcClient->top);
 }
 
-void Object::ObjectRect2WindowRect(Object *pObj, const RECT *prcObj,
-                                   RECT *prcWnd) {
-  RECT rcInWindow;
+void Object::ObjectRect2WindowRect(Object *pObj, const Rect *prcObj,
+                                   Rect *prcWnd) {
+  Rect rcInWindow;
   pObj->GetWindowRect(&rcInWindow);
 
   prcWnd->left = rcInWindow.left + prcObj->left;
@@ -73,7 +73,7 @@ void Object::ParentClientPoint2ChildClientPoint(Object *pObjChild,
   }
 }
 void Object::ParentClientRect2ChildClientRect(Object *pObjChild,
-                                              const RECT *prc, RECT *pOut) {
+                                              const Rect *prc, Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ParentClientPoint2ChildClientPoint(pObjChild, &pt, &pt);
 
@@ -91,8 +91,8 @@ void Object::ParentPoint2ChildPoint(Object *pObjChild, const Point *pt,
   ParentClientPoint2ChildPoint(pObjChild, &ptTemp, pOut);
 }
 
-void Object::ParentRect2ChildRect(Object *pObjChild, const RECT *prc,
-                                  RECT *pOut) {
+void Object::ParentRect2ChildRect(Object *pObjChild, const Rect *prc,
+                                  Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ParentPoint2ChildPoint(pObjChild, &pt, &pt);
 
@@ -106,8 +106,8 @@ void Object::ChildPoint2ParentClientPoint(Object *pObjChild,
   ptOut->y = ptChild->y + pObjChild->m_rcParent.top;
 }
 
-void Object::ChildRect2ParentClientRect(Object *pObjChild, const RECT *prc,
-                                        RECT *pOut) {
+void Object::ChildRect2ParentClientRect(Object *pObjChild, const Rect *prc,
+                                        Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ChildPoint2ParentClientPoint(pObjChild, &pt, &pt);
 
@@ -130,8 +130,8 @@ void Object::ObjectClientPoint2ObjectPoint(Object *pObj, const Point *ptChild,
   }
 }
 
-void Object::ObjectClientRect2ObjectRect(Object *pObj, const RECT *prc,
-                                         RECT *pOut) {
+void Object::ObjectClientRect2ObjectRect(Object *pObj, const Rect *prc,
+                                         Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ObjectClientPoint2ObjectPoint(pObj, &pt, &pt);
 
@@ -147,8 +147,8 @@ void Object::ChildPoint2ParentPoint(Object *pObjChild, const Point *ptChild,
   }
 }
 
-void Object::ChildRect2ParentRect(Object *pObjChild, const RECT *prc,
-                                  RECT *pOut) {
+void Object::ChildRect2ParentRect(Object *pObjChild, const Rect *prc,
+                                  Rect *pOut) {
   Point pt = {prc->left, prc->top};
   ChildPoint2ParentPoint(pObjChild, &pt, &pt);
 
@@ -170,7 +170,7 @@ Point Object::GetWindowPoint() {
   return pt;
 }
 
-void Object::GetWindowRect(RECT *lprc) {
+void Object::GetWindowRect(Rect *lprc) {
   UIASSERT(lprc);
 
   Point pt = this->GetWindowPoint();
@@ -266,7 +266,7 @@ void Object::WindowPoint2ObjectClientPoint(const Point *ptWindow,
   ObjectPoint2ObjectClientPoint(this, &pt, ptClient);
 }
 
-void Object::WindowRect2ObjectClientRect(const RECT *rcWindow, RECT *rcObj) {
+void Object::WindowRect2ObjectClientRect(const Rect *rcWindow, Rect *rcObj) {
   Point ptWindow = {rcWindow->left, rcWindow->top};
   Point ptClient = {0};
 
@@ -276,7 +276,7 @@ void Object::WindowRect2ObjectClientRect(const RECT *rcWindow, RECT *rcObj) {
   rcObj->right = rcObj->left + (rcWindow->right - rcWindow->left);
   rcObj->bottom = rcObj->top + (rcWindow->bottom - rcWindow->top);
 }
-void Object::WindowRect2ObjectRect(const RECT *rcWindow, RECT *rcObj) {
+void Object::WindowRect2ObjectRect(const Rect *rcWindow, Rect *rcObj) {
   Point ptWindow = {rcWindow->left, rcWindow->top};
   Point ptObj = {0};
 
@@ -290,13 +290,13 @@ void Object::WindowRect2ObjectRect(const RECT *rcWindow, RECT *rcObj) {
 //////////////////////////////////////////////////////////////////////////
 
 // 获取一个对象在窗口上的可视区域。例如用于绘制该对象时的裁剪
-bool Object::GetRectInWindow(RECT *prc, bool bOnlyVisiblePart) {
+bool Object::GetRectInWindow(Rect *prc, bool bOnlyVisiblePart) {
   return CalcRectInAncestor(GetWindowObject(), nullptr, bOnlyVisiblePart, prc);
 }
 
 // 计算对象在层中的位置（不是层缓存中的位置，缓存也可能有偏移）
 /*
-bool  Object::GetRectInLayer(RECT* prc, bool bOnlyVisiblePart)
+bool  Object::GetRectInLayer(Rect* prc, bool bOnlyVisiblePart)
 {
         assert(0 && "TODO");
 #if 0
@@ -314,7 +314,7 @@ bool  Object::GetRectInLayer(RECT* prc, bool bOnlyVisiblePart)
 }
 
 
-bool  Object::GetVisibleClientRectInLayer(RECT* prc)
+bool  Object::GetVisibleClientRectInLayer(Rect* prc)
 {
         assert (0 && TEXT("todo"));
 #if 0
@@ -322,7 +322,7 @@ bool  Object::GetVisibleClientRectInLayer(RECT* prc)
     if (!pRenderLayer)
         return GetRectInWindow(prc, true);
 
-    RECT rcClient;
+    Rect rcClient;
     this->GetClientRectInObject(&rcClient);
     if (!CalcRectInAncestor(
                         pRenderLayer->GetCreateObject(),
@@ -340,8 +340,8 @@ bool  Object::GetVisibleClientRectInLayer(RECT* prc)
 //   [in] 默认是CRect  rcClip(0, 0, GetWidth(), GetHeight());
 //        但为了支持只求Object上的某一部分区域在祖先中的可见区域，增加该参数
 //
-bool Object::CalcRectInAncestor(Object *pObjAncestor, const RECT *prcObjPart,
-                                bool bCalcVisible, RECT *prcOut) {
+bool Object::CalcRectInAncestor(Object *pObjAncestor, const Rect *prcObjPart,
+                                bool bCalcVisible, Rect *prcOut) {
   // 从下往上遍历
   if (!pObjAncestor)
     return false;
@@ -350,8 +350,8 @@ bool Object::CalcRectInAncestor(Object *pObjAncestor, const RECT *prcObjPart,
   if (prcOut)
     prcOut->SetEmpty();
 
-  RECT rcObj = {0, 0, GetWidth(), GetHeight()};
-  RECT rcObjPart = {0}; // 规范过的合理区域
+  Rect rcObj = {0, 0, GetWidth(), GetHeight()};
+  Rect rcObjPart = {0}; // 规范过的合理区域
 
   if (nullptr == prcObjPart) {
     rcObjPart.CopyFrom(rcObj);
@@ -368,7 +368,7 @@ bool Object::CalcRectInAncestor(Object *pObjAncestor, const RECT *prcObjPart,
   }
 
   //  向上遍历
-  RECT rcClip(rcObjPart);
+  Rect rcClip(rcObjPart);
   Object *pParent = nullptr;
   Object *pChild = this;
   while ((pParent = this->EnumParentObject(pParent))) {
@@ -377,7 +377,7 @@ bool Object::CalcRectInAncestor(Object *pObjAncestor, const RECT *prcObjPart,
 
     if (bCalcVisible) {
       // 与父对象进行求交
-      RECT rcParent{0, 0, pParent->GetWidth(), pParent->GetHeight()};
+      Rect rcParent{0, 0, pParent->GetWidth(), pParent->GetHeight()};
       if (!rcParent.Intersect(rcClip, &rcClip))
         return false;
     }
@@ -394,12 +394,12 @@ bool Object::CalcRectInAncestor(Object *pObjAncestor, const RECT *prcObjPart,
 }
 
 // 测试窗口上的区域与自己的交集
-bool Object::IntersectWindowRect(const RECT *prcWindow, RECT *prcIntersectWnd,
-                                 RECT *prcIntersectObj) {
+bool Object::IntersectWindowRect(const Rect *prcWindow, Rect *prcIntersectWnd,
+                                 Rect *prcIntersectObj) {
   UIASSERT(prcWindow);
 
   // wnd
-  RECT rcWndMe, rcIntersectWnd;
+  Rect rcWndMe, rcIntersectWnd;
   GetRectInWindow(&rcWndMe, true);
 
   if (!rcWndMe.Intersect(*prcWindow, &rcIntersectWnd))
@@ -411,15 +411,15 @@ bool Object::IntersectWindowRect(const RECT *prcWindow, RECT *prcIntersectWnd,
 
   // obj
   if (prcIntersectObj) {
-    //         RECT  rcObj = {0};
+    //         Rect  rcObj = {0};
     //         WindowRect2ObjectRect(prcWindow, &rcObj);
     //
-    //         RECT  rcMy = {0, 0, GetWidth(), GetHeight()};
-    //         RECT  rcIntersect = {0};
+    //         Rect  rcMy = {0, 0, GetWidth(), GetHeight()};
+    //         Rect  rcIntersect = {0};
     //         IntersectRect(&rcIntersect, &rcMy, &rcObj);
     //         ::CopyRect(prcIntersectObj, &rcIntersect);
 
-    RECT rcMe = {0, 0, GetWidth(), GetHeight()};
+    Rect rcMe = {0, 0, GetWidth(), GetHeight()};
     rcMe.left += rcIntersectWnd.left - rcWndMe.left;
     rcMe.right -= rcWndMe.right - rcIntersectWnd.right;
     rcMe.top += rcIntersectWnd.top - rcWndMe.top;
@@ -431,11 +431,11 @@ bool Object::IntersectWindowRect(const RECT *prcWindow, RECT *prcIntersectWnd,
 }
 
 // 这里的clientrect 并不是0,0起点的，而是相对于Object左上角而言
-void Object::GetClientRectInObject(RECT *prc) {
+void Object::GetClientRectInObject(Rect *prc) {
   if (nullptr == prc)
     return;
 
-  RECT rcNonClient = {0};
+  Rect rcNonClient = {0};
   GetNonClientRegion(&rcNonClient);
 
   prc->Set(rcNonClient.left, rcNonClient.top,
@@ -444,11 +444,11 @@ void Object::GetClientRectInObject(RECT *prc) {
 }
 
 // 这里的clientrect 是0,0起点的
-void Object::GetObjectClientRect(RECT *prc) {
+void Object::GetObjectClientRect(Rect *prc) {
   if (nullptr == prc)
     return;
 
-  RECT rcNonClient = {0};
+  Rect rcNonClient = {0};
   GetNonClientRegion(&rcNonClient);
 
   prc->Set(0, 0, this->GetWidth() - rcNonClient.left - rcNonClient.right,
@@ -462,13 +462,13 @@ void Object::GetNonClientRegion(REGION4 *prc) {
            m_rcExtNonClient.bottom + m_rcPadding.bottom + m_rcBorder.bottom);
 }
 
-void Object::GetClientRectInParent(RECT *prc) {
+void Object::GetClientRectInParent(Rect *prc) {
   GetClientRectInObject(prc);
   prc->Offset(m_rcParent.left, m_rcParent.top);
 }
 
 // clientrect在窗口中的坐标
-void Object::GetClientRectInWindow(RECT *prc) {
+void Object::GetClientRectInWindow(Rect *prc) {
   if (nullptr == prc)
     return;
 
@@ -558,10 +558,10 @@ void Object::UpdateLayout() {
             break;
         }
 
-        SIZE sizeOld = {pParent->GetWidth(), pParent->GetHeight()};
-        SIZE size = pParent->GetDesiredSize();
+        Size sizeOld = {pParent->GetWidth(), pParent->GetHeight()};
+        Size size = pParent->GetDesiredSize();
 
-        if (sizeOld.cx == size.cx || sizeOld.cy == size.cy)
+        if (sizeOld.cx == size.width || sizeOld.cy == size.height)
         {
             pLayout->Arrange(pObjectToUpdate->GetIObject());
             pParent->Invalidate();
@@ -580,9 +580,9 @@ void Object::UpdateLayout() {
         {
             HWND hWnd = GetHWND();
 
-            RECT rcWndNow;
+            Rect rcWndNow;
             ::GetWindowRect(hWnd, rcWndNow);
-            if (rcWndNow.Width() == size.cx && rcWndNow.Height() == size.cy)  // 当大小没有改变时，不会触发WM_SIZE，也就不会更新了
+            if (rcWndNow.Width() == size.width && rcWndNow.Height() == size.height)  // 当大小没有改变时，不会触发WM_SIZE，也就不会更新了
             {
                 pLayout->Arrange(pObjectToUpdate->GetIObject());
                 pParent->Invalidate();
@@ -595,12 +595,12 @@ void Object::UpdateLayout() {
 //                 {
 //                     WindowRender*  pRender = static_cast<WindowBase*>(pParent)->GetWindowRender();
 //                     pRender->SetCanCommit(false);
-//                     SetWindowPos(GetHWND(), 0, 0,0, size.cx, size.cy, nFlag);
+//                     SetWindowPos(GetHWND(), 0, 0,0, size.width, size.height, nFlag);
 //                     pRender->SetCanCommit(true);
 //                 }
 //                 else
                 {
-                    SetWindowPos(GetHWND(), 0, 0,0, size.cx, size.cy, nFlag);
+                    SetWindowPos(GetHWND(), 0, 0,0, size.width, size.height, nFlag);
                 }
             }
             break;
@@ -630,7 +630,7 @@ void Object::UpdateLayout() {
 //
 //	获取对象自己期望的大小
 //
-SIZE Object::GetDesiredSize() {
+Size Object::GetDesiredSize() {
   if (!m_pLayoutParam) {
     CreateLayoutParam();
 
@@ -710,7 +710,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
 	if (pWindow)
 		bHardComposite = pWindow->IsGpuComposite();
 
-    //RECT rcOldVisibleRect = {0};
+    //Rect rcOldVisibleRect = {0};
     if (bMove || bSize) 
     {
         // 刷新移动前的区域位置
@@ -760,7 +760,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
 			}
 			else
 			{
-                RECT rcArray[2];
+                Rect rcArray[2];
                 CopyRect(rcArray, &rcOldVisibleRect);
                 GetRectInWindow(&rcArray[1], true);
                 
@@ -775,7 +775,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
 #endif
 }
 
-void Object::SetObjectPos(const RECT *prc, int nFlag) {
+void Object::SetObjectPos(const Rect *prc, int nFlag) {
   if (nullptr == prc)
     return;
 
@@ -806,7 +806,7 @@ int Object::GetHeightWithMargins() {
 // 遍历自己的nc object来更新自己的non client region
 //
 void Object::UpdateObjectNonClientRegion() {
-  RECT rcNonClient = {0, 0, 0, 0};
+  Rect rcNonClient = {0, 0, 0, 0};
 
   UIMSG msg;
   msg.message = UI_MSG_CALC_PARENT_NONCLIENTRECT;
@@ -822,7 +822,7 @@ void Object::UpdateObjectNonClientRegion() {
   this->SetExtNonClientRegion(&rcNonClient);
 }
 
-void Object::GetParentRect(RECT *prc) {
+void Object::GetParentRect(Rect *prc) {
   if (nullptr == prc)
     return;
 

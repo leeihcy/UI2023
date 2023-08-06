@@ -81,8 +81,8 @@ struct UIAPI IRenderBase : public IMessage
     IImageRes*  GetSkinImageRes();
 
     void  Serialize(SERIALIZEDATA* pData);
-    void  DrawState(IRenderTarget*, const RECT* prc, int nState);
-    SIZE  GetDesiredSize();
+    void  DrawState(IRenderTarget*, const Rect* prc, int nState);
+    Size  GetDesiredSize();
     void  Init();
 
 	UI_DECLARE_INTERFACE(RenderBase);

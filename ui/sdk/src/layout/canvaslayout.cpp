@@ -10,9 +10,9 @@
 namespace ui
 {
 
-SIZE  CanvasLayout::Measure()
+Size  CanvasLayout::Measure()
 {
-    SIZE size = {0,0};
+    Size size = {0,0};
 
     // 通过子控件来获取自己所需要的大小
     Object*  pChild = nullptr;
@@ -23,34 +23,34 @@ SIZE  CanvasLayout::Measure()
         {
             continue;
         }
-        SIZE  s = pChild->GetDesiredSize();
-		s.cx += pChild->GetMarginW(); 
-		s.cy += pChild->GetMarginH();
+        Size  s = pChild->GetDesiredSize();
+		s.width += pChild->GetMarginW(); 
+		s.height += pChild->GetMarginH();
         
         if (NDEF != pParam->GetConfigLeft())
         {
-            s.cx += pParam->GetConfigLeft();
+            s.width += pParam->GetConfigLeft();
         }
         if (NDEF != pParam->GetConfigRight())
         {
-            s.cx += pParam->GetConfigRight();
+            s.width += pParam->GetConfigRight();
         }
         if (NDEF != pParam->GetConfigTop())
         {
-            s.cy += pParam->GetConfigTop();
+            s.height += pParam->GetConfigTop();
         }
         if (NDEF != pParam->GetConfigBottom())
         {
-            s.cy += pParam->GetConfigBottom();
+            s.height += pParam->GetConfigBottom();
         }
 
-        if (size.cx < s.cx)
+        if (size.width < s.width)
         {
-            size.cx = s.cx;
+            size.width = s.width;
         }
-        if (size.cy < s.cy)
+        if (size.height < s.height)
         {
-            size.cy = s.cy;
+            size.height = s.height;
         }
     }
     return size;
@@ -62,7 +62,7 @@ void  CanvasLayout::DoArrage(IObject* pIObjToArrage)
         pObjToArrage = pIObjToArrage->GetImpl();
 
     // 调用该函数时，自己的大小已经被求出来了
-    RECT rcClient;
+    Rect rcClient;
     m_pPanel->GetClientRectInObject(&rcClient);
     int  nWidth  = rcClient.Width();  //m_pPanel->GetWidth();
     int  nHeight = rcClient.Height(); //m_pPanel->GetHeight();
@@ -102,7 +102,7 @@ void  CanvasLayout::ArrangeObject(Object*  pChild, const int& nWidth, const int&
 
     //////////////////////////////////////////////////////////////////////////
     // 计算出 pChild 的 rectP的宽和高
-    SIZE s = pParam->CalcDesiredSize();
+    Size s = pParam->CalcDesiredSize();
 
 	// 先CalcDesiredSize，再getconfigleft,防止在CalcDesiredSize中修改config left
 	int left = pParam->GetConfigLeft();
@@ -118,7 +118,7 @@ void  CanvasLayout::ArrangeObject(Object*  pChild, const int& nWidth, const int&
 	{
 		if (left != NDEF && right != NDEF)
 		{
-			s.cx = nWidth - left - right;
+			s.width = nWidth - left - right;
 		}
 	}
     // 如果同时指定了top/bottom，则忽略height属性
@@ -126,23 +126,23 @@ void  CanvasLayout::ArrangeObject(Object*  pChild, const int& nWidth, const int&
 	{
 		if (top != NDEF && bottom != NDEF)
 		{
-			s.cy = nHeight - top - bottom;
+			s.height = nHeight - top - bottom;
 		}
 	}
-	if (s.cx < 0)
-		s.cx = 0;
-	if (s.cy < 0)
-		s.cy = 0;
+	if (s.width < 0)
+		s.width = 0;
+	if (s.height < 0)
+		s.height = 0;
 
-    RECT rcChildObj ;
-    int nChildW = s.cx;// - pChild->GetMarginW();
-    int nChildH = s.cy;// - pChild->GetMarginH();
+    Rect rcChildObj ;
+    int nChildW = s.width;// - pChild->GetMarginW();
+    int nChildH = s.height;// - pChild->GetMarginH();
     rcChildObj.Set(0, 0, nChildW, nChildH );
 
     // 计算出坐标，若left/right,top/bottom中有一个未指定的，那么取0（但在DesktopLayout中是取居中）
 	if (nConfigFlag & LAYOUT_ITEM_ALIGN_CENTER)
 	{
-		x = (nWidth - s.cx) / 2;  // 居中
+		x = (nWidth - s.width) / 2;  // 居中
 		if (left != NDEF)
 			x -= left;
 		if (right != NDEF)
@@ -172,7 +172,7 @@ void  CanvasLayout::ArrangeObject(Object*  pChild, const int& nWidth, const int&
 
 	if (nConfigFlag & LAYOUT_ITEM_ALIGN_VCENTER)
 	{
-		y = (nHeight - s.cy) / 2;  // 居中
+		y = (nHeight - s.height) / 2;  // 居中
 		if (top != NDEF)
 			y -= top;
 		if (bottom != NDEF)
@@ -214,7 +214,7 @@ void  CanvasLayout::ChildObjectVisibleChanged(IObject* pObj)
     //SetDirty(true);<-- 不能仅调该函数，可能后面没有触发invalidate
     DoArrage(pObj);
 
-	RECT rc = {0};
+	Rect rc = {0};
 	pObj->GetParentRect(&rc);
 	m_pPanel->Invalidate(&rc);
     
@@ -249,9 +249,9 @@ CanvasLayoutParam::~CanvasLayoutParam()
 
 }
 
-SIZE  CanvasLayoutParam::CalcDesiredSize()
+Size  CanvasLayoutParam::CalcDesiredSize()
 {
-    SIZE size = {0,0};
+    Size size = {0,0};
 
 	if (IsSizedByContent())
 	{
@@ -260,19 +260,19 @@ SIZE  CanvasLayoutParam::CalcDesiredSize()
 
         // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
         if (this->m_nConfigWidth != AUTO)
-            size.cx = this->m_nConfigWidth;
+            size.width = this->m_nConfigWidth;
         if (this->m_nConfigHeight!= AUTO)
-            size.cy = this->m_nConfigHeight;
+            size.height = this->m_nConfigHeight;
     }
 	else
 	{
-		size.cx = this->m_nConfigWidth;
-		size.cy = this->m_nConfigHeight;
+		size.width = this->m_nConfigWidth;
+		size.height = this->m_nConfigHeight;
 	}
 
     // 计算 margin 的大小
-//     size.cx += m_pObj->GetMarginW();
-//     size.cy += m_pObj->GetMarginH();
+//     size.width += m_pObj->GetMarginW();
+//     size.height += m_pObj->GetMarginH();
 
     return size;
 }
@@ -283,8 +283,8 @@ void  CanvasLayoutParam::UpdateByRect()
     if (!pParent)
         return;
 
-    RECT  rcParent;
-    RECT  rcPanel;
+    Rect  rcParent;
+    Rect  rcPanel;
     m_pObj->GetParentRect(&rcParent);
     pParent->GetClientRectInObject(&rcPanel);
 

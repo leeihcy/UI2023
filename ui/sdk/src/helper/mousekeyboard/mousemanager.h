@@ -11,8 +11,8 @@ class Application;
 struct GetObjectByPosExData
 {
 	Object* pObjParent;
-	POINT*  ptParent;
-	POINT*  ptOutInObj __out;  // out
+	Point*  ptParent;
+	Point*  ptOutInObj __out;  // out
 
 	bool  bTestDecendant;
 	bool  bTestRejectMouseMsg;
@@ -25,8 +25,8 @@ public:
     WindowMouseMgr(WindowBase& o);
     ~WindowMouseMgr(void);
 
-    Object*  GetObjectByPos(Object* pObjParent, POINT* ptWindow, __out POINT* ptObj);
-	Object*  GetObjectByPos_UIEditor(Object* pObjParent, POINT* ptWindow, __out POINT* ptObj);
+    Object*  GetObjectByPos(Object* pObjParent, Point* ptWindow, __out Point* ptObj);
+	Object*  GetObjectByPos_UIEditor(Object* pObjParent, Point* ptWindow, __out Point* ptObj);
     static Object*  GetObjectByPosEx(GetObjectByPosExData* pData);
 
 public:
@@ -109,7 +109,7 @@ protected:
 
 private:
     bool  AdjustDoubleClickMessage(long l);
-    Object*  GetGestureTargetObject(POINT ptScreen, long wParam);
+    Object*  GetGestureTargetObject(Point ptScreen, long wParam);
 
 	void  updateImeStatus();
 

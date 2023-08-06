@@ -32,24 +32,24 @@ namespace UIx64
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
 
-	inline void SetRect(void* _this, RECT* value, pfnRectSetter func) {
+	inline void SetRect(void* _this, Rect* value, pfnRectSetter func) {
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
-	inline void GetRect(void* _this, RECT* value, pfnRectGetter func) {
-		x64asm_Set64(_this, (INT_PTR)value, func);
-	}
-
-	inline void SetPoint(void* _this, POINT* value, pfnPointSetter func) {
-		x64asm_Set64(_this, (INT_PTR)value, func);
-	}
-	inline void GetPoint(void* _this, POINT* value, pfnPointGetter func) {
+	inline void GetRect(void* _this, Rect* value, pfnRectGetter func) {
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
 
-	inline void SetSize(void* _this, SIZE* value, pfnSizeSetter func) {
+	inline void SetPoint(void* _this, Point* value, pfnPointSetter func) {
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
-	inline void GetSize(void* _this, SIZE* value, pfnSizeGetter func) {
+	inline void GetPoint(void* _this, Point* value, pfnPointGetter func) {
+		x64asm_Set64(_this, (INT_PTR)value, func);
+	}
+
+	inline void SetSize(void* _this, Size* value, pfnSizeSetter func) {
+		x64asm_Set64(_this, (INT_PTR)value, func);
+	}
+	inline void GetSize(void* _this, Size* value, pfnSizeGetter func) {
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
 

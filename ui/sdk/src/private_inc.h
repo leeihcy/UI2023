@@ -5,7 +5,7 @@
 #include "include/util/struct.h"
 #include "include/util/color.h"
 #include "include/util/util.h"
-#include "include/base/xmldefine.h"
+#include "include/macro/xmldefine.h"
 // #include "include/util/iimage.h"
 #include "include/interface/iuieditor.h"
 #include "include/interface/iobjectdescription.h"
@@ -42,7 +42,7 @@ namespace ui
 typedef unsigned int uint;
 #endif
 
-// typedef RECT RECT;
+// typedef Rect Rect;
 
 typedef std::map<std::wstring, std::wstring>  ATTRMAP;
 

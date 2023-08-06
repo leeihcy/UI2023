@@ -1,7 +1,7 @@
 #include "interface/iwindow.h"
-#include "base/uiapi.h"
-#include "base/uicreator.h"
-#include "base/uidefine.h"
+#include "include/uiapi.h"
+#include "include/uicreator.h"
+#include "include/macro/uidefine.h"
 #include "src/window/window.h"
 
 #if 0
@@ -94,7 +94,7 @@ IObject*  IWindowBase::GetPressObject()
         return p->GetIObject();
     return nullptr;
 }
-IObject*  IWindowBase::GetObjectByPos(IObject* pObjParent, POINT* pt, bool bSkinBuilderInvoke)
+IObject*  IWindowBase::GetObjectByPos(IObject* pObjParent, Point* pt, bool bSkinBuilderInvoke)
 { 
     if (nullptr == pObjParent)
         return nullptr;
@@ -105,7 +105,7 @@ IObject*  IWindowBase::GetObjectByPos(IObject* pObjParent, POINT* pt, bool bSkin
 
     return nullptr;
 }
-bool  IWindowBase::Create(const wchar_t* szID, HWND hWndParent, RECT* prc, long lStyle, long lExStyle) 
+bool  IWindowBase::Create(const wchar_t* szID, HWND hWndParent, Rect* prc, long lStyle, long lExStyle) 
 {
 	return __pImpl->Create(szID, hWndParent, prc, lStyle, lExStyle);
 }
@@ -142,11 +142,11 @@ void  IWindowBase::EndDialog(INT_PTR n)
 	return __pImpl->EndDialog(n);
 }
 
-void  IWindowBase::CalcWindowSizeByClientSize( SIZE sizeClient, SIZE* pSizeWindow )
+void  IWindowBase::CalcWindowSizeByClientSize( Size sizeClient, Size* pSizeWindow )
 {
 	__pImpl->CalcWindowSizeByClientSize(sizeClient, pSizeWindow); 
 }
-void  IWindowBase::CalcClientRectByWindowRect( RECT* rcWindow, RECT* rcClient )
+void  IWindowBase::CalcClientRectByWindowRect( Rect* rcWindow, Rect* rcClient )
 {
 	__pImpl->CalcClientRectByWindowRect(rcWindow, rcClient);
 }
@@ -154,11 +154,11 @@ void  IWindowBase::SaveMemBitmap(wchar* szFile)
 {
 	__pImpl->SaveMemBitmap(szFile);
 }
-void  IWindowBase::AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha)
+void  IWindowBase::AlphaBlendMemBitmap(HDC hDC, Rect* prc, int alpha)
 {
 	__pImpl->AlphaBlendMemBitmap(hDC, prc, alpha);
 }
-void  IWindowBase::BitBltMemBitmap(HDC hDC, RECT* prc)
+void  IWindowBase::BitBltMemBitmap(HDC hDC, Rect* prc)
 {
 	__pImpl->BitBltMemBitmap(hDC, prc);
 }
@@ -220,11 +220,11 @@ bool ui::IWindowBase::IsSizeMoveIng()
 }
 
 
-void  IWindowBase::GetWindowNormalRect(RECT* prc)
+void  IWindowBase::GetWindowNormalRect(Rect* prc)
 {
 	__pImpl->GetWindowNormalRect(prc);
 }
-void  IWindowBase::SetWindowNormalRect(const RECT* prc)
+void  IWindowBase::SetWindowNormalRect(const Rect* prc)
 {
 	__pImpl->SetWindowNormalRect(prc);
 }
@@ -236,7 +236,7 @@ void  IWindowBase::UpdateDesktopLayout()
 #endif
 #if 0
 	extern "C"
-		void GetWindowNormalRect(HWND hWnd, RECT* prc)
+		void GetWindowNormalRect(HWND hWnd, Rect* prc)
 	{
 		UIASSERT(hWnd);
 		if (!hWnd)
