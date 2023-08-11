@@ -3,7 +3,7 @@
 // #include "src/Atl\image.h"
 #include "src/skin_parse/datasource/File/filebufferreader.h"
 #include "src/skin_parse/xml/xmlwrap.h"
-#include "private_inc.h"
+#include "src/private_inc.h"
 
 namespace ui
 {

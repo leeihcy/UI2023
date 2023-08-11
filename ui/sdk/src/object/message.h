@@ -1,7 +1,7 @@
 #ifndef _UI_SDK_SRC_OBJECT_MESSAGE_H_
 #define _UI_SDK_SRC_OBJECT_MESSAGE_H_
 
-#include "interface/imessage.h"
+#include "include/interface/imessage.h"
 #include <list>
 
 namespace ui
@@ -61,6 +61,8 @@ namespace ui
 		void         RemoveHook(IMessage* pObj);
 		void         ClearHook();
 
+    long SendMessage(uint message, long wParam = 0, long lParam = 0);
+
 		// 返回TRUE，表示该消息已被处理，FALSE表示该消息没被处理
 		bool         ProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
 		virtual bool virtualProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
@@ -80,6 +82,8 @@ namespace ui
 		UIMSG *           m_pCurMsg;          // 记录当前正在处理的消息
 		IMessage*         m_pIMessage;
 		bool              m_bCreateIMessage;
+
+    
 	};
 
 }

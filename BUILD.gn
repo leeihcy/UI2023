@@ -11,9 +11,9 @@ group("unittest") {
     ]
 }
 
-group("sample") {
+group("samples") {
     deps = [
-        "//ui:sample"
+        "//samples:ui"
     ]
 }
  

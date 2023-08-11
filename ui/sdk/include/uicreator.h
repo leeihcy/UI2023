@@ -70,7 +70,7 @@ public:
 
     T *p = new ObjectCreator<T>;
 
-    if (0 != (UISendMessage(p, UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
+    if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
       p->Release();
       return nullptr;
     }
@@ -81,7 +81,7 @@ public:
 
   // 确保delete和new在同一模块，由IMessage::Destroy触发
   virtual void virtual_delete_this() override {
-    UISendMessage(this, UI_MSG_FINALRELEASE);
+    this->SendMessage(UI_MSG_FINALRELEASE);
     delete this;
   }
 
@@ -102,7 +102,7 @@ public:
   static T *CreateInstance(IResBundle *pResBundle) {
     T *p = new ObjectNoImplCreator<T>;
 
-    if (FAILED(UISendMessage(p, UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
+    if (FAILED(p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
       delete p;
       return nullptr;
     }
@@ -113,7 +113,7 @@ public:
 
   // 确保delete和new在同一模块，由IMessage::Destroy触发
   virtual void virtual_delete_this() override {
-    UISendMessage(this, UI_MSG_FINALRELEASE);
+    this->SendMessage(UI_MSG_FINALRELEASE);
     delete this;
   }
 };

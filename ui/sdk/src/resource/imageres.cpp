@@ -1,5 +1,5 @@
 #include "imageres.h"
-#include "inc.h"
+#include "include/inc.h"
 
 #include "image/image.h"
 // #include "src\Renderlibrary\gdi\gdibitmap.h"

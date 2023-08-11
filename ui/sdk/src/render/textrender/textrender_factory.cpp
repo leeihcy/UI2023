@@ -1,5 +1,5 @@
-#include "inc.h"
-#include "private_inc.h"
+#include "include/inc.h"
+#include "src/private_inc.h"
 #include "textrender_factory.h"
 #include "src/render/textrender/textrender.h"
 #include "src/application/uiapplication.h"

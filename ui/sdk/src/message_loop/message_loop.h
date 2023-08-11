@@ -1,7 +1,7 @@
 #ifndef _UI_SDK_SRC_BASE_MSG_LOOP_H_
 #define _UI_SDK_SRC_BASE_MSG_LOOP_H_
 
-#include "common/signalslot/signal.h"
+#include "include/common/signalslot/signal.h"
 
 namespace ui {
 

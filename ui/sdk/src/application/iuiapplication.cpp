@@ -1,4 +1,4 @@
-#include "interface/iuiapplication.h"
+#include "include/interface/iuiapplication.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/res_bundle.h"
 #include "include/interface/iobject.h"

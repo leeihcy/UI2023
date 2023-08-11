@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "textrender.h"
 
 #include "src/render/renderbase.h"
@@ -261,7 +261,7 @@ void  TextRenderBase::CheckSkinTextureChanged()
 {
     if (m_nTextRenderType > TEXTRENDER_TYPE_CONTRAST_FIRST && m_nTextRenderType < TEXTRENDER_TYPE_CONTRAST_LAST)
     {
-        UISendMessage(static_cast<IMessage*>(m_pITextRenderBase), UI_MSG_SKINTEXTURECHANGED);
+        static_cast<IMessage*>(m_pITextRenderBase)->SendMessage(UI_MSG_SKINTEXTURECHANGED);
     }
 }
 

@@ -1,7 +1,7 @@
 #ifndef _UI_STRUCT_H_
 #define _UI_STRUCT_H_
 
-#include "include/macro/uidefine.h"
+#include "sdk/include/macro/uidefine.h"
 #include "rect.h"
 
 struct IDataObject;

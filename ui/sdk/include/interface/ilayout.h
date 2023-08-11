@@ -1,7 +1,7 @@
 #ifndef _ILAYOUT_H_
 #define _ILAYOUT_H_
-#include "include/macro/uidefine.h"
-#include "include/util/rect.h"
+#include "sdk/include/macro/uidefine.h"
+#include "sdk/include/util/rect.h"
 #include "ui/sdk/include/macro/xmldefine.h"
 namespace ui
 {

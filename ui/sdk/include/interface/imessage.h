@@ -1,8 +1,8 @@
 #ifndef _UI_IMESSAGE_H_
 #define _UI_IMESSAGE_H_
-#include "include/common/guid/guid.h"
-#include "include/macro/uidefine.h"
-#include "include/uicreator.h"
+#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/macro/uidefine.h"
+#include "sdk/include/uicreator.h"
 #include <string.h>
 
 namespace ui {
@@ -35,6 +35,13 @@ struct UIAPI IMessage {
   IMessage(E_BOOL_CREATE_IMPL);
   bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
   void Release();
+
+  // long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
+  static long SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
+                          bool *pbHandled = nullptr);
+  long SendMessage(uint message, long wParam = 0, long lParam = 0,
+                   uint nCode = 0, IMessage *pMsgFrom = nullptr,
+                   int nMsgMapID = 0, bool *pbHandled = nullptr);
 
   bool IsMsgHandled() const;
   void SetMsgHandled(bool b);
@@ -83,6 +90,11 @@ public:
   UIMSG *GetCurMsg();
   void SetCurMsg(UIMSG *p);
   bool DoHook(UIMSG *pMsg, int nMsgMapID);
+
+  virtual bool virtualProcessMessage(ui::UIMSG *pMsg, int nMsgMapID = 0,
+                                     bool bDoHook = false) {
+    return false;
+  }
 
 protected:
   Message *m_pImpl;

@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "object.h"
 // #include "src/UIObject\Window\windowbase.h"
 // #include "src/Atl\image.h"
@@ -117,7 +117,7 @@ void Object::DoPostPaint(IRenderTarget* pRenderTarget, RenderContext context)
 		// 子控件可能设置了剪裁区域。这里得先恢复再画postpaint
 		context.m_bUpdateClip = true;
 		context.Update(pRenderTarget);
-		UI::UISendMessage(m_pIObject,
+		m_pIObject->SendMessage(,
 			UI_WM_POSTPAINT, 
 			(long)pRenderTarget, 
 			(long)&context);
@@ -180,7 +180,7 @@ void Object::Invalidate(Rect *prcObjArray, int nCount) {
 
 void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   // 1. 非客户区，不受padding scroll影响
-  ::UISendMessage(this, WM_ERASEBKGND, (long)pRenderTarget);
+  m_pIObject->SendMessage(WM_ERASEBKGND, (long)pRenderTarget);
   this->virtualOnPostDrawObjectErasebkgnd();
 
   // 2. 客户区，更新裁剪、偏移
@@ -202,7 +202,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   {
     pRenderTarget->OffsetOrigin(xOffset, yOffset);
     {
-      ::UISendMessage(this, WM_PAINT, (long)pRenderTarget);
+      m_pIObject->SendMessage(WM_PAINT, (long)pRenderTarget);
 
       if (m_pChild) {
         this->DrawChildObject__(pRenderTarget, m_pChild);
@@ -219,7 +219,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   }
 
   if (m_objStyle.post_paint) {
-    ui::UISendMessage(m_pIObject, UI_MSG_POSTPAINT, (long)pRenderTarget);
+    m_pIObject->SendMessage(UI_MSG_POSTPAINT, (long)pRenderTarget);
   }
 
 #ifdef _DEBUG

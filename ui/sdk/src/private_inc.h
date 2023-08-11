@@ -50,7 +50,6 @@ typedef std::map<std::wstring, std::wstring>  ATTRMAP;
 // ÄÚ²¿api
 class Message;
 void  UI_Split(const std::wstring& str, wchar_t szSep, std::vector<std::wstring>& vRet);
-long  UISendMessage(Message* pMsgTo, unsigned int message, long wParam = 0, long lParam = 0);
 struct IRenderFont;
 void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
 wchar_t*  GetTempBuffer(int nMaxSize = 255);

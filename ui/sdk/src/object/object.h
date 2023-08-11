@@ -2,7 +2,7 @@
 #include "include/interface/iobject.h"
 #include "objtree.h"
 #include "object_layer.h"
-#include "private_inc.h"
+#include "src/private_inc.h"
 
 namespace ui
 {

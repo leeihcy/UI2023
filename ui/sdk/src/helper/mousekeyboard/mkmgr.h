@@ -26,13 +26,13 @@ class WindowBase;
         }
 
         
-        // ×¢Òâ£º ÏÈ¸Ä±äËùÓĞ¶ÔÏóµÄ×´Ì¬£¬ÔÙ·¢ËÍÏûÏ¢£¬±ÜÃâÔÚµÚÒ»¸ö¶ÔÏóÏìÓ¦ÏûÏ¢µÄÊ±ºòÄÃ²»µ½µÚ¶ş¸ö¶ÔÏóµÄ×´Ì¬
+        // æ³¨æ„ï¼š å…ˆæ”¹å˜æ‰€æœ‰å¯¹è±¡çš„çŠ¶æ€ï¼Œå†å‘é€æ¶ˆæ¯ï¼Œé¿å…åœ¨ç¬¬ä¸€ä¸ªå¯¹è±¡å“åº”æ¶ˆæ¯çš„æ—¶å€™æ‹¿ä¸åˆ°ç¬¬äºŒä¸ªå¯¹è±¡çš„çŠ¶æ€
         if (pThis->m_pObjHover)
         {
             pThis->m_pObjHover->SetHover(false, false);
         }
 
-        // diableµÄobject½ö¿ÉÒÔµ¯³ötooltip£¬²»ÄÜÉèÖÃÎªhover
+        // diableçš„objectä»…å¯ä»¥å¼¹å‡ºtooltipï¼Œä¸èƒ½è®¾ç½®ä¸ºhover
         if (pNewHoverObj && pNewHoverObj->IsEnable())
         {
             pNewHoverObj->SetHover(true, false);
@@ -92,17 +92,17 @@ class WindowBase;
     template <class T>
     void _OnMouseMove(Object* pObj, long wParam, long lParam, T* pThis)
     {
-        // ½«ËùÓĞµÄÇé¿ö¶¼ÁĞ³öÀ´½øĞĞÅĞ¶Ï
+        // å°†æ‰€æœ‰çš„æƒ…å†µéƒ½åˆ—å‡ºæ¥è¿›è¡Œåˆ¤æ–­
 
         if (nullptr == pThis->m_pObjPress)
         {
             if (nullptr == pThis->m_pObjHover)
             {
-                // Êó±ê»¹ÊÇÔÚÍâÃæÒÆ¶¯
+                // é¼ æ ‡è¿˜æ˜¯åœ¨å¤–é¢ç§»åŠ¨
                 if (pObj == pThis->m_pObjHover)   
                 {
                 }
-                // Êó±êÒÆ¶¯µ½ÁËpObjÉÏ
+                // é¼ æ ‡ç§»åŠ¨åˆ°äº†pObjä¸Š
                 else                              
                 {
                     pThis->SetHoverObject(pObj);
@@ -111,16 +111,16 @@ class WindowBase;
             }
             else
             {
-                // Êó±êÔÚAÉÏÃæÒÆ¶¯
+                // é¼ æ ‡åœ¨Aä¸Šé¢ç§»åŠ¨
                 if (pObj == pThis->m_pObjHover)   
                 {
                     ::UISendMessage(pThis->m_pObjHover, WM_MOUSEMOVE, wParam, lParam);
                 }
-                // Êó±ê¸Õ²Å·ÅÔÚAÉÏÃæ£¬µ«ÏÖÔÚÓÖÒÆ³öÈ¥ÁË£¬¿ÉÄÜÒÆµ½BÉÏÃæ£¬Ò²¿ÉÄÜÃ»ÓĞÒÆ¶¯ÈÎºÎ¶ÔÏóÉÏ
+                // é¼ æ ‡åˆšæ‰æ”¾åœ¨Aä¸Šé¢ï¼Œä½†ç°åœ¨åˆç§»å‡ºå»äº†ï¼Œå¯èƒ½ç§»åˆ°Bä¸Šé¢ï¼Œä¹Ÿå¯èƒ½æ²¡æœ‰ç§»åŠ¨ä»»ä½•å¯¹è±¡ä¸Š
                 else                              
                 {
                     Object* pSaveHover = pThis->m_pObjHover;
-                    pThis->SetHoverObject(pObj); // ÏÈÉèÖÃ×´Ì¬£¬ÔÙ·¢ËÍÏûÏ¢
+                    pThis->SetHoverObject(pObj); // å…ˆè®¾ç½®çŠ¶æ€ï¼Œå†å‘é€æ¶ˆæ¯
 
                     ::UISendMessage(pSaveHover, WM_MOUSELEAVE, (long) 0, 0);
                     if (pObj)
@@ -134,14 +134,14 @@ class WindowBase;
         {
             if (nullptr == pThis->m_pObjHover)
             {
-                // Êó±ê°´ÔÚÁËA¶ÔÏóÉÏ£¬µ«Êó±êÔÚAÍâÃæ¡£ÏÖÔÚÓÖÒÆ¶¯»ØÀ´ÁË
+                // é¼ æ ‡æŒ‰åœ¨äº†Aå¯¹è±¡ä¸Šï¼Œä½†é¼ æ ‡åœ¨Aå¤–é¢ã€‚ç°åœ¨åˆç§»åŠ¨å›æ¥äº†
                 if (pObj == pThis->m_pObjPress)  
                 {
                     pThis->SetHoverObject(pThis->m_pObjPress);
                     ::UISendMessage(pThis->m_pObjPress, WM_MOUSEMOVE, wParam, lParam);
 
                 }	
-                // Êó±êÔÚA¶ÔÏóÉÏ°´ÏÂÁË£¬µ«Êó±êÏÖÔÚ²»ÔÙAÉÏÃæ
+                // é¼ æ ‡åœ¨Aå¯¹è±¡ä¸ŠæŒ‰ä¸‹äº†ï¼Œä½†é¼ æ ‡ç°åœ¨ä¸å†Aä¸Šé¢
                 else                    
                 {
                     ::UISendMessage(pThis->m_pObjPress, WM_MOUSEMOVE, wParam, lParam);
@@ -149,7 +149,7 @@ class WindowBase;
             }
             else
             {
-                // Êó±ê°´ÔÚÁËA¶ÔÏóÉÏ£¬ÏÖÔÚÔÚAÉÏÒÆ¶¯
+                // é¼ æ ‡æŒ‰åœ¨äº†Aå¯¹è±¡ä¸Šï¼Œç°åœ¨åœ¨Aä¸Šç§»åŠ¨
                 if (pObj == pThis->m_pObjPress)  
                 {
                     UIASSERT(pThis->m_pObjPress == pThis->m_pObjHover);
@@ -157,7 +157,7 @@ class WindowBase;
 
                     ::UISendMessage(pThis->m_pObjPress, WM_MOUSEMOVE, wParam, lParam);
                 }
-                // Êó±ê¸Õ²Å°´ÔÚÁËA¶ÔÏóÉÏ£¬µ«ÏÖÔÚÊó±êÒÆ³öÀ´ÁË¡£
+                // é¼ æ ‡åˆšæ‰æŒ‰åœ¨äº†Aå¯¹è±¡ä¸Šï¼Œä½†ç°åœ¨é¼ æ ‡ç§»å‡ºæ¥äº†ã€‚
                 else  
                 {
                     pThis->SetHoverObject(nullptr);
@@ -169,13 +169,13 @@ class WindowBase;
 
 
 
-    // ×¢£ºµ±ÓĞÒ»¸öHwndHost¶ÔÏóÊ±£¬Êó±êÒÆµ½ËüÉÏÃæÊ±½«´¥·¢WM_MOUSELEAVEÏûÏ¢£¬¶ø²»ÊÇMOUSEMOVE
-    //     Òò´ËHwndHost¶ÔÏó»¹Ã»·¨ÊµÏÖTooltip;
+    // æ³¨ï¼šå½“æœ‰ä¸€ä¸ªHwndHostå¯¹è±¡æ—¶ï¼Œé¼ æ ‡ç§»åˆ°å®ƒä¸Šé¢æ—¶å°†è§¦å‘WM_MOUSELEAVEæ¶ˆæ¯ï¼Œè€Œä¸æ˜¯MOUSEMOVE
+    //     å› æ­¤HwndHostå¯¹è±¡è¿˜æ²¡æ³•å®ç°Tooltip;
     //
     template <class T>
     void _OnMouseLeave(T* pThis)
     {
-        // ÎªÁË·ÀÖ¹ÔÚ¶ÔÏóÔÚ´¦ÀíWM_LBUTTONUPÏûÏ¢Ê±MouseManagerµÄ×´Ì¬·¢ÉúÁË¸Ä±ä,ÏÈ±£´æ×´Ì¬
+        // ä¸ºäº†é˜²æ­¢åœ¨å¯¹è±¡åœ¨å¤„ç†WM_LBUTTONUPæ¶ˆæ¯æ—¶MouseManagerçš„çŠ¶æ€å‘ç”Ÿäº†æ”¹å˜,å…ˆä¿å­˜çŠ¶æ€
         Object*  pSaveObjPress = pThis->m_pObjPress;
         Object*  pSaveObjHover = pThis->m_pObjHover;
 
@@ -207,7 +207,7 @@ class WindowBase;
 
             Object* pSave = pThis->m_pObjPress;
 
-            // Ó¦¸ÃÊÇÏÈsetfocus£¬ÔÙlbuttondown/up
+            // åº”è¯¥æ˜¯å…ˆsetfocusï¼Œå†lbuttondown/up
             if (pThis->m_pObjPress && pThis->m_pObjPress->CanTabstop())
             {
                 pThis->SetFocusObject(pThis->m_pObjPress);
@@ -220,7 +220,7 @@ class WindowBase;
                 msg.message = WM_LBUTTONDOWN;
                 msg.wParam  = wParam;
                 msg.lParam  = lParam;
-                ::UISendMessage(&msg, 0, pbHandled);      // ÓĞ¿ÉÄÜµ¼ÖÂm_pObjPressÎªnullptrÁË
+                ::UISendMessage(&msg, 0, pbHandled);      // æœ‰å¯èƒ½å¯¼è‡´m_pObjPressä¸ºnullpträº†
             }
         }
     }
@@ -283,8 +283,8 @@ class WindowBase;
                 msg.lParam  = l;
                 ::UISendMessage(&msg);
 
-				// SetPressObject(nullptr)·ÅÔÚUISendMessageÇ°Ãæ£¬
-				// »áµ¼ÖÂcheckbuttonµã»÷ºó²»Ë¢ĞÂ
+				// SetPressObject(nullptr)æ”¾åœ¨UISendMessageå‰é¢ï¼Œ
+				// ä¼šå¯¼è‡´checkbuttonç‚¹å‡»åä¸åˆ·æ–°
 				if (pThis->m_pObjPress == pSavePress)
 					pThis->SetPressObject(nullptr);
 				else

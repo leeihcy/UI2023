@@ -2,10 +2,10 @@
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
 #include "include/macro/uimsg.h"
-#include "common.h"
-#include "common/signalslot/signal.h"
-#include "interface/iwindow.h"
-#include "object/object.h"
+#include "include/common.h"
+#include "include/common/signalslot/signal.h"
+#include "include/interface/iwindow.h"
+#include "src/object/object.h"
 #include "src/layer/windowrender.h"
 
 namespace ui {

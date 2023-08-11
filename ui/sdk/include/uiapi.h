@@ -1,9 +1,9 @@
 #ifndef _UI_API_H_
 #define _UI_API_H_
 
-#include "include/common.h"
-#include "include/macro/xmldefine.h"
-#include "include/macro/uidefine.h"
+#include "sdk/include/common.h"
+#include "sdk/include/macro/xmldefine.h"
+#include "sdk/include/macro/uidefine.h"
 
 namespace ui {
 
@@ -56,13 +56,6 @@ typedef long (*funRegisterUIObjectPtr)(IApplication *p);
 
 struct UIMSG;
 struct IMessage;
-UIAPI long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
-UIAPI long UISendMessage(UIMSG *pMsg, int nMsgMapID = 0,
-                         bool *pbHandled = nullptr);
-UIAPI long UISendMessage(IMessage *pMsgTo, uint message, long wParam = 0,
-                         long lParam = 0, uint nCode = 0,
-                         IMessage *pMsgFrom = nullptr, int nMsgMapID = 0,
-                         bool *pbHandled = nullptr);
 
 struct IMapAttribute;
 struct IListAttribute;

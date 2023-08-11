@@ -45,7 +45,7 @@ typedef unsigned int COLORREF;
 class UIAPI Color {
 public:
   Color();
-  Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+  Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a=0xFF);
   Color(unsigned int rgba);
   ~Color();
   static Color *CreateInstance(COLORREF color);

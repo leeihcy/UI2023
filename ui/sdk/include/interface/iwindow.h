@@ -1,7 +1,7 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
 
-#include "include/macro/uidefine.h"
+#include "sdk/include/macro/uidefine.h"
 #include "../common/signalslot/signal.h"
 #include "iobject.h"
 #include <SkCanvas.h>

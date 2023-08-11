@@ -1,6 +1,6 @@
 #ifndef _UI_RENDERLIBRARY_H_
 #define _UI_RENDERLIBRARY_H_
-#include "include/util/color.h"
+#include "sdk/include/util/color.h"
 
 namespace ui {
 struct IRenderFont;

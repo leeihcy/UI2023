@@ -1,6 +1,6 @@
 #pragma once
-#include "inc.h"
-#include "private_inc.h"
+#include "include/inc.h"
+#include "src/private_inc.h"
 
 namespace ui
 {

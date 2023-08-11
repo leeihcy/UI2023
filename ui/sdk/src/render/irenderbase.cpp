@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "include/interface/irenderbase.h"
 #include "src/render/renderbase.h"
 #include "src/object/object.h"
@@ -73,7 +73,7 @@ IImageRes*  IRenderBase::GetSkinImageRes()
 
 void  IRenderBase::Serialize(SERIALIZEDATA* pData)
 {
-    UISendMessage(static_cast<IMessage*>(this), UI_MSG_SERIALIZE, (long)pData);
+    static_cast<IMessage*>(this)->SendMessage(UI_MSG_SERIALIZE, (long)pData);
 }
 
 void  IRenderBase::DrawState(IRenderTarget* p, const Rect* prc, int nState)
@@ -85,17 +85,19 @@ void  IRenderBase::DrawState(IRenderTarget* p, const Rect* prc, int nState)
     }
     drawstate.nState = nState;
 
-    UISendMessage(static_cast<IMessage*>(this), UI_MSG_RENDERBASE_DRAWSTATE, (long)&drawstate, 0);
+    static_cast<IMessage*>(this)->SendMessage(
+      UI_MSG_RENDERBASE_DRAWSTATE, (long)&drawstate, 0);
 };
 Size  IRenderBase::GetDesiredSize() 
 { 
     Size s = {0,0}; 
-    UISendMessage(static_cast<IMessage*>(this), UI_MSG_GETDESIREDSIZE, (long)&s, 0);
+    static_cast<IMessage*>(this)->SendMessage(
+      UI_MSG_GETDESIREDSIZE, (long)&s, 0);
 
     return s; 
 }
 void  IRenderBase::Init()
 {
-    UISendMessage(static_cast<IMessage*>(this), UI_MSG_INITIALIZE);
+    static_cast<IMessage*>(this)->SendMessage(UI_MSG_INITIALIZE);
 }
 }

@@ -1,9 +1,9 @@
 #ifndef _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 #define _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 
-#include "interface/iuiapplication.h"
-#include "message_loop/message_loop.h"
-#include "resource/resource_manager.h"
+#include "include/interface/iuiapplication.h"
+#include "src/message_loop/message_loop.h"
+#include "src/resource/resource_manager.h"
 #include "src/animate/wrap/animate.h"
 #include "src/helper/msg/msghelper.h"
 #include "src/helper/topwindow/topwindowmanager.h"

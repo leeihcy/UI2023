@@ -1,6 +1,6 @@
 #ifndef _INCLUDED_UI_LOG_H_
 #define _INCLUDED_UI_LOG_H_
-#include "include/macro/uidefine.h"
+#include "sdk/include/macro/uidefine.h"
 
 namespace ui
 {

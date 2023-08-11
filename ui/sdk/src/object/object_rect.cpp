@@ -191,7 +191,7 @@ bool Object::GetScrollOffset(int *pxOffset, int *pyOffset) {
   *pyOffset = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    UISendMessage(this, UI_MSG_GETSCROLLOFFSET, (long)pxOffset, (long)pyOffset);
+    this->SendMessage(UI_MSG_GETSCROLLOFFSET, (long)pxOffset, (long)pyOffset);
     return true;
   }
 
@@ -206,7 +206,7 @@ bool Object::GetScrollRange(int *pxRange, int *pyRange) {
   *pyRange = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    UISendMessage(this, UI_MSG_GETSCROLLRANGE, (long)pxRange, (long)pyRange);
+    SendMessage(UI_MSG_GETSCROLLRANGE, (long)pxRange, (long)pyRange);
     return true;
   }
 
@@ -489,7 +489,7 @@ void Object::notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
                             unsigned int nHeight) {
   this->virtualOnSize(nType, nWidth, nHeight);
 
-  UISendMessage(m_pIObject, WM_SIZE, 0, MAKELPARAM(nWidth, nHeight));
+  m_pIObject->SendMessage(WM_SIZE, 0, MAKELPARAM(nWidth, nHeight));
 }
 
 void Object::virtualOnSize(unsigned int nType, unsigned int nWidth,
@@ -498,7 +498,7 @@ void Object::virtualOnSize(unsigned int nType, unsigned int nWidth,
 }
 void Object::notify_WM_MOVE(int x, int y) {
   this->virtualOnMove();
-  UISendMessage(this, WM_MOVE, 0, MAKELPARAM(m_rcParent.left, m_rcParent.top));
+  SendMessage(WM_MOVE, 0, MAKELPARAM(m_rcParent.left, m_rcParent.top));
 }
 
 void Object::virtualOnMove() {
@@ -816,7 +816,7 @@ void Object::UpdateObjectNonClientRegion() {
   Object *pNcChild = nullptr;
   while ((pNcChild = this->EnumNcChildObject(pNcChild))) {
     msg.pMsgTo = pNcChild->GetIMessage();
-    UISendMessage(&msg);
+    msg.pMsgTo->SendMessage(&msg);
   }
 
   this->SetExtNonClientRegion(&rcNonClient);
@@ -836,7 +836,7 @@ ILayout *Object::GetLayout() {
 
   Object *obj = m_pParent;
   while (obj) {
-    p = (ILayout *)UISendMessage(obj, UI_MSG_GETLAYOUT);
+    p = (ILayout *)(obj->SendMessage(UI_MSG_GETLAYOUT));
     if (p)
       return p;
     obj = obj->m_pParent;

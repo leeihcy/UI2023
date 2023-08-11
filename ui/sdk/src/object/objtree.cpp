@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "objtree.h"
 #include "object.h"
 

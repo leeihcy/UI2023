@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "renderbase.h"
 
 #include "src/object/object.h"
@@ -71,7 +71,7 @@ void  RenderBase::CheckThemeChanged()
 {
     if (this->IsThemeRender())
     {
-        UISendMessage(static_cast<IMessage*>(m_pIRenderBase), WM_THEMECHANGED);
+        static_cast<IMessage*>(m_pIRenderBase)->SendMessage(WM_THEMECHANGED);
     }
 }
 

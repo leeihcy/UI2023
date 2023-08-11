@@ -1,9 +1,9 @@
 #ifndef _IUIAPPLICATION_H_
 #define _IUIAPPLICATION_H_
 #include <functional>
-#include "include/common/guid/guid.h"
-#include "include/macro/uidefine.h"
-#include "include/uiapi.h"
+#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/macro/uidefine.h"
+#include "sdk/include/uiapi.h"
 
 namespace uia
 {

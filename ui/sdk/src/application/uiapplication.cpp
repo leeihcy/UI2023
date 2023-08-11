@@ -1,9 +1,9 @@
 #include "uiapplication.h"
 
-#include "inc.h"
+#include "include/inc.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
-#include "private_inc.h"
+#include "src/private_inc.h"
 #include "src/resource/colormanager.h"
 #include "src/resource/fontmanager.h"
 #include "src/resource/i18nmanager.h"

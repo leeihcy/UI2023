@@ -14,12 +14,3 @@ group("unittest") {
         "sdk:sdk_test"
     ]
 }
-
-
-######################################
-
-group("sample") {
-    deps = [
-        "samples"
-    ]
-}

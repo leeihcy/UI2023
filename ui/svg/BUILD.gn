@@ -7,7 +7,8 @@ shared_library("uisvg") {
     defines = ["UI_SVG_EXPORTS"]
     include_dirs = [
         "//",
-        "//ui/svg",
+        "//ui/",
+        "//ui/svg/",
     ]
   
     lib_dirs = ["$root_build_dir/"]
@@ -21,6 +22,9 @@ shared_library("uisvg") {
     ]
 
     sources = [
+      "src/element/ielement.cpp",
+      "src/element/rect.cpp",
+      "src/uisvgapi.cpp",
     ]
 
     # 单元测试

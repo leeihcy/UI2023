@@ -15,9 +15,8 @@ shared_library("uisdk") {
 
     include_dirs = [
         "//",
-        "//ui/sdk",
-        "//ui/sdk/include",
-        "//ui/sdk/src",
+        "//ui/",
+        "//ui/sdk/",
         "//ui/3rd/skia/src/",
         "//ui/3rd/skia/src/include/core/"
     ]
@@ -206,7 +205,8 @@ executable("uisdk_unittest") {
     cflags = ["-g"]
   }
   include_dirs = [
-    "//ui/sdk",
+    "//ui/",
+    "//ui/sdk/",
   ]
   sources = [
     "test/test_main.cpp"

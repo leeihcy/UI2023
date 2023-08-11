@@ -4,7 +4,7 @@
 #include "rect.h"
 #include "quad.h"
 
-#include "include/macro/uidefine.h"
+#include "sdk/include/macro/uidefine.h"
 
 // Ò»¸ö3D±ä»»²âÊÔÍøÒ³
 // http://ie.microsoft.com/testdrive/Graphics/hands-on-css3/hands-on_3d-transforms.htm

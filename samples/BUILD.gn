@@ -1,7 +1,7 @@
 import("//build/config/common.gni")
 
 
-group("samples") {
+group("ui") {
     deps = [
         "hello"
     ]

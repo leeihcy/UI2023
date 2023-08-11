@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "include/interface/itextrenderbase.h"
 #include "src/render/textrender/textrender.h"
 #include "src/object/object.h"
@@ -74,13 +74,13 @@ TEXTRENDER_TYPE  ITextRenderBase::GetType()
 
 IRenderFont*  ITextRenderBase::GetRenderFont()
 {
-    return (IRenderFont*)UISendMessage(static_cast<IMessage*>(this),
-        UI_MSG_GETRENDERFONT);
+    return (IRenderFont*)(static_cast<IMessage*>(this)->SendMessage(
+        UI_MSG_GETRENDERFONT));
 }
 
 void  ITextRenderBase::Serialize(SERIALIZEDATA* pData)
 {
-    UISendMessage(static_cast<IMessage*>(this), UI_MSG_SERIALIZE, (long)pData);
+    static_cast<IMessage*>(this)->SendMessage(UI_MSG_SERIALIZE, (long)pData);
 }
 
 void  ITextRenderBase::_LoadFont(const wchar_t* szFontId, IRenderFont*& pRenderFont)
@@ -134,12 +134,12 @@ void  ITextRenderBase::DrawState(
     drawstate.szText = szText;
     drawstate.nDrawTextFlag = nDrawTextFlag; 
 
-    UISendMessage(static_cast<IMessage*>(this), 
+    static_cast<IMessage*>(this)->SendMessage( 
         UI_MSG_RENDERBASE_DRAWSTATE, (long)&drawstate, 0);
 }
 void  ITextRenderBase::Init()
 {
-     UISendMessage(static_cast<IMessage*>(this), UI_MSG_INITIALIZE);
+     static_cast<IMessage*>(this)->SendMessage(UI_MSG_INITIALIZE);
 }
 void  ITextRenderBase::CheckSkinTextureChanged()
 {

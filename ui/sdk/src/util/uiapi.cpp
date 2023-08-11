@@ -1,4 +1,4 @@
-#include "inc.h"
+#include "include/inc.h"
 #include "include/uiapi.h"
 #include "src/object/object.h"
 #include "src/application/uiapplication.h"

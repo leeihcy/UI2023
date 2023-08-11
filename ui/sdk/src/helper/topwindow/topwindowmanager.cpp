@@ -213,8 +213,7 @@ void TopWindowManager::SendMessage2AllWnd(UIMSG *pMsg) {
     if (nullptr == pObj)
       continue;
 
-    pMsg->pMsgTo = pObj->GetIMessage();
-    UISendMessage(pMsg);
+    pObj->GetIMessage()->SendMessage(pMsg);
   }
 }
 // void  TopWindowManager::PostMessage2AllWnd(UIMSG* pMsg)
@@ -238,7 +237,7 @@ void TopWindowManager::ForwardMessage2AllObj(UIMSG *pMsg) {
       continue;
 
     pMsg->pMsgTo = pObj->GetIMessage();
-    UISendMessage(pMsg);
+    pMsg->pMsgTo->SendMessage(pMsg);
 
     pObj->ForwardMessageToChildObject(pObj, pMsg);
   }

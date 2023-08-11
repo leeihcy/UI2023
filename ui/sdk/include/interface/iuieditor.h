@@ -1,5 +1,5 @@
 #pragma once
-#include "include/common/guid/guid.h"
+#include "sdk/include/common/guid/guid.h"
 
 namespace ui
 {

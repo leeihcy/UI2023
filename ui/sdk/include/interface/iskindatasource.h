@@ -6,7 +6,7 @@
 #include <ios>
 #endif
 
-#include "inc.h"
+#include "sdk/include/inc.h"
 
 namespace Gdiplus { class Bitmap; }
 namespace ui

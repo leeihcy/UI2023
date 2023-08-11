@@ -695,7 +695,7 @@ Size  GridLayoutParam::CalcDesiredSize()
     if (bWidthNotConfiged || bHeightNotConfiged)
     {
         // 获取子对象所需要的空间
-        UISendMessage(m_pObj, UI_MSG_GETDESIREDSIZE, (long)&size);
+        m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
 
         // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
         if (this->m_nConfigWidth != AUTO)
@@ -725,7 +725,8 @@ bool  GridLayoutParam::IsSizedByContent()
     if (!m_pObj || !m_pObj->GetParentObject())
         return true;
 
-    ILayout* pLayout = (ILayout*)UISendMessage(m_pObj->GetParentObject(), UI_MSG_GETLAYOUT);
+    ILayout* pLayout = (ILayout*)(
+      m_pObj->GetParentObject()->SendMessage(UI_MSG_GETLAYOUT));
     if (!pLayout)
         return true;
 

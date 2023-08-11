@@ -339,7 +339,7 @@ void Object::LoadAttributeFromMap(IMapAttribute *pMapAttrib, bool bReload) {
   if (m_pIMapAttributeRemain)
     m_pIMapAttributeRemain->AddRef();
 
-  UISendMessage(m_pIObject, UI_MSG_SERIALIZE, (long)&data);
+  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
@@ -781,11 +781,7 @@ void Object::SetFocus(bool b, bool bNoitfy) {
 
   m_objState.focus = b;
   if (bNoitfy) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_FOCUS;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_FOCUS);
   }
 }
 
@@ -878,14 +874,14 @@ void Object::ForwardMessageToChildObject(Object *pParent, UIMSG *pMsg) {
   Object *pChild = nullptr;
   while ((pChild = pParent->EnumChildObject(pChild))) {
     pMsg->pMsgTo = pChild->GetIMessage();
-    ::UISendMessage(pMsg);
+    pMsg->pMsgTo->SendMessage(pMsg);
     Object::ForwardMessageToChildObject(pChild, pMsg);
   }
 
   Object *pNcChild = nullptr;
   while ((pNcChild = pParent->EnumNcChildObject(pNcChild))) {
     pMsg->pMsgTo = pNcChild->GetIMessage();
-    ::UISendMessage(pMsg);
+    pMsg->pMsgTo->SendMessage(pMsg);
     Object::ForwardMessageToChildObject(pNcChild, pMsg);
   }
 }
@@ -914,16 +910,16 @@ void Object::ForwardInitializeMessageToDecendant(Object *pObj) {
       pChild->virtualOnLoad();
 
       msg.pMsgTo = pChild->GetIMessage();
-      ::UISendMessage(&msg);
+      msg.pMsgTo->SendMessage(&msg);
 
       Object::ForwardInitializeMessageToDecendant(pChild);
 
       msg2.pMsgTo = pChild->GetIMessage();
-      ::UISendMessage(&msg2);
+      msg2.pMsgTo->SendMessage(&msg2);
     }
 
     msg3.pMsgTo = pChild->GetIMessage();
-    ::UISendMessage(&msg3);
+    msg3.pMsgTo->SendMessage(&msg3);
   }
 }
 void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
@@ -937,7 +933,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   virtualSetVisibleEx(eType);
 
   // 通知子对象
-  UISendMessage(this, UI_MSG_VISIBLE_CHANGED, bVisibleCompatible ? true : false,
+  SendMessage(UI_MSG_VISIBLE_CHANGED, bVisibleCompatible ? true : false,
                 (long)this);
 
   UIMSG msg;
@@ -947,7 +943,8 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   Object::ForwardMessageToChildObject(this, &msg);
 
   if (m_pParent) {
-    ILayout *pLayout = (ILayout *)UISendMessage(m_pParent, UI_MSG_GETLAYOUT);
+    ILayout *pLayout = (ILayout *)(
+      m_pParent->SendMessage(UI_MSG_GETLAYOUT));
     if (pLayout) {
       pLayout->ChildObjectVisibleChanged(m_pIObject);
     }
@@ -984,7 +981,7 @@ void Object::SetEnable(bool b, bool bNoitfy) {
   virtualSetEnable(b);
 
   if (bNoitfy && b != bOld)
-    UISendMessage(GetIMessage(), UI_MSG_STATECHANGED, (long)OSB_DISABLE);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, (long)OSB_DISABLE);
 
   if (b != bOld) {
     // [注] 如果没有指定刷新，则需要外部显示调用UpdateObject，因为该控件所在层
@@ -1024,11 +1021,7 @@ void Object::SetDefault(bool b, bool bNotify) {
 
   m_objState.default_ = b;
   if (bNotify) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_DEFAULT;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_DEFAULT);
   }
 }
 
@@ -1038,11 +1031,7 @@ void Object::SetSelected(bool b, bool bNotify) {
 
   m_objState.selected = b;
   if (bNotify) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_SELECTED;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_SELECTED);
   }
 }
 
@@ -1054,11 +1043,7 @@ void Object::SetForceHover(bool b, bool bNotify) {
 
   m_objState.force_hover = b;
   if (bNotify && IsHover() != bOldHover) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_HOVER;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_HOVER);
   }
 }
 
@@ -1070,11 +1055,7 @@ void Object::SetForcePress(bool b, bool bNotify) {
 
   m_objState.force_press = b;
   if (bNotify && IsPress() != bOldPress) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_PRESS;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_PRESS);
   }
 }
 
@@ -1084,11 +1065,7 @@ void Object::SetHover(bool b, bool bNotify) {
 
   m_objState.hover = b;
   if (bNotify) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_HOVER;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_HOVER);
   }
 }
 
@@ -1098,11 +1075,7 @@ void Object::SetPress(bool b, bool bNotify) {
 
   m_objState.press = b;
   if (bNotify) {
-    UIMSG msg;
-    msg.message = UI_MSG_STATECHANGED;
-    msg.wParam = OSB_PRESS;
-    msg.pMsgTo = GetIMessage();
-    UISendMessage(&msg);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_PRESS);
   }
 }
 
@@ -1154,7 +1127,7 @@ void Object::InitDefaultAttrib() {
   if (m_pIMapAttributeRemain)
     m_pIMapAttributeRemain->AddRef();
 
-  UISendMessage(m_pIObject, UI_MSG_SERIALIZE, (long)&data);
+  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {

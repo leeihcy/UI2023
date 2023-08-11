@@ -1,6 +1,6 @@
 #ifndef _IUIINTERFACE_H_
 #define _IUIINTERFACE_H_
-#include "include/interface/imessage.h"
+#include "sdk/include/interface/imessage.h"
 
 // IApplication½Ó¿Ú
 namespace ui

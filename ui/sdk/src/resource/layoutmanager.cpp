@@ -62,7 +62,7 @@ Object*  LayoutManager::LoadPluginLayout(
     if (!pFirstChild)
         return nullptr;
 
-    ILayout*  pLayout = (ILayout*)UISendMessage(pNewParent, UI_MSG_GETLAYOUT);
+    ILayout*  pLayout = (ILayout*)(pNewParent->SendMessage(UI_MSG_GETLAYOUT));
     if (pLayout)
     {
         pLayout->ChildObjectVisibleChanged(pFirstChild->GetIObject());
@@ -72,9 +72,9 @@ Object*  LayoutManager::LoadPluginLayout(
     // 发送初始化通知( TBD: 这里只实现了给第一个对象发送通知，因此插件也只能有一个根结点）
     Object* p = pFirstChild;
     {
-        UISendMessage(p, UI_MSG_INITIALIZE);
+        p->SendMessage(UI_MSG_INITIALIZE);
         Object::ForwardInitializeMessageToDecendant(p);
-        UISendMessage(p, UI_MSG_INITIALIZE2);
+        p->SendMessage(UI_MSG_INITIALIZE2);
     }
 
 	pNewParent->Invalidate();

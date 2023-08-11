@@ -1,6 +1,6 @@
 #include "resource_manager.h"
-#include "common.h"
-#include "interface/iresbundle.h"
+#include "include/common.h"
+#include "include/interface/iresbundle.h"
 
 // #include "interface\iuires.h"
 #include "res_bundle.h"
