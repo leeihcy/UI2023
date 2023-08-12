@@ -89,8 +89,8 @@ namespace ui
 		IObject*  FindObject(const wchar_t* szObjId);
         IObject*  TryFindObject(const wchar_t* szObjId);
 		IObject*  FindNcObject(const wchar_t* szObjId);
-		IObject*  FindObject(Guid uuid);
-        IObject*  FindNcObject(Guid uuid);
+		IObject*  FindObject(Uuid uuid);
+        IObject*  FindNcObject(Uuid uuid);
 		IObject*  GetChildObject();
 		IObject*  GetNcChildObject();
 		IObject*  GetNextObject();

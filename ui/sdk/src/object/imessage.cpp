@@ -192,18 +192,18 @@ void IMessage::RemoveHook(IMessage *pObj) {
 }
 void IMessage::ClearHook() { return m_pImpl->ClearHook(); }
 
-void IMessage::AddDelayRef(void **pp) {
-  if (!m_pImpl) {
-    m_pImpl = new Message(this);
-  }
-  return m_pImpl->AddDelayRef(pp);
-}
-void IMessage::RemoveDelayRef(void **pp) {
-  if (m_pImpl)
-    m_pImpl->RemoveDelayRef(pp);
-}
+// void IMessage::AddDelayRef(void **pp) {
+//   if (!m_pImpl) {
+//     m_pImpl = new Message(this);
+//   }
+//   return m_pImpl->AddDelayRef(pp);
+// }
+// void IMessage::RemoveDelayRef(void **pp) {
+//   if (m_pImpl)
+//     m_pImpl->RemoveDelayRef(pp);
+// }
 
-void *IMessage::QueryInterface(const Guid &iid) {
+void *IMessage::QueryInterface(const Uuid &iid) {
   return (void *)SendMessage(UI_MSG_QUERYINTERFACE, (long)&iid);
 }
 

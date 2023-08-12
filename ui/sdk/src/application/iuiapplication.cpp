@@ -124,7 +124,7 @@ IObject*  IApplication::CreateUIObjectByName(const wchar_t* szName, IResBundle* 
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
-IObject*  IApplication::CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes) 
+IObject*  IApplication::CreateUIObjectByClsid(const Uuid& clsid, IResBundle* pISkinRes) 
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }

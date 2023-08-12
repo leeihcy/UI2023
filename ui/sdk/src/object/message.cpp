@@ -13,7 +13,7 @@ Message::~Message() {
 
   this->ClearNotify();
   this->ClearHook();
-  this->ResetDelayRef();
+  // this->ResetDelayRef();
 
   if (m_bCreateIMessage) {
     m_pIMessage->m_pImpl = nullptr;
@@ -194,28 +194,28 @@ void Message::ClearHook() {
   this->m_lHookMsgMap.clear();
 }
 
-void Message::AddDelayRef(void **pp) {
-  std::list<void **>::iterator iter =
-      std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
-  if (iter == m_lDelayRefs.end()) {
-    m_lDelayRefs.push_back(pp);
-  }
-}
-void Message::RemoveDelayRef(void **pp) {
-  std::list<void **>::iterator iter =
-      std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
-  if (iter != m_lDelayRefs.end()) {
-    m_lDelayRefs.erase(iter);
-  }
-}
-void Message::ResetDelayRef() {
-  std::list<void **>::iterator iter = m_lDelayRefs.begin();
-  for (; iter != m_lDelayRefs.end(); iter++) {
-    void **pp = *iter;
-    *pp = nullptr;
-  }
-  m_lDelayRefs.clear();
-}
+// void Message::AddDelayRef(void **pp) {
+//   std::list<void **>::iterator iter =
+//       std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+//   if (iter == m_lDelayRefs.end()) {
+//     m_lDelayRefs.push_back(pp);
+//   }
+// }
+// void Message::RemoveDelayRef(void **pp) {
+//   std::list<void **>::iterator iter =
+//       std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+//   if (iter != m_lDelayRefs.end()) {
+//     m_lDelayRefs.erase(iter);
+//   }
+// }
+// void Message::ResetDelayRef() {
+//   std::list<void **>::iterator iter = m_lDelayRefs.begin();
+//   for (; iter != m_lDelayRefs.end(); iter++) {
+//     void **pp = *iter;
+//     *pp = nullptr;
+//   }
+//   m_lDelayRefs.clear();
+// }
 
 bool Message::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   ui::UIMSG *pOldMsg = this->GetCurMsg();

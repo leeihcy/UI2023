@@ -319,14 +319,14 @@ IObject*  IObject::FindNcObject(const wchar_t* szObjId)
 		return p->GetIObject();
 	return nullptr;
 }
-IObject*  IObject::FindObject(Guid uuid)
+IObject*  IObject::FindObject(Uuid uuid)
 {
     Object* p = __pImpl->FindObject(uuid);
     if (p)
         return p->GetIObject();
     return nullptr;
 }
-IObject*  IObject::FindNcObject(Guid uuid)
+IObject*  IObject::FindNcObject(Uuid uuid)
 {
 	Object* p = __pImpl->FindNcObject(uuid);
 	if (p)

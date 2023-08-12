@@ -26,13 +26,13 @@ struct UIAPI IImageRender : public IRenderBase {
   IRenderBitmap *GetRenderBitmap();
   void SetRenderBitmap(IRenderBitmap *pBitmap);
 
-  UI_DEFINE_CLASS_GUID("6DAC8F58-390D-4660-A35F-2EBE956ED442");
+  static Uuid UUID() { return Uuid("6DAC8F58-390D-4660-A35F-2EBE956ED442"); }
   UI_DECLARE_INTERFACE(ImageRender);
 };
 
 class ImageListItemRender;
 struct UIAPI IImageListItemRender : public IImageRender {
-  UI_DEFINE_CLASS_GUID("51FFF758-737E-4252-BDBF-7DAF9DB261A6");
+  static Uuid UUID() { return Uuid("51FFF758-737E-4252-BDBF-7DAF9DB261A6"); }
   UI_DECLARE_INTERFACE(ImageListItemRender);
 };
 
@@ -48,7 +48,7 @@ struct UIAPI IImageListRender : public IRenderBase {
   int GetItemHeight();
   int GetItemCount();
 
-  UI_DEFINE_CLASS_GUID("34CBE966-3ADE-49F9-98D5-79584248DBDB");
+  static Uuid UUID() { return Uuid("34CBE966-3ADE-49F9-98D5-79584248DBDB"); }
   UI_DECLARE_INTERFACE(ImageListRender);
 };
 

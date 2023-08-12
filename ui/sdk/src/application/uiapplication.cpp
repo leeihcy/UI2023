@@ -396,7 +396,7 @@ IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
   return nullptr;
 }
 
-IObject *Application::CreateUIObjectByClsid(const Guid &clsid,
+IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
                                             IResBundle *pSkinRes) {
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {

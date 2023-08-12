@@ -4,16 +4,20 @@
 #include "../common.h"
 #include "sdk/include/interface/iobject.h"
 
-namespace ui { namespace svg {
+namespace ui {
+namespace svg {
 class Rect;
+
+
 
 struct UISVGAPI IRect : public ui::IObject {
 
-  UI_DECLARE_INTERFACE_ACROSSMODULE(Rect);
-public:
-  UI_DEFINE_CLASS_GUID("473cce67-2db5-4a58-8e0e-0a9fc09012fc");
+  static Uuid UUID() { return Uuid("e9548da8-38ca-11ee-ac24-f45c89b0174f"); }
+
+  UI_DECLARE_INTERFACE_ACROSSMODULE(Rect)
 };
 
-}}
+} // namespace svg
+} // namespace ui
 
 #endif

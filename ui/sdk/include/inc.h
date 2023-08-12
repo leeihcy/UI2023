@@ -2,7 +2,7 @@
 #define _UI_INC_H_
 
 #include "sdk/include/common.h"
-#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/common/uuid/uuid.h"
 
 #include "sdk/include/uicreator.h"
 #include "sdk/include/uiapi.h"

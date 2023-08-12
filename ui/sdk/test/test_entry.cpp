@@ -7,7 +7,7 @@
 void signalslot_unittest();
 void weakptr_unittest();
 void rect_region_unittest();
-void guid_unittest();
+void uuid_unittest();
 
 namespace ui {
 
@@ -17,7 +17,7 @@ void _UIUnitTest() {
   weakptr_unittest();
   rect_region_unittest();
 #endif
-  guid_unittest();
+  uuid_unittest();
 }
 
 UIAPI void UIUnitTest() {

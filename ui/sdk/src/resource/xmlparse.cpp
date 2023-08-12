@@ -1,10 +1,10 @@
-#include "StdAfx.h"
 #include "xmlparse.h"
+#include "StdAfx.h"
 #include <atlconv.h>
 
 #include "UISDK\Kernel\Src\Atl\image.h"
-#include "UISDK\Kernel\Src\Util\MapAttr\mapattr.h"
 #include "UISDK\Kernel\Src\Base\Object\object.h"
+#include "UISDK\Kernel\Src\Util\MapAttr\mapattr.h"
 #include "UISDK\Kernel\Src\Window\windowbase.h"
 
 #if 0
@@ -293,7 +293,7 @@ font.xml <- FontXmlParse
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-//	
+//
 //	全局函数定义
 
 //

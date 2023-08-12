@@ -2,58 +2,48 @@
 #include "include/interface/iobjectdescription.h"
 
 namespace ui {
-// Ä¬ÈÏdesc£¬ÓÃÓÚ»ñÈ¡descÖ¸ÕëÊ±£¬×Ü·µ»ØÒ»¸ö·Ç¿ÕÖ¸Õë³öÈ¥
-class UndefineDescription : public IObjectDescription
-{
+// é»˜è®¤descï¼Œç”¨äºè·å–descæŒ‡é’ˆæ—¶ï¼Œæ€»è¿”å›ä¸€ä¸ªéç©ºæŒ‡é’ˆå‡ºå»
+class UndefineDescription : public IObjectDescription {
 public:
-	static IObjectDescription*  Get()
-	{
-        static UndefineDescription s;
-		return &s;
-	}
+  static IObjectDescription *Get() {
+    static UndefineDescription s;
+    return &s;
+  }
 
-    virtual void  CreateInstance(IResBundle* p, void** pp) override
-    {
-        UIASSERT(0);
-    }
+  virtual void CreateInstance(IResBundle *p, void **pp) override {
+    UIASSERT(0);
+  }
 
-	virtual OBJ_TYPE GetMajorType() override
-	{
-        UIASSERT(0);
-		return OBJ_UNKNOWN;
-	}
-	virtual long  GetMinorType() override
-	{
-        UIASSERT(0);
-		return 0;
-	}
-	virtual const wchar_t*  GetCategory() override
-	{
-        UIASSERT(0);
-        return CATEGORY_CONTROL;
-	}
-	virtual const wchar_t*  GetTagName() override
-	{
-        UIASSERT(0);
-		return L"";
-	}
-	virtual const Guid&  GetGuid() override
-	{
-        UIASSERT(0);
-		return Guid::Null();
-	}
+  virtual OBJ_TYPE GetMajorType() override {
+    UIASSERT(0);
+    return OBJ_UNKNOWN;
+  }
+  virtual long GetMinorType() override {
+    UIASSERT(0);
+    return 0;
+  }
+  virtual const wchar_t *GetCategory() override {
+    UIASSERT(0);
+    return CATEGORY_CONTROL;
+  }
+  virtual const wchar_t *GetTagName() override {
+    UIASSERT(0);
+    return L"";
+  }
+  virtual Uuid GetGuid() override {
+    UIASSERT(0);
+    return Uuid::Null();
+  }
 
-    virtual void  GetDefaultSize(long& w, long& h) override
-    {
-        UIASSERT(0);
-        w = 100;
-        h = 100;
-    }
-    virtual HBITMAP  LoadIcon() override 
-    {
-        UIASSERT(0);
-        return 0;
-    }
+  virtual void GetDefaultSize(long &w, long &h) override {
+    UIASSERT(0);
+    w = 100;
+    h = 100;
+  }
+  virtual HBITMAP LoadIcon() override {
+    UIASSERT(0);
+    return 0;
+  }
 };
 
-}
+} // namespace ui

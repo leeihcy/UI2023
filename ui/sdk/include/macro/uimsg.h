@@ -193,7 +193,7 @@ public:                                                                        \
 //
 //  message : UI_WM_QUERYINTERFACE
 //  code : NA
-//  wparam : GUID*   pguid
+//  wparam : UUID*   pguid
 //  lparam : void**  ppOut
 //
 #define UI_MSG_QUERYINTERFACE 165312200
@@ -201,7 +201,7 @@ public:                                                                        \
 #define UIMSG_QUERYINTERFACE(className)                                        \
   if (uMsg == UI_MSG_QUERYINTERFACE) {                                         \
     SetMsgHandled(true);                                                       \
-    if (__guid(I##className) == (*(const Guid *)wParam)) {                     \
+    if (I##className::UUID() == (*(const Uuid *)wParam)) {                     \
       SetMsgHandled(true);                                                     \
       lResult = (long)(void *)m_pI##className;                                 \
       return true;                                                             \

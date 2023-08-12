@@ -83,7 +83,7 @@ public:
   bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
   bool RegisterUIObject(IObjectDescription *);
   IObject *CreateUIObjectByName(const wchar_t *szXmlName, IResBundle *);
-  IObject *CreateUIObjectByClsid(const Guid &clsid, IResBundle *);
+  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResBundle *);
 
   void LoadUIObjectListToToolBox();
 

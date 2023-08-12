@@ -192,8 +192,9 @@ struct UIAPI IWindow : public IObject {
   signal<void()> &DestroySignal();
   signal<void(IRenderTarget*)> &PaintSignal();
 
+  static Uuid UUID() { return {0x5C36801E, 0x5929, 0x4512, {0xA9, 0x98, 0xF9, 0x71, 0x9D, 0xCC, 0x69, 0x03}}; }
+
   UI_DECLARE_INTERFACE(Window)
-  UI_DEFINE_CLASS_GUID("5C36801E-5929-4512-A998-F9719DCC6903");
 };
 
 // 辅助类

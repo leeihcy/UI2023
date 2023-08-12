@@ -1,139 +1,109 @@
 #pragma once
-#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/common/uuid/uuid.h"
 
-namespace ui
-{
-    struct IImageResItem;
-    struct IGifResItem;
-    struct ICursorResItem;
-    struct IAttributeEditorProxy;
-    struct IStringAttribute;
-    struct IBoolAttribute;
-    struct IColorAttribute;
-    struct ILongAttribute;
-	struct IEnumAttribute;
-    struct IFlagsAttribute;
-    struct IRectAttribute;
-	struct ISizeAttribute;
-	struct IRegion9Attribute;
-    struct IStringEnumAttribute;
-	struct IStyleResItem;
-    struct IRenderBaseAttribute;
-    struct ITextRenderBaseAttribute;
-    struct IObject;
-    struct IObjectDescription;
-    struct IUIElement;
+namespace ui {
+struct IImageResItem;
+struct IGifResItem;
+struct ICursorResItem;
+struct IAttributeEditorProxy;
+struct IStringAttribute;
+struct IBoolAttribute;
+struct IColorAttribute;
+struct ILongAttribute;
+struct IEnumAttribute;
+struct IFlagsAttribute;
+struct IRectAttribute;
+struct ISizeAttribute;
+struct IRegion9Attribute;
+struct IStringEnumAttribute;
+struct IStyleResItem;
+struct IRenderBaseAttribute;
+struct ITextRenderBaseAttribute;
+struct IObject;
+struct IObjectDescription;
+struct IUIElement;
 
-	struct  EditorAddObjectResData
-	{
-		IApplication*  pUIApp;
-		IObject*  pParentObj;
-		IUIElement*  pParentXml;
-		bool  bNcChild;
+struct EditorAddObjectResData {
+  IApplication *pUIApp;
+  IObject *pParentObj;
+  IUIElement *pParentXml;
+  bool bNcChild;
 
-		Guid  objiid;
-		const wchar_t*  szId;
-		void** ppCreateObj;
-		IUIElement**  ppCreateXml;
-	};
-	
-	//  Õ‚≤øµƒ±‡º≠∆˜÷∏’Î£¨”√”⁄œ˚œ¢Õ®÷™∫Õ ˝æ›ªÒ»°
-	enum EditorAttributeFlag
-	{
-		EDITOR_ATTRIBUTE_ADD,
-		EDITOR_ATTRIBUTE_UPDATE,
-	};
-
-	enum EditorOPType
-	{
-		Editor_None,
-		Editor_Add,
-		Editor_Remove,
-		Editor_Modify,
-		// Editor_Clear,
-	};
-
-	struct IUIEditor
-	{
-		virtual ~IUIEditor() {};
-
-        virtual bool  AddObjectRes(
-                EditorAddObjectResData* pData) = 0;
-
-		// ¥”≈‰÷√Œƒº˛÷–∂¡»°ÕÍ“ª∏ˆ∂‘œÛµƒ Ù–‘≈‰÷√
-		virtual void  OnObjectAttributeLoad(
-                /*__in*/ IObject*  pObj, 
-                /*__in*/ IUIElement* pXmlElem) = 0;
-        virtual void  OnObjectDeleteInd(
-                /*__in*/ IObject* pObj) = 0;
-        virtual void  OnImageItemLoad(
-                /*__in*/ IImageResItem*  pItem, 
-                /*__in*/ IUIElement* pXmlElem) = 0;
-        virtual void  OnGifItemLoad(
-                /*__in*/ IGifResItem*  pItem, 
-                /*__in*/ IUIElement* pXmlElem) = 0;
-        virtual void  OnCursorItemLoad(
-                /*__in*/ ICursorResItem*  pItem, 
-                /*__in*/ IUIElement* pXmlElem) = 0;
-        virtual void  OnImageItemDeleteInd(
-                /*__in*/ IImageResItem*  pItem) = 0;
-        virtual void  OnGifItemDeleteInd(
-                /*__in*/ IGifResItem*  pItem) = 0;
-        virtual void  OnCursorItemDeleteInd(
-                /*__in*/ ICursorResItem*  pItem) = 0;
-
-		virtual void  OnStyleChanged(
-                IResBundle* pSkinRes, 
-                IStyleResItem* p, 
-                EditorOPType e) = 0;
-		virtual void  OnStyleAttributeChanged(
-                IResBundle* pSkinRes, 
-                IStyleResItem* p, 
-                const wchar_t* szKey, 
-                EditorOPType e) = 0;
-        virtual void  EditorStringAttribute(
-                IStringAttribute*, 
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorBoolAttribute(
-                IBoolAttribute*, 
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorLongAttribute(
-                ILongAttribute*,
-                EditorAttributeFlag e) = 0;
-		virtual void  EditorEnumAttribute(
-                IEnumAttribute*,
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorFlagsAttribute(
-                IFlagsAttribute*,
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorRectAttribute(
-                IRectAttribute*, 
-                EditorAttributeFlag e) = 0;
-		virtual void  EditorSizeAttribute(
-				ISizeAttribute*,
-				EditorAttributeFlag e) = 0;
-		virtual void  EditorRegion9Attribute(
-                IRegion9Attribute*, 
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorStringEnumAttribute(
-                IStringEnumAttribute*, 
-                EditorAttributeFlag e) = 0;
-		virtual void  EditorColorAttribute(
-				IColorAttribute*,
-				EditorAttributeFlag e) = 0;
-        virtual void  EditorRenderBase(
-                IRenderBaseAttribute* pAttribute, 
-                EditorAttributeFlag e) = 0;
-        virtual void  EditorTextRenderBase(
-                ITextRenderBaseAttribute* pAttribute,
-                EditorAttributeFlag e) = 0;
-
-        // ªÒ»°∂‘œÛ¡–±Ì£¨ÃÌº”µΩπ§æﬂœ‰÷–°£
-        // µ˜”√LoadUIObjectListToUIEdirot ±¥•∑¢
-        virtual void  OnToolBox_AddObject(
-                IObjectDescription*) = 0;
-	};
-
-	
+  Uuid objiid;
+  const wchar_t *szId;
+  void **ppCreateObj;
+  IUIElement **ppCreateXml;
 };
 
+//  Â§ñÈÉ®ÁöÑÁºñËæëÂô®ÊåáÈíàÔºåÁî®‰∫éÊ∂àÊÅØÈÄöÁü•ÂíåÊï∞ÊçÆËé∑Âèñ
+enum EditorAttributeFlag {
+  EDITOR_ATTRIBUTE_ADD,
+  EDITOR_ATTRIBUTE_UPDATE,
+};
+
+enum EditorOPType {
+  Editor_None,
+  Editor_Add,
+  Editor_Remove,
+  Editor_Modify,
+  // Editor_Clear,
+};
+
+struct IUIEditor {
+  virtual ~IUIEditor(){};
+
+  virtual bool AddObjectRes(EditorAddObjectResData *pData) = 0;
+
+  // ‰ªéÈÖçÁΩÆÊñá‰ª∂‰∏≠ËØªÂèñÂÆå‰∏Ä‰∏™ÂØπË±°ÁöÑÂ±ûÊÄßÈÖçÁΩÆ
+  virtual void OnObjectAttributeLoad(
+      /*__in*/ IObject *pObj,
+      /*__in*/ IUIElement *pXmlElem) = 0;
+  virtual void OnObjectDeleteInd(
+      /*__in*/ IObject *pObj) = 0;
+  virtual void OnImageItemLoad(
+      /*__in*/ IImageResItem *pItem,
+      /*__in*/ IUIElement *pXmlElem) = 0;
+  virtual void OnGifItemLoad(
+      /*__in*/ IGifResItem *pItem,
+      /*__in*/ IUIElement *pXmlElem) = 0;
+  virtual void OnCursorItemLoad(
+      /*__in*/ ICursorResItem *pItem,
+      /*__in*/ IUIElement *pXmlElem) = 0;
+  virtual void OnImageItemDeleteInd(
+      /*__in*/ IImageResItem *pItem) = 0;
+  virtual void OnGifItemDeleteInd(
+      /*__in*/ IGifResItem *pItem) = 0;
+  virtual void OnCursorItemDeleteInd(
+      /*__in*/ ICursorResItem *pItem) = 0;
+
+  virtual void OnStyleChanged(IResBundle *pSkinRes, IStyleResItem *p,
+                              EditorOPType e) = 0;
+  virtual void OnStyleAttributeChanged(IResBundle *pSkinRes, IStyleResItem *p,
+                                       const wchar_t *szKey,
+                                       EditorOPType e) = 0;
+  virtual void EditorStringAttribute(IStringAttribute *,
+                                     EditorAttributeFlag e) = 0;
+  virtual void EditorBoolAttribute(IBoolAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorLongAttribute(ILongAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorEnumAttribute(IEnumAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorFlagsAttribute(IFlagsAttribute *,
+                                    EditorAttributeFlag e) = 0;
+  virtual void EditorRectAttribute(IRectAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorSizeAttribute(ISizeAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorRegion9Attribute(IRegion9Attribute *,
+                                      EditorAttributeFlag e) = 0;
+  virtual void EditorStringEnumAttribute(IStringEnumAttribute *,
+                                         EditorAttributeFlag e) = 0;
+  virtual void EditorColorAttribute(IColorAttribute *,
+                                    EditorAttributeFlag e) = 0;
+  virtual void EditorRenderBase(IRenderBaseAttribute *pAttribute,
+                                EditorAttributeFlag e) = 0;
+  virtual void EditorTextRenderBase(ITextRenderBaseAttribute *pAttribute,
+                                    EditorAttributeFlag e) = 0;
+
+  // Ëé∑ÂèñÂØπË±°ÂàóË°®ÔºåÊ∑ªÂä†Âà∞Â∑•ÂÖ∑ÁÆ±‰∏≠„ÄÇ
+  // Ë∞ÉÁî®LoadUIObjectListToUIEdirotÊó∂Ëß¶Âèë
+  virtual void OnToolBox_AddObject(IObjectDescription *) = 0;
+};
+
+}; // namespace ui

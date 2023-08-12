@@ -148,7 +148,7 @@ Window *Object::GetWindowObject() {
   } while (1);
 
   IWindow *pWindow =
-      (IWindow *)pParent->GetIObject()->QueryInterface(__guid(IWindow));
+      (IWindow *)pParent->GetIObject()->QueryInterface(IWindow::UUID());
   if (pWindow)
     return pWindow->GetImpl();
   return nullptr;
@@ -231,10 +231,10 @@ Object *Object::FindNcObject(const wchar_t *szobjId) {
   return nullptr;
 }
 
-Object *Object::FindObject(Guid uuid) {
+Object *Object::FindObject(Uuid uuid) {
   return this->find_child_object(uuid, true);
 }
-Object *Object::FindNcObject(Guid uuid) {
+Object *Object::FindNcObject(Uuid uuid) {
   return this->find_ncchild_object(uuid, true);
 }
 
@@ -262,7 +262,7 @@ Object *Object::find_child_object(const wchar_t *szobjId, bool bFindDecendant) {
   return nullptr;
 }
 
-Object *Object::find_child_object(Guid uuid, bool bFindDecendant) {
+Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumChildObject(pObjChild))) {
     IObjectDescription *pDesc = pObjChild->GetDescription();
@@ -284,7 +284,7 @@ Object *Object::find_child_object(Guid uuid, bool bFindDecendant) {
   return nullptr;
 }
 
-Object *Object::find_ncchild_object(Guid uuid, bool bFindDecendant) {
+Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumNcChildObject(pObjChild))) {
     IObjectDescription *pDesc = pObjChild->GetDescription();

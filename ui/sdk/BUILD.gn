@@ -188,7 +188,7 @@ shared_library("uisdk") {
         "include/common/weakptr/weakptr_unittest.cpp",
         "src/message_loop/message_loop_unittest.cpp",
         "src/util/rectregion/rectregion_unittest.cpp",
-        "include/common/guid/guid_unittest.cpp",
+        "include/common/uuid/uuid_unittest.cpp",
       ]
     }
 }

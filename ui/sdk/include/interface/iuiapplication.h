@@ -1,7 +1,7 @@
 #ifndef _IUIAPPLICATION_H_
 #define _IUIAPPLICATION_H_
 #include <functional>
-#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uiapi.h"
 
@@ -70,7 +70,7 @@ struct UIAPI IApplication
     bool  GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc);
     
     IObject*  CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes);
-    IObject*  CreateUIObjectByClsid(const Guid& clsid, IResBundle* pISkinRes);
+    IObject*  CreateUIObjectByClsid(const Uuid& clsid, IResBundle* pISkinRes);
     bool  RegisterUIObject(IObjectDescription* p);
     void  LoadUIObjectListToToolBox();
 

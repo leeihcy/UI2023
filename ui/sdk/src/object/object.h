@@ -74,8 +74,8 @@ public:
 	Object*  FindObject(const wchar_t* szObjId);
     Object*  TryFindObject(const wchar_t* szObjId);
 	Object*  FindNcObject(const wchar_t* szobjId);
-	Object*  FindObject(Guid uuid);
-    Object*  FindNcObject(Guid uuid);
+	Object*  FindObject(Uuid uuid);
+    Object*  FindNcObject(Uuid uuid);
 	unsigned long  GetChildCount();
 	Object*  GetChildObjectByIndex(unsigned long lIndex);
 	unsigned long  GetChildObjectIndex(Object* pChild);
@@ -320,8 +320,8 @@ protected:
 
 protected:
 	Object*  find_child_object(const wchar_t* szobjId, bool bFindDecendant);
-	Object*  find_child_object(Guid uuid, bool bFindDecendant);
-    Object*  find_ncchild_object(Guid uuid, bool bFindDecendant);
+	Object*  find_child_object(Uuid uuid, bool bFindDecendant);
+    Object*  find_ncchild_object(Uuid uuid, bool bFindDecendant);
 	void  load_renderbase(const wchar_t* szName, IRenderBase*& pRender);
 	void  load_textrender(const wchar_t* szName, ITextRenderBase*& pTextRender);
 	const wchar_t*  get_renderbase_name(IRenderBase*& pRender);

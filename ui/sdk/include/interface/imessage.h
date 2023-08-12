@@ -1,6 +1,6 @@
 #ifndef _UI_IMESSAGE_H_
 #define _UI_IMESSAGE_H_
-#include "sdk/include/common/guid/guid.h"
+#include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uicreator.h"
 #include <string.h>
@@ -70,10 +70,10 @@ public:
   void RemoveHook(IMessage *pObj);
   void ClearHook();
 
-  void AddDelayRef(void **pp);
-  void RemoveDelayRef(void **pp);
+  // void AddDelayRef(void **pp);
+  // void RemoveDelayRef(void **pp);
 
-  void *QueryInterface(const Guid &iid);
+  void *QueryInterface(const Uuid &iid);
 
 protected:
   Message *m_pImpl;

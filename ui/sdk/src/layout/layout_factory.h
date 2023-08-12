@@ -20,7 +20,7 @@ private:
 	{
 		String  m_strName;
 		int     m_nLayoutType;
-		Guid    m_guid;
+		Uuid    m_guid;
 		pfnUICreateLayoutPtr  m_func;
 	};
 	typedef std::vector<UILAYOUT_CREATE_INFO*> UILAYOUT_CREATE_DATA;

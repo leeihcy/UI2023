@@ -4,88 +4,87 @@
 #include "include/interface/imessage.h"
 #include <list>
 
-namespace ui
-{
-	//
-	// ÓÃÓÚÆäËü¶ÔÏóÀ¹½ØÎÒµÄÏûÏ¢
-	//
-	class MsgHook
-	{
-	public:
-		MsgHook()
-		{
-			pObj = nullptr;
-			nMsgMapIDToHook = 0;
-			nMsgMapIDToNotify = 0;
-		}
+namespace ui {
+//
+// ç”¨äºå…¶å®ƒå¯¹è±¡æ‹¦æˆªæˆ‘çš„æ¶ˆæ¯
+//
+class MsgHook {
+public:
+  MsgHook() {
+    pObj = nullptr;
+    nMsgMapIDToHook = 0;
+    nMsgMapIDToNotify = 0;
+  }
 
-		IMessage* pObj;                // ¼ÇÂ¼Ë­ÒªÀ¹½ØÎÒµÄÏûÏ¢
-		int      nMsgMapIDToHook;      // pObjÒªHOOK¸Ãmap idµÄÏûÏ¢
-		int      nMsgMapIDToNotify;    // HOOKµ½µÄÏûÏ¢£¬pObjÊ¹ÓÃ¸Ãmap idÈ¥ÏìÓ¦
-	};
+  IMessage *pObj;        // è®°å½•è°è¦æ‹¦æˆªæˆ‘çš„æ¶ˆæ¯
+  int nMsgMapIDToHook;   // pObjè¦HOOKè¯¥map idçš„æ¶ˆæ¯
+  int nMsgMapIDToNotify; // HOOKåˆ°çš„æ¶ˆæ¯ï¼ŒpObjä½¿ç”¨è¯¥map idå»å“åº”
+};
 
-	class MsgNotify
-	{
-	public:
-		MsgNotify()
-		{
-			pObj = nullptr;
-			nMsgMapIDToNotify = 0;
-		}
+class MsgNotify {
+public:
+  MsgNotify() {
+    pObj = nullptr;
+    nMsgMapIDToNotify = 0;
+  }
 
-		IMessage*  pObj;
-		int       nMsgMapIDToNotify;    // µ±ÓĞÏûÏ¢Í¨ÖªpObjÊ±£¬pObjÊ¹ÓÃ¸ÃidÈ¥ÏìÓ¦
-	};
+  IMessage *pObj;
+  int nMsgMapIDToNotify; // å½“æœ‰æ¶ˆæ¯é€šçŸ¥pObjæ—¶ï¼ŒpObjä½¿ç”¨è¯¥idå»å“åº”
+};
 
-	// ÏûÏ¢»ùÀà,object´Ó¸ÃÀà¼Ì³Ğ´Ó¶øÓµÓĞÁËÏûÏ¢¹¦ÄÜ
-	class Message
-	{
-	public:
-		Message(IMessage*);
-		virtual ~Message();
+// æ¶ˆæ¯åŸºç±»,objectä»è¯¥ç±»ç»§æ‰¿ä»è€Œæ‹¥æœ‰äº†æ¶ˆæ¯åŠŸèƒ½
+class Message {
+public:
+  Message(IMessage *);
+  virtual ~Message();
 
-		IMessage*    GetIMessage();
+  IMessage *GetIMessage();
 
-		bool         IsMsgHandled()const;
-		void         SetMsgHandled(bool);
-		UIMSG*       GetCurMsg() { return m_pCurMsg; }
-		void         SetCurMsg(UIMSG* p) { m_pCurMsg = p; }
+  bool IsMsgHandled() const;
+  void SetMsgHandled(bool);
+  UIMSG *GetCurMsg() { return m_pCurMsg; }
+  void SetCurMsg(UIMSG *p) { m_pCurMsg = p; }
 
-		void         ClearNotify();
-		void         SetNotify(IMessage* pObj, int nMsgMapID = 0);
-		void         CopyNotifyTo(IMessage* pObjCopyTo);
-		IMessage*    GetNotifyObj() { return m_objNotify.pObj; }
+  void ClearNotify();
+  void SetNotify(IMessage *pObj, int nMsgMapID = 0);
+  void CopyNotifyTo(IMessage *pObjCopyTo);
+  IMessage *GetNotifyObj() { return m_objNotify.pObj; }
 
-		void         AddHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-		void         RemoveHook(IMessage* pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-		void         RemoveHook(IMessage* pObj);
-		void         ClearHook();
+  void AddHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
+  void RemoveHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
+  void RemoveHook(IMessage *pObj);
+  void ClearHook();
 
-    long SendMessage(uint message, long wParam = 0, long lParam = 0);
+  long SendMessage(uint message, long wParam = 0, long lParam = 0);
 
-		// ·µ»ØTRUE£¬±íÊ¾¸ÃÏûÏ¢ÒÑ±»´¦Àí£¬FALSE±íÊ¾¸ÃÏûÏ¢Ã»±»´¦Àí
-		bool         ProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
-		virtual bool virtualProcessMessage(UIMSG* pMsg, int nMsgMapID = 0, bool bDoHook = false);
+  // è¿”å›TRUEï¼Œè¡¨ç¤ºè¯¥æ¶ˆæ¯å·²è¢«å¤„ç†ï¼ŒFALSEè¡¨ç¤ºè¯¥æ¶ˆæ¯æ²¡è¢«å¤„ç†
+  bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
+  virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID = 0,
+                                     bool bDoHook = false);
 
-		bool         DoHook(UIMSG* pMsg, int nMsgMapID);
-		long         DoNotify(UIMSG* pMsg);
+  bool DoHook(UIMSG *pMsg, int nMsgMapID);
+  long DoNotify(UIMSG *pMsg);
 
-		void         AddDelayRef(void** pp);
-		void         RemoveDelayRef(void** pp);
-		void         ResetDelayRef();
+  // void AddDelayRef(void** pp);
+  // void RemoveDelayRef(void** pp);
+  // void ResetDelayRef();
 
-	protected:
-		std::list<MsgHook*>  m_lHookMsgMap;      // ÀıÈçComboBoxÒªhook ComboboxÖĞµÄÏÂÀ­°´Å¥µÄÊÂ¼ş
-		MsgNotify          m_objNotify;        // ²úÉúÊÂ¼şÊ±£¬ĞèÒªÍ¨ÖªµÄ¶ÔÏó
-		std::list<void**>  m_lDelayRefs;       // ĞèÒªÑÓ³Ùµ÷ÓÃ×Ô¼ºµÄÒ»Ğ©ÒıÓÃ£¬±ÜÃâ×Ô¼º±»Ïú»ÙÖ®ºó»¹µ÷ÓÃIMessageµÄÒ»Ğ©º¯Êı£¬Èçuipostmessage, tooltip timer. È¡´úÔ­UIApplicationÖĞµÄAddUIObject¹¦ÄÜ£¨Ğ§ÂÊÌ«µÍ
+protected:
+  // ä¾‹å¦‚ComboBoxè¦hook Comboboxä¸­çš„ä¸‹æ‹‰æŒ‰é’®çš„äº‹ä»¶
+  std::list<MsgHook *> m_lHookMsgMap; 
+      
+  // äº§ç”Ÿäº‹ä»¶æ—¶ï¼Œéœ€è¦é€šçŸ¥çš„å¯¹è±¡
+  MsgNotify m_objNotify; 
 
-		UIMSG *           m_pCurMsg;          // ¼ÇÂ¼µ±Ç°ÕıÔÚ´¦ÀíµÄÏûÏ¢
-		IMessage*         m_pIMessage;
-		bool              m_bCreateIMessage;
+  // éœ€è¦å»¶è¿Ÿè°ƒç”¨è‡ªå·±çš„ä¸€äº›å¼•ç”¨ï¼Œé¿å…è‡ªå·±è¢«é”€æ¯ä¹‹åè¿˜è°ƒç”¨IMessageçš„ä¸€äº›å‡½æ•°ï¼Œå¦‚uipostmessage,
+  // tooltip timer. å–ä»£åŸUIApplicationä¸­çš„AddUIObjectåŠŸèƒ½ï¼ˆæ•ˆç‡å¤ªä½
+  // std::list<void**>  m_lDelayRefs;     
 
-    
-	};
+  UIMSG *m_pCurMsg; // è®°å½•å½“å‰æ­£åœ¨å¤„ç†çš„æ¶ˆæ¯
+  IMessage *m_pIMessage;
+  bool m_bCreateIMessage;
+};
 
-}
+} // namespace ui
 
 #endif

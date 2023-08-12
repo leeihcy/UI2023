@@ -4,6 +4,7 @@
 // #include "include/interface/icustomwindow.h"
 
 namespace ui {
+
 class WindowDescription : public IObjectDescription {
 public:
   static IObjectDescription *Get() {
@@ -19,7 +20,9 @@ public:
   virtual long GetMinorType() override { return WINDOW_SIMPLE; }
   virtual const wchar_t *GetCategory() override { return CATEGORY_WINDOW; }
   virtual const wchar_t *GetTagName() override { return L"Window"; }
-  virtual const Guid &GetGuid() override { return __guid(IWindow); }
+  virtual Uuid GetGuid() override { 
+    return IWindow::UUID();
+  }
 
   virtual void GetDefaultSize(long &w, long &h) override {
     w = 500;
@@ -58,7 +61,7 @@ public:
 	{
 		return L"CustomWindow";
 	}
-	virtual const GUID&  GetGuid() override
+	virtual const UUID&  GetGuid() override
 	{
 		return __guid(ICustomWindow);
 	}
