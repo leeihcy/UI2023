@@ -17,6 +17,11 @@ IMessage::~IMessage() { SAFE_DELETE(m_pImpl); }
 
 Message *IMessage::GetImpl() { return m_pImpl; }
 
+void IMessage::connect(const char* event, slot<void(Event*)>&& s) {
+  m_pImpl->connect(event, std::forward<slot<void(Event*)>>(s));
+}
+
+
 bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   ui::UIMSG *pOldMsg = nullptr;
   if (m_pImpl)

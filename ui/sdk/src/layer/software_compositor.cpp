@@ -47,7 +47,7 @@ void SoftwareCompositor::virtualCommit(const RectRegion &arrDirtyInWindow) {
 
   uint nCount = arrDirtyInWindow.GetCount();
   if (!nCount) {
-    UI_LOG_WARN(L"commit but no dirty area");
+    // UI_LOG_WARN(L"commit but no dirty area");
     return;
   }
 

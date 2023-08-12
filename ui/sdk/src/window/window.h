@@ -72,9 +72,6 @@ public:
   void onPaint(Rect *dirty);
   void onSize(int width, int height);
 
-  signal<void()> &DestroySignal() { return m_signal_destroy; }
-  signal<void(IRenderTarget*)> &PaintSignal() { return m_signal_paint; }
-
 private:
   // void on_paint(SkCanvas &canvas);
   // void on_erase_bkgnd(SkCanvas &canvas);
@@ -103,10 +100,6 @@ private:
 	WindowStyle  m_windowStyle;
 	
   String  m_strConfigWindowText;   // 皮肤中配置的窗口标题
-
-  // 事件定义
-  signal<void()> m_signal_destroy;
-  signal<void(IRenderTarget*)> m_signal_paint;
 };
 
 } // namespace ui

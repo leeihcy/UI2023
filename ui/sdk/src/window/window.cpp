@@ -137,7 +137,11 @@ void Window::onSize(int width, int height) {
 }
 
 void Window::onClose() {}
-void Window::onDestroy() { m_signal_destroy.emit(); }
+void Window::onDestroy() { 
+  WindowDestroyEvent event;
+  event.window = m_pIWindow;
+  emit(WINDOW_DESTROY_EVENT, &event); 
+}
 
 void Window::onPaint(Rect *dirty) {
   // if (dirty) {
@@ -244,7 +248,10 @@ void Window::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
   if (nullptr == pRenderTarget)
     return;
 
-  m_signal_paint.emit(pRenderTarget);
+  WindowPaintEvent event;
+  event.window = m_pIWindow;
+  event.rt = pRenderTarget;
+  emit(WINDOW_PAINT_EVENT, &event);
 
   SetMsgHandled(false);
 }

@@ -1,7 +1,7 @@
 
 
-executable("hello") {
-    output_name = "sample_hello"
+executable("svg") {
+    output_name = "sample_svg"
 
     deps = [
         "//ui/sdk:sdk"
@@ -11,7 +11,6 @@ executable("hello") {
     ]
     sources = [
         "main.cc",
-        "macos.mm"
     ]
 
     cflags = []

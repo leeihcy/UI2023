@@ -32,6 +32,25 @@ IMessage *Message::GetIMessage() {
   return m_pIMessage;
 }
 
+void Message::connect(const char *event_name, slot<void(Event *)> &&s) {
+  if (!event_name || !event_name[0]) {
+    return;
+  }
+  m_events[std::string(event_name)].connect(
+      std::forward<slot<void(Event *)>>(s));
+}
+
+void Message::emit(const char *event_name, Event *event) {
+  if (!event_name || !event_name[0]) {
+    return;
+  }
+  auto iter = m_events.find(std::string(event_name));
+  if (iter == m_events.end()) {
+    return;
+  }
+  iter->second.emit(event);
+}
+
 long Message::SendMessage(uint message, long wParam, long lParam)
 {
   return m_pIMessage->SendMessage(message, wParam, lParam);

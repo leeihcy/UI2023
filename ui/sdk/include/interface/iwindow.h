@@ -2,14 +2,14 @@
 #define _INCLUDED_IWINDOW_
 
 #include "sdk/include/macro/uidefine.h"
+#include "sdk/include/event.h"
 #include "../common/signalslot/signal.h"
 #include "iobject.h"
-#include <SkCanvas.h>
-#include <SkSurface.h>
 // #include "irenderlayer.h"
 // #include "ipanel.h"
 
 namespace ui {
+struct IRenderTarget;
 #if 0
 struct IWindowMouseMgr;
 struct IWindowKeyboardMgr;
@@ -189,9 +189,6 @@ struct UIAPI IWindow : public IObject {
   void SetTitle(const char *title);
   void Show();
 
-  signal<void()> &DestroySignal();
-  signal<void(IRenderTarget*)> &PaintSignal();
-
   static Uuid UUID() { return {0x5C36801E, 0x5929, 0x4512, {0xA9, 0x98, 0xF9, 0x71, 0x9D, 0xCC, 0x69, 0x03}}; }
 
   UI_DECLARE_INTERFACE(Window)
@@ -212,6 +209,18 @@ public:
 
 private:
   IWindow *m_p;
+};
+
+
+#define WINDOW_DESTROY_EVENT "destroy"
+struct WindowDestroyEvent : public Event {
+  IWindow* window;
+};
+
+#define WINDOW_PAINT_EVENT "paint"
+struct WindowPaintEvent : public Event {
+  IWindow* window;
+  IRenderTarget* rt;
 };
 
 // #if 0

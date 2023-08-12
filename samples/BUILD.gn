@@ -3,7 +3,8 @@ import("//build/config/common.gni")
 
 group("ui") {
     deps = [
-        "hello"
+        "hello",
+        "svg",
     ]
 }
 

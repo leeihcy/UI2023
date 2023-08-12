@@ -3,6 +3,8 @@
 #include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uicreator.h"
+#include "sdk/include/event.h"
+#include "sdk/include/common/signalslot/slot.h"
 #include <string.h>
 
 namespace ui {
@@ -35,6 +37,8 @@ struct UIAPI IMessage {
   IMessage(E_BOOL_CREATE_IMPL);
   bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
   void Release();
+
+  void connect(const char* event, slot<void(Event*)>&&);
 
   // long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
   static long SendMessage(UIMSG *pMsg, int nMsgMapID = 0,

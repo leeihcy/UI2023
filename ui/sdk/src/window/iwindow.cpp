@@ -15,8 +15,6 @@ void IWindow::Create(const Rect &rect) { __pImpl->Create(rect); }
 void IWindow::SetTitle(const char *title) { __pImpl->SetTitle(title); }
 void IWindow::Show() { __pImpl->Show(); }
 
-ui::signal<void()> &IWindow::DestroySignal() { return __pImpl->DestroySignal(); }
-signal<void(IRenderTarget*)> &IWindow::PaintSignal() { return __pImpl->PaintSignal(); }
 
 #if 0
 UI_IMPLEMENT_INTERFACE(WindowBase, Panel)

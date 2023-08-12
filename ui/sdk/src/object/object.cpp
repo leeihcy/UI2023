@@ -757,7 +757,8 @@ bool Object::NeedClip() {
   // 	//
   // 如果子对象是一个层，并且有变换，则不更新剪裁区域，而是切换到父对象的剪裁区域
   // 	// 2015.9.23 add
-  // 如果是硬件合成模式，则不用管，层与层之间的数据没有关联。 	if (m_pRenderLayer
+  // 如果是硬件合成模式，则不用管，层与层之间的数据没有关联。 	if
+  // (m_pRenderLayer
   // && m_pRenderLayer->HasTransform())
   // 	{
   // 		WindowBase* pWindow = GetWindowObject();
@@ -934,7 +935,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
 
   // 通知子对象
   SendMessage(UI_MSG_VISIBLE_CHANGED, bVisibleCompatible ? true : false,
-                (long)this);
+              (long)this);
 
   UIMSG msg;
   msg.message = UI_MSG_VISIBLE_CHANGED;
@@ -943,8 +944,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   Object::ForwardMessageToChildObject(this, &msg);
 
   if (m_pParent) {
-    ILayout *pLayout = (ILayout *)(
-      m_pParent->SendMessage(UI_MSG_GETLAYOUT));
+    ILayout *pLayout = (ILayout *)(m_pParent->SendMessage(UI_MSG_GETLAYOUT));
     if (pLayout) {
       pLayout->ChildObjectVisibleChanged(m_pIObject);
     }

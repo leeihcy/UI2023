@@ -2,7 +2,9 @@
 #define _UI_SDK_SRC_OBJECT_MESSAGE_H_
 
 #include "include/interface/imessage.h"
+#include "include/common/signalslot/signal.h"
 #include <list>
+#include <map>
 
 namespace ui {
 //
@@ -45,6 +47,9 @@ public:
   UIMSG *GetCurMsg() { return m_pCurMsg; }
   void SetCurMsg(UIMSG *p) { m_pCurMsg = p; }
 
+  void connect(const char* event_name, slot<void(Event*)>&& s);
+  void emit(const char* event_name, Event* event);
+
   void ClearNotify();
   void SetNotify(IMessage *pObj, int nMsgMapID = 0);
   void CopyNotifyTo(IMessage *pObjCopyTo);
@@ -75,6 +80,10 @@ protected:
       
   // 产生事件时，需要通知的对象
   MsgNotify m_objNotify; 
+  
+  // 事件定义
+  std::map<std::string, signal<void(Event*)>> m_events;
+
 
   // 需要延迟调用自己的一些引用，避免自己被销毁之后还调用IMessage的一些函数，如uipostmessage,
   // tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低

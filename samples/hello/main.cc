@@ -1,14 +1,16 @@
 #include <iostream>
 using namespace std;
 
-#include "ui/sdk/include/interface/iuiapplication.h"
-#include "ui/sdk/include/interface/iwindow.h"
+#include "sdk/include/interface/iuiapplication.h"
+#include "sdk/include/interface/iwindow.h"
 
-void on_window_destroy(ui::IApplication *uiapp) {
+void on_window_destroy(ui::IApplication *uiapp, ui::Event*) {
   printf("on_window_destroy\n");
   uiapp->Quit();
 }
-void on_window_paint(ui::IRenderTarget *pRT) {
+void on_window_paint(ui::Event* e) {
+  ui::IRenderTarget * pRT = static_cast<ui::WindowPaintEvent*>(e)->rt;
+
   ui::Color colors[3] = {ui::Color(255, 0, 0, 255), ui::Color(0, 255, 0, 255),
                          ui::Color(0, 0, 255, 255)};
   static int i = 0;
@@ -32,8 +34,8 @@ int main() {
   window->Create(rc);
   window->SetTitle("你好Hello!");
   window->Show();
-  window->DestroySignal().connect(on_window_destroy, app.get());
-  window->PaintSignal().connect(on_window_paint);
+  window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
+  window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
   app->Run();
 
