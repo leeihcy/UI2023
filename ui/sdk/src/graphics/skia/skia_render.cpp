@@ -2,10 +2,20 @@
 #include "skia_render.h"
 #include "include/util/log.h"
 
+
 namespace ui {
+
+void toSkRect(Rect& rc, SkRect *skrect)
+{
+  skrect->fLeft = rc.left;
+  skrect->fTop = rc.top;
+  skrect->fRight = rc.right;
+  skrect->fBottom = rc.bottom;
+}
 
 SkiaRenderTarget::SkiaRenderTarget(bool bNeedAlphaChannel) {
   m_bNeedAlphaChannel = bNeedAlphaChannel;
+  m_ptOffset.x = m_ptOffset.y = 0;
 }
 
 SkiaRenderTarget::~SkiaRenderTarget() {
@@ -15,42 +25,141 @@ SkiaRenderTarget::~SkiaRenderTarget() {
 
 void SkiaRenderTarget::Release() { delete this; }
 
-// 该HDC不需要释放
-// HDC SkiaRenderTarget::GetBindHDC()
-// {
-// 	return m_hBindDC;
-// }
 
-void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {}
+void SkiaRenderTarget::update_clip_rgn() {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  if (m_stackClipRect.empty()) {
+  //   HRGN hRgn = m_arrayMetaClipRegion.CreateRgn();
+  //   ::SelectClipRgn(GetHDC(), hRgn);
+  //   DeleteObject(hRgn);
+  
+    int count = m_arrayMetaClipRegion.GetCount();
+    for (int i = 0; i < count; i++) {
+      Rect* prc = m_arrayMetaClipRegion.GetRectPtrAt(i);
+      
+      SkRect skrc;
+      toSkRect(*prc, &skrc);
 
-void SkiaRenderTarget::PushRelativeClipRect(const Rect *prc) {
-  UIASSERT(false);
+      canvas->clipRect(skrc);
+    }
+    return;
+  }
+
+  // RECT rcIntersect = {0, 0, 1, 1};
+
+  // deque<RECT>::const_iterator iter = m_stackClipRect._Get_container().begin();
+  // CopyRect(&rcIntersect, &(*iter));
+  // iter++;
+  // for (; iter != m_stackClipRect._Get_container().end(); ++iter) {
+  //   ::IntersectRect(&rcIntersect, &rcIntersect, &(*iter));
+  // }
+
+  // HRGN hRgn = nullptr;
+  // if (!m_arrayMetaClipRegion.GetCount()) {
+  //   hRgn = CreateRectRgnIndirect(&rcIntersect);
+  // } else {
+  //   RectArray array = m_arrayMetaClipRegion;
+  //   if (!array.IntersectRect(&rcIntersect)) {
+  //     RECT rcIntersect = {0, 0, 1, 1};
+  //     hRgn = CreateRectRgnIndirect(&rcIntersect);
+  //   } else {
+  //     hRgn = array.CreateRgn();
+  //   }
+  // }
+
+  // ::SelectClipRgn(GetHDC(), hRgn);
+  // DeleteObject(hRgn);
 }
 
-void SkiaRenderTarget::PopRelativeClipRect() { UIASSERT(false); }
+
+void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {
+  // while (!m_stackClipRect.empty())
+  //   m_stackClipRect.pop();
+  m_stackClipRect.clear();
+
+  m_arrayMetaClipRegion.CopyFromArray(prc, nrcCount);
+
+  update_clip_rgn();
+}
+
+void SkiaRenderTarget::PushRelativeClipRect(const Rect *prc) {
+  Rect rc = {0};
+  if (prc) {
+    rc.CopyFrom(*prc);
+    rc.Offset(m_ptOffset.x, m_ptOffset.y);
+  }
+
+  m_stackClipRect.push_back(rc);
+
+  update_clip_rgn();
+}
+
+void SkiaRenderTarget::PopRelativeClipRect() { 
+  assert(!m_stackClipRect.empty());
+  m_stackClipRect.pop_back();
+
+
+  update_clip_rgn();
+}
 
 bool SkiaRenderTarget::IsRelativeRectInClip(const Rect *prc) {
-  UIASSERT(false);
-  return false;
+assert(prc);
+  if (!prc)
+    return false;
+
+  if (m_stackClipRect.empty() && m_arrayMetaClipRegion.GetCount() == 0)
+    return true;
+
+  Rect rcTest = *prc;
+  rcTest.Offset(m_ptOffset.x, m_ptOffset.y);
+
+  if (!m_arrayMetaClipRegion.IntersectRect(&rcTest, true))
+    return false;
+
+  if (m_stackClipRect.empty())
+    return true;
+
+  Rect rcIntersect = {0, 0, 1, 1};
+
+  auto iter = m_stackClipRect.begin();
+  rcIntersect.CopyFrom(*iter);
+  iter++;
+  for (; iter != m_stackClipRect.end(); ++iter) {
+    rcIntersect.Intersect((*iter), &rcIntersect);
+  }
+
+  if (!rcIntersect.Intersect(rcTest, &rcIntersect))
+    return false;
+
+  return true;
+
 }
 
 void SkiaRenderTarget::SetOrigin(int x, int y) {
-  // if (m_ptOffset.x == x && m_ptOffs-
+   if (m_ptOffset.x == x && m_ptOffset.y == y)
+    return;
+
+  int offsetx = x - m_ptOffset.x;
+  int offsety = y - m_ptOffset.y;
+  m_ptOffset.x = x;
+  m_ptOffset.y = y;
+
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  canvas->translate(offsetx, offsety);
 }
-
 void SkiaRenderTarget::OffsetOrigin(int x, int y) {
-  // m_ptOffset.x += x;
-  // m_ptOffset.y += y;
+  m_ptOffset.x += x;
+  m_ptOffset.y += y;
 
-  // Point pt = {0};
-  // ::SetViewportOrgEx(GetHDC(), m_ptOffset.x, m_ptOffset.y, &pt);
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  canvas->translate(x, y);
 }
 void SkiaRenderTarget::GetOrigin(int *px, int *py) {
-  // if (px)
-  //     *px = m_ptOffset.x;
+  if (px)
+      *px = m_ptOffset.x;
 
-  // if (py)
-  //     *py = m_ptOffset.y;
+  if (py)
+      *py = m_ptOffset.y;
 }
 
 bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {

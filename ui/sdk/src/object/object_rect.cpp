@@ -291,7 +291,7 @@ void Object::WindowRect2ObjectRect(const Rect *rcWindow, Rect *rcObj) {
 
 // 获取一个对象在窗口上的可视区域。例如用于绘制该对象时的裁剪
 bool Object::GetRectInWindow(Rect *prc, bool bOnlyVisiblePart) {
-  return CalcRectInAncestor(GetWindowObject(), nullptr, bOnlyVisiblePart, prc);
+  return CalcRectInAncestor(GetWindow(), nullptr, bOnlyVisiblePart, prc);
 }
 
 // 计算对象在层中的位置（不是层缓存中的位置，缓存也可能有偏移）
@@ -643,8 +643,7 @@ Size Object::GetDesiredSize() {
   return m_pLayoutParam->CalcDesiredSize();
 }
 
-void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
-#if 0
+void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
 	if (cx < 0)
 		cx = 0;
 	if (cy < 0)
@@ -665,8 +664,8 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
     //         return;
 
     nFlag |= SWP_NOZORDER;   // 该函数不提供修改ZORDER的功能
-    WINDOWPOS wndpos =  {nullptr, nullptr, x, y, cx, cy, nFlag};
-    UISendMessage(this, WM_WINDOWPOSCHANGING, 0, (long)&wndpos);
+    WINDOWPOS wndpos =  {0, 0, x, y, cx, cy, nFlag};
+    m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (long)&wndpos);
     x = wndpos.x;
     y = wndpos.y;
     cx = wndpos.cx;
@@ -705,7 +704,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
         return;  // DONOTHING
     }
 
-	WindowBase* pWindow = this->GetWindowObject();
+	Window* pWindow = this->GetWindow();
 	bool bHardComposite = false;
 	if (pWindow)
 		bHardComposite = pWindow->IsGpuComposite();
@@ -721,7 +720,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
         }
     }
 
-	::SetRect(&m_rcParent, x,y,x+cx,y+cy);
+	  m_rcParent.Set(x,y,x+cx,y+cy);
     if (!(nFlag&SWP_NOUPDATELAYOUTPOS))
     {
         UpdateLayoutPos();
@@ -740,8 +739,8 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
             notify_WM_SIZE(0, m_rcParent.Width(),m_rcParent.Height());
         }
 
-        WINDOWPOS wndpos2 =  {nullptr, nullptr, x, y, cx, cy, nFlag};
-        UISendMessage(this, WM_WINDOWPOSCHANGED, 0, (long)&wndpos2);
+        WINDOWPOS wndpos2 =  {0, 0, x, y, cx, cy, nFlag};
+        m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (long)&wndpos2);
     }
 
     if (bMove || bSize)
@@ -770,12 +769,9 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, int nFlag) {
             */
         }
     }
-#else
-  UIASSERT(false);
-#endif
 }
 
-void Object::SetObjectPos(const Rect *prc, int nFlag) {
+void Object::SetObjectPos(const Rect *prc, unsigned int nFlag) {
   if (nullptr == prc)
     return;
 

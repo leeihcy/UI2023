@@ -148,7 +148,7 @@ bool  IApplication::RegisterUIRenderBaseCreateData(
 // {
 //     IResBundle* pSkinRes = nullptr;
 //     if (pObject)
-//         pSkinRes = pObject->GetSkinRes();
+//         pSkinRes = pObject->GetResBundle();
 //     else
 //         pSkinRes = GetDefaultSkinRes();
 // 
@@ -165,7 +165,7 @@ bool  IApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** 
 { 
     IResBundle* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetSkinRes();
+        pSkinRes = pObject->GetResBundle();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType, pObject, ppOut);
@@ -186,7 +186,7 @@ bool  IApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* p
 {
     IResBundle* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetSkinRes();
+        pSkinRes = pObject->GetResBundle();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRenderBaseByName(pSkinRes, szName, pObject, ppOut);
@@ -195,7 +195,7 @@ bool  IApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRende
 { 
     IResBundle* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetSkinRes();
+        pSkinRes = pObject->GetResBundle();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRender(pSkinRes, nType, pObject, ppOut); 

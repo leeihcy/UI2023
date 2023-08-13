@@ -4,7 +4,7 @@
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/event.h"
 #include "../common/signalslot/signal.h"
-#include "iobject.h"
+#include "ipanel.h"
 // #include "irenderlayer.h"
 // #include "ipanel.h"
 
@@ -116,7 +116,7 @@ struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
 {
     HWND  GetHWND();
     IWindowRender*  GetWindowRender();
-	IResBundle*  GetSkinRes();
+	IResBundle*  GetResBundle();
 
     bool  IsChildWindow();
 	bool  IsWindowVisible();
@@ -184,7 +184,7 @@ typedef struct tagWindowStyle
 
 
 class Window;
-struct UIAPI IWindow : public IObject {
+struct UIAPI IWindow : public IPanel {
   void Create(const Rect &rect);
   void SetTitle(const char *title);
   void Show();

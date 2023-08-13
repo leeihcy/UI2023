@@ -9,7 +9,7 @@
 #endif
 
 namespace ui {
-UI_IMPLEMENT_INTERFACE(Window, Object)
+UI_IMPLEMENT_INTERFACE(Window, Panel)
 
 void IWindow::Create(const Rect &rect) { __pImpl->Create(rect); }
 void IWindow::SetTitle(const char *title) { __pImpl->SetTitle(title); }
@@ -56,9 +56,9 @@ IWindowRender*  IWindowBase::GetWindowRender()
 { 
 	return __pImpl->GetWindowRender()->GetIWindowRender();
 }
-IResBundle*  IWindowBase::GetSkinRes()                                      
+IResBundle*  IWindowBase::GetResBundle()                                      
 { 
-	return __pImpl->GetSkinRes()->GetIResBundle(); 
+	return __pImpl->GetResBundle()->GetIResBundle(); 
 }
 void   IWindowBase::SetFocusObject(IObject* pObj)
 {

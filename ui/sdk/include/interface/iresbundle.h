@@ -68,9 +68,9 @@ namespace ui
 		void  ChangeSkinHLS(short h, short l, short s, int nFlag);
 		bool  Save(IResBundle* pSkinRes);
 
-		unsigned int  GetSkinResCount();
-		IResBundle*  GetSkinResByIndex(unsigned int i);
-		IResBundle*  GetSkinResByName(const wchar_t* szName);
+		unsigned int  GetResBundleCount();
+		IResBundle*  GetResBundleByIndex(unsigned int i);
+		IResBundle*  GetResBundleByName(const wchar_t* szName);
 
         void  SetCurrentLanguage(const wchar_t*);
         const wchar_t*  GetCurrentLanguage();

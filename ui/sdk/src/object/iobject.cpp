@@ -1,6 +1,6 @@
 #include "include/interface/iobject.h"
 #include "src/object/object.h"
-// #include "src/UIObject\Window\windowbase.h"
+#include "src/window/window.h"
 #include "include/interface/ixmlwrap.h"
 // #include "..\..\Layer\layer.h"
 #include "src/application/uiapplication.h"
@@ -43,16 +43,15 @@ void  IObject::SetId(const wchar_t* szText)
 	__pImpl->SetId(szText); 
 }
 
-#if 0
-IWindowBase*  IObject::GetWindowObject() 
+IWindow*  IObject::GetWindow() 
 {
-    WindowBase* p = __pImpl->GetWindowObject();
+    Window* p = __pImpl->GetWindow();
     if (p)
-        return p->GetIWindowBase();
+        return p->GetIWindow();
     else
         return nullptr;
 }
-
+#if 0
 ILayer*  IObject::GetLayer()
 {
     Layer* p = __pImpl->GetLayer();
@@ -83,9 +82,9 @@ IApplication* IObject::GetUIApplication()
 
 	return p->GetIUIApplication();
 }
-IResBundle*  IObject::GetSkinRes()
+IResBundle*  IObject::GetResBundle()
 {
-	ResBundle* p = __pImpl->GetSkinRes();
+	ResBundle* p = __pImpl->GetResBundle();
 	if (!p)
 		return nullptr;
 

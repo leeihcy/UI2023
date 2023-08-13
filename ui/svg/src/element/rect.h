@@ -12,8 +12,12 @@ public:
   Rect(IRect*);
 
   UI_BEGIN_MSG_MAP()
+    UIMSG_ERASEBKGND(OnEraseBkgnd)
 	UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(Rect, IObject)
 
+private:
+  void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget);
+  
 private:
   IRect* m_pIRect;
   

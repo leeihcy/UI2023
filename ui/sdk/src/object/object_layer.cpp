@@ -16,7 +16,7 @@ void ObjectLayer::CreateLayer() {
 
   WindowRender *pWndRender = nullptr;
 
-  Window *pWindow = m_obj.GetWindowObject();
+  Window *pWindow = m_obj.GetWindow();
   if (pWindow)
     pWndRender = &pWindow->GetWindowRender();
 

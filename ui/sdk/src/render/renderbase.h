@@ -46,7 +46,7 @@ public:
 	void  SetRenderType( const RENDER_TYPE& nType ){ m_nRenderType = nType ; }
 	RENDER_TYPE  GetRenderType() { return m_nRenderType; }
 
-    ResBundle*  GetSkinRes();
+    ResBundle*  GetResBundle();
 	ColorRes*  GetSkinColorRes();
 	ImageRes*  GetSkinImageRes();
 	

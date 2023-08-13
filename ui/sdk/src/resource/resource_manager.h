@@ -38,9 +38,9 @@ public:
   ResBundle *LoadResBundle(const wchar_t *szPath);
   ResBundle *LoadResBundle(long hInstance, int resId = -1);
   ResBundle *GetDefaultSkinRes();
-  ResBundle *GetSkinResByName(const wchar_t *szName);
-  unsigned int GetSkinResCount();
-  ResBundle *GetSkinResByIndex(unsigned int i);
+  ResBundle *GetResBundleByName(const wchar_t *szName);
+  unsigned int GetResBundleCount();
+  ResBundle *GetResBundleByIndex(unsigned int i);
 
   bool Save(ResBundle *pSkinRes = nullptr);
   void ChangeSkinHLS(short h, short l, short s, int nFlag);

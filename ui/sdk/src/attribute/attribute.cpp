@@ -608,7 +608,7 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
     SERIALIZEDATA data = {0};
     data.pAttributeEditorProxy = &m_oIProxy;
     data.pUIApplication = pObj->GetUIApplication();
-    data.pSkinRes = pObj->GetSkinRes();
+    data.pSkinRes = pObj->GetResBundle();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 
     static_cast<IMessage *>(pObj)->SendMessage(UI_MSG_SERIALIZE, (long)&data);

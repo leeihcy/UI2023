@@ -3,7 +3,7 @@
 #include "sdk/include/inc.h"
 
 namespace ui {
-struct IWindowBase;
+struct IWindow;
 struct IResBundle;
 struct IObjectDescription;
 struct ITextRenderBase;
@@ -66,10 +66,8 @@ typedef struct tagObjState {
 class Object;
 struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
-  IResBundle *GetSkinRes();
-#if 0
-		IWindowBase*  GetWindowObject();
-#endif
+  IResBundle *GetResBundle();
+	IWindow*  GetWindow();
   void SetDescription(IObjectDescription *p);
   IObjectDescription *GetDescription(); // 返回值不会为空
   const wchar_t *GetId();

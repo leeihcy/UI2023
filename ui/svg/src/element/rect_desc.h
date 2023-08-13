@@ -21,7 +21,7 @@ public:
   virtual long GetMinorType() override { return CONTROL_SVG; }
   virtual const wchar_t *GetCategory() override { return CATEGORY_SVG; }
   virtual const wchar_t *GetTagName() override { return L"Rect"; }
-  virtual Uuid GetGuid() override { return IRect::UUID(); }
+  virtual Uuid GetUuid() override { return IRect::UUID(); }
 
   virtual void GetDefaultSize(long &w, long &h) override {
     w = 100;

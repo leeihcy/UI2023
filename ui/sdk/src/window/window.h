@@ -6,6 +6,7 @@
 #include "include/common/signalslot/signal.h"
 #include "include/interface/iwindow.h"
 #include "src/object/object.h"
+#include "src/panel/panel.h"
 #include "src/layer/windowrender.h"
 
 namespace ui {
@@ -26,7 +27,7 @@ struct WindowPlatform {
   virtual void Commit(IRenderTarget* pRT, const Rect* prect, int count) = 0;
 };
 
-class Window : public Object {
+class Window : public Panel {
 public:
   Window(IWindow *p);
   ~Window();
@@ -40,8 +41,7 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UIMSG_FINALCONSTRUCT(FinalConstruct)
   // UIMSG_PRECREATEWINDOW( PreCreateWindow )
-  // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
-  UI_END_MSG_MAP_CHAIN_PARENT(Object)
+  UI_END_MSG_MAP_CHAIN_PARENT( Panel )
 
   IWindow*   GetIWindow() { return m_pIWindow; }
   WindowRender&  GetWindowRender() { return m_window_render; }

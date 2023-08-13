@@ -55,6 +55,8 @@ long  GetDpi()
             ReleaseDC(nullptr, hDC);
         }
     }
+#else
+    dpi = DEFAULT_SCREEN_DPI;
 #endif
     return dpi;
 }
@@ -62,7 +64,7 @@ long  GetDpi()
 float  GetDpiScale()
 {
     static bool bInit = false;
-    static float fScale = 0;
+    static float fScale = 1;
 
     if (!bInit)
     {

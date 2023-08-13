@@ -103,6 +103,8 @@ shared_library("uisdk") {
         "src/object/object_rect.cpp",
         "src/object/object_render.cpp",
         "src/object/object_animate.cpp",
+        "src/panel/ipanel.cpp",
+        "src/panel/panel.cpp",
         "src/render/colorrender/colorrender.cpp",
         "src/render/colorrender/icolorrender.cpp",
         "src/render/imagerender/iimagerender.cpp",

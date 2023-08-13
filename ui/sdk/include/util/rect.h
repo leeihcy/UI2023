@@ -92,6 +92,12 @@ struct Rect : public RectLTRB {
     top += y;
     bottom += y;
   }
+  void Deflate(Rect& rc) {
+    left += rc.left;
+    top += rc.top;
+    right -= rc.right;
+    bottom -= rc.bottom;
+  }
 
   int width() const { return right - left; }
   int Width() const { return width(); }

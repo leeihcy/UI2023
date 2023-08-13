@@ -92,11 +92,24 @@ typedef struct tagLOGFONT {
 #define WM_QUIT 0x0012
 #define WM_ERASEBKGND 0x0014
 #define WM_THEMECHANGED 0x031A
+#define WM_WINDOWPOSCHANGING 0x0046
+#define WM_WINDOWPOSCHANGED 0x0047
+
+typedef struct tagWINDOWPOS {
+  HWND hwnd;
+  HWND hwndInsertAfter;
+  int  x;
+  int  y;
+  int  cx;
+  int  cy;
+  unsigned int flags;
+} WINDOWPOS, *LPWINDOWPOS, *PWINDOWPOS;
 
 #define SWP_NOMOVE 1
 #define SWP_NOSIZE 2
 #define SWP_NOZORDER 4
 #define SWP_NOREDRAW 8
+#define SWP_NOSENDCHANGING 0x10
 
 #define DT_SINGLELINE 1
 #define DT_END_ELLIPSIS 2

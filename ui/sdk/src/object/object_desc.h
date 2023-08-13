@@ -30,7 +30,7 @@ public:
     UIASSERT(0);
     return L"";
   }
-  virtual Uuid GetGuid() override {
+  virtual Uuid GetUuid() override {
     UIASSERT(0);
     return Uuid::Null();
   }

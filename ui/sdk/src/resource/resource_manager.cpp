@@ -181,7 +181,7 @@ long ResourceManager::ChangeSkin(IResBundle* pISkinRes, bool bSync)
         return true;
 }
 
-ResBundle*  ResourceManager::GetSkinResByIndex(long lIndex)
+ResBundle*  ResourceManager::GetResBundleByIndex(long lIndex)
 {
         int nSize = (int)m_resoures.size();
         if (lIndex < 0 || lIndex >= nSize )
@@ -213,7 +213,7 @@ long ResourceManager::SetActiveSkin(IResBundle* pSkinRes)
 //
 //	失败返回-1
 //
-int ResourceManager::GetSkinResIndex(ResBundle* pSkinRes)
+int ResourceManager::GetResBundleIndex(ResBundle* pSkinRes)
 {
         if (nullptr == pSkinRes)
                 return -1;
@@ -300,7 +300,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
     ui::util::GetPathFileName(szDir, szSkinName);
 
     // 允许同名，但在不同的路径下面
-    // 		ResBundle* pTest = GetSkinResByName(szSkinName);
+    // 		ResBundle* pTest = GetResBundleByName(szSkinName);
     // 		if (pTest)
     // 		{
     // 			UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
@@ -329,7 +329,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
 
     util::GetPathFileName(szPath, szSkinName);
     szSkinName[wcslen(szSkinName) - nExtLength] = 0;
-    ResBundle *pTest = GetSkinResByName(szSkinName);
+    ResBundle *pTest = GetResBundleByName(szSkinName);
     if (pTest) {
       UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
       return pTest;
@@ -444,7 +444,7 @@ bool ResourceManager::Save(ResBundle *pSkinRes) {
   return bRet;
 }
 
-ResBundle *ResourceManager::GetSkinResByName(const wchar_t *szName) {
+ResBundle *ResourceManager::GetResBundleByName(const wchar_t *szName) {
   if (nullptr == szName)
     return nullptr;
 
@@ -458,10 +458,10 @@ ResBundle *ResourceManager::GetSkinResByName(const wchar_t *szName) {
   return nullptr;
 }
 
-unsigned int ResourceManager::GetSkinResCount() {
+unsigned int ResourceManager::GetResBundleCount() {
   return (unsigned int)m_resoures.size();
 }
-ResBundle *ResourceManager::GetSkinResByIndex(unsigned int i) {
+ResBundle *ResourceManager::GetResBundleByIndex(unsigned int i) {
   if (i >= m_resoures.size())
     return nullptr;
 

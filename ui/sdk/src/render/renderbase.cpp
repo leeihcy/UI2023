@@ -42,16 +42,16 @@ long  RenderBase::Release()
 	return m_lRef;
 }
 
-ResBundle*  RenderBase::GetSkinRes()
+ResBundle*  RenderBase::GetResBundle()
 {
     if (!m_pObject)
         return nullptr;
 
-    return m_pObject->GetSkinRes();
+    return m_pObject->GetResBundle();
 }
 ColorRes*  RenderBase::GetSkinColorRes()
 {
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return nullptr;
 
@@ -60,7 +60,7 @@ ColorRes*  RenderBase::GetSkinColorRes()
 
 ImageRes*  RenderBase::GetSkinImageRes()
 {
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return nullptr;
 
@@ -115,7 +115,7 @@ void  RenderBase::_LoadBitmap(const wchar_t* szBitmapId, IRenderBitmap*& pBitmap
 
 	if (m_pObject)
 	{
-		ResBundle* pSkinRes = m_pObject->GetSkinRes();
+		ResBundle* pSkinRes = m_pObject->GetResBundle();
 		if (!pSkinRes)
 			return;
 

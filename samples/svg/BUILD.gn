@@ -4,7 +4,8 @@ executable("svg") {
     output_name = "sample_svg"
 
     deps = [
-        "//ui/sdk:sdk"
+        "//ui/sdk:sdk",
+        "//ui/svg:svg"
     ]
     include_dirs = [
         "//ui",

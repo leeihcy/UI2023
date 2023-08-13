@@ -32,7 +32,7 @@ public:
 	{
 		return L"HwndHost";
 	}
-	virtual const GUID&  GetGuid() override
+	virtual const GUID&  GetUuid() override
 	{
 		return __uuidof(IHwndHost);
 	}

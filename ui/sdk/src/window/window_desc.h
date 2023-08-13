@@ -20,7 +20,7 @@ public:
   virtual long GetMinorType() override { return WINDOW_SIMPLE; }
   virtual const wchar_t *GetCategory() override { return CATEGORY_WINDOW; }
   virtual const wchar_t *GetTagName() override { return L"Window"; }
-  virtual Uuid GetGuid() override { 
+  virtual Uuid GetUuid() override { 
     return IWindow::UUID();
   }
 
@@ -61,7 +61,7 @@ public:
 	{
 		return L"CustomWindow";
 	}
-	virtual const UUID&  GetGuid() override
+	virtual const UUID&  GetUuid() override
 	{
 		return __guid(ICustomWindow);
 	}

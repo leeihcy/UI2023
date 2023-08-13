@@ -400,7 +400,7 @@ IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
                                             IResBundle *pSkinRes) {
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
-    if (clsid == m_vecUIObjectDesc[i]->GetGuid()) {
+    if (clsid == m_vecUIObjectDesc[i]->GetUuid()) {
       IObject *p = nullptr;
       m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void **)&p);
       return p;
@@ -737,7 +737,7 @@ bool Application::CreateRenderBaseByName(const wchar_t *szName,
                                          IRenderBase **ppOut) {
   IResBundle *pSkinRes = nullptr;
   if (pObject) {
-    pSkinRes = pObject->GetSkinRes();
+    pSkinRes = pObject->GetResBundle();
   } else {
     ResBundle *p = GetDefaultSkinRes();
     pSkinRes = p ? p->GetIResBundle() : nullptr;

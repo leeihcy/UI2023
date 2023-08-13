@@ -1,12 +1,11 @@
-#include "stdafx.h"
 #include "include/interface/ipanel.h"
-#include "src/UIObject\Panel\panel.h"
-#include "round_panel.h"
+#include "src/panel/panel.h"
+// #include "round_panel.h"
 
 namespace ui
 {
 UI_IMPLEMENT_INTERFACE(Panel, Object)
-UI_IMPLEMENT_INTERFACE(RoundPanel, Panel)
+// UI_IMPLEMENT_INTERFACE(RoundPanel, Panel)
 
 ILayout* IPanel::GetLayout()                 
 {

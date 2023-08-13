@@ -139,7 +139,7 @@ Layer *Object::GetLayerForAnimate() {
 }
 
 // 获取一个控件所在窗口句炳
-Window *Object::GetWindowObject() {
+Window *Object::GetWindow() {
   Object *pParent = this;
   do {
     if (!pParent->m_pParent)
@@ -155,7 +155,7 @@ Window *Object::GetWindowObject() {
 }
 #if defined(OS_WIN)
 HWND Object::GetHWND() {
-  WindowBase *pWindow = this->GetWindowObject();
+  WindowBase *pWindow = this->GetWindow();
   if (!pWindow)
     return nullptr;
 
@@ -266,7 +266,7 @@ Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumChildObject(pObjChild))) {
     IObjectDescription *pDesc = pObjChild->GetDescription();
-    if (pDesc->GetGuid() == uuid) {
+    if (pDesc->GetUuid() == uuid) {
       return pObjChild;
     }
   }
@@ -288,7 +288,7 @@ Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumNcChildObject(pObjChild))) {
     IObjectDescription *pDesc = pObjChild->GetDescription();
-    if (pDesc->GetGuid() == uuid) {
+    if (pDesc->GetUuid() == uuid) {
       return pObjChild;
     }
   }
@@ -456,7 +456,7 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 //         return pRenderFont;
 //
 //     // 向窗口获取默认
-//     WindowBase* pWindow = GetWindowObject();
+//     WindowBase* pWindow = GetWindow();
 //     if (pWindow)
 //         return pWindow->GetWindowDefaultRenderFont();
 //
@@ -560,7 +560,7 @@ void Object::OnVisibleChanged(bool bVisible, IObject *pObjChanged) {
   //     if (!bVisible)
   //     {
   //         // 防止调用中途或者换肤过程中，一些对象突然被销毁，导致的野指针错误
-  //         WindowBase* pWindow = GetWindowObject();
+  //         WindowBase* pWindow = GetWindow();
   //         if (pWindow)  //
   //         必须在DestroyChildObject前调用，否则parent关系被清空
   //         {
@@ -604,12 +604,9 @@ void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
     __ADD(clip_client);
     __ADD(tabstop);
 
-#if defined(OS_WIN)
     if (add->layer)
       m_objLayer.CreateLayer();
-#else
-    UIASSERT(false);
-#endif
+      
     // 默认值为1时，如果没有在xml中配置，不会触发setter函数
     // 因此在设置默认值的时候，应该同步一次该值
     if (add->default_ncobject) {
@@ -761,7 +758,7 @@ bool Object::NeedClip() {
   // (m_pRenderLayer
   // && m_pRenderLayer->HasTransform())
   // 	{
-  // 		WindowBase* pWindow = GetWindowObject();
+  // 		WindowBase* pWindow = GetWindow();
   // 		if (!pWindow || !pWindow->IsGpuComposite())
   // 			return false;
   // 	}
@@ -794,7 +791,7 @@ bool Object::SetFocusInWindow() {
 
   pMKMgr->SetFocusObject(this);
 
-  // 	WindowBase* pWnd = GetWindowObject();
+  // 	WindowBase* pWnd = GetWindow();
   // 	if (!pWnd)
   // 		return false;
   //
@@ -1148,7 +1145,7 @@ void Object::InitDefaultAttrib() {
 
 void Object::SetOutRef(void **ppOutRef) { m_ppOutRef = ppOutRef; }
 
-ResBundle *Object::GetSkinRes() { return m_pSkinRes; }
+ResBundle *Object::GetResBundle() { return m_pSkinRes; }
 
 IResBundle *Object::GetIResBundle() {
   if (!m_pSkinRes)
@@ -1277,7 +1274,7 @@ IRenderFont *Object::GetRenderFont() {
 
 #if defined(OS_WIN)
   // 向窗口获取默认
-  WindowBase *pWindow = GetWindowObject();
+  Window *pWindow = GetWindow();
   if (pWindow)
     return pWindow->GetWindowDefaultRenderFont();
 #else
@@ -1409,7 +1406,7 @@ const wchar_t *Object::SaveTextRender() {
 #if 0
 unsigned int  Object::CalcContrastTextColor()
 {
-    WindowBase*  pWindowBase = GetWindowObject();
+    WindowBase*  pWindowBase = GetWindow();
     if (nullptr == pWindowBase)
         return 0;
 
@@ -1473,7 +1470,7 @@ unsigned int  Object::CalcContrastTextColor()
 
 Object *Object::GetObjectByPos(Point *pt) {
 #if defined(OS_WIN)
-  WindowBase *pWindow = GetWindowObject();
+  WindowBase *pWindow = GetWindow();
   if (nullptr == pWindow)
     return nullptr;
 
@@ -1486,7 +1483,7 @@ Object *Object::GetObjectByPos(Point *pt) {
 
 bool Object::SetMouseCapture(int nNotifyMsgId) {
 #if defined(OS_WIN)
-  WindowBase *pWindow = GetWindowObject();
+  WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
 
@@ -1499,7 +1496,7 @@ bool Object::SetMouseCapture(int nNotifyMsgId) {
 }
 bool Object::ReleaseMouseCapture() {
 #if defined(OS_WIN)
-  WindowBase *pWindow = GetWindowObject();
+  WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
 
@@ -1512,7 +1509,7 @@ bool Object::ReleaseMouseCapture() {
 }
 bool Object::SetKeyboardCapture(int nNotifyMsgId) {
 #if defined(OS_WIN)
-  WindowBase *pWindow = GetWindowObject();
+  WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
 
@@ -1525,7 +1522,7 @@ bool Object::SetKeyboardCapture(int nNotifyMsgId) {
 }
 bool Object::ReleaseKeyboardCapture() {
 #if defined(OS_WIN)
-  WindowBase *pWindow = GetWindowObject();
+  WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
 

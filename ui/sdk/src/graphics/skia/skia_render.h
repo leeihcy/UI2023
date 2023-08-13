@@ -1,9 +1,13 @@
 #pragma once
+#include <vector>
+
 #include <SkCanvas.h>
 #include <SkSurface.h>
 #include <SkColorSpace.h>
 
 #include "include/interface/renderlibrary.h"
+#include "src/util/rectregion/rectregion.h"
+
 // #include "Src\Util\RectRegion\rectarray.h"
 // #include "gdibitmap.h"
 // #include "gdibrush.h"
@@ -100,8 +104,7 @@ protected:
   // void InverseAlpha(HDC hDC, const Rect* lpRect);
   // void _FixAlpha(HDC hDC, const Rect* lpRect, util::FixAlphaMode e, long wParam);
 
-  // void update_clip_rgn();
-
+  void update_clip_rgn();
 
 protected:
   // 渲染
@@ -115,11 +118,11 @@ protected:
 
   // long m_lDrawingRef; // 标识外部调用了几次BeginDraw，解决嵌套调用出现的一些问题
 
-  // // 剪裁数据
-  // RectRegion m_arrayMetaClipRegion;
-  // stack<Rect> m_stackClipRect;
+  // 剪裁数据
+  RectRegion m_arrayMetaClipRegion;
+  std::vector<Rect> m_stackClipRect;  // 需要遍历，不使用std::stack
 
-  // Point m_ptOffset; // 用于调试时查看当前HDC偏移量
+  Point m_ptOffset; // 用于调试时查看当前HDC偏移量
 };
 
 } // namespace ui

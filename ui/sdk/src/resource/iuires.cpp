@@ -763,22 +763,22 @@ bool  IResourceManager::Save(IResBundle* pSkinRes)
         return m_pImpl->Save(pSkinRes->GetImpl()); 
 }
 
-IResBundle*  IResourceManager::GetSkinResByName(const wchar_t* szName)
+IResBundle*  IResourceManager::GetResBundleByName(const wchar_t* szName)
 {
-	ResBundle* p = m_pImpl->GetSkinResByName(szName);
+	ResBundle* p = m_pImpl->GetResBundleByName(szName);
 	if (p)
 		return p->GetIResBundle();
 
 	return nullptr;
 }
 
-uint  IResourceManager::GetSkinResCount()
+uint  IResourceManager::GetResBundleCount()
 {
-	return m_pImpl->GetSkinResCount();
+	return m_pImpl->GetResBundleCount();
 }
-IResBundle*  IResourceManager::GetSkinResByIndex(uint i)
+IResBundle*  IResourceManager::GetResBundleByIndex(uint i)
 {
-	ResBundle* p = m_pImpl->GetSkinResByIndex(i);
+	ResBundle* p = m_pImpl->GetResBundleByIndex(i);
 	if (p)
 		return p->GetIResBundle();
 

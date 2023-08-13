@@ -75,7 +75,7 @@ struct IObjectDescription {
   virtual long GetMinorType() = 0;
   virtual const wchar_t *GetCategory() = 0;
   virtual const wchar_t *GetTagName() = 0;
-  virtual Uuid GetGuid() = 0;
+  virtual Uuid GetUuid() = 0;
   virtual void GetDefaultSize(long &w, long &h) = 0;
   virtual HBITMAP LoadIcon() = 0;
 };

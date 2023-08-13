@@ -63,7 +63,7 @@ public:
 	
 	IColorRes*  GetSkinColorRes();
 	IFontRes*  GetSkinFontRes();
-    ResBundle*  GetSkinRes();
+    ResBundle*  GetResBundle();
 
 	bool  IsThemeRender();
     void  CheckSkinTextureChanged();

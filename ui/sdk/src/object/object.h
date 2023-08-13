@@ -7,7 +7,6 @@
 namespace ui {
 class ResBundle;
 class Application;
-class WindowBase;
 class Window;
 class Layer;
 struct UIElement;
@@ -47,9 +46,9 @@ public:
 
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
-  ResBundle *GetSkinRes();
+  ResBundle *GetResBundle();
   IResBundle *GetIResBundle();
-  Window *GetWindowObject();
+  Window *GetWindow();
 #if defined(OS_WIN)
   HWND GetHWND();
 #endif
@@ -163,8 +162,8 @@ public:
   // void  UpdateMyLayout();
   void UpdateLayoutPos();
   void UpdateObjectNonClientRegion();
-  virtual void SetObjectPos(int x, int y, int cx, int cy, int nFlag = 0);
-  void SetObjectPos(const Rect *prc, int nFlag);
+  virtual void SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag = 0);
+  void SetObjectPos(const Rect *prc, unsigned int nFlag);
 
   void GetParentRect(Rect *prc);
   Point GetWindowPoint();

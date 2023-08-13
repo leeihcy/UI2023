@@ -15,7 +15,7 @@
 
 namespace ui {
 
-Window::Window(IWindow *p) : Object(p), m_window_render(*this), m_pIWindow(p) {}
+Window::Window(IWindow *p) : Panel(p), m_window_render(*this), m_pIWindow(p) {}
 Window::~Window() {
   if (m_platform) {
     m_platform->Release();
@@ -40,8 +40,7 @@ long Window::FinalConstruct(IResBundle *p) {
 void Window::OnSerialize(SERIALIZEDATA *pData) {
   // 放在最前面，设置好Graphics Render Library
   m_window_render.OnSerialize(pData);
-  // Panel::OnSerialize(pData);
-  Object::OnSerialize(pData);
+  Panel::OnSerialize(pData);
 
   AttributeSerializer s(pData, TEXT("Window"));
 #if 0
@@ -203,7 +202,9 @@ bool Window::CreateUI(const wchar_t *szId) {
 
     m_strId = szId; // 提前给id赋值，便于日志输出
   }
-
+  else {
+    InitDefaultAttrib();
+  }
   //
   //	为了解决xp、win7上面的一个特性：只有在按了ALT键，或者TAB键之后，才会显示控件的focus
   // rect 	在初始化后，主动将该特性清除。

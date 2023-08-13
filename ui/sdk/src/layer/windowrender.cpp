@@ -36,7 +36,7 @@ void WindowRender::OnSerialize(SERIALIZEDATA *pData) {
 
   s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(long *)&m_grl_type)
       ->FillGraphicsRenderLibraryData()
-      ->SetDefault(GRAPHICS_RENDER_LIBRARY_TYPE_GDI);
+      ->SetDefault(GRAPHICS_RENDER_LIBRARY_TYPE_SKIA);
 
   s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
       ->SetDefault(true);

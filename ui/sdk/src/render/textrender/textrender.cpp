@@ -225,18 +225,18 @@ Size TextRenderBase::GetDesiredSize(const wchar_t* szText, int nLimitWidth)
 
 IColorRes*  TextRenderBase::GetSkinColorRes()
 {
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return nullptr;
 
     return &pSkinRes->GetColorRes().GetIColorRes();
 }
 
-ResBundle*  TextRenderBase::GetSkinRes()
+ResBundle*  TextRenderBase::GetResBundle()
 {
     if (m_pObject)
     {
-        return m_pObject->GetSkinRes();
+        return m_pObject->GetResBundle();
     }
 
     return nullptr;
@@ -244,7 +244,7 @@ ResBundle*  TextRenderBase::GetSkinRes()
 
 IFontRes*  TextRenderBase::GetSkinFontRes()
 {
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return nullptr;
 
@@ -310,7 +310,7 @@ void  SimpleTextRender::LoadFont(const wchar_t* szFontId)
 	}
 #endif
 
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return;
 
@@ -672,7 +672,7 @@ void  ColorListTextRender::LoadFont(const wchar_t* szFontId)
         m_strFontId.clear();
 #endif
 
-    ResBundle* pSkinRes = GetSkinRes();
+    ResBundle* pSkinRes = GetResBundle();
     if (!pSkinRes)
         return;
 

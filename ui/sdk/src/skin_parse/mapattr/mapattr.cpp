@@ -281,7 +281,7 @@ long  CMapAttribute::GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t
 //     {
 //         SERIALIZEDATA data = {0};
 //         data.pUIApplication = pUIApp;
-// 		data.pSkinRes = pBindObj?pBindObj->GetSkinRes():nullptr;
+// 		data.pSkinRes = pBindObj?pBindObj->GetResBundle():nullptr;
 //         data.pMapAttrib = static_cast<IMapAttribute*>(this);
 //         data.szPrefix = szPrefix;
 //         data.nFlags = SERIALIZEFLAG_LOAD;
@@ -328,7 +328,7 @@ long  CMapAttribute::GetAttr_Image9Region(const wchar_t* szPrefix, const wchar_t
 //     {
 //         SERIALIZEDATA data = {0};
 //         data.pUIApplication = pUIApp;
-// 		data.pSkinRes = pBindObj ? pBindObj->GetSkinRes() : nullptr;
+// 		data.pSkinRes = pBindObj ? pBindObj->GetResBundle() : nullptr;
 //         data.pMapAttrib = static_cast<IMapAttribute*>(this);
 //         data.szPrefix = szPrefix;
 //         data.nFlags = SERIALIZEFLAG_LOAD;
