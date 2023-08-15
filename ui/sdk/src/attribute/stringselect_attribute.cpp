@@ -1,129 +1,131 @@
-#include "include/inc.h"
 #include "stringselect_attribute.h"
 #include "attribute.h"
+#include "include/inc.h"
 #include "include/interface/iuiapplication.h"
 #include "src/application/uiapplication.h"
 
+namespace ui {
+AttributeBase *CreateStringEnumAttribute() { return new StringEnumAttribute(); }
 
-namespace ui
-{
-    AttributeBase*  CreateStringEnumAttribute()
-    {
-        return new StringEnumAttribute();
-    }
-
-StringEnumAttribute::StringEnumAttribute()
-{
-    m_pIStringEnumAttribute = nullptr;
-    m_bEditable = false;
+StringEnumAttribute::StringEnumAttribute() {
+  m_pIStringEnumAttribute = nullptr;
+  m_bEditable = false;
 }
 
-StringEnumAttribute::~StringEnumAttribute()
-{
-    SAFE_DELETE(m_pIStringEnumAttribute);
+StringEnumAttribute::~StringEnumAttribute() {
+  SAFE_DELETE(m_pIStringEnumAttribute);
 }
 
-IStringEnumAttribute*  StringEnumAttribute::GetIStringEnumAttribute()
-{
-    if (!m_pIStringEnumAttribute)
-        m_pIStringEnumAttribute = new IStringEnumAttribute(this);
+IStringEnumAttribute *StringEnumAttribute::GetIStringEnumAttribute() {
+  if (!m_pIStringEnumAttribute)
+    m_pIStringEnumAttribute = new IStringEnumAttribute(this);
 
-    return m_pIStringEnumAttribute;
+  return m_pIStringEnumAttribute;
 }
 
-StringEnumAttribute*  StringEnumAttribute::Add(const wchar_t* szText)
-{
-    if (IsExist(szText))
-        return this;
-
-    if (szText)
-        m_list.push_back(String(szText));
-
+StringEnumAttribute *StringEnumAttribute::Add(const wchar_t *szText) {
+  if (IsExist(szText))
     return this;
+
+  if (szText)
+    m_list.push_back(String(szText));
+
+  return this;
 }
 
-bool  StringEnumAttribute::IsExist(const wchar_t* szText)
-{
-    if (!szText)
-        return false;
-
-    std::list<String>::iterator iter = m_list.begin();
-    for (; iter != m_list.end(); ++iter)
-    {
-        if ((*iter) == szText)
-            return true;
-    }
-
+bool StringEnumAttribute::IsExist(const wchar_t *szText) {
+  if (!szText)
     return false;
+
+  std::list<String>::iterator iter = m_list.begin();
+  for (; iter != m_list.end(); ++iter) {
+    if ((*iter) == szText)
+      return true;
+  }
+
+  return false;
 }
 
-void  StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, long w, long l)
-{
-    std::list<String>::iterator iter = m_list.begin();
-    for (; iter != m_list.end(); ++iter)
-    {
-        callback((*iter).c_str(), w, l);
-    }
-    return;
+void StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, long w,
+                                     long l) {
+  std::list<String>::iterator iter = m_list.begin();
+  for (; iter != m_list.end(); ++iter) {
+    callback((*iter).c_str(), w, l);
+  }
+  return;
 }
 
-const wchar_t*  StringEnumAttribute::Get()
-{
-    const wchar_t* szValue = StringAttribute::Get();
-    if (!szValue)
-        return nullptr;
+const wchar_t *StringEnumAttribute::Get() {
+  const wchar_t *szValue = StringAttribute::Get();
+  if (!szValue)
+    return nullptr;
 
-    if (m_bEditable)
-    {
-        return szValue;
-    }
+  if (m_bEditable) {
+    return szValue;
+  } else {
+    if (IsExist(szValue))
+      return szValue;
     else
-    {
-        if (IsExist(szValue))
-            return szValue;
-        else
-            return m_strDefault.c_str();
-    }
+      return m_strDefault.c_str();
+  }
 }
 
-void  StringEnumAttribute::Set(const wchar_t* szValue)
-{
-    if (!m_bEditable && !IsExist(szValue))
-    {
-        return StringAttribute::Set(m_strDefault.c_str());
-    }
+void StringEnumAttribute::Set(const wchar_t *szValue) {
+  if (!m_bEditable && !IsExist(szValue)) {
+    return StringAttribute::Set(m_strDefault.c_str());
+  }
 
-    StringAttribute::Set(szValue);
+  StringAttribute::Set(szValue);
 }
 
-void  EnumRenderBaseNameCallback(const wchar_t* szText, long wParam, long lParam)
-{
-    StringEnumAttribute* pThis = (StringEnumAttribute*)wParam;
-    pThis->Add(szText);
-}
-StringEnumAttribute*  StringEnumAttribute::FillRenderBaseTypeData()
-{
-    m_list.clear();
-    this->Add(EMPTYTEXT);  // Ôö¼ÓÒ»ÏîÄ¬ÈÏÖµ£¬È¡Ïûµ±Ç°µÄÑ¡Ïî
-    m_pUIApplication->GetIUIApplication()->EnumRenderBaseName(EnumRenderBaseNameCallback, (long)this, 0);
-    return this;
+bool EnumLayoutTypeCallback(const wchar_t *szName, long wParam,
+                            long) {
+  StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
+  pThis->Add(szName);
+
+  return true;
 }
 
-void  EnumTextRenderBaseNameCallback(const wchar_t* szText, long wParam, long lParam)
-{
-    StringEnumAttribute* pThis = (StringEnumAttribute*)wParam;
-    pThis->Add(szText);
-}
-StringEnumAttribute*  StringEnumAttribute::FillTextRenderBaseTypeData()
-{
-    m_list.clear();
-	m_pUIApplication->GetIUIApplication()->EnumTextRenderBaseName(EnumTextRenderBaseNameCallback, (long)this, 0);
-    return this;
+// å¡«å……å¯é€‰çš„å¸ƒå±€ç±»åž‹ï¼š
+// "canvas" LAYOUT_TYPE_CANVAS
+// ...
+StringEnumAttribute *StringEnumAttribute::FillLayoutTypeData() {
+  Application *pUIApp = GetUIApplication();
+  if (pUIApp)
+    pUIApp->GetIUIApplication()->EnumLayoutType(EnumLayoutTypeCallback,
+                                                (long)this, 0);
+
+  return this;
 }
 
-void  StringEnumAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
-{
-    p->StringEnum2Editor(this, e);
+void EnumRenderBaseNameCallback(const wchar_t *szText, long wParam,
+                                long lParam) {
+  StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
+  pThis->Add(szText);
+}
+StringEnumAttribute *StringEnumAttribute::FillRenderBaseTypeData() {
+  m_list.clear();
+  this->Add(EMPTYTEXT); // å¢žåŠ ä¸€é¡¹é»˜è®¤å€¼ï¼Œå–æ¶ˆå½“å‰çš„é€‰é¡¹
+  m_pUIApplication->GetIUIApplication()->EnumRenderBaseName(
+      EnumRenderBaseNameCallback, (long)this, 0);
+  return this;
 }
 
+void EnumTextRenderBaseNameCallback(const wchar_t *szText, long wParam,
+                                    long lParam) {
+  StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
+  pThis->Add(szText);
 }
+StringEnumAttribute *StringEnumAttribute::FillTextRenderBaseTypeData() {
+  m_list.clear();
+  m_pUIApplication->GetIUIApplication()->EnumTextRenderBaseName(
+      EnumTextRenderBaseNameCallback, (long)this, 0);
+  return this;
+}
+
+void StringEnumAttribute::Editor(SERIALIZEDATA *pData, AttributeEditorProxy *p,
+                                 EditorAttributeFlag e) {
+  p->StringEnum2Editor(this, e);
+}
+
+} // namespace ui

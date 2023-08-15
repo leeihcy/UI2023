@@ -25,10 +25,11 @@ public:
 
 public:
   ILayout *GetLayout();
-  LAYOUTTYPE GetLayoutType();
-  void SetLayoutType(LAYOUTTYPE eLayoutType);
-  long GetLayoutType2();
-  void SetLayoutType2(long eLayoutType);
+  void SetLayout(ILayout*);
+  void SetLayoutType(const wchar_t* layout_name);
+
+  const wchar_t* GetLayoutName();
+  void SetLayoutName(const wchar_t* name);
 
   void SetTextureRender(IRenderBase *p);
   IRenderBase *GetTextureRender();
@@ -58,6 +59,8 @@ protected:
   // 最上面的遮罩层
   IRenderBase *m_pMaskRender;
   Rect m_rcMaskRenderRegion;
+
+  std::wstring m_layout_name;
 };
 
 } // namespace ui

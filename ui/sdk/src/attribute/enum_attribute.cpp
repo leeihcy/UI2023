@@ -86,26 +86,6 @@ const wchar_t*  EnumAttribute::Get()
     }
 }
 
-bool EnumLayoutTypeCallback(long lType, const wchar_t* szName, long wParam, long)
-{
-    EnumAttribute* pThis = (EnumAttribute*)wParam;
-    pThis->AddOption(lType, szName);
-
-    return true;
-}
-
-// 填充可选的布局类型：
-// "canvas" LAYOUT_TYPE_CANVAS
-// ...
-EnumAttribute*  EnumAttribute::FillLayoutTypeData()
-{
-    Application*  pUIApp = GetUIApplication();
-    if (pUIApp)
-	    pUIApp->GetIUIApplication()->EnumLayoutType(EnumLayoutTypeCallback, (long)this, 0);
-
-	return this;
-}
-
 namespace ui
 {
 // void  EnumGraphicsRenderLibraryType(

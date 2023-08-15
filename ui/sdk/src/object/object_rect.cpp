@@ -636,7 +636,8 @@ Size Object::GetDesiredSize() {
 
     if (!m_pLayoutParam) // 还是创建不成功，例如Combobox中的Button，它没有父Panel-Layout
     {
-      m_pLayoutParam = CanvasLayout::s_CreateLayoutParam(m_pIObject);
+      CanvasLayout layout;
+      m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
     }
   }
 
@@ -849,7 +850,8 @@ ILayoutParam *Object::GetSafeLayoutParam() {
   if (m_pLayoutParam)
     return m_pLayoutParam;
 
-  CanvasLayout::s_GetObjectLayoutParam(this);
+  CanvasLayout layout;
+  m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
 
   SERIALIZEDATA data = {0};
   data.pMapAttrib = m_pIMapAttributeRemain;
@@ -880,163 +882,6 @@ void Object::DestroyLayoutParam() { SAFE_RELEASE(m_pLayoutParam); }
 void Object::SetLayoutParam(ILayoutParam *p) {
   SAFE_RELEASE(m_pLayoutParam);
   m_pLayoutParam = p;
-}
-
-int Object::GetConfigWidth() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)->GetConfigWidth();
-  } else if (m_pIMapAttributeRemain) {
-    int nRet = NDEF;
-    m_pIMapAttributeRemain->GetAttr_int(XML_WIDTH, false, &nRet);
-    return nRet;
-  }
-
-  return NDEF;
-}
-
-int Object::GetConfigHeight() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)
-          ->GetConfigHeight();
-  } else if (m_pIMapAttributeRemain) {
-    int nRet = NDEF;
-    m_pIMapAttributeRemain->GetAttr_int(XML_HEIGHT, false, &nRet);
-    return nRet;
-  }
-  return NDEF;
-}
-
-int Object::GetConfigLayoutFlags() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return 0;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)
-          ->GetConfigLayoutFlags();
-  } else {
-    const wchar_t *szText =
-        m_pIMapAttributeRemain->GetAttr(XML_LAYOUT_ITEM_ALIGN, false);
-    if (!szText)
-      return 0;
-
-    return CanvasLayoutParam::ParseAlignAttr(szText);
-  }
-}
-int Object::GetConfigLeft() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)->GetConfigLeft();
-  } else {
-    int nRet = NDEF;
-    if (m_pIMapAttributeRemain)
-      m_pIMapAttributeRemain->GetAttr_int(XML_LAYOUT_ITEM_LEFT, false, &nRet);
-    return nRet;
-  }
-}
-int Object::GetConfigRight() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)->GetConfigRight();
-  } else {
-    int nRet = NDEF;
-    if (m_pIMapAttributeRemain)
-      m_pIMapAttributeRemain->GetAttr_int(XML_LAYOUT_ITEM_RIGHT, false, &nRet);
-    return nRet;
-  }
-}
-int Object::GetConfigTop() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)->GetConfigTop();
-  } else {
-    int nRet = NDEF;
-    if (m_pIMapAttributeRemain)
-      m_pIMapAttributeRemain->GetAttr_int(XML_LAYOUT_ITEM_TOP, false, &nRet);
-    return nRet;
-  }
-}
-int Object::GetConfigBottom() {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() != LAYOUT_TYPE_CANVAS)
-      return NDEF;
-    else
-      return static_cast<CanvasLayoutParam *>(m_pLayoutParam)
-          ->GetConfigBottom();
-  } else {
-    int nRet = NDEF;
-    if (m_pIMapAttributeRemain)
-      m_pIMapAttributeRemain->GetAttr_int(XML_LAYOUT_ITEM_BOTTOM, false, &nRet);
-    return nRet;
-  }
-}
-
-void Object::SetConfigWidth(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigWidth(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigWidth(n);
-  }
-}
-void Object::SetConfigHeight(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigHeight(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigHeight(n);
-  }
-}
-void Object::SetConfigLayoutFlags(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigLayoutFlags(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigLayoutFlags(n);
-  }
-}
-void Object::SetConfigLeft(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigLeft(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigLeft(n);
-  }
-}
-void Object::SetConfigRight(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigRight(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigRight(n);
-  }
-}
-void Object::SetConfigTop(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigTop(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigTop(n);
-  }
-}
-void Object::SetConfigBottom(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigBottom(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigBottom(n);
-  }
 }
 
 void Object::LoadBorder(REGION4 *prc) {

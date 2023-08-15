@@ -232,7 +232,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
   int nCXScreen = 800, nCYScreen = 600; // 屏幕大小
   int left = NDEF, top = NDEF, right = NDEF, bottom = NDEF;
 
-  CanvasLayoutParam *pParam = CanvasLayout::s_GetObjectLayoutParam(pWindow);
+  CanvasLayoutParam *pParam = CanvasLayout::GetObjectLayoutParam(pWindow);
   if (!pParam) {
     return;
   }

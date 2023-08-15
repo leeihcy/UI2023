@@ -31,9 +31,19 @@ public:
 };
 #endif
 
-template <class TLayout, class TLayoutInterface, class TLayoutParam,
-          LAYOUTTYPE tLayoutType>
-class LayoutImpl : public TLayoutInterface {
+// 桌面布局管理器，专门用于设置顶层窗口在屏幕中的大小与位置
+// 桌面布局有些特殊，它直接管理窗口的位置，但窗口和控件、Panel有很多不一样的地方，
+// 如窗口分客户区和非客户区。而且DesktopLayout只需要管理一个对象，即Window，没有其他
+// 子对象，因此这里不将DesktopLayout派生自LayoutManager
+class DesktopLayout {
+public:
+  void Arrange(Window *pWindow);
+};
+
+void LoadConfigWH(const wchar_t *szText, long &wh, long &whtype);
+const wchar_t *SaveConfigWH(long wh, long whtype);
+
+template <class T, class IT, class TParam> class LayoutImpl : public IT {
 public:
   LayoutImpl() {
     m_pPanel = nullptr;
@@ -47,29 +57,34 @@ public:
       }
     }
   }
-  void Release() override { delete this; }
 
-  virtual LAYOUTTYPE GetLayoutType() override { return tLayoutType; }
-
-  static long CreateInstance(IObject *p, ILayout **ppOut) {
+  static bool CreateInstance(IObject *p, ILayout **ppOut) {
     if (nullptr == ppOut || nullptr == p)
-      return 1; // E_INVALIDARG;
+      return false;
 
-    TLayout *pLayout = new TLayout;
+    T *pLayout = new T;
     pLayout->m_pPanel = p->GetImpl();
     *ppOut = pLayout;
-    return 0;
-  }
-  ILayoutParam *CreateLayoutParam(IObject *pObj) override {
-    return s_CreateLayoutParam(pObj);
+    return true;
   }
 
-  static ILayoutParam *s_CreateLayoutParam(IObject *pObj) {
+  void Release() override { delete this; }
+
+  bool IsDirty() override { return m_bDirty; }
+  void SetDirty(bool b) override { m_bDirty = b; }
+
+  // Arrage由基类统管，子类实现DoArrage
+  virtual void DoArrage(IObject *pObjToArrage = nullptr) = 0;
+  virtual void Arrange(IObject *pObjToArrage = nullptr) override {
+    m_bDirty = false;
+    DoArrage(pObjToArrage);
+  }
+
+  ILayoutParam *CreateLayoutParam(IObject *pObj) override {
     if (!pObj)
       return nullptr;
-
-    TLayoutParam *p = new TLayoutParam();
-    p->SetObject(pObj->GetImpl());
+    
+    TParam *p = new TParam(pObj->GetImpl());
     IMapAttribute *pMapAttr = nullptr;
     pObj->GetImpl()->GetMapAttribute(&pMapAttr);
 
@@ -96,74 +111,27 @@ public:
   }
 
   // 自己在布局的时候调用
-  static TLayoutParam *s_GetObjectLayoutParam(Object *pObj) {
+  TParam *GetObjectLayoutParam(Object *pObj) {
     if (!pObj)
       return nullptr;
 
     ILayoutParam *pParam = pObj->GetLayoutParam();
-    if (pParam && pParam->GetLayoutType() == tLayoutType) {
-      return static_cast<TLayoutParam *>(pParam);
+    if (pParam && pParam->UUID() == T::UUID()) {
+      return static_cast<TParam *>(pParam);
     }
 
-    pParam = s_CreateLayoutParam(pObj->GetIObject());
+    pParam = CreateLayoutParam(pObj->GetIObject());
     pObj->SetLayoutParam(pParam);
-    return static_cast<TLayoutParam *>(pParam);
+    return static_cast<TParam *>(pParam);
   }
-
-  // Arrage由基类统管，子类实现DoArrage
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) = 0;
-  virtual void Arrange(IObject *pObjToArrage = nullptr) override {
-    m_bDirty = false;
-    DoArrage(pObjToArrage);
-  }
-
-  virtual bool IsDirty() override { return m_bDirty; }
-  void SetDirty(bool b) override { m_bDirty = b; }
-
-  virtual void ChildObjectContentSizeChanged(IObject *pObj) override {}
+  
+  void ChildObjectContentSizeChanged(IObject *pObj) override {}
 
 protected:
   Object *m_pPanel; // 与该布局关联的panel
   bool m_bDirty;    // 是否需要布局
 };
 
-template <class T> class LayoutParamImpl : public T {
-public:
-  LayoutParamImpl() { m_pObj = nullptr; }
-  virtual ~LayoutParamImpl() {}
-  virtual void Release() { delete this; }
-
-  void SetObject(Object *p) { m_pObj = p; }
-  virtual void UpdateByRect() {}
-  virtual void Serialize(SERIALIZEDATA *pData) {}
-
-  virtual Size CalcDesiredSize() {
-    Size s = {0, 0};
-
-    if (m_pObj) {
-      // 计算 margin 的大小
-      s.width += m_pObj->GetMarginW();
-      s.height += m_pObj->GetMarginH();
-    }
-
-    return s;
-  }
-
-protected:
-  Object *m_pObj;
-};
-
-// 桌面布局管理器，专门用于设置顶层窗口在屏幕中的大小与位置
-// 桌面布局有些特殊，它直接管理窗口的位置，但窗口和控件、Panel有很多不一样的地方，
-// 如窗口分客户区和非客户区。而且DesktopLayout只需要管理一个对象，即Window，没有其他
-// 子对象，因此这里不将DesktopLayout派生自LayoutManager
-class DesktopLayout {
-public:
-  void Arrange(Window *pWindow);
-};
-
-void LoadConfigWH(const wchar_t *szText, long &wh, long &whtype);
-const wchar_t *SaveConfigWH(long wh, long whtype);
 } // namespace ui
 
 #endif // LAYOUT_H_70402CBF_A4C2_4a35_AA14_829F26BA9A5C

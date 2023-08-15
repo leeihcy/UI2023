@@ -257,7 +257,7 @@ Size  GridLayout::Measure()
 			continue;
         }
 
-        GridLayoutParam*  pParam = s_GetObjectLayoutParam(pChild);
+        GridLayoutParam*  pParam = GetObjectLayoutParam(pChild);
         if (!pParam)
         {
             continue;;
@@ -438,7 +438,7 @@ void  GridLayout::DoArrage(IObject* pObjToArrage)
 	while ((pChild = this->m_pPanel->EnumChildObject(pChild)))
 	{
 		// 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
-		GridLayoutParam*  pParam = s_GetObjectLayoutParam(pChild);
+		GridLayoutParam*  pParam = GetObjectLayoutParam(pChild);
 		if (!pParam)
 			continue;;
 
@@ -533,7 +533,7 @@ void  GridLayout::DoArrage(IObject* pObjToArrage)
 	pChild = nullptr;
 	while ((pChild = this->m_pPanel->EnumChildObject(pChild)))
 	{
-        GridLayoutParam*  pParam = s_GetObjectLayoutParam(pChild);
+        GridLayoutParam*  pParam = GetObjectLayoutParam(pChild);
         if (!pParam)
         {
             continue;;
@@ -638,8 +638,9 @@ void  GridLayout::ChildObjectVisibleChanged(IObject* pObj)
 
 //////////////////////////////////////////////////////////////////////////
 
-GridLayoutParam::GridLayoutParam()
+GridLayoutParam::GridLayoutParam(Object* p)
 {
+  m_pObj = p;
     m_nConfigWidth = AUTO;
     m_nConfigHeight = AUTO;
     m_nConfigLayoutFlags = 0;

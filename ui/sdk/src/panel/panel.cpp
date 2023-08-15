@@ -41,20 +41,27 @@ Panel::~Panel() {
 
 ILayout *Panel::GetLayout() { return this->m_pLayout; }
 
-long Panel::GetLayoutType2() {
-  return (long)GetLayoutType();
+
+const wchar_t* Panel::GetLayoutName() 
+{
+  return m_layout_name.c_str();
 }
-void Panel::SetLayoutType2(long eLayoutType) {
-  SetLayoutType((LAYOUTTYPE)eLayoutType);
+void Panel::SetLayoutName(const wchar_t* name)
+{
+  if (!name) {
+    m_layout_name.clear();
+  } else {
+    m_layout_name = name;
+  }
 }
 
-void Panel::SetLayoutType(LAYOUTTYPE eLayoutType) {
-  if (m_pLayout && m_pLayout->GetLayoutType() == eLayoutType)
-    return;
+void Panel::SetLayoutType(const wchar_t* layout_name) {
+  // if (m_pLayout && m_pLayout->GetLayoutType() == eLayoutType)
+  //   return;
 
   SAFE_RELEASE(m_pLayout);
 
-  GetUIApplication()->GetLayoutFactory().Create(eLayoutType, m_pIPanel,
+  GetUIApplication()->GetLayoutFactory().CreateByName(layout_name, m_pIPanel, false,
                                                 &m_pLayout);
 
   // 子结点的布局类型全部跟着变
@@ -63,13 +70,6 @@ void Panel::SetLayoutType(LAYOUTTYPE eLayoutType) {
     pChild->DestroyLayoutParam();
     pChild->GetSafeLayoutParam();
   }
-}
-
-LAYOUTTYPE Panel::GetLayoutType() {
-  if (!m_pLayout)
-    return LAYOUT_TYPE_CANVAS;
-
-  return m_pLayout->GetLayoutType();
 }
 
 long Panel::OnGetLayoutPtr(unsigned int uMsg, long wParam, long lParam) {
@@ -122,9 +122,9 @@ void Panel::OnSerialize(SERIALIZEDATA *pData) {
     s.AddRect(XML_FOREGND_RENDER_PREFIX XML_PANEL_RENDER_REGION,
               m_rcForegndRenderRegion);
 
-    s.AddEnum(XML_LAYOUT_TYPE,
-              Slot(&Panel::SetLayoutType2, this),
-              Slot(&Panel::GetLayoutType2, this))
+    s.AddStringEnum(XML_LAYOUT_TYPE,
+              Slot(&Panel::SetLayoutName, this),
+              Slot(&Panel::GetLayoutName, this))
         ->FillLayoutTypeData();
   }
   if (pData->IsLoad()) {
@@ -132,7 +132,7 @@ void Panel::OnSerialize(SERIALIZEDATA *pData) {
       m_objStyle.post_paint = 1;
     }
     if (!m_pLayout) {
-      SetLayoutType(LAYOUT_TYPE_CANVAS);
+      SetLayoutType(XML_LAYOUT_CANVAS);
     }
   }
 

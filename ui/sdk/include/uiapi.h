@@ -32,10 +32,9 @@ typedef void (*pfnUICreateRenderBasePtr)(IResBundle *pSkinRes, void **ppOut);
 typedef void (*pfnUICreateTextRenderBasePtr)(IResBundle *pSkinRes,
                                              void **ppOut);
 typedef long (*pfnParseSkinTag)(IUIElement *, IResBundle *pSkinRes);
-typedef long (*pfnUICreateLayoutPtr)(IObject *pObject, ILayout **ppLayout);
 
 // uiapplication中的枚举回调
-typedef bool (*pfnEnumLayoutTypeCallback)(long, const wchar_t *, long, long);
+typedef bool (*pfnEnumLayoutTypeCallback)(const wchar_t *, long, long);
 typedef void (*pfnEnumRenderBaseNameCallback)(const wchar_t *, long, long);
 typedef void (*pfnEnumTextRenderBaseNameCallback)(const wchar_t *, long, long);
 

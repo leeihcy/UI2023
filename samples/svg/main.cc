@@ -21,16 +21,20 @@ public:
   }
 
   void create_ui() {
+    auto* panel = ui::IPanel::CreateInstance(m_window->GetResBundle());
+    panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"0");
+    m_window->AddChild(panel);
+    panel->InitDefaultAttrib();
+
     auto* rect = ui::svg::IRect::CreateInstance(m_window->GetResBundle());
     rect->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_TOP, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"100");
-    // rect->SetConfigLeft(100);
-    // rect->SetConfigTop(100);
-    // rect->SetConfigWidth(100);
-    // rect->SetConfigHeight(100);
-    m_window->AddChild(rect);
+    panel->AddChild(rect);
     rect->InitDefaultAttrib();
   }
 

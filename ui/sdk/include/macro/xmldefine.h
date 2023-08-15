@@ -455,18 +455,6 @@ enum ROUND_CORNER_TYPE
 #define XML_LAYOUT_CARD          L"card"           // 布局类型：card
 #define XML_LAYOUT_AVERAGE       L"average"        // 布局类型：average
 
-enum LAYOUTTYPE
-{
-    LAYOUT_TYPE_CANVAS = 0,
-    //LAYOUT_TYPE_STACK,
-	LAYOUT_TYPE_HORZ,
-	LAYOUT_TYPE_VERT,
-    LAYOUT_TYPE_GRID,
-    LAYOUT_TYPE_DOCK,
-    LAYOUT_TYPE_CARD,
-    LAYOUT_TYPE_AVERAGE,
-};
-
 // stack布局的属性
 // #define XML_LAYOUT_STACK_DIRECTION      L"layout.direction"  // stack布局的方向
 // #define XML_LAYOUT_STACK_LEFTTORIGHT    L"lefttoright"       // xml中可配置的值

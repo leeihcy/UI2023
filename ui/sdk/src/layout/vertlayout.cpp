@@ -1,448 +1,356 @@
-#include "include/inc.h"
 #include "vertlayout.h"
-#include "src/object/object.h"
+#include "include/inc.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/flags_attribute.h"
+#include "src/object/object.h"
 #include "src/util/DPI/dpihelper.h"
 
-namespace ui
-{
+namespace ui {
 
-VertLayout::VertLayout()
-{
-    m_nSpace = 0;
-//	this->m_eDirection = LAYOUT_Vert_LEFTTORIGHT;   // ƒ¨»œ∂—’ª «¥”◊ÛµΩ”“
+VertLayout::VertLayout() {
+  m_nSpace = 0;
+  //	this->m_eDirection = LAYOUT_Vert_LEFTTORIGHT;   // ÈªòËÆ§Â†ÜÊ†àÊòØ‰ªéÂ∑¶Âà∞Âè≥
 }
-VertLayout::~VertLayout()
-{
-}
-void  VertLayout::Serialize(SERIALIZEDATA* pData)
-{
-//     AttributeSerializer s(pData, TEXT("VertLayout"));
-//
-//     s.AddLong(XML_LAYOUT_VERT_GAP, this,
-//         memfun_cast<pfnLongSetter>(&VertLayout::LoadGap),
-//         memfun_cast<pfnLongGetter>(&VertLayout::SaveGap));
-// 
+VertLayout::~VertLayout() {}
+void VertLayout::Serialize(SERIALIZEDATA *pData) {
+  //     AttributeSerializer s(pData, TEXT("VertLayout"));
+  //
+  //     s.AddLong(XML_LAYOUT_VERT_GAP, this,
+  //         memfun_cast<pfnLongSetter>(&VertLayout::LoadGap),
+  //         memfun_cast<pfnLongGetter>(&VertLayout::SaveGap));
+  //
 }
 
-void  VertLayout::LoadGap(long n)
-{
-    m_nSpace = ScaleByDpi_if_gt0(n);
-}
-long  VertLayout::SaveGap()
-{
-    return RestoreByDpi_if_gt0(m_nSpace);
-}
+void VertLayout::LoadGap(long n) { m_nSpace = ScaleByDpi_if_gt0(n); }
+long VertLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
 
-void  VertLayout::SetSpace(int n)
-{
-    m_nSpace = n;
-}
+void VertLayout::SetSpace(int n) { m_nSpace = n; }
 
-Size  VertLayout::Measure()
-{
-	Size s = { 0 };
+Size VertLayout::Measure() {
+  Size s = {0};
 
-	int nMaxWidth = 0;
+  int nMaxWidth = 0;
 
-	Object* pChild = nullptr;
-	while ((pChild = m_pPanel->EnumChildObject(pChild)))
-	{
-		// ∑≈‘⁄IsSelfCollapsed÷Æ«∞°£editor÷–“≤–Ë“™º”‘ÿ“˛≤ÿ∂‘œÛµƒ≤ºæ÷ Ù–‘
-		VertLayoutParam* pParam = s_GetObjectLayoutParam(pChild);
-		if (!pParam)
-			continue;
+  Object *pChild = nullptr;
+  while ((pChild = m_pPanel->EnumChildObject(pChild))) {
+    // ÊîæÂú®IsSelfCollapsed‰πãÂâç„ÄÇeditor‰∏≠‰πüÈúÄË¶ÅÂä†ËΩΩÈöêËóèÂØπË±°ÁöÑÂ∏ÉÂ±ÄÂ±ûÊÄß
+    VertLayoutParam *pParam = GetObjectLayoutParam(pChild);
+    if (!pParam)
+      continue;
 
-		if (pChild->IsSelfCollapsed())
-			continue;
+    if (pChild->IsSelfCollapsed())
+      continue;
 
-		if (pParam->m_eHeightType == AUTO)
-		{
-			s.height += pChild->GetDesiredSize().height;
-		}
-        else
-		{
-			s.height += pParam->m_nConfigHeight;
-		} 
+    if (pParam->m_eHeightType == AUTO) {
+      s.height += pChild->GetDesiredSize().height;
+    } else {
+      s.height += pParam->m_nConfigHeight;
+    }
 
-		Rect rMargin = { 0 };
-		pChild->GetMarginRegion(&rMargin); 
-		s.height += rMargin.top + rMargin.bottom;
+    Rect rMargin = {0};
+    pChild->GetMarginRegion(&rMargin);
+    s.height += rMargin.top + rMargin.bottom;
 
-		int nWidth = rMargin.left + rMargin.right;
-        if (pParam->m_eWidthType == AUTO)
-		{
-			nWidth += pChild->GetDesiredSize().width;
-		}
-		else 
-		{
-			nWidth += pParam->m_nConfigWidth;
-		}
-        
+    int nWidth = rMargin.left + rMargin.right;
+    if (pParam->m_eWidthType == AUTO) {
+      nWidth += pChild->GetDesiredSize().width;
+    } else {
+      nWidth += pParam->m_nConfigWidth;
+    }
 
-        nMaxWidth = std::max(nMaxWidth, nWidth);
-	}
-	s.width = nMaxWidth;
+    nMaxWidth = std::max(nMaxWidth, nWidth);
+  }
+  s.width = nMaxWidth;
 
-	return s;
+  return s;
 }
 
-struct ObjLayoutInfo
-{
-	Object*  pObj;
-	int width;  // ≤ª∞¸∫¨margin
-	int height; // ≤ª∞¸∫¨margin
+struct ObjLayoutInfo {
+  Object *pObj;
+  int width;  // ‰∏çÂåÖÂê´margin
+  int height; // ‰∏çÂåÖÂê´margin
 };
 
-void  VertLayout::DoArrage(IObject* /*pIObjToArrage*/)
-{
-	// º∆À„√ø∏ˆ◊”øÿº˛–Ë“™µƒøÌ∂»º∞∆‰≤ºæ÷À≥–Ú
-	int nChildCount = m_pPanel->GetChildCount();
-	if (nChildCount <= 0)
-		return;
+void VertLayout::DoArrage(IObject * /*pIObjToArrage*/) {
+  // ËÆ°ÁÆóÊØè‰∏™Â≠êÊéß‰ª∂ÈúÄË¶ÅÁöÑÂÆΩÂ∫¶ÂèäÂÖ∂Â∏ÉÂ±ÄÈ°∫Â∫è
+  int nChildCount = m_pPanel->GetChildCount();
+  if (nChildCount <= 0)
+    return;
 
-	// ∏∏øÿº˛ƒ⁄º‰æ‡
-	Rect rcPadding = { 0 };
-	m_pPanel->GetPaddingRegion(&rcPadding);
+  // Áà∂Êéß‰ª∂ÂÜÖÈó¥Ë∑ù
+  Rect rcPadding = {0};
+  m_pPanel->GetPaddingRegion(&rcPadding);
 
-	Rect rcParent;
-	m_pPanel->GetObjectClientRect(&rcParent);
+  Rect rcParent;
+  m_pPanel->GetObjectClientRect(&rcParent);
 
-	std::vector<ObjLayoutInfo>  vecInfo(nChildCount);
-	memset(&vecInfo[0], 0, sizeof(ObjLayoutInfo)*nChildCount);
+  std::vector<ObjLayoutInfo> vecInfo(nChildCount);
+  memset(&vecInfo[0], 0, sizeof(ObjLayoutInfo) * nChildCount);
 
-	int nTopCursor = 0;  // ”√”⁄÷∏∂®’‚∏ˆøÿº˛µƒ≤ºæ÷À≥–Ú£¨æ””“∂‘∆Îµƒµ√∑¥◊≈≈≈–Ú
-	int nBottomCursor = nChildCount-1;
+  int nTopCursor = 0; // Áî®‰∫éÊåáÂÆöËøô‰∏™Êéß‰ª∂ÁöÑÂ∏ÉÂ±ÄÈ°∫Â∫èÔºåÂ±ÖÂè≥ÂØπÈΩêÁöÑÂæóÂèçÁùÄÊéíÂ∫è
+  int nBottomCursor = nChildCount - 1;
 
-	int nNeedHeight = 0;
-	int nAvgCount = 0;
+  int nNeedHeight = 0;
+  int nAvgCount = 0;
 
-	Object* pChild = nullptr;
-	while ((pChild = m_pPanel->EnumChildObject(pChild)))
-	{
-		// ∑≈‘⁄IsSelfCollapsed÷Æ«∞°£editor÷–“≤–Ë“™º”‘ÿ“˛≤ÿ∂‘œÛµƒ≤ºæ÷ Ù–‘
-		VertLayoutParam* pParam = s_GetObjectLayoutParam(pChild);
-		if (!pParam)
-			continue;
+  Object *pChild = nullptr;
+  while ((pChild = m_pPanel->EnumChildObject(pChild))) {
+    // ÊîæÂú®IsSelfCollapsed‰πãÂâç„ÄÇeditor‰∏≠‰πüÈúÄË¶ÅÂä†ËΩΩÈöêËóèÂØπË±°ÁöÑÂ∏ÉÂ±ÄÂ±ûÊÄß
+    VertLayoutParam *pParam = GetObjectLayoutParam(pChild);
+    if (!pParam)
+      continue;
 
-		if (pChild->IsSelfCollapsed())
-			continue;
+    if (pChild->IsSelfCollapsed())
+      continue;
 
-		//  º∆À„≤ºæ÷À≥–Ú
-		int nIndex = nTopCursor;
-		if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_BOTTOM)
-		{
-			nIndex = nBottomCursor;
-			nBottomCursor--;
-		}
-		else
-		{
-			nIndex = nTopCursor;
-			nTopCursor++;
-		}
+    //  ËÆ°ÁÆóÂ∏ÉÂ±ÄÈ°∫Â∫è
+    int nIndex = nTopCursor;
+    if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_BOTTOM) {
+      nIndex = nBottomCursor;
+      nBottomCursor--;
+    } else {
+      nIndex = nTopCursor;
+      nTopCursor++;
+    }
 
-		// º∆À„À˘–Ë“™µƒøÌ∏ﬂ
-		int nObjWidth = 0;
-		int nObjHeight = 0;
+    // ËÆ°ÁÆóÊâÄÈúÄË¶ÅÁöÑÂÆΩÈ´ò
+    int nObjWidth = 0;
+    int nObjHeight = 0;
 
-		if (pParam->IsSizedByContent())
-		{
-			Size s = pChild->GetDesiredSize();
+    if (pParam->IsSizedByContent()) {
+      Size s = pChild->GetDesiredSize();
 
-			nObjWidth = s.width;// - pChild->GetMarginW();
-			nObjHeight = s.height;// - pChild->GetMarginH();
-		}
+      nObjWidth = s.width;   // - pChild->GetMarginW();
+      nObjHeight = s.height; // - pChild->GetMarginH();
+    }
 
-        if (pParam->m_eHeightType == WH_AVG)
-		{
-			// ±æ¥Œ—≠ª∑Ω· ¯∫Û‘Ÿº∆À„
-			nAvgCount++;
-			nObjHeight = 0;
-		}
-		else if (pParam->m_eHeightType == WH_PERCENT)
-		{
-#if 0 // ±»¿˝÷–∞¸∫¨margin
+    if (pParam->m_eHeightType == WH_AVG) {
+      // Êú¨Ê¨°Âæ™ÁéØÁªìÊùüÂêéÂÜçËÆ°ÁÆó
+      nAvgCount++;
+      nObjHeight = 0;
+    } else if (pParam->m_eHeightType == WH_PERCENT) {
+#if 0 // ÊØî‰æã‰∏≠ÂåÖÂê´margin
             nObjHeight = rcParent.Height() * pParam->m_nConfigHeight / 100;
             nObjHeight -= pChild->GetMarginH();
 
-#else // ±»¿˝÷–≤ª∞¸∫¨margin
-            nObjHeight = rcParent.Height() * pParam->m_nConfigHeight / 100;
+#else // ÊØî‰æã‰∏≠‰∏çÂåÖÂê´margin
+      nObjHeight = rcParent.Height() * pParam->m_nConfigHeight / 100;
 #endif
-		}
-		else if (pParam->m_eHeightType != WH_AUTO)
-		{
-			nObjHeight = pParam->m_nConfigHeight;
-		}
-         
+    } else if (pParam->m_eHeightType != WH_AUTO) {
+      nObjHeight = pParam->m_nConfigHeight;
+    }
 
-        if (pParam->m_eWidthType == WH_SET)
-		{
-			nObjWidth = pParam->m_nConfigWidth;
-		}
-        else if (pParam->m_eWidthType == WH_PERCENT)
-        {
-            nObjWidth = rcParent.Width() * pParam->m_nConfigWidth / 100;
-        }
+    if (pParam->m_eWidthType == WH_SET) {
+      nObjWidth = pParam->m_nConfigWidth;
+    } else if (pParam->m_eWidthType == WH_PERCENT) {
+      nObjWidth = rcParent.Width() * pParam->m_nConfigWidth / 100;
+    }
 
-		ObjLayoutInfo& info = vecInfo[nIndex];
-		info.pObj = pChild;
-		info.width = nObjWidth;
-		info.height = nObjHeight;
+    ObjLayoutInfo &info = vecInfo[nIndex];
+    info.pObj = pChild;
+    info.width = nObjWidth;
+    info.height = nObjHeight;
 
-		nNeedHeight += nObjHeight + pChild->GetMarginH();
-	}
+    nNeedHeight += nObjHeight + pChild->GetMarginH();
+  }
 
-	// º∆À„∆Ωæ˘øÌ∂»
-	int nAvgHeight = 0;
-	int nAvgDiff = 0;  // ŒÛ≤Ó≤π◊„
-	if (nAvgCount > 0)
-	{
-		int nTotal = (rcParent.Height()- nNeedHeight);
-		nAvgHeight = ((rcParent.Height()-nNeedHeight) / nAvgCount);
-		nAvgDiff = nTotal - (nAvgHeight * nAvgCount);
-	}
+  // ËÆ°ÁÆóÂπ≥ÂùáÂÆΩÂ∫¶
+  int nAvgHeight = 0;
+  int nAvgDiff = 0; // ËØØÂ∑ÆË°•Ë∂≥
+  if (nAvgCount > 0) {
+    int nTotal = (rcParent.Height() - nNeedHeight);
+    nAvgHeight = ((rcParent.Height() - nNeedHeight) / nAvgCount);
+    nAvgDiff = nTotal - (nAvgHeight * nAvgCount);
+  }
 
-	// ø™ º≤ºæ÷
-	int nTopConsume = 0;
-	int nBottomConsume = 0;
+  // ÂºÄÂßãÂ∏ÉÂ±Ä
+  int nTopConsume = 0;
+  int nBottomConsume = 0;
 
-	for (int i = 0; i < nChildCount; i++)
-	{
-		ObjLayoutInfo& info = vecInfo[i];
-		pChild = info.pObj;
-		if (!pChild)
-			continue;
+  for (int i = 0; i < nChildCount; i++) {
+    ObjLayoutInfo &info = vecInfo[i];
+    pChild = info.pObj;
+    if (!pChild)
+      continue;
 
-		// ∑≈‘⁄IsSelfCollapsed÷Æ«∞°£editor÷–“≤–Ë“™º”‘ÿ“˛≤ÿ∂‘œÛµƒ≤ºæ÷ Ù–‘
-		VertLayoutParam* pParam = s_GetObjectLayoutParam(pChild);
-		if (!pParam)
-			continue;
+    // ÊîæÂú®IsSelfCollapsed‰πãÂâç„ÄÇeditor‰∏≠‰πüÈúÄË¶ÅÂä†ËΩΩÈöêËóèÂØπË±°ÁöÑÂ∏ÉÂ±ÄÂ±ûÊÄß
+    VertLayoutParam *pParam = GetObjectLayoutParam(pChild);
+    if (!pParam)
+      continue;
 
-		if (pChild->IsSelfCollapsed())
-			continue;
+    if (pChild->IsSelfCollapsed())
+      continue;
 
-		Rect rMargin = { 0 };
-		pChild->GetMarginRegion(&rMargin);
+    Rect rMargin = {0};
+    pChild->GetMarginRegion(&rMargin);
 
-		Rect rcObj;
+    Rect rcObj;
 
-		// »Áπ˚ «∆Ωæ˘øÌ∂»£¨Œ™∆‰øÌ∂»∏≥÷µ
-        if (pParam->m_eHeightType == WH_AVG)
-		{
-			info.height = nAvgHeight;
-			info.height += nAvgDiff;
-			nAvgDiff = 0;
-		}
+    // Â¶ÇÊûúÊòØÂπ≥ÂùáÂÆΩÂ∫¶Ôºå‰∏∫ÂÖ∂ÂÆΩÂ∫¶ËµãÂÄº
+    if (pParam->m_eHeightType == WH_AVG) {
+      info.height = nAvgHeight;
+      info.height += nAvgDiff;
+      nAvgDiff = 0;
+    }
 
-		// º∆À„y◊¯±Í
-		if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_BOTTOM)
-		{
-			nBottomConsume += rMargin.bottom;
+    // ËÆ°ÁÆóyÂùêÊ†á
+    if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_BOTTOM) {
+      nBottomConsume += rMargin.bottom;
 
-			rcObj.bottom = rcParent.bottom - nBottomConsume;
-			rcObj.top = rcObj.bottom - info.height;
+      rcObj.bottom = rcParent.bottom - nBottomConsume;
+      rcObj.top = rcObj.bottom - info.height;
 
-			nBottomConsume += info.height + rMargin.top;
-		}
-		else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_TOP)
-		{
-			nTopConsume += rMargin.top;
+      nBottomConsume += info.height + rMargin.top;
+    } else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_TOP)
+    {
+      nTopConsume += rMargin.top;
 
-			rcObj.top = rcParent.top + nTopConsume;
-			rcObj.bottom = rcObj.top + info.height;
+      rcObj.top = rcParent.top + nTopConsume;
+      rcObj.bottom = rcObj.top + info.height;
 
-			nTopConsume += info.height + rMargin.bottom;
-		}
+      nTopConsume += info.height + rMargin.bottom;
+    }
 
-		// º∆À„x◊¯±Í
-		if ((pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_LEFT) &&
-			(pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_RIGHT))
-		{
-			rcObj.left = rcParent.left + rMargin.left;
-			rcObj.right = rcParent.right - rMargin.right;
-		}
-		else if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_RIGHT)
-		{
-			rcObj.right = rcParent.right - rMargin.right;
-			rcObj.left = rcObj.right - info.width;
-		}
-		else if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_CENTER)
-		{
-			rcObj.left = rcParent.left + (rcParent.Width() - info.width) / 2;
-			rcObj.left = rcObj.left + rMargin.left - rMargin.right;
-			rcObj.right = rcObj.left + info.width;
-		}
-		else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_LEFT)
-		{
-			rcObj.left = rcParent.left + rMargin.left;
-			rcObj.right = rcObj.left + info.width;
-		}
+    // ËÆ°ÁÆóxÂùêÊ†á
+    if ((pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_LEFT) &&
+        (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_RIGHT)) {
+      rcObj.left = rcParent.left + rMargin.left;
+      rcObj.right = rcParent.right - rMargin.right;
+    } else if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_RIGHT) {
+      rcObj.right = rcParent.right - rMargin.right;
+      rcObj.left = rcObj.right - info.width;
+    } else if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_CENTER) {
+      rcObj.left = rcParent.left + (rcParent.Width() - info.width) / 2;
+      rcObj.left = rcObj.left + rMargin.left - rMargin.right;
+      rcObj.right = rcObj.left + info.width;
+    } else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_LEFT)
+    {
+      rcObj.left = rcParent.left + rMargin.left;
+      rcObj.right = rcObj.left + info.width;
+    }
 
-		pChild->SetObjectPos(
-			&rcObj,
-			SWP_NOREDRAW|SWP_NOUPDATELAYOUTPOS|SWP_FORCESENDSIZEMSG);
-	}
-
+    pChild->SetObjectPos(&rcObj, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+                                     SWP_FORCESENDSIZEMSG);
+  }
 }
 
-void  VertLayout::ChildObjectVisibleChanged(IObject* pObj)
-{
-    UIASSERT (pObj);
-	UIASSERT(pObj->GetParentObject());
-	UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+void VertLayout::ChildObjectVisibleChanged(IObject *pObj) {
+  UIASSERT(pObj);
+  UIASSERT(pObj->GetParentObject());
+  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-    SetDirty(true);
-    m_pPanel->Invalidate();
+  SetDirty(true);
+  m_pPanel->Invalidate();
 }
 
-void  VertLayout::ChildObjectContentSizeChanged(IObject* pObj)
-{
-    UIASSERT(pObj);
-    UIASSERT(pObj->GetParentObject());
-    UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+void VertLayout::ChildObjectContentSizeChanged(IObject *pObj) {
+  UIASSERT(pObj);
+  UIASSERT(pObj->GetParentObject());
+  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-    SetDirty(true);
-    m_pPanel->Invalidate();
+  SetDirty(true);
+  m_pPanel->Invalidate();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-VertLayoutParam::VertLayoutParam()
-{
-    m_nConfigWidth = AUTO;
-    m_nConfigHeight = AUTO;
-    m_nConfigLayoutFlags = 0;
-	m_eWidthType = WH_SET;
-	m_eHeightType = WH_SET;
+VertLayoutParam::VertLayoutParam(Object *pObj) {
+  m_pObj = pObj;
+  
+  m_nConfigWidth = AUTO;
+  m_nConfigHeight = AUTO;
+  m_nConfigLayoutFlags = 0;
+  m_eWidthType = WH_SET;
+  m_eHeightType = WH_SET;
 }
-VertLayoutParam::~VertLayoutParam()
-{
+VertLayoutParam::~VertLayoutParam() {}
 
-}
+void VertLayoutParam::UpdateByRect() {
+  Rect rcParent;
+  m_pObj->GetParentRect(&rcParent);
 
-void  VertLayoutParam::UpdateByRect()
-{
-    Rect  rcParent;
-    m_pObj->GetParentRect(&rcParent);
-
-    if (m_nConfigWidth >= 0)
-    {
-        m_nConfigWidth = rcParent.Width();
-    }
-    if (m_nConfigHeight >= 0)
-    {
-        m_nConfigHeight = rcParent.Height();
-    }
+  if (m_nConfigWidth >= 0) {
+    m_nConfigWidth = rcParent.Width();
+  }
+  if (m_nConfigHeight >= 0) {
+    m_nConfigHeight = rcParent.Height();
+  }
 }
 
-void  VertLayoutParam::Serialize(SERIALIZEDATA* pData)
-{
-    AttributeSerializer s(pData, TEXT("VertLayoutParam"));
+void VertLayoutParam::Serialize(SERIALIZEDATA *pData) {
+  AttributeSerializer s(pData, TEXT("VertLayoutParam"));
 
-    s.AddString(
-            XML_WIDTH,
-            Slot(&VertLayoutParam::LoadConfigWidth, this),
-            Slot(&VertLayoutParam::SaveConfigWidth, this)
-        )
-		->SetDefault(XML_AUTO)
-        ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_WIDTH);
+  s.AddString(XML_WIDTH, Slot(&VertLayoutParam::LoadConfigWidth, this),
+              Slot(&VertLayoutParam::SaveConfigWidth, this))
+      ->SetDefault(XML_AUTO)
+      ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_WIDTH);
 
-    s.AddString(
-            XML_HEIGHT,
-            Slot(&VertLayoutParam::LoadConfigHeight, this),
-            Slot(&VertLayoutParam::SaveConfigHeight, this)
-        )
-		->SetDefault(XML_AUTO)
-		->SetCompatibleKey(XML_LAYOUT_PREFIX XML_HEIGHT);;
+  s.AddString(XML_HEIGHT, Slot(&VertLayoutParam::LoadConfigHeight, this),
+              Slot(&VertLayoutParam::SaveConfigHeight, this))
+      ->SetDefault(XML_AUTO)
+      ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_HEIGHT);
+  ;
 
-    s.AddFlags(XML_LAYOUT_ITEM_ALIGN, m_nConfigLayoutFlags)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_LEFT, XML_LAYOUT_ITEM_ALIGN_LEFT)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_RIGHT, XML_LAYOUT_ITEM_ALIGN_RIGHT)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_TOP, XML_LAYOUT_ITEM_ALIGN_TOP)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_BOTTOM, XML_LAYOUT_ITEM_ALIGN_BOTTOM)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_CENTER, XML_LAYOUT_ITEM_ALIGN_CENTER)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_VCENTER, XML_LAYOUT_ITEM_ALIGN_VCENTER)
-        ->AddFlag(LAYOUT_ITEM_ALIGN_FILL, XML_LAYOUT_ITEM_ALIGN_FILL);
+  s.AddFlags(XML_LAYOUT_ITEM_ALIGN, m_nConfigLayoutFlags)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_LEFT, XML_LAYOUT_ITEM_ALIGN_LEFT)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_RIGHT, XML_LAYOUT_ITEM_ALIGN_RIGHT)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_TOP, XML_LAYOUT_ITEM_ALIGN_TOP)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_BOTTOM, XML_LAYOUT_ITEM_ALIGN_BOTTOM)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_CENTER, XML_LAYOUT_ITEM_ALIGN_CENTER)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_VCENTER, XML_LAYOUT_ITEM_ALIGN_VCENTER)
+      ->AddFlag(LAYOUT_ITEM_ALIGN_FILL, XML_LAYOUT_ITEM_ALIGN_FILL);
 }
 
-long  VertLayoutParam::GetConfigWidth()
-{
-    return m_nConfigWidth;
+long VertLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
+void VertLayoutParam::SetConfigWidth(long n) { m_nConfigWidth = n; }
+void VertLayoutParam::LoadConfigWidth(const wchar_t *szText) {
+  LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
 }
-void  VertLayoutParam::SetConfigWidth(long n)
-{
-    m_nConfigWidth = n;
-}
-void  VertLayoutParam::LoadConfigWidth(const wchar_t* szText)
-{
-    LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
-}
-const wchar_t*  VertLayoutParam::SaveConfigWidth()
-{
-    return SaveConfigWH(m_nConfigWidth, m_eWidthType);
+const wchar_t *VertLayoutParam::SaveConfigWidth() {
+  return SaveConfigWH(m_nConfigWidth, m_eWidthType);
 }
 
-long  VertLayoutParam::GetConfigHeight()
-{
-    return m_nConfigHeight;
+long VertLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
+void VertLayoutParam::SetConfigHeight(long n) { m_nConfigHeight = n; }
+void VertLayoutParam::LoadConfigHeight(const wchar_t *szText) {
+  LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
 }
-void  VertLayoutParam::SetConfigHeight(long n)
-{
-    m_nConfigHeight = n;
-}
-void  VertLayoutParam::LoadConfigHeight(const wchar_t* szText)
-{
-    LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
-}
-const wchar_t*  VertLayoutParam::SaveConfigHeight()
-{
-    return SaveConfigWH(m_nConfigHeight, m_eHeightType);
+const wchar_t *VertLayoutParam::SaveConfigHeight() {
+  return SaveConfigWH(m_nConfigHeight, m_eHeightType);
 }
 
-void  VertLayoutParam::SetConfigLayoutFlags(long n)
-{
-    m_nConfigLayoutFlags = n;
-}
-long  VertLayoutParam::GetConfigLayoutFlags()
-{
-    return m_nConfigLayoutFlags;
-}
+void VertLayoutParam::SetConfigLayoutFlags(long n) { m_nConfigLayoutFlags = n; }
+long VertLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
 
-Size  VertLayoutParam::CalcDesiredSize()
-{
-    Size size = {0,0};
+Size VertLayoutParam::CalcDesiredSize() {
+  Size size = {0, 0};
 
-    if (IsSizedByContent())
-    {
-        // ªÒ»°◊”∂‘œÛÀ˘–Ë“™µƒø’º‰
-        m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
+  if (IsSizedByContent()) {
+    // Ëé∑ÂèñÂ≠êÂØπË±°ÊâÄÈúÄË¶ÅÁöÑÁ©∫Èó¥
+    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
 
-        // »Áπ˚”–÷∏∂®width°¢heightµƒ∆‰÷–“ª∏ˆ£¨ƒ«√¥∫ˆ¬‘‘⁄…œ“ª≤Ω÷–µ√µΩµƒ÷µ
-        if (this->m_eWidthType != AUTO)
-            size.width = this->m_nConfigWidth;
-        if (this->m_eHeightType != AUTO)
-            size.height = this->m_nConfigHeight;
-    }
-    else
-    {
-        size.width = this->m_nConfigWidth;
-        size.height = this->m_nConfigHeight;
-    }
+    // Â¶ÇÊûúÊúâÊåáÂÆöwidth„ÄÅheightÁöÑÂÖ∂‰∏≠‰∏Ä‰∏™ÔºåÈÇ£‰πàÂøΩÁï•Âú®‰∏ä‰∏ÄÊ≠•‰∏≠ÂæóÂà∞ÁöÑÂÄº
+    if (this->m_eWidthType != AUTO)
+      size.width = this->m_nConfigWidth;
+    if (this->m_eHeightType != AUTO)
+      size.height = this->m_nConfigHeight;
+  } else {
+    size.width = this->m_nConfigWidth;
+    size.height = this->m_nConfigHeight;
+  }
 
-    // º∆À„ margin µƒ¥Û–°
-//     size.width += m_pObj->GetMarginW();
-//     size.height += m_pObj->GetMarginH();
+  // ËÆ°ÁÆó margin ÁöÑÂ§ßÂ∞è
+  //     size.width += m_pObj->GetMarginW();
+  //     size.height += m_pObj->GetMarginH();
 
-    return size;
+  return size;
 }
 
-bool  VertLayoutParam::IsSizedByContent()
-{
-    if (m_eWidthType != AUTO && m_eHeightType != AUTO)
-        return false;
+bool VertLayoutParam::IsSizedByContent() {
+  if (m_eWidthType != AUTO && m_eHeightType != AUTO)
+    return false;
 
-    return true;
+  return true;
 }
-}
+} // namespace ui

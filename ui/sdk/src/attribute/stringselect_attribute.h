@@ -24,6 +24,7 @@ public:
     
     StringEnumAttribute*  FillRenderBaseTypeData();
     StringEnumAttribute*  FillTextRenderBaseTypeData();
+    StringEnumAttribute*  FillLayoutTypeData();
 
     IStringEnumAttribute*  GetIStringEnumAttribute();
 

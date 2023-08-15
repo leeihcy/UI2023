@@ -1,5 +1,5 @@
 #include "include/uisvgapi.h"
-#include "src/element/rect_desc.h"
+#include "src/element/rect/rect_desc.h"
 
 namespace ui { namespace svg {
 

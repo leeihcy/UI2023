@@ -2,7 +2,7 @@
 #include "long_attribute.h"
 
 //
-// Àý£º layout="stack" <--> 2
+// layout="stack" <--> 2
 //
 namespace ui
 {
@@ -20,7 +20,6 @@ public:
 
 public:
     EnumAttribute*  AddOption(long, const wchar_t*);
-    EnumAttribute*  FillLayoutTypeData();
 	EnumAttribute*  FillGraphicsRenderLibraryData();
 
 private:

@@ -1,7 +1,7 @@
-#include "include/inc.h"
 #include "attribute.h"
 #include "9region_attribute.h"
 #include "color_attribute.h"
+#include "include/inc.h"
 #include "include/interface/imapattr.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiapplication.h"
@@ -104,8 +104,8 @@ StringAttribute *AttributeSerializer::AddString(const wchar_t *szKey,
   return p;
 }
 // StringAttribute *AttributeSerializer::AddString(const wchar_t *szKey,
-//                                                 void *_this, pfnStringSetter s,
-//                                                 pfnStringGetter g) {
+//                                                 void *_this, pfnStringSetter
+//                                                 s, pfnStringGetter g) {
 //   StringAttribute *p =
 //       static_cast<StringAttribute *>(Add(ATTRIBUTE_TYPE_STRING, szKey));
 
@@ -114,16 +114,16 @@ StringAttribute *AttributeSerializer::AddString(const wchar_t *szKey,
 
 //   return p;
 // }
-StringAttribute*  AttributeSerializer::AddString(const wchar_t* szKey, slot<void(const wchar_t*)>&& s, slot<const wchar_t*()>&& g)
-{
+StringAttribute *AttributeSerializer::AddString(const wchar_t *szKey,
+                                                slot<void(const wchar_t *)> &&s,
+                                                slot<const wchar_t *()> &&g) {
   StringAttribute *p =
       static_cast<StringAttribute *>(Add(ATTRIBUTE_TYPE_STRING, szKey));
 
-  if (p)
-    p->Bind(
-        std::forward<slot<void(const wchar_t*)>>(s), 
-        std::forward<slot<const wchar_t*()>>(g));
-
+  if (p) {
+    p->Bind(std::forward<slot<void(const wchar_t *)>>(s),
+            std::forward<slot<const wchar_t *()>>(g));
+  }
   return p;
 }
 // StringAttribute *
@@ -174,62 +174,74 @@ StringAttribute *AttributeSerializer::AddI18nString(const wchar_t *szKey,
 
 //   return p;
 // }
-StringAttribute* AttributeSerializer::AddI18nString(const wchar_t* szKey, 
-        slot<void(const wchar_t*, int)>&& s, 
-        slot<const wchar_t*()>&& g)
-{
+StringAttribute *
+AttributeSerializer::AddI18nString(const wchar_t *szKey,
+                                   slot<void(const wchar_t *, int)> &&s,
+                                   slot<const wchar_t *()> &&g) {
   I18nStringAttribute *p = static_cast<I18nStringAttribute *>(
       Add(ATTRIBUTE_TYPE_I18N_STRING, szKey));
 
   if (p) {
-    p->BindEx(std::forward<slot<void(const wchar_t*, int)>>(s), 
-        std::forward<slot<const wchar_t*()>>(g));
+    p->BindEx(std::forward<slot<void(const wchar_t *, int)>>(s),
+              std::forward<slot<const wchar_t *()>>(g));
   }
   return p;
 }
-// StringEnumAttribute *AttributeSerializer::AddStringEnum(const wchar_t *szKey,
-//                                                         void *_this,
-//                                                         pfnStringSetter s,
-//                                                         pfnStringGetter g) {
-//   return static_cast<StringEnumAttribute *>(
-//       Add(ATTRIBUTE_TYPE_STRINGENUM, szKey, _this, s, g));
-// }
+StringEnumAttribute *
+AttributeSerializer::AddStringEnum(const wchar_t *szKey,
+                                   slot<void(const wchar_t *)> &&s,
+                                   slot<const wchar_t *()> &&g) {
+  StringEnumAttribute *p = static_cast<StringEnumAttribute *>(
+      Add(ATTRIBUTE_TYPE_STRINGENUM, szKey, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(const wchar_t *)>>(s),
+            std::forward<slot<const wchar_t *()>>(g));
+  }
+  return p;
+}
 BoolAttribute *AttributeSerializer::AddBool(const wchar_t *szKey,
                                             bool &bBindValue) {
   return static_cast<BoolAttribute *>(
       Add(ATTRIBUTE_TYPE_BOOL, szKey, &bBindValue));
 }
-// BoolAttribute *AttributeSerializer::AddBool(const wchar_t *szKey, void *_this,
-//                                             pfnBoolSetter s, pfnBoolGetter g) {
+// BoolAttribute *AttributeSerializer::AddBool(const wchar_t *szKey, void
+// *_this,
+//                                             pfnBoolSetter s, pfnBoolGetter g)
+//                                             {
 //   return static_cast<BoolAttribute *>(
 //       Add(ATTRIBUTE_TYPE_BOOL, szKey, _this, s, g));
 // }
-BoolAttribute*  AttributeSerializer::AddBool(const wchar_t* szKey, slot<void(bool)>&& s, slot<bool()>&& g) {
-    BoolAttribute * p = static_cast<BoolAttribute *>(
-      Add(ATTRIBUTE_TYPE_BOOL, szKey, nullptr));
-    if (p) {
-        p->Bind(std::forward<slot<void(bool)>>(s), std::forward<slot<bool()>>(g));
-    }
-    return p;
+BoolAttribute *AttributeSerializer::AddBool(const wchar_t *szKey,
+                                            slot<void(bool)> &&s,
+                                            slot<bool()> &&g) {
+  BoolAttribute *p =
+      static_cast<BoolAttribute *>(Add(ATTRIBUTE_TYPE_BOOL, szKey, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(bool)>>(s), std::forward<slot<bool()>>(g));
+  }
+  return p;
 }
 LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey,
                                             long &lBindValue) {
   return static_cast<LongAttribute *>(
       Add(ATTRIBUTE_TYPE_LONG, szKey, &lBindValue));
 }
-// LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey, void *_this,
-//                                             pfnLongSetter s, pfnLongGetter g) {
+// LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey, void
+// *_this,
+//                                             pfnLongSetter s, pfnLongGetter g)
+//                                             {
 //   return static_cast<LongAttribute *>(
 //       Add(ATTRIBUTE_TYPE_LONG, szKey, _this, s, g));
 // }
-LongAttribute*  AttributeSerializer::AddLong(const wchar_t* szKey, slot<void(long)>&& s, slot<long()>&& g)
-{
-    LongAttribute* p = static_cast<LongAttribute *>(
-      Add(ATTRIBUTE_TYPE_LONG, szKey, nullptr));
-    if (p) {
-        p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
-    }
-    return p;
+LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey,
+                                            slot<void(long)> &&s,
+                                            slot<long()> &&g) {
+  LongAttribute *p =
+      static_cast<LongAttribute *>(Add(ATTRIBUTE_TYPE_LONG, szKey, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
+  }
+  return p;
 }
 
 FlagsAttribute *AttributeSerializer::AddFlags(const wchar_t *szKey,
@@ -243,20 +255,22 @@ EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey,
   return static_cast<EnumAttribute *>(
       Add(ATTRIBUTE_TYPE_ENUM, szKey, &lBindValue));
 }
-// EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey, void *_this,
-//                                             pfnLongSetter s, pfnLongGetter g) {
+// EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey, void
+// *_this,
+//                                             pfnLongSetter s, pfnLongGetter g)
+//                                             {
 //   return static_cast<EnumAttribute *>(
 //       Add(ATTRIBUTE_TYPE_ENUM, szKey, _this, s, g));
 // }
-EnumAttribute*  AttributeSerializer::AddEnum(const wchar_t* szKey, 
-    slot<void(long)>&& s, slot<long()>&& g)
-{
-    EnumAttribute * p = static_cast<EnumAttribute *>(
-      Add(ATTRIBUTE_TYPE_ENUM, szKey, nullptr));
-    if (p) {
-        p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
-    }
-    return p;
+EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey,
+                                            slot<void(long)> &&s,
+                                            slot<long()> &&g) {
+  EnumAttribute *p =
+      static_cast<EnumAttribute *>(Add(ATTRIBUTE_TYPE_ENUM, szKey, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
+  }
+  return p;
 }
 
 RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey,
@@ -264,20 +278,24 @@ RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey,
   return static_cast<RectAttribute *>(
       Add(ATTRIBUTE_TYPE_RECT, szKey, &rcBindValue));
 }
-// RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey, void *_this,
-//                                             pfnRectSetter s, pfnRectGetter g) {
+// RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey, void
+// *_this,
+//                                             pfnRectSetter s, pfnRectGetter g)
+//                                             {
 //   return static_cast<RectAttribute *>(
 //       Add(ATTRIBUTE_TYPE_RECT, szKey, _this, s, g));
 // }
-RectAttribute*  AttributeSerializer::AddRect(const wchar_t* szKey, slot<void(Rect*)>&& s, slot<void(Rect*)>&& g)
-{
-    RectAttribute* p = static_cast<RectAttribute *>(
-      Add(ATTRIBUTE_TYPE_RECT, szKey, nullptr));
+RectAttribute *AttributeSerializer::AddRect(const wchar_t *szKey,
+                                            slot<void(Rect *)> &&s,
+                                            slot<void(Rect *)> &&g) {
+  RectAttribute *p =
+      static_cast<RectAttribute *>(Add(ATTRIBUTE_TYPE_RECT, szKey, nullptr));
 
-    if (p) {
-        p->Bind(std::forward<slot<void(Rect*)>>(s), std::forward<slot<void(Rect*)>>(g));
-    }
-    return p;
+  if (p) {
+    p->Bind(std::forward<slot<void(Rect *)>>(s),
+            std::forward<slot<void(Rect *)>>(g));
+  }
+  return p;
 }
 
 SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey,
@@ -285,19 +303,23 @@ SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey,
   return static_cast<SizeAttribute *>(
       Add(ATTRIBUTE_TYPE_SIZE, szKey, &sBindValue));
 }
-// SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey, void *_this,
-//                                             pfnSizeSetter s, pfnSizeGetter g) {
+// SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey, void
+// *_this,
+//                                             pfnSizeSetter s, pfnSizeGetter g)
+//                                             {
 //   return static_cast<SizeAttribute *>(
 //       Add(ATTRIBUTE_TYPE_SIZE, szKey, _this, s, g));
 // }
-SizeAttribute*  AttributeSerializer::AddSize(const wchar_t* szKey, slot<void(Size*)>&& s, slot<void(Size*)>&& g)
-{
-   SizeAttribute* p = static_cast<SizeAttribute *>(
-      Add(ATTRIBUTE_TYPE_SIZE, szKey, nullptr));   
-    if (p) {
-        p->Bind(std::forward<slot<void(Size*)>>(s), std::forward<slot<void(Size*)>>(g));
-    }
-    return p;
+SizeAttribute *AttributeSerializer::AddSize(const wchar_t *szKey,
+                                            slot<void(Size *)> &&s,
+                                            slot<void(Size *)> &&g) {
+  SizeAttribute *p =
+      static_cast<SizeAttribute *>(Add(ATTRIBUTE_TYPE_SIZE, szKey, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(Size *)>>(s),
+            std::forward<slot<void(Size *)>>(g));
+  }
+  return p;
 }
 
 Region9Attribute *AttributeSerializer::Add9Region(const wchar_t *szKey,
@@ -306,22 +328,22 @@ Region9Attribute *AttributeSerializer::Add9Region(const wchar_t *szKey,
       Add(ATTRIBUTE_TYPE_9REGION, szKey, &rBindValue));
 }
 // Region9Attribute *AttributeSerializer::Add9Region(const wchar_t *szKey,
-//                                                   void *_this, pfnRectSetter s,
-//                                                   pfnRectGetter g) {
+//                                                   void *_this, pfnRectSetter
+//                                                   s, pfnRectGetter g) {
 //   return static_cast<Region9Attribute *>(
 //       Add(ATTRIBUTE_TYPE_9REGION, szKey, _this, s, g));
 // }
-Region9Attribute*  AttributeSerializer::Add9Region(const wchar_t* szKey, 
-    slot<void(C9Region*)>&& s, slot<void(C9Region*)>&& g)
-{
-  Region9Attribute* p = static_cast<Region9Attribute *>(
+Region9Attribute *AttributeSerializer::Add9Region(const wchar_t *szKey,
+                                                  slot<void(C9Region *)> &&s,
+                                                  slot<void(C9Region *)> &&g) {
+  Region9Attribute *p = static_cast<Region9Attribute *>(
       Add(ATTRIBUTE_TYPE_9REGION, szKey, nullptr));
-    if (p) {
-        p->Bind(std::forward<slot<void(C9Region*)>>(s), std::forward<slot<void(C9Region*)>>(g));
-    }
-    return p;
+  if (p) {
+    p->Bind(std::forward<slot<void(C9Region *)>>(s),
+            std::forward<slot<void(C9Region *)>>(g));
+  }
+  return p;
 }
-
 
 ColorAttribute *AttributeSerializer::AddColor(const wchar_t *szKey,
                                               Color *&pBindValue) {

@@ -2,73 +2,74 @@
 #include "include/interface/ilayout.h"
 #include "src/layout/layout.h"
 
-namespace ui
-{
+namespace ui {
 
 class Object;
 
-class HorzLayoutParam : public LayoutParamImpl<IHorzLayoutParam>
-{
+class HorzLayoutParam : public IHorzLayoutParam {
 public:
-    HorzLayoutParam();
-    ~HorzLayoutParam();
+  HorzLayoutParam(Object *pObj);
+  ~HorzLayoutParam();
 
-    virtual void  UpdateByRect() override;
-    virtual void  Serialize(SERIALIZEDATA* pData) override;
-    virtual LAYOUTTYPE  GetLayoutType() override { return LAYOUT_TYPE_HORZ; }
-    virtual Size  CalcDesiredSize() override;
-    virtual bool  IsSizedByContent() override;
+  Uuid UUID() override { return IHorzLayout::UUID(); }
+  void Release() override { delete this; }
+
+  virtual void UpdateByRect() override;
+  virtual void Serialize(SERIALIZEDATA *pData) override;
+  virtual Size CalcDesiredSize() override;
+  virtual bool IsSizedByContent() override;
 
 public:
-    virtual long  GetConfigWidth() override;
-    virtual void  SetConfigWidth(long) override;
-    void  LoadConfigWidth(const wchar_t*);
-    const wchar_t*  SaveConfigWidth();
+  virtual long GetConfigWidth() override;
+  virtual void SetConfigWidth(long) override;
+  void LoadConfigWidth(const wchar_t *);
+  const wchar_t *SaveConfigWidth();
 
-    virtual long  GetConfigHeight() override;
-    virtual void  SetConfigHeight(long) override;
-    void  LoadConfigHeight(const wchar_t*);
-    const wchar_t*  SaveConfigHeight();
+  virtual long GetConfigHeight() override;
+  virtual void SetConfigHeight(long) override;
+  void LoadConfigHeight(const wchar_t *);
+  const wchar_t *SaveConfigHeight();
 
-    virtual void SetConfigLayoutFlags(long) override;
-    virtual long GetConfigLayoutFlags() override;
+  virtual void SetConfigLayoutFlags(long) override;
+  virtual long GetConfigLayoutFlags() override;
 
 private:
-    long  m_nConfigWidth;  
-    long  m_nConfigHeight; 
-    long  m_nConfigLayoutFlags;
+  Object *m_pObj;
+  
+  long m_nConfigWidth;
+  long m_nConfigHeight;
+  long m_nConfigLayoutFlags;
 
-    long  m_eWidthType;
-    long  m_eHeightType;
+  long m_eWidthType;
+  long m_eHeightType;
 
-	friend class HorzLayout;
+  friend class HorzLayout;
 };
 
-class HorzLayout : public LayoutImpl<HorzLayout, IHorzLayout, HorzLayoutParam, LAYOUT_TYPE_HORZ>
-{
+class HorzLayout : public LayoutImpl<HorzLayout, IHorzLayout, HorzLayoutParam> {
 public:
-	HorzLayout();
-    ~HorzLayout();
+  HorzLayout();
+  ~HorzLayout();
 
-    virtual Size  Measure() override;
-	virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
-	virtual void  Serialize(SERIALIZEDATA* pData) override;
-    virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
-    virtual void  ChildObjectContentSizeChanged(IObject* pObj) override;
+  virtual Size Measure() override;
+  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
+  virtual void Serialize(SERIALIZEDATA *pData) override;
+  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
+  virtual void ChildObjectContentSizeChanged(IObject *pObj) override;
 
-    virtual void  SetSpace(int n) override;
+  virtual void SetSpace(int n) override;
 
 protected:
-    void  ArrangeObject_Left(Object* pChildObj, int& nLeftCustom, int& nRightCustom, Size size);
-    void  ArrangeObject_Right(Object* pChildObj, int& nLeftCustom, int& nRightCustom, Size size);
+  void ArrangeObject_Left(Object *pChildObj, int &nLeftCustom,
+                          int &nRightCustom, Size size);
+  void ArrangeObject_Right(Object *pChildObj, int &nLeftCustom,
+                           int &nRightCustom, Size size);
 
-    void  LoadGap(long);
-    long  SaveGap();
+  void LoadGap(long);
+  long SaveGap();
 
 public:
-    long  m_nSpace;  // ¡Ω∏ˆ◊”∂‘œÛ÷Æº‰º‰œ∂
+  long m_nSpace; // ‰∏§‰∏™Â≠êÂØπË±°‰πãÈó¥Èó¥Èöô
 };
 
-
-
-}
+} // namespace ui

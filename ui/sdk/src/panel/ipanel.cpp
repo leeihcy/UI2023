@@ -11,9 +11,9 @@ ILayout* IPanel::GetLayout()
 {
     return __pImpl->GetLayout(); 
 }
-void  IPanel::SetLayoutType(LAYOUTTYPE eLayoutType)  
+void  IPanel::SetLayoutType(const wchar_t* name)  
 { 
-    __pImpl->SetLayoutType(eLayoutType);
+    __pImpl->SetLayoutType(name);
 }
 void  IPanel::SetTextureRender(IRenderBase* p)
 {

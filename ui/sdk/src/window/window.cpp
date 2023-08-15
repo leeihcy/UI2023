@@ -97,10 +97,10 @@ void Window::onSize(int width, int height) {
 
   m_rcParent.CopyFrom(rcParent);
 
-  if (GetConfigWidth() > 0)
-    SetConfigWidth(rcWindow.width());
-  if (GetConfigHeight() > 0)
-    SetConfigHeight(rcWindow.height());
+  // if (GetConfigWidth() > 0)
+  //   SetConfigWidth(rcWindow.width());
+  // if (GetConfigHeight() > 0)
+  //   SetConfigHeight(rcWindow.height());
 
   notify_WM_SIZE(0, rcParent.width(), rcParent.height());
 #if 0

@@ -83,7 +83,7 @@ public:
         slot<const wchar_t*()>&& g);
     // StringAttribute*  AddI18nString(const wchar_t*, void* _this, pfnStringExSetter s, pfnStringGetter g);
     // StringAttribute*  AddI18nString(const wchar_t*, const std::function<void(const wchar_t*, int)>& s, const std::function<const wchar_t*()>& g);
-    // StringEnumAttribute*  AddStringEnum(const wchar_t*, void* _this, pfnStringSetter s, pfnStringGetter g);
+    StringEnumAttribute*  AddStringEnum(const wchar_t*, slot<void(const wchar_t*)>&& s, slot<const wchar_t*()>&& g);
 
     BoolAttribute*  AddBool(const wchar_t*, bool& bBindValue);
     // BoolAttribute*  AddBool(const wchar_t*, void* _this, pfnBoolSetter s, pfnBoolGetter g);

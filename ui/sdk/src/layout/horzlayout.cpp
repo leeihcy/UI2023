@@ -35,7 +35,7 @@ Size HorzLayout::Measure() {
   Object *pChild = nullptr;
   while ((pChild = m_pPanel->EnumChildObject(pChild))) {
     // 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
-    HorzLayoutParam *pParam = s_GetObjectLayoutParam(pChild);
+    HorzLayoutParam *pParam = GetObjectLayoutParam(pChild);
     if (!pParam)
       continue;
 
@@ -105,7 +105,7 @@ void HorzLayout::DoArrage(IObject *pIObjToArrage) {
   Object *pChild = nullptr;
   while ((pChild = m_pPanel->EnumChildObject(pChild))) {
     // 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
-    HorzLayoutParam *pParam = s_GetObjectLayoutParam(pChild);
+    HorzLayoutParam *pParam = GetObjectLayoutParam(pChild);
     if (!pParam)
       continue;
 
@@ -183,7 +183,7 @@ void HorzLayout::DoArrage(IObject *pIObjToArrage) {
       continue;
 
     // 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
-    HorzLayoutParam *pParam = s_GetObjectLayoutParam(pChild);
+    HorzLayoutParam *pParam = GetObjectLayoutParam(pChild);
     if (!pParam)
       continue;
 
@@ -261,12 +261,13 @@ void HorzLayout::ChildObjectContentSizeChanged(IObject *pObj) {
   m_pPanel->Invalidate();
 }
 
-HorzLayoutParam::HorzLayoutParam() {
+HorzLayoutParam::HorzLayoutParam(Object *pObj) {
   m_nConfigWidth = AUTO;
   m_nConfigHeight = AUTO;
   m_nConfigLayoutFlags = 0;
   m_eWidthType = WH_SET;
   m_eHeightType = WH_SET;
+  m_pObj = pObj;
 }
 
 HorzLayoutParam::~HorzLayoutParam() {}

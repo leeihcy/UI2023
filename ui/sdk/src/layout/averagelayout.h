@@ -2,40 +2,36 @@
 #include "include/interface/ilayout.h"
 #include "src/layout/layout.h"
 
-// Æ½¾ù·ÖÅä²¼¾Ö
-namespace ui
-{
+// å¹³å‡åˆ†é…å¸ƒå±€
+namespace ui {
 
 class Object;
 
-class AverageLayoutParam : public LayoutParamImpl<IAverageLayoutParam>
-{
+class AverageLayoutParam : public IAverageLayoutParam {
 public:
-    virtual LAYOUTTYPE  GetLayoutType() { return LAYOUT_TYPE_AVERAGE; }
-    virtual bool  IsSizedByContent() { return false; }
+  AverageLayoutParam(Object*) {}
+  Uuid UUID() override { return IAverageLayout::UUID(); }
+  void Release() override { delete this; }
+  bool IsSizedByContent() override { return false; }
 };
 
-
-class AverageLayout : public LayoutImpl<AverageLayout, IAverageLayout, AverageLayoutParam, LAYOUT_TYPE_AVERAGE>
-{
+class AverageLayout : public LayoutImpl<AverageLayout, IAverageLayout, AverageLayoutParam> {
 public:
-	AverageLayout();
-    ~AverageLayout();
+  AverageLayout();
+  ~AverageLayout();
 
-    virtual Size  Measure() override;
-	virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
-	virtual void  Serialize(SERIALIZEDATA*) override;
-    virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
+  virtual Size Measure() override;
+  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
+  virtual void Serialize(SERIALIZEDATA *) override;
+  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
-    void  ArrangeObject_H(Object* pChildObj, Rect* prc);
-    void  ArrangeObject_V(Object* pChildObj, Rect* prc);
+  void ArrangeObject_H(Object *pChildObj, Rect *prc);
+  void ArrangeObject_V(Object *pChildObj, Rect *prc);
 
 public:
-	LAYOUT_AVERAGE_DIRECTION  direction;    // ¶ÑÕ»ÅÅ²¼µÄ·½Ïò
-    Object*   m_pPanel;   // Óë¸Ã²¼¾Ö¹ØÁªµÄpanel
-    int   m_nGap;  // Á½¸ö×Ó¶ÔÏóÖ®¼ä¼äÏ¶,
+  LAYOUT_AVERAGE_DIRECTION direction; // å †æ ˆæ’å¸ƒçš„æ–¹å‘
+  Object *m_pPanel;                   // ä¸è¯¥å¸ƒå±€å…³è”çš„panel
+  int m_nGap;                         // ä¸¤ä¸ªå­å¯¹è±¡ä¹‹é—´é—´éš™,
 };
 
-
-
-}
+} // namespace ui

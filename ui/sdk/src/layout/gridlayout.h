@@ -2,90 +2,90 @@
 #include "include/interface/ilayout.h"
 #include "src/layout/layout.h"
 
-namespace ui
-{
+namespace ui {
 class Object;
 
-
-class GridLayoutParam : public LayoutParamImpl<IGridLayoutParam>
-{
+class GridLayoutParam : public IGridLayoutParam {
 public:
-    GridLayoutParam();
-    ~GridLayoutParam();
+  GridLayoutParam(Object*);
+  ~GridLayoutParam();
+  
+  Uuid UUID() override { return IGridLayout::UUID(); }
+  void Release() override { delete this; }
 
-    virtual void  UpdateByRect();
-    virtual void  Serialize(SERIALIZEDATA* pData);
-    virtual LAYOUTTYPE  GetLayoutType() { return LAYOUT_TYPE_GRID; }
-    virtual Size  CalcDesiredSize();
-    virtual bool  IsSizedByContent();
+  void UpdateByRect() override;
+  void Serialize(SERIALIZEDATA *pData) override;
+  Size CalcDesiredSize() override;
+  bool IsSizedByContent() override;
 
 public:
-    DECLARE_INT_SETGET(ConfigWidth)
-    DECLARE_INT_SETGET(ConfigHeight)
-    DECLARE_INT_SETGET(ConfigLayoutFlags)
-    DECLARE_INT_SETGET(Row)
-    DECLARE_INT_SETGET(Col)
-    DECLARE_INT_SETGET(RowSpan)
-    DECLARE_INT_SETGET(ColSpan)
+
+#define DECLARE_INT_SETGET(xxx) \
+	int  Get##xxx() override { return m_n##xxx; } \
+	void Set##xxx( int n ) override { m_n##xxx = n; }
+
+  DECLARE_INT_SETGET(ConfigWidth)
+  DECLARE_INT_SETGET(ConfigHeight)
+  DECLARE_INT_SETGET(ConfigLayoutFlags)
+  DECLARE_INT_SETGET(Row)
+  DECLARE_INT_SETGET(Col)
+  DECLARE_INT_SETGET(RowSpan)
+  DECLARE_INT_SETGET(ColSpan)
 
 private:
-    Object*  m_pObj;
+  Object *m_pObj;
 
-    long  m_nConfigWidth;  
-    long  m_nConfigHeight; 
-    long  m_nConfigLayoutFlags;
+  long m_nConfigWidth;
+  long m_nConfigHeight;
+  long m_nConfigLayoutFlags;
 
-    long  m_nRow;
-    long  m_nCol;
-    long  m_nRowSpan;
-    long  m_nColSpan;
+  long m_nRow;
+  long m_nCol;
+  long m_nRowSpan;
+  long m_nColSpan;
 };
 
-
-enum GridWHType
-{
-	GWHT_AUTO,
-	GWHT_ASTERISK,  // *
-	GWHT_VALUE
+enum GridWHType {
+  GWHT_AUTO,
+  GWHT_ASTERISK, // *
+  GWHT_VALUE
 };
 
-// ±Ì∏Ò≤ºæ÷µƒ“ª––ªÚ“ª¡–µƒ¥Û–° √Ë ˆ
-class GridWH
-{
+// Ë°®Ê†ºÂ∏ÉÂ±ÄÁöÑ‰∏ÄË°åÊàñ‰∏ÄÂàóÁöÑÂ§ßÂ∞è ÊèèËø∞
+class GridWH {
 public:
-	GridWH();
+  GridWH();
 
-	int          last;  // ◊Ó÷’¥Û–°
-	int          xml;   // ‘⁄xml÷–µƒ¥Û–°√Ë ˆ£¨∏√÷µΩˆ∂‘*¿‡–Õ”–”√
-	GridWHType   type;  // auto, *, value
+  int last;        // ÊúÄÁªàÂ§ßÂ∞è
+  int xml;         // Âú®xml‰∏≠ÁöÑÂ§ßÂ∞èÊèèËø∞ÔºåËØ•ÂÄº‰ªÖÂØπ*Á±ªÂûãÊúâÁî®
+  GridWHType type; // auto, *, value
 };
 
-class GridLayout : public LayoutImpl<GridLayout, IGridLayout, GridLayoutParam, LAYOUT_TYPE_GRID>
-{
+class GridLayout : public LayoutImpl<GridLayout, IGridLayout, GridLayoutParam> {
 public:
-    GridLayout();
-	~GridLayout();
+  GridLayout();
+  ~GridLayout();
 
-    virtual void  Serialize(SERIALIZEDATA*) override;
-    virtual Size  Measure() override;
-    virtual void  DoArrage(IObject* pObjToArrage=nullptr) override;
-    virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
+  virtual void Serialize(SERIALIZEDATA *) override;
+  virtual Size Measure() override;
+  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
+  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
-	int  getColPos(unsigned int nCol);    
-	int  getRowPos(unsigned int nRow);
+  int getColPos(unsigned int nCol);
+  int getRowPos(unsigned int nRow);
 
-    GridWH*  GetWidth(unsigned int nIndex);
-    GridWH*  GetHeight(unsigned int nIndex);
+  GridWH *GetWidth(unsigned int nIndex);
+  GridWH *GetHeight(unsigned int nIndex);
 
 private:
-    void  LoadGridWidth(const wchar_t* szText);
-    const wchar_t*  SaveGridWidth();
-    void  LoadGridHeight(const wchar_t* szText);
-    const wchar_t*  SaveGridHeight();
+  void LoadGridWidth(const wchar_t *szText);
+  const wchar_t *SaveGridWidth();
+  void LoadGridHeight(const wchar_t *szText);
+  const wchar_t *SaveGridHeight();
 
 private:
-	std::vector<GridWH>   widths;
-	std::vector<GridWH>   heights;
+  std::vector<GridWH> widths;
+  std::vector<GridWH> heights;
 };
 
-}
+} // namespace ui

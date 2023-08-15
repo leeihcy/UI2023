@@ -1,5 +1,5 @@
 #include "include/interface/irect.h"
-#include "src/element/rect.h"
+#include "src/element/rect/rect.h"
 
 namespace ui {
 namespace svg {

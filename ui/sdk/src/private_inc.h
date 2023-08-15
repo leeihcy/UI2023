@@ -25,10 +25,6 @@
 	unsigned char  Get##xxx() { return m_byte##xxx; } \
 	void    Set##xxx( byte b ) { m_byte##xxx = b; }
 
-#define DECLARE_INT_SETGET(xxx) \
-	int     Get##xxx() { return m_n##xxx; } \
-	void    Set##xxx( int n ) { m_n##xxx = n; }
-
 // String°²È«¸³Öµ
 #define SETSTRING(str, sz) \
 	if (sz){str = sz;} else {str.clear();}

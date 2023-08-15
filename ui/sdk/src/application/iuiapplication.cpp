@@ -209,10 +209,6 @@ bool  IApplication::CreateLayoutByName(const wchar_t* szName, IObject* pObject, 
 { 
     return m_pImpl->GetLayoutFactory().CreateByName(szName, pObject, bCreateDefault, ppOut); 
 }
-bool  IApplication::CreateLayout(int nType, IObject* pObject, ILayout** ppOut)
-{
-    return m_pImpl->GetLayoutFactory().Create(nType, pObject, ppOut);
-}
 void  IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam)
 {
     m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);

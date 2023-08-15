@@ -84,7 +84,6 @@ struct UIAPI IApplication
     void  EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback, long wParam, long lParam);
 
     bool  CreateLayoutByName(const wchar_t* szName, IObject* pObject, bool bCreateDefault, ILayout** ppOut);
-    bool  CreateLayout(int nType, IObject* pObject, ILayout** ppOut);
     void  EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam);
 
 #if 0

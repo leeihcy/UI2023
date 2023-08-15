@@ -6,22 +6,24 @@ namespace ui{
 
 class Object;
 
-class CardLayoutParam : public LayoutParamImpl<ICardLayoutParam>
+class CardLayoutParam : public ICardLayoutParam
 {
 public:
-    virtual LAYOUTTYPE  GetLayoutType() { return LAYOUT_TYPE_CARD; }
-    virtual bool  IsSizedByContent() { return false; }
+    CardLayoutParam(Object*) {}
+    Uuid UUID() override { return ICardLayout::UUID(); }
+    void Release() override { delete this; }
+    bool IsSizedByContent() override { return false; }
 };
 
-class CardLayout : public LayoutImpl<CardLayout, ICardLayout, CardLayoutParam, LAYOUT_TYPE_CARD>
+class CardLayout : public LayoutImpl<CardLayout, IGridLayout, CardLayoutParam>
 {
 public:
     CardLayout();
 
-    virtual void  Serialize(SERIALIZEDATA*) override{};
-    virtual Size  Measure() override;
-    virtual void  DoArrage(IObject* pObjToArrage = nullptr) override;
-    virtual void  ChildObjectVisibleChanged(IObject* pObj) override;
+    void  Serialize(SERIALIZEDATA*) override{};
+    Size  Measure() override;
+    void  DoArrage(IObject* pObjToArrage = nullptr) override;
+    void  ChildObjectVisibleChanged(IObject* pObj) override;
 };
 
 
