@@ -855,7 +855,7 @@ ILayoutParam *Object::GetSafeLayoutParam() {
 
   SERIALIZEDATA data = {0};
   data.pMapAttrib = m_pIMapAttributeRemain;
-  data.pSkinRes = GetIResBundle();
+  data.pSkinRes = GetIResource();
   data.pUIApplication = GetIUIApplication();
   data.nFlags = SERIALIZEFLAG_LOAD;
   m_pLayoutParam->Serialize(&data);

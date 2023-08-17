@@ -10,7 +10,7 @@ using namespace std;
 
 class MainWindow {
 public:
-  MainWindow(ui::IResBundle *res) : m_window(res) {
+  MainWindow(ui::IResource *res) : m_window(res) {
     create_ui();
     
     ui::Rect rc = {100, 100, 500, 400};
@@ -25,14 +25,14 @@ public:
 
   void create_ui() {
   #if 1
-    ui::svg::SvgPtr panel(m_window->GetResBundle());
+    ui::svg::SvgPtr panel(m_window->GetResource());
     panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"0");
     panel->InitDefaultAttrib();
 
-    ui::svg::RectPtr rect(m_window->GetResBundle());
+    ui::svg::RectPtr rect(m_window->GetResource());
     rect->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_TOP, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"100");

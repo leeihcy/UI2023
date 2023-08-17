@@ -20,13 +20,13 @@ public:
             pfnUICreateTextRenderBasePtr pfunc);
 
 	bool  CreateTextRenderBaseByName(
-            IResBundle* pSkinRes, 
+            IResource* pSkinRes, 
             const wchar_t* szName, 
             IObject* pObject, 
             ITextRenderBase** ppOut);
 
 	bool  CreateTextRender(
-            IResBundle* pSkinRes, 
+            IResource* pSkinRes, 
             int nType, 
             IObject* pObject, 
             ITextRenderBase** ppOut);

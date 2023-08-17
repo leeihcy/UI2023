@@ -67,7 +67,7 @@ bool  RenderBaseFactory::RegisterUIRenderBaseCreateData(
 }
 
 bool  RenderBaseFactory::CreateRenderBaseByName(
-        IResBundle* pSkinRes, 
+        IResource* pSkinRes, 
         const wchar_t* strName, 
         IObject* pObject, 
         IRenderBase** ppOut)
@@ -116,7 +116,7 @@ bool  RenderBaseFactory::CreateRenderBaseByName(
 	return false;
 }
 bool  RenderBaseFactory::CreateRenderBase(
-        IResBundle* pSkinRes, 
+        IResource* pSkinRes, 
         int nType,
         IObject* pObject,
         IRenderBase** ppOut)

@@ -82,13 +82,13 @@ IApplication* IObject::GetUIApplication()
 
 	return p->GetIUIApplication();
 }
-IResBundle*  IObject::GetResBundle()
+IResource*  IObject::GetResource()
 {
-	ResBundle* p = __pImpl->GetResBundle();
+	Resource* p = __pImpl->GetResource();
 	if (!p)
 		return nullptr;
 
-	return p->GetIResBundle();
+	return p->GetIResource();
 }
 
 void  IObject::SetOutRef(void** ppOutRef)                  

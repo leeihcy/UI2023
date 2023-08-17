@@ -4,7 +4,7 @@
 
 namespace ui {
 struct IWindow;
-struct IResBundle;
+struct IResource;
 struct IObjectDescription;
 struct ITextRenderBase;
 struct IRenderFont;
@@ -66,7 +66,7 @@ typedef struct tagObjState {
 class Object;
 struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
-  IResBundle *GetResBundle();
+  IResource *GetResource();
 	IWindow*  GetWindow();
   void SetDescription(IObjectDescription *p);
   IObjectDescription *GetDescription(); // 返回值不会为空

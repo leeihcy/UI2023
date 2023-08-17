@@ -15,7 +15,7 @@ I18nManager::~I18nManager()
     m_listElement.clear();
 }
 
-long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
+long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
 	I18nManager& mgr = pSkinRes->GetImpl()->GetI18nManager();
 	return mgr.ParseNewElement(pElem->GetImpl());

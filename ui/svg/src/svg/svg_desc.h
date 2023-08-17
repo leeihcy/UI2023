@@ -13,7 +13,7 @@ public:
     return &s;
   }
 
-  virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
+  virtual void CreateInstance(ui::IResource *p, void **pp) override {
     *pp = ISvg::create(p);
   }
 

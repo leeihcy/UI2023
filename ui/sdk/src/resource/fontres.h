@@ -7,7 +7,7 @@ namespace ui
 struct IFontResItem;
 struct IRenderFont;
 struct IFontRes;
-class ResBundle;
+class Resource;
 
 //
 //	一条字体信息
@@ -44,7 +44,7 @@ public:
 
 	void   SetLogFont( LOGFONT* pLogFont );
 	void   ModifyFont( LOGFONT* pLogFont );
-	IRenderFont* GetFont(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI );
+	IRenderFont* GetFont(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI );
 
 	bool   IsMyRenderFont(IRenderFont* pRenderFont);
 
@@ -64,7 +64,7 @@ private:
 class FontRes
 {
 public:
-    FontRes(ResBundle*  m_pSkinRes);
+    FontRes(Resource*  m_pSkinRes);
 	~FontRes();
 
     IFontRes&  GetIFontRes();
@@ -87,7 +87,7 @@ public:
 	const wchar_t* GetRenderFontId(IRenderFont* pFont);
 
 private:
-    ResBundle*  m_pSkinRes;
+    Resource*  m_pSkinRes;
     IFontRes*  m_pIFontRes;
     std::vector<FontResItem*>  m_vFonts;
 };

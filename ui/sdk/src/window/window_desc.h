@@ -12,7 +12,7 @@ public:
     return &s;
   }
 
-  virtual void CreateInstance(IResBundle *p, void **pp) override {
+  virtual void CreateInstance(IResource *p, void **pp) override {
     *pp = IWindow::create(p);
   }
 
@@ -40,7 +40,7 @@ public:
 		return &s;
 	}
 
-    virtual void  CreateInstance(IResBundle* p, void** pp) override
+    virtual void  CreateInstance(IResource* p, void** pp) override
     {
         *pp = UI::ICustomWindow::create(p);
     }

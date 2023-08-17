@@ -77,7 +77,7 @@ private:
   // void swap_buffer();
 
 protected:
-  long FinalConstruct(IResBundle *p);
+  long FinalConstruct(IResource *p);
   // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
   void OnSerialize(SERIALIZEDATA *pData);
   // void OnSetDefId(IObject *pButton);

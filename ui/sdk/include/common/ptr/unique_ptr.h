@@ -12,7 +12,7 @@
 
 
 namespace ui {
-struct IResBundle;
+struct IResource;
 
 template <class T> class unique_ptr : public std::unique_ptr<T, void (*)(T *)> {
   using super = std::unique_ptr<T, void (*)(T *)>;
@@ -22,7 +22,7 @@ public:
   unique_ptr() : super(T::create(), T::destroy) {}
 
   // 构造函数需要传递一个资源对象，如 IWindow
-  unique_ptr(IResBundle *p) : super(T::create(p), T::destroy) {}
+  unique_ptr(IResource *p) : super(T::create(p), T::destroy) {}
 };
 
 } // namespace ui

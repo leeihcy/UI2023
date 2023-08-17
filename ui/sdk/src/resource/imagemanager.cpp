@@ -13,7 +13,7 @@ namespace ui {
 //////////////////////////////////////////////////////////////////////////
 
 
-ImageManager::ImageManager(ResBundle* pSkinRes) : m_resImage(pSkinRes)
+ImageManager::ImageManager(Resource* pSkinRes) : m_resImage(pSkinRes)
 #if defined(OS_WIN)
 , m_resGif(pSkinRes)
 #endif
@@ -168,7 +168,7 @@ GifRes&  ImageManager::GetGifRes()
 
 //////////////////////////////////////////////////////////////////////////
 
-long  ImageManager::UIParseImageTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
+long  ImageManager::UIParseImageTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
     IImageManager&  pImageMgr = pSkinRes->GetImageManager();
     return pImageMgr.GetImpl()->ParseNewElement(pElem->GetImpl());

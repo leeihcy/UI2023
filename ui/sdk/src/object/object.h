@@ -5,7 +5,7 @@
 #include "src/private_inc.h"
 
 namespace ui {
-class ResBundle;
+class Resource;
 class Application;
 class Window;
 class Layer;
@@ -46,8 +46,8 @@ public:
 
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
-  ResBundle *GetResBundle();
-  IResBundle *GetIResBundle();
+  Resource *GetResource();
+  IResource *GetIResource();
   Window *GetWindow();
 #if defined(OS_WIN)
   HWND GetHWND();
@@ -322,7 +322,7 @@ public:
   void ScaleTo(float x, float y, LayerAnimateParam *param = nullptr);
 
 protected:
-  long FinalConstruct(IResBundle *pSkinRes);
+  long FinalConstruct(IResource *pSkinRes);
   void FinalRelease();
   unsigned int OnHitTest(Point *ptInParent, Point *ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
@@ -367,7 +367,7 @@ public:
 
 protected:
   IObject *m_pIObject;
-  ResBundle *m_pSkinRes; // 用于支持多皮肤包共存（插件模式）
+  Resource *m_pSkinRes; // 用于支持多皮肤包共存（插件模式）
   IObjectDescription *
       m_pDescription; // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
 

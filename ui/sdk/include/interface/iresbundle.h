@@ -20,12 +20,12 @@ namespace ui
 	struct IUIDocument;
 	struct II18nRes;
 
-	class ResBundle;
-	struct UIAPI IResBundle
+	class Resource;
+	struct UIAPI IResource
 	{
-		IResBundle(ResBundle*);
-		ResBundle*  GetImpl();
-		void  SetParentSkinRes(IResBundle*);
+		IResource(Resource*);
+		Resource*  GetImpl();
+		void  SetParentSkinRes(IResource*);
 
 		IApplication*  GetUIApplication();
         IResourceManager&    GetResourceManager();
@@ -53,7 +53,7 @@ namespace ui
 		bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 	private:
-		ResBundle*  m_pImpl;
+		Resource*  m_pImpl;
 	};
 
 
@@ -66,11 +66,11 @@ namespace ui
 
 		IApplication*  GetUIApplication();
 		void  ChangeSkinHLS(short h, short l, short s, int nFlag);
-		bool  Save(IResBundle* pSkinRes);
+		bool  Save(IResource* pSkinRes);
 
-		unsigned int  GetResBundleCount();
-		IResBundle*  GetResBundleByIndex(unsigned int i);
-		IResBundle*  GetResBundleByName(const wchar_t* szName);
+		unsigned int  GetResourceCount();
+		IResource*  GetResourceByIndex(unsigned int i);
+		IResource*  GetResourceByName(const wchar_t* szName);
 
         void  SetCurrentLanguage(const wchar_t*);
         const wchar_t*  GetCurrentLanguage();

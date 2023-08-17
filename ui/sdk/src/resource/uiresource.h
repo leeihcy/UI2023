@@ -3,7 +3,7 @@
 
 namespace ui
 {
-class ResBundle;
+class Resource;
 class Object;
 
 class OutCtrlDllItem

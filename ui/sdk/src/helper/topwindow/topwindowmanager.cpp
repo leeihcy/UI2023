@@ -86,7 +86,7 @@ IWindow *TopWindowManager::GetWindow(HWND hWnd) {
 //	修改皮肤，让当前所有窗口重新加载
 //
 #if 0
-void TopWindowManager::ChangeSkin(ResBundle* pNewSkinRes)
+void TopWindowManager::ChangeSkin(Resource* pNewSkinRes)
 {
 	if( nullptr == pNewSkinRes )
 		return;

@@ -71,7 +71,7 @@ public:
   bool CreateRenderBaseByName(const wchar_t *szName, IObject *pObject,
                               IRenderBase **ppOut);
 
-  ResBundle *GetDefaultSkinRes();
+  Resource *GetDefaultSkinRes();
 #if 0
 	bool  ShowToolTip(TOOLTIPITEM* pItem);
 	void  HideToolTip();
@@ -82,8 +82,8 @@ public:
   bool GetSkinTagParseFunc(const wchar_t *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
   bool RegisterUIObject(IObjectDescription *);
-  IObject *CreateUIObjectByName(const wchar_t *szXmlName, IResBundle *);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResBundle *);
+  IObject *CreateUIObjectByName(const wchar_t *szXmlName, IResource *);
+  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *);
 
   void LoadUIObjectListToToolBox();
 

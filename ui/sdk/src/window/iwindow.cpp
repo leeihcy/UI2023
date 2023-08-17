@@ -56,9 +56,9 @@ IWindowRender*  IWindowBase::GetWindowRender()
 { 
 	return __pImpl->GetWindowRender()->GetIWindowRender();
 }
-IResBundle*  IWindowBase::GetResBundle()                                      
+IResource*  IWindowBase::GetResource()                                      
 { 
-	return __pImpl->GetResBundle()->GetIResBundle(); 
+	return __pImpl->GetResource()->GetIResource(); 
 }
 void   IWindowBase::SetFocusObject(IObject* pObj)
 {

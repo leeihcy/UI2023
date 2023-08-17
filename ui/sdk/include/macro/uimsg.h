@@ -76,7 +76,7 @@
   }
 
 #define UI_BEGIN_MSG_MAP_Ixxx(iclassname)                                      \
-  static iclassname *CreateInstance(ui::IResBundle *pSkinRes) {                \
+  static iclassname *CreateInstance(ui::IResource *pSkinRes) {                \
     return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes);      \
   }                                                                            \
   UI_BEGIN_MSG_MAP()

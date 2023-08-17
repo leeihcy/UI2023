@@ -20,23 +20,23 @@ struct UIAPI SDKVersion {
 };
 
 struct IUIElement;
-struct IResBundle;
+struct IResource;
 struct IObject;
 struct ILayout;
 struct IApplication;
 
 // UI对象创建函数
-// typedef  long(*pfnUICreateRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
-// typedef  long(*pfnUICreateTextRenderBasePtr)(IResBundle* pSkinRes, void**
+// typedef  long(*pfnUICreateRenderBasePtr)(IResource* pSkinRes, void** ppOut);
+// typedef  long(*pfnUICreateTextRenderBasePtr)(IResource* pSkinRes, void**
 // ppOut);
-typedef long (*pfnParseSkinTag)(IUIElement *, IResBundle *pSkinRes);
+typedef long (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 // typedef  long(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 // UI对象创建函数
-typedef void (*pfnUICreateRenderBasePtr)(IResBundle *pSkinRes, void **ppOut);
-typedef void (*pfnUICreateTextRenderBasePtr)(IResBundle *pSkinRes,
+typedef void (*pfnUICreateRenderBasePtr)(IResource *pSkinRes, void **ppOut);
+typedef void (*pfnUICreateTextRenderBasePtr)(IResource *pSkinRes,
                                              void **ppOut);
-typedef long (*pfnParseSkinTag)(IUIElement *, IResBundle *pSkinRes);
+typedef long (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 
 // uiapplication中的枚举回调
 typedef bool (*pfnEnumLayoutTypeCallback)(const wchar_t *, long, long);
@@ -50,7 +50,7 @@ enum PARSE_CONTROL_RETURN {
   ParseControl_LoadObject, // 创建对象并加载其属性，但处没处理子结点
   ParseControl_LoadDescendants, // 加载自己和所有子结点的属性
 };
-typedef PARSE_CONTROL_RETURN (*pfnParseControlTag)(IUIElement *, IResBundle *,
+typedef PARSE_CONTROL_RETURN (*pfnParseControlTag)(IUIElement *, IResource *,
                                                    IObject *pObjParent,
                                                    IObject **);
 

@@ -20,7 +20,7 @@ CustomListItem*  ListCtrlBase::InsertCustomItem(
         return nullptr;
 
     ICustomListItem* pItem = ICustomListItem::
-            CreateInstance(m_pSkinRes->GetIResBundle());
+            CreateInstance(m_pSkinRes->GetIResource());
 
     CustomListItem* pImpl = pItem->GetImpl();
     if (!this->InsertItem(pImpl, pParent, pInsertAfter))

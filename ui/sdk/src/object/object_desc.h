@@ -10,7 +10,7 @@ public:
     return &s;
   }
 
-  virtual void CreateInstance(IResBundle *p, void **pp) override {
+  virtual void CreateInstance(IResource *p, void **pp) override {
     UIASSERT(0);
   }
 

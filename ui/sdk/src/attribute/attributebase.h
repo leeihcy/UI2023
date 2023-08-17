@@ -54,7 +54,7 @@ namespace ui
 		void  SetGroupName(const wchar_t* szGroupName);
 		const wchar_t*  GetGroupName();
 		void  SetUIApplication(Application* p);
-		void  SetSkinRes(ResBundle* p);
+		void  SetSkinRes(Resource* p);
 		Application*  GetUIApplication();
 
     protected:
@@ -83,6 +83,6 @@ namespace ui
 
     protected:
         Application*  m_pUIApplication;
-		ResBundle*  m_pSkinRes;
+		Resource*  m_pSkinRes;
     };
 }

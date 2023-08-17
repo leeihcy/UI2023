@@ -18,7 +18,7 @@ public:
 class StyleManager
 {
 public:
-	StyleManager(ResBundle* p);
+	StyleManager(Resource* p);
 	~StyleManager(void);
 	
 	StyleRes&  GetStyleRes();
@@ -44,7 +44,7 @@ public:
 //  bool     GetStyleItemInfo( int nIndex, IStyleResItem** ppStyleItemInfo );
 //  bool     GetStyleItemInfo( STYLE_SELECTOR_TYPE eType, const wchar_t* szSelectorID, IStyleResItem** ppStyleItemInfo );
 
-    static long  UIParseStyleTagCallback(IUIElement*, IResBundle* pSkinRes);
+    static long  UIParseStyleTagCallback(IUIElement*, IResource* pSkinRes);
 
 private:
     long  ParseNewElement(UIElement* pElem);
@@ -64,7 +64,7 @@ private:
 
 	// ∂‘œÛ Ù–‘
 	StyleRes  m_StyleRes;
-	ResBundle*  m_pSkinRes;
+	Resource*  m_pSkinRes;
 };;
 
 }

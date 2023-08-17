@@ -50,23 +50,23 @@ Application*  IApplication::GetImpl()
 	return m_pImpl;
 }
 
-IResBundle* IApplication::RootBundle() {
-    return m_pImpl->GetResourceManager().RootBundle().GetIResBundle();
+IResource* IApplication::RootBundle() {
+    return m_pImpl->GetResourceManager().RootBundle().GetIResource();
 }
 
-IResBundle*  IApplication::LoadResBundle(const wchar_t* szSkinResPath)
+IResource*  IApplication::LoadResource(const wchar_t* szSkinResPath)
 {
-    ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(szSkinResPath); 
+    Resource* p = m_pImpl->GetResourceManager().LoadResource(szSkinResPath); 
 	if (p)
-		return p->GetIResBundle();
+		return p->GetIResource();
 	return nullptr;
 }
 
-IResBundle*  IApplication::LoadResBundle(long hInstance, int resId)
+IResource*  IApplication::LoadResource(long hInstance, int resId)
 {
-	ResBundle* p = m_pImpl->GetResourceManager().LoadResBundle(hInstance, resId); 
+	Resource* p = m_pImpl->GetResourceManager().LoadResource(hInstance, resId); 
 	if (p)
-		return p->GetIResBundle();
+		return p->GetIResource();
 	return nullptr;
 }
 
@@ -105,11 +105,11 @@ uia::IAnimateManager*  IApplication::GetAnimateManager()
 // {
 // 	return m_pImpl->GetMessageFilterMgr();
 // }
-IResBundle*  IApplication::GetDefaultSkinRes()
+IResource*  IApplication::GetDefaultSkinRes()
 {
-    ResBundle* p = m_pImpl->GetDefaultSkinRes(); 
+    Resource* p = m_pImpl->GetDefaultSkinRes(); 
 	if (p)
-		return p->GetIResBundle();
+		return p->GetIResource();
 	return nullptr;
 }
 void  IApplication::RestoreRegisterUIObject()      
@@ -129,11 +129,11 @@ bool  IApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControl
     return m_pImpl->GetControlTagParseFunc(szTag, pFunc);
 }
 
-IObject*  IApplication::CreateUIObjectByName(const wchar_t* szName, IResBundle* pISkinRes)
+IObject*  IApplication::CreateUIObjectByName(const wchar_t* szName, IResource* pISkinRes)
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
-IObject*  IApplication::CreateUIObjectByClsid(const Uuid& clsid, IResBundle* pISkinRes) 
+IObject*  IApplication::CreateUIObjectByClsid(const Uuid& clsid, IResource* pISkinRes) 
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
@@ -155,9 +155,9 @@ bool  IApplication::RegisterUIRenderBaseCreateData(
 // bool  IApplication::CreateRenderBaseByName(
 // 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
 // {
-//     IResBundle* pSkinRes = nullptr;
+//     IResource* pSkinRes = nullptr;
 //     if (pObject)
-//         pSkinRes = pObject->GetResBundle();
+//         pSkinRes = pObject->GetResource();
 //     else
 //         pSkinRes = GetDefaultSkinRes();
 // 
@@ -172,9 +172,9 @@ bool  IApplication::RegisterUIRenderBaseCreateData(
 
 bool  IApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** ppOut) 
 { 
-    IResBundle* pSkinRes = nullptr;
+    IResource* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetResBundle();
+        pSkinRes = pObject->GetResource();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType, pObject, ppOut);
@@ -193,18 +193,18 @@ bool  IApplication::RegisterUITextRenderBaseCreateData(
 }
 bool  IApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* pObject, ITextRenderBase** ppOut) 
 {
-    IResBundle* pSkinRes = nullptr;
+    IResource* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetResBundle();
+        pSkinRes = pObject->GetResource();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRenderBaseByName(pSkinRes, szName, pObject, ppOut);
 }
 bool  IApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRenderBase** ppOut) 
 { 
-    IResBundle* pSkinRes = nullptr;
+    IResource* pSkinRes = nullptr;
     if (pObject)
-        pSkinRes = pObject->GetResBundle();
+        pSkinRes = pObject->GetResource();
     else
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRender(pSkinRes, nType, pObject, ppOut); 

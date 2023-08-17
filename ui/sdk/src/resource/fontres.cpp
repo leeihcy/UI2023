@@ -59,7 +59,7 @@ int FontResItem::GetFontSize()
 	return FontHeight2Size(m_lf.lfHeight); 
 }
 
-IRenderFont* FontResItem::GetFont(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
+IRenderFont* FontResItem::GetFont(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
 {
 #if 0
 	switch(eRenderType)
@@ -103,7 +103,7 @@ bool FontResItem::IsMyRenderFont(IRenderFont* pRenderFont)
     return false;
 }
 
-FontRes::FontRes(ResBundle* pSkinRes)
+FontRes::FontRes(Resource* pSkinRes)
 {
     m_pSkinRes = pSkinRes;
     m_pIFontRes = nullptr;
@@ -204,7 +204,7 @@ bool  FontRes::GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, IRenderF
 		}
 	}
 
-	ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
+	Resource* pParentRes = m_pSkinRes->GetParentSkinRes();
 	if (pParentRes)
 	{
 		return pParentRes->GetFontRes().GetDefaultFont(eRenderType, ppFont);

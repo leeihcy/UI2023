@@ -184,7 +184,7 @@ bool StyleResItem::Apply(IMapAttribute *pMapAttrib, bool bOverwrite) {
 //   StyleRes
 //
 
-StyleRes::StyleRes(ResBundle *p) {
+StyleRes::StyleRes(Resource *p) {
   m_pIStyleRes = nullptr;
   m_pSkinRes = p;
 }
@@ -364,7 +364,7 @@ StyleResItem *StyleRes::GetItem(STYLE_SELECTOR_TYPE type, const wchar_t *szId) {
     }
   }
 
-  ResBundle *pParentRes = m_pSkinRes->GetParentSkinRes();
+  Resource *pParentRes = m_pSkinRes->GetParentSkinRes();
   if (pParentRes) {
     return pParentRes->GetStyleRes().GetItem(type, szId);
   }

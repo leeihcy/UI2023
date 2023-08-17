@@ -19,13 +19,13 @@ public:
             pfnUICreateRenderBasePtr pfunc);
 
 	bool  CreateRenderBaseByName(
-            IResBundle* pSkinRes, 
+            IResource* pSkinRes, 
             const wchar_t* szName, 
             IObject* pObject, 
             IRenderBase** ppOut);
 
 	bool  CreateRenderBase(
-            IResBundle* pSkinRes, 
+            IResource* pSkinRes, 
             int nType, 
             IObject* pObject, 
             IRenderBase** ppOut);

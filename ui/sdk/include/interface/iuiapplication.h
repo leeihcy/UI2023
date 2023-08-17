@@ -13,7 +13,7 @@ namespace ui {
 class Application;
 struct ILayout;
 struct IUIEditor;
-struct IResBundle;
+struct IResource;
 struct IResourceManager;
 struct IImageManager;
 struct IImageRes;
@@ -49,9 +49,9 @@ struct UIAPI IApplication {
   void Run();
   void Quit();
 
-  IResBundle *RootBundle();
-  IResBundle *LoadResBundle(const wchar_t *szSkinPath);
-  IResBundle *LoadResBundle(long hInstance, int resId = -1);
+  IResource *RootBundle();
+  IResource *LoadResource(const wchar_t *szSkinPath);
+  IResource *LoadResource(long hInstance, int resId = -1);
 
   void SetEditorMode(bool b);
   bool IsEditorMode();
@@ -63,7 +63,7 @@ struct UIAPI IApplication {
   uia::IAnimateManager *GetAnimateManager();
   // IMessageFilterMgr*  GetMessageFilterMgr();
 
-  IResBundle *GetDefaultSkinRes();
+  IResource *GetDefaultSkinRes();
 
   void RestoreRegisterUIObject();
   bool RegisterControlTagParseFunc(const wchar_t *szTag,
@@ -71,8 +71,8 @@ struct UIAPI IApplication {
   bool GetSkinTagParseFunc(const wchar_t *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
 
-  IObject *CreateUIObjectByName(const wchar_t *szName, IResBundle *pISkinRes);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResBundle *pISkinRes);
+  IObject *CreateUIObjectByName(const wchar_t *szName, IResource *pISkinRes);
+  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *pISkinRes);
   bool RegisterUIObject(IObjectDescription *p);
   void LoadUIObjectListToToolBox();
 

@@ -89,7 +89,7 @@ bool  ImageResItem::IsMyRenderBitmap(IRenderBitmap* pRenderBitmap)
 	return false;
 }
 
-IRenderBitmap* ImageResItem::GetImage(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, bool* pbFirstTimeCreate)
+IRenderBitmap* ImageResItem::GetImage(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, bool* pbFirstTimeCreate)
 {
 	if (nullptr == pSkinRes)
 		return nullptr;
@@ -115,7 +115,7 @@ IRenderBitmap* ImageResItem::GetImage(ResBundle* pSkinRes, GRAPHICS_RENDER_LIBRA
 	return nullptr;
 }
 
-IRenderBitmap*  ImageResItem::GetImage_gdi(ResBundle* pSkinRes, bool* pbFirstTimeCreate)
+IRenderBitmap*  ImageResItem::GetImage_gdi(Resource* pSkinRes, bool* pbFirstTimeCreate)
 {
 #if defined(OS_WIN)
     SkinDataSource* pDataSource = pSkinRes->GetDataSource();
@@ -446,7 +446,7 @@ void  ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap)
 //	ImageRes
 //
 
-ImageRes::ImageRes(ResBundle*  pSkinRes)
+ImageRes::ImageRes(Resource*  pSkinRes)
 {
 	m_pSkinRes = pSkinRes; 
 	m_pIImageRes = nullptr;
@@ -830,7 +830,7 @@ const wchar_t*  ImageRes::GetRenderBitmapId(IRenderBitmap* pBitmap)
 		}
 	}
 
-    ResBundle* pParent = m_pSkinRes->GetParentSkinRes();
+    Resource* pParent = m_pSkinRes->GetParentSkinRes();
     if (pParent)
     {
         return pParent->GetImageRes().GetRenderBitmapId(pBitmap);

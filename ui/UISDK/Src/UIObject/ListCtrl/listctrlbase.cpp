@@ -85,7 +85,7 @@ ListCtrlBase::~ListCtrlBase()
     SAFE_RELEASE(m_pFocusRender);
 }
 
-HRESULT  ListCtrlBase::FinalConstruct(IResBundle* p)
+HRESULT  ListCtrlBase::FinalConstruct(IResource* p)
 {
 	DO_PARENT_PROCESS(IListCtrlBase, IControl);
     if (FAILED(GetCurMsg()->lRet))

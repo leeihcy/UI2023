@@ -6,7 +6,7 @@
 #include "src/skin_parse/xml/xmlwrap.h"
 
 namespace ui {
-ColorManager::ColorManager(ResBundle *pSkinRes) : m_resColor(pSkinRes) {
+ColorManager::ColorManager(Resource *pSkinRes) : m_resColor(pSkinRes) {
   m_pIColorManager = nullptr;
   m_pSkinRes = pSkinRes;
 }
@@ -53,7 +53,7 @@ ColorRes &ColorManager::GetColorRes() { return m_resColor; }
 //////////////////////////////////////////////////////////////////////////
 
 long ColorManager::UIParseColorTagCallback(IUIElement *pElem,
-                                           IResBundle *pSkinRes) {
+                                           IResource *pSkinRes) {
   IColorManager &pColorMgr = pSkinRes->GetColorManager();
   return pColorMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }

@@ -10,7 +10,7 @@ namespace ui
 {
 #define MAX_STRING_LEN    256
 
-StyleManager::StyleManager(ResBundle* p) : m_StyleRes(p)
+StyleManager::StyleManager(Resource* p) : m_StyleRes(p)
 {
     m_pIStyleManager = nullptr;
 	m_pSkinRes = p;
@@ -242,7 +242,7 @@ bool  StyleManager::parse_inherit(
 }
 
 long  StyleManager::UIParseStyleTagCallback(
-            IUIElement* pElem, IResBundle* pSkinRes)
+            IUIElement* pElem, IResource* pSkinRes)
 {
     IStyleManager&  pStyleMgr = pSkinRes->GetStyleManager();
     return pStyleMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
@@ -388,7 +388,7 @@ void  StyleManager::OnStyleAdd(StyleResItem* p)
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), Editor_Add);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), Editor_Add);
 	}
 }
 void  StyleManager::OnStyleRemove(StyleResItem* p)
@@ -397,7 +397,7 @@ void  StyleManager::OnStyleRemove(StyleResItem* p)
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), Editor_Remove);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), Editor_Remove);
 	}
 }
 void  StyleManager::OnStlyeModify(StyleResItem* p)
@@ -406,7 +406,7 @@ void  StyleManager::OnStlyeModify(StyleResItem* p)
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), Editor_Modify);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), Editor_Modify);
 	}
 }
 void  StyleManager::OnStyleAttributeAdd(StyleResItem* p, const wchar_t* szKey)
@@ -415,7 +415,7 @@ void  StyleManager::OnStyleAttributeAdd(StyleResItem* p, const wchar_t* szKey)
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleAttributeChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), szKey, Editor_Add);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), szKey, Editor_Add);
 	}
 }
 void  StyleManager::OnStyleAttributeRemove(StyleResItem* p, const wchar_t* szKey)
@@ -424,7 +424,7 @@ void  StyleManager::OnStyleAttributeRemove(StyleResItem* p, const wchar_t* szKey
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleAttributeChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), szKey, Editor_Remove);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), szKey, Editor_Remove);
 	}
 }
 void  StyleManager::OnStyleAttributeModify(StyleResItem* p, const wchar_t* szKey)
@@ -433,7 +433,7 @@ void  StyleManager::OnStyleAttributeModify(StyleResItem* p, const wchar_t* szKey
 	if (pUIEditor)
 	{
 		pUIEditor->OnStyleAttributeChanged(
-			m_pSkinRes->GetIResBundle(), p->GetIStyleResItem(), szKey, Editor_Modify);
+			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), szKey, Editor_Modify);
 	}
 }
 }

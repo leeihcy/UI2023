@@ -660,55 +660,55 @@ bool  IStyleRes::UnloadStyle(
 //////////////////////////////////////////////////////////////////////////
 
 
-IResBundle::IResBundle(ResBundle* p)
+IResource::IResource(Resource* p)
 {
     m_pImpl = p;
 }
-ResBundle*  IResBundle::GetImpl()
+Resource*  IResource::GetImpl()
 {
     return m_pImpl;
 }
 
-void  IResBundle::SetParentSkinRes(IResBundle* p)
+void  IResource::SetParentSkinRes(IResource* p)
 {
 	m_pImpl->SetParentSkinRes(p ? p->GetImpl() : nullptr);
 }
 
-IApplication*  IResBundle::GetUIApplication()  { return m_pImpl->GetUIApplication()->GetIUIApplication(); }
-IResourceManager&    IResBundle::GetResourceManager()    { return m_pImpl->GetSkinMgr().GetIResourceManager(); }
-IImageManager&   IResBundle::GetImageManager()   { return m_pImpl->GetImageManager().GetIImageManager(); }
-IColorManager&   IResBundle::GetColorManager()   { return m_pImpl->GetColorManager().GetIColorManager(); }
-IFontManager&    IResBundle::GetFontManager()    { return m_pImpl->GetFontManager().GetIFontManager(); }
-IStyleManager&   IResBundle::GetStyleManager()   { return m_pImpl->GetStyleManager().GetIStyleManager(); }
-ILayoutManager&  IResBundle::GetLayoutManager()  { return m_pImpl->GetLayoutManager().GetILayoutManager(); }
+IApplication*  IResource::GetUIApplication()  { return m_pImpl->GetUIApplication()->GetIUIApplication(); }
+IResourceManager&    IResource::GetResourceManager()    { return m_pImpl->GetSkinMgr().GetIResourceManager(); }
+IImageManager&   IResource::GetImageManager()   { return m_pImpl->GetImageManager().GetIImageManager(); }
+IColorManager&   IResource::GetColorManager()   { return m_pImpl->GetColorManager().GetIColorManager(); }
+IFontManager&    IResource::GetFontManager()    { return m_pImpl->GetFontManager().GetIFontManager(); }
+IStyleManager&   IResource::GetStyleManager()   { return m_pImpl->GetStyleManager().GetIStyleManager(); }
+ILayoutManager&  IResource::GetLayoutManager()  { return m_pImpl->GetLayoutManager().GetILayoutManager(); }
 
-IImageRes&  IResBundle::GetImageRes()            { return m_pImpl->GetImageRes().GetIImageRes(); }
-IFontRes&   IResBundle::GetFontRes()             { return m_pImpl->GetFontRes().GetIFontRes(); }
-IColorRes&  IResBundle::GetColorRes()            { return m_pImpl->GetColorRes().GetIColorRes(); }
-IStyleRes&  IResBundle::GetStyleRes()            { return m_pImpl->GetStyleRes().GetIStyleRes(); }
-II18nRes&   IResBundle::GetI18nRes()             
+IImageRes&  IResource::GetImageRes()            { return m_pImpl->GetImageRes().GetIImageRes(); }
+IFontRes&   IResource::GetFontRes()             { return m_pImpl->GetFontRes().GetIFontRes(); }
+IColorRes&  IResource::GetColorRes()            { return m_pImpl->GetColorRes().GetIColorRes(); }
+IStyleRes&  IResource::GetStyleRes()            { return m_pImpl->GetStyleRes().GetIStyleRes(); }
+II18nRes&   IResource::GetI18nRes()             
 { 
 	return m_pImpl->GetI18nRes().GetII18nRes(); 
 }
 
-const wchar_t*  IResBundle::GetName()              
+const wchar_t*  IResource::GetName()              
 { 
     return m_pImpl->GetName();
 }
-const wchar_t*  IResBundle::GetPath()              
+const wchar_t*  IResource::GetPath()              
 { 
     return m_pImpl->GetPath();
 }
 
-bool  IResBundle::Load()                        
+bool  IResource::Load()                        
 { 
     return m_pImpl->Load();
 }
-bool  IResBundle::ChangeSkinHLS(short h, short l, short s, int nFlag) 
+bool  IResource::ChangeSkinHLS(short h, short l, short s, int nFlag) 
 { 
     return m_pImpl->ChangeSkinHLS(h,l,s,nFlag);
 }
-ISkinDataSource*  IResBundle::GetDataSource()    
+ISkinDataSource*  IResource::GetDataSource()    
 {
     SkinDataSource* p = m_pImpl->GetDataSource(); 
 	if (!p)
@@ -716,19 +716,19 @@ ISkinDataSource*  IResBundle::GetDataSource()
 
 	return p->GetISkinDataSource();
 }
-unsigned int  IResBundle::GetXmlDocCount()               
+unsigned int  IResource::GetXmlDocCount()               
 { 
     return m_pImpl->GetXmlDocCount();
 }
 
-IUIDocument*  IResBundle::GetXmlDoc(unsigned int nIndex)
+IUIDocument*  IResource::GetXmlDoc(unsigned int nIndex)
 {
 	UIDocument* p = m_pImpl->GetXmlDoc(nIndex);
 	if (p)
 		return p->GetIUIDocument();
 	return nullptr;
 }
-IUIDocument*  IResBundle::GetXmlDocByName(const wchar_t* szName)
+IUIDocument*  IResource::GetXmlDocByName(const wchar_t* szName)
 {
 	UIDocument* p = m_pImpl->GetXmlDocByName(szName);
 	if (p)
@@ -755,7 +755,7 @@ void  IResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag)
     m_pImpl->ChangeSkinHLS(h,l,s,nFlag);
 }
 
-bool  IResourceManager::Save(IResBundle* pSkinRes) 
+bool  IResourceManager::Save(IResource* pSkinRes) 
 {
     if (nullptr == pSkinRes)
         return m_pImpl->Save(nullptr);
@@ -763,24 +763,24 @@ bool  IResourceManager::Save(IResBundle* pSkinRes)
         return m_pImpl->Save(pSkinRes->GetImpl()); 
 }
 
-IResBundle*  IResourceManager::GetResBundleByName(const wchar_t* szName)
+IResource*  IResourceManager::GetResourceByName(const wchar_t* szName)
 {
-	ResBundle* p = m_pImpl->GetResBundleByName(szName);
+	Resource* p = m_pImpl->GetResourceByName(szName);
 	if (p)
-		return p->GetIResBundle();
+		return p->GetIResource();
 
 	return nullptr;
 }
 
-uint  IResourceManager::GetResBundleCount()
+uint  IResourceManager::GetResourceCount()
 {
-	return m_pImpl->GetResBundleCount();
+	return m_pImpl->GetResourceCount();
 }
-IResBundle*  IResourceManager::GetResBundleByIndex(uint i)
+IResource*  IResourceManager::GetResourceByIndex(uint i)
 {
-	ResBundle* p = m_pImpl->GetResBundleByIndex(i);
+	Resource* p = m_pImpl->GetResourceByIndex(i);
 	if (p)
-		return p->GetIResBundle();
+		return p->GetIResource();
 
 	return nullptr;
 }

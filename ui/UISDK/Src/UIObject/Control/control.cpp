@@ -117,7 +117,7 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
     if (!m_pTextRender)
     {
         GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
-            m_pSkinRes->GetIResBundle(), 
+            m_pSkinRes->GetIResource(), 
             TEXTRENDER_TYPE_SIMPLE,
             m_pIObject, 
             &m_pTextRender);
@@ -130,7 +130,7 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
 			
             SERIALIZEDATA data = {0};
             data.pUIApplication = GetUIApplication()->GetIUIApplication();
-			data.pSkinRes = m_pSkinRes->GetIResBundle();
+			data.pSkinRes = m_pSkinRes->GetIResource();
             data.pMapAttrib = pMapAttr;
             data.szPrefix = nullptr;
             data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;

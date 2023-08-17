@@ -288,7 +288,7 @@ bool ColorResItem::ModifyHLS( short h, short l, short s, int nFlag)
 	return true;
 }
 
-ColorRes::ColorRes(ResBundle* p)
+ColorRes::ColorRes(Resource* p)
 {
     m_pSkinRes = p; 
     m_pIColorRes = nullptr; 

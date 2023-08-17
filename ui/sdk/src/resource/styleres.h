@@ -2,7 +2,7 @@
 #include "include/inc.h"
 
 namespace ui {
-class ResBundle;
+class Resource;
 struct IStyleRes;
 
 // 1. 控件设置一个class样式：
@@ -77,7 +77,7 @@ private:
 
 class StyleRes {
 public:
-  StyleRes(ResBundle *p);
+  StyleRes(Resource *p);
   ~StyleRes();
   IStyleRes &GetIStyleRes();
   void Clear();
@@ -113,7 +113,7 @@ public:
 private:
   IStyleRes *m_pIStyleRes;
 
-  ResBundle *m_pSkinRes;
+  Resource *m_pSkinRes;
   std::vector<StyleResItem *> m_vStyles;
 };
 } // namespace ui

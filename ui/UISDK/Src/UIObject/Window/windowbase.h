@@ -10,7 +10,7 @@
 
 namespace ui {
 class WindowRender;
-class ResBundle;
+class Resource;
 interface IRenderFont;
 
 //

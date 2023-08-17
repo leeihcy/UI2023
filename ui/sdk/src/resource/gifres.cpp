@@ -54,7 +54,7 @@ IGifResItem*  GifResItem::GetIGifResItem()
 	return m_pIGifResItem;
 }
 
-GifImageBase*  GifResItem::GetGifImage(ResBundle* pSkinRes)
+GifImageBase*  GifResItem::GetGifImage(Resource* pSkinRes)
 {
 	if (nullptr == m_pUIApp)
 		return nullptr;
@@ -96,7 +96,7 @@ void GifResItem::SetAttribute(IMapAttribute* pMapAttrib)
 	m_pMapAttrib->AddRef();
 }
 
-GifRes::GifRes(ResBundle* p)
+GifRes::GifRes(Resource* p)
 {
 	m_pUIApp = nullptr; 
 	m_pIGifRes = nullptr;

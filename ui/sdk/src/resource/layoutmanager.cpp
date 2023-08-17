@@ -17,7 +17,7 @@
 namespace ui
 {
 
-LayoutManager::LayoutManager(ResBundle* p)
+LayoutManager::LayoutManager(Resource* p)
 {
 	m_pSkinRes = p;
     m_pILayoutManager = nullptr;
@@ -120,7 +120,7 @@ UIElementProxy  LayoutManager::FindWindowElement(
 	if (proxy)
 		return proxy;
 
-	ResBundle* pParentRes = m_pSkinRes->GetParentSkinRes();
+	Resource* pParentRes = m_pSkinRes->GetParentSkinRes();
 	if (pParentRes)
 	{
 		return pParentRes->GetLayoutManager().FindWindowElement(szTagName, szId);
@@ -314,7 +314,7 @@ Object*  LayoutManager::ParseElement(
 	if (0 == wcscmp(XML_PROP, bstrTagName.c_str()))
 		return nullptr;
 
-    IObject* pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(), m_pSkinRes->GetIResBundle());
+    IObject* pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(), m_pSkinRes->GetIResource());
     if (nullptr == pIObject)
     {
         // 尝试寻找该Tag是否被注册了
@@ -324,7 +324,7 @@ Object*  LayoutManager::ParseElement(
         {
             eParseRet = func(
                     pUIElement->GetIUIElement(), 
-                    m_pSkinRes->GetIResBundle(), 
+                    m_pSkinRes->GetIResource(), 
                     pParent?pParent->GetIObject():nullptr, 
                     &pIObject);
 
@@ -516,13 +516,13 @@ void  LayoutManager::ReloadChildObjects(
 
 //////////////////////////////////////////////////////////////////////////
 
-long  LayoutManager::UIParseLayoutTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
+long  LayoutManager::UIParseLayoutTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
     ILayoutManager&  pLayoutMgr = pSkinRes->GetLayoutManager();
     pLayoutMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 	return true;
 }
-long  LayoutManager::UIParseLayoutConfigTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
+long  LayoutManager::UIParseLayoutConfigTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
 	ILayoutManager&  pLayoutMgr = pSkinRes->GetLayoutManager();
 	pLayoutMgr.GetImpl()->ParseLayoutConfigTag(pElem->GetImpl());

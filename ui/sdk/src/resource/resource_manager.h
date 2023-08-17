@@ -15,7 +15,7 @@
  *  2023.7.26
  *  重命名
  *  SkinManager ==> ResourceManager
- *  SkinRes ==> ResBundle 
+ *  SkinRes ==> Resource 
  * 
  */
 namespace ui {
@@ -33,16 +33,16 @@ public:
   IResourceManager &GetIResourceManager();
   Application *GetUIApplication();
 
-  ResBundle& RootBundle() { return m_root_bundle; }
+  Resource& RootBundle() { return m_root_bundle; }
 
-  ResBundle *LoadResBundle(const wchar_t *szPath);
-  ResBundle *LoadResBundle(long hInstance, int resId = -1);
-  ResBundle *GetDefaultSkinRes();
-  ResBundle *GetResBundleByName(const wchar_t *szName);
-  unsigned int GetResBundleCount();
-  ResBundle *GetResBundleByIndex(unsigned int i);
+  Resource *LoadResource(const wchar_t *szPath);
+  Resource *LoadResource(long hInstance, int resId = -1);
+  Resource *GetDefaultSkinRes();
+  Resource *GetResourceByName(const wchar_t *szName);
+  unsigned int GetResourceCount();
+  Resource *GetResourceByIndex(unsigned int i);
 
-  bool Save(ResBundle *pSkinRes = nullptr);
+  bool Save(Resource *pSkinRes = nullptr);
   void ChangeSkinHLS(short h, short l, short s, int nFlag);
 
   const wchar_t *GetCurrentLanguage();
@@ -58,10 +58,10 @@ private:
   // 默认带一个资源包，作为其它资源包的根结点，
   // 在这个包中的资源，可以被所有其他包访问到。
   // 这个包只能通过接口的方式进行修改，没有落地文件。
-  ResBundle m_root_bundle;
+  Resource m_root_bundle;
 
   // 动态加载的其他资源包
-  std::vector<ResBundle *> m_resoures;
+  std::vector<Resource *> m_resoures;
 
   // TODO: 运行过程中如何切换语言
   std::wstring m_strLanguage; // 当前使用的语言

@@ -19,7 +19,7 @@ struct IResourceManager;
 
 enum SKIN_RES_LOAD_STATE
 {
-    SKIN_RES_LOAD_STATE_NONE,     // 仅new ResBundle
+    SKIN_RES_LOAD_STATE_NONE,     // 仅new Resource
     SKIN_RES_LOAD_STATE_LOADED,   // 已加载    
 };
 
@@ -28,11 +28,11 @@ enum SKIN_RES_LOAD_STATE
 //	一个资源包。
 //  可以是目录，或者是一个压缩包，或者是代码控制的资源。
 //	
-class ResBundle
+class Resource
 {
 public:
-    ResBundle(ResourceManager& o);
-	~ResBundle();
+    Resource(ResourceManager& o);
+	~Resource();
 
 	bool  Load();
 	bool  Unload();
@@ -44,7 +44,7 @@ public:
 	SkinDataSource*  CreateDataSource(SKIN_PACKET_TYPE eType); 
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	IResBundle*        GetIResBundle();
+	IResource*        GetIResource();
     Application*   GetUIApplication();
     IResourceManager&    GetIResourceManager();
 
@@ -81,16 +81,16 @@ public:
 
 	void  OnNewUIDocument(UIDocument* pDoc);    
 	
-	void  SetParentSkinRes(ResBundle*);
-	ResBundle*  GetParentSkinRes();
+	void  SetParentSkinRes(Resource*);
+	Resource*  GetParentSkinRes();
 
 private:
-    IResBundle*  m_pISkinRes;
+    IResource*  m_pISkinRes;
 	ResourceManager&  m_mgrSkinRef;
 
 	// 父一级的资源，本地找不着时，向上查找
 	// 用于插件资源中引用父一级的资源
-	ResBundle*  m_pParentSkinRes;  
+	Resource*  m_pParentSkinRes;  
 
 	String  m_strSkinResName;
     SkinDataSource*  m_pDataSource;

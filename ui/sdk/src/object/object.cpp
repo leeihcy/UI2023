@@ -78,7 +78,7 @@ Object::~Object(void) {
 #endif
 }
 
-long Object::FinalConstruct(IResBundle *pSkinRes) {
+long Object::FinalConstruct(IResource *pSkinRes) {
   m_pSkinRes = pSkinRes->GetImpl();
   return 0;
 }
@@ -331,7 +331,7 @@ void Object::LoadAttributes(bool bReload) {
 
   SERIALIZEDATA data = {0};
   data.pUIApplication = GetIUIApplication();
-  data.pSkinRes = m_pSkinRes->GetIResBundle();
+  data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = m_pIMapAttributeRemain;
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
@@ -1111,7 +1111,7 @@ void Object::InitDefaultAttrib() {
 
   SERIALIZEDATA data = {0};
   data.pUIApplication = GetIUIApplication();
-  data.pSkinRes = m_pSkinRes->GetIResBundle();
+  data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = pMapAttrib;
   data.nFlags = SERIALIZEFLAG_LOAD;
 
@@ -1139,13 +1139,13 @@ void Object::InitDefaultAttrib() {
 
 void Object::SetOutRef(void **ppOutRef) { m_ppOutRef = ppOutRef; }
 
-ResBundle *Object::GetResBundle() { return m_pSkinRes; }
+Resource *Object::GetResource() { return m_pSkinRes; }
 
-IResBundle *Object::GetIResBundle() {
+IResource *Object::GetIResource() {
   if (!m_pSkinRes)
     return nullptr;
 
-  return m_pSkinRes->GetIResBundle();
+  return m_pSkinRes->GetIResource();
 }
 
 Application *Object::GetUIApplication() {
@@ -1282,7 +1282,7 @@ void Object::load_renderbase(const wchar_t *szName, IRenderBase *&pRender) {
   if (szName) {
 #if defined(OS_WIN)
     GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
-        m_pSkinRes->GetIResBundle(), szName, m_pIObject, &pRender);
+        m_pSkinRes->GetIResource(), szName, m_pIObject, &pRender);
 #else
     UIASSERT(false);
 #endif
@@ -1295,7 +1295,7 @@ void Object::load_textrender(const wchar_t *szName,
   if (szName) {
 #if defined(OS_WIN)
     GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
-        m_pSkinRes->GetIResBundle(), szName, m_pIObject, &pTextRender);
+        m_pSkinRes->GetIResource(), szName, m_pIObject, &pTextRender);
 #endif
   }
 }

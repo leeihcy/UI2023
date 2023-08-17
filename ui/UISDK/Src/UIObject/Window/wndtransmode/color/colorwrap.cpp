@@ -32,7 +32,7 @@ void  ColorMaskWindowWrap::Init(ICustomWindow* pWnd)
         szText = pMapAttrib->GetAttr(XML_WINDOW_TRANSPARENT_MASKCOLOR_VALUE, false);
         if (szText)
         {
-            ResBundle* pSkinRes = pWnd->GetImpl()->GetSkinRes();
+            Resource* pSkinRes = pWnd->GetImpl()->GetSkinRes();
             if (pSkinRes)
             {
                 ColorRes colorRes = pSkinRes->GetColorRes();

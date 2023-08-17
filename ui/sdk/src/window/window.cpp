@@ -25,7 +25,7 @@ Window::~Window() {
   UI_LOG_DEBUG("~Window");
 }
 
-long Window::FinalConstruct(IResBundle *p) {
+long Window::FinalConstruct(IResource *p) {
   DO_PARENT_PROCESS(IWindow, /*IPanel*/ IObject);
 
 #if 0

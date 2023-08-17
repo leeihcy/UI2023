@@ -11,7 +11,7 @@
 
 namespace ui {
 struct IApplication;
-struct IResBundle;
+struct IResource;
 struct UIMSG;
 
 enum E_BOOL_CREATE_IMPL {
@@ -24,14 +24,14 @@ enum E_BOOL_CREATE_IMPL {
 //
 //  message : UI_WM_FINALCONSTRUCT
 //  code : NA
-//  wparam : IResBundle*,对象所属资源包
+//  wparam : IResource*,对象所属资源包
 //
 #define UI_MSG_FINALCONSTRUCT 168252120
-// long  FinalConstruct(IResBundle* p);
+// long  FinalConstruct(IResource* p);
 #define UIMSG_FINALCONSTRUCT(func)                                             \
   if (uMsg == UI_MSG_FINALCONSTRUCT) {                                         \
     SetMsgHandled(true);                                                       \
-    lResult = func((ui::IResBundle *)wParam);                                  \
+    lResult = func((ui::IResource *)wParam);                                  \
     if (IsMsgHandled())                                                        \
       return true;                                                             \
   }
@@ -56,12 +56,12 @@ enum E_BOOL_CREATE_IMPL {
 template <class T> class ObjectCreator : public T {
 public:
   // 通用型
-  static void CreateInstance2(IResBundle *pResBundle, void **pp) {
-    *pp = (void *)ObjectCreator<T>::create(pResBundle);
+  static void CreateInstance2(IResource *pResource, void **pp) {
+    *pp = (void *)ObjectCreator<T>::create(pResource);
   }
   // 专用型
-  static T *create(IResBundle *pResBundle) {
-    if (!pResBundle) {
+  static T *create(IResource *pResource) {
+    if (!pResource) {
 #ifdef _DEBUG
       DebugBreak();
 #endif
@@ -70,7 +70,7 @@ public:
 
     T *p = new ObjectCreator<T>;
 
-    if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
+    if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResource))) {
       T::destroy(p);
       return nullptr;
     }
@@ -95,14 +95,14 @@ public:
 template <class T> class ObjectNoImplCreator : public T {
 public:
   // 通用型
-  static void CreateInstance2(IResBundle *pResBundle, void **pp) {
-    *pp = (void *)ObjectNoImplCreator<T>::CreateInstance(pResBundle);
+  static void CreateInstance2(IResource *pResource, void **pp) {
+    *pp = (void *)ObjectNoImplCreator<T>::CreateInstance(pResource);
   }
   // 专用型
-  static T *CreateInstance(IResBundle *pResBundle) {
+  static T *CreateInstance(IResource *pResource) {
     T *p = new ObjectNoImplCreator<T>;
 
-    if (FAILED(p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
+    if (FAILED(p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResource))) {
       delete p;
       return nullptr;
     }

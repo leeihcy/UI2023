@@ -2283,7 +2283,7 @@ IStyleManager*  CXmlLayoutParse::getStyleMgr()
 	if (NULL == pSkinMgr)
 		return NULL;
 
-	IResBundle* pSkinRes = NULL;
+	IResource* pSkinRes = NULL;
 	pSkinMgr->GetActiveSkin(&pSkinRes);
 	if (NULL == pSkinRes)
 		return NULL;

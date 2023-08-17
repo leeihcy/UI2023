@@ -21,7 +21,7 @@ UI_IMPLEMENT_INTERFACE_ACROSSMODULE(Rect, Object)
 //   }
 // }
 // Rect *IRect::GetImpl() { return static_cast<Rect *>(m_pImpl); }
-// IRect *IRect::CreateInstance(ui::IResBundle *p) {
+// IRect *IRect::CreateInstance(ui::IResource *p) {
 //   return ui::ObjectCreator<IRect>::CreateInstance(p);
 // }
 // bool IRect::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {

@@ -76,9 +76,9 @@ struct IUIEditor {
   virtual void OnCursorItemDeleteInd(
       /*__in*/ ICursorResItem *pItem) = 0;
 
-  virtual void OnStyleChanged(IResBundle *pSkinRes, IStyleResItem *p,
+  virtual void OnStyleChanged(IResource *pSkinRes, IStyleResItem *p,
                               EditorOPType e) = 0;
-  virtual void OnStyleAttributeChanged(IResBundle *pSkinRes, IStyleResItem *p,
+  virtual void OnStyleAttributeChanged(IResource *pSkinRes, IStyleResItem *p,
                                        const wchar_t *szKey,
                                        EditorOPType e) = 0;
   virtual void EditorStringAttribute(IStringAttribute *,

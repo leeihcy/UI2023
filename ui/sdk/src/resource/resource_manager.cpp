@@ -30,11 +30,11 @@ void ResourceManager::Destroy() {
   //////////////////////////////////////////////////////////////////////////
   // 释放各皮肤数据内存
 
-  std::vector<ResBundle *>::iterator iter = m_resoures.begin();
-  std::vector<ResBundle *>::iterator iterEnd = m_resoures.end();
+  std::vector<Resource *>::iterator iter = m_resoures.begin();
+  std::vector<Resource *>::iterator iterEnd = m_resoures.end();
 
   for (; iter != iterEnd; iter++) {
-    ResBundle *p = (*iter);
+    Resource *p = (*iter);
     delete p;
   }
   m_resoures.clear();
@@ -111,7 +111,7 @@ void  ResourceManager::GetSkinDirection(wchar_t*  szOut)
 }
 
 // 在皮肤目录中添加一个新皮肤
-IResBundle*  ResourceManager::AddSkin(const wchar_t*  szPath)
+IResource*  ResourceManager::AddSkin(const wchar_t*  szPath)
 {
     if (nullptr == szPath)
         return nullptr;
@@ -123,18 +123,18 @@ IResBundle*  ResourceManager::AddSkin(const wchar_t*  szPath)
     if (!PathFileExists(strFilePath.c_str()))
         return nullptr;
 
-    ResBundle* p = OnFindSkinInSkinDir(SKIN_PACKET_TYPE_DIR, szPath,
-strFilePath.c_str()); if (p) return p->GetIResBundle();
+    Resource* p = OnFindSkinInSkinDir(SKIN_PACKET_TYPE_DIR, szPath,
+strFilePath.c_str()); if (p) return p->GetIResource();
 
     return nullptr;
 }
 
 
 // 在调用SetSkinDirection后，如果发现一个皮肤文件，则调用该响应函数
-ResBundle*  ResourceManager::OnFindSkinInSkinDir(SKIN_PACKET_TYPE eType, const
+Resource*  ResourceManager::OnFindSkinInSkinDir(SKIN_PACKET_TYPE eType, const
 wchar_t* szPath, const wchar_t* szPath)
 {
-    ResBundle*  pSkin = new ResBundle(*this);
+    Resource*  pSkin = new Resource(*this);
     pSkin->SetParam(eType, szPath, szPath);
 
     m_resoures.push_back(pSkin);
@@ -144,12 +144,12 @@ wchar_t* szPath, const wchar_t* szPath)
 // 换肤
 //
 bSync用于解决：点击一个按钮换肤，但这个按钮在换肤中被delete了，导致换肤结束后堆栈崩溃
-long ResourceManager::ChangeSkin(IResBundle* pISkinRes, bool bSync)
+long ResourceManager::ChangeSkin(IResource* pISkinRes, bool bSync)
 {
         if (nullptr == pISkinRes)
                 return E_INVALIDARG;
 
-    ResBundle* pSkinRes = pISkinRes->GetImpl();
+    Resource* pSkinRes = pISkinRes->GetImpl();
     if (pSkinRes == m_pCurActiveSkinRes)
         return S_FALSE;
 
@@ -164,7 +164,7 @@ long ResourceManager::ChangeSkin(IResBundle* pISkinRes, bool bSync)
         return E_PENDING;
     }
 
-        ResBundle* pOldSkinRes = m_pCurActiveSkinRes;
+        Resource* pOldSkinRes = m_pCurActiveSkinRes;
         m_pCurActiveSkinRes = nullptr;
 
     pSkinRes->Load();
@@ -180,7 +180,7 @@ long ResourceManager::ChangeSkin(IResBundle* pISkinRes, bool bSync)
         return true;
 }
 
-ResBundle*  ResourceManager::GetResBundleByIndex(long lIndex)
+Resource*  ResourceManager::GetResourceByIndex(long lIndex)
 {
         int nSize = (int)m_resoures.size();
         if (lIndex < 0 || lIndex >= nSize )
@@ -194,7 +194,7 @@ ResBundle*  ResourceManager::GetResBundleByIndex(long lIndex)
 //
 //	一些GET操作都是默认针对于当前皮肤而言的
 //
-long ResourceManager::SetActiveSkin(IResBundle* pSkinRes)
+long ResourceManager::SetActiveSkin(IResource* pSkinRes)
 {
         if (nullptr == pSkinRes)
         {
@@ -202,7 +202,7 @@ long ResourceManager::SetActiveSkin(IResBundle* pSkinRes)
                 return E_INVALIDARG;
         }
 
-        ResBundle* pSkinRes2 = pSkinRes->GetImpl(); //
+        Resource* pSkinRes2 = pSkinRes->GetImpl(); //
 内部仍然保存为SkinRes，便于调用 m_pCurActiveSkinRes = pSkinRes2; return 0;
 }
 
@@ -212,7 +212,7 @@ long ResourceManager::SetActiveSkin(IResBundle* pSkinRes)
 //
 //	失败返回-1
 //
-int ResourceManager::GetResBundleIndex(ResBundle* pSkinRes)
+int ResourceManager::GetResourceIndex(Resource* pSkinRes)
 {
         if (nullptr == pSkinRes)
                 return -1;
@@ -230,7 +230,7 @@ int ResourceManager::GetResBundleIndex(ResBundle* pSkinRes)
         return -1;
 }
 
-ResBundle* ResourceManager::GetActiveSkin()
+Resource* ResourceManager::GetActiveSkin()
 {
         if (nullptr == m_pCurActiveSkinRes)
                 return nullptr;
@@ -245,12 +245,12 @@ Application *ResourceManager::GetUIApplication() { return m_pUIApplication; }
 // void  ChangeSkinTimerProc(unsigned int*, TimerItem* pItem)
 // {
 //     ResourceManager* pThis = (ResourceManager*)pItem->wParam;
-//     pThis->ChangeSkin((IResBundle*)pItem->lParam, true);
+//     pThis->ChangeSkin((IResource*)pItem->lParam, true);
 // }
 
 void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 #if 0
-	std::vector<ResBundle*>::iterator iter = m_resoures.begin();
+	std::vector<Resource*>::iterator iter = m_resoures.begin();
 	for (; iter != m_resoures.end(); ++iter)
 	{
 		(*iter)->ChangeSkinHLS(h,l,s,nFlag);
@@ -274,11 +274,11 @@ void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 //
 //	加载皮肤数据
 //
-ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
+Resource *ResourceManager::LoadResource(const wchar_t *szPath) {
   if (!szPath)
     return nullptr;
 
-  UI_LOG_INFO(L"\n\n------------  LoadResBundle: %s ----------------\n",
+  UI_LOG_INFO(L"\n\n------------  LoadResource: %s ----------------\n",
               szPath);
 
   wchar_t szSkinName[MAX_PATH] = {0};
@@ -299,7 +299,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
     ui::util::GetPathFileName(szDir, szSkinName);
 
     // 允许同名，但在不同的路径下面
-    // 		ResBundle* pTest = GetResBundleByName(szSkinName);
+    // 		Resource* pTest = GetResourceByName(szSkinName);
     // 		if (pTest)
     // 		{
     // 			UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
@@ -328,7 +328,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
 
     util::GetPathFileName(szPath, szSkinName);
     szSkinName[wcslen(szSkinName) - nExtLength] = 0;
-    ResBundle *pTest = GetResBundleByName(szSkinName);
+    Resource *pTest = GetResourceByName(szSkinName);
     if (pTest) {
       UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
       return pTest;
@@ -337,7 +337,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
     eSkinPackageType = SKIN_PACKET_TYPE_ZIP;
   }
 
-  ResBundle *pSkin = new ResBundle(*this);
+  Resource *pSkin = new Resource(*this);
   pSkin->CreateDataSource(eSkinPackageType);
   pSkin->SetName(szSkinName);
   pSkin->SetPath(strPath.c_str());
@@ -352,12 +352,12 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
   return pSkin;
 }
 
-ResBundle *ResourceManager::LoadResBundle(long hInstance, int resId) {
+Resource *ResourceManager::LoadResource(long hInstance, int resId) {
 #if defined(OS_WIN)
   if (!hInstance)
     return nullptr;
 
-  ResBundle *pSkin = nullptr;
+  Resource *pSkin = nullptr;
   bool bSuccess = false;
   HGLOBAL hData = nullptr;
   do {
@@ -380,7 +380,7 @@ ResBundle *ResourceManager::LoadResBundle(long hInstance, int resId) {
     if (!text || !dwSize)
       break;
 
-    pSkin = new ResBundle(*this);
+    pSkin = new Resource(*this);
     SkinDataSource *pDataSource =
         pSkin->CreateDataSource(SKIN_PACKET_TYPE_RESZIP);
     pDataSource->SetData(text, dwSize);
@@ -408,7 +408,7 @@ ResBundle *ResourceManager::LoadResBundle(long hInstance, int resId) {
 #endif
 }
 
-ResBundle *ResourceManager::GetDefaultSkinRes() {
+Resource *ResourceManager::GetDefaultSkinRes() {
   if (0 == m_resoures.size())
     return nullptr;
 
@@ -422,7 +422,7 @@ ResBundle *ResourceManager::GetDefaultSkinRes() {
 //		nullptr -  xx  当前皮肤的指定资源
 //		 xx  - nullptr 指定皮肤的所有资源
 //
-bool ResourceManager::Save(ResBundle *pSkinRes) {
+bool ResourceManager::Save(Resource *pSkinRes) {
   bool bRet = true;
 
   //////////////////////////////////////////////////////////////////////////
@@ -443,13 +443,13 @@ bool ResourceManager::Save(ResBundle *pSkinRes) {
   return bRet;
 }
 
-ResBundle *ResourceManager::GetResBundleByName(const wchar_t *szName) {
+Resource *ResourceManager::GetResourceByName(const wchar_t *szName) {
   if (nullptr == szName)
     return nullptr;
 
-  std::vector<ResBundle *>::iterator iter = m_resoures.begin();
+  std::vector<Resource *>::iterator iter = m_resoures.begin();
   for (; iter != m_resoures.end(); iter++) {
-    ResBundle *p = *iter;
+    Resource *p = *iter;
     if (0 == wcscmp(szName, p->GetName()))
       return p;
   }
@@ -457,10 +457,10 @@ ResBundle *ResourceManager::GetResBundleByName(const wchar_t *szName) {
   return nullptr;
 }
 
-unsigned int ResourceManager::GetResBundleCount() {
+unsigned int ResourceManager::GetResourceCount() {
   return (unsigned int)m_resoures.size();
 }
-ResBundle *ResourceManager::GetResBundleByIndex(unsigned int i) {
+Resource *ResourceManager::GetResourceByIndex(unsigned int i) {
   if (i >= m_resoures.size())
     return nullptr;
 
@@ -479,7 +479,7 @@ void ResourceManager::SetCurrentLanguage(const wchar_t *szText) {
 
   m_strLanguage = szText;
 
-  std::vector<ResBundle *>::iterator iter = m_resoures.begin();
+  std::vector<Resource *>::iterator iter = m_resoures.begin();
   for (; iter != m_resoures.end(); ++iter) {
     (*iter)->GetI18nManager().Reload();
   }

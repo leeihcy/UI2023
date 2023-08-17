@@ -11,7 +11,7 @@ public:
     return &s;
   }
 
-  virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
+  virtual void CreateInstance(ui::IResource *p, void **pp) override {
     *pp = IPanel::create(p);
   }
 
@@ -35,7 +35,7 @@ public:
     return &s;
   }
 
-  virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
+  virtual void CreateInstance(ui::IResource *p, void **pp) override {
     *pp = IRoundPanel::create(p);
   }
   virtual const wchar_t *GetTagName() override { return L"RoundPanel"; }

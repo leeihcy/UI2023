@@ -10,7 +10,7 @@
 namespace ui 
 {
     
-ResBundle::ResBundle(ResourceManager& o):
+Resource::Resource(ResourceManager& o):
     m_mgrSkinRef(o),
     m_mgrLayout(this),
     m_mgrStyle(this),
@@ -26,7 +26,7 @@ ResBundle::ResBundle(ResourceManager& o):
     m_pHLSInfo = nullptr;
 	m_pParentSkinRes = nullptr;
 }
-ResBundle::~ResBundle()
+Resource::~Resource()
 {
     Unload();
     SAFE_DELETE(m_pISkinRes);
@@ -34,16 +34,16 @@ ResBundle::~ResBundle()
     SAFE_RELEASE(m_pDataSource);
 }
 
-IResBundle*  ResBundle::GetIResBundle()
+IResource*  Resource::GetIResource()
 {
     if (nullptr == m_pISkinRes)
     {
-        m_pISkinRes = new IResBundle(this);
+        m_pISkinRes = new IResource(this);
     }
     return m_pISkinRes; 
 }
 
-void  ResBundle::SetName(const wchar_t* szName)
+void  Resource::SetName(const wchar_t* szName)
 {
 	if (szName)
 		m_strSkinResName = szName;
@@ -51,7 +51,7 @@ void  ResBundle::SetName(const wchar_t* szName)
 		m_strSkinResName.clear();
 }
 
-void  ResBundle::SetPath(const wchar_t* szPath)
+void  Resource::SetPath(const wchar_t* szPath)
 {
 	UIASSERT(m_pDataSource);
 	if (!m_pDataSource)
@@ -59,7 +59,7 @@ void  ResBundle::SetPath(const wchar_t* szPath)
 	m_pDataSource->SetPath(szPath);
 }
 
-SkinDataSource*  ResBundle::CreateDataSource(SKIN_PACKET_TYPE eType)
+SkinDataSource*  Resource::CreateDataSource(SKIN_PACKET_TYPE eType)
 {
 	SAFE_DELETE(m_pDataSource);
 	CreateDataSourceInstance(eType, &m_pDataSource);
@@ -67,12 +67,12 @@ SkinDataSource*  ResBundle::CreateDataSource(SKIN_PACKET_TYPE eType)
 	return m_pDataSource;
 }
 
-const wchar_t*  ResBundle::GetName()
+const wchar_t*  Resource::GetName()
 { 
     return m_strSkinResName.c_str();
 }
 
-const wchar_t*  ResBundle::GetPath() 
+const wchar_t*  Resource::GetPath() 
 { 
     if (nullptr == m_pDataSource)
         return nullptr;
@@ -80,7 +80,7 @@ const wchar_t*  ResBundle::GetPath()
     return m_pDataSource->GetPath(); 
 }
 
-bool  ResBundle::Load()
+bool  Resource::Load()
 {
     if (m_eLoadState == SKIN_RES_LOAD_STATE_LOADED)
         return true;
@@ -112,7 +112,7 @@ bool  ResBundle::Load()
 	}
 }
 
-bool  ResBundle::Unload()
+bool  Resource::Unload()
 {
     _DocList::iterator iter = m_listDoc.begin();
     for (; iter != m_listDoc.end(); iter++)
@@ -126,20 +126,20 @@ bool  ResBundle::Unload()
     return true;
 }
 
-void  ResBundle::SetParentSkinRes(ResBundle* p)
+void  Resource::SetParentSkinRes(Resource* p)
 {
     UIASSERT(p != this);
 	m_pParentSkinRes = p;
 } 
 
-ResBundle*  ResBundle::GetParentSkinRes()
+Resource*  Resource::GetParentSkinRes()
 {
 	return m_pParentSkinRes;
 }
 
 // parse.ProcessFile在解析配置文件过程中，如果发现一个新的文档，
 // 则会回调该函数进行通知
-void  ResBundle::OnNewUIDocument(UIDocument* pDoc)
+void  Resource::OnNewUIDocument(UIDocument* pDoc)
 {
 	if (!pDoc)
 		return;
@@ -148,7 +148,7 @@ void  ResBundle::OnNewUIDocument(UIDocument* pDoc)
     m_listDoc.push_back(pDoc);
 }
 
-bool ResBundle::Save()
+bool Resource::Save()
 {
     _DocList::iterator iter = m_listDoc.begin();
     for (; iter != m_listDoc.end(); iter++)
@@ -168,7 +168,7 @@ bool ResBundle::Save()
 	return true;
 }
 
-bool ResBundle::ChangeSkinHLS(short h, short l, short s, int nFlag)
+bool Resource::ChangeSkinHLS(short h, short l, short s, int nFlag)
 {
     if (nullptr == m_pHLSInfo)
     {
@@ -196,7 +196,7 @@ bool ResBundle::ChangeSkinHLS(short h, short l, short s, int nFlag)
 }
 
 
-UIDocument*  ResBundle::GetXmlDoc(unsigned int nIndex)
+UIDocument*  Resource::GetXmlDoc(unsigned int nIndex)
 {
     if (nIndex >= GetXmlDocCount())
         return nullptr;
@@ -204,7 +204,7 @@ UIDocument*  ResBundle::GetXmlDoc(unsigned int nIndex)
     return m_listDoc[nIndex];
 }
 
-UIDocument* ResBundle::GetXmlDocByName(const wchar_t* szName)
+UIDocument* Resource::GetXmlDocByName(const wchar_t* szName)
 {
 	if (!szName)
 		return nullptr;
@@ -221,34 +221,34 @@ UIDocument* ResBundle::GetXmlDocByName(const wchar_t* szName)
 	return nullptr;
 }
 
-Application*  ResBundle::GetUIApplication()  
+Application*  Resource::GetUIApplication()  
 { 
 	return m_mgrSkinRef.GetUIApplication();
 }
-IResourceManager&  ResBundle::GetIResourceManager()   
+IResourceManager&  Resource::GetIResourceManager()   
 { 
 	return m_mgrSkinRef.GetIResourceManager(); 
 }
 
-ImageRes&  ResBundle::GetImageRes()
+ImageRes&  Resource::GetImageRes()
 {
 	return m_mgrImage.GetImageRes();
 }
-ColorRes&  ResBundle::GetColorRes()
+ColorRes&  Resource::GetColorRes()
 {
 	return m_mgrColor.GetColorRes();
 }
-FontRes&  ResBundle::GetFontRes()
+FontRes&  Resource::GetFontRes()
 {
 	return m_mgrFont.GetFontRes();
 }
 
-StyleRes&  ResBundle::GetStyleRes()
+StyleRes&  Resource::GetStyleRes()
 {
     return m_mgrStyle.GetStyleRes();
 }
 
-I18nRes&  ResBundle::GetI18nRes()
+I18nRes&  Resource::GetI18nRes()
 {
 	return m_mgrI18n.GetI18nRes();
 }

@@ -24,7 +24,7 @@ enum {
 #define UI_DECLARE_INTERFACE(T)                                                \
 public:                                                                        \
   typedef T ImplName;                                                          \
-  static I##T *create(ui::IResBundle *);                                       \
+  static I##T *create(ui::IResource *);                                       \
   static void destroy(I##T *);                                                 \
   I##T(ui::E_BOOL_CREATE_IMPL);                                                \
   bool nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook);         \
@@ -51,7 +51,7 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::create(IResBundle *pSkinRes) {                                   \
+  I##T *I##T::create(IResource *pSkinRes) {                                   \
     return ui::ObjectCreator<I##T>::create(pSkinRes);                          \
   }                                                                            \
   void I##T::destroy(I##T * p) {                                               \
@@ -77,7 +77,7 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::create(ui::IResBundle *p) {                                      \
+  I##T *I##T::create(ui::IResource *p) {                                      \
     return ui::ObjectCreator<I##T>::create(p);                                 \
   }                                                                            \
   void I##T::destroy(I##T * p) {                                               \
@@ -152,7 +152,7 @@ struct IMapAttribute;
 struct IListAttribute;
 struct IAttributeEditorProxy;
 struct IApplication;
-struct IResBundle;
+struct IResource;
 
 struct SERIALIZEDATA {
   union {
@@ -162,7 +162,7 @@ struct SERIALIZEDATA {
   };
 
   IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
-  IResBundle *pSkinRes;
+  IResource *pSkinRes;
   const wchar_t *szPrefix;    // 属性前缀
   const wchar_t *szParentKey; // 父属性（仅用于editor），如bkg.render.type
   unsigned int nFlags;

@@ -84,7 +84,7 @@ bool IsFontExist(const wchar_t* pszFaceName)
 #endif
 }
 
-FontManager::FontManager(ResBundle* p):m_resFont(p)
+FontManager::FontManager(Resource* p):m_resFont(p)
 {
     m_pIFontManager = nullptr;
 	m_pSkinRes = p;
@@ -139,7 +139,7 @@ FontRes&  FontManager::GetFontRes()
 }
 
 
-long  FontManager::UIParseFontTagCallback(IUIElement* pElem, IResBundle* pSkinRes)
+long  FontManager::UIParseFontTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
     IFontManager&  pFontMgr = pSkinRes->GetFontManager();
     return pFontMgr.GetImpl()->ParseNewElement(pElem->GetImpl());

@@ -111,7 +111,7 @@ void Application::x_Init() {
 #endif
 }
 
-ResBundle *Application::GetDefaultSkinRes() {
+Resource *Application::GetDefaultSkinRes() {
   return m_resource_manager.GetDefaultSkinRes();
 }
 MessageLoop &Application::GetMessageLoop() { return m_message_loop; }
@@ -379,7 +379,7 @@ void Application::RestoreRegisterUIObject() {
 }
 
 IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
-                                           IResBundle *pSkinRes) {
+                                           IResource *pSkinRes) {
   if (!szXmlName)
     return nullptr;
 
@@ -397,7 +397,7 @@ IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
 }
 
 IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
-                                            IResBundle *pSkinRes) {
+                                            IResource *pSkinRes) {
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
     if (clsid == m_vecUIObjectDesc[i]->GetUuid()) {
@@ -735,12 +735,12 @@ void Application::LoadUIObjectListToToolBox() {
 bool Application::CreateRenderBaseByName(const wchar_t *szName,
                                          IObject *pObject,
                                          IRenderBase **ppOut) {
-  IResBundle *pSkinRes = nullptr;
+  IResource *pSkinRes = nullptr;
   if (pObject) {
-    pSkinRes = pObject->GetResBundle();
+    pSkinRes = pObject->GetResource();
   } else {
-    ResBundle *p = GetDefaultSkinRes();
-    pSkinRes = p ? p->GetIResBundle() : nullptr;
+    Resource *p = GetDefaultSkinRes();
+    pSkinRes = p ? p->GetIResource() : nullptr;
   }
 
   return m_renderBaseFactory.CreateRenderBaseByName(pSkinRes, szName, pObject,

@@ -10,7 +10,7 @@
 
 namespace ui {
 
-SkinParseEngine::SkinParseEngine(ResBundle* pSkinRes)
+SkinParseEngine::SkinParseEngine(Resource* pSkinRes)
 {   
 	UIASSERT(pSkinRes);
     m_pSkinRes = pSkinRes;
@@ -82,11 +82,11 @@ void  SkinParseEngine::NewChild(UIElement* pElement)
         return;
 	}
 
-    func(pElement->GetIUIElement(), m_pSkinRes->GetIResBundle());
+    func(pElement->GetIUIElement(), m_pSkinRes->GetIResource());
 }
 
 
-long  SkinParseEngine::UIParseIncludeTagCallback(IUIElement* pElement, IResBundle* pSkinRes)
+long  SkinParseEngine::UIParseIncludeTagCallback(IUIElement* pElement, IResource* pSkinRes)
 {
     if (nullptr == pElement || nullptr == pSkinRes)
         return -1; // E_FAIL;
