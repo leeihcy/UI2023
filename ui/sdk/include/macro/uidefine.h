@@ -1,15 +1,6 @@
 #ifndef _UIDEFINE_H_
 #define _UIDEFINE_H_
 
-#include "../common.h"
-
-// TODO:
-#if defined(OS_WIN)
-#define UIAPI_UUID(guid) __declspec(uuid(#guid)) UIAPI
-#else
-#define UIAPI_UUID(guid) UIAPI
-#endif
-
 namespace ui {
 struct UIMSG;
 
@@ -33,7 +24,8 @@ enum {
 #define UI_DECLARE_INTERFACE(T)                                                \
 public:                                                                        \
   typedef T ImplName;                                                          \
-  static I##T *CreateInstance(ui::IResBundle *);                               \
+  static I##T *create(ui::IResBundle *);                                       \
+  static void destroy(I##T *);                                                 \
   I##T(ui::E_BOOL_CREATE_IMPL);                                                \
   bool nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook);         \
   T *GetImpl();
@@ -59,8 +51,11 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::CreateInstance(IResBundle *pSkinRes) {                           \
-    return ui::ObjectCreator<I##T>::CreateInstance(pSkinRes);                  \
+  I##T *I##T::create(IResBundle *pSkinRes) {                                   \
+    return ui::ObjectCreator<I##T>::create(pSkinRes);                          \
+  }                                                                            \
+  void I##T::destroy(I##T * p) {                                               \
+    p->Release();                                                  \
   }                                                                            \
   bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
     return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
@@ -82,8 +77,11 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::CreateInstance(ui::IResBundle *p) {                              \
-    return ui::ObjectCreator<I##T>::CreateInstance(p);                         \
+  I##T *I##T::create(ui::IResBundle *p) {                                      \
+    return ui::ObjectCreator<I##T>::create(p);                                 \
+  }                                                                            \
+  void I##T::destroy(I##T * p) {                                               \
+    p->Release();                                                  \
   }                                                                            \
   bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
     return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
@@ -165,9 +163,9 @@ struct SERIALIZEDATA {
 
   IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
   IResBundle *pSkinRes;
-  const wchar *szPrefix;    // 属性前缀
-  const wchar *szParentKey; // 父属性（仅用于editor），如bkg.render.type
-  uint nFlags;
+  const wchar_t *szPrefix;    // 属性前缀
+  const wchar_t *szParentKey; // 父属性（仅用于editor），如bkg.render.type
+  unsigned int nFlags;
 
   bool IsReload() {
     return ((nFlags & SERIALIZEFLAG_RELOAD) == SERIALIZEFLAG_RELOAD) ? true

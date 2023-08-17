@@ -1,4 +1,5 @@
 #include "sdk/include/inc.h"
+#include "include/util/math.h"
 #include "matrix.h"
 #include "math.h"
 #include <math.h>

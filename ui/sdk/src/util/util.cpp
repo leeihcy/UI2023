@@ -51,7 +51,7 @@ namespace ui {
 		public:
 			std::vector<String>  m_vecString;
 		};
-		unsigned int  SplitString(const wchar_t* szText, wchar szSep, ISplitStringEnum** ppEnum)
+		unsigned int  SplitString(const wchar_t* szText, wchar_t szSep, ISplitStringEnum** ppEnum)
 		{
 			if (!szText || !szText[0] || !ppEnum)
 				return 0;
@@ -203,7 +203,7 @@ namespace ui {
 			return col;
 		}
 
-		byte Letter2Hex(wchar c)
+		byte Letter2Hex(wchar_t c)
 		{
 			switch (c)
 			{
@@ -319,7 +319,7 @@ namespace ui {
             return TranslateRGB(szColor);
 		}
 
-		bool  TranslateRECT(const wchar_t* szRect, Rect* pRect, wchar szSep)
+		bool  TranslateRECT(const wchar_t* szRect, Rect* pRect, wchar_t szSep)
 		{
 			if (nullptr == szRect)
 				return false;
@@ -350,7 +350,7 @@ namespace ui {
 			return true;
 		}
 
-		bool TranslateSIZE(const wchar_t* szText, Size* pSize, wchar szSep)
+		bool TranslateSIZE(const wchar_t* szText, Size* pSize, wchar_t szSep)
 		{
 			if (nullptr == szText)
 				return false;
@@ -423,7 +423,7 @@ namespace ui {
 		//
 		//	获取一个路径szPath中的文件名
 		//
-		bool GetPathFileName(const wchar_t* szPath, wchar* szOutDir)
+		bool GetPathFileName(const wchar_t* szPath, wchar_t* szOutDir)
 		{
 			if (nullptr == szPath || nullptr == szOutDir)
 				return false;
@@ -437,7 +437,7 @@ namespace ui {
 		}
 
 
-		bool GetPathFileExt(const wchar_t* szPath, wchar* szOutExt)
+		bool GetPathFileExt(const wchar_t* szPath, wchar_t* szOutExt)
 		{
 			if (nullptr == szPath || nullptr == szOutExt)
 				return false;
@@ -721,7 +721,7 @@ namespace ui {
 
 
 
-		bool TranslateImage9Region(const wchar_t* szText, C9Region* p9Region, wchar szSep)
+		bool TranslateImage9Region(const wchar_t* szText, C9Region* p9Region, wchar_t szSep)
 		{
 			if (nullptr == szText || nullptr == p9Region)
 				return false;
@@ -790,11 +790,11 @@ namespace ui {
 			return true;
 		}
 
-		void UIAPI PathInBin(const wchar_t* szRelative, wchar szAbsolution[MAX_PATH])
+		void UIAPI PathInBin(const wchar_t* szRelative, wchar_t szAbsolution[MAX_PATH])
 		{
         #if defined(OS_WIN)
 			GetModuleFileName(GetModuleHandle(nullptr), szAbsolution, MAX_PATH);
-			wchar* p = _tcsrchr(szAbsolution, '\\');
+			wchar_t* p = _tcsrchr(szAbsolution, '\\');
 			if (p != nullptr)
 				*(p + 1) = 0;
 

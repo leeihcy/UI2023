@@ -1,11 +1,14 @@
 #ifndef _UI_IMESSAGE_H_
 #define _UI_IMESSAGE_H_
+#include <string.h>
+
+#include "sdk/include/interface.h"
 #include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uicreator.h"
 #include "sdk/include/event.h"
 #include "sdk/include/common/signalslot/slot.h"
-#include <string.h>
+
 
 namespace ui {
 struct IMessage;
@@ -16,7 +19,7 @@ struct MSG {
 #else
   long hWnd;
 #endif
-  uint message;
+  unsigned int message;
   long wParam;
   long lParam;
 };
@@ -27,7 +30,7 @@ struct UIMSG : public MSG {
 
   IMessage *pMsgFrom; // 消息发送者
   IMessage *pMsgTo;   // 消息接受者
-  uint nCode;         // 针对 WM_COMMAND,WM_NOTIFY
+  unsigned int nCode;         // 针对 WM_COMMAND,WM_NOTIFY
   long lRet;          // 消息处理结束后的返回值
   bool bHandled;      // 该消息是否已被处理过
 };
@@ -43,8 +46,8 @@ struct UIAPI IMessage {
   // long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
   static long SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
                           bool *pbHandled = nullptr);
-  long SendMessage(uint message, long wParam = 0, long lParam = 0,
-                   uint nCode = 0, IMessage *pMsgFrom = nullptr,
+  long SendMessage(unsigned int message, long wParam = 0, long lParam = 0,
+                   unsigned int nCode = 0, IMessage *pMsgFrom = nullptr,
                    int nMsgMapID = 0, bool *pbHandled = nullptr);
 
   bool IsMsgHandled() const;

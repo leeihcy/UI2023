@@ -1,5 +1,7 @@
 #ifndef _UI_UTIL_H_
 #define _UI_UTIL_H_
+#include "sdk/include/interface.h"
+#include "sdk/include/util/windows.h"
 
 namespace ui {
 class C9Region;
@@ -52,34 +54,34 @@ private:
 };
 
 enum FixAlphaMode {
-  // ֱ�ӽ�alpha����Ϊ255
+  // 直接将alpha设置为255
   SET_ALPHA_255,
 
-  // �����ǰalpha==0����alpha����Ϊ255
+  // 如果当前alpha==0，将alpha设置为255
   SET_ALPHA_255_IF_ALPHA_IS_0,
 
-  // �����ǰ���ز���0����alpha����Ϊ255
+  // 如果当前像素不是0，则将alpha设置为255
   SET_ALPHA_255_IF_RGBA_ISNOT_0,
 
-  // alpha ��ת 0->255, 255->0
+  // alpha 反转 0->255, 255->0
   SET_ALPHA_INVERSE_0_255,
 
-  // ��alpha����Ϊָ��ֵwParam
+  // 将alpha设置为指定值wParam
   SET_ALPHA_VALUE,
 
-  // �����ǰalphaֵ��255, ��alpha����Ϊָ��ֵwParam
-  // ����û��ֵԤ�˴���
+  // 如果当前alpha值是255, 将alpha设置为指定值wParam
+  // 但是没有值预乘处理
   SET_ALPHA_VALUE_IF_ALPHA_IS_255
 
   // ...
-  // �����ǰalpha==wParam����alpha����ΪlParam
+  // 如果当前alpha==wParam，将alpha设置为lParam
   //	SET_ALPHA_IF_ALPHA_EQUAL,
 
-  // �����ǰalpha<wParam����alpha����ΪlParam
+  // 如果当前alpha<wParam，将alpha设置为lParam
   //	SET_ALPHA_IF_ALPHA_LESS,
 };
 struct FixAlphaData {
-  // ����ָ����hDC��û��ָ��hBitmapʱ����hDC�л�ȡCurrentBitap
+  // 当仅指定了hDC，没有指定hBitmap时，从hDC中获取CurrentBitap
   HDC hDC;
   HBITMAP hBitmap;
   bool bTopDownDib;

@@ -9,8 +9,8 @@ namespace ui {
 class WindowPlatformLinux : public WindowPlatform, public XEventDispatcher {
 public:
   WindowPlatformLinux(ui::Window &w);
+  ~WindowPlatformLinux();
   void Initialize() override;
-  void Release() override;
 
   bool Create(const Rect &rect) override;
   bool CreateTransparent(const Rect &rect);

@@ -7,9 +7,6 @@
 
 namespace ui {
 Layer *SoftwareCompositor::virtualCreateLayer() { return new SoftwareLayer; }
-
-void SoftwareCompositor::virtualBindHWND(HWND) {}
-
 // 软件渲染需要返回脏区域的窗口坐标，用于增量提交到最终窗口上面
 void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   if (!m_pRootLayer)

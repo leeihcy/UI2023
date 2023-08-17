@@ -1,17 +1,19 @@
 #ifndef _UI_INC_H_
 #define _UI_INC_H_
 
-#include "sdk/include/common.h"
 #include "sdk/include/common/uuid/uuid.h"
 
+#include "sdk/include/interface.h"
 #include "sdk/include/uicreator.h"
 #include "sdk/include/uiapi.h"
 
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/macro/uimsg.h"
 #include "sdk/include/macro/xmldefine.h"
+#include "sdk/include/macro/helper.h"
 
 #include "sdk/include/util/rect.h"
+#include "sdk/include/util/windows.h"
 
 #include "sdk/include/interface/imessage.h"
 // #include "sdk/include/interface/iobject.h"

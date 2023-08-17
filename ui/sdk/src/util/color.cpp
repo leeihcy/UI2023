@@ -1,6 +1,7 @@
 #include <math.h>
 #include "include/inc.h"
 #include "include/util/color.h"
+#include "include/util/math.h"
 
 //
 //  色调调节方法：
@@ -182,11 +183,11 @@ long  Color::Release()
     return lRef;
 }
 
-void  Color::ToHexString(wchar* szBuffer)
+void  Color::ToHexString(wchar_t* szBuffer)
 {
     wprintf(szBuffer, TEXT("0x%02X%02X%02X%02X"), a,r,g,b);
 }
-void  Color::ToWebString(wchar* szBuffer)
+void  Color::ToWebString(wchar_t* szBuffer)
 {
     if (a == 255)
     {
@@ -448,7 +449,7 @@ void  Color::SetResId(const wchar_t* szId)
 
     if (szId && szId[0])
     {
-        m_szResId = new wchar[wcslen(szId) + 1];
+        m_szResId = new wchar_t[wcslen(szId) + 1];
         wcscpy(m_szResId, szId);
     }
 }

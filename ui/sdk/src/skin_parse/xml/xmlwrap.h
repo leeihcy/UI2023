@@ -66,7 +66,7 @@ struct UIElement
 	virtual UIElementProxy  NextElement() = 0;
 	virtual UIElementProxy  FindChild(const wchar_t* szChildName) = 0;
 
-	virtual void  GetAttribList(IMapAttribute** ppMapAttrib) = 0;
+	virtual void GetAttribList(IMapAttribute*) = 0;
 	virtual void  GetAttribList2(IListAttribute** ppListAttrib) = 0;
 	virtual bool  SetAttribList2(IListAttribute* pListAttrib) = 0;
 #if defined(OS_WIN)

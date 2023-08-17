@@ -187,7 +187,7 @@ shared_library("uisdk") {
       sources += [
         "test/test_entry.cpp",
         "include/common/signalslot/signalslot_unittest.cpp",
-        "include/common/weakptr/weakptr_unittest.cpp",
+        "include/common/ptr/weakptr_unittest.cpp",
         "src/message_loop/message_loop_unittest.cpp",
         "src/util/rectregion/rectregion_unittest.cpp",
         "include/common/uuid/uuid_unittest.cpp",

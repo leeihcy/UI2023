@@ -813,6 +813,12 @@ ILayoutParam*  IObject::GetSafeLayoutParam()
 { 
 	return __pImpl->GetSafeLayoutParam();
 }
+ILayoutParam* IObject::GetLayoutParam() {
+  return __pImpl->GetLayoutParam();
+}
+void IObject::SetLayoutParam(ILayoutParam* p) {
+  __pImpl->SetLayoutParam(p);
+}
 // void  IObject::CreateLayoutParam()
 // {
 // 	__pImpl->CreateLayoutParam();
@@ -903,10 +909,10 @@ void  IObject::SetTextRender(ITextRenderBase* p)
 // { 
 // 	__pImpl->SetAttributeByPrefix(szPrefix, pMatAttrib, bReload, bErase); 
 // }
-void  IObject::LoadAttributeFromMap(IMapAttribute* pMatAttrib, bool bReload)
-{
-	__pImpl->LoadAttributeFromMap(pMatAttrib, bReload); 
-}
+// void  IObject::LoadAttributeFromMap(IMapAttribute* pMatAttrib, bool bReload)
+// {
+// 	__pImpl->LoadAttributeFromMap(pMatAttrib, bReload); 
+// }
 void  IObject::LoadAttributeFromXml(IUIElement* pXmlElement, bool bReload)
 {
     __pImpl->LoadAttributeFromXml(
@@ -920,9 +926,12 @@ void  IObject::AddAttribute(const wchar_t* szKey, const wchar_t*  szValue)
 { 
 	__pImpl->AddAttribute(szKey, szValue); 
 }
-void  IObject::GetMapAttribute(IMapAttribute** ppMapAttribute)
+IMapAttribute* IObject::GetMapAttribute()
 { 
-	__pImpl->GetMapAttribute(ppMapAttribute); 
+	return __pImpl->GetMapAttribute(); 
+}
+void IObject::ClearMapAttribute() {
+  __pImpl->ClearMapAttribute();
 }
 Size  IObject::GetDesiredSize()
 { 

@@ -11,18 +11,6 @@
 // 内部全局方法
 namespace ui
 {
- 
-bool  CreateUIApplication(IApplication** pp)
-{
-    if (!pp)
-        return false;
-
-    IApplication* p = new IApplication;
-    p->GetImpl()->x_Init();
-
-    *pp = p;
-    return true;
-}
 
 /*
 void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
@@ -70,10 +58,10 @@ void  UI_ExtendPath(String& strPath)
 #if defined(OS_WIN)
     if (!util::IsFullPath(strPath.c_str()))
     {
-        wchar szModulePath[MAX_PATH] = _T("");
+        wchar_t szModulePath[MAX_PATH] = _T("");
 
         GetModuleFileName(/*Application::GetModuleInstance()*/g_hInstance, szModulePath, MAX_PATH);
-        wchar* szTemp = _tcsrchr(szModulePath, _T('\\'));
+        wchar_t* szTemp = _tcsrchr(szModulePath, _T('\\'));
         if (szTemp)
             *(szTemp+1) = 0;
 
@@ -142,10 +130,10 @@ void  UI_Split(const String& str, wchar_t szSep, std::vector<String>& vRet)
 
 // 用于支持Get时返回一个LPCTSTR临时变量
 #define GlobalTempBufferSize  256
-wchar   g_szGlobalTempBuffer[GlobalTempBufferSize];
+wchar_t   g_szGlobalTempBuffer[GlobalTempBufferSize];
 String  g_strGlobalTempBuffer;
 
-wchar*  GetTempBuffer(int nMaxSize)
+wchar_t*  GetTempBuffer(int nMaxSize)
 {
 	UIASSERT(nMaxSize < GlobalTempBufferSize);
 	memset(g_szGlobalTempBuffer, 0, sizeof(g_szGlobalTempBuffer));

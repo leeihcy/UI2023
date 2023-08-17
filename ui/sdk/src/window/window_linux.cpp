@@ -6,8 +6,7 @@ namespace ui {
 WindowPlatformLinux::WindowPlatformLinux(ui::Window &w) : m_ui_window(w) {}
 void WindowPlatformLinux::Initialize() { m_display.Init(); }
 
-void WindowPlatformLinux::Release() {
-  Destroy();
+void WindowPlatformLinux::~WindowPlatformLinux() {
   m_display.Destroy();
 }
 

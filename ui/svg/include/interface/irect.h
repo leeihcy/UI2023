@@ -1,14 +1,12 @@
 #ifndef _UI_SVG_INCLUDE_INTERFACE_IRECT_H_
 #define _UI_SVG_INCLUDE_INTERFACE_IRECT_H_
-
-#include "../common.h"
+#include "svg/include/common.h"
+#include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/interface/iobject.h"
 
 namespace ui {
 namespace svg {
 class Rect;
-
-
 
 struct UISVGAPI IRect : public ui::IObject {
 
@@ -16,8 +14,9 @@ struct UISVGAPI IRect : public ui::IObject {
 
   UI_DECLARE_INTERFACE_ACROSSMODULE(Rect)
 };
+using RectPtr = ui::unique_ptr<IRect>;
 
-} // namespace svg
-} // namespace ui
+} 
+}  
 
 #endif

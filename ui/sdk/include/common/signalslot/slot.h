@@ -22,7 +22,7 @@
 // 5. signal默认支持多个slot
 //
 // TODO: 1. 支持回调顺序
-// TODO: 2. class对象的生命周期处理，已释放的对象，怎么及时断开，weakptr?
+// TODO: 2. class对象的生命周期处理，已释放的对象，怎么及时断开，weak_ptr?
 // TODO: 3. 引用类型、&&类型、const类型兼容
 // TODO: 4. 支持lambda
 //

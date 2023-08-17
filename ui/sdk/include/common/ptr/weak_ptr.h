@@ -7,7 +7,7 @@
 namespace ui
 {
 template<typename T>
-class weakptr;
+class weak_ptr;
 
 // 所有weakptr中将引用该对象，保存着对象T是否析构。
 class weakptr_data {
@@ -39,8 +39,8 @@ public:
     ~weakptr_factory() {
         m_data->kill();
     }
-    weakptr<T> get() const {
-        return weakptr<T>(m_ptr, m_data);
+    weak_ptr<T> get() const {
+        return weak_ptr<T>(m_ptr, m_data);
     }
 private:
     T* m_ptr;
@@ -50,7 +50,7 @@ private:
 // 用于控制对象的生命周期
 // 当对象已释放时，可通过 bool 判断出来，避免出现野指针崩溃。
 template<typename T>
-class weakptr {
+class weak_ptr {
 public:
     operator bool() {
         return m_ptr && m_data && m_data->is_lived();
@@ -65,28 +65,28 @@ public:
         return m_ptr;
     }
 
-    weakptr() {
+    weak_ptr() {
     }
-    ~weakptr() {
+    ~weak_ptr() {
         m_ptr = nullptr;
         m_data.reset();
     }
-    weakptr(const weakptr<T>& copy) {
+    weak_ptr(const weak_ptr<T>& copy) {
         m_ptr = copy.m_ptr;
         m_data = copy.m_data;
     }
-    weakptr<T>& operator=(const weakptr<T>& copy) {
+    weak_ptr<T>& operator=(const weak_ptr<T>& copy) {
         m_data = copy.m_data;
         m_ptr = copy.m_ptr;
         return *this;
     }
 
-    weakptr(weakptr<T>&& copy) {
+    weak_ptr(weak_ptr<T>&& copy) {
         m_ptr = copy.m_ptr;
         copy.m_ptr = nullptr;
         m_data.swap(copy.m_data);
     }
-    weakptr<T>& operator=(weakptr<T>&& copy) {
+    weak_ptr<T>& operator=(weak_ptr<T>&& copy) {
         m_ptr = copy.m_ptr;
         copy.m_ptr = nullptr;
         m_data.swap(copy.m_data);
@@ -94,8 +94,8 @@ public:
     }
   
 protected:
-    weakptr(T* ptr, std::shared_ptr<weakptr_data> data) {
-        // printf(" weakptr(T, shared_ptr) 0x%p\n", this);
+    weak_ptr(T* ptr, std::shared_ptr<weakptr_data> data) {
+        // printf(" weak_ptr(T, shared_ptr) 0x%p\n", this);
 
         m_ptr = ptr;
         m_data = data;

@@ -1,11 +1,9 @@
 #ifndef _UI_IANIMATE_H_
 #define _UI_IANIMATE_H_
-#include "sdk/include/macro/uidefine.h"
+#include "sdk/include/interface.h"
 
 namespace uia
 {
-#define ANIMATEBASE_API UIAPI
-
 enum TIMELINE_TIME_TYPE
 {
 	TT_BY_MS,
@@ -107,7 +105,7 @@ enum EaseType
 
 
 class Timeline;
-struct ANIMATEBASE_API ITimeline
+struct UIAPI ITimeline
 {
 public:
 	ITimeline(Timeline* p);
@@ -138,11 +136,11 @@ struct ITimingFunction
 	virtual float OnTick(float fTimePercent) = 0;
 };
 
-typedef float (__stdcall *pfnTimingFunction)(float fTimePercent);
+typedef float (/*__stdcall*/ *pfnTimingFunction)(float fTimePercent);
 
 
 class FromToTimeline;
-struct ANIMATEBASE_API IFromToTimeline : public ITimeline
+struct UIAPI IFromToTimeline : public ITimeline
 {
 	IFromToTimeline(FromToTimeline* p);
 
@@ -159,7 +157,7 @@ private:
 };
 
 class KeyFrameTimeline;
-struct ANIMATEBASE_API IKeyFrameTimeline : public ITimeline
+struct UIAPI IKeyFrameTimeline : public ITimeline
 {
 	IKeyFrameTimeline(KeyFrameTimeline* p);
 
@@ -173,7 +171,7 @@ private:
 
 struct IAnimateEventCallback;
 class Storyboard;
-struct ANIMATEBASE_API IStoryboard
+struct UIAPI IStoryboard
 {
 public:
 	IStoryboard(Storyboard* p);
@@ -208,7 +206,7 @@ private:
 struct IAnimateEventCallback;
 class AnimateManager;
 
-struct ANIMATEBASE_API IAnimateManager
+struct UIAPI IAnimateManager
 {
 	IAnimateManager(AnimateManager* p);
 	AnimateManager*  GetImpl();
@@ -258,10 +256,10 @@ struct IAnimateTimerCallback
 
 extern "C"
 {
-    void  ANIMATEBASE_API CreateAnimateManager(
+    void  UIAPI CreateAnimateManager(
                                 IAnimateTimerCallback* p, 
                                 IAnimateManager** pp);
-    void  ANIMATEBASE_API DestroyAnimateManager(
+    void  UIAPI DestroyAnimateManager(
                                 IAnimateManager* p);
 }
 

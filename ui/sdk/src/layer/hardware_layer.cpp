@@ -1,3 +1,4 @@
+#include "include/macro/helper.h"
 #include "hardware_layer.h"
 #include "hardware_compositor.h"
 #include "include/interface/renderlibrary.h"

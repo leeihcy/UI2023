@@ -12,7 +12,7 @@ public:
   }
 
   virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
-    *pp = IPanel::CreateInstance(p);
+    *pp = IPanel::create(p);
   }
 
   virtual OBJ_TYPE GetMajorType() override { return OBJ_PANEL; }
@@ -36,7 +36,7 @@ public:
   }
 
   virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
-    *pp = IRoundPanel::CreateInstance(p);
+    *pp = IRoundPanel::create(p);
   }
   virtual const wchar_t *GetTagName() override { return L"RoundPanel"; }
   virtual Uuid GetUuid() override { return IRoundPanel::UUID(); }

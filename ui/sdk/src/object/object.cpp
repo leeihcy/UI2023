@@ -66,7 +66,11 @@ Object::~Object(void) {
   if (m_ppOutRef)
     *m_ppOutRef = nullptr;
 
-  SAFE_RELEASE(m_pIMapAttributeRemain);
+  if (m_pIMapAttributeRemain) {
+    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain = nullptr;
+  }
+
   SAFE_RELEASE(m_pLayoutParam);
 #if defined(OS_WIN)
   if (m_pAccessible)
@@ -306,46 +310,39 @@ Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   return nullptr;
 }
 
-void Object::LoadAttributeFromMap(IMapAttribute *pMapAttrib, bool bReload) {
-  if (!pMapAttrib)
+void Object::LoadAttributes(bool bReload) {
+  if (!m_pIMapAttributeRemain)
     return;
 
   String strStyle;
   String strId;
 
-  const wchar_t *szText = pMapAttrib->GetAttr(XML_STYLECLASS, false);
+  const wchar_t *szText = m_pIMapAttributeRemain->GetAttr(XML_STYLECLASS, false);
   if (szText)
     strStyle = szText;
 
-  szText = pMapAttrib->GetAttr(XML_ID, false);
+  szText = m_pIMapAttributeRemain->GetAttr(XML_ID, false);
   if (szText)
     strId = szText;
 
   StyleRes &styleRes = m_pSkinRes->GetStyleRes();
   styleRes.LoadStyle(m_pDescription->GetTagName(), strStyle.c_str(),
-                     strId.c_str(), pMapAttrib);
+                     strId.c_str(), m_pIMapAttributeRemain);
 
   SERIALIZEDATA data = {0};
   data.pUIApplication = GetIUIApplication();
   data.pSkinRes = m_pSkinRes->GetIResBundle();
-  data.pMapAttrib = pMapAttrib;
+  data.pMapAttrib = m_pIMapAttributeRemain;
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
-
-  // 保存属性，用于扩展。
-  SAFE_RELEASE(m_pIMapAttributeRemain);
-  m_pIMapAttributeRemain = pMapAttrib;
-  if (m_pIMapAttributeRemain)
-    m_pIMapAttributeRemain->AddRef();
 
   m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    SAFE_RELEASE(m_pIMapAttributeRemain);
-  } else {
-    int a = 0;
+    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain = nullptr;
   }
 }
 
@@ -354,10 +351,13 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
   if (!pElement)
     return;
 
-  IMapAttribute *pMapAttrib = nullptr;
-  pElement->GetAttribList(&pMapAttrib);
-  { this->LoadAttributeFromMap(pMapAttrib, bReload); }
-  SAFE_RELEASE(pMapAttrib);
+  if (m_pIMapAttributeRemain) {
+    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain = nullptr;
+  }
+  m_pIMapAttributeRemain = UICreateIMapAttribute();
+  pElement->GetAttribList(m_pIMapAttributeRemain);
+  this->LoadAttributes(bReload); 
 
   // 通知编辑器关联控件和xml结点.
   // 将通知放在这里，而不是layoutmanager中，是为了解决复合控件中的子控件加载问题
@@ -378,19 +378,16 @@ const wchar_t *Object::GetAttribute(const wchar_t *szKey, bool bErase) {
 }
 void Object::AddAttribute(const wchar_t *szKey, const wchar_t *szValue) {
   if (nullptr == m_pIMapAttributeRemain) {
-    UICreateIMapAttribute(&m_pIMapAttributeRemain);
+    m_pIMapAttributeRemain = UICreateIMapAttribute();
   }
   m_pIMapAttributeRemain->AddAttr(szKey, szValue);
 }
-void Object::GetMapAttribute(IMapAttribute **ppMapAttribute) {
-  if (ppMapAttribute && m_pIMapAttributeRemain) {
-    *ppMapAttribute = m_pIMapAttributeRemain;
-    m_pIMapAttributeRemain->AddRef();
-  }
+IMapAttribute* Object::GetMapAttribute() {
+  return m_pIMapAttributeRemain;
 }
 void Object::ClearMapAttribute() {
   if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Release();
+    m_pIMapAttributeRemain->Delete();
     m_pIMapAttributeRemain = nullptr;
   }
 }
@@ -1092,12 +1089,11 @@ void Object::InitDefaultAttrib() {
   IMapAttribute *pMapAttrib = nullptr;
   if (m_pIMapAttributeRemain) {
     pMapAttrib = m_pIMapAttributeRemain;
-    pMapAttrib->AddRef();
   } else {
-    UICreateIMapAttribute(&pMapAttrib);
+    pMapAttrib = UICreateIMapAttribute();
   }
 
-  UIASSERT(m_strId.empty() && TEXT("将setid放在该函数之后调用，避免覆盖"));
+  UIASSERT(m_strId.empty() && "将setid放在该函数之后调用，避免覆盖");
   // pMapAttrib->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
 
   // 解析样式
@@ -1119,18 +1115,16 @@ void Object::InitDefaultAttrib() {
   data.pMapAttrib = pMapAttrib;
   data.nFlags = SERIALIZEFLAG_LOAD;
 
-  SAFE_RELEASE(m_pIMapAttributeRemain);
   m_pIMapAttributeRemain = pMapAttrib;
-  if (m_pIMapAttributeRemain)
-    m_pIMapAttributeRemain->AddRef();
+  pMapAttrib = nullptr;
 
   m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    SAFE_RELEASE(m_pIMapAttributeRemain);
+    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain = nullptr;
   }
-  SAFE_RELEASE(pMapAttrib);
 }
 //
 // void Object::SetUserData(LPVOID p)

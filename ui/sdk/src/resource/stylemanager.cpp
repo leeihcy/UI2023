@@ -118,7 +118,7 @@ StyleRes&  StyleManager::GetStyleRes()
 bool  StyleManager::ParseInheritString(
         const String& strInherit,
         STYLE_SELECTOR_TYPE& eStyletype, 
-        wchar* szStyleName)
+        wchar_t* szStyleName)
 {
     if (strInherit.length() <= 0 || nullptr == szStyleName )
         return false;
@@ -143,7 +143,7 @@ bool  StyleManager::ParseInheritString(
 bool  StyleManager::MakeInheritString(
     const STYLE_SELECTOR_TYPE& eStyletype, 
     const String& strStypeName, 
-    wchar* szInherit)
+    wchar_t* szInherit)
 {
     if (strStypeName.length() <= 0 || nullptr == szInherit )
         return false;
@@ -214,7 +214,7 @@ bool  StyleManager::parse_inherit(
             continue;
 
         STYLE_SELECTOR_TYPE type = STYLE_SELECTOR_TYPE_TAG;
-        wchar szStyleName[MAX_STRING_LEN] = _T("");
+        wchar_t szStyleName[MAX_STRING_LEN] = _T("");
         ParseInheritString(strInherit, type, szStyleName);
 
         StyleResItem* pInheritItem = pStyleRes->GetItem(type, szStyleName);
@@ -297,8 +297,8 @@ void  StyleManager::OnNewChild(UIElement* pElem)
     std::wstring bstrTagName = pElem->GetTagName();
 
     //	加载所有属性
-    IMapAttribute* pMapAttrib = nullptr;
-    pElem->GetAttribList(&pMapAttrib);
+    IMapAttribute* pMapAttrib = UICreateIMapAttribute();
+    pElem->GetAttribList(pMapAttrib);
 
     StyleResItem* pStyleItem = new StyleResItem;
     pStyleItem->SetAttributeMap(pMapAttrib);
@@ -356,7 +356,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
     }
     while (0);
 
-    SAFE_RELEASE(pMapAttrib);
+    pMapAttrib->Delete();
 }
 
 UIElement*  StyleManager::GetStyleXmlElem(const wchar_t* szId)

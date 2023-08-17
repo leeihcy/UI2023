@@ -15,13 +15,14 @@
 
 namespace ui {
 
-Window::Window(IWindow *p) : Panel(p), m_window_render(*this), m_pIWindow(p) {}
+Window::Window(IWindow *p) : Panel(p), m_window_render(*this), m_pIWindow(p) {
+  UI_LOG_DEBUG("Window");
+}
 Window::~Window() {
   if (m_platform) {
     m_platform->Release();
-    delete m_platform;
-    m_platform = nullptr;
   }
+  UI_LOG_DEBUG("~Window");
 }
 
 long Window::FinalConstruct(IResBundle *p) {
@@ -55,9 +56,9 @@ void Window::OnSerialize(SERIALIZEDATA *pData) {
 void Window::Create(const Rect &rect) {
 #if defined(OS_WIN)
 #elif defined(OS_MAC)
-  m_platform = new WindowPlatformMac(*this);
+  m_platform.reset(new WindowPlatformMac(*this));
 #elif defined(OS_LINUX)
-  m_platform = new WindowPlatformLinux(*this);
+  m_platform.reset(new WindowPlatformLinux(*this));
 #else
   assert(false);
 #endif

@@ -353,16 +353,12 @@ void  PugiXmlElement::enum_attr(
     }
 }
 
-void  PugiXmlElement::GetAttribList(IMapAttribute** ppMapAttrib)
+void  PugiXmlElement::GetAttribList(IMapAttribute* ppMapAttrib)
 {
-    // 有可能是增量获取
-    if (*ppMapAttrib == nullptr)
-        UICreateIMapAttribute(ppMapAttrib);
-
     //(*ppMapAttrib)->SetTag(m_node.name());
 
     enum_attr([ppMapAttrib](const wchar_t* k, const wchar_t* v){
-        (*ppMapAttrib)->AddAttr(k, v);
+        ppMapAttrib->AddAttr(k, v);
     });
 }
 void  PugiXmlElement::GetAttribList2(IListAttribute** ppListAttrib)
@@ -543,7 +539,7 @@ bool  PugiXmlElement::GetAttribInt(const wchar_t* szKey, int* pInt)
 }
 bool  PugiXmlElement::AddAttribInt(const wchar_t* szKey, int nInt)
 {
-	wchar szValue[16] = {0};
+	wchar_t szValue[16] = {0};
 	wprintf(szValue, TEXT("%d"), nInt);
 
 	return AddAttrib(szKey, szValue);

@@ -12,7 +12,7 @@ public:
 
   UI_BEGIN_MSG_MAP()
     UIMSG_ERASEBKGND(OnEraseBkgnd)
-	UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(Svg, IObject)
+	UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(Svg, IPanel)
 
 private:
   void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget);

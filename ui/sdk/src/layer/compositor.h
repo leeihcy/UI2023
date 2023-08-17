@@ -1,7 +1,7 @@
 #pragma once
 #include "layer.h"
 #include "src/util/rectregion/rectregion.h"
-#include "include/common/weakptr/weakptr.h"
+#include "include/common/ptr/weak_ptr.h"
 
 namespace ui {
 class Application;
@@ -36,7 +36,9 @@ public:
   
 protected:
   virtual Layer *virtualCreateLayer() = 0;
+#if defined(OS_WIN)
   virtual void virtualBindHWND(HWND) = 0;
+#endif
   virtual void virtualCommit(const RectRegion &arrDirtyInWindow) = 0;
 
 protected:

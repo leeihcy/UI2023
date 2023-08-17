@@ -13,7 +13,7 @@ public:
 
     virtual void  CreateInstance(UI::IResBundle* p, void** pp) override
     {
-        *pp = IScrollPanel::CreateInstance(p);
+        *pp = IScrollPanel::create(p);
     }
 
 	virtual OBJ_TYPE  GetMajorType() override

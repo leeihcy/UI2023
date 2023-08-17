@@ -13,7 +13,7 @@ public:
   }
 
   virtual void CreateInstance(IResBundle *p, void **pp) override {
-    *pp = IWindow::CreateInstance(p);
+    *pp = IWindow::create(p);
   }
 
   virtual OBJ_TYPE GetMajorType() override { return OBJ_WINDOW; }
@@ -42,7 +42,7 @@ public:
 
     virtual void  CreateInstance(IResBundle* p, void** pp) override
     {
-        *pp = UI::ICustomWindow::CreateInstance(p);
+        *pp = UI::ICustomWindow::create(p);
     }
 
 	virtual OBJ_TYPE  GetMajorType() override

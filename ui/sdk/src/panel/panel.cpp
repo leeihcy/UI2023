@@ -3,12 +3,12 @@
 #include "include/interface/imapattr.h"
 #include "include/interface/irenderbase.h"
 #include "include/interface/iwindow.h"
-#include "src/window/window.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/stringselect_attribute.h"
 #include "src/layout/layout.h"
+#include "src/window/window.h"
 
 namespace ui {
 
@@ -41,13 +41,8 @@ Panel::~Panel() {
 
 ILayout *Panel::GetLayout() { return this->m_pLayout; }
 
-
-const wchar_t* Panel::GetLayoutName() 
-{
-  return m_layout_name.c_str();
-}
-void Panel::SetLayoutName(const wchar_t* name)
-{
+const wchar_t *Panel::GetLayoutName() { return m_layout_name.c_str(); }
+void Panel::SetLayoutName(const wchar_t *name) {
   if (!name) {
     m_layout_name.clear();
   } else {
@@ -55,14 +50,19 @@ void Panel::SetLayoutName(const wchar_t* name)
   }
 }
 
-void Panel::SetLayoutType(const wchar_t* layout_name) {
+void Panel::SetLayoutType(const wchar_t *layout_name) {
   // if (m_pLayout && m_pLayout->GetLayoutType() == eLayoutType)
   //   return;
 
-  SAFE_RELEASE(m_pLayout);
+  ILayout *layout = nullptr;
+  GetUIApplication()->GetLayoutFactory().CreateByName(layout_name, m_pIPanel,
+                                                      false, &layout);
+  SetLayout(layout);
+}
+void Panel::SetLayout(ILayout *p) {
 
-  GetUIApplication()->GetLayoutFactory().CreateByName(layout_name, m_pIPanel, false,
-                                                &m_pLayout);
+  SAFE_RELEASE(m_pLayout);
+  m_pLayout = p;
 
   // 子结点的布局类型全部跟着变
   Object *pChild = nullptr;
@@ -122,9 +122,8 @@ void Panel::OnSerialize(SERIALIZEDATA *pData) {
     s.AddRect(XML_FOREGND_RENDER_PREFIX XML_PANEL_RENDER_REGION,
               m_rcForegndRenderRegion);
 
-    s.AddStringEnum(XML_LAYOUT_TYPE,
-              Slot(&Panel::SetLayoutName, this),
-              Slot(&Panel::GetLayoutName, this))
+    s.AddStringEnum(XML_LAYOUT_TYPE, Slot(&Panel::SetLayoutName, this),
+                    Slot(&Panel::GetLayoutName, this))
         ->FillLayoutTypeData();
   }
   if (pData->IsLoad()) {
@@ -132,7 +131,11 @@ void Panel::OnSerialize(SERIALIZEDATA *pData) {
       m_objStyle.post_paint = 1;
     }
     if (!m_pLayout) {
-      SetLayoutType(XML_LAYOUT_CANVAS);
+      if (!m_layout_name.empty()) {
+        SetLayoutType(m_layout_name.c_str());
+      } else {
+        SetLayoutType(XML_LAYOUT_CANVAS);
+      }
     }
   }
 

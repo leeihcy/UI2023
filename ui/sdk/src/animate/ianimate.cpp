@@ -1,4 +1,5 @@
 #include "include/inc.h"
+#include "include/util/math.h"
 #include "animatemgr.h"
 #include "storyboard.h"
 #include "timeline.h"

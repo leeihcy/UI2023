@@ -14,8 +14,8 @@ namespace ui {
 class WindowPlatformMac : public WindowPlatform {
 public:
   WindowPlatformMac(ui::Window& w);
+  ~WindowPlatformMac();
   void Initialize() override;
-  void Release() override;
 
   bool Create(const Rect &rect) override;
   void Destroy();

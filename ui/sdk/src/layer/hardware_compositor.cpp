@@ -13,12 +13,11 @@ HardwareCompositor::~HardwareCompositor()
 {
     SAFE_RELEASE(m_pHardwareComposition);
 }
-
+#if defined(OS_WIN)
 void  HardwareCompositor::virtualBindHWND(HWND hWnd)
 {
 	UIASSERT(!m_pHardwareComposition);
 
-#if defined(OS_WIN)
 	HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
 	if (!hModule)
 	{
@@ -37,8 +36,8 @@ void  HardwareCompositor::virtualBindHWND(HWND hWnd)
 	}
 
     m_pHardwareComposition = fn(m_hWnd);
-#endif
 }
+#endif
 
 void  HardwareCompositor::Resize(uint nWidth, uint nSize)
 {

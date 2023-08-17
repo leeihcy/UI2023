@@ -1,14 +1,13 @@
-#ifndef _UI_SVG_INCLUDE_INTERFACE_IRECT_H_
-#define _UI_SVG_INCLUDE_INTERFACE_IRECT_H_
+#ifndef _UI_SVG_INCLUDE_INTERFACE_ISVG_H_
+#define _UI_SVG_INCLUDE_INTERFACE_ISVG_H_
 
-#include "../common.h"
+#include "svg/include/common.h"
+#include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/interface/ipanel.h"
 
 namespace ui {
 namespace svg {
 class Svg;
-
-
 
 struct UISVGAPI ISvg : public ui::IPanel {
 
@@ -16,6 +15,7 @@ struct UISVGAPI ISvg : public ui::IPanel {
 
   UI_DECLARE_INTERFACE_ACROSSMODULE(Svg)
 };
+using SvgPtr = ui::unique_ptr<ISvg>;
 
 } // namespace svg
 } // namespace ui

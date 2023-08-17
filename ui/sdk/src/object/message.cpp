@@ -1,5 +1,10 @@
-#include "message.h"
+#include <string>
+
+#include "include/macro/helper.h"
 #include "include/util/log.h"
+
+#include "message.h"
+
 
 namespace ui {
 

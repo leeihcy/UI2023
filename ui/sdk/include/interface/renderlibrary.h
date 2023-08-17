@@ -1,6 +1,7 @@
 #ifndef _UI_RENDERLIBRARY_H_
 #define _UI_RENDERLIBRARY_H_
 #include "sdk/include/util/color.h"
+#include "sdk/include/util/windows.h"
 
 namespace ui {
 struct IRenderFont;
@@ -136,8 +137,8 @@ struct IRenderBitmap : public IRenderResource {
   virtual int GetBPP() = 0;
   virtual COLORREF GetAverageColor() { return 0; }
 
-  virtual void Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/){};
-  virtual HBITMAP Detach() { return 0; }
+  // virtual void Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/){};
+  // virtual HBITMAP Detach() { return 0; }
 
   virtual unsigned char *LockBits() = 0;
   virtual void UnlockBits() = 0;

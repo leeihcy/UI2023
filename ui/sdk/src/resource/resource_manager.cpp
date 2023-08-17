@@ -1,5 +1,4 @@
 #include "resource_manager.h"
-#include "include/common.h"
 #include "include/interface/iresbundle.h"
 
 // #include "interface\iuires.h"
@@ -87,7 +86,7 @@ finddata.cFileName, strPath.c_str());
         else
         {
             // 判断文件后缀是否是*.skn格式
-            wchar szExt[MAX_PATH] = _T("");
+            wchar_t szExt[MAX_PATH] = _T("");
             util::GetPathFileExt(finddata.cFileName, szExt);
             if (0 == wcscmp(szExt, XML_SKIN_PACKET_EXT))
             {
@@ -103,7 +102,7 @@ m_strSkinDir.c_str());
     FindClose(hFind);
 }
 
-void  ResourceManager::GetSkinDirection(wchar*  szOut)
+void  ResourceManager::GetSkinDirection(wchar_t*  szOut)
 {
     if (szOut)
     {
@@ -282,13 +281,13 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
   UI_LOG_INFO(L"\n\n------------  LoadResBundle: %s ----------------\n",
               szPath);
 
-  wchar szSkinName[MAX_PATH] = {0};
+  wchar_t szSkinName[MAX_PATH] = {0};
   SKIN_PACKET_TYPE eSkinPackageType = SKIN_PACKET_TYPE_DIR;
 
   String strPath(szPath);
   if (ui::util::PathIsDirectory(szPath)) {
     // 从路径中获取皮肤名。
-    wchar szDir[MAX_PATH] = {0};
+    wchar_t szDir[MAX_PATH] = {0};
     wcscpy(szDir, szPath);
     int nLength = (int)wcslen(szDir);
     if (nLength < 1)
@@ -308,7 +307,7 @@ ResBundle *ResourceManager::LoadResBundle(const wchar_t *szPath) {
     // 		}
     eSkinPackageType = SKIN_PACKET_TYPE_DIR;
   } else {
-    wchar szExt[MAX_PATH] = _T("");
+    wchar_t szExt[MAX_PATH] = _T("");
     util::GetPathFileExt(szPath, szExt);
 
     int nExtLength = 0;

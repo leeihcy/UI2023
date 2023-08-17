@@ -1,7 +1,7 @@
 #ifndef _UI_API_H_
 #define _UI_API_H_
+#include "sdk/include/interface.h"
 
-#include "sdk/include/common.h"
 #include "sdk/include/macro/xmldefine.h"
 #include "sdk/include/macro/uidefine.h"
 
@@ -12,13 +12,18 @@ namespace ui {
 #define UISDK_VERSION_MINOR 0 // 次版本
 #define UISDK_VERSION_PATCH 1 // 补丁版本
 
+struct UIAPI SDKVersion {
+  static int GetMajor();
+  static int GetMinor();
+  static int GetPatch();
+  static int GetVersionText(char *szText, int nTextSize);
+};
+
 struct IUIElement;
 struct IResBundle;
 struct IObject;
 struct ILayout;
 struct IApplication;
-
-UIAPI bool CreateUIApplication(IApplication **pp);
 
 // UI对象创建函数
 // typedef  long(*pfnUICreateRenderBasePtr)(IResBundle* pSkinRes, void** ppOut);
@@ -58,7 +63,7 @@ struct IMessage;
 
 struct IMapAttribute;
 struct IListAttribute;
-UIAPI long UICreateIMapAttribute(IMapAttribute **ppOut);
+UIAPI IMapAttribute* UICreateIMapAttribute();
 UIAPI long UICreateIListAttribute(IListAttribute **ppOut);
 
 struct IRenderBitmap;

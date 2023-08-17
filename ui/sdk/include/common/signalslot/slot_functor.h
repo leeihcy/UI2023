@@ -1,7 +1,7 @@
 #ifndef _SIGNALSLOT_INTERNAL_H_
 #define _SIGNALSLOT_INTERNAL_H_
 
-#include "../weakptr/weakptr.h"
+#include "../ptr/weak_ptr.h"
 
 namespace ui
 {
@@ -48,7 +48,7 @@ namespace ui
         }
 
         // weakptr特化版本
-        static Return Run(Functor method, ui::weakptr<Class> pthis, Args... args) {
+        static Return Run(Functor method, ui::weak_ptr<Class> pthis, Args... args) {
             if (!pthis) {
                 return Return();
             }

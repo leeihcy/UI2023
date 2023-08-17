@@ -1,7 +1,7 @@
 #ifndef _UI_IATTRIBUTE_H_
 #define _UI_IATTRIBUTE_H_
 #include <functional>
-#include "sdk/include/common.h"
+#include "sdk/include/interface.h"
 #include "sdk/include/common/signalslot/slot.h"
 
 namespace ui {

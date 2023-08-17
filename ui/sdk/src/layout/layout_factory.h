@@ -1,8 +1,9 @@
 #pragma once
+#include <vector>
+#include <string>
+
 #include "include/interface/ilayout.h"
 #include "include/uiapi.h"
-#include "include/common/uuid/uuid.h"
-#include <vector>
 
 
 namespace ui {
@@ -26,7 +27,7 @@ public:
 
 private:
   struct UILAYOUT_CREATE_INFO {
-    String m_strName;
+    std::wstring m_strName;
     // Uuid m_guid;
     pfnUICreateLayoutPtr m_func;
   };

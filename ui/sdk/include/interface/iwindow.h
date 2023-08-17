@@ -1,9 +1,9 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
-
+#include "sdk/include/common/ptr/unique_ptr.h"
+#include "sdk/include/common/signalslot/signal.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/event.h"
-#include "../common/signalslot/signal.h"
 #include "ipanel.h"
 // #include "irenderlayer.h"
 // #include "ipanel.h"
@@ -78,95 +78,100 @@ struct  AnchorData
 #define SWDS_MASK_SYNC_VISIBLE 0x8
 #define SWDS_MASK_ALL 0xFFFF
 
-struct  SyncWindowData
-{
-    HWND         m_hWnd;           
-    unsigned int         m_nMask;
-    unsigned int         m_nAnchorType;   
-    AnchorData   m_rcAnchorData;  // 当m_nAnchorType相应位有值时，m_rcAnchorData的该位有效
-    bool         m_bAnchorOn;     // 跟随是否起作用。例如临时将窗口移出HOST窗口，不进行跟随，然后又贴到HOST窗口旁再次开启跟随。
-	bool         m_bSyncVisible;  // 是否同步显隐
+struct SyncWindowData {
+  HWND m_hWnd;
+  unsigned int m_nMask;
+  unsigned int m_nAnchorType;
+  AnchorData
+      m_rcAnchorData; // 当m_nAnchorType相应位有值时，m_rcAnchorData的该位有效
+  bool
+      m_bAnchorOn; // 跟随是否起作用。例如临时将窗口移出HOST窗口，不进行跟随，然后又贴到HOST窗口旁再次开启跟随。
+  bool m_bSyncVisible; // 是否同步显隐
 
-    SyncWindowData()
-    {
-        m_hWnd = nullptr;
-        m_nAnchorType = ANCHOR_NONE;
-        m_bAnchorOn = true;
-		m_bSyncVisible = false;
+  SyncWindowData() {
+    m_hWnd = nullptr;
+    m_nAnchorType = ANCHOR_NONE;
+    m_bAnchorOn = true;
+    m_bSyncVisible = false;
 
-        m_nMask = 0;
-    }
+    m_nMask = 0;
+  }
 };
 
 // 用于外部业务实现者处理窗口消息。
 // 外部不再要求从IWindowBase派生，只需要实现IWindowMessageCallback接口即可。
-struct IWindowDelegate
-{
-    virtual bool  OnWindowMessage(unsigned int, long, long, LRESULT& lResult) { return FALSE; }
-    virtual bool  OnWindowUIMessage(UIMSG* pMsg) { return FALSE; }
-    virtual void  OnWindowInitialize() {}
-	virtual void  DoBindPlz(bool bind) {}  // 在换肤时会再通知一次，因为有可能有新增的控件
-    virtual void  OnWindowClose(bool& bCanClose) { }
-    virtual void  OnWindowDestroy() {};
+struct IWindowDelegate {
+  virtual bool OnWindowMessage(unsigned int, long, long, LRESULT &lResult) {
+    return FALSE;
+  }
+  virtual bool OnWindowUIMessage(UIMSG *pMsg) { return FALSE; }
+  virtual void OnWindowInitialize() {}
+  virtual void DoBindPlz(bool bind) {
+  } // 在换肤时会再通知一次，因为有可能有新增的控件
+  virtual void OnWindowClose(bool &bCanClose) {}
+  virtual void OnWindowDestroy(){};
 };
 
 class WindowBase;
-struct UIAPI_UUID(1C7CED21-3CF6-49C9-9E52-72522C8A1CF6) IWindowBase
- : public IPanel
-{
-    HWND  GetHWND();
-    IWindowRender*  GetWindowRender();
-	IResBundle*  GetResBundle();
+struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
+    : public IPanel {
+  HWND GetHWND();
+  IWindowRender *GetWindowRender();
+  IResBundle *GetResBundle();
 
-    bool  IsChildWindow();
-	bool  IsWindowVisible();
-    void  ShowWindow();
-    void  HideWindow();
-    bool  IsDoModal();
-    void  CenterWindow(HWND hWndCenter = nullptr);
-    void  CenterWindow(HMONITOR hMonitor = nullptr);
-	void  GetWindowNormalRect(Rect* prc);
-	void  SetWindowNormalRect(const Rect* prc);
-	void  UpdateDesktopLayout();
+  bool IsChildWindow();
+  bool IsWindowVisible();
+  void ShowWindow();
+  void HideWindow();
+  bool IsDoModal();
+  void CenterWindow(HWND hWndCenter = nullptr);
+  void CenterWindow(HMONITOR hMonitor = nullptr);
+  void GetWindowNormalRect(Rect *prc);
+  void SetWindowNormalRect(const Rect *prc);
+  void UpdateDesktopLayout();
 
-    void  SetFocusObject(IObject* pObj);
-	void  SetPressObject(IObject* pObj);
-    IObject*  GetHoverObject();
-    IObject*  GetPressObject();
-    IObject*  GetObjectByPos(IObject* pObjParent, Point* pt, bool bSkinBuilderInvoke=false);
+  void SetFocusObject(IObject *pObj);
+  void SetPressObject(IObject *pObj);
+  IObject *GetHoverObject();
+  IObject *GetPressObject();
+  IObject *GetObjectByPos(IObject *pObjParent, Point *pt,
+                          bool bSkinBuilderInvoke = false);
 
-    bool  Create(const wchar_t* szID, HWND hWndParent=nullptr, Rect* prc=nullptr, long lStyle = 0, long lExStyle = 0);
-    bool  Attach(HWND hWnd, const wchar_t* szID);
-    void  Detach();
-	INT_PTR  DoModal(const wchar_t* szID, HWND hWndParent, bool canResize);
-	INT_PTR  DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent);
-    HWND  DoModeless(const wchar_t* szID, HWND hWndParent, bool canResize);
-    HWND  DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t* szID, HWND hWndParent);
-    void  EndDialog(INT_PTR);
-	void  DestroyWindow();
-	void  ChangeSkinLayout(const wchar_t* szLayoutId);
+  bool Create(const wchar_t *szID, HWND hWndParent = nullptr,
+              Rect *prc = nullptr, long lStyle = 0, long lExStyle = 0);
+  bool Attach(HWND hWnd, const wchar_t *szID);
+  void Detach();
+  INT_PTR DoModal(const wchar_t *szID, HWND hWndParent, bool canResize);
+  INT_PTR DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar_t *szID,
+                  HWND hWndParent);
+  HWND DoModeless(const wchar_t *szID, HWND hWndParent, bool canResize);
+  HWND DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar_t *szID,
+                  HWND hWndParent);
+  void EndDialog(INT_PTR);
+  void DestroyWindow();
+  void ChangeSkinLayout(const wchar_t *szLayoutId);
 
-    void  SaveMemBitmap(wchar* szFile);
-	void  AlphaBlendMemBitmap(HDC hDC, Rect* prc, int alpha);
-	void  BitBltMemBitmap(HDC hDC, Rect* prc);
-    void  EnableDwmTransition(bool b);
-	void  EnableGpuComposite(bool b);
-	bool  IsGpuComposite();
-	void  DirectComposite();
-	void  SetWindowMessageCallback(IWindowDelegate*);
+  void SaveMemBitmap(wchar_t *szFile);
+  void AlphaBlendMemBitmap(HDC hDC, Rect *prc, int alpha);
+  void BitBltMemBitmap(HDC hDC, Rect *prc);
+  void EnableDwmTransition(bool b);
+  void EnableGpuComposite(bool b);
+  bool IsGpuComposite();
+  void DirectComposite();
+  void SetWindowMessageCallback(IWindowDelegate *);
 
-    void  CalcWindowSizeByClientSize( Size sizeClient, Size* pSizeWindow );
-    void  CalcClientRectByWindowRect( Rect* rcWindow, Rect* rcClient );
+  void CalcWindowSizeByClientSize(Size sizeClient, Size *pSizeWindow);
+  void CalcClientRectByWindowRect(Rect *rcWindow, Rect *rcClient);
 
-//     bool  AddAnchorItem(const SyncWindowData& data);
-//     void  HideAllAnchorItem();
+  //     bool  AddAnchorItem(const SyncWindowData& data);
+  //     void  HideAllAnchorItem();
 
-    long  SetDroppable(bool b);
-	bool  IsSizeMoveIng();
+  long SetDroppable(bool b);
+  bool IsSizeMoveIng();
 
-	signal_mc<long>&  SizeChangedEvent();
-    signal_mc<bool&>&  OnCloseEvent();  // void  OnWindowClose(bool& bCanClose);
-    UI_DECLARE_INTERFACE(WindowBase);
+  signal_mc<long> &SizeChangedEvent();
+  signal_mc<bool &> &OnCloseEvent(); // void  OnWindowClose(bool& bCanClose);
+  UI_DECLARE_INTERFACE(WindowBase);
 };
 
 #endif
@@ -195,21 +200,7 @@ struct UIAPI IWindow : public IPanel {
 };
 
 // 辅助类
-class WindowPtr {
-public:
-  WindowPtr(IResBundle *bundle) { m_p = IWindow::CreateInstance(bundle); }
-  ~WindowPtr() {
-    if (m_p) { m_p->Release(); }
-  }
-  WindowPtr(const WindowPtr&) = delete;
-  WindowPtr& operator=(const WindowPtr&) = delete;
-
-  IWindow *operator->() { return m_p; }
-  operator IWindow *() const { return m_p; }
-
-private:
-  IWindow *m_p;
-};
+using WindowPtr = ui::unique_ptr<ui::IWindow>;
 
 
 #define WINDOW_DESTROY_EVENT "destroy"

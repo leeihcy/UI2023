@@ -97,7 +97,7 @@ bool  ResBundle::Load()
 		
 #if 0        
 		__int64 lCost = watch.Now();
-		wchar szText[128] = {0};
+		wchar_t szText[128] = {0};
 		wprintf(szText, _T("Load Skin File Cost: %d ms\r\n"), (int)lCost);
 		::OutputDebugString(szText);
 

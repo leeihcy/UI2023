@@ -120,7 +120,7 @@ GifResItem* GifRes::LoadItem(IMapAttribute* pMapAttrib, const String& strFullPat
 {
 	String strID;
 
-	const wchar* szText = pMapAttrib->GetAttr(XML_ID, true);
+	const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
 	if (szText)
 		strID = szText;
 
@@ -151,7 +151,7 @@ GifResItem* GifRes::GetGifItem( int nIndex )
 	return m_vGifs[nIndex];
 }
 
-GifResItem* GifRes::GetGifItem(const wchar*  szId)
+GifResItem* GifRes::GetGifItem(const wchar_t*  szId)
 {
 	if (nullptr == szId)
 		return nullptr;

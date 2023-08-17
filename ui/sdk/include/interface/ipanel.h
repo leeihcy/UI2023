@@ -13,6 +13,7 @@ struct UIAPI IPanel : public IObject {
   static Uuid UUID() { static Uuid s("A591D454-65ED-40C3-8D84-612ABA3C8167"); return s;}
 
   ILayout *GetLayout();
+  void SetLayout(ILayout* p);
   void SetLayoutType(const wchar_t* name);
 
   void SetTextureRender(IRenderBase *p);

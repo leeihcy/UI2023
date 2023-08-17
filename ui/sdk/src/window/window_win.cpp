@@ -4,11 +4,10 @@
 namespace ui {
 
 WindowPlatformWin::WindowPlatformWin(ui::Window &w) : m_ui_window(w) {}
+WindowPlatformWin::~WindowPlatformWin() {
+}
 void WindowPlatformWin::Initialize() {  }
 
-void WindowPlatformWin::Release() {
-  Destroy();
-}
 
 bool WindowPlatformWin::Create(const Rect &rect) {
   HWND hWnd = nullptr;

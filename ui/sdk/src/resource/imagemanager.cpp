@@ -58,7 +58,7 @@ void ImageManager::Clear()
 	m_resImage.Clear();
 }
 
-IImageResItem* ImageManager::InsertImageItem(IMAGE_ITEM_TYPE eType, const wchar* szId, const wchar* szPath)
+IImageResItem* ImageManager::InsertImageItem(IMAGE_ITEM_TYPE eType, const wchar_t* szId, const wchar_t* szPath)
 {
 	if (nullptr == szId || nullptr == szPath)
 		return nullptr;
@@ -73,7 +73,7 @@ IImageResItem* ImageManager::InsertImageItem(IMAGE_ITEM_TYPE eType, const wchar*
 	return p->GetIImageResItem();
 }
 
-bool ImageManager::ModifyImageItem(const wchar* szId, const wchar* szPath)
+bool ImageManager::ModifyImageItem(const wchar_t* szId, const wchar_t* szPath)
 {
 	if (nullptr == szId || nullptr == szPath)
 		return false;
@@ -86,7 +86,7 @@ bool ImageManager::ModifyImageItem(const wchar* szId, const wchar* szPath)
 
 	return true;
 }
-bool ImageManager::ModifyImageItemInRunTime(const wchar* szId, const wchar* szPath)
+bool ImageManager::ModifyImageItemInRunTime(const wchar_t* szId, const wchar_t* szPath)
 {
 	if (nullptr == szId || nullptr == szPath)
 		return false;
@@ -103,7 +103,7 @@ bool ImageManager::ModifyImageItemInRunTime(const wchar* szId, const wchar* szPa
 	return true;
 }
 
-bool ImageManager::ModifyImageItemAlpha(const wchar* szId, byte nAlphaPercent)
+bool ImageManager::ModifyImageItemAlpha(const wchar_t* szId, byte nAlphaPercent)
 {
 	if (nullptr == szId || nAlphaPercent < 0 || nAlphaPercent > 100)
 		return false;
@@ -120,7 +120,7 @@ bool ImageManager::ModifyImageItemAlpha(const wchar* szId, byte nAlphaPercent)
 	return true;
 }
 
-bool ImageManager::RemoveImageItem(const wchar* szId)
+bool ImageManager::RemoveImageItem(const wchar_t* szId)
 {
 	if (nullptr == szId)
 		return false;
@@ -217,8 +217,8 @@ void  ImageManager::OnNewChild(UIElement* pElem)
     std::wstring bstrTagName = pElem->GetTagName();
 
     //	加载所有属性
-    IMapAttribute* pMapAttrib = nullptr;
-    pElem->GetAttribList(&pMapAttrib);
+    IMapAttribute* pMapAttrib = UICreateIMapAttribute();
+    pElem->GetAttribList(pMapAttrib);
 
     // 获取路径
     std::wstring  bstrPath = pElem->GetData();
@@ -228,7 +228,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
     
     if (bstrPath.empty())
     {
-        SAFE_RELEASE(pMapAttrib);
+        pMapAttrib->Delete();
         return;
     }
 
@@ -242,7 +242,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
 //     }
 //     else
 //     {
-//         wchar szFullPath[MAX_PATH] = _T("");
+//         wchar_t szFullPath[MAX_PATH] = _T("");
 //         util::CalcFullPathByRelative(m_pSkinRes->GetPath(), (BSTR)bstrPath, szFullPath);
 // 
 //         strFullPath = szFullPath;
@@ -307,7 +307,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
         }
     }
 
-    SAFE_RELEASE(pMapAttrib);
+    pMapAttrib->Delete();
 }
 
 UIElement*  ImageManager::GetImageXmlElem(const wchar_t* szId)

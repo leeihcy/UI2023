@@ -14,7 +14,7 @@ public:
     static void CreateInstance2( LPTSTR nCursorID, HINSTANCE hInstance, UICursor** ppOutRef );
     void     SetOutRef(UICursor** ppOutRef) { m_pOutRef = ppOutRef; }
     bool     Load(LPTSTR nCursorID, HINSTANCE hInstance);
-    bool     Load(const wchar* szCursorFile);
+    bool     Load(const wchar_t* szCursorFile);
     void     Attach(HCURSOR hCursor);
     HCURSOR  Detach();
     

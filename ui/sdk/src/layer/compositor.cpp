@@ -67,7 +67,7 @@ void Compositor::RequestInvalidate() {
   // m_pWindowRender->m_window.Invalidate(nullptr);
 
   if (m_request_invalidate_ref == 0) {
-    weakptr<Compositor> ptr = m_weakptr_factory.get();
+    weak_ptr<Compositor> ptr = m_weakptr_factory.get();
     m_pUIApp->GetMessageLoop().PostTask(
         Slot(&Compositor::_onRequestInvalidate, ptr));
     m_request_invalidate_ref++;

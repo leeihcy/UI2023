@@ -505,7 +505,7 @@ bool CXmlImageParse::ModifyImage( ImageResItem *pImageItemInfo )
 				break;;
 			if (m_xml.GetAttrib(XML_ID) == pImageItemInfo->GetIDRef())
 			{
-				wchar szRelative[MAX_PATH] = _T("");
+				wchar_t szRelative[MAX_PATH] = _T("");
 				util::CalcRelativePathToFile(m_strDataSource.c_str(), pImageItemInfo->GetPathRef().c_str(), szRelative );
 				if (m_xml.SetData( pImageItemInfo->GetPathRef()) )  
 				{
@@ -679,8 +679,8 @@ bool CXmlImageParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 			}
 			else
 			{
-				wchar szProjDir[MAX_PATH] = _T("");
-				wchar szFullPath[MAX_PATH] = _T("");
+				wchar_t szProjDir[MAX_PATH] = _T("");
+				wchar_t szFullPath[MAX_PATH] = _T("");
 				util::GetPathDir(m_strDataSource.c_str(), szProjDir);
 				util::CalcFullPathByRelative( szProjDir, strPath.c_str(), szFullPath );
 
@@ -713,7 +713,7 @@ bool CXmlImageParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 }
 bool CXmlImageParse::insert_image_2_xml( ImageResItem *pImageItemInfo )
 {
-	wchar szRelative[MAX_PATH] = _T("");
+	wchar_t szRelative[MAX_PATH] = _T("");
 	util::CalcRelativePathToFile(m_strDataSource.c_str(), pImageItemInfo->GetPathRef().c_str(), szRelative );
 
 	if (false == m_xml.AddElem( XML_ITEM, String(szRelative)) )    
@@ -1314,7 +1314,7 @@ bool CXmlFontParse::ModifyFont( FontResItem *pFontItemInfo )
 				break;;
 			if (m_xml.GetAttrib(XML_ID) == pFontItemInfo->GetIDRef() )
 			{
-				wchar szFontFace[32] = _T("");
+				wchar_t szFontFace[32] = _T("");
 				pFontItemInfo->GetFaceName(szFontFace);
 				if (false == m_xml.SetAttrib( XML_ID,    pFontItemInfo->GetIDRef() ))                      { bLoopRet = false; break; }
 				if (false == m_xml.SetAttrib( XML_FONT_FACENAME,    szFontFace ))                          { bLoopRet = false; break; }
@@ -1387,7 +1387,7 @@ bool CXmlFontParse::insert_font_2_xml( FontResItem *pFontItemInfo )
 
 	if (false == m_xml.AddElem( XML_ITEM ) )   { return false; }
 
-	wchar szFontFace[32] = _T("");
+	wchar_t szFontFace[32] = _T("");
 	pFontItemInfo->GetFaceName(szFontFace);
 	if (false == m_xml.SetAttrib( XML_ID,    pFontItemInfo->GetIDRef() ))                      { return false; }
 	if (false == m_xml.SetAttrib( XML_FONT_FACENAME,    szFontFace ))                          { return false; }
@@ -1470,7 +1470,7 @@ bool CXmlStyleParse::Reload( StyleRes* pStyleInfo )
 //
 // 解析一个继承字符串所属的样式类型，如将#button解析为 id选择类型，id=button
 //
-/*static*/ bool ParseInheritString(const String& strInherit, STYLE_SELECTOR_TYPE& eStyletype, wchar* szStyleName )
+/*static*/ bool ParseInheritString(const String& strInherit, STYLE_SELECTOR_TYPE& eStyletype, wchar_t* szStyleName )
 {
 	if (strInherit.length() <= 0 || NULL == szStyleName )
 		return false;
@@ -1492,7 +1492,7 @@ bool CXmlStyleParse::Reload( StyleRes* pStyleInfo )
 	}
 	return true;
 }
-/*static*/ bool MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const String& strStypeName, wchar* szInherit )
+/*static*/ bool MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const String& strStypeName, wchar_t* szInherit )
 {
 	if (strStypeName.length() <= 0 || NULL == szInherit )
 		return false;
@@ -1563,7 +1563,7 @@ bool CXmlStyleParse::parse_inherit( tree<StyleResItem*>* pTreeItem, StyleRes* pS
 			continue;
 
 		STYLE_SELECTOR_TYPE type = STYLE_SELECTOR_TYPE_TAG;
-		wchar szStyleName[MAX_STRING_LEN] = _T("");
+		wchar_t szStyleName[MAX_STRING_LEN] = _T("");
 		ParseInheritString(strInherit, type, szStyleName);
 
 		StyleResItem* pInheritItem = pStyleRes->GetStyleItem(type, szStyleName);
@@ -2130,7 +2130,7 @@ bool  CXmlLayoutParse::ReLoadLayout(Object* pRootObj, list<Object*>& listAllChil
 	return bRet;
 }
 #if 0
-IObject*  CXmlLayoutParse::LoadRootObject(const wchar* szTag, const wchar szId)
+IObject*  CXmlLayoutParse::LoadRootObject(const wchar_t* szTag, const wchar_t szId)
 {
     if (NULL == szTag || NULL == szId)
         return NULL;
@@ -2378,7 +2378,7 @@ Object*  CXmlLayoutParse::mapXmlToClass(const String& strXmlName)
     Object* p = pIObject->GetObjectImpl();
 	if (NULL == p && m_pUIApp->IsDesignMode())
 	{
-		wchar szText[128] = _T("");
+		wchar_t szText[128] = _T("");
 		wprintf(szText, _T("%s CreateInstance Failed, xmlName=%s. 该控件配置在保存时将丢失."), FUNC_NAME, strXmlName.c_str());
 		::MessageBox(NULL, szText, _T("Error"), MB_OK|MB_ICONERROR);
 	}
@@ -2429,16 +2429,16 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 
     String strID, strStyleClass;  // 避免pMapAttrib->GetAttr返回临时变量。
     {
-	    const wchar*  szID = pMapAttrib->GetAttr(XML_ID, false);
+	    const wchar_t*  szID = pMapAttrib->GetAttr(XML_ID, false);
         if (szID)
             strID = szID;
 
-    	const wchar*  szStyleClass = pMapAttrib->GetAttr(XML_STYLECLASS, false);
+    	const wchar_t*  szStyleClass = pMapAttrib->GetAttr(XML_STYLECLASS, false);
         if (szStyleClass)
             strStyleClass = szStyleClass;
     }
 
-	const wchar*  szTagName = pObj->GetObjectName();
+	const wchar_t*  szTagName = pObj->GetObjectName();
 
 	if (m_pUIApp->IsDesignMode() && NULL != pResItem)
 	{

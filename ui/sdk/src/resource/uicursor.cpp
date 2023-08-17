@@ -62,7 +62,7 @@ HCURSOR UICursor::GetCursor()
     return m_hCursor; 
 }
 
-bool UICursor::Load(const wchar* szCursorFile)
+bool UICursor::Load(const wchar_t* szCursorFile)
 {
     if (nullptr == szCursorFile)
         return false;

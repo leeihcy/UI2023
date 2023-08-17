@@ -1,3 +1,4 @@
+#include "include/macro/helper.h"
 #include "include/interface/imessage.h"
 #include "include/uiapi.h"
 #include "include/macro/uimsg.h"

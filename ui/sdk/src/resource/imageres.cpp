@@ -51,7 +51,10 @@ ImageResItem::~ImageResItem()
 // 		m_pGdiplusBitmap->SetOutRef(nullptr);
 //     }
 	SAFE_DELETE(m_pOriginImageData);
-	SAFE_RELEASE(m_pMapAttrib);
+	if (m_pMapAttrib) {
+    m_pMapAttrib->Delete();
+    m_pMapAttrib = nullptr;
+  } 
 	SAFE_DELETE(m_pIImageResItem);
 }
 
@@ -290,8 +293,10 @@ bool  ImageResItem::NeedDpiAdapt()
 }
 void ImageResItem::SetAttribute(IMapAttribute* pMapAttrib) 
 { 
-	m_pMapAttrib = pMapAttrib;
-	m_pMapAttrib->AddRef();
+  if (!m_pMapAttrib) {
+    m_pMapAttrib = UICreateIMapAttribute();
+  }
+  pMapAttrib->CopyTo(m_pMapAttrib, true);
 
 	bool  bUseSkinHLS = false;
 	bool  bNeedAntiAliasing = false;
@@ -622,7 +627,7 @@ ImageResItem*  ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const wchar_t* szId,
 		}
 
 			
-		wchar szInsert[16] = { 0 };
+		wchar_t szInsert[16] = { 0 };
 		for (int i = nScale; i > 1; i--)
 		{
 			wprintf(szInsert, TEXT("@%dx"), i);

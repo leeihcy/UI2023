@@ -83,28 +83,21 @@ public:
   ILayoutParam *CreateLayoutParam(IObject *pObj) override {
     if (!pObj)
       return nullptr;
-    
+
     TParam *p = new TParam(pObj->GetImpl());
-    IMapAttribute *pMapAttr = nullptr;
-    pObj->GetImpl()->GetMapAttribute(&pMapAttr);
+    IMapAttribute *pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
-    if (!pMapAttr) {
-      UICreateIMapAttribute(&pMapAttr);
-    }
-    if (pMapAttr) {
-      SERIALIZEDATA data = {0};
-      data.pUIApplication = pObj->GetUIApplication();
-      data.pSkinRes = pObj->GetResBundle();
-      data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-      data.pMapAttrib = pMapAttr;
+    SERIALIZEDATA data = {0};
+    data.pUIApplication = pObj->GetUIApplication();
+    data.pSkinRes = pObj->GetResBundle();
+    data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
+    data.pMapAttrib = pMapAttr;
 
-      p->Serialize(&data);
+    p->Serialize(&data);
 
-      // 节省内存
-      if (pMapAttr->GetAttrCount() == 0) {
-        pObj->GetImpl()->ClearMapAttribute();
-      }
-      SAFE_RELEASE(pMapAttr);
+    // 节省内存
+    if (pMapAttr->GetAttrCount() == 0) {
+      pObj->GetImpl()->ClearMapAttribute();
     }
 
     return static_cast<ILayoutParam *>(p);
@@ -124,7 +117,7 @@ public:
     pObj->SetLayoutParam(pParam);
     return static_cast<TParam *>(pParam);
   }
-  
+
   void ChildObjectContentSizeChanged(IObject *pObj) override {}
 
 protected:

@@ -42,7 +42,7 @@ public:
 	virtual UIElementProxy  NextElement() override;
 	virtual UIElementProxy  FindChild(const wchar_t* szChildName) override;
 
-    virtual void  GetAttribList(IMapAttribute** ppMapAttrib) override;
+    virtual void  GetAttribList(IMapAttribute* ppMapAttrib) override;
     virtual void  GetAttribList2(IListAttribute** ppListAttrib) override;
     virtual bool  SetAttribList2(IListAttribute* pListAttrib) override;
 #if defined(OS_WIN)

@@ -1,9 +1,12 @@
 #include <iostream>
 using namespace std;
 
+#include "sdk/include/inc.h"
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
+#include "svg/include/inc.h"
 #include "svg/include/interface/irect.h"
+#include "svg/include/interface/isvg.h"
 
 class MainWindow {
 public:
@@ -21,21 +24,24 @@ public:
   }
 
   void create_ui() {
-    auto* panel = ui::IPanel::CreateInstance(m_window->GetResBundle());
+  #if 1
+    ui::svg::SvgPtr panel(m_window->GetResBundle());
     panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"0");
-    m_window->AddChild(panel);
     panel->InitDefaultAttrib();
 
-    auto* rect = ui::svg::IRect::CreateInstance(m_window->GetResBundle());
+    ui::svg::RectPtr rect(m_window->GetResBundle());
     rect->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_TOP, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"100");
     rect->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"100");
-    panel->AddChild(rect);
     rect->InitDefaultAttrib();
+
+    panel->AddChild(rect.release());
+    m_window->AddChild(panel.release());
+  #endif
   }
 
   void on_window_destroy(ui::IApplication *uiapp, ui::Event* event) {
@@ -49,6 +55,8 @@ private:
 
 int main() {
   ui::ApplicationPtr app;
+  ui::svg::RegisterObjects(app.get());
+
   {
     MainWindow main_window(app->RootBundle());
     app->Run();

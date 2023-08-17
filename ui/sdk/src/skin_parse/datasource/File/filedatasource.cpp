@@ -148,7 +148,7 @@ bool FileDataSource::FileExist(const wchar_t* szPath)
 //         return true;
 //     }
 // 
-//     wchar  szFullPath[MAX_PATH] = _T("");
+//     wchar_t  szFullPath[MAX_PATH] = _T("");
 // 
 //     // 相对于皮肤包路径
 //     const wchar_t* szSkinDir = pSkinRes->GetPath();
@@ -168,7 +168,7 @@ bool FileDataSource::FileExist(const wchar_t* szPath)
 //     if (nullptr == pDoc)
 //         return false;
 // 
-//     wchar  szFileDir[MAX_PATH] = _T("");
+//     wchar_t  szFileDir[MAX_PATH] = _T("");
 //     if (false == util::GetPathDir(pDoc->GetPath(), szFileDir))
 //     {
 //         SAFE_RELEASE(pDoc);

@@ -221,8 +221,8 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
     const wchar_t* szText = nullptr;
 
     //	先加载默认配置，再遍历检查当前语言的配置
-    IMapAttribute* pMapAttrib = nullptr;
-    pElem->GetAttribList(&pMapAttrib);
+    IMapAttribute* pMapAttrib = UICreateIMapAttribute();
+    pElem->GetAttribList(pMapAttrib);
 
     String  strID;
     String  strFaceName;
@@ -299,6 +299,6 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
             strID.c_str(), strFaceName.c_str());
     }
 
-    SAFE_RELEASE(pMapAttrib);
+    pMapAttrib->Delete();
 }
 }

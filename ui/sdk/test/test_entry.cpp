@@ -1,4 +1,4 @@
-#include "include/macro/uidefine.h"
+#include "include/interface.h"
 #include <iostream>
 
 // 整个UISDK中的单元测试用例入口

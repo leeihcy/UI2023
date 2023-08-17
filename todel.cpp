@@ -292,3 +292,47 @@ void Object::SetConfigBottom(int n) {
     CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigBottom(n);
   }
 }
+
+
+
+
+class ApplicationPtr {
+public:
+  ApplicationPtr() { m_p = IApplication::create(); }
+  ~ApplicationPtr() {
+    if (m_p) {
+      IApplication::destroy(m_p);
+      m_p = nullptr;
+    }
+  }
+  ApplicationPtr(const ApplicationPtr &) = delete;
+  ApplicationPtr &operator=(const ApplicationPtr &) = delete;
+
+  ApplicationPtr(ApplicationPtr &&o) {
+    m_p = o.m_p;
+    o.m_p = nullptr;
+  }
+
+  IApplication *operator->() { return m_p; }
+  operator IApplication *() const { return m_p; }
+  IApplication *get() const { return m_p; }
+
+private:
+  IApplication *m_p;
+};
+
+class WindowPtr {
+public:
+  WindowPtr(IResBundle *bundle) { m_p = IWindow::CreateInstance(bundle); }
+  ~WindowPtr() {
+    if (m_p) { m_p->Release(); }
+  }
+  WindowPtr(const WindowPtr&) = delete;
+  WindowPtr& operator=(const WindowPtr&) = delete;
+
+  IWindow *operator->() { return m_p; }
+  operator IWindow *() const { return m_p; }
+
+private:
+  IWindow *m_p;
+};

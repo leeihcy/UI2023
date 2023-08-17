@@ -4,6 +4,7 @@ using namespace std;
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
 
+
 void on_window_destroy(ui::IApplication *uiapp, ui::Event*) {
   printf("on_window_destroy\n");
   uiapp->Quit();

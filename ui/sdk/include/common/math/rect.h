@@ -1,6 +1,5 @@
 #ifndef _UI_MATH_RECT_H_
 #define _UI_MATH_RECT_H_
-#include "sdk/include/common.h"
 #include "sdk/include/util/rect.h"
 
 namespace ui

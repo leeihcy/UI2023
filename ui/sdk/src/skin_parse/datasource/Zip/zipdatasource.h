@@ -31,7 +31,7 @@ public:
 	bool  FileExist(const wchar_t* szPath);
 	
 private:
-    void  TranslatePath(const wchar_t* szOrignPath, wchar* szLastPath);
+    void  TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPath);
 	bool  Init();
 
 private:

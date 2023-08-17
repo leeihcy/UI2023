@@ -1,6 +1,6 @@
 #ifndef _UI_STRUCT_H_
 #define _UI_STRUCT_H_
-
+#include "sdk/include/interface.h"
 #include "sdk/include/macro/uidefine.h"
 #include "rect.h"
 

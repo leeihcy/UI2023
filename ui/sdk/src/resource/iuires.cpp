@@ -507,9 +507,9 @@ const wchar_t*  IStyleResItem::GetAttribute(const wchar_t* szKey)
 // }
 
 
-void  IStyleResItem::GetAttributeMap(IMapAttribute** ppMapAttrib)
+IMapAttribute*  IStyleResItem::GetAttributeMap()
 { 
-    m_pImpl->GetAttributeMap(ppMapAttrib);
+   return m_pImpl->GetAttributeMap();
 }
 
 

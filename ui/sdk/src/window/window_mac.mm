@@ -22,8 +22,8 @@ namespace ui {
 
 WindowPlatformMac::WindowPlatformMac(ui::Window &w) : m_ui_window(w) {}
 void WindowPlatformMac::Initialize() {}
-
-void WindowPlatformMac::Release() { Destroy(); }
+WindowPlatformMac::~WindowPlatformMac() {
+}
 
 bool WindowPlatformMac::Create(const Rect &rect) {
   NSUInteger windowStyle =

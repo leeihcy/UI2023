@@ -89,7 +89,7 @@ bool  ZipDataSource::Load_UIDocument(UIDocument* pDocument, const wchar_t* szPat
     ZIPENTRY ze;
     int index = 0; 
 
-    wchar szPath2[MAX_PATH];
+    wchar_t szPath2[MAX_PATH];
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
@@ -109,10 +109,10 @@ bool  ZipDataSource::Load_UIDocument(UIDocument* pDocument, const wchar_t* szPat
     return bRet;
 }
 
-void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar* szLastPath)
+void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPath)
 {
     const wchar_t* p = szOrignPath;
-    wchar* p2 = szLastPath;
+    wchar_t* p2 = szLastPath;
 
     // Ìø¹ý .\xxx ±íÊ¾µÄµ±Ç°Ä¿Â¼
     if (wcslen(szOrignPath) > 2 &&
@@ -148,7 +148,7 @@ bool  ZipDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* sz
     int index = 0; 
 
     // Ìæ»»Â·¾¶·ûºÅ
-    wchar szPath2[MAX_PATH] = _T("");
+    wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 	
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
@@ -180,7 +180,7 @@ bool  ZipDataSource::Load_Image(const wchar_t* szPath, ImageWrap* pImage)
     int index = 0; 
 
     // Ìæ»»Â·¾¶·ûºÅ
-    wchar szPath2[MAX_PATH] = _T("");
+    wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
@@ -212,7 +212,7 @@ bool  ZipDataSource::Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadW
     int index = 0; 
 
     // Ìæ»»Â·¾¶·ûºÅ
-    wchar szPath2[MAX_PATH] = _T("");
+    wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
@@ -244,7 +244,7 @@ bool  ZipDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReade
     int index = 0; 
 
     // Ìæ»»Â·¾¶·ûºÅ
-    wchar szPath2[MAX_PATH] = _T("");
+    wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
@@ -271,7 +271,7 @@ bool ZipDataSource::FileExist(const wchar_t* szPath)
 	int index = 0;
 
 	// Ìæ»»Â·¾¶·ûºÅ
-	wchar szPath2[MAX_PATH] = _T("");
+	wchar_t szPath2[MAX_PATH] = _T("");
 	TranslatePath(szPath, szPath2);
 
 	FindZipItem(m_hZip, szPath2, true, &index, &ze);

@@ -1,4 +1,4 @@
-#include "weakptr.h"
+#include "weak_ptr.h"
 #include "../signalslot/signal.h"
 #include <assert.h>
 
@@ -34,7 +34,7 @@ public:
 void test_destructor() {
     Math* p;
     
-    weakptr<Math> mathptr;
+    weak_ptr<Math> mathptr;
     assert(!mathptr);
 
     // printf("enter-----\n");
@@ -45,9 +45,9 @@ void test_destructor() {
 
         mathptr->foo();
 
-        weakptr<Math> mathptr2 = mathptr;
+        weak_ptr<Math> mathptr2 = mathptr;
         mathptr2->foo();
-        weakptr<Math> mathptr3(mathptr);
+        weak_ptr<Math> mathptr3(mathptr);
         mathptr3->foo();
 
         assert(FETCH(0) == 3);
@@ -68,7 +68,7 @@ void test_slot() {
         ui::signal<void()> s;
             
         Math math;
-        weakptr<Math> mathptr = math.m_weakptr_factory.get();
+        weak_ptr<Math> mathptr = math.m_weakptr_factory.get();
         s.connect(&Math::foo, &math);
         s.connect(&Math::foo, mathptr);
         s.emit();
@@ -81,7 +81,7 @@ void test_slot() {
         ui::signal<void()> s;
         {
             Math math;
-            weakptr<Math> mathptr = math.m_weakptr_factory.get();
+            weak_ptr<Math> mathptr = math.m_weakptr_factory.get();
             s.connect(&Math::foo, mathptr);
         }
         s.emit();

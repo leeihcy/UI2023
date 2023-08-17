@@ -1,4 +1,5 @@
-#include "sdk/include/inc.h"
+#include "include/inc.h"
+#include "include/util/math.h"
 #include "quad.h"
 
 namespace ui {

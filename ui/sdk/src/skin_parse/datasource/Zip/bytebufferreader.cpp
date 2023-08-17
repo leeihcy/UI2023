@@ -82,7 +82,7 @@ bool  ByteBufferReader::load(const byte* pdata, int nsize, bool bdeletedata)
     return true;
 }
 
-bool  ByteBufferReader::save(const wchar* szPath)
+bool  ByteBufferReader::save(const wchar_t* szPath)
 {
     if (!szPath)
         return false;

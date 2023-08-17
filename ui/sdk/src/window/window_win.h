@@ -8,8 +8,8 @@ namespace ui {
 class WindowPlatformWin : public WindowPlatform {
 public:
   WindowPlatformWin(ui::Window &w);
+  ~WindowPlatformWin();
   void Initialize() override;
-  void Release() override;
 
   bool Create(const Rect &rect) override;
   bool CreateTransparent(const Rect &rect);

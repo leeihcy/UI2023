@@ -126,12 +126,12 @@ public:
   void ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove);
   bool TestObjectStyle(const OBJSTYLE &test);
 
-  void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);
+  void LoadAttributes(bool bReload);
   void LoadAttributeFromXml(UIElement *pElement, bool bReload);
 
   const wchar_t *GetAttribute(const wchar_t *szKey, bool bErase);
   void AddAttribute(const wchar_t *szKey, const wchar_t *szValue);
-  void GetMapAttribute(IMapAttribute **ppMapAttribute);
+  IMapAttribute* GetMapAttribute();
   void ClearMapAttribute();
   void InitDefaultAttrib();
    

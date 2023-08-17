@@ -57,10 +57,10 @@ template <class T> class ObjectCreator : public T {
 public:
   // 通用型
   static void CreateInstance2(IResBundle *pResBundle, void **pp) {
-    *pp = (void *)ObjectCreator<T>::CreateInstance(pResBundle);
+    *pp = (void *)ObjectCreator<T>::create(pResBundle);
   }
   // 专用型
-  static T *CreateInstance(IResBundle *pResBundle) {
+  static T *create(IResBundle *pResBundle) {
     if (!pResBundle) {
 #ifdef _DEBUG
       DebugBreak();
@@ -71,7 +71,7 @@ public:
     T *p = new ObjectCreator<T>;
 
     if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResBundle))) {
-      p->Release();
+      T::destroy(p);
       return nullptr;
     }
 
@@ -79,7 +79,7 @@ public:
   }
   ObjectCreator() : T(E_BOOL_CREATE_IMPL::CREATE_IMPL_TRUE) {}
 
-  // 确保delete和new在同一模块，由IMessage::Destroy触发
+  // 确保delete和new在同一模块，由IMessage::destroy触发
   virtual void virtual_delete_this() override {
     this->SendMessage(UI_MSG_FINALRELEASE);
     delete this;

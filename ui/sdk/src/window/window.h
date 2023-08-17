@@ -2,7 +2,6 @@
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
 #include "include/macro/uimsg.h"
-#include "include/common.h"
 #include "include/common/signalslot/signal.h"
 #include "include/interface/iwindow.h"
 #include "src/object/object.h"
@@ -14,8 +13,8 @@ class Window;
 
 struct WindowPlatform {
   virtual ~WindowPlatform(){};
-  virtual void Initialize() = 0;
-  virtual void Release() = 0;
+  virtual void Initialize() {};
+  virtual void Release() {};
   virtual bool Create(const Rect &rect) = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
@@ -89,7 +88,7 @@ private:
   IWindow*  m_pIWindow;
 
   // 平台相关函数。
-  WindowPlatform *m_platform = nullptr;
+  std::unique_ptr<WindowPlatform> m_platform;
 
   int m_width = 0;
   int m_height = 0;

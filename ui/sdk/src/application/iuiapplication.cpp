@@ -23,6 +23,19 @@ IApplication::~IApplication()
     SAFE_DELETE(m_pImpl);
 }
 
+/*static*/
+IApplication* IApplication::create() {
+    IApplication* p = new IApplication;
+    p->GetImpl()->x_Init();
+    return p;
+}
+
+/*static*/
+void IApplication::destroy(IApplication* p)
+{
+	delete p;
+}
+
 void IApplication::Run() {
     m_pImpl->Run();
 }
@@ -35,10 +48,6 @@ void  IApplication::Quit()
 Application*  IApplication::GetImpl() 
 { 
 	return m_pImpl;
-}
-void  IApplication::Release()
-{
-	delete this;
 }
 
 IResBundle* IApplication::RootBundle() {

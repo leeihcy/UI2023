@@ -148,7 +148,7 @@ public:
 #if 0 // -- 架构改造
 	virtual  Menu* LoadMenu( const String& strMenuId );
 #endif
- //   virtual IObject*  LoadRootObject(const wchar* szTag, const wchar szId);
+ //   virtual IObject*  LoadRootObject(const wchar_t* szTag, const wchar_t szId);
 
 	// 编辑器专用函数
 	virtual bool LoadAllWindowNodeInfo(LayoutWindowNodeInfo* pInfoArray, int* pArraySize);

@@ -1,4 +1,5 @@
 #include "include/interface/ixmlwrap.h"
+#include "include/macro/helper.h"
 #include "xmlwrap.h"
 
 namespace ui 
@@ -74,7 +75,7 @@ bool  IUIElement::ClearAttrib()
     return m_pImpl->ClearAttrib();
 }
 
-void  IUIElement::GetAttribList(IMapAttribute** ppMapAttrib)
+void  IUIElement::GetAttribList(IMapAttribute* ppMapAttrib)
 {
     m_pImpl->GetAttribList(ppMapAttrib);
 }

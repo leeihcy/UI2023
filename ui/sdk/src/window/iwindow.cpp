@@ -148,7 +148,7 @@ void  IWindowBase::CalcClientRectByWindowRect( Rect* rcWindow, Rect* rcClient )
 {
 	__pImpl->CalcClientRectByWindowRect(rcWindow, rcClient);
 }
-void  IWindowBase::SaveMemBitmap(wchar* szFile) 
+void  IWindowBase::SaveMemBitmap(wchar_t* szFile) 
 {
 	__pImpl->SaveMemBitmap(szFile);
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "include/interface/irect.h"
+#include "include/interface/isvg.h"
 #include "sdk/include/interface/iobjectdescription.h"
 #include "src/private_inc.h"
 
@@ -14,7 +14,7 @@ public:
   }
 
   virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
-    *pp = ISvg::CreateInstance(p);
+    *pp = ISvg::create(p);
   }
 
   virtual OBJ_TYPE GetMajorType() override { return OBJ_CONTROL; }

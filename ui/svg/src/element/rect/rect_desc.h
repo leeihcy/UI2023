@@ -14,7 +14,7 @@ public:
   }
 
   virtual void CreateInstance(ui::IResBundle *p, void **pp) override {
-    *pp = IRect::CreateInstance(p);
+    *pp = IRect::create(p);
   }
 
   virtual OBJ_TYPE GetMajorType() override { return OBJ_CONTROL; }

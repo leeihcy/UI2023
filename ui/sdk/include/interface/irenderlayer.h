@@ -1,7 +1,9 @@
 #ifndef _UI_IRENDERLAYER_H_
 #define _UI_IRENDERLAYER_H_
-#include "ianimate.h"
+#include <functional>
+#include "sdk/include/interface.h"
 #include "sdk/include/macro/xmldefine.h"
+#include "ianimate.h"
 
 namespace ui
 {

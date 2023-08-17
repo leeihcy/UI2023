@@ -15,7 +15,7 @@ public:
     virtual void  seek(int npos, ios_base::seek_dir dir);
     virtual int   tell();
     virtual bool  load(const byte* pdata, int nsize, bool bdeletedata);
-    virtual bool  save(const wchar* szPath);
+    virtual bool  save(const wchar_t* szPath);
 
 private:
     void  destroy();

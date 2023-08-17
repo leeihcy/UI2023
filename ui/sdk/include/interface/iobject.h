@@ -74,9 +74,10 @@ struct UIAPI IObject : public IMessage {
   void SetId(const wchar_t *szText);
   HWND GetHWND();
   void InitDefaultAttrib();
-  void GetMapAttribute(IMapAttribute **ppMapAttribute);
+  IMapAttribute* GetMapAttribute();
+  void ClearMapAttribute();
   void SetOutRef(void **ppOutRef);
-  void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);
+  // void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);
   void LoadAttributeFromXml(IUIElement *pXmlElement, bool bReload);
   const wchar_t *GetAttribute(const wchar_t *szKey, bool bErase);
   void AddAttribute(const wchar_t *szKey, const wchar_t *szValue);
@@ -151,6 +152,8 @@ struct UIAPI IObject : public IMessage {
   void SetMinWidth(int);
   void SetMinHeight(int);
   ILayoutParam *GetSafeLayoutParam();
+  ILayoutParam* GetLayoutParam();
+  void SetLayoutParam(ILayoutParam*);
   void SetPaddingRegion(REGION4 *prc);
   void GetPaddingRegion(REGION4 *prc);
   void SetMarginRegion(REGION4 *prc);
