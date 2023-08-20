@@ -14,76 +14,41 @@ struct IApplication;
 struct IResource;
 struct UIMSG;
 
-enum E_BOOL_CREATE_IMPL {
-  CREATE_IMPL_FALSE = 0,
-  CREATE_IMPL_TRUE = 1,
-};
-
-//
-//  在UICreateInstance时调用，给对象一次在构造中初始化对象并返回成功失败的方法
-//
-//  message : UI_WM_FINALCONSTRUCT
-//  code : NA
-//  wparam : IResource*,对象所属资源包
-//
-#define UI_MSG_FINALCONSTRUCT 168252120
-// long  FinalConstruct(IResource* p);
-#define UIMSG_FINALCONSTRUCT(func)                                             \
-  if (uMsg == UI_MSG_FINALCONSTRUCT) {                                         \
-    SetMsgHandled(true);                                                       \
-    lResult = func((ui::IResource *)wParam);                                  \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-//
-//  在~UIObjCreator中调用，给对象在析构前调用虚函数的方法
-//
-//  message : UI_WM_FINALRELEASE
-//  code : NA
-//  wparam : NA
-//  lparam : NA
-//
-#define UI_MSG_FINALRELEASE 168252121
-// void  FinalRelease();
-#define UIMSG_FINALRELEASE(func)                                               \
-  if (uMsg == UI_MSG_FINALRELEASE) {                                           \
-    SetMsgHandled(true);                                                       \
-    func();                                                                    \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
+#if 0
+// 已废弃 2023/8/19
+// 使用 XxxMeta 代替。
 template <class T> class ObjectCreator : public T {
 public:
   // 通用型
   static void CreateInstance2(IResource *pResource, void **pp) {
-    *pp = (void *)ObjectCreator<T>::create(pResource);
+    // *pp = (void *)ObjectCreator<T>::create(pResource);
+    // TODO:
   }
   // 专用型
-  static T *create(IResource *pResource) {
-    if (!pResource) {
-#ifdef _DEBUG
-      DebugBreak();
-#endif
-      return nullptr;
-    }
+//   static T *create(IResource *pResource) {
+//     if (!pResource) {
+// #ifdef _DEBUG
+//       DebugBreak();
+// #endif
+//       return nullptr;
+//     }
 
-    T *p = new ObjectCreator<T>;
+//     T *p = new ObjectCreator<T>;
 
-    if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResource))) {
-      T::destroy(p);
-      return nullptr;
-    }
+//     if (0 != (p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResource))) {
+//       delete p;
+//       return nullptr;
+//     }
 
-    return p;
-  }
+//     return p;
+//   }
   ObjectCreator() : T(E_BOOL_CREATE_IMPL::CREATE_IMPL_TRUE) {}
 
   // 确保delete和new在同一模块，由IMessage::destroy触发
-  virtual void virtual_delete_this() override {
-    this->SendMessage(UI_MSG_FINALRELEASE);
-    delete this;
-  }
+  // virtual void virtual_delete_this() override {
+  //   this->SendMessage(UI_MSG_FINALRELEASE);
+  //   delete this;
+  // }
 
   // 调用imessage->virtualProcessMessage时，回到最外层对象来处理
   virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID,
@@ -117,6 +82,6 @@ public:
     delete this;
   }
 };
-
+#endif
 } // namespace ui
 #endif // _UI_CREATOR_H_

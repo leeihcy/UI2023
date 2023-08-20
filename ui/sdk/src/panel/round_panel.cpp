@@ -20,7 +20,7 @@ static  RoundRectHandler  s_RoundRectHandler;
 	m_pIRoundPanel = p;
 
 	m_objStyle.post_paint = 1;
-	SetDescription(RoundPanelDescription::Get());
+	SetMeta(RoundPanelDescription::Get());
     s_parentBuf.AddRef();
 }
 RoundPanel::~RoundPanel()

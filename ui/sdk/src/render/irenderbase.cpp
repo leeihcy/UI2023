@@ -5,20 +5,13 @@
 #include "include/interface/iuiapplication.h"
 #include "src/resource/colorres.h"
 #include "src/resource/imageres.h"
+#include "src/render/render_meta.h"
 
 namespace ui
 {
 UI_IMPLEMENT_INTERFACE(RenderBase, Message)
 // UI_IMPLEMENT_INTERFACE(NullRender, RenderBase)
 
-long  IRenderBase::AddRef() 
-{ 
-	return __pImpl->AddRef();
-}
-long  IRenderBase::Release()
-{ 
-	return __pImpl->Release();
-}
 
 void  IRenderBase::CheckThemeChanged()
 {

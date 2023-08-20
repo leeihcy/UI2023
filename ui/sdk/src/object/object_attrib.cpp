@@ -19,9 +19,18 @@ void  Object::OnSerialize(SERIALIZEDATA* pData)
 	if (pData->IsReload())
 	{
 		SAFE_RELEASE(m_pLayoutParam);
-		SAFE_RELEASE(m_pBkgndRender);
-		SAFE_RELEASE(m_pForegndRender);
-		SAFE_RELEASE(m_pTextRender);
+    if (m_pBkgndRender) {
+      m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
+      m_pBkgndRender = nullptr;
+    }
+    if (m_pForegndRender) {
+      m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
+      m_pForegndRender = nullptr;
+    }
+    if (m_pTextRender) {
+      m_pTextRender->GetMeta()->Destroy(m_pTextRender);
+      m_pTextRender = nullptr;
+    }
 		//SAFE_RELEASE(m_pCursor);
 	}
 

@@ -34,9 +34,6 @@ class TextRenderBase;
 struct UIAPI ITextRenderBase : public IMessage {
   IRenderFont *GetRenderFont();
 
-  long AddRef();
-  long Release();
-
   void SetObject(IObject *pObject);
   IObject *GetObject();
 

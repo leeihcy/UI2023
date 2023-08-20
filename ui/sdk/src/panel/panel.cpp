@@ -1,4 +1,5 @@
 #include "panel.h"
+#include "panel_meta.h"
 #include "include/interface/ilayout.h"
 #include "include/interface/imapattr.h"
 #include "include/interface/irenderbase.h"
@@ -9,6 +10,7 @@
 #include "src/attribute/stringselect_attribute.h"
 #include "src/layout/layout.h"
 #include "src/window/window.h"
+
 
 namespace ui {
 
@@ -29,14 +31,22 @@ Panel::Panel(IPanel *p) : Object(p) {
   s.default_transparent = 1;
   s.default_reject_self_mouse_msg = 1;
   ModifyObjectStyle(&s, 0);
-
-  this->SetDescription(PanelDescription::Get());
 }
 
 Panel::~Panel() {
   SAFE_RELEASE(m_pLayout);
-  SAFE_RELEASE(m_pTextureRender);
-  SAFE_RELEASE(m_pMaskRender);
+  if (m_pTextureRender) {
+    m_pTextureRender->GetMeta()->Destroy(m_pTextureRender);
+    m_pTextureRender = nullptr;
+  }
+  if (m_pMaskRender) {
+    m_pMaskRender->GetMeta()->Destroy(m_pMaskRender);
+    m_pMaskRender = nullptr;
+  }
+}
+
+void Panel::RouteMessage(ui::Msg *msg) {
+  Object::RouteMessage(msg);
 }
 
 ILayout *Panel::GetLayout() { return this->m_pLayout; }
@@ -182,11 +192,11 @@ void Panel::OnPostPaint(IRenderTarget *pRenderTarget) {
 }
 
 void Panel::SetTextureRender(IRenderBase *p) {
-  SAFE_RELEASE(m_pTextureRender);
+  if (m_pTextureRender) {
+    m_pTextureRender->GetMeta()->Destroy(m_pTextureRender);
+    m_pTextureRender = nullptr;
+  }
   m_pTextureRender = p;
-
-  if (m_pTextureRender)
-    m_pTextureRender->AddRef();
 }
 IRenderBase *Panel::GetTextureRender() { return m_pTextureRender; }
 

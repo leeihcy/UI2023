@@ -1,6 +1,7 @@
 #include "include/inc.h"
 #include "include/interface/iimagerender.h"
 #include "src/render/imagerender/imagerender.h"
+#include "src/render/render_meta.h"
 
 namespace ui
 {

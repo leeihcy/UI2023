@@ -34,28 +34,10 @@ TextRenderBase::TextRenderBase(ITextRenderBase* p) : Message(p)
     m_eDrawTextEffect = TEXT_EFFECT_NONE;
     m_pColorTextBkgnd = nullptr;
     m_wparamDrawText = m_lparamDrawText = 0;
-	m_lRef = 0;
 }
 TextRenderBase::~TextRenderBase()
 {
     SAFE_RELEASE(m_pColorTextBkgnd);
-}
-
-long  TextRenderBase::AddRef()
-{
-	m_lRef++;
-	return m_lRef;
-}
-long  TextRenderBase::Release()
-{
-	--m_lRef;
-	if (0 >= m_lRef)
-	{
-		m_pITextRenderBase->IMessage::Release();
-		return 0;
-	}
-
-	return m_lRef;
 }
 
 void TextRenderBase::SetTextAlignment(int nDrawFlag)

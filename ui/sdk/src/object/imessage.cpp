@@ -1,7 +1,7 @@
-#include "include/macro/helper.h"
 #include "include/interface/imessage.h"
-#include "include/uiapi.h"
+#include "include/macro/helper.h"
 #include "include/macro/uimsg.h"
+#include "include/uiapi.h"
 #include "include/util/log.h"
 #include "message.h"
 
@@ -18,17 +18,19 @@ IMessage::~IMessage() { SAFE_DELETE(m_pImpl); }
 
 Message *IMessage::GetImpl() { return m_pImpl; }
 
-void IMessage::connect(const char* event, slot<void(Event*)>&& s) {
-  m_pImpl->connect(event, std::forward<slot<void(Event*)>>(s));
+void IMessage::connect(const char *event, slot<void(Event *)> &&s) {
+  m_pImpl->connect(event, std::forward<slot<void(Event *)>>(s));
 }
 
+IMeta *IMessage::GetMeta() { return m_pImpl->GetMeta(); }
 
 bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   ui::UIMSG *pOldMsg = nullptr;
   if (m_pImpl)
     pOldMsg = m_pImpl->GetCurMsg();
 
-  bool bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+  bool bRet =  GetMeta()->virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+  // bool bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
 
   if (m_pImpl)
     m_pImpl->SetCurMsg(pOldMsg);
@@ -75,9 +77,8 @@ long IMessage::SendMessage(UIMSG *pMsg, int nMsgMapID, bool *pbHandled) {
   return pMsg->lRet;
 }
 
-long IMessage::SendMessage(uint message, long wParam, long lParam,
-                   uint nCode, IMessage *pMsgFrom, int nMsgMapID,
-                   bool *pbHandled) {
+long IMessage::SendMessage(uint message, long wParam, long lParam, uint nCode,
+                           IMessage *pMsgFrom, int nMsgMapID, bool *pbHandled) {
   UIMSG msg;
   msg.pMsgFrom = pMsgFrom;
   msg.pMsgTo = this;
@@ -138,8 +139,7 @@ long IMessage::SendMessage(uint message, long wParam, long lParam,
 // #endif
 // }
 
-
-void IMessage::Release() { this->virtual_delete_this(); }
+// void IMessage::Release() { this->virtual_delete_this(); }
 
 bool IMessage::IsMsgHandled() const { return m_pImpl->IsMsgHandled(); }
 void IMessage::SetMsgHandled(bool b) { m_pImpl->SetMsgHandled(b); }
@@ -153,7 +153,7 @@ bool IMessage::virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   return false;
 }
 
-void IMessage::virtual_delete_this() { delete this; }
+// void IMessage::virtual_delete_this() { delete this; }
 
 // bool  IMessage::DoHook(UIMSG* pMsg, int nMsgMapID)
 // {

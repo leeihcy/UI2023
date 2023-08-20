@@ -1,5 +1,6 @@
 #include "include/interface/isvg.h"
 #include "src/svg/svg.h"
+#include "src/svg/svg_meta.h"
 
 namespace ui {
 namespace svg {

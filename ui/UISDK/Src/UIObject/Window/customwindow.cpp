@@ -6,7 +6,7 @@
 #include "src/UIObject\Window\wndtransmode\aero\aerowrap.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
-#include "window_desc.h"
+#include "window_meta.h"
 #include "include/interface/ilayout.h"
 
 CustomWindow::CustomWindow(ICustomWindow* p) : Window(p)
@@ -22,7 +22,7 @@ CustomWindow::CustomWindow(ICustomWindow* p) : Window(p)
 	m_lResizeCapability = WRSB_CAPTION;
     m_bAeroCaptionAnimate = true;
 
-	SetDescription(CustomWindowDescription::Get());
+	SetMeta(CustomWindowDescription::Get());
 }
 CustomWindow::~CustomWindow()
 {

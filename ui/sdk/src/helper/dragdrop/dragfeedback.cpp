@@ -37,7 +37,7 @@ CDragFeedback::~CDragFeedback()
 // 由drop target调用，设置当前显示文本。
 // 每次鼠标拖拽移动通知外部都要重新设置
 // 在接下来触发的GiveFeedback中渲染该文本
-void  CDragFeedback::SetDescription(HBITMAP hIcon, LPCWSTR szText)
+void  CDragFeedback::SetMeta(HBITMAP hIcon, LPCWSTR szText)
 {
     if (szText)
         m_strDescription = szText;

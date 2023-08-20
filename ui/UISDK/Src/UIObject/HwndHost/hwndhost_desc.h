@@ -2,10 +2,10 @@
 #include "include/interface/iobjectdescription.h"
 #include "include/interface/ihwndhost.h"
 
-class HwndHostDescription : public IObjectDescription
+class HwndHostDescription : public IMeta
 {
 public:
-	static IObjectDescription*  Get()
+	static IMeta*  Get()
 	{
 		static HwndHostDescription s;
 		return &s;

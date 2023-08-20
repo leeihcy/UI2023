@@ -27,7 +27,7 @@ namespace ui
 	// 用于拖拽过程中，显示更详细的信息。如果拖拽文本
 	interface IDragFeedback
 	{
-		virtual void  SetDescription(HBITMAP hIcon, LPCWSTR szText) = 0;
+		virtual void  SetMeta(HBITMAP hIcon, LPCWSTR szText) = 0;
 		virtual HRESULT  GiveFeedback(DWORD dwEffect) = 0;
 	};
 

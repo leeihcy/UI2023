@@ -3,45 +3,26 @@
 #include <string.h>
 
 #include "sdk/include/interface.h"
+#include "sdk/include/interface/imeta.h"
 #include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/macro/uidefine.h"
-#include "sdk/include/uicreator.h"
 #include "sdk/include/event.h"
 #include "sdk/include/common/signalslot/slot.h"
-
+#include "sdk/include/macro/msg.h"
 
 namespace ui {
 struct IMessage;
-
-struct MSG {
-#if defined(OS_WIN)
-  HWND hWnd;
-#else
-  long hWnd;
-#endif
-  unsigned int message;
-  long wParam;
-  long lParam;
-};
-
-// 消息结构定义。系统控件仍然使uiSG，但UI控件使用UIMsg进行代码
-struct UIMSG : public MSG {
-  UIMSG() { memset(this, 0, sizeof(UIMSG)); }
-
-  IMessage *pMsgFrom; // 消息发送者
-  IMessage *pMsgTo;   // 消息接受者
-  unsigned int nCode;         // 针对 WM_COMMAND,WM_NOTIFY
-  long lRet;          // 消息处理结束后的返回值
-  bool bHandled;      // 该消息是否已被处理过
-};
+struct IMeta;
 
 class Message;
 struct UIAPI IMessage {
   IMessage(E_BOOL_CREATE_IMPL);
   bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
-  void Release();
+  // void Release();
 
   void connect(const char* event, slot<void(Event*)>&&);
+
+  IMeta *GetMeta(); // 返回值不会为空
 
   // long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
   static long SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
@@ -62,7 +43,7 @@ protected:
 private:
   virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID,
                                      bool bDoHook); // 虚函数2. 消息处理
-  virtual void virtual_delete_this(); // 由UIObjCreator负责实现
+  // virtual void virtual_delete_this(); // 由UIObjCreator负责实现
 
 public:
   Message *GetImpl();

@@ -1,11 +1,10 @@
 #include "rect.h"
-#include "rect_desc.h"
+#include "rect_meta.h"
 
 namespace ui { namespace svg {
 
 Rect::Rect(IRect* p) : ui::MessageProxy(p) {
   m_pIRect = p;
-  m_pIRect->SetDescription(RectDescription::Get());
 }
 
 void Rect::OnEraseBkgnd(ui::IRenderTarget* rt)

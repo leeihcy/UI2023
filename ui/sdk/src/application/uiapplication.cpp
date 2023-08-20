@@ -12,7 +12,8 @@
 #include "src/resource/res_bundle.h"
 #include "src/resource/stylemanager.h"
 #include "src/skin_parse/skinparseengine.h"
-#include "src/window/window_desc.h"
+#include "src/window/window_meta.h"
+#include "src/panel/panel_meta.h"
 
 #if defined(OS_MAC)
 #include "application_mac.h"
@@ -312,7 +313,7 @@ bool Application::GetControlTagParseFunc(const wchar_t *szTag,
 //      必须将该映射列表保存为动态数组。当第三方实现了一个UI类时，向app来注册其创建信息。
 //
 
-bool Application::RegisterUIObject(IObjectDescription *pObjDesc) {
+bool Application::RegisterUIObject(IMeta *pObjDesc) {
   if (!pObjDesc)
     return false;
 
@@ -320,7 +321,7 @@ bool Application::RegisterUIObject(IObjectDescription *pObjDesc) {
   for (int i = 0; i < nSize; i++) {
     m_vecUIObjectDesc[i];
     if (m_vecUIObjectDesc[i] == pObjDesc) {
-      UI_LOG_WARN(_T("register duplicate. name=%s"), pObjDesc->GetTagName());
+      UI_LOG_WARN("register duplicate. name=%s", pObjDesc->Name());
       return false;
     }
   }
@@ -346,13 +347,13 @@ void Application::ClearRegisterUIObject() {
 }
 
 void Application::RegisterDefaultUIObject() {
-  RegisterUIObject(WindowDescription::Get());
+  RegisterUIObject(&WindowMeta::Get());
+  RegisterUIObject(&PanelMeta::Get());
 #if 0
-  RegisterUIObject(PanelDescription::Get());
-  RegisterUIObject(RoundPanelDescription::Get());
-  RegisterUIObject(ScrollPanelDescription::Get());
-  RegisterUIObject(CustomWindowDescription::Get());
-  RegisterUIObject(HwndHostDescription::Get());
+  RegisterUIObject(RoundPanelMeta::Get());
+  RegisterUIObject(ScrollPanelMeta::Get());
+  RegisterUIObject(CustomWindowMeta::Get());
+  RegisterUIObject(HwndHostMeta::Get());
     //  RegisterUIObject(ScrollPanelDescription::Get());
 #endif
 
@@ -385,9 +386,9 @@ IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
 
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
-    if (0 == wcscmp(szXmlName, m_vecUIObjectDesc[i]->GetTagName())) {
+    if (0 == wcscmp(szXmlName, m_vecUIObjectDesc[i]->Name())) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void **)&p);
+      m_vecUIObjectDesc[i]->Create(pSkinRes, (void **)&p);
       return p;
     }
   }
@@ -400,9 +401,9 @@ IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
                                             IResource *pSkinRes) {
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
-    if (clsid == m_vecUIObjectDesc[i]->GetUuid()) {
+    if (clsid == m_vecUIObjectDesc[i]->UUID()) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->CreateInstance(pSkinRes, (void **)&p);
+      m_vecUIObjectDesc[i]->Create(pSkinRes, (void **)&p);
       return p;
     }
   }

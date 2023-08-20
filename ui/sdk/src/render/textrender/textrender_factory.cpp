@@ -23,11 +23,13 @@ void  TextRenderFactory::Init()
                 classname::GetType(),             \
 				(ui::pfnUICreateTextRenderBasePtr)ObjectCreator<I##classname>::CreateInstance2);
 
+#if 0 // TODO
 	REGISTER_UI_TEXTRENDERBASE2(SimpleTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(FontColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorListTextRender)
+#endif
 }
 
 void  TextRenderFactory::Clear()
@@ -84,7 +86,6 @@ bool  TextRenderFactory::CreateTextRenderBaseByName(
 		pData->m_func(pSkinRes, (void**)ppOut);
 		if (*ppOut)
 		{
-			(*ppOut)->AddRef();
 			(*ppOut)->SetObject(pObject);
 			(*ppOut)->Init();
 			(*ppOut)->SetType((TEXTRENDER_TYPE)pData->m_nRenderType);
@@ -120,7 +121,6 @@ bool  TextRenderFactory::CreateTextRender(
 		pData->m_func(pSkinRes, (void**)ppOut);
 		if (*ppOut)
 		{
-			(*ppOut)->AddRef();
 			(*ppOut)->SetObject(pObject);
 			(*ppOut)->Init();
 			(*ppOut)->SetType((TEXTRENDER_TYPE)nType);

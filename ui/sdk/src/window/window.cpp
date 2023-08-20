@@ -25,9 +25,17 @@ Window::~Window() {
   UI_LOG_DEBUG("~Window");
 }
 
-long Window::FinalConstruct(IResource *p) {
-  DO_PARENT_PROCESS(IWindow, /*IPanel*/ IObject);
+void Window::RouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    Panel::RouteMessage(msg);
+    FinalConstruct();
+    return;
+  }
+  
+  Panel::RouteMessage(msg);
+}
 
+long Window::FinalConstruct() {
 #if 0
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
@@ -184,8 +192,8 @@ bool Window::CreateUI(const wchar_t *szId) {
     LayoutManager &layoutmanager = m_pSkinRes->GetLayoutManager();
     //	加载子控件
     const wchar_t *szName = L"";
-    if (m_pDescription)
-      szName = m_pDescription->GetTagName();
+    if (GetMeta())
+      szName = GetMeta()->Name();
 
     UIElementProxy pUIElement = layoutmanager.FindWindowElement(szName, szId);
     if (pUIElement) {

@@ -14,15 +14,19 @@
 namespace ui {
 struct IResource;
 
+// 在std unique_ptr的基础上，封装自动创建和自动销毁的逻辑
+
 template <class T> class unique_ptr : public std::unique_ptr<T, void (*)(T *)> {
-  using super = std::unique_ptr<T, void (*)(T *)>;
-
 public:
-  // 构造函数没有参数，如 IApplication
-  unique_ptr() : super(T::create(), T::destroy) {}
-
-  // 构造函数需要传递一个资源对象，如 IWindow
+  using super = std::unique_ptr<T, void (*)(T *)>;
+  
   unique_ptr(IResource *p) : super(T::create(p), T::destroy) {}
+
+  // static void deletor(T* p) {
+  //   p->destroy();
+  // }
+  // // 基类指针
+  // unique_ptr(T* p) : super(p, unique_ptr<T>::deletor) {}
 };
 
 } // namespace ui

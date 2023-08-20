@@ -1,54 +1,47 @@
 #pragma once
-namespace ui
-{	
-	class Application;
-	struct IRenderBase;
+#include <string>
+#include <vector>
+#include "include/uiapi.h"
 
-class RenderBaseFactory
-{
+namespace ui {
+class Application;
+struct IRenderBase;
+struct IResource;
+struct IObject;
+
+class RenderBaseFactory {
 public:
-	RenderBaseFactory(Application& app);
-	~RenderBaseFactory();
+  RenderBaseFactory(Application &app);
+  ~RenderBaseFactory();
 
-	void  Init();
-	void  Clear();
+  void Init();
+  void Clear();
 
-	bool  RegisterUIRenderBaseCreateData(
-            const wchar_t* szName, 
-            int nType,
-            pfnUICreateRenderBasePtr pfunc);
+  bool RegisterUIRenderBaseCreateData(const wchar_t *szName, int nType,
+                                      pfnUICreateRenderBasePtr pfunc);
 
-	bool  CreateRenderBaseByName(
-            IResource* pSkinRes, 
-            const wchar_t* szName, 
-            IObject* pObject, 
-            IRenderBase** ppOut);
+  bool CreateRenderBaseByName(IResource *pSkinRes, const wchar_t *szName,
+                              IObject *pObject, IRenderBase **ppOut);
 
-	bool  CreateRenderBase(
-            IResource* pSkinRes, 
-            int nType, 
-            IObject* pObject, 
-            IRenderBase** ppOut);
+  bool CreateRenderBase(IResource *pSkinRes, int nType, IObject *pObject,
+                        IRenderBase **ppOut);
 
-	const wchar_t*  GetRenderBaseName(int nType);
+  const wchar_t *GetRenderBaseName(int nType);
 
-	void  EnumRenderBaseName(
-            pfnEnumRenderBaseNameCallback callback, 
-            long wParam, 
-            long lParam);
+  void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam,
+                          long lParam);
 
 private:
-	Application&  m_app;
+  Application &m_app;
 
-	struct UIRENDERBASE_CREATE_INFO
-	{
-		String  m_strName;    // ¥Ê‘⁄∫‹∂‡÷÷theme¿‡–Õ£¨µ´∂‘”¶µƒøÿº˛¿‡–Õ≤ª“ª—˘
-		int     m_nRenderType;
-		pfnUICreateRenderBasePtr m_func;
-	};
+  struct UIRENDERBASE_CREATE_INFO {
+    std::wstring m_strName; // Â≠òÂú®ÂæàÂ§öÁßçthemeÁ±ªÂûãÔºå‰ΩÜÂØπÂ∫îÁöÑÊéß‰ª∂Á±ªÂûã‰∏ç‰∏ÄÊ†∑
+    int m_nRenderType;
+    pfnUICreateRenderBasePtr m_func;
+  };
 
-	typedef std::vector<UIRENDERBASE_CREATE_INFO*>  UIRENDERBASE_CREATE_DATA;
-	UIRENDERBASE_CREATE_DATA  m_vecUIRenderBaseCreateData;  // ”√”⁄¥¥Ω®RenderBase
+  typedef std::vector<UIRENDERBASE_CREATE_INFO *> UIRENDERBASE_CREATE_DATA;
+  UIRENDERBASE_CREATE_DATA m_vecUIRenderBaseCreateData; // Áî®‰∫éÂàõÂª∫RenderBase
 };
 
-}
+} // namespace ui

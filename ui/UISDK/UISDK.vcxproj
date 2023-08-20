@@ -446,7 +446,7 @@
     <ClInclude Include="Src\UIObject\Window\sync_window.h" />
     <ClInclude Include="Src\UIObject\Window\window.h" />
     <ClInclude Include="Src\UIObject\Window\windowbase.h" />
-    <ClInclude Include="Src\UIObject\Window\window_desc.h" />
+    <ClInclude Include="Src\UIObject\Window\window_meta.h" />
     <ClInclude Include="Src\UIObject\Window\wndtransmode\aero\aerowrap.h" />
     <ClInclude Include="Src\UIObject\Window\wndtransmode\alpha\alphawrap.h" />
     <ClInclude Include="Src\UIObject\Window\wndtransmode\anti\antiwrap.h" />

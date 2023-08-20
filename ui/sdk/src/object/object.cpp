@@ -23,7 +23,7 @@
 #include <algorithm>
 // #include "..\Accessible\accessibleimpl.h"
 // #include "..\Accessible\object_accessible.h"
-#include "object_desc.h"
+#include "object_meta.h"
 
 using namespace ui;
 
@@ -53,7 +53,7 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
 #if defined(OS_WIN)
   m_pAccessible = nullptr;
 #endif
-  m_pDescription = UndefineDescription::Get();
+  m_meta = &ObjectMeta::Get();
 
   memset(&m_objStyle, 0, sizeof(m_objStyle));
   memset(&m_objState, 0, sizeof(m_objState));
@@ -76,6 +76,14 @@ Object::~Object(void) {
   if (m_pAccessible)
     SAFE_RELEASE(m_pAccessible);
 #endif
+}
+
+void Object::RouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    Message::RouteMessage(msg);
+    FinalConstruct(static_cast<FinalConstructMessage*>(msg)->resource);
+    return;
+  }
 }
 
 long Object::FinalConstruct(IResource *pSkinRes) {
@@ -102,9 +110,18 @@ void Object::FinalRelease() {
   //	清理自己的邻居关系
   RemoveMeInTheTree();
 
-  SAFE_RELEASE(m_pBkgndRender);
-  SAFE_RELEASE(m_pForegndRender);
-  SAFE_RELEASE(m_pTextRender);
+  if (m_pBkgndRender) {
+    m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
+    m_pBkgndRender = nullptr;
+  }
+  if (m_pForegndRender) {
+    m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
+    m_pForegndRender = nullptr;
+  }
+  if (m_pTextRender) {
+    m_pTextRender->GetMeta()->Destroy(m_pTextRender);
+    m_pTextRender = nullptr;
+  }
 
   // 在析构之前销毁，避免窗口的window compositor已经销毁了，但layer还没有被销毁
   m_objLayer.DestroyLayer();
@@ -269,8 +286,8 @@ Object *Object::find_child_object(const wchar_t *szobjId, bool bFindDecendant) {
 Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumChildObject(pObjChild))) {
-    IObjectDescription *pDesc = pObjChild->GetDescription();
-    if (pDesc->GetUuid() == uuid) {
+    IMeta *pDesc = pObjChild->GetMeta();
+    if (pDesc->UUID() == uuid) {
       return pObjChild;
     }
   }
@@ -291,8 +308,8 @@ Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
 Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumNcChildObject(pObjChild))) {
-    IObjectDescription *pDesc = pObjChild->GetDescription();
-    if (pDesc->GetUuid() == uuid) {
+    IMeta *pDesc = pObjChild->GetMeta();
+    if (pDesc->UUID() == uuid) {
       return pObjChild;
     }
   }
@@ -326,7 +343,7 @@ void Object::LoadAttributes(bool bReload) {
     strId = szText;
 
   StyleRes &styleRes = m_pSkinRes->GetStyleRes();
-  styleRes.LoadStyle(m_pDescription->GetTagName(), strStyle.c_str(),
+  styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
                      strId.c_str(), m_pIMapAttributeRemain);
 
   SERIALIZEDATA data = {0};
@@ -818,8 +835,8 @@ bool Object::IsVisible() {
   else {
     // 注：在这里不对最外层的窗口进行判断的原因是：在类似于窗口初始化的函数里面，
     // 虽然窗口暂时是不可见的，但里面的对象的IsVisible应该是返回true才好处理
-    if (m_pParent->GetDescription() &&
-        OBJ_WINDOW == m_pParent->GetDescription()->GetMajorType()) {
+    if (m_pParent->GetMeta() &&
+        OBJ_WINDOW == m_pParent->GetMeta()->Detail().major_type) {
       return true;
     } else {
       return m_pParent->IsVisible();
@@ -1106,7 +1123,7 @@ void Object::InitDefaultAttrib() {
   if (szStyle)
     strStyle = szStyle;
 
-  styleRes.LoadStyle(m_pDescription->GetTagName(), strStyle.c_str(), nullptr,
+  styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(), nullptr,
                      pMapAttrib);
 
   SERIALIZEDATA data = {0};
@@ -1227,27 +1244,27 @@ void Object::SortChildByZorder() {
 }
 
 void Object::SetBackRender(IRenderBase *p) {
-  SAFE_RELEASE(m_pBkgndRender);
+  if (m_pBkgndRender) {
+    m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
+    m_pBkgndRender = nullptr;
+  }
   m_pBkgndRender = p;
-
-  if (m_pBkgndRender)
-    m_pBkgndRender->AddRef();
 }
 
 void Object::SetForegndRender(IRenderBase *p) {
-  SAFE_RELEASE(m_pForegndRender);
-
+  if (m_pForegndRender) {
+    m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
+    m_pForegndRender = nullptr;
+  }
   m_pForegndRender = p;
-  if (m_pForegndRender)
-    m_pForegndRender->AddRef();
 }
 
 void Object::SetTextRender(ITextRenderBase *p) {
-  SAFE_RELEASE(m_pTextRender);
-
+  if (m_pTextRender) {
+    m_pTextRender->GetMeta()->Destroy(m_pTextRender);
+    m_pTextRender = nullptr;
+  }
   m_pTextRender = p;
-  if (m_pTextRender)
-    m_pTextRender->AddRef();
 }
 
 ITextRenderBase *Object::GetTextRender() { return m_pTextRender; }
@@ -1278,26 +1295,28 @@ IRenderFont *Object::GetRenderFont() {
 }
 
 void Object::load_renderbase(const wchar_t *szName, IRenderBase *&pRender) {
-  SAFE_RELEASE(pRender);
-  if (szName) {
-#if defined(OS_WIN)
-    GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
-        m_pSkinRes->GetIResource(), szName, m_pIObject, &pRender);
-#else
-    UIASSERT(false);
-#endif
-  }
+  UIASSERT(false);
+//   SAFE_RELEASE(pRender);
+//   if (szName) {
+// #if defined(OS_WIN)
+//     GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
+//         m_pSkinRes->GetIResource(), szName, m_pIObject, &pRender);
+// #else
+//     UIASSERT(false);
+// #endif
+  // }
 }
 
 void Object::load_textrender(const wchar_t *szName,
                              ITextRenderBase *&pTextRender) {
-  SAFE_RELEASE(pTextRender);
-  if (szName) {
-#if defined(OS_WIN)
-    GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
-        m_pSkinRes->GetIResource(), szName, m_pIObject, &pTextRender);
-#endif
-  }
+                              UIASSERT(false);
+//   SAFE_RELEASE(pTextRender);
+//   if (szName) {
+// #if defined(OS_WIN)
+//     GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
+//         m_pSkinRes->GetIResource(), szName, m_pIObject, &pTextRender);
+// #endif
+//   }
 }
 
 const wchar_t *Object::get_renderbase_name(IRenderBase *&pRender) {
@@ -1682,9 +1701,6 @@ bool Object::CreateAccesible(IAccessible **pp) {
   return true;
 }
 #endif
-
-void Object::SetDescription(IObjectDescription *p) { m_pDescription = p; }
-IObjectDescription *Object::GetDescription() { return m_pDescription; }
 
 // 自己在树中的位置改变。如在编辑器中，拖拽控件到另一个panel下面
 void Object::position_in_tree_changed() {

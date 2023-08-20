@@ -24,7 +24,7 @@ public:
   }
 
   void create_ui() {
-  #if 1
+  #if 0
     ui::svg::SvgPtr panel(m_window->GetResource());
     panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");

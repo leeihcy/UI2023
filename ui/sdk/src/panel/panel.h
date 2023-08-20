@@ -1,7 +1,7 @@
 #pragma once
 
 #include "include/interface/ipanel.h"
-#include "panel_desc.h"
+#include "panel_meta.h"
 #include "src/object/object.h"
 
 namespace ui {
@@ -21,6 +21,8 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(Object)
 
+  void RouteMessage(ui::Msg *msg);
+
   IPanel *GetIPanel() { return m_pIPanel; }
 
 public:
@@ -33,8 +35,6 @@ public:
 
   void SetTextureRender(IRenderBase *p);
   IRenderBase *GetTextureRender();
-
-  IObjectDescription *GetObjectDescription() { return PanelDescription::Get(); }
 
 protected:
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,

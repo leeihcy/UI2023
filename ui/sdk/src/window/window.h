@@ -38,9 +38,10 @@ public:
   // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
   UIMSG_QUERYINTERFACE(Window)
   UIMSG_SERIALIZE(OnSerialize)
-  UIMSG_FINALCONSTRUCT(FinalConstruct)
   // UIMSG_PRECREATEWINDOW( PreCreateWindow )
   UI_END_MSG_MAP_CHAIN_PARENT( Panel )
+
+  void RouteMessage(ui::Msg *msg);
 
   IWindow*   GetIWindow() { return m_pIWindow; }
   WindowRender&  GetWindowRender() { return m_window_render; }
@@ -77,7 +78,7 @@ private:
   // void swap_buffer();
 
 protected:
-  long FinalConstruct(IResource *p);
+  long FinalConstruct();
   // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
   void OnSerialize(SERIALIZEDATA *pData);
   // void OnSetDefId(IObject *pButton);

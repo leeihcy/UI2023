@@ -24,17 +24,18 @@ enum {
 #define UI_DECLARE_INTERFACE(T)                                                \
 public:                                                                        \
   typedef T ImplName;                                                          \
-  static I##T *create(ui::IResource *);                                       \
-  static void destroy(I##T *);                                                 \
+  friend struct T##Meta;                                                       \
+  static std::unique_ptr<I##T, void (*)(I##T *)> create(ui::IResource *);      \
   I##T(ui::E_BOOL_CREATE_IMPL);                                                \
+  void RouteMessage(ui::Msg *msg);                                             \
   bool nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook);         \
   T *GetImpl();
 
 // 跨模块时，作为本模块的根对象，需要增加成员变量及销毁该变量
 #define UI_DECLARE_INTERFACE_ACROSSMODULE(T)                                   \
   UI_DECLARE_INTERFACE(T)                                                      \
-protected:                                                                     \
   virtual ~I##T();                                                             \
+protected:                                                                     \
   T *m_pImpl;
 
 // 这里采用operator new的原因：
@@ -51,15 +52,13 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::create(IResource *pSkinRes) {                                   \
-    return ui::ObjectCreator<I##T>::create(pSkinRes);                          \
-  }                                                                            \
-  void I##T::destroy(I##T * p) {                                               \
-    p->Release();                                                  \
+  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
+    return T##Meta::Get().create(res);                                         \
   }                                                                            \
   bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
     return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
-  }
+  }                                                                            \
+  void I##T::RouteMessage(ui::Msg *msg) { __pImpl->RouteMessage(msg); }
 
 #define UI_IMPLEMENT_INTERFACE_ACROSSMODULE(T, SUPER)                          \
   I##T::~I##T() {                                                              \
@@ -77,15 +76,13 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  I##T *I##T::create(ui::IResource *p) {                                      \
-    return ui::ObjectCreator<I##T>::create(p);                                 \
-  }                                                                            \
-  void I##T::destroy(I##T * p) {                                               \
-    p->Release();                                                  \
+  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
+    return T##Meta::Get().create(res);                                         \
   }                                                                            \
   bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
     return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
-  }
+  }                                                                            \
+  void I##T::RouteMessage(ui::Msg *msg) { static_cast<T *>(m_pImpl)->RouteMessage(msg); }
 
 // TODO: 优化调用形式。
 #define DO_PARENT_PROCESS(IMyInterface, IParentInterface)                      \

@@ -5,7 +5,7 @@
 namespace ui {
 struct IWindow;
 struct IResource;
-struct IObjectDescription;
+struct IMeta;
 struct ITextRenderBase;
 struct IRenderFont;
 struct IRenderBase;
@@ -68,8 +68,6 @@ struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
   IResource *GetResource();
 	IWindow*  GetWindow();
-  void SetDescription(IObjectDescription *p);
-  IObjectDescription *GetDescription(); // 返回值不会为空
   const wchar_t *GetId();
   void SetId(const wchar_t *szText);
   HWND GetHWND();

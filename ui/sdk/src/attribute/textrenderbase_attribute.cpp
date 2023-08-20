@@ -44,7 +44,7 @@ void  TextRenderBaseAttribute::Set(const wchar_t* szType)
         return;
     }
 
-    SAFE_RELEASE(*m_ppBindValue);
+    Reset();
     m_pUIApplication->GetIUIApplication()->CreateTextRenderBaseByName(
 		szType, m_pObject->GetIObject(), m_ppBindValue);
 }
@@ -53,7 +53,9 @@ void  TextRenderBaseAttribute::Reset()
 {
 	if (m_ppBindValue)
 	{
-		SAFE_RELEASE(*m_ppBindValue);
+		if (*m_ppBindValue) {
+      *m_ppBindValue = nullptr;
+    }
 	}
 	else
 	{

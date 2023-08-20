@@ -10,7 +10,7 @@
 #include "src/Resource\fontmanager.h"
 #include "src/Resource\stylemanager.h"
 #include "src/Resource\layoutmanager.h"
-#include "src/UIObject\Window\window_desc.h"
+#include "src/UIObject\Window\window_meta.h"
 #include "src/UIObject\HwndHost\hwndhost_desc.h"
 #include "src/UIObject\Panel\panel_desc.h"
 #include "src/UIObject\Panel\ScrollPanel\scrollpanel_desc.h"

@@ -6,7 +6,6 @@
 #include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/common/ptr/weak_ptr.h"
 #include "sdk/include/common/uuid/uuid.h"
-#include "sdk/include/uicreator.h"
 
 namespace ui {
 
@@ -32,6 +31,25 @@ using wchar = wchar_t;
 #endif
 #endif
 
+struct IApplication;
+struct IMessage;
+struct IObject;
+struct IPanel;
+struct IWindow;
+
+
+// 定义快速
+// struct IWindow;
+// using IWindowPtr = std::unique_ptr<IWindow, void (*)(IWindow*)>;
+// struct WindowPtr : public IWindowPtr {
+//     WindowPtr(IResource *res) : IWindowPtr(IWindow::create(res)){ }
+// };
+#define UI_DEFINE_PTR(Xxx)                                                     \
+  struct I##Xxx;                                                               \
+  using I##Xxx##Ptr = std::unique_ptr<I##Xxx, void (*)(I##Xxx *)>;             \
+  struct Xxx##Ptr : public I##Xxx##Ptr {                                       \
+    Xxx##Ptr(IResource *res) : I##Xxx##Ptr(I##Xxx::create(res)) {}             \
+  };
 
 } // namespace ui
 #endif

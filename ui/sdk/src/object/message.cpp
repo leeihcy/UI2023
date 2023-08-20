@@ -26,6 +26,14 @@ Message::~Message() {
   }
 }
 
+
+void Message::RouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    m_meta = static_cast<FinalConstructMessage*>(msg)->meta;
+    return;
+  }
+}
+
 // 当自己没有从IMessage创建时，为了支持IMessage，自己创建一个。
 IMessage *Message::GetIMessage() {
   //     if (nullptr == m_pIMessage)
@@ -36,6 +44,8 @@ IMessage *Message::GetIMessage() {
   //     }
   return m_pIMessage;
 }
+
+IMeta *Message::GetMeta() { return m_meta; }
 
 void Message::connect(const char *event_name, slot<void(Event *)> &&s) {
   if (!event_name || !event_name[0]) {

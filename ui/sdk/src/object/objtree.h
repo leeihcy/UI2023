@@ -2,89 +2,80 @@
 #include "src/object/message.h"
 
 //
-//	Ê¹ÓÃTree½á¹¹ÊµÏÖObjectÖ®¼äµÄ²ã´Î¹ØÏµ
+//	ä½¿ç”¨Treeç»“æ„å®ç°Objectä¹‹é—´çš„å±‚æ¬¡å…³ç³»
 //
-namespace ui
-{
+namespace ui {
 class Object;
 
-class ObjTree : public Message
-{
+class ObjTree : public Message {
 public:
-	ObjTree(IMessage* p) : Message(p)
-		{ m_pParent = m_pChild = m_pNcChild = m_pNext = m_pPrev = nullptr;	}
-	~ObjTree()
-		{}
+  ObjTree(IMessage *p) : Message(p) {
+    m_pParent = m_pChild = m_pNcChild = m_pNext = m_pPrev = nullptr;
+  }
+  ~ObjTree() {}
 
 public:
-    virtual bool IsNcObject() { return false; }  // ÓÉ¼Ì³ĞÕßÀ´À©Õ¹ÊµÏÖ
-	virtual void SetAsNcObject(bool b) {}
-	virtual bool CanTabstop() { return false; }
-	virtual int  GetZorder() { return 0;  }
+  virtual bool IsNcObject() { return false; } // ç”±ç»§æ‰¿è€…æ¥æ‰©å±•å®ç°
+  virtual void SetAsNcObject(bool b) {}
+  virtual bool CanTabstop() { return false; }
+  virtual int GetZorder() { return 0; }
 
-	void  AddChild(Object* pObj);
-    void  InsertChild(Object* pObj, Object* pInsertAfter);
-	void  AddNcChild(Object* pObj);
-    void  InsertAfter(Object* pInsertAfter);
-    void  InsertBefore(Object* pInsertBefore);
-	bool  IsMyChild(Object* pChild, bool bFindInGrand);
-	bool  RemoveChildInTree(Object* pChild);
+  void AddChild(Object *pObj);
+  void InsertChild(Object *pObj, Object *pInsertAfter);
+  void AddNcChild(Object *pObj);
+  void InsertAfter(Object *pInsertAfter);
+  void InsertBefore(Object *pInsertBefore);
+  bool IsMyChild(Object *pChild, bool bFindInGrand);
+  bool RemoveChildInTree(Object *pChild);
 
-	Object* EnumChildObject(Object* pObj);
-	Object* REnumChildObject(Object* pObj);
-	Object* EnumNcChildObject(Object* pObj);
-	Object* REnumNcChildObject(Object* pObj);
-	Object* EnumAllChildObject(Object* pObj);
-	Object* REnumAllChildObject(Object* pObj);
-	Object* EnumParentObject(Object* pObj);
-	Object* REnumParentObject(Object* pObj);
+  Object *EnumChildObject(Object *pObj);
+  Object *REnumChildObject(Object *pObj);
+  Object *EnumNcChildObject(Object *pObj);
+  Object *REnumNcChildObject(Object *pObj);
+  Object *EnumAllChildObject(Object *pObj);
+  Object *REnumAllChildObject(Object *pObj);
+  Object *EnumParentObject(Object *pObj);
+  Object *REnumParentObject(Object *pObj);
 
-	Object* GetParentObject();
-	Object* GetChildObject();
-	Object* GetNcChildObject();
-	Object* GetLastChildObject();
-	Object* GetLastNcChildObject();
-	Object* GetNextObject();
-	Object* GetPrevObject();
-	Object* GetRootObject();
+  Object *GetParentObject();
+  Object *GetChildObject();
+  Object *GetNcChildObject();
+  Object *GetLastChildObject();
+  Object *GetLastNcChildObject();
+  Object *GetNextObject();
+  Object *GetPrevObject();
+  Object *GetRootObject();
 
-    void SetParentObjectDirect(Object* p);
-    void SetChildObjectDirect(Object* p);
-    void SetNcChildObjectDirect(Object* p);
-    void SetNextObjectDirect(Object* p);
-    void SetPrevObjectDirect(Object* p);
+  void SetParentObjectDirect(Object *p);
+  void SetChildObjectDirect(Object *p);
+  void SetNcChildObjectDirect(Object *p);
+  void SetNextObjectDirect(Object *p);
+  void SetPrevObjectDirect(Object *p);
 
-	Object* GetNextTreeItemObject();
-	Object* GetPrevTreeItemObject();
-	Object* GetNextTreeTabstopItemObject();
-	Object* GetPrevTreeTabstopItemObject();
+  Object *GetNextTreeItemObject();
+  Object *GetPrevTreeItemObject();
+  Object *GetNextTreeTabstopItemObject();
+  Object *GetPrevTreeTabstopItemObject();
 
-	Object* GetNextTabObject()
-    {
-        return GetNextTreeTabstopItemObject(); 
-    }
-	Object* GetPrevTabObject()
-    {
-        return GetPrevTreeTabstopItemObject(); 
-    }
+  Object *GetNextTabObject() { return GetNextTreeTabstopItemObject(); }
+  Object *GetPrevTabObject() { return GetPrevTreeTabstopItemObject(); }
 
-	void RemoveMeInTheTree();
-	void ClearMyTreeRelationOnly();
+  void RemoveMeInTheTree();
+  void ClearMyTreeRelationOnly();
 
-    void MoveToAsFirstChild();
-    void MoveToAsLastChild();
-    bool SwapObject(Object* pObj1, Object* pObj2);
+  void MoveToAsFirstChild();
+  void MoveToAsLastChild();
+  bool SwapObject(Object *pObj1, Object *pObj2);
 
 protected:
-    void DestroyChildObject();
+  void DestroyChildObject();
 
 protected:
-	Object*  m_pParent;
-	Object*  m_pChild;
-	Object*  m_pNcChild;     // ·Ç¿Í»§ÇøµÄ×Ó¶ÔÏó£¬Ö÷ÒªÓÃÓÚÊµÏÖ¹ö¶¯Ê±£¬²»¸úËæÆ«ÒÆ
-	Object*  m_pNext;
-	Object*  m_pPrev;
+  Object *m_pParent;
+  Object *m_pChild;
+  Object *m_pNcChild; // éå®¢æˆ·åŒºçš„å­å¯¹è±¡ï¼Œä¸»è¦ç”¨äºå®ç°æ»šåŠ¨æ—¶ï¼Œä¸è·Ÿéšåç§»
+  Object *m_pNext;
+  Object *m_pPrev;
 };
 
-}
-
+} // namespace ui

@@ -3,6 +3,7 @@
 #include "src/render/textrender/textrender.h"
 #include "src/object/object.h"
 #include "include/interface/iuiapplication.h"
+#include "src/render/render_meta.h"
 
 namespace ui
 {
@@ -20,14 +21,6 @@ ITextRenderBase::ITextRenderBase() : IMessage(CREATE_IMPL_FALSE)
 	m_pImpl = new TextRenderBase(this);
 }
 
-long  ITextRenderBase::AddRef() 
-{ 
-	return __pImpl->AddRef();
-}
-long  ITextRenderBase::Release()
-{ 
-	return __pImpl->Release();
-}
 void  ITextRenderBase::SetObject(IObject* pObject)
 {
     Object* pObj = nullptr;

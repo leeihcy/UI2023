@@ -1,284 +1,247 @@
-#pragma  once
+#pragma once
 #if defined(OS_WIN)
-#include "uxtheme.h"
 #include "Vsstyle.h"
+#include "uxtheme.h"
 #pragma comment(lib, "uxtheme.lib")
 #endif
 
 #include "include/interface/itextrenderbase.h"
 #include "src/object/message.h"
 
-namespace ui
-{
+namespace ui {
 class AttributeSerializer;
 class Application;
 class Object;
 struct TEXTRENDERBASE_DRAWSTATE;
 
-
-class TextRenderBase : public Message
-{
+class TextRenderBase : public Message {
 public:
-	TextRenderBase(ITextRenderBase* p);
-	~TextRenderBase();
+  TextRenderBase(ITextRenderBase *p);
+  ~TextRenderBase();
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_GETDESIREDSIZE2(OnGetDesiredSize)
-    UI_END_MSG_MAP()
+  UI_BEGIN_MSG_MAP()
+  UIMSG_GETDESIREDSIZE2(OnGetDesiredSize)
+  UI_END_MSG_MAP()
 
-	long  AddRef();
-	long  Release();
-
-    void  Serialize(AttributeSerializer* ps);
-    void  OnGetDesiredSize(Size* pSize, GETDESIREDSIZEINFO* pInfo);
-    Size  GetDesiredSize(const wchar_t* szText, int nLimitWidth=-1);
+  void Serialize(AttributeSerializer *ps);
+  void OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo);
+  Size GetDesiredSize(const wchar_t *szText, int nLimitWidth = -1);
 
 public:
-    void  SetRenderFont(IRenderFont* pFont) {}
+  void SetRenderFont(IRenderFont *pFont) {}
 
-	void  SetTextAlignment(int nDrawFlag);
-    int   GetTextAlignment() 
-    {
-        return m_nDrawTextFlag; 
-    }
-    void  SetTextEffect(TEXT_EFFECT e) 
-    {
-        m_eDrawTextEffect = e;
-    }
-    TEXT_EFFECT  GetTextEffect()
-    {
-        return m_eDrawTextEffect;
-    }
-    void  SetDrawTextParam(long w, long l)
-    {
-        m_wparamDrawText = w;
-        m_lparamDrawText = l;
-    }
+  void SetTextAlignment(int nDrawFlag);
+  int GetTextAlignment() { return m_nDrawTextFlag; }
+  void SetTextEffect(TEXT_EFFECT e) { m_eDrawTextEffect = e; }
+  TEXT_EFFECT GetTextEffect() { return m_eDrawTextEffect; }
+  void SetDrawTextParam(long w, long l) {
+    m_wparamDrawText = w;
+    m_lparamDrawText = l;
+  }
 
-	void     SetObject(Object* pObject) { m_pObject = pObject; }
-    Object*  GetObject() { return m_pObject; }
+  void SetObject(Object *pObject) { m_pObject = pObject; }
+  Object *GetObject() { return m_pObject; }
 
-	void  SetTextRenderType(const TEXTRENDER_TYPE& nType){ m_nTextRenderType = nType ; }
-	TEXTRENDER_TYPE  GetTextRenderType() { return m_nTextRenderType; }
-	
-	IColorRes*  GetSkinColorRes();
-	IFontRes*  GetSkinFontRes();
-    Resource*  GetResource();
+  void SetTextRenderType(const TEXTRENDER_TYPE &nType) {
+    m_nTextRenderType = nType;
+  }
+  TEXTRENDER_TYPE GetTextRenderType() { return m_nTextRenderType; }
 
-	bool  IsThemeRender();
-    void  CheckSkinTextureChanged();
+  IColorRes *GetSkinColorRes();
+  IFontRes *GetSkinFontRes();
+  Resource *GetResource();
 
-    void  _LoadFont(const wchar_t* szFontId, IRenderFont*& pRenderFont);
-    const wchar_t*  _SaveFont(IRenderFont*& pRenderFont);
-	void  _LoadDefalutFont(IRenderFont** ppRenderFont);
-    void  _LoadColor(const wchar_t* szColorId, Color*& pColor);
-    const wchar_t*  _SaveColor(Color*& pColor);
+  bool IsThemeRender();
+  void CheckSkinTextureChanged();
 
-    void  LoadHaloColor(const wchar_t* szColorId);
-    const wchar_t*  GetHaloColorId();
+  void _LoadFont(const wchar_t *szFontId, IRenderFont *&pRenderFont);
+  const wchar_t *_SaveFont(IRenderFont *&pRenderFont);
+  void _LoadDefalutFont(IRenderFont **ppRenderFont);
+  void _LoadColor(const wchar_t *szColorId, Color *&pColor);
+  const wchar_t *_SaveColor(Color *&pColor);
+
+  void LoadHaloColor(const wchar_t *szColorId);
+  const wchar_t *GetHaloColorId();
 
 protected:
-    ITextRenderBase*  m_pITextRenderBase;
+  ITextRenderBase *m_pITextRenderBase;
 
-	Object*  m_pObject;     // ∞Û∂®µƒ∂‘œÛ£¨“™ªÊ÷∆À≠µƒŒƒ◊÷
-	TEXTRENDER_TYPE  m_nTextRenderType;  // ◊‘º∫µƒ¿‡–Õ
-	long  m_nDrawTextFlag;    // DrawTextµƒflag±Í ∂
-	long  m_lRef;
-    
-    TEXT_EFFECT  m_eDrawTextEffect;
-    Color*  m_pColorTextBkgnd;
-    long  m_wparamDrawText;
-    long  m_lparamDrawText;
+  Object *m_pObject;                 // ÁªëÂÆöÁöÑÂØπË±°ÔºåË¶ÅÁªòÂà∂Ë∞ÅÁöÑÊñáÂ≠ó
+  TEXTRENDER_TYPE m_nTextRenderType; // Ëá™Â∑±ÁöÑÁ±ªÂûã
+  long m_nDrawTextFlag;              // DrawTextÁöÑflagÊ†áËØÜ
+
+  TEXT_EFFECT m_eDrawTextEffect;
+  Color *m_pColorTextBkgnd;
+  long m_wparamDrawText;
+  long m_lparamDrawText;
 };
 
-class SimpleTextRender : public TextRenderBase
-{
+class SimpleTextRender : public TextRenderBase {
 public:
-	SimpleTextRender(ISimpleTextRender* p);
-	~SimpleTextRender();
+  SimpleTextRender(ISimpleTextRender *p);
+  ~SimpleTextRender();
 
-    UI_DECLARE_TEXTRENDERBASE(
-        SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE, TEXTRENDER_TYPE_SIMPLE)
+  UI_DECLARE_TEXTRENDERBASE(SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE,
+                            TEXTRENDER_TYPE_SIMPLE)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_GETRENDERFONT(GetRenderFont)
-        UIMSG_QUERYINTERFACE(SimpleTextRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  UIMSG_GETRENDERFONT(GetRenderFont)
+  UIMSG_QUERYINTERFACE(SimpleTextRender)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
+  void OnSerialize(SERIALIZEDATA *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
+  IRenderFont *GetRenderFont() { return m_pRenderFont; }
 
-	void  OnSerialize(SERIALIZEDATA* pData);
-	void  DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
-    IRenderFont*  GetRenderFont() { return m_pRenderFont; }
+  void SetRenderFont(IRenderFont *);
+  void SetColor(Color *pColText);
+  bool GetColor(COLORREF &color);
 
-	void  SetRenderFont(IRenderFont*);
-	void  SetColor(Color*  pColText);
-	bool  GetColor(COLORREF& color);
-
-	void  LoadFont(const wchar_t* szFontId);
-	const wchar_t*  GetFontId();
+  void LoadFont(const wchar_t *szFontId);
+  const wchar_t *GetFontId();
 
 protected:
-    ISimpleTextRender*  m_pISimpleTextRender;
-	Color*  m_pColorText;
-	IRenderFont*  m_pRenderFont;
+  ISimpleTextRender *m_pISimpleTextRender;
+  Color *m_pColorText;
+  IRenderFont *m_pRenderFont;
 
 #ifdef EDITOR_MODE
-    String  m_strFontId;
+  String m_strFontId;
 #endif
 };
 
-
-// ∏˘æ›∆§∑Ù—’…´£¨◊‘  ”¶…Ë÷√Œƒ±æµƒ—’…´ «∞◊ªπ «∫⁄
-class ContrastColorTextRender : public TextRenderBase
-{
+// Ê†πÊçÆÁöÆËÇ§È¢úËâ≤ÔºåËá™ÈÄÇÂ∫îËÆæÁΩÆÊñáÊú¨ÁöÑÈ¢úËâ≤ÊòØÁôΩËøòÊòØÈªë
+class ContrastColorTextRender : public TextRenderBase {
 public:
-    ContrastColorTextRender(IContrastColorTextRender* p);
-    ~ContrastColorTextRender();
+  ContrastColorTextRender(IContrastColorTextRender *p);
+  ~ContrastColorTextRender();
 
-    UI_DECLARE_TEXTRENDERBASE(
-        ContrastColorTextRender, 
-        XML_TEXTRENDER_TYPE_CONTRAST_COLOR, 
-        TEXTRENDER_TYPE_CONTRASTCOLOR)
+  UI_DECLARE_TEXTRENDERBASE(ContrastColorTextRender,
+                            XML_TEXTRENDER_TYPE_CONTRAST_COLOR,
+                            TEXTRENDER_TYPE_CONTRASTCOLOR)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_GETRENDERFONT(GetRenderFont)
-        UIMSG_QUERYINTERFACE(ContrastColorTextRender)
-        UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  UIMSG_GETRENDERFONT(GetRenderFont)
+  UIMSG_QUERYINTERFACE(ContrastColorTextRender)
+  UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
 public:
-    void  SetRenderFont(IRenderFont*);
+  void SetRenderFont(IRenderFont *);
 
 protected:
-    void  OnSerialize(SERIALIZEDATA* pData);
-    void  DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
-    IRenderFont*  GetRenderFont() { return m_pRenderFont; }
-    long  OnSkinTextureChanged(unsigned int, long, long);
+  void OnSerialize(SERIALIZEDATA *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
+  IRenderFont *GetRenderFont() { return m_pRenderFont; }
+  long OnSkinTextureChanged(unsigned int, long, long);
 
-    void  LoadFont(const wchar_t* szFontId){
-        _LoadFont(szFontId, m_pRenderFont);
-    }
-    const wchar_t*  GetFontId(){
-        return _SaveFont(m_pRenderFont);
-    }
-    void  LoadColor(const wchar_t* szColorId){
-        _LoadColor(szColorId, m_pColorText);
-    }
-    const wchar_t*  GetColorId(){
-        return _SaveColor(m_pColorText);
-    }
+  void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
+  const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
+  void LoadColor(const wchar_t *szColorId) {
+    _LoadColor(szColorId, m_pColorText);
+  }
+  const wchar_t *GetColorId() { return _SaveColor(m_pColorText); }
 
 private:
-    IContrastColorTextRender*  m_pIContrastColorTextRender;
-    
-    Color*   m_pColorText;
-    IRenderFont*  m_pRenderFont;
+  IContrastColorTextRender *m_pIContrastColorTextRender;
 
-    bool  m_bNeedCalcColor;
+  Color *m_pColorText;
+  IRenderFont *m_pRenderFont;
+
+  bool m_bNeedCalcColor;
 };
 
-
-class ContrastColorListTextRender : public TextRenderBase
-{
+class ContrastColorListTextRender : public TextRenderBase {
 public:
-    ContrastColorListTextRender(IContrastColorListTextRender* p);
-    ~ContrastColorListTextRender();
+  ContrastColorListTextRender(IContrastColorListTextRender *p);
+  ~ContrastColorListTextRender();
 
-    UI_DECLARE_TEXTRENDERBASE(
-        ContrastColorListTextRender,
-        XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST, 
-        TEXTRENDER_TYPE_CONTRASTCOLORLIST)
+  UI_DECLARE_TEXTRENDERBASE(ContrastColorListTextRender,
+                            XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST,
+                            TEXTRENDER_TYPE_CONTRASTCOLORLIST)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_GETRENDERFONT(GetRenderFont)
-        UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
-        UIMSG_QUERYINTERFACE(ContrastColorListTextRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  UIMSG_GETRENDERFONT(GetRenderFont)
+  UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
+  UIMSG_QUERYINTERFACE(ContrastColorListTextRender)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-    void  OnSerialize(SERIALIZEDATA* pData);
-    void  DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
-    long  OnSkinTextureChanged(unsigned int, long, long);
+  void OnSerialize(SERIALIZEDATA *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
+  long OnSkinTextureChanged(unsigned int, long, long);
 
-    IRenderFont*  GetRenderFont();
-    void  SetRenderFont(IRenderFont*);
+  IRenderFont *GetRenderFont();
+  void SetRenderFont(IRenderFont *);
 
-    void  SetCount(long nCount);
-    long  GetCount();
+  void SetCount(long nCount);
+  long GetCount();
 
-    void  LoadFont(const wchar_t* szFontId){
-        _LoadFont(szFontId, m_pRenderFont);
-    }
-    const wchar_t*  GetFontId(){
-        return _SaveFont(m_pRenderFont);
-    }
+  void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
+  const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
 
 protected:
-    void  Clear();
+  void Clear();
 
 private:
-    IContrastColorListTextRender*  m_pIContrastColorListTextRender;
+  IContrastColorListTextRender *m_pIContrastColorListTextRender;
 
-    std::vector<Color*>  m_vTextColor;
-    IRenderFont*   m_pRenderFont;
-    int   m_nCount;
+  std::vector<Color *> m_vTextColor;
+  IRenderFont *m_pRenderFont;
+  int m_nCount;
 };
 
 //////////////////////////////////////////////////////////////////////////
 
-class ColorListTextRender : public TextRenderBase
-{
+class ColorListTextRender : public TextRenderBase {
 public:
-	ColorListTextRender(IColorListTextRender* p);
-	~ColorListTextRender();
+  ColorListTextRender(IColorListTextRender *p);
+  ~ColorListTextRender();
 
-    UI_DECLARE_TEXTRENDERBASE(
-        ColorListTextRender,
-        XML_TEXTRENDER_TYPE_COLORLIST, 
-        TEXTRENDER_TYPE_COLORLIST)
+  UI_DECLARE_TEXTRENDERBASE(ColorListTextRender, XML_TEXTRENDER_TYPE_COLORLIST,
+                            TEXTRENDER_TYPE_COLORLIST)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_GETRENDERFONT(GetRenderFont)
-        UIMSG_QUERYINTERFACE(ColorListTextRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  UIMSG_GETRENDERFONT(GetRenderFont)
+  UIMSG_QUERYINTERFACE(ColorListTextRender)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
+  void OnSerialize(SERIALIZEDATA *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
-	void  OnSerialize(SERIALIZEDATA* pData);
-	void  DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
+  IRenderFont *GetRenderFont();
+  void SetRenderFont(IRenderFont *);
 
-    IRenderFont*  GetRenderFont();
-	void  SetRenderFont(IRenderFont*);
+  void LoadFont(const wchar_t *szFontId);
+  const wchar_t *GetFontId();
 
-    void  LoadFont(const wchar_t* szFontId);
-    const wchar_t*  GetFontId();
+  void SetCount(long nCount);
+  long GetCount();
 
-    void  SetCount(long nCount);
-    long  GetCount();
+  void LoadColor(const wchar_t *szText);
+  const wchar_t *GetColor();
 
-    void  LoadColor(const wchar_t* szText);
-    const wchar_t*  GetColor();
-
-	void  SetColor(int nIndex, COLORREF col);
+  void SetColor(int nIndex, COLORREF col);
 
 protected:
-	void  Clear();
+  void Clear();
 
 private:
-    IColorListTextRender*  m_pIColorListTextRender;
+  IColorListTextRender *m_pIColorListTextRender;
 
-	std::vector<ColorPtr>  m_vTextColor;
-	IRenderFont*      m_pRenderFont;
-	int               m_nCount;
+  std::vector<ColorPtr> m_vTextColor;
+  IRenderFont *m_pRenderFont;
+  int m_nCount;
 
 #ifdef EDITOR_MODE
-    String  m_strFontId;
+  String m_strFontId;
 #endif
 };
 #if 0
@@ -290,56 +253,54 @@ private:
 	};
 #endif
 
-class FontColorListTextRender : public TextRenderBase
-{
+class FontColorListTextRender : public TextRenderBase {
 public:
-	FontColorListTextRender(IFontColorListTextRender* p);
-	~FontColorListTextRender();
+  FontColorListTextRender(IFontColorListTextRender *p);
+  ~FontColorListTextRender();
 
-    UI_DECLARE_TEXTRENDERBASE(
-        FontColorListTextRender,
-        XML_TEXTRENDER_TYPE_FONTCOLORLIST,
-        TEXTRENDER_TYPE_FONTCOLORLIST)
+  UI_DECLARE_TEXTRENDERBASE(FontColorListTextRender,
+                            XML_TEXTRENDER_TYPE_FONTCOLORLIST,
+                            TEXTRENDER_TYPE_FONTCOLORLIST)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_GETRENDERFONT(GetRenderFont)
-        UIMSG_QUERYINTERFACE(FontColorListTextRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  UIMSG_GETRENDERFONT(GetRenderFont)
+  UIMSG_QUERYINTERFACE(FontColorListTextRender)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-    void  OnSerialize(SERIALIZEDATA* pData);
-    void  DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
+  void OnSerialize(SERIALIZEDATA *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
-	IRenderFont*  GetRenderFont();
-	void  SetRenderFont(IRenderFont*);
+  IRenderFont *GetRenderFont();
+  void SetRenderFont(IRenderFont *);
 
-	void  SetCount(long nCount);
-    long  GetCount();
+  void SetCount(long nCount);
+  long GetCount();
 
-    void  LoadColor(const wchar_t* szText);
-    const wchar_t*  GetColor();
-    void  LoadFont(const wchar_t* szText);
-    const wchar_t*  GetFont();
+  void LoadColor(const wchar_t *szText);
+  const wchar_t *GetColor();
+  void LoadFont(const wchar_t *szText);
+  const wchar_t *GetFont();
 
-	void  SetColor(int nIndex, unsigned int color);
-	void  SetFont(int nIndex, IRenderFont*);
+  void SetColor(int nIndex, unsigned int color);
+  void SetFont(int nIndex, IRenderFont *);
 
 protected:
-	void  Clear();
+  void Clear();
 
 private:
-    IFontColorListTextRender*  m_pIFontColorListTextRender;
+  IFontColorListTextRender *m_pIFontColorListTextRender;
 
-	std::vector<Color*>     m_vTextColor;
-	std::vector<IRenderFont*> m_vTextFont;
+  std::vector<Color *> m_vTextColor;
+  std::vector<IRenderFont *> m_vTextFont;
 
-	int   m_nCount;
+  int m_nCount;
 };
 
 #if 0
 //
-//	÷˜Ã‚±≥æ∞∞¥≈•
+//	‰∏ªÈ¢òËÉåÊôØÊåâÈíÆ
 //
 class ThemeTextRenderBase : public TextRenderBase
 {
@@ -371,7 +332,7 @@ public:
 protected:
     IThemeTextRenderBase*  m_pIThemeTextRenderBase;
 	HTHEME  m_hTheme;
-    bool    m_bNoTheme;  //  «∑Ò«ø÷∆ π”√Œﬁ÷˜Ã‚µƒ—˘ Ω°£
+    bool    m_bNoTheme;  // ÊòØÂê¶Âº∫Âà∂‰ΩøÁî®Êó†‰∏ªÈ¢òÁöÑÊ†∑Âºè„ÄÇ
 };
 #endif
-}
+} // namespace ui

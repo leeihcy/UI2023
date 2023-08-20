@@ -1,76 +1,78 @@
-#pragma  once
-#include "src/object/message.h"
+#ifndef _UI_SDK_SRC_RENDER_RENDERBASE_H_
+#define _UI_SDK_SRC_RENDER_RENDERBASE_H_
 #include "include/interface/irenderbase.h"
+#include "include/util/color.h"
+#include "include/macro/uimsg.h"
+#include "src/object/message.h"
 
-namespace ui
-{
-	struct IRenderBase;
-	struct IRenderBitmap;
-	class Application;
-    class ColorRes;
-    class ImageRes;
-    class Resource;
-    class Object;
+namespace ui {
+struct IRenderBase;
+struct IRenderBitmap;
+class Application;
+class ColorRes;
+class ImageRes;
+class Resource;
+class Object;
 
-const unsigned int  WINDOW_BKGND_RENDER_STATE_ACTIVE  = 0;   // ´°¿Ú¼¤»îÑùÊ½
-const unsigned int  WINDOW_BKGND_RENDER_STATE_INACTIVE = 1;   // ´°¿Ú·Ç¼¤»îÑùÊ½
+const unsigned int WINDOW_BKGND_RENDER_STATE_ACTIVE = 0; // çª—å£æ¿€æ´»æ ·å¼
+const unsigned int WINDOW_BKGND_RENDER_STATE_INACTIVE = 1; // çª—å£éžæ¿€æ´»æ ·å¼
 
-
-// ´°¿Ú±³¾°»æÖÆ»ùÀà£¬ÓÃÓÚÊµÏÖ¸÷ÖÖÑùÊ½´°¿Ú±³¾°µÄ»æÖÆ£¬Èç£ºÆ½ÆÌ£¬¾ÓÖÐ£¬À­Éì£¬9¹¬µÈ
-class RenderBase : public Message
-{
+// çª—å£èƒŒæ™¯ç»˜åˆ¶åŸºç±»ï¼Œç”¨äºŽå®žçŽ°å„ç§æ ·å¼çª—å£èƒŒæ™¯çš„ç»˜åˆ¶ï¼Œå¦‚ï¼šå¹³é“ºï¼Œå±…ä¸­ï¼Œæ‹‰ä¼¸ï¼Œ9å®«ç­‰
+class RenderBase : public Message {
 public:
-	RenderBase(IRenderBase* p);
-	virtual ~RenderBase(){};
-    
-	UI_BEGIN_MSG_MAP()
-    UI_END_MSG_MAP()
+  RenderBase(IRenderBase *p);
+  virtual ~RenderBase(){};
 
-	long  AddRef();
-	long  Release();
+  UI_BEGIN_MSG_MAP()
+  UI_END_MSG_MAP()
 
-	//
-	//	ÓÉÓÚRender¿ÉÒÔ±»ÓÃÔÚºÜ¶àµØ·½£¬Èç±³¾°¡¢Í¼±êµÈµÈ¡£ÎªÁËÇø·ÖÉèÖÃµÄÊÇÄÄ¸ö²¿·ÖµÄRenderÊôÐÔ£¬
-	//	»áÔÚRenderÊôÐÔÇ°ÃæÌí¼ÓÒ»¸öÇ°×º£¬Èçbkgnd.render.type  icon.render.type
-	//	ÔÚSetAttributeÖÐ£¬ÐèÒªÍ¬Ê±¸ù¾ÝÇ°×º+ÊôÐÔÃûÀ´½øÐÐ²Ù×÷
-	//
-	//	ÁíÍâIRender²»ÐèÒªÌá¹©RetAttribute²Ù×÷£¬ÒòÎªObjectÔÚResetµÄÊ±ºò£¬Ò»°ãÊÇdelete irender
-	//	Òò´ËÕâÀïÒ²Ã»ÓÐÌí¼Ó bool bReload ²ÎÊý
-	//
-    bool  IsThemeRender() {return m_nRenderType > RENDER_TYPE_THEME_FIRST && m_nRenderType < RENDER_TYPE_THEME_LAST; }
-    void  CheckThemeChanged();
+  //
+  //	ç”±äºŽRenderå¯ä»¥è¢«ç”¨åœ¨å¾ˆå¤šåœ°æ–¹ï¼Œå¦‚èƒŒæ™¯ã€å›¾æ ‡ç­‰ç­‰ã€‚ä¸ºäº†åŒºåˆ†è®¾ç½®çš„æ˜¯å“ªä¸ªéƒ¨åˆ†çš„Renderå±žæ€§ï¼Œ
+  //	ä¼šåœ¨Renderå±žæ€§å‰é¢æ·»åŠ ä¸€ä¸ªå‰ç¼€ï¼Œå¦‚bkgnd.render.type  icon.render.type
+  //	åœ¨SetAttributeä¸­ï¼Œéœ€è¦åŒæ—¶æ ¹æ®å‰ç¼€+å±žæ€§åæ¥è¿›è¡Œæ“ä½œ
+  //
+  //	å¦å¤–IRenderä¸éœ€è¦æä¾›RetAttributeæ“ä½œï¼Œå› ä¸ºObjectåœ¨Resetçš„æ—¶å€™ï¼Œä¸€èˆ¬æ˜¯delete
+  //irender 	å› æ­¤è¿™é‡Œä¹Ÿæ²¡æœ‰æ·»åŠ  bool bReload å‚æ•°
+  //
+  bool IsThemeRender() {
+    return m_nRenderType > RENDER_TYPE_THEME_FIRST &&
+           m_nRenderType < RENDER_TYPE_THEME_LAST;
+  }
+  void CheckThemeChanged();
 
-	void     SetObject(Application* pUIApp, Object* pObject) { m_pUIApplication = pUIApp; m_pObject = pObject; }
-    Object*  GetObject() { return m_pObject; }
+  void SetObject(Application *pUIApp, Object *pObject) {
+    m_pUIApplication = pUIApp;
+    m_pObject = pObject;
+  }
+  Object *GetObject() { return m_pObject; }
 
-	void  SetRenderType( const RENDER_TYPE& nType ){ m_nRenderType = nType ; }
-	RENDER_TYPE  GetRenderType() { return m_nRenderType; }
+  void SetRenderType(const RENDER_TYPE &nType) { m_nRenderType = nType; }
+  RENDER_TYPE GetRenderType() { return m_nRenderType; }
 
-    Resource*  GetResource();
-	ColorRes*  GetSkinColorRes();
-	ImageRes*  GetSkinImageRes();
-	
-	void  _LoadColor(const wchar_t* szColorId, Color*& pColorRef);
-	void  _LoadBitmap(const wchar_t* szBitmapId, IRenderBitmap*& pBitmapRef);
-	const wchar_t*  _GetColorId(Color*& pColorRef);
-	const wchar_t*  _GetBitmapId(IRenderBitmap*& pBitmapRef);
+  Resource *GetResource();
+  ColorRes *GetSkinColorRes();
+  ImageRes *GetSkinImageRes();
+
+  void _LoadColor(const wchar_t *szColorId, Color *&pColorRef);
+  void _LoadBitmap(const wchar_t *szBitmapId, IRenderBitmap *&pBitmapRef);
+  const wchar_t *_GetColorId(Color *&pColorRef);
+  const wchar_t *_GetBitmapId(IRenderBitmap *&pBitmapRef);
 
 protected:
-    Application*  m_pUIApplication;
-    IRenderBase*     m_pIRenderBase;
-	long  m_lRef;
+  Application *m_pUIApplication;
+  IRenderBase *m_pIRenderBase;
 
-    Object*  m_pObject;  // °ó¶¨µÄ¶ÔÏó£¬Òª»æÖÆË­µÄ±³¾°
-	RENDER_TYPE   m_nRenderType;  // ×Ô¼ºµÄÀàÐÍ
+  Object *m_pObject;         // ç»‘å®šçš„å¯¹è±¡ï¼Œè¦ç»˜åˆ¶è°çš„èƒŒæ™¯
+  RENDER_TYPE m_nRenderType; // è‡ªå·±çš„ç±»åž‹
 };
 
-// ½«bkgnd.render.type=null±íÊ¾²»Ê¹ÓÃÄ¬ÈÏ±³¾°
+// å°†bkgnd.render.type=nullè¡¨ç¤ºä¸ä½¿ç”¨é»˜è®¤èƒŒæ™¯
 // class NullRender : public RenderBase
 // {
 // public:
 // 	NullRender(INullRender* p) : RenderBase(p)
 // 	{
-// 		m_pINullRender = p; 
+// 		m_pINullRender = p;
 // 	}
 
 //     UI_DECLARE_RENDERBASE(NullRender, XML_RENDER_TYPE_NULL, RENDER_TYPE_NULL)
@@ -79,8 +81,8 @@ protected:
 //         UIMSG_QUERYINTERFACE(NullRender)
 //     UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
-
 //     INullRender*  m_pINullRender;
 // };
 
-}
+} // namespace ui
+#endif

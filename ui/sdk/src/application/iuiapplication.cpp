@@ -23,17 +23,16 @@ IApplication::~IApplication()
     SAFE_DELETE(m_pImpl);
 }
 
-/*static*/
-IApplication* IApplication::create() {
-    IApplication* p = new IApplication;
-    p->GetImpl()->x_Init();
-    return p;
+void destroy(IApplication* p) {
+  delete p;
+  // IApplication::destroy(p);
 }
 
 /*static*/
-void IApplication::destroy(IApplication* p)
-{
-	delete p;
+IApplicationPtr IApplication::create() {
+  IApplicationPtr app(new IApplication, destroy);
+  app->GetImpl()->x_Init();
+  return app;
 }
 
 void IApplication::Run() {
@@ -137,7 +136,7 @@ IObject*  IApplication::CreateUIObjectByClsid(const Uuid& clsid, IResource* pISk
 { 
     return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
-bool  IApplication::RegisterUIObject(IObjectDescription* p)
+bool  IApplication::RegisterUIObject(IMeta* p)
 {
     return m_pImpl->RegisterUIObject(p); 
 }

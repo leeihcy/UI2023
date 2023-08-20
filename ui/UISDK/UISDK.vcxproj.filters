@@ -552,7 +552,7 @@
     <ClInclude Include="Src\UIObject\Window\window.h">
       <Filter>02. Src\02. UI对象\03. window</Filter>
     </ClInclude>
-    <ClInclude Include="Src\UIObject\Window\window_desc.h">
+    <ClInclude Include="Src\UIObject\Window\window_meta.h">
       <Filter>02. Src\02. UI对象\03. window</Filter>
     </ClInclude>
     <ClInclude Include="Src\UIObject\Window\windowbase.h">

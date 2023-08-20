@@ -1,10 +1,10 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
+#include "ipanel.h"
 #include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/common/signalslot/signal.h"
-#include "sdk/include/macro/uidefine.h"
 #include "sdk/include/event.h"
-#include "ipanel.h"
+#include "sdk/include/macro/uidefine.h"
 // #include "irenderlayer.h"
 // #include "ipanel.h"
 
@@ -176,42 +176,44 @@ struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
 
 #endif
 
-
 // window style
-typedef struct tagWindowStyle
-{
-	bool  destroyed : 1;       // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
-	bool  attach : 1;          // 表示该窗口是attach的，创建、销毁由外部来控制
-	bool  setcreaterect : 1;   // 创建窗口时指定了窗口大小，不用再进行窗口布局了
-	bool  dialog_noresize : 1; // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
-	bool  hard_composite: 1;   // 本窗口使用硬件合成 
-}WindowStyle;
-
+typedef struct tagWindowStyle {
+  bool
+      destroyed : 1; // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
+  bool attach : 1; // 表示该窗口是attach的，创建、销毁由外部来控制
+  bool setcreaterect : 1; // 创建窗口时指定了窗口大小，不用再进行窗口布局了
+  bool
+      dialog_noresize : 1; // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
+  bool hard_composite : 1; // 本窗口使用硬件合成
+} WindowStyle;
 
 class Window;
+
+
 struct UIAPI IWindow : public IPanel {
+  friend struct WindowMeta;
+
   void Create(const Rect &rect);
   void SetTitle(const char *title);
   void Show();
 
-  static Uuid UUID() { return {0x5C36801E, 0x5929, 0x4512, {0xA9, 0x98, 0xF9, 0x71, 0x9D, 0xCC, 0x69, 0x03}}; }
-
   UI_DECLARE_INTERFACE(Window)
 };
+UI_DEFINE_PTR(Window)
+
 
 // 辅助类
-using WindowPtr = ui::unique_ptr<ui::IWindow>;
-
+// using IWindowPtr = ui::unique_ptr<ui::IWindow>;
 
 #define WINDOW_DESTROY_EVENT "destroy"
 struct WindowDestroyEvent : public Event {
-  IWindow* window;
+  IWindow *window;
 };
 
 #define WINDOW_PAINT_EVENT "paint"
 struct WindowPaintEvent : public Event {
-  IWindow* window;
-  IRenderTarget* rt;
+  IWindow *window;
+  IRenderTarget *rt;
 };
 
 // #if 0

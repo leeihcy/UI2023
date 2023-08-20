@@ -40,6 +40,8 @@ public:
   Message(IMessage *);
   virtual ~Message();
 
+  void RouteMessage(ui::Msg *msg);
+
   IMessage *GetIMessage();
 
   bool IsMsgHandled() const;
@@ -49,6 +51,8 @@ public:
 
   void connect(const char* event_name, slot<void(Event*)>&& s);
   void emit(const char* event_name, Event* event);
+
+  IMeta *GetMeta();
 
   void ClearNotify();
   void SetNotify(IMessage *pObj, int nMsgMapID = 0);
@@ -84,6 +88,8 @@ protected:
   // 事件定义
   std::map<std::string, signal<void(Event*)>> m_events;
 
+  // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
+  IMeta *m_meta; 
 
   // 需要延迟调用自己的一些引用，避免自己被销毁之后还调用IMessage的一些函数，如uipostmessage,
   // tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低

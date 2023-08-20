@@ -1,5 +1,6 @@
 #ifndef _UI_MSG_H_
 #define _UI_MSG_H_
+ 
 
 //
 // 为了可以在消息响应函数中直接访问当前消息结构，将m_pCurMsg作为成员函数进行访问或设置
@@ -75,11 +76,11 @@
   return false;                                                                \
   }
 
-#define UI_BEGIN_MSG_MAP_Ixxx(iclassname)                                      \
-  static iclassname *CreateInstance(ui::IResource *pSkinRes) {                \
-    return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes);      \
-  }                                                                            \
-  UI_BEGIN_MSG_MAP()
+// #define UI_BEGIN_MSG_MAP_Ixxx(iclassname)                                      \
+//   static iclassname *CreateInstance(ui::IResource *pSkinRes) {                \
+//     return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes);      \
+//   }                                                                            \
+//   UI_BEGIN_MSG_MAP()
 
 //
 // 消息链传递
@@ -876,5 +877,40 @@ struct CREATEBYEDITORDATA {
 
 // 回车，作用到了默认按钮上面
 #define UI_MSG_DEFAULTBUTTON_VKRETURN_EVENT 169281816
+
+
+//
+//  在UICreateInstance时调用，给对象一次在构造中初始化对象并返回成功失败的方法
+//
+//  message : UI_WM_FINALCONSTRUCT
+//  code : NA
+//  wparam : IResource*,对象所属资源包
+//
+#define UI_MSG_FINALCONSTRUCT 168252120
+// long  FinalConstruct(IResource* p);
+#define UIMSG_FINALCONSTRUCT(func)                                             \
+  if (uMsg == UI_MSG_FINALCONSTRUCT) {                                         \
+    SetMsgHandled(true);                                                       \
+    lResult = func((ui::IResource *)wParam);                                  \
+    if (IsMsgHandled())                                                        \
+      return true;                                                             \
+  }
+//
+//  在~UIObjCreator中调用，给对象在析构前调用虚函数的方法
+//
+//  message : UI_WM_FINALRELEASE
+//  code : NA
+//  wparam : NA
+//  lparam : NA
+//
+#define UI_MSG_FINALRELEASE 168252121
+// void  FinalRelease();
+#define UIMSG_FINALRELEASE(func)                                               \
+  if (uMsg == UI_MSG_FINALRELEASE) {                                           \
+    SetMsgHandled(true);                                                       \
+    func();                                                                    \
+    if (IsMsgHandled())                                                        \
+      return true;                                                             \
+  }
 
 #endif

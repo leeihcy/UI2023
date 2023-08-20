@@ -20,7 +20,7 @@ struct IStyleResItem;
 struct IRenderBaseAttribute;
 struct ITextRenderBaseAttribute;
 struct IObject;
-struct IObjectDescription;
+struct IMeta;
 struct IUIElement;
 
 struct EditorAddObjectResData {
@@ -103,7 +103,7 @@ struct IUIEditor {
 
   // 获取对象列表，添加到工具箱中。
   // 调用LoadUIObjectListToUIEdirot时触发
-  virtual void OnToolBox_AddObject(IObjectDescription *) = 0;
+  virtual void OnToolBox_AddObject(IMeta *) = 0;
 };
 
 }; // namespace ui

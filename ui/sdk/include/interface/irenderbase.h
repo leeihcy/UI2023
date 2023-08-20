@@ -1,95 +1,102 @@
 #ifndef _UI_IRENDERBASE_H_
 #define _UI_IRENDERBASE_H_
+#include "sdk/include/interface.h"
+#include "sdk/include/interface/imessage.h"
+#include "sdk/include/util/rect.h"
 
 #if defined(OS_WIN)
 #include <uxtheme.h>
 #endif
 
-namespace ui
-{
+namespace ui {
 
 struct IObject;
 struct IColorRes;
 struct IImageRes;
 struct IRenderTarget;
+struct Rect;
 
-    // ◊¢£∫libo 20120927
-    //     √ø¥Œπ‚∏¯render¥´µ›“ª∏ˆ ˝÷µ£¨¿Ô√ÊŒﬁ∑®÷ªƒ‹”√’‚∏ˆ ˝÷µ”ÎÕº∆¨œÓÀ˜“˝Ω¯––∆•≈‰£¨Œﬁ∑®◊ˆ∏¸∂‡µƒ≈–∂œ
-    //     “Ú¥Àæˆ∂®¿©’πDrawState≤Œ ˝°£µÕŒªŒ™Õº∆¨À˜“˝÷µ£¨∏ﬂŒªŒ™◊¥Ã¨÷µ
+// Ê≥®Ôºölibo 20120927
+//     ÊØèÊ¨°ÂÖâÁªôrender‰º†ÈÄí‰∏Ä‰∏™Êï∞ÂÄºÔºåÈáåÈù¢Êó†Ê≥ïÂè™ËÉΩÁî®Ëøô‰∏™Êï∞ÂÄº‰∏éÂõæÁâáÈ°πÁ¥¢ÂºïËøõË°åÂåπÈÖçÔºåÊó†Ê≥ïÂÅöÊõ¥Â§öÁöÑÂà§Êñ≠
+//     Âõ†Ê≠§ÂÜ≥ÂÆöÊâ©Â±ïDrawStateÂèÇÊï∞„ÄÇ‰Ωé‰Ωç‰∏∫ÂõæÁâáÁ¥¢ÂºïÂÄºÔºåÈ´ò‰Ωç‰∏∫Áä∂ÊÄÅÂÄº
 
-#define RENDER_STATE_MASK     0xFFFF0000
-#define RENDER_STATE_NORMAL   0x00010000
-#define RENDER_STATE_HOVER    0x00020000
-#define RENDER_STATE_PRESS    0x00040000
-#define RENDER_STATE_DISABLE  0x00080000
+#define RENDER_STATE_MASK 0xFFFF0000
+#define RENDER_STATE_NORMAL 0x00010000
+#define RENDER_STATE_HOVER 0x00020000
+#define RENDER_STATE_PRESS 0x00040000
+#define RENDER_STATE_DISABLE 0x00080000
 #define RENDER_STATE_SELECTED 0x00100000
-#define RENDER_STATE_DEFAULT  0x00200000
+#define RENDER_STATE_DEFAULT 0x00200000
 #define RENDER_STATE_READONLY 0x00400000
-#define RENDER_STATE_NOTFOCUS 0x00800000  // ±ª—°÷–¡À£¨µ´ ß»•¡ÀΩπµ„
+#define RENDER_STATE_NOTFOCUS 0x00800000 // Ë¢´ÈÄâ‰∏≠‰∫ÜÔºå‰ΩÜÂ§±Âéª‰∫ÜÁÑ¶ÁÇπ
 
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_NORMAL =
+    RENDER_STATE_NORMAL | 0;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_HOVER =
+    RENDER_STATE_HOVER | 1;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_PRESS =
+    RENDER_STATE_PRESS | 2;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_DISABLE =
+    RENDER_STATE_DISABLE | 3;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_NORMAL =
+    RENDER_STATE_NORMAL | RENDER_STATE_SELECTED | 4;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_HOVER =
+    RENDER_STATE_HOVER | RENDER_STATE_SELECTED | 5;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_PRESS =
+    RENDER_STATE_PRESS | RENDER_STATE_SELECTED | 6;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_DISABLE =
+    RENDER_STATE_DISABLE | RENDER_STATE_SELECTED | 7;
+const unsigned int LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_NOT_FOCUS =
+    RENDER_STATE_SELECTED | RENDER_STATE_NOTFOCUS | 8;
 
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_NORMAL  = RENDER_STATE_NORMAL|0;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_HOVER   = RENDER_STATE_HOVER|1;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_PRESS   = RENDER_STATE_PRESS|2;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_DISABLE = RENDER_STATE_DISABLE|3;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_NORMAL = RENDER_STATE_NORMAL|RENDER_STATE_SELECTED|4;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_HOVER  = RENDER_STATE_HOVER|RENDER_STATE_SELECTED|5;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_PRESS  = RENDER_STATE_PRESS|RENDER_STATE_SELECTED|6;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_DISABLE = RENDER_STATE_DISABLE|RENDER_STATE_SELECTED|7;
-const unsigned int  LISTCTRLITEM_FOREGND_RENDER_STATE_SELECTED_NOT_FOCUS = RENDER_STATE_SELECTED|RENDER_STATE_NOTFOCUS|8;
+const unsigned int LISTCTRLITEM_FOCUS_RENDER_STATE_NORMAL =
+    RENDER_STATE_NORMAL | 0;
+const unsigned int LISTCTRLITEM_FOCUS_RENDER_STATE_CTRLNOFOCUS =
+    RENDER_STATE_NOTFOCUS | 1;
 
-const unsigned int  LISTCTRLITEM_FOCUS_RENDER_STATE_NORMAL = RENDER_STATE_NORMAL|0;
-const unsigned int  LISTCTRLITEM_FOCUS_RENDER_STATE_CTRLNOFOCUS = RENDER_STATE_NOTFOCUS|1;
+enum RENDER_TYPE {
+  RENDER_TYPE_NULL,
+  RENDER_TYPE_COLOR,
+  RENDER_TYPE_THEME_SYSCOLOR,
+  RENDER_TYPE_GRADIENT,
+  RENDER_TYPE_COLORLIST,
 
+  RENDER_TYPE_IMAGE,
+  RENDER_TYPE_IMAGELIST,
+  RENDER_TYPE_IMAGELISTITEM,
 
-enum RENDER_TYPE
-{
-    RENDER_TYPE_NULL,             
-    RENDER_TYPE_COLOR,       
-    RENDER_TYPE_THEME_SYSCOLOR,
-    RENDER_TYPE_GRADIENT,    
-    RENDER_TYPE_COLORLIST,
+  //	RENDER_TYPE_NOTHEME,    //
+  //Âº∫Âà∂‰ΩøÁî®Á≥ªÁªüÊó†‰∏ªÈ¢òÊ†∑ÂºèÁöÑÊ†∑ÂºèÔºàwin2000Ê†∑ÂºèÔºâÔºåÁõÆÂâç‰ªÖGroupBoxÊîØÊåÅ
+  RENDER_TYPE_THEME_FIRST = 1000,
+  //	RENDER_TYPE_THEME,
+  RENDER_TYPE_THEME_TOOLTIP_WINDOW_BKGND,
 
-    RENDER_TYPE_IMAGE,  
-    RENDER_TYPE_IMAGELIST,
-    RENDER_TYPE_IMAGELISTITEM,
-
-    //	RENDER_TYPE_NOTHEME,    // «ø÷∆ π”√œµÕ≥Œﬁ÷˜Ã‚—˘ Ωµƒ—˘ Ω£®win2000—˘ Ω£©£¨ƒø«∞ΩˆGroupBox÷ß≥÷
-    RENDER_TYPE_THEME_FIRST = 1000,
-    //	RENDER_TYPE_THEME,
-    RENDER_TYPE_THEME_TOOLTIP_WINDOW_BKGND,
-
-    RENDER_TYPE_THEME_LAST = 9999,
+  RENDER_TYPE_THEME_LAST = 9999,
 };
 
 class RenderBase;
-struct UIAPI IRenderBase : public IMessage
-{
-	long  AddRef();
-	long  Release();
+struct UIAPI IRenderBase : public IMessage {
+  void CheckThemeChanged();
+  bool IsThemeRender();
 
-    void  CheckThemeChanged();
-    bool  IsThemeRender();
+  void SetObject(IApplication *pUIApp, IObject *pObject);
+  IObject *GetObject();
 
-    void  SetObject(IApplication*  pUIApp, IObject* pObject);
-    IObject*  GetObject();
+  void SetType(RENDER_TYPE nType);
+  RENDER_TYPE GetType();
 
-    void  SetType(RENDER_TYPE nType);
-    RENDER_TYPE  GetType();
+  IColorRes *GetSkinColorRes();
+  IImageRes *GetSkinImageRes();
 
-    IColorRes*  GetSkinColorRes();
-    IImageRes*  GetSkinImageRes();
+  void Serialize(SERIALIZEDATA *pData);
+  void DrawState(IRenderTarget *, const Rect *prc, int nState);
+  Size GetDesiredSize();
+  void Init();
 
-    void  Serialize(SERIALIZEDATA* pData);
-    void  DrawState(IRenderTarget*, const Rect* prc, int nState);
-    Size  GetDesiredSize();
-    void  Init();
-
-	UI_DECLARE_INTERFACE(RenderBase);
+  UI_DECLARE_INTERFACE(RenderBase);
 };
 
-
-// -- 2015.4.1π˝∆⁄£¨≤ª‘Ÿ π”√
+// -- 2015.4.1ËøáÊúüÔºå‰∏çÂÜç‰ΩøÁî®
 // class NullRender;
 // struct __declspec(uuid("4A0A8C42-CA22-4BD4-8875-C58FB8FC2788"))
 // INullRender : public IRenderBase
@@ -98,6 +105,6 @@ struct UIAPI IRenderBase : public IMessage
 // };
 //////////////////////////////////////////////////////////////////////////
 
-}
+} // namespace ui
 
 #endif // _UI_IRENDERBASE_H_

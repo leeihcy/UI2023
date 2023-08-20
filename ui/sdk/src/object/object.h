@@ -31,6 +31,8 @@ public:
   UIMSG_FINALCONSTRUCT(FinalConstruct)
   UIMSG_FINALRELEASE(FinalRelease)
   UI_END_MSG_MAP()
+  
+  void RouteMessage(ui::Msg *msg);
 
 public:
   IObject *GetIObject();
@@ -41,9 +43,6 @@ public:
 #if defined(OS_WIN)
   bool CreateAccesible(IAccessible **pp);
 #endif
-  void SetDescription(IObjectDescription *);
-  IObjectDescription *GetDescription();
-
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
   Resource *GetResource();
@@ -367,9 +366,8 @@ public:
 
 protected:
   IObject *m_pIObject;
-  Resource *m_pSkinRes; // 用于支持多皮肤包共存（插件模式）
-  IObjectDescription *
-      m_pDescription; // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
+  // 用于支持多皮肤包共存（插件模式）
+  Resource *m_pSkinRes; 
 
   String m_strId; // 该对象在XML中的标识
 #ifdef EDITOR_MODE
@@ -377,17 +375,18 @@ protected:
 #endif
 
 #pragma region //坐标相关数据
-  Rect
-      m_rcParent; // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
-  Rect
-      m_rcExtNonClient; // 扩展的非客户区，与border、padding共同做为对象的非客户区。
+// 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
+  Rect m_rcParent; 
+  // 扩展的非客户区，与border、padding共同做为对象的非客户区。
+  Rect m_rcExtNonClient; 
   Rect m_rcMargin;
   Rect m_rcPadding;
   Rect m_rcBorder;
   // HRGN     m_hRgn;                  //
   // （未使用）如果该对象是一个不规则区域，必须设置该值，该值对window类型对象无效.
   // rgn是相对于窗口左上角的。
-  ILayoutParam *m_pLayoutParam; // 布局参数。由Object负责释放
+  // ui::unique_ptr<ILayoutParam> m_pLayoutParam; // 布局参数。由Object负责释放
+  ILayoutParam* m_pLayoutParam = nullptr;
 #pragma endregion
 
   OBJSTYLE m_objStyle;

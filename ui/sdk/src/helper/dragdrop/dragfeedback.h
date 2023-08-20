@@ -21,7 +21,7 @@ public:
     void  Unbind2DropSource(IDropSource* p);
 
 public:
-    virtual void  SetDescription(HBITMAP hIcon, LPCWSTR szText) override;
+    virtual void  SetMeta(HBITMAP hIcon, LPCWSTR szText) override;
     virtual HRESULT  GiveFeedback(unsigned int dwEffect) override;
 
 private:

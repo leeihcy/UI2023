@@ -14,7 +14,7 @@ HwndHost::HwndHost(IHwndHost* p):Control(p)
 	s.default_reject_all_mouse_msg = 1;  // 默认不接收鼠标消息
 	this->ModifyObjectStyle(&s, 0);
 
-	this->SetDescription(HwndHostDescription::Get());
+	this->SetMeta(HwndHostDescription::Get());
 }
 HwndHost::~HwndHost()
 {

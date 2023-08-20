@@ -1,6 +1,7 @@
 #include "include/inc.h"
 #include "include/interface/icolorrender.h"
 #include "src/render/colorrender/colorrender.h"
+#include "src/render/render_meta.h"
 
 namespace ui
 {

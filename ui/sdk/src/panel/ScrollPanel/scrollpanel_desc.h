@@ -1,11 +1,11 @@
 #pragma once
-#include "include/interface/iobjectdescription.h"
+#include "include/interface/imeta.h"
 #include "include/interface/iscrollpanel.h"
 
-class ScrollPanelDescription : public IObjectDescription
+class ScrollPanelDescription : public IMeta
 {
 public:
-	static IObjectDescription*  Get()
+	static IMeta*  Get()
 	{
 		static ScrollPanelDescription s;
 		return &s;

@@ -4,7 +4,6 @@
 #include "sdk/include/common/uuid/uuid.h"
 
 #include "sdk/include/interface.h"
-#include "sdk/include/uicreator.h"
 #include "sdk/include/uiapi.h"
 
 #include "sdk/include/macro/uidefine.h"
@@ -19,9 +18,8 @@
 // #include "sdk/include/interface/iobject.h"
 // #include "sdk/include/interface/ipanel.h"
 #include "sdk/include/interface/iresbundle.h"
-// #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/renderlibrary.h"
-#include "sdk/include/interface/iobjectdescription.h"
+// #include "sdk/include/interface/imeta.h"
 #include "sdk/include/interface/imapattr.h"
 #include "sdk/include/interface/irenderbase.h"
 #include "sdk/include/interface/itextrenderbase.h"

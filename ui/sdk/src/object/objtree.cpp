@@ -41,8 +41,8 @@ void ObjTree::DestroyChildObject() {
   Object *pObj = nullptr;
   while ((pObj = EnumChildObject(pObj))) {
     this->m_pChild = pObj->m_pNext;
-    if (pObj->m_pIMessage) {
-      pObj->m_pIMessage->Release();
+    if (pObj->m_pIObject) {
+      pObj->GetMeta()->Destroy(pObj->m_pIObject);
       pObj = nullptr;
     }
 
@@ -58,8 +58,8 @@ void ObjTree::DestroyChildObject() {
   pObj = nullptr;
   while ((pObj = EnumNcChildObject(pObj))) {
     this->m_pNcChild = pObj->m_pNext;
-    if (pObj->m_pIMessage) {
-      pObj->m_pIMessage->Release();
+    if (pObj->m_pIObject) {
+      pObj->GetMeta()->Destroy(pObj->m_pIObject);
       pObj = nullptr;
     }
 

@@ -8,7 +8,7 @@
 #include "include/macro/xmldefine.h"
 // #include "include/util/iimage.h"
 #include "include/interface/iuieditor.h"
-#include "include/interface/iobjectdescription.h"
+#include "include/interface/imeta.h"
 #include "include/util/log.h"
 // #include "../common/define.h"
 

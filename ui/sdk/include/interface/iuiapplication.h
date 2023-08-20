@@ -1,7 +1,6 @@
 #ifndef _IUIAPPLICATION_H_
 #define _IUIAPPLICATION_H_
-#include "sdk/include/common/ptr/unique_ptr.h"
-#include "sdk/include/common/uuid/uuid.h"
+#include "sdk/include/interface.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uiapi.h"
 #include <functional>
@@ -27,7 +26,7 @@ struct IStyleManager;
 struct IStyleRes;
 struct ILayoutManager;
 struct ILayoutRes;
-struct IObjectDescription;
+struct IMeta;
 struct IWindowBase;
 struct ITopWindowManager;
 struct IRenderBase;
@@ -36,15 +35,24 @@ struct IMessageFilterMgr;
 struct TOOLTIPITEM;
 class TimerItem;
 
-struct UIAPI IApplication {
-  // 返回的对象，需要调用destroy进行释放！
-  static IApplication* create();
-  static void destroy(IApplication*);
+using IApplicationPtr =
+    std::unique_ptr<ui::IApplication, void (*)(IApplication *)>;
 
+struct UIAPI IApplication {
+  static IApplicationPtr create();
+  friend void destroy(IApplication *p);
+
+private:
+  // 禁止外部继承该类，只能通过create创建。
+  // ApplicationPtr已封装了销毁逻辑。
   IApplication();
+
+protected:
+  // 只能通过内部的destroy函数销毁。
   ~IApplication();
+
+public:
   Application *GetImpl();
-  
 
   void Run();
   void Quit();
@@ -73,7 +81,7 @@ struct UIAPI IApplication {
 
   IObject *CreateUIObjectByName(const wchar_t *szName, IResource *pISkinRes);
   IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *pISkinRes);
-  bool RegisterUIObject(IObjectDescription *p);
+  bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 
   bool RegisterUIRenderBaseCreateData(const wchar_t *szName, int nType,
@@ -132,7 +140,9 @@ private:
   Application *m_pImpl;
 };
 
-using ApplicationPtr = ui::unique_ptr<ui::IApplication>;
+struct ApplicationPtr : public IApplicationPtr {
+  ApplicationPtr() : IApplicationPtr(IApplication::create()) {}
+};
 
 } // namespace ui
 #endif // _IUIAPPLICATION_H_

@@ -5,6 +5,7 @@
 // #include "..\..\Layer\layer.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/res_bundle.h"
+#include "src/object/object_meta.h"
 
 using namespace ui;
 
@@ -24,15 +25,6 @@ UI_IMPLEMENT_INTERFACE(Object, Message)
 // {
 // 	return __pImpl->GetObjectExtentType();
 // }
-
-void  IObject::SetDescription(IObjectDescription* p)
-{
-    __pImpl->SetDescription(p);
-}
-IObjectDescription*  IObject::GetDescription()
-{
-    return __pImpl->GetDescription();
-}
 
 const wchar_t*  IObject::GetId()                          
 {

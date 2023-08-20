@@ -251,16 +251,16 @@ void TopWindowManager::GetAllChildIntoList(Object *pParent,
   if (nullptr == pParent)
     return;
 
-  if (pParent->GetDescription() &&
-      OBJ_CONTROL == pParent->GetDescription()->GetMajorType())
+  if (pParent->GetMeta() &&
+      OBJ_CONTROL == pParent->GetMeta()->Detail().major_type)
     return;
 
   Object *pChild = nullptr;
   while ((pChild = pParent->EnumChildObject(pChild))) {
     listObjects.push_back(pChild);
 
-    if (pParent->GetDescription() &&
-        OBJ_CONTROL != pParent->GetDescription()->GetMajorType())
+    if (pParent->GetMeta() &&
+        OBJ_CONTROL != pParent->GetMeta()->Detail().major_type)
       this->GetAllChildIntoList(pChild, listObjects);
   }
 }

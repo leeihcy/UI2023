@@ -18,7 +18,7 @@
 namespace ui {
 
 class GifTimerManager;
-// struct IObjectDescription;
+// struct IMeta;
 // class ImageManager;
 // class ImageRes;
 // class CursorRes;
@@ -81,7 +81,7 @@ public:
                                    pfnParseControlTag func);
   bool GetSkinTagParseFunc(const wchar_t *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
-  bool RegisterUIObject(IObjectDescription *);
+  bool RegisterUIObject(IMeta *);
   IObject *CreateUIObjectByName(const wchar_t *szXmlName, IResource *);
   IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *);
 
@@ -112,7 +112,7 @@ private:
   // gpu合成总开关
   bool m_bGpuEnable;
 
-  typedef std::vector<IObjectDescription *> UIOBJ_CREATE_DATA;
+  typedef std::vector<IMeta *> UIOBJ_CREATE_DATA;
   typedef std::map<String, pfnParseSkinTag> UISKINTAGPARSE_DATA;
   typedef std::map<String, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
 
