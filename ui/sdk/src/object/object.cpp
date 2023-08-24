@@ -83,6 +83,9 @@ void Object::RouteMessage(ui::Msg *msg) {
     Message::RouteMessage(msg);
     FinalConstruct(static_cast<FinalConstructMessage*>(msg)->resource);
     return;
+  } else if (msg->message == UI_MSG_FINALRELEASE) {
+    FinalRelease();
+    return;
   }
 }
 
@@ -346,7 +349,7 @@ void Object::LoadAttributes(bool bReload) {
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
                      strId.c_str(), m_pIMapAttributeRemain);
 
-  SERIALIZEDATA data = {0};
+  SerializeParam data = {0};
   data.pUIApplication = GetIUIApplication();
   data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = m_pIMapAttributeRemain;
@@ -957,7 +960,8 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   if (m_pParent) {
     ILayout *pLayout = (ILayout *)(m_pParent->SendMessage(UI_MSG_GETLAYOUT));
     if (pLayout) {
-      pLayout->ChildObjectVisibleChanged(m_pIObject);
+      ArrangeParam param = {m_pIObject, ArrangeReason::VisibleChanged};
+      pLayout->Arrange(&param);
     }
   }
 
@@ -1126,7 +1130,7 @@ void Object::InitDefaultAttrib() {
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(), nullptr,
                      pMapAttrib);
 
-  SERIALIZEDATA data = {0};
+  SerializeParam data = {0};
   data.pUIApplication = GetIUIApplication();
   data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = pMapAttrib;

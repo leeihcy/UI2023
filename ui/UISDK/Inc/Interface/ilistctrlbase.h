@@ -25,7 +25,7 @@ namespace ui
 {
     struct  LISTCTRL_CLICKNOTIFY_DATA
     {
-        IListItemBase*  pDowmItem;  // Êó±ê°´ÏÂÊ±µÄitem£¬ÓĞ¿ÉÄÜµ¯ÆğÊ±²»ÔÚ¸ÃitemÉÏ£¬ÕâÓÉÍâ²¿È¥ÅĞ¶Ï¡£
+        IListItemBase*  pDowmItem;  // é¼ æ ‡æŒ‰ä¸‹æ—¶çš„itemï¼Œæœ‰å¯èƒ½å¼¹èµ·æ—¶ä¸åœ¨è¯¥itemä¸Šï¼Œè¿™ç”±å¤–éƒ¨å»åˆ¤æ–­ã€‚
         WPARAM  wParam;
         LPARAM  lParam;
     };
@@ -38,48 +38,48 @@ namespace ui
 	};
 }
 
-//	Ë«»÷listctrl
+//	åŒå‡»listctrl
 //		message: UI_MSG_NOTIFY
 //		code:    UI_LCN_DBCLICK
 //		wparam:  LISTCTRL_CLICKNOTIFY_DATA*
 // #define UI_NM_DBCLICK   135311303
 
-//	µã»÷listctrl
+//	ç‚¹å‡»listctrl
 //		message: UI_MSG_NOTIFY
 //		code:    UI_LCN_CLICK
 //		wparam:  LISTCTRL_CLICKNOTIFY_DATA*
 //#define UI_NM_CLICK     135311304
 
-//  ÓÒ»÷listctrl
+//  å³å‡»listctrl
 //		message: UI_MSG_NOTIFY
 //		code:    UI_NM_RCLICK
 //		wparam:  LISTCTRL_CLICKNOTIFY_DATA*
 // #define UI_NM_RCLICK     136291126
 
-// ¹öÂÖµã»÷listctrl
+// æ»šè½®ç‚¹å‡»listctrl
 //      message: UI_MSG_NOTIFY
 //      code:    UI_NM_MCLICK
 //      wParam: LISTCTRL_CLICKNOTIFY_DATA*
 //#define  UI_NM_MCLICK    158141138
  
-//  ¼üÅÌÏûÏ¢
+//  é”®ç›˜æ¶ˆæ¯
 //      message: UI_MSG_NOTIFY
 //      code:    UI_NM_KEYDOWN
 //      wParam:  vKey
 //      lParam:  
-//      return:  1±íÊ¾ÒÑ´¦Àí£¬0±íÊ¾Î´´¦Àí
+//      return:  1è¡¨ç¤ºå·²å¤„ç†ï¼Œ0è¡¨ç¤ºæœªå¤„ç†
 // #define UI_NM_KEYDOWN    140081548
 
-//	listctrl µ±Ç°Ñ¡ÖĞÏî¸Ä±ä(combobox)
+//	listctrl å½“å‰é€‰ä¸­é¡¹æ”¹å˜(combobox)
 //		message: UI_MSG_NOTIFY
 //		code:    UI_LCN_SELCHANGED
 //		wparam:  IListItemBase* pOld
 //		lparam:  IListItemBase* pNew
-#define UI_LCN_SELCHANGED_SELF  135311306   // ¸ø×Ô¼ºÅÉÉúÀà·¢ËÍµÄ
-// #define UI_LCN_SELCHANGED  135311305  // ¸ø×Ô¼º·¢ËÍµÄ¡£·ÏÆú£¬ĞŞ¸ÄÎªsignal
+#define UI_LCN_SELCHANGED_SELF  135311306   // ç»™è‡ªå·±æ´¾ç”Ÿç±»å‘é€çš„
+// #define UI_LCN_SELCHANGED  135311305  // ç»™è‡ªå·±å‘é€çš„ã€‚åºŸå¼ƒï¼Œä¿®æ”¹ä¸ºsignal
 
 
-//  listctrlµ±Ç°hoverÏî¸Ä±ä\
+//  listctrlå½“å‰hoveré¡¹æ”¹å˜\
 //		message: UI_MSG_NOTIFY
 //		code:    UI_LCN_HOVERITEMCHANGED
 //		wparam:  IListItemBase* pOld
@@ -91,16 +91,16 @@ namespace ui
 //      lParam: IListItemBase*
 #define UI_LCN_DRAWITEM 135311307
 
-// ¼ì²âÒ»¸ö×ø±êÎ»ÓÚÄÄ¸ö¿É¼ûitemÉÏ
+// æ£€æµ‹ä¸€ä¸ªåæ ‡ä½äºå“ªä¸ªå¯è§itemä¸Š
 // HitTest
-//     wParam: x (¿Ø¼ş×ø±ê£¬ÒÑ¼ÆËãÁËÆ«ÒÆ£¬¹ö¶¯µÈ)
+//     wParam: x (æ§ä»¶åæ ‡ï¼Œå·²è®¡ç®—äº†åç§»ï¼Œæ»šåŠ¨ç­‰)
 //     lParam: y
 //     ret: IListItemBase*
 //
 #define UI_LCM_HITTEST  136041628
 
 //
-// Í¨ÖªlistctrlÅÉÉúÀàÌí¼ÓÁËÒ»¸öITEM
+// é€šçŸ¥listctrlæ´¾ç”Ÿç±»æ·»åŠ äº†ä¸€ä¸ªITEM
 // Message: UI_MSG_NOTIFY
 // Code:    UI_LCN_REMOVEITEM
 // WPARAM:  IListItemBase*
@@ -108,39 +108,39 @@ namespace ui
 //
 #define UI_LCN_ITEMADD      136131220
 
-// Í¨ÖªlistctrlÅÉÉúÀàÕıÔÚÉ¾³ıÒ»¸öITEM
+// é€šçŸ¥listctrlæ´¾ç”Ÿç±»æ­£åœ¨åˆ é™¤ä¸€ä¸ªITEM
 // Message: UI_MSG_NOTIFY
 // Code:    UI_LCN_PRE_ITEMREMOVE
 // WPARAM:  IListItemBase*
 #define UI_LCN_PRE_ITEMREMOVE    136131221
 
-// Í¨ÖªlistctrlÅÉÉúÀàÕıÔÚÉ¾³ıÒ»¸öITEM
+// é€šçŸ¥listctrlæ´¾ç”Ÿç±»æ­£åœ¨åˆ é™¤ä¸€ä¸ªITEM
 // Message: UI_MSG_NOTIFY
 // Code:    UI_LCN_PRE_ITEMREMOVE
 // WPARAM:  long lItemId
-// LPARAM:  IListItemBase* (Í¨ÖªÍêÖ®ºó£¬¸Ãitem½«±»É¾³ı)
+// LPARAM:  IListItemBase* (é€šçŸ¥å®Œä¹‹åï¼Œè¯¥itemå°†è¢«åˆ é™¤)
 #define UI_LCN_ITEMREMOVE    136131632
 
-// Í¨ÖªlistctrlÅÉÉúÀàÕıÔÚÉ¾³ıËùÓĞITEM
+// é€šçŸ¥listctrlæ´¾ç”Ÿç±»æ­£åœ¨åˆ é™¤æ‰€æœ‰ITEM
 // Message: UI_MSG_NOTIFY
 // Code:    UI_LCN_REMOVEALLITEM
 #define UI_LCN_PRE_ALLITEMREMOVE 136131222
 
-// Í¨ÖªlistctrlÅÉÉúÀàÕıÔÚÉ¾³ıËùÓĞITEM
+// é€šçŸ¥listctrlæ´¾ç”Ÿç±»æ­£åœ¨åˆ é™¤æ‰€æœ‰ITEM
 // Message: UI_MSG_NOTIFY
 // Code:    UI_LCN_REMOVEALLITEM
 #define UI_LCN_ALLITEMREMOVE 136131223
 
-// Êı¾İÀÁ¼ÓÔØ
+// æ•°æ®æ‡’åŠ è½½
 // wParam: IListItemBase*
 #define UI_LCN_LAZYLOADDATA  156301212
 
-// first/last draw item¸üĞÂ(ĞèÒªfloat_group_headÑùÊ½)
-// ·¢ËÍ¸øÁĞ±íÅÉÉúÀà
+// first/last draw itemæ›´æ–°(éœ€è¦float_group_headæ ·å¼)
+// å‘é€ç»™åˆ—è¡¨æ´¾ç”Ÿç±»
 #define UI_LCN_FIRSTLASTDRAWITEM_UPDATED  157021559
 
-// Í¨Öª×ÓÀàÁ¢¼´½áÊø±à¼­×´Ì¬¡£listctrl±¾Éí²»Ìá¹©±à¼­¹¦ÄÜ¡£µ«ÓĞĞ©Í¨ÖªÖ»ÄÜ´ÓlistitembaseÖĞ
-// ·¢³öÀ´£¬ÈçitemÔÚ±à¼­¹ı³ÌÖĞ±»Ïú»ÙÁË
+// é€šçŸ¥å­ç±»ç«‹å³ç»“æŸç¼–è¾‘çŠ¶æ€ã€‚listctrlæœ¬èº«ä¸æä¾›ç¼–è¾‘åŠŸèƒ½ã€‚ä½†æœ‰äº›é€šçŸ¥åªèƒ½ä»listitembaseä¸­
+// å‘å‡ºæ¥ï¼Œå¦‚itemåœ¨ç¼–è¾‘è¿‡ç¨‹ä¸­è¢«é”€æ¯äº†
 #define UI_MSG_LISTCTRL_DISCARDEDIT  171131553
 
 #define UITVI_ROOT    ((UI::IListItemBase*)TVI_ROOT)
@@ -151,7 +151,7 @@ namespace ui
 {
 
 typedef bool (*ListItemCompareProc)(IListItemBase* p1, IListItemBase* p2);
-typedef bool (*ListItemEnumProc)(IListItemBase* pItem, WPARAM, LPARAM);   // ·µ»ØfalseÊ±Í£Ö¹enum
+typedef bool (*ListItemEnumProc)(IListItemBase* pItem, WPARAM, LPARAM);   // è¿”å›falseæ—¶åœæ­¢enum
 
 enum LISTITEM_VISIBLE_POS_TYPE
 {
@@ -171,14 +171,14 @@ enum LISTITEM_VISIBLE_POS_TYPE
 };
 
 #if 0
-// Ìí¼ÓÁĞ±íÏîµÄÒ»Ğ©±êÊ¶£¬Ö÷ÒªÊÇÓÃÓÚÌá¸ßÅúÁ¿Ìí¼ÓÊ±µÄĞ§ÂÊ
+// æ·»åŠ åˆ—è¡¨é¡¹çš„ä¸€äº›æ ‡è¯†ï¼Œä¸»è¦æ˜¯ç”¨äºæé«˜æ‰¹é‡æ·»åŠ æ—¶çš„æ•ˆç‡
 enum LISTCTRL_OP_FLAG
 {
 	LF_NONE =             0x0000,
-	// LF_REDRAW =           0x0001,    // Ë¢ĞÂ ¹ıÆÚ£¬Í³Ò»²ÉÓÃÑÓ³ÙË¢ĞÂ£¬ÍâÃæ²»ÓÃ¹ÜË¢ĞÂÂß¼­
-	LF_LAYOUT =           0x0002,    // ¼ÆËãÃ¿¸ö×ÓÏîµÄÎ»ÖÃ
-	LF_SORT =             0x0004,    // ÅÅĞò¡£×îºó±ØĞëµ÷ÓÃÒ»´Î
-	LF_UPDATEITEMINDEX =  0x0008,    // ¸üĞÂË÷Òı
+	// LF_REDRAW =           0x0001,    // åˆ·æ–° è¿‡æœŸï¼Œç»Ÿä¸€é‡‡ç”¨å»¶è¿Ÿåˆ·æ–°ï¼Œå¤–é¢ä¸ç”¨ç®¡åˆ·æ–°é€»è¾‘
+	LF_LAYOUT =           0x0002,    // è®¡ç®—æ¯ä¸ªå­é¡¹çš„ä½ç½®
+	LF_SORT =             0x0004,    // æ’åºã€‚æœ€åå¿…é¡»è°ƒç”¨ä¸€æ¬¡
+	LF_UPDATEITEMINDEX =  0x0008,    // æ›´æ–°ç´¢å¼•
 	LF_ALL =  (/*LF_REDRAW|*/LF_LAYOUT|LF_SORT|LF_UPDATEITEMINDEX),
 };
 typedef long LISTITEM_OPFLAGS;
@@ -186,25 +186,25 @@ typedef long LISTITEM_OPFLAGS;
 
 typedef struct tagListCtrlStyle
 {
-	bool  sort_ascend : 1;        // ÉıĞòÅÅĞò
-	bool  sort_descend : 1;       // ½µĞòÅÅĞò
+	bool  sort_ascend : 1;        // å‡åºæ’åº
+	bool  sort_descend : 1;       // é™åºæ’åº
 	bool  sort_child : 1; 
-	bool  multiple_sel : 1;       // ÊÇ·ñÖ§³Ö¶àÑ¡
-	bool  popuplistbox : 1;       // µ¯³öÊ½listboxÊ½Êó±ê¹ÜÀíÆ÷£¬1.Êó±ê°´ÏÂÊ±²»Ñ¡Ôñ£¬Êó±êµ¯ÆğÊ±Ñ¡Ôñ 2. µ±Ã»ÓĞhoverÊ±ÏÔÊ¾sel 3. µ±ÓĞhoverÊ±ÏÔÊ¾hover 4. Êó±êÒÆ³ö¿Ø¼şÊ±²»È¡Ïûhover
-	bool  menu : 1;               // ²Ëµ¥Ê½Êó±ê¹ÜÀíÆ÷£¬1. Êó±êµ¯ÆğÊ±£¬Èç¹û²»ÔÚpressitemÉÏ£¬Ôò²»´¥·¢click
-    bool  destroying : 1;         // ÕıÔÚ±»Ïú»Ù(FinalRelease)
-    bool  float_group_head : 1;   // ĞèÒªÏÔÊ¾¸¡¶¯×éÍ·
-    bool  dragwnd_if_clickblank : 1; // Êó±êµã»÷¿Õ°×ÇøÓòÊ±£¬ÍÏ×§´°¿Ú
-    bool  changeselection_onlbuttonup : 1; // Êó±êµ¯ÆğÊ±²ÅĞŞ¸ÄÑ¡Çø
+	bool  multiple_sel : 1;       // æ˜¯å¦æ”¯æŒå¤šé€‰
+	bool  popuplistbox : 1;       // å¼¹å‡ºå¼listboxå¼é¼ æ ‡ç®¡ç†å™¨ï¼Œ1.é¼ æ ‡æŒ‰ä¸‹æ—¶ä¸é€‰æ‹©ï¼Œé¼ æ ‡å¼¹èµ·æ—¶é€‰æ‹© 2. å½“æ²¡æœ‰hoveræ—¶æ˜¾ç¤ºsel 3. å½“æœ‰hoveræ—¶æ˜¾ç¤ºhover 4. é¼ æ ‡ç§»å‡ºæ§ä»¶æ—¶ä¸å–æ¶ˆhover
+	bool  menu : 1;               // èœå•å¼é¼ æ ‡ç®¡ç†å™¨ï¼Œ1. é¼ æ ‡å¼¹èµ·æ—¶ï¼Œå¦‚æœä¸åœ¨pressitemä¸Šï¼Œåˆ™ä¸è§¦å‘click
+  bool  destroying : 1;         // æ­£åœ¨è¢«é”€æ¯(FinalRelease)
+  bool  float_group_head : 1;   // éœ€è¦æ˜¾ç¤ºæµ®åŠ¨ç»„å¤´
+  bool  dragwnd_if_clickblank : 1; // é¼ æ ‡ç‚¹å‡»ç©ºç™½åŒºåŸŸæ—¶ï¼Œæ‹–æ‹½çª—å£
+  bool  changeselection_onlbuttonup : 1; // é¼ æ ‡å¼¹èµ·æ—¶æ‰ä¿®æ”¹é€‰åŒº
 	
 }LISTCTRLSTYLE;
 
 
-// ÏûÏ¢Ó³ÉäID·ÖÀà 
-// #define LISTCTRLBASE_KEYBOARDMOUSEMGR_PREMSG_ID   1   // mousemgr´¦ÀíÇ°ÏÈ·¢¸ølistctrl´¦ÀíµÄÏûÏ¢Ó³ÉäID
-// #define LISTCTRLBASE_KEYBOARDMOUSEMGR_POSTMSG_ID  2   // mousemgr´¦ÀíºóÔÙ·¢¸ølistctrl´¦ÀíµÄÏûÏ¢Ó³ÉäID
-// #define LISTCTRLBASE_INNER_CONTROL_MSG_ID  3  // ÄÚ²¿¿Ø¼şID¡£µ±ÄÚ²¿¿Ø¼şµ÷ÓÃDoNotifyÊÇ£¬½«·¢µ½Õâ¸öIDÉÏ	
-#define LISTCTRLBASE_EDIT_CONTROL_MSG_ID   4  // ±à¼­¿Ø¼şÏûÏ¢Í¨ÖªID
+// æ¶ˆæ¯æ˜ å°„IDåˆ†ç±» 
+// #define LISTCTRLBASE_KEYBOARDMOUSEMGR_PREMSG_ID   1   // mousemgrå¤„ç†å‰å…ˆå‘ç»™listctrlå¤„ç†çš„æ¶ˆæ¯æ˜ å°„ID
+// #define LISTCTRLBASE_KEYBOARDMOUSEMGR_POSTMSG_ID  2   // mousemgrå¤„ç†åå†å‘ç»™listctrlå¤„ç†çš„æ¶ˆæ¯æ˜ å°„ID
+// #define LISTCTRLBASE_INNER_CONTROL_MSG_ID  3  // å†…éƒ¨æ§ä»¶IDã€‚å½“å†…éƒ¨æ§ä»¶è°ƒç”¨DoNotifyæ˜¯ï¼Œå°†å‘åˆ°è¿™ä¸ªIDä¸Š	
+#define LISTCTRLBASE_EDIT_CONTROL_MSG_ID   4  // ç¼–è¾‘æ§ä»¶æ¶ˆæ¯é€šçŸ¥ID
 
 struct UIAPI IListCtrlBase : public IControl
 {
@@ -364,17 +364,17 @@ interface UIAPI IListItemShareData : public IMessage
 
 #define UI_MSGMAPID_LC_LAYOUT 142901215
 
-// ÏòÁĞ±í¿Ø¼ş»ñÈ¡ĞĞ¼ä¾à
+// å‘åˆ—è¡¨æ§ä»¶è·å–è¡Œé—´è·
 #define UI_LCM_LAYOUT_GET_LINESPACE  142901216
-// ÏòÁĞ±í¿Ø¼ş»ñÈ¡item¼ä¾à
+// å‘åˆ—è¡¨æ§ä»¶è·å–itemé—´è·
 #define UI_LCM_LAYOUT_GET_ITEMSPACE  142901217
 
-// ¸ÃÁĞ±íÏîµ¥¶ÀÕ¼ÓÃÒ»ĞĞ
+// è¯¥åˆ—è¡¨é¡¹å•ç‹¬å ç”¨ä¸€è¡Œ
 #define UI_LISTCTRL_LAYOUT_HORZ_SINGLELINE -3
-// ¸ÃÁĞ±íÏîÕ¼Âúµ±Ç°ĞĞµÄÊ£Óà¿Õ¼ä
+// è¯¥åˆ—è¡¨é¡¹å æ»¡å½“å‰è¡Œçš„å‰©ä½™ç©ºé—´
 //#define UI_LISTCTRL_LAYOUT_HORZ_REMAINLINE -4
 
-// Ã¿ÖÖ²¼¾ÖÒªÊµÏÖµÄ»ùÀà
+// æ¯ç§å¸ƒå±€è¦å®ç°çš„åŸºç±»
 interface IListCtrlLayout
 {
     virtual ~IListCtrlLayout() = 0 {};

@@ -187,7 +187,7 @@ const wchar_t*  StringAttribute::GetDefault()
 	return m_strDefault.c_str();
 }
 
-void StringAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void StringAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
     p->String2Editor(this, e);
 }

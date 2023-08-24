@@ -205,7 +205,7 @@ LongAttribute*  LongAttribute::AddAlias(long l, const wchar_t* sz)
     return this;
 }
 
-void  LongAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  LongAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
     p->Long2Editor(this, e);
 }

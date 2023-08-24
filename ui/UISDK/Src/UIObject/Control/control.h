@@ -20,7 +20,7 @@ public:
 
     IControl*  GetIControl() { return m_pIControl; }
 
-    void  OnSerialize(SERIALIZEDATA* pData);
+    void  OnSerialize(SerializeParam* pData);
 
 	void  ModifyControlStyle(ControlStyle* add, ControlStyle* remove);
 	bool  TestControlStyle(ControlStyle* test);

@@ -8,7 +8,7 @@
 
 //   void SetObject(Object *p) { m_pObj = p; }
 //   virtual void UpdateByRect() {}
-//   virtual void Serialize(SERIALIZEDATA *pData) {}
+//   virtual void Serialize(SerializeParam *pData) {}
 
 //   virtual Size CalcDesiredSize() {
 //     Size s = {0, 0};
@@ -83,7 +83,7 @@ public:
       UICreateIMapAttribute(&pMapAttr);
     }
     if (pMapAttr) {
-      SERIALIZEDATA data = {0};
+      SerializeParam data = {0};
       data.pUIApplication = pObj->GetUIApplication();
       data.pSkinRes = pObj->GetResBundle();
       data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
@@ -117,16 +117,11 @@ public:
   }
 
   // Arrage由基类统管，子类实现DoArrage
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) = 0;
-  virtual void Arrange(IObject *pObjToArrage = nullptr) override {
+  virtual void DoArrange(ArrangeParam* param) = 0;
+  virtual void Arrange(ArrangeParam* param) override {
     m_bDirty = false;
-    DoArrage(pObjToArrage);
+    DoArrange(pObjToArrage);
   }
-
- 
-
-  virtual void ChildObjectContentSizeChanged(IObject *pObj) override {}
-
 
 };
 

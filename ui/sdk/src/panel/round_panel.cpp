@@ -59,7 +59,7 @@ void  RoundPanel::SetRadius(
     m_rightbottom = rightbottom;
 }
 
-void  RoundPanel::OnSerialize(SERIALIZEDATA* pData)
+void  RoundPanel::OnSerialize(SerializeParam* pData)
 {
 	__super::OnSerialize(pData);
 

@@ -213,13 +213,18 @@ void  IApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback cal
     m_pImpl->GetTextRenderFactroy().EnumTextRenderBaseName(callback, wParam, lParam);
 }
 
-bool  IApplication::CreateLayoutByName(const wchar_t* szName, IObject* pObject, bool bCreateDefault, ILayout** ppOut) 
-{ 
-    return m_pImpl->GetLayoutFactory().CreateByName(szName, pObject, bCreateDefault, ppOut); 
+bool IApplication::CreateLayoutByName(const wchar_t *szName, IObject *pObject,
+                                      bool bCreateDefault, ILayout **ppOut) {
+  return m_pImpl->GetLayoutFactory().CreateByName(szName, pObject,
+                                                  bCreateDefault, ppOut);
 }
-void  IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam, long lParam)
-{
-    m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
+void IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback,
+                                  long wParam, long lParam) {
+  m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
+}
+bool IApplication::RegisterLayout(const wchar_t *name,
+                                  pfnUICreateLayoutPtr pfn) {
+  return m_pImpl->GetLayoutFactory().Register(name, pfn);
 }
 // bool  IApplication::IsDialogMessage(MSG* pMsg) 
 // {

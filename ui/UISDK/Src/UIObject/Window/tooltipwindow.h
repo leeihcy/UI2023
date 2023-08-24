@@ -32,7 +32,7 @@ public:
 	virtual bool  SetTitle(const String& strText);
 	virtual bool  Show();
 	virtual bool  Hide();
-	virtual void  OnSerialize(SERIALIZEDATA* pData);
+	virtual void  OnSerialize(SerializeParam* pData);
 private:
 	String   m_strText;
 	int      m_nLimitWidth;

@@ -26,7 +26,7 @@ BOOL TooltipWindow::PreCreateWindow(CREATESTRUCT* pcs)
 	return TRUE;
 }
 
-void  TooltipWindow::OnSerialize(SERIALIZEDATA* pData)
+void  TooltipWindow::OnSerialize(SerializeParam* pData)
 {
 	this->EnableWindowLayered(true);  // 先于__super::SetAttribute，指定创建Gdiplus类型资源
 

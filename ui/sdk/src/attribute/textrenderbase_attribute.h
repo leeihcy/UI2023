@@ -16,9 +16,9 @@ public:
     virtual bool  IsDefaultValue() override;
     void  SetBindValue(void*) override;
 
-	virtual void  Load(SERIALIZEDATA*) override;
-	virtual void  Save(SERIALIZEDATA*) override;
-	virtual void  Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
+	virtual void  Load(SerializeParam*) override;
+	virtual void  Save(SerializeParam*) override;
+	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
 
 public:
     void  SetObjectPtr(Object* p)
@@ -36,7 +36,7 @@ public:
     ITextRenderBaseAttribute*  GetITextRenderBaseAttribute();
 
 private:
-	void  do_child_action(SERIALIZEDATA* pData);
+	void  do_child_action(SerializeParam* pData);
 
 private:
     ITextRenderBaseAttribute*  m_pITextRenderBaseAttribute;

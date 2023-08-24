@@ -15,9 +15,8 @@ public:
   void Release() override { delete this; }
 
   virtual void UpdateByRect() override;
-  virtual void Serialize(SERIALIZEDATA *pData) override;
+  virtual void Serialize(SerializeParam *pData) override;
   virtual Size CalcDesiredSize() override;
-  virtual bool IsSizedByContent() override;
 
 public:
   virtual long GetConfigWidth() override;
@@ -33,6 +32,7 @@ public:
   virtual void SetConfigLayoutFlags(long) override;
   virtual long GetConfigLayoutFlags() override;
 
+  bool IsSizedByContent();
 private:
   Object *m_pObj;
   
@@ -52,10 +52,9 @@ public:
   ~HorzLayout();
 
   virtual Size Measure() override;
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
-  virtual void Serialize(SERIALIZEDATA *pData) override;
-  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
-  virtual void ChildObjectContentSizeChanged(IObject *pObj) override;
+  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void Serialize(SerializeParam *pData) override;
+  // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
   virtual void SetSpace(int n) override;
 

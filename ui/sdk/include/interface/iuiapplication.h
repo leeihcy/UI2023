@@ -1,6 +1,7 @@
 #ifndef _IUIAPPLICATION_H_
 #define _IUIAPPLICATION_H_
 #include "sdk/include/interface.h"
+#include "sdk/include/interface/ilayout.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uiapi.h"
 #include <functional>
@@ -103,6 +104,7 @@ public:
                           bool bCreateDefault, ILayout **ppOut);
   void EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam,
                       long lParam);
+  bool RegisterLayout(const wchar_t* name, pfnUICreateLayoutPtr pfn);  
 
 #if 0
     bool  IsDialogMessage(MSG* pMsg);

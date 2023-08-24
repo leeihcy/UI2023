@@ -6,7 +6,7 @@
 
 namespace ui {
 struct IObject;
-struct SERIALIZEDATA;
+struct SerializeParam;
 struct Rect;
 struct Size;
 struct Color;
@@ -294,7 +294,7 @@ private:
 
 class AttributeSerializer;
 struct UIAPI AttributeSerializerWrap {
-  AttributeSerializerWrap(SERIALIZEDATA *, const wchar_t *szGroupName);
+  AttributeSerializerWrap(SerializeParam *, const wchar_t *szGroupName);
   ~AttributeSerializerWrap();
   AttributeSerializer *GetImpl();
 

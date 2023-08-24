@@ -57,8 +57,8 @@ public:
   TopWindowManager *GetTopWindowMgr() { return &m_TopWindowMgr; }
   uia::IAnimateManager *GetAnimateManager();
 #if 0    
-    GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
-    IWaitForHandlesMgr*  GetWaitForHandlesMgr() { return &m_WaitForHandlesMgr; }
+  GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
+  IWaitForHandlesMgr*  GetWaitForHandlesMgr() { return &m_WaitForHandlesMgr; }
 	IMessageFilterMgr*  GetMessageFilterMgr() { return &m_MsgFilterMgr; }
 	HMODULE  GetUID2DModule();
 	HMODULE  GetUID3DModule();

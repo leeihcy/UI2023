@@ -78,7 +78,7 @@ void CustomWindow::virtualInnerInitWindow( )
     }
 }
 
-void  CustomWindow::OnSerialize(SERIALIZEDATA* pData)
+void  CustomWindow::OnSerialize(SerializeParam* pData)
 {
 	// 注：这里需要将设置分层窗口的属性放在前面。因为object中很多背景图依赖于窗口类型
 	Window::OnSerialize(pData);

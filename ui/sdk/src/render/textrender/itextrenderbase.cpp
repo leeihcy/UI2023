@@ -71,7 +71,7 @@ IRenderFont*  ITextRenderBase::GetRenderFont()
         UI_MSG_GETRENDERFONT));
 }
 
-void  ITextRenderBase::Serialize(SERIALIZEDATA* pData)
+void  ITextRenderBase::Serialize(SerializeParam* pData)
 {
     static_cast<IMessage*>(this)->SendMessage(UI_MSG_SERIALIZE, (long)pData);
 }

@@ -157,7 +157,7 @@ bool  BoolAttribute::IsDefaultValue()
     return GetBool() == m_bDefault;
 }
 
-void  BoolAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  BoolAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
     p->Bool2Editor(this, e);
 }

@@ -143,7 +143,7 @@ IListCtrlBase*  ListCtrlBase::GetIListCtrlBase()
     return m_pIListCtrlBase; 
 }
 
-void  ListCtrlBase::OnSerialize(SERIALIZEDATA* pData)
+void  ListCtrlBase::OnSerialize(SerializeParam* pData)
 {
 	DO_PARENT_PROCESS(IListCtrlBase, IControl);
 
@@ -176,7 +176,7 @@ void  ListCtrlBase::OnSerialize(SERIALIZEDATA* pData)
 //         pUIApp->CreateTextRenderBase(TEXTRENDER_TYPE_SIMPLE, m_pIListCtrlBase, &pTextRender);
 //         if (pTextRender)
 //         {
-//             SERIALIZEDATA data = {0};
+//             SerializeParam data = {0};
 //             data.pUIApplication = GetIUIApplication();
 //             data.pMapAttrib = pMapAttrib;
 //             data.szPrefix = nullptr;
@@ -192,7 +192,7 @@ void  ListCtrlBase::OnSerialize(SERIALIZEDATA* pData)
         map<int, IListItemShareData*>::iterator iter = m_mapItemTypeShareData.begin();
         for (; iter != m_mapItemTypeShareData.end(); iter++)
         {
-// 		    SERIALIZEDATA data = {0};
+// 		    SerializeParam data = {0};
 //             data.pUIApplication = GetIUIApplication();
 // 		    data.pMapAttrib = pData->pMapAttrib;
 // 		    data.nFlags = SERIALIZEFLAG_LOAD;
@@ -1092,7 +1092,7 @@ void ListCtrlBase::LayoutItem(ListItemBase* pStart, bool bRedraw)
 	SetCalcFirstLastDrawItemFlag();
     m_bNeedLayoutItems = false;
 
-	if (m_pLayoutParam && m_pLayoutParam->IsSizedByContent())
+	if (m_pLayoutParam && false/*m_pLayoutParam->IsSizedByContent()*/)
 	{
 		ILayout* layout = __super::GetLayout();
 		if (layout)
@@ -2530,7 +2530,7 @@ void  ListCtrlBase::SetItemTypeShareData(int lType, IListItemShareData* pData)
         pData->GetImpl()->SetListCtrlBase(this);
         if (this->m_pIMapAttributeRemain)
         {
-			SERIALIZEDATA data = {0};
+			SerializeParam data = {0};
             data.pUIApplication = GetIUIApplication();
 			data.pMapAttrib = m_pIMapAttributeRemain;
 			data.nFlags = SERIALIZEFLAG_LOAD;

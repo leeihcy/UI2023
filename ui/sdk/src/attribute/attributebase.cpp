@@ -108,7 +108,7 @@ Application*  AttributeBase::GetUIApplication()
 	return m_pUIApplication;
 }
 
-void  AttributeBase::Load(SERIALIZEDATA* pData)
+void  AttributeBase::Load(SerializeParam* pData)
 {
 	bool bEraseAttr = pData->NeedErase();
 
@@ -164,7 +164,7 @@ void  AttributeBase::Load(SERIALIZEDATA* pData)
 	}
 }
 
-void  AttributeBase::Save(SERIALIZEDATA* pData)
+void  AttributeBase::Save(SerializeParam* pData)
 {
 	const wchar_t* szKey = GetKey();
 	if (!szKey)

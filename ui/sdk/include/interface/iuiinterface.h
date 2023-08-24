@@ -60,7 +60,7 @@ namespace ui
 		virtual bool  Show(HWND hWndParent) = 0;
 		virtual bool  Hide() = 0;
 		virtual bool  SetUIApplication(IApplication* p) = 0;
-		virtual void  OnSerialize(SERIALIZEDATA* pData) = 0;
+		virtual void  OnSerialize(SerializeParam* pData) = 0;
 	};
 
 	struct IWaitForHandleCallback

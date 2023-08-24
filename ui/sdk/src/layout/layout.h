@@ -74,10 +74,10 @@ public:
   void SetDirty(bool b) override { m_bDirty = b; }
 
   // Arrage由基类统管，子类实现DoArrage
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) = 0;
-  virtual void Arrange(IObject *pObjToArrage = nullptr) override {
+  virtual void DoArrange(ArrangeParam* param) = 0;
+  virtual void Arrange(ArrangeParam* param) override {
     m_bDirty = false;
-    DoArrage(pObjToArrage);
+    DoArrange(param);
   }
 
   ILayoutParam *CreateLayoutParam(IObject *pObj) override {
@@ -87,7 +87,7 @@ public:
     TParam *p = new TParam(pObj->GetImpl());
     IMapAttribute *pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
-    SERIALIZEDATA data = {0};
+    SerializeParam data = {0};
     data.pUIApplication = pObj->GetUIApplication();
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
@@ -117,8 +117,6 @@ public:
     pObj->SetLayoutParam(pParam);
     return static_cast<TParam *>(pParam);
   }
-
-  void ChildObjectContentSizeChanged(IObject *pObj) override {}
 
 protected:
   Object *m_pPanel; // 与该布局关联的panel

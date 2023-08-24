@@ -44,7 +44,7 @@ protected:
   void OnPaint(IRenderTarget *pRenderTarget);
   void OnPostPaint(IRenderTarget *pRenderTarget);
   long OnGetLayoutPtr(unsigned int uMsg, long wParam, long lParam);
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void OnGetDesiredSize(Size *pSize); 
 protected:
   IPanel *m_pIPanel;

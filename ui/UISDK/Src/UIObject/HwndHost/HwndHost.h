@@ -31,7 +31,7 @@ public:
 protected:
 	LONG_PTR  OnHitTest(POINT* pt, POINT*  ptInChild);
 	void  OnVisibleChanged(BOOL bVisible, IObject* pObjChanged);
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
     void  GetDesiredSize(SIZE* pSize);
 
 	virtual void  SetObjectPos( int x, int y, int cx, int cy, int nFlag=0) override;

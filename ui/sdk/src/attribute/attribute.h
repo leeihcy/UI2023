@@ -55,7 +55,7 @@ struct IMapAttribute;
 class AttributeSerializer
 {
 public:
-    AttributeSerializer(SERIALIZEDATA*, const wchar_t* szGroupName);
+    AttributeSerializer(SerializeParam*, const wchar_t* szGroupName);
     ~AttributeSerializer();
     AttributeBase*  Add(long eType, const wchar_t* szKey);
     AttributeBase*  Add(long eType, const wchar_t* szKey, void* pBindValue);
@@ -67,7 +67,7 @@ public:
     void  Editor();
 
     IApplication*  GetUIApplication();
-    SERIALIZEDATA*  GetSerializeData();
+    SerializeParam*  GetSerializeData();
 
 public:
     // 封装
@@ -126,7 +126,7 @@ private:
     typedef  _AttrList::iterator   _AttrIter;
 
     _AttrList  m_list;
-    SERIALIZEDATA*  m_pData;
+    SerializeParam*  m_pData;
 	String  m_strGroupName;
 };
 
@@ -141,7 +141,7 @@ public:
     void  Clear();
     void  AddAttribute(
 			AttributeBase* p, 
-			SERIALIZEDATA* pData, 
+			SerializeParam* pData, 
 			const wchar_t* szGroupName);
 
     AttributeBase*  FindAttributeByKey(const wchar_t* szKey);

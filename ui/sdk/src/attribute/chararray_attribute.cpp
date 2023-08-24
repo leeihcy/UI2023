@@ -164,7 +164,7 @@ const wchar_t*  CharArrayAttribute::GetDefault()
 	return m_strDefault.c_str();
 }
 
-void  CharArrayAttribute::Editor(SERIALIZEDATA* pData, UI::AttributeEditorProxy* p, UI::EditorAttributeFlag e)
+void  CharArrayAttribute::Editor(SerializeParam* pData, UI::AttributeEditorProxy* p, UI::EditorAttributeFlag e)
 {
     p->CharArray2Editor(this, e);
 }

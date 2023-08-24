@@ -46,7 +46,7 @@ long Window::FinalConstruct() {
   return 0;
 }
 
-void Window::OnSerialize(SERIALIZEDATA *pData) {
+void Window::OnSerialize(SerializeParam *pData) {
   // 放在最前面，设置好Graphics Render Library
   m_window_render.OnSerialize(pData);
   Panel::OnSerialize(pData);

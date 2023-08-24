@@ -13,7 +13,7 @@ struct UISVGAPI ISvg : public ui::IPanel {
   static Uuid UUID() { return Uuid("3855b19a-39b6-11ee-9f56-f45c89b0174f"); }
   UI_DECLARE_INTERFACE_ACROSSMODULE(Svg)
 };
-using SvgPtr = ui::unique_ptr<ISvg>;
+UI_DEFINE_PTR(Svg);
 
 } // namespace svg
 } // namespace ui

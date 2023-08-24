@@ -109,7 +109,7 @@ public:
     bool  IsVScrollBarAtTop();
     bool  IsVScrollBarAtBottom();
 
-	void  Serialize(SERIALIZEDATA* pData);
+	void  Serialize(SerializeParam* pData);
 
     void  DoMouseWheel(unsigned int nFlags, 
 			short zDelta, POINT pt,

@@ -19,7 +19,7 @@ class Compositor;
 class Layer;
 struct IObjectLayerContent;
 struct IListItemLayerContent;
-struct SERIALIZEDATA;
+struct SerializeParam;
 struct IRenderTarget;
 struct Rect;
 struct Rect;
@@ -35,7 +35,7 @@ public:
 #if defined(OS_WIN)
   void BindHWND(HWND hWnd);
 #endif
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void OnWindowSize(unsigned int nWidth, unsigned int nHeight);
   void OnWindowPaint(const Rect& dirty);
 

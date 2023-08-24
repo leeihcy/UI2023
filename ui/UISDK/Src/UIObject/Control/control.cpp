@@ -20,7 +20,7 @@ Control::Control(IControl* p) : Object(p)
     m_objStyle.default_tabstop = 1;
 }
 
-void  Control::OnSerialize(SERIALIZEDATA* pData)
+void  Control::OnSerialize(SerializeParam* pData)
 {
     __super::OnSerialize(pData);
 
@@ -50,7 +50,7 @@ void  Control::OnSerialize(SERIALIZEDATA* pData)
 // 		// ×ÖÌå
 // 		if (m_pTextRender)
 // 		{
-// 			SERIALIZEDATA data(*pData);
+// 			SerializeParam data(*pData);
 // 			data.szParentKey = XML_TEXTRENDER_TYPE;
 // 			if (data.pUIApplication->IsDesignMode())
 // 				data.SetErase(false);
@@ -128,7 +128,7 @@ ITextRenderBase*  Control::CreateDefaultTextRender()
 			if (!pMapAttr)
 				UICreateIMapAttribute(&pMapAttr);
 			
-            SERIALIZEDATA data = {0};
+            SerializeParam data = {0};
             data.pUIApplication = GetUIApplication()->GetIUIApplication();
 			data.pSkinRes = m_pSkinRes->GetIResource();
             data.pMapAttrib = pMapAttr;
@@ -183,7 +183,7 @@ void Control::TryUpdateLayoutOnContentChanged()
 	while (pObj)
 	{
 		ILayoutParam*  param = pObj->GetSafeLayoutParam();
-		if (!param || !param->IsSizedByContent())
+		if (!param /*|| !param->IsSizedByContent()*/)
 			break;
 
 		Object* parent = pObj->GetParentObject();

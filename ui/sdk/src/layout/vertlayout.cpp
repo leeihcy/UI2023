@@ -13,7 +13,7 @@ VertLayout::VertLayout() {
   //	this->m_eDirection = LAYOUT_Vert_LEFTTORIGHT;   // 默认堆栈是从左到右
 }
 VertLayout::~VertLayout() {}
-void VertLayout::Serialize(SERIALIZEDATA *pData) {
+void VertLayout::Serialize(SerializeParam *pData) {
   //     AttributeSerializer s(pData, TEXT("VertLayout"));
   //
   //     s.AddLong(XML_LAYOUT_VERT_GAP, this,
@@ -72,7 +72,7 @@ struct ObjLayoutInfo {
   int height; // 不包含margin
 };
 
-void VertLayout::DoArrage(IObject * /*pIObjToArrage*/) {
+void VertLayout::DoArrange(ArrangeParam* param) {
   // 计算每个子控件需要的宽度及其布局顺序
   int nChildCount = m_pPanel->GetChildCount();
   if (nChildCount <= 0)
@@ -235,23 +235,23 @@ void VertLayout::DoArrage(IObject * /*pIObjToArrage*/) {
   }
 }
 
-void VertLayout::ChildObjectVisibleChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void VertLayout::ChildObjectVisibleChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  SetDirty(true);
-  m_pPanel->Invalidate();
-}
+//   SetDirty(true);
+//   m_pPanel->Invalidate();
+// }
 
-void VertLayout::ChildObjectContentSizeChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void VertLayout::ChildObjectContentSizeChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  SetDirty(true);
-  m_pPanel->Invalidate();
-}
+//   SetDirty(true);
+//   m_pPanel->Invalidate();
+// }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -278,7 +278,7 @@ void VertLayoutParam::UpdateByRect() {
   }
 }
 
-void VertLayoutParam::Serialize(SERIALIZEDATA *pData) {
+void VertLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializer s(pData, TEXT("VertLayoutParam"));
 
   s.AddString(XML_WIDTH, Slot(&VertLayoutParam::LoadConfigWidth, this),

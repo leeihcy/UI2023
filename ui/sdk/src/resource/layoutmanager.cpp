@@ -56,8 +56,10 @@ Object *LayoutManager::LoadPluginLayout(const wchar_t *szWndId,
 
   ILayout *pLayout = (ILayout *)(pNewParent->SendMessage(UI_MSG_GETLAYOUT));
   if (pLayout) {
-    pLayout->ChildObjectVisibleChanged(pFirstChild->GetIObject());
     pLayout->SetDirty(true);
+
+    ArrangeParam param = {pFirstChild->GetIObject(), ArrangeReason::VisibleChanged};
+    pLayout->Arrange(&param);
   }
 
   // 发送初始化通知( TBD:

@@ -13,7 +13,7 @@
 namespace ui {
 // 将xml用的配置转成对象的属性，注意，子类重载该函数时，必须先调用父类的该方法
 // bReload表示为换肤时调用，此时不能再给某些属性赋值，例如text属性
-void  Object::OnSerialize(SERIALIZEDATA* pData)
+void  Object::OnSerialize(SerializeParam* pData)
 {
     IMapAttribute*  pMapAttrib = pData->pMapAttrib;
 	if (pData->IsReload())
@@ -143,7 +143,7 @@ void  Object::OnSerialize(SERIALIZEDATA* pData)
 	   // 背景属性
 // 	   if (m_pBkgndRender)
 // 	   {
-// 		   SERIALIZEDATA data(*pData);
+// 		   SerializeParam data(*pData);
 // 		   data.szParentKey = XML_BACKGND_RENDER_PREFIX XML_RENDER_TYPE;
 // 		   data.szPrefix = XML_BACKGND_RENDER_PREFIX;
 // 
@@ -159,7 +159,7 @@ void  Object::OnSerialize(SERIALIZEDATA* pData)
 // 	   // 前景属性
 // 	   if (m_pForegndRender)
 // 	   {
-// 		   SERIALIZEDATA data(*pData);
+// 		   SerializeParam data(*pData);
 // 		   data.szParentKey = XML_FOREGND_RENDER_PREFIX XML_RENDER_TYPE;
 // 		   data.szPrefix = XML_FOREGND_RENDER_PREFIX;
 // 		   if (data.pUIApplication->IsDesignMode())

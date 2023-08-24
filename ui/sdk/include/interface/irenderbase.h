@@ -88,7 +88,7 @@ struct UIAPI IRenderBase : public IMessage {
   IColorRes *GetSkinColorRes();
   IImageRes *GetSkinImageRes();
 
-  void Serialize(SERIALIZEDATA *pData);
+  void Serialize(SerializeParam *pData);
   void DrawState(IRenderTarget *, const Rect *prc, int nState);
   Size GetDesiredSize();
   void Init();

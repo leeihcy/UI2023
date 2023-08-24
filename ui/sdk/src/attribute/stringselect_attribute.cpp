@@ -123,7 +123,7 @@ StringEnumAttribute *StringEnumAttribute::FillTextRenderBaseTypeData() {
   return this;
 }
 
-void StringEnumAttribute::Editor(SERIALIZEDATA *pData, AttributeEditorProxy *p,
+void StringEnumAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
                                  EditorAttributeFlag e) {
   p->StringEnum2Editor(this, e);
 }

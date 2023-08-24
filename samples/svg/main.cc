@@ -24,7 +24,6 @@ public:
   }
 
   void create_ui() {
-  #if 0
     ui::svg::SvgPtr panel(m_window->GetResource());
     panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
     panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");
@@ -33,15 +32,15 @@ public:
     panel->InitDefaultAttrib();
 
     ui::svg::RectPtr rect(m_window->GetResource());
-    rect->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"100");
-    rect->AddAttribute(XML_LAYOUT_ITEM_TOP, L"100");
-    rect->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"100");
-    rect->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"100");
+    rect->AddAttribute(L"x", L"100");
+    rect->AddAttribute(L"y", L"100");
+    rect->AddAttribute(L"width", L"100");
+    rect->AddAttribute(L"height", L"100");
     rect->InitDefaultAttrib();
 
     panel->AddChild(rect.release());
     m_window->AddChild(panel.release());
-  #endif
+    // m_window->AddChild(rect.release());
   }
 
   void on_window_destroy(ui::IApplication *uiapp, ui::Event* event) {

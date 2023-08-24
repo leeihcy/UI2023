@@ -6,12 +6,12 @@ namespace ui { namespace svg {
 
 Svg::Svg(ISvg* p) : ui::MessageProxy(p) {
   m_pISvg = p;
-  p->SetLayout(new SvgLayout());
+  p->SetLayout(new SvgLayout(p));
 }
 
 void Svg::OnEraseBkgnd(ui::IRenderTarget* rt)
 {
-
+  
 }
 
 

@@ -45,7 +45,9 @@ Size CanvasLayout::Measure() {
   }
   return size;
 }
-void CanvasLayout::DoArrage(IObject *pIObjToArrage) {
+void CanvasLayout::DoArrange(ArrangeParam* param) {
+  IObject* pIObjToArrage = param ? param->obj_to_arrange : nullptr;
+  
   Object *pObjToArrage = nullptr;
   if (pIObjToArrage)
     pObjToArrage = pIObjToArrage->GetImpl();
@@ -168,34 +170,34 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
                                         SWP_FORCESENDSIZEMSG);
 }
 
-void CanvasLayout::ChildObjectVisibleChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void CanvasLayout::ChildObjectVisibleChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  // TODO: 优化为只布局该pObj，并且仅在collapsed的情况下需要布局
-  // SetDirty(true);<-- 不能仅调该函数，可能后面没有触发invalidate
-  DoArrage(pObj);
+//   // TODO: 优化为只布局该pObj，并且仅在collapsed的情况下需要布局
+//   // SetDirty(true);<-- 不能仅调该函数，可能后面没有触发invalidate
+//   DoArrange(pObj);
 
-  Rect rc = {0};
-  pObj->GetParentRect(&rc);
-  m_pPanel->Invalidate(&rc);
+//   Rect rc = {0};
+//   pObj->GetParentRect(&rc);
+//   m_pPanel->Invalidate(&rc);
 
-  // pObj隐藏了，无法刷新，通过父对象来刷新
-  // pObj->Invalidate();
-}
+//   // pObj隐藏了，无法刷新，通过父对象来刷新
+//   // pObj->Invalidate();
+// }
 
-void CanvasLayout::ChildObjectContentSizeChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void CanvasLayout::ChildObjectContentSizeChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  // TODO: 优化为只布局该pObj，并且仅在collapsed的情况下需要布局
-  // SetDirty(true);<-- 不能仅调该函数，可能后面没有触发invalidate
-  DoArrage(pObj);
+//   // TODO: 优化为只布局该pObj，并且仅在collapsed的情况下需要布局
+//   // SetDirty(true);<-- 不能仅调该函数，可能后面没有触发invalidate
+//   DoArrange(pObj);
 
-  pObj->Invalidate();
-}
+//   pObj->Invalidate();
+// }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -211,7 +213,10 @@ CanvasLayoutParam::~CanvasLayoutParam() {}
 Size CanvasLayoutParam::CalcDesiredSize() {
   Size size = {0, 0};
 
-  if (IsSizedByContent()) {
+  if (this->m_nConfigWidth >= 0 && this->m_nConfigHeight >=0) {
+    size.width = this->m_nConfigWidth;
+    size.height = this->m_nConfigHeight;
+  } else {
     // 获取子对象所需要的空间
     m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
 
@@ -220,9 +225,6 @@ Size CanvasLayoutParam::CalcDesiredSize() {
       size.width = this->m_nConfigWidth;
     if (this->m_nConfigHeight != AUTO)
       size.height = this->m_nConfigHeight;
-  } else {
-    size.width = this->m_nConfigWidth;
-    size.height = this->m_nConfigHeight;
   }
 
   // 计算 margin 的大小
@@ -275,7 +277,7 @@ void CanvasLayoutParam::UpdateByRect() {
     m_nConfigHeight = rcParent.Height();
   }
 }
-void CanvasLayoutParam::Serialize(SERIALIZEDATA *pData) {
+void CanvasLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializer s(pData, TEXT("CanvasLayoutParam"));
 
   // width=""，也支持 layout.width=""
@@ -413,31 +415,6 @@ int CanvasLayoutParam::ParseAlignAttr(const wchar_t *szAttr) {
   SAFE_RELEASE(pEnum);
 
   return nRet;
-}
-
-bool CanvasLayoutParam::IsSizedByContent() {
-  bool bWidthNotConfiged = m_nConfigWidth == AUTO;
-  bool bHeightNotConfiged = m_nConfigHeight == AUTO;
-
-  // 	if (bWidthNotConfiged)
-  // 	{
-  // 		if (m_nConfigLeft != NDEF && m_nConfigRight != NDEF)
-  // 			bWidthNotConfiged = false;
-  // 	}
-  //
-  // 	if (bHeightNotConfiged)
-  // 	{
-  // 		if (m_nConfigTop != NDEF && m_nConfigBottom != NDEF)
-  // 			bHeightNotConfiged = false;
-  // 	}
-
-  if (bWidthNotConfiged || bHeightNotConfiged)
-    return true;
-
-  //     if (m_nConfigLayoutFlags & LAYOUT_FLAG_FORCE_DESIREDSIZE)
-  //         return true;
-
-  return false;
 }
 
 } // namespace ui

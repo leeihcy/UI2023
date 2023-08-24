@@ -17,7 +17,7 @@ public:
     virtual bool  IsDefaultValue() override;
     void  SetBindValue(void*);
     void  SetBindFuction(void* _this, void* _setter, void* _getter);
-	virtual void  Editor(SERIALIZEDATA* pData, AttributeEditorProxy *, EditorAttributeFlag) override;
+	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy *, EditorAttributeFlag) override;
     void  SetBindValueSize(long lSize);
     
 public:

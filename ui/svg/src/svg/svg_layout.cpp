@@ -1,4 +1,5 @@
 #include "svg_layout.h"
+#include "sdk/include/interface/iattribute.h"
 #include "sdk/include/interface/iobject.h"
 
 namespace ui {
@@ -7,14 +8,15 @@ namespace svg {
 SvgLayoutParam::SvgLayoutParam(ui::IObject *p) { m_obj = p; }
 
 void SvgLayoutParam::Load() {
+
   IMapAttribute *pMapAttr = m_obj->GetMapAttribute();
-  SERIALIZEDATA data = {0};
+  SerializeParam data = {0};
   data.pUIApplication = m_obj->GetUIApplication();
   data.pSkinRes = m_obj->GetResource();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   data.pMapAttrib = pMapAttr;
 
-  // Serialize(&data);
+  Serialize(&data);
 
   // 节省内存
   if (pMapAttr->GetAttrCount() == 0) {
@@ -24,7 +26,15 @@ void SvgLayoutParam::Load() {
 
 Uuid SvgLayoutParam::UUID() { return SvgLayout::UUID(); }
 
-SvgLayout::SvgLayout() {}
+void SvgLayoutParam::Serialize(SerializeParam *pData) {
+  AttributeSerializerWrap s(pData, L"SvgLayoutParam");
+  s.AddLong(L"x", m_x);
+  s.AddLong(L"y", m_y);
+  s.AddLong(L"width", m_width);
+  s.AddLong(L"height", m_height);
+}
+
+SvgLayout::SvgLayout(IObject *bind_object) { m_bind_object = bind_object; }
 SvgLayout::~SvgLayout() {}
 
 // 自己在布局的时候调用
@@ -44,13 +54,30 @@ SvgLayoutParam *GetObjectLayoutParam(IObject *pObj) {
   return static_cast<SvgLayoutParam *>(param);
 }
 
-void SvgLayout::Arrange(IObject *pObjToArrage) {
+void SvgLayout::Arrange(ArrangeParam *param) {
   m_dirty = false;
 
-  // SvgLayoutParam *pParam = GetObjectLayoutParam(pChild);
-  // if (!pParam) {
-  //   return;
-  // }
+  IObject *obj_to_arrange = param ? param->obj_to_arrange : nullptr;
+
+  ui::IObject *child = nullptr;
+  while ((child = m_bind_object->EnumChildObject(child))) {
+    if (obj_to_arrange && obj_to_arrange != child)
+      continue;
+
+    SvgLayoutParam *pParam = GetObjectLayoutParam(child);
+    if (!pParam) {
+      return;
+    }
+
+    Rect rect;
+    rect.left = pParam->m_x;
+    rect.top = pParam->m_y;
+    rect.right = rect.left + pParam->m_width;
+    rect.bottom = rect.top + pParam->m_height;
+
+    child->SetObjectPos(&rect, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+                                    SWP_FORCESENDSIZEMSG);
+  }
 
   // Size s = pParam->CalcDesiredSize();
 
@@ -70,12 +97,10 @@ void SvgLayout::Arrange(IObject *pObjToArrage) {
 }
 
 ILayoutParam *SvgLayout::CreateLayoutParam(IObject *pObj) {
-  return new SvgLayoutParam(pObj);
+  auto* p = new SvgLayoutParam(pObj);
+  p->Load();
+  return p;
 }
-
-void SvgLayout::ChildObjectVisibleChanged(IObject *pObj) {}
-
-void SvgLayout::ChildObjectContentSizeChanged(IObject *pObj) {}
 
 bool SvgLayout::IsDirty() { return m_dirty; }
 void SvgLayout::SetDirty(bool b) { m_dirty = b; }

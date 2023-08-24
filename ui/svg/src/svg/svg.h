@@ -14,7 +14,9 @@ public:
     UIMSG_ERASEBKGND(OnEraseBkgnd)
 	UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(Svg, IPanel)
 
-  void RouteMessage(Msg*) {}
+  void RouteMessage(Msg* msg) {
+    static_cast<IPanel*>(m_pISvg)->RouteMessage(msg);
+  }
   
 private:
   void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget);

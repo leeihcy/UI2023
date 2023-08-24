@@ -67,7 +67,7 @@ interface UIAPI IScrollBarManager : public IMessage
     SCROLLBAR_VISIBLE_TYPE GetScrollBarVisibleType(SCROLLBAR_DIRECTION_TYPE eType);
 
     virtual BOOL  virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook); 
-    void  Serialize(SERIALIZEDATA* pData);
+    void  Serialize(SerializeParam* pData);
     void  FireScrollMessage(SCROLLBAR_DIRECTION_TYPE eType, int nCode, int nTrackPos = 0);
 
     // Set

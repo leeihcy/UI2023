@@ -51,7 +51,7 @@ struct UIAPI ITextRenderBase : public IMessage {
   void Init();
   void CheckSkinTextureChanged();
 
-  void Serialize(SERIALIZEDATA *pData);
+  void Serialize(SerializeParam *pData);
 
 protected:
   void _LoadFont(const wchar_t *szFontId, IRenderFont *&pRenderFont);

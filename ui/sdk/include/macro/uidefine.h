@@ -151,7 +151,7 @@ struct IAttributeEditorProxy;
 struct IApplication;
 struct IResource;
 
-struct SERIALIZEDATA {
+struct SerializeParam {
   union {
     IMapAttribute *pMapAttrib;                    // load [in] / getlist [out]
     IListAttribute *pListAttrib;                  // save [out]

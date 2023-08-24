@@ -517,95 +517,89 @@ void Object::virtualOnMove() {
 //
 void Object::UpdateLayout() {
 #if 0
-	if (m_pDescription && m_pDescription->GetMajorType() == OBJ_WINDOW)
-	{
-		ILayout* pLayout = static_cast<Window*>(this)->GetLayout();
-		if (pLayout)
-		{
-			pLayout->Arrange(nullptr);
-            this->Invalidate();
-		}
-		return;
-	}
-
-    Object* pParent = this->GetParentObject();
-    Object* pObjectToUpdate = this;
-
-    while (pParent)
-    {
-		OBJ_TYPE nObjType = OBJ_UNKNOWN;
-		if (pParent->GetDescription())
-			nObjType = pParent->GetDescription()->GetMajorType();
-
-        if (OBJ_PANEL != nObjType && OBJ_WINDOW != nObjType)  // 例如listview中的headerctrl，它的父对象不是panel
-        {
-            pParent->notify_WM_SIZE(0, pParent->GetWidth(), pParent->GetHeight());
-            return;
-        }
-
-        ILayout* pLayout = ((Panel*)pParent)->GetLayout();
-        if (nullptr == pLayout)
-        {
-            UI_LOG_WARN(_T("GetLayout failed. id=%s"), pParent->m_strId.c_str());
-            break;
-        }
-
-        ILayoutParam*  pLayoutParam = pParent->GetLayoutParam();
-        if (pLayoutParam && !pLayoutParam->IsSizedByContent())
-        {
-            pLayout->Arrange(pObjectToUpdate->GetIObject());
-            pParent->Invalidate();
-            break;
-        }
-
-        Size sizeOld = {pParent->GetWidth(), pParent->GetHeight()};
-        Size size = pParent->GetDesiredSize();
-
-        if (sizeOld.cx == size.width || sizeOld.cy == size.height)
-        {
-            pLayout->Arrange(pObjectToUpdate->GetIObject());
-            pParent->Invalidate();
-            break;
-        }
-        // pParent的大小发生了变化，继续往上
-        if (pParent->GetParentObject())
-        {
-            pObjectToUpdate = pParent;
-            pParent = pParent->GetParentObject();  // TODO: 有点乱... 当是窗口的时候size为window rect，sizeOld为client rect，因此肯定不一样
-            continue;                              // 所以在这里如果发现是window( parent==null )则继续往下处理
-        }
-        else if (
-			pParent->GetDescription() && 
-			pParent->GetDescription()->GetMajorType() == OBJ_WINDOW)
-        {
-            HWND hWnd = GetHWND();
-
-            Rect rcWndNow;
-            ::GetWindowRect(hWnd, rcWndNow);
-            if (rcWndNow.Width() == size.width && rcWndNow.Height() == size.height)  // 当大小没有改变时，不会触发WM_SIZE，也就不会更新了
-            {
-                pLayout->Arrange(pObjectToUpdate->GetIObject());
-                pParent->Invalidate();
-            }
-            else
-            {
-                
-                unsigned int nFlag = SWP_NOZORDER|SWP_NOMOVE|SWP_NOACTIVATE;
-//                 if (!bUpdate) 
-//                 {
-//                     WindowRender*  pRender = static_cast<WindowBase*>(pParent)->GetWindowRender();
-//                     pRender->SetCanCommit(false);
-//                     SetWindowPos(GetHWND(), 0, 0,0, size.width, size.height, nFlag);
-//                     pRender->SetCanCommit(true);
-//                 }
-//                 else
-                {
-                    SetWindowPos(GetHWND(), 0, 0,0, size.width, size.height, nFlag);
-                }
-            }
-            break;
-        }
+  if (m_pDescription && m_pDescription->GetMajorType() == OBJ_WINDOW) {
+    ILayout *pLayout = static_cast<Window *>(this)->GetLayout();
+    if (pLayout) {
+      pLayout->Arrange(nullptr);
+      this->Invalidate();
     }
+    return;
+  }
+
+  Object *pParent = this->GetParentObject();
+  Object *pObjectToUpdate = this;
+
+  while (pParent) {
+    OBJ_TYPE nObjType = OBJ_UNKNOWN;
+    if (pParent->GetDescription())
+      nObjType = pParent->GetDescription()->GetMajorType();
+
+    if (OBJ_PANEL != nObjType &&
+        OBJ_WINDOW !=
+            nObjType) // 例如listview中的headerctrl，它的父对象不是panel
+    {
+      pParent->notify_WM_SIZE(0, pParent->GetWidth(), pParent->GetHeight());
+      return;
+    }
+
+    ILayout *pLayout = ((Panel *)pParent)->GetLayout();
+    if (nullptr == pLayout) {
+      UI_LOG_WARN(_T("GetLayout failed. id=%s"), pParent->m_strId.c_str());
+      break;
+    }
+
+    ILayoutParam *pLayoutParam = pParent->GetLayoutParam();
+    if (pLayoutParam && !pLayoutParam->IsSizedByContent()) {
+      pLayout->Arrange(pObjectToUpdate->GetIObject());
+      pParent->Invalidate();
+      break;
+    }
+
+    Size sizeOld = {pParent->GetWidth(), pParent->GetHeight()};
+    Size size = pParent->GetDesiredSize();
+
+    if (sizeOld.cx == size.width || sizeOld.cy == size.height) {
+      pLayout->Arrange(pObjectToUpdate->GetIObject());
+      pParent->Invalidate();
+      break;
+    }
+    // pParent的大小发生了变化，继续往上
+    if (pParent->GetParentObject()) {
+      pObjectToUpdate = pParent;
+      pParent =
+          pParent
+              ->GetParentObject(); // TODO: 有点乱... 当是窗口的时候size为window
+                                   // rect，sizeOld为client rect，因此肯定不一样
+      continue; // 所以在这里如果发现是window( parent==null )则继续往下处理
+    } else if (pParent->GetDescription() &&
+               pParent->GetDescription()->GetMajorType() == OBJ_WINDOW) {
+      HWND hWnd = GetHWND();
+
+      Rect rcWndNow;
+      ::GetWindowRect(hWnd, rcWndNow);
+      if (rcWndNow.Width() == size.width &&
+          rcWndNow.Height() ==
+              size.height) // 当大小没有改变时，不会触发WM_SIZE，也就不会更新了
+      {
+        pLayout->Arrange(pObjectToUpdate->GetIObject());
+        pParent->Invalidate();
+      } else {
+
+        unsigned int nFlag = SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE;
+        //                 if (!bUpdate)
+        //                 {
+        //                     WindowRender*  pRender =
+        //                     static_cast<WindowBase*>(pParent)->GetWindowRender();
+        //                     pRender->SetCanCommit(false);
+        //                     SetWindowPos(GetHWND(), 0, 0,0, size.width,
+        //                     size.height, nFlag); pRender->SetCanCommit(true);
+        //                 }
+        //                 else
+        { SetWindowPos(GetHWND(), 0, 0, 0, size.width, size.height, nFlag); }
+      }
+      break;
+    }
+  }
 #else
   UIASSERT(false);
 #endif
@@ -645,131 +639,117 @@ Size Object::GetDesiredSize() {
 }
 
 void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
-	if (cx < 0)
-		cx = 0;
-	if (cy < 0)
-		cy = 0;
+  if (cx < 0)
+    cx = 0;
+  if (cy < 0)
+    cy = 0;
 
-    bool bMove = (nFlag&SWP_NOMOVE)?false:true;
-    bool bSize = (nFlag&SWP_NOSIZE)?false:true;
+  bool bMove = (nFlag & SWP_NOMOVE) ? false : true;
+  bool bSize = (nFlag & SWP_NOSIZE) ? false : true;
 
-    //  TODO: 加上这一段代码会导致SetVisible中的布局出现问题，如果pp -> p -> o，o发生变化
-    //  让p去重新布局，然后p再检测自己的desiredsize变化了，再向pp请求重新布局，结果pp的大
-    //  小没有发生变化，导致p不会去重新布局，o刷新失败。
-    //     if (bMove && 
-    //         x == m_rcParent.left &&
-    //         y == m_rcParent.top && 
-    //         bSize && 
-    //         cx == m_rcParent.Width() && 
-    //         cy == m_rcParent.Height())
-    //         return;
+  //  TODO: 加上这一段代码会导致SetVisible中的布局出现问题，如果pp -> p ->
+  //  o，o发生变化
+  //  让p去重新布局，然后p再检测自己的desiredsize变化了，再向pp请求重新布局，结果pp的大
+  //  小没有发生变化，导致p不会去重新布局，o刷新失败。
+  //     if (bMove &&
+  //         x == m_rcParent.left &&
+  //         y == m_rcParent.top &&
+  //         bSize &&
+  //         cx == m_rcParent.Width() &&
+  //         cy == m_rcParent.Height())
+  //         return;
 
-    nFlag |= SWP_NOZORDER;   // 该函数不提供修改ZORDER的功能
-    WINDOWPOS wndpos =  {0, 0, x, y, cx, cy, nFlag};
-    m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (long)&wndpos);
-    x = wndpos.x;
-    y = wndpos.y;
-    cx = wndpos.cx;
-    cy = wndpos.cy;
-    nFlag = wndpos.flags;
+  nFlag |= SWP_NOZORDER; // 该函数不提供修改ZORDER的功能
+  WINDOWPOS wndpos = {0, 0, x, y, cx, cy, nFlag};
+  m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (long)&wndpos);
+  x = wndpos.x;
+  y = wndpos.y;
+  cx = wndpos.cx;
+  cy = wndpos.cy;
+  nFlag = wndpos.flags;
 
-    if (x == m_rcParent.left && y == m_rcParent.top)
-        bMove = false;
-    if (cx == m_rcParent.Width() && cy == m_rcParent.Height())
-        bSize = false;
+  if (x == m_rcParent.left && y == m_rcParent.top)
+    bMove = false;
+  if (cx == m_rcParent.Width() && cy == m_rcParent.Height())
+    bSize = false;
 
-    if (bMove&&bSize)
-    {
+  if (bMove && bSize) {
 
+  } else if (bMove) {
+    cx = this->GetWidth();
+    cy = this->GetHeight();
+  } else if (bSize) {
+    x = m_rcParent.left;
+    y = m_rcParent.top;
+  } else {
+    if (nFlag & SWP_FORCESENDSIZEMSG) {
+      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
     }
-    else if (bMove)
-    {
-        cx = this->GetWidth();
-        cy = this->GetHeight();
+    if (nFlag & SWP_FORCEUPDATEOBJECT) {
+      this->Invalidate();
     }
-    else if (bSize)
-    {
-        x = m_rcParent.left;
-        y = m_rcParent.top;
+    return; // DONOTHING
+  }
+
+  Window *pWindow = this->GetWindow();
+  bool bHardComposite = false;
+  if (pWindow)
+    bHardComposite = pWindow->IsGpuComposite();
+
+  // Rect rcOldVisibleRect = {0};
+  if (bMove || bSize) {
+    // 刷新移动前的区域位置
+    if (!(nFlag & SWP_NOREDRAW)) {
+      // this->GetRectInWindow(&rcOldVisibleRect, true);  //
+      // 获取下当前会刷新的区域范围，放在后面进行提交
+      this->Invalidate();
     }
-    else
-    {
-        if (nFlag & SWP_FORCESENDSIZEMSG)
-        {
-            notify_WM_SIZE(0, m_rcParent.Width(),m_rcParent.Height());
-        }
-        if (nFlag & SWP_FORCEUPDATEOBJECT)
-        {
-            this->Invalidate();
-        }
-        return;  // DONOTHING
+  }
+
+  m_rcParent.Set(x, y, x + cx, y + cy);
+  if (!(nFlag & SWP_NOUPDATELAYOUTPOS)) {
+    UpdateLayoutPos();
+  }
+
+  // MSDN: MoveWindow sends the WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED,
+  // WM_MOVE, WM_SIZE, and WM_NCCALCSIZE messages to the window.
+  // 在这里我们暂时只先发送WM_MOVE/WM_SIZE消息
+  if (!(nFlag & SWP_NOSENDCHANGING)) {
+    if (bMove) {
+      notify_WM_MOVE(m_rcParent.left, m_rcParent.top);
     }
-
-	Window* pWindow = this->GetWindow();
-	bool bHardComposite = false;
-	if (pWindow)
-		bHardComposite = pWindow->IsGpuComposite();
-
-    //Rect rcOldVisibleRect = {0};
-    if (bMove || bSize) 
-    {
-        // 刷新移动前的区域位置
-        if (!(nFlag & SWP_NOREDRAW))
-        {
-            //this->GetRectInWindow(&rcOldVisibleRect, true);  // 获取下当前会刷新的区域范围，放在后面进行提交
-            this->Invalidate();
-        }
-    }
-
-	  m_rcParent.Set(x,y,x+cx,y+cy);
-    if (!(nFlag&SWP_NOUPDATELAYOUTPOS))
-    {
-        UpdateLayoutPos();
-    }
-
-    // MSDN: MoveWindow sends the WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED, WM_MOVE, WM_SIZE, and WM_NCCALCSIZE messages to the window. 
-    // 在这里我们暂时只先发送WM_MOVE/WM_SIZE消息
-    if (!(nFlag & SWP_NOSENDCHANGING))
-    {
-        if (bMove)
-        {
-            notify_WM_MOVE(m_rcParent.left,m_rcParent.top);
-        }
-        if (bSize)
-        {
-            notify_WM_SIZE(0, m_rcParent.Width(),m_rcParent.Height());
-        }
-
-        WINDOWPOS wndpos2 =  {0, 0, x, y, cx, cy, nFlag};
-        m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (long)&wndpos2);
+    if (bSize) {
+      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
     }
 
-    if (bMove || bSize)
-    {
-        // 刷新移动后的区域位置
-        if (!(nFlag & SWP_NOREDRAW))
-        {
-			// 2015.9.22
-			// 如果是硬件合成模式，则最终窗口上的缓存并不包含其它
-			// 层的内容，直接CommitDoubleBuffer会导致内容丢失。
+    WINDOWPOS wndpos2 = {0, 0, x, y, cx, cy, nFlag};
+    m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (long)&wndpos2);
+  }
 
-            this->Invalidate();
-			/*if (bHardComposite)
-			{
-				pWindow->DirectComposite();
-			}
-			else
-			{
-                Rect rcArray[2];
-                CopyRect(rcArray, &rcOldVisibleRect);
-                GetRectInWindow(&rcArray[1], true);
-                
-				// 将移动之前的区域数据提交到窗口上，避免闪烁
-				pWindow->CommitDoubleBuffet2Window(nullptr, rcArray, 2);
-			}
-            */
-        }
+  if (bMove || bSize) {
+    // 刷新移动后的区域位置
+    if (!(nFlag & SWP_NOREDRAW)) {
+      // 2015.9.22
+      // 如果是硬件合成模式，则最终窗口上的缓存并不包含其它
+      // 层的内容，直接CommitDoubleBuffer会导致内容丢失。
+
+      this->Invalidate();
+      /*if (bHardComposite)
+      {
+              pWindow->DirectComposite();
+      }
+      else
+      {
+Rect rcArray[2];
+CopyRect(rcArray, &rcOldVisibleRect);
+GetRectInWindow(&rcArray[1], true);
+
+              // 将移动之前的区域数据提交到窗口上，避免闪烁
+              pWindow->CommitDoubleBuffet2Window(nullptr, rcArray, 2);
+      }
+*/
     }
+  }
 }
 
 void Object::SetObjectPos(const Rect *prc, unsigned int nFlag) {
@@ -853,7 +833,7 @@ ILayoutParam *Object::GetSafeLayoutParam() {
   CanvasLayout layout;
   m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
 
-  SERIALIZEDATA data = {0};
+  SerializeParam data = {0};
   data.pMapAttrib = m_pIMapAttributeRemain;
   data.pSkinRes = GetIResource();
   data.pUIApplication = GetIUIApplication();

@@ -12,7 +12,6 @@ public:
     CardLayoutParam(Object*) {}
     Uuid UUID() override { return ICardLayout::UUID(); }
     void Release() override { delete this; }
-    bool IsSizedByContent() override { return false; }
 };
 
 class CardLayout : public LayoutImpl<CardLayout, IGridLayout, CardLayoutParam>
@@ -20,10 +19,10 @@ class CardLayout : public LayoutImpl<CardLayout, IGridLayout, CardLayoutParam>
 public:
     CardLayout();
 
-    void  Serialize(SERIALIZEDATA*) override{};
+    void  Serialize(SerializeParam*) override{};
     Size  Measure() override;
-    void  DoArrage(IObject* pObjToArrage = nullptr) override;
-    void  ChildObjectVisibleChanged(IObject* pObj) override;
+    void  DoArrange(ArrangeParam* param) override;
+    // void  ChildObjectVisibleChanged(IObject* pObj) override;
 };
 
 

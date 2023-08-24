@@ -64,7 +64,7 @@ IImageRes*  IRenderBase::GetSkinImageRes()
     return nullptr;
 }
 
-void  IRenderBase::Serialize(SERIALIZEDATA* pData)
+void  IRenderBase::Serialize(SerializeParam* pData)
 {
     static_cast<IMessage*>(this)->SendMessage(UI_MSG_SERIALIZE, (long)pData);
 }

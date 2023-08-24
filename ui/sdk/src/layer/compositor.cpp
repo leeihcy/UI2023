@@ -3,6 +3,7 @@
 #include "src/application/uiapplication.h"
 #include "src/window/window.h"
 #include "windowrender.h"
+#include "include/util/log.h"
 
 namespace ui {
 Compositor::Compositor() {
@@ -24,6 +25,7 @@ Compositor::~Compositor() {
   //
   //         delete p;
   //     }
+  UI_LOG_DEBUG("~Compositor");
 }
 
 void Compositor::SetUIApplication(Application *p) { m_pUIApp = p; }

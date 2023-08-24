@@ -83,7 +83,7 @@ void HwndHost::OnUnsubclassWindow()
 {
 }
 
-void  HwndHost::OnSerialize(SERIALIZEDATA* pData)
+void  HwndHost::OnSerialize(SerializeParam* pData)
 {
 	__super::OnSerialize(pData);
 

@@ -16,7 +16,7 @@ public:
 
     virtual const wchar_t*  Get() override; 
     virtual void  Set(const wchar_t*) override;
-	virtual void  Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
+	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
 
 public:
     EnumAttribute*  AddOption(long, const wchar_t*);

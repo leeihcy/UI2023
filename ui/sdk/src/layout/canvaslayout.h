@@ -15,10 +15,9 @@ public:
   void Release() override { delete this; }
 
   virtual void UpdateByRect() override;
-  virtual void Serialize(SERIALIZEDATA *pData) override;
+  virtual void Serialize(SerializeParam *pData) override;
   // virtual LAYOUTTYPE  GetLayoutType() override { return LAYOUT_TYPE_CANVAS; }
   virtual Size CalcDesiredSize() override;
-  virtual bool IsSizedByContent() override;
 
   static int ParseAlignAttr(const wchar_t *);
 
@@ -80,11 +79,10 @@ private:
 //
 class CanvasLayout : public LayoutImpl<CanvasLayout, ICanvasLayout, CanvasLayoutParam> {
 public:
-  virtual void Serialize(SERIALIZEDATA *) override{};
+  virtual void Serialize(SerializeParam *) override{};
   virtual Size Measure() override;
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
-  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
-  virtual void ChildObjectContentSizeChanged(IObject *pObj) override;
+  virtual void DoArrange(ArrangeParam* param) override;
+  // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
 public:
   void ArrangeObject(Object *pChild, const int &nWidth,

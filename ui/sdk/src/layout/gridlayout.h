@@ -14,9 +14,8 @@ public:
   void Release() override { delete this; }
 
   void UpdateByRect() override;
-  void Serialize(SERIALIZEDATA *pData) override;
+  void Serialize(SerializeParam *pData) override;
   Size CalcDesiredSize() override;
-  bool IsSizedByContent() override;
 
 public:
 
@@ -66,10 +65,10 @@ public:
   GridLayout();
   ~GridLayout();
 
-  virtual void Serialize(SERIALIZEDATA *) override;
+  virtual void Serialize(SerializeParam *) override;
   virtual Size Measure() override;
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
-  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
+  virtual void DoArrange(ArrangeParam* param) override;
+  // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
   int getColPos(unsigned int nCol);
   int getRowPos(unsigned int nRow);

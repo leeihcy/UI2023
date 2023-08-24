@@ -161,7 +161,7 @@ bool  RectAttribute::IsDefaultValue()
 	return m_rcDefault == rc ? true:false;
 }
 
-void  RectAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  RectAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
     p->Rect2Editor(this, e);
 }

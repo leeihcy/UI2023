@@ -93,7 +93,7 @@ bool  TextRenderBaseAttribute::IsDefaultValue()
 }
 
 
-void  TextRenderBaseAttribute::do_child_action(SERIALIZEDATA* pData)
+void  TextRenderBaseAttribute::do_child_action(SerializeParam* pData)
 {
 	// 子属性序列化
 	if (m_ppBindValue && *m_ppBindValue)
@@ -111,7 +111,7 @@ void  TextRenderBaseAttribute::do_child_action(SERIALIZEDATA* pData)
 	}
 }
 
-void  TextRenderBaseAttribute::Load(SERIALIZEDATA* pData)
+void  TextRenderBaseAttribute::Load(SerializeParam* pData)
 {
 	// 保存自己的类型
 	AttributeBase::Load(pData);
@@ -119,7 +119,7 @@ void  TextRenderBaseAttribute::Load(SERIALIZEDATA* pData)
 	// 子属性序列化
 	do_child_action(pData);
 }
-void  TextRenderBaseAttribute::Save(SERIALIZEDATA* pData)
+void  TextRenderBaseAttribute::Save(SerializeParam* pData)
 {
 	// 保存自己的类型
 	AttributeBase::Save(pData);
@@ -128,7 +128,7 @@ void  TextRenderBaseAttribute::Save(SERIALIZEDATA* pData)
 	do_child_action(pData);
 }
 
-void  TextRenderBaseAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  TextRenderBaseAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
     p->TextRenderBase2Editor(this, e);
 

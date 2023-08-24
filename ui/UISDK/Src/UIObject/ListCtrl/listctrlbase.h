@@ -100,7 +100,7 @@ protected:
     long  OnInertiaVScroll(
 				unsigned int uMsg, WPARAM wParam, LPARAM lParam);
 	void  GetDesiredSize(SIZE* pSize);
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
     long  OnHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam);
     BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
     HANDLED_VALUE  OnDrawItem(

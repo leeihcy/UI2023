@@ -41,7 +41,7 @@ public:
     void  SetRenderBitmap(IRenderBitmap* pBitmap);
 
 protected:
-    void  OnSerialize(SERIALIZEDATA* pData);
+    void  OnSerialize(SerializeParam* pData);
     void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 	void  GetDesiredSize(Size* pSize);
 
@@ -93,7 +93,7 @@ public:
     UI_END_MSG_MAP_CHAIN_PARENT(ImageRender)
 
 
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  GetDesiredSize(Size* pSize);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
@@ -137,7 +137,7 @@ public:
 	void  SetState2Index(const wchar_t*);
 	const wchar_t*  GetState2Index();
 	
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 	void  GetDesiredSize(Size* pSize);
     //virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard*) override;

@@ -549,7 +549,7 @@ const wchar_t*  ITextRenderBaseAttribute::GetParentKey()
 
 //////////////////////////////////////////////////////////////////////////
 
-AttributeSerializerWrap::AttributeSerializerWrap(SERIALIZEDATA* p, const wchar_t* szGroupName)
+AttributeSerializerWrap::AttributeSerializerWrap(SerializeParam* p, const wchar_t* szGroupName)
 {
     m_pImpl = new AttributeSerializer(p, szGroupName);
 }

@@ -11,7 +11,7 @@ AverageLayout::AverageLayout() {
 }
 AverageLayout::~AverageLayout() {}
 
-void AverageLayout::Serialize(SERIALIZEDATA *pData) {
+void AverageLayout::Serialize(SerializeParam *pData) {
   IMapAttribute *pMapAttrib = pData->pMapAttrib;
   if (nullptr == pMapAttrib)
     return;
@@ -68,7 +68,7 @@ Size AverageLayout::Measure() {
   return size;
 }
 
-void AverageLayout::DoArrage(IObject *pIObjToArrage) {
+void AverageLayout::DoArrange(ArrangeParam* param) {
   int nConsume1 = 0; // 当前已消耗的高度或宽度（从left/top开始计数）
   int nChildCount = 0;
   int nAverageSize = 0;
@@ -152,13 +152,13 @@ void AverageLayout::ArrangeObject_V(Object *pChildObj, Rect *prc) {
       SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS | SWP_FORCESENDSIZEMSG);
 }
 
-void AverageLayout::ChildObjectVisibleChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void AverageLayout::ChildObjectVisibleChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  SetDirty(true);
-  m_pPanel->Invalidate();
-}
+//   SetDirty(true);
+//   m_pPanel->Invalidate();
+// }
 
 } // namespace ui

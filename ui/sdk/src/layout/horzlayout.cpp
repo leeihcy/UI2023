@@ -13,7 +13,7 @@ HorzLayout::HorzLayout() {
   //	this->m_eDirection = LAYOUT_Horz_LEFTTORIGHT;   // 默认堆栈是从左到右
 }
 HorzLayout::~HorzLayout() {}
-void HorzLayout::Serialize(SERIALIZEDATA *pData) {
+void HorzLayout::Serialize(SerializeParam *pData) {
   //     AttributeSerializer s(pData, TEXT("HorzLayout"));
   //
   //     s.AddLong(XML_LAYOUT_HORZ_GAP, this,
@@ -79,7 +79,7 @@ struct ObjLayoutInfo {
   int height; // 不包含margin
 };
 
-void HorzLayout::DoArrage(IObject *pIObjToArrage) {
+void HorzLayout::DoArrange(ArrangeParam* param) {
   // 计算每个子控件需要的宽度及其布局顺序
   int nChildCount = m_pPanel->GetChildCount();
   if (nChildCount <= 0)
@@ -243,23 +243,23 @@ void HorzLayout::DoArrage(IObject *pIObjToArrage) {
   }
 }
 
-void HorzLayout::ChildObjectVisibleChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void HorzLayout::ChildObjectVisibleChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  SetDirty(true);
-  m_pPanel->Invalidate();
-}
+//   SetDirty(true);
+//   m_pPanel->Invalidate();
+// }
 
-void HorzLayout::ChildObjectContentSizeChanged(IObject *pObj) {
-  UIASSERT(pObj);
-  UIASSERT(pObj->GetParentObject());
-  UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void HorzLayout::ChildObjectContentSizeChanged(IObject *pObj) {
+//   UIASSERT(pObj);
+//   UIASSERT(pObj->GetParentObject());
+//   UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-  SetDirty(true);
-  m_pPanel->Invalidate();
-}
+//   SetDirty(true);
+//   m_pPanel->Invalidate();
+// }
 
 HorzLayoutParam::HorzLayoutParam(Object *pObj) {
   m_nConfigWidth = AUTO;
@@ -283,7 +283,7 @@ void HorzLayoutParam::UpdateByRect() {
     m_nConfigHeight = rcParent.Height();
   }
 }
-void HorzLayoutParam::Serialize(SERIALIZEDATA *pData) {
+void HorzLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializer s(pData, TEXT("HorzLayoutParam"));
 
   s.AddString(XML_WIDTH, Slot(&HorzLayoutParam::LoadConfigWidth, this),

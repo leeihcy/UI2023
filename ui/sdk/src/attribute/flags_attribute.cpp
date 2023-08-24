@@ -103,7 +103,7 @@ FlagsAttribute*  FlagsAttribute::AddFlag(long l, const wchar_t* sz)
     return this;
 }
 
-void  FlagsAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  FlagsAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
      p->Flags2Editor(this, e);
 }

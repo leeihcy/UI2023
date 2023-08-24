@@ -26,7 +26,7 @@ protected:
 	virtual void  virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight);
 
     HRESULT  FinalConstruct(IResource* p);
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
     BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
 	void  OnLButtonDown(unsigned int nFlags, POINT point);
 

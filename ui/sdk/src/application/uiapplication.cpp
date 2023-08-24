@@ -38,7 +38,7 @@ ResourceManager &Application::GetResourceManager() {
 }
 
 void Application::x_Init() {
-  UI_LOG_INFO("Application Init");
+  UI_LOG_INFO("Application Init: 0x%x", this);
 
 #if defined(OS_WIN)
   //	::CoInitialize(0);

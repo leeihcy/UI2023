@@ -25,7 +25,7 @@ public:
     UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
 public:
@@ -57,7 +57,7 @@ public:
     UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
     void  SetBkColor(int nColorIndex);
@@ -93,7 +93,7 @@ public:
     UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
     void  LoadFromColor(const wchar_t* sz){
@@ -145,7 +145,7 @@ public:
 	
 	void  Clear();
 
-    void  OnSerialize(SERIALIZEDATA* pData);
+    void  OnSerialize(SerializeParam* pData);
     void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
 	void  SetStateColor(int nState, COLORREF colorBk, bool bSetBk, COLORREF colBorder, bool bSetBorder);

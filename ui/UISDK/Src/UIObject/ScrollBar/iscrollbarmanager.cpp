@@ -67,7 +67,7 @@ void  IScrollBarManager::FireScrollMessage(SCROLLBAR_DIRECTION_TYPE eType, int n
 { m_pImpl->FireScrollMessage(eType, nCode, nTrackPos); }
 
 BOOL  IScrollBarManager::virtualProcessMessage(UIMSG* pMsg, int nMsgMapID, bool bDoHook) { return m_pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook); }
-void  IScrollBarManager::Serialize(SERIALIZEDATA* pData) { m_pImpl->Serialize(pData); }
+void  IScrollBarManager::Serialize(SerializeParam* pData) { m_pImpl->Serialize(pData); }
 
 void  IScrollBarManager::SetHScrollPos(int nPos)                      { m_pImpl->SetHScrollPos(nPos); }
 void  IScrollBarManager::SetVScrollPos(int nPos)                      { m_pImpl->SetVScrollPos(nPos); }

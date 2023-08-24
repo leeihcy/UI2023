@@ -142,7 +142,7 @@ bool  ColorAttribute::IsDefaultValue()
 	return false;
 }
 
-void  ColorAttribute::Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
+void  ColorAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
 {
 	p->Color2Editor(this, e);
 }

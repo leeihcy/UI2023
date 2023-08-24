@@ -171,7 +171,7 @@ public:
 		return true;
 	}
 
-	virtual void  OnSerialize(SERIALIZEDATA* pData)
+	virtual void  OnSerialize(SerializeParam* pData)
 	{
 
 	}

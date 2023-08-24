@@ -13,7 +13,7 @@ public:
     virtual const wchar_t*  Get() override; 
     virtual void  Set(const wchar_t*) override;
 	virtual void  Reset() override;
-	virtual void  Editor(SERIALIZEDATA* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
+	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
     virtual bool  IsDefaultValue() override;
 	void  SetBindValue(void*) override;
     void  SetBindValue2(void**);

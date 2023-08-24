@@ -12,7 +12,6 @@ public:
   AverageLayoutParam(Object*) {}
   Uuid UUID() override { return IAverageLayout::UUID(); }
   void Release() override { delete this; }
-  bool IsSizedByContent() override { return false; }
 };
 
 class AverageLayout : public LayoutImpl<AverageLayout, IAverageLayout, AverageLayoutParam> {
@@ -21,9 +20,9 @@ public:
   ~AverageLayout();
 
   virtual Size Measure() override;
-  virtual void DoArrage(IObject *pObjToArrage = nullptr) override;
-  virtual void Serialize(SERIALIZEDATA *) override;
-  virtual void ChildObjectVisibleChanged(IObject *pObj) override;
+  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void Serialize(SerializeParam *) override;
+  // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
   void ArrangeObject_H(Object *pChildObj, Rect *prc);
   void ArrangeObject_V(Object *pChildObj, Rect *prc);

@@ -262,7 +262,7 @@ SimpleTextRender::~SimpleTextRender()
 }
 
 // 如果字体指针为空，则取object对象的配置字体。
-void SimpleTextRender::OnSerialize(SERIALIZEDATA* pData)
+void SimpleTextRender::OnSerialize(SerializeParam* pData)
 {
 	{
 		AttributeSerializer s(pData, TEXT("SimpleTextRender"));
@@ -379,7 +379,7 @@ ContrastColorTextRender::~ContrastColorTextRender()
 }
 
 // 如果字体指针为空，则取object对象的配置字体。
-void ContrastColorTextRender::OnSerialize(SERIALIZEDATA* pData)
+void ContrastColorTextRender::OnSerialize(SerializeParam* pData)
 {
     {
         AttributeSerializer s(pData, TEXT("ContrastColorTextRender"));
@@ -520,7 +520,7 @@ long  ContrastColorListTextRender::OnSkinTextureChanged(unsigned int, long, long
 
     return 0;
 }
-void ContrastColorListTextRender::OnSerialize(SERIALIZEDATA* pData)
+void ContrastColorListTextRender::OnSerialize(SerializeParam* pData)
 {
     {
         AttributeSerializer s(pData, TEXT("ContrastColorListTextRender"));
@@ -620,7 +620,7 @@ void ColorListTextRender::Clear()
 }
 
 
-void ColorListTextRender::OnSerialize(SERIALIZEDATA* pData)
+void ColorListTextRender::OnSerialize(SerializeParam* pData)
 {
     {
         AttributeSerializer s(pData, TEXT("ColorListTextRender"));
@@ -793,7 +793,7 @@ void FontColorListTextRender::Clear()
 	m_nCount = 0;
 }
 
-void FontColorListTextRender::OnSerialize(SERIALIZEDATA* pData)
+void FontColorListTextRender::OnSerialize(SerializeParam* pData)
 {
     {
         AttributeSerializer s(pData, TEXT("FontColorListTextRender"));

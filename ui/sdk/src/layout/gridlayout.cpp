@@ -204,7 +204,7 @@ const wchar_t*  GridLayout::SaveGridHeight()
 
     return strBuffer.c_str();
 }
-void  GridLayout::Serialize(SERIALIZEDATA* pData)
+void  GridLayout::Serialize(SerializeParam* pData)
 {
     {
         AttributeSerializer s(pData, TEXT("GridLayout"));
@@ -404,7 +404,7 @@ Size  GridLayout::Measure()
 
     return size;
 }
-void  GridLayout::DoArrage(IObject* pObjToArrage)
+void  GridLayout::DoArrange(ArrangeParam* param)
 {
 	// 调用该函数时，自己的大小已经被求出来了
 
@@ -626,14 +626,14 @@ GridWH*  GridLayout::GetHeight(unsigned int nIndex)
 }
 
 
-void  GridLayout::ChildObjectVisibleChanged(IObject* pObj)
-{
-	UIASSERT(pObj);
-	UIASSERT(pObj->GetParentObject());
-	UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
+// void  GridLayout::ChildObjectVisibleChanged(IObject* pObj)
+// {
+// 	UIASSERT(pObj);
+// 	UIASSERT(pObj->GetParentObject());
+// 	UIASSERT(pObj->GetParentObject()->GetImpl() == m_pPanel);
 
-    pObj->Invalidate();
-}
+//     pObj->Invalidate();
+// }
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -667,7 +667,7 @@ void  GridLayoutParam::UpdateByRect()
         m_nConfigHeight = rcParent.Height();
     }
 }
-void  GridLayoutParam::Serialize(SERIALIZEDATA* pData)
+void  GridLayoutParam::Serialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("GridLayoutParam"));
     s.AddLong(XML_WIDTH, m_nConfigWidth)->AddAlias(AUTO, XML_AUTO)->SetDefault(AUTO);
@@ -716,7 +716,7 @@ Size  GridLayoutParam::CalcDesiredSize()
 
     return size;
 }
-
+#if 0
 bool  GridLayoutParam::IsSizedByContent()
 {
     if (m_nConfigHeight != AUTO && m_nConfigWidth != AUTO)
@@ -754,3 +754,4 @@ bool  GridLayoutParam::IsSizedByContent()
 
     return false;
 }
+#endif

@@ -11,7 +11,7 @@ class Rect;
 struct UISVGAPI IRect : public ui::IObject {
   UI_DECLARE_INTERFACE_ACROSSMODULE(Rect)
 };
-// using RectPtr = ui::unique_ptr<IRect>;
+UI_DEFINE_PTR(Rect);
 
 } 
 }  

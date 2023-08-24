@@ -43,7 +43,7 @@ IObject*  ScrollBarManager::GetBindObject()
     return m_pBindObject; 
 }
 
-void  ScrollBarManager::Serialize(SERIALIZEDATA* pData)
+void  ScrollBarManager::Serialize(SerializeParam* pData)
 {
 	AttributeSerializer as(pData, TEXT("scrollbar"));
 	as.AddEnum(XML_HSCROLLBAR, *(long*)&m_ehScrollbarVisibleType)

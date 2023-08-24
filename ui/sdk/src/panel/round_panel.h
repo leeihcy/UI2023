@@ -45,7 +45,7 @@ public:
             ULONG leftbottom, ULONG rightbottom);
 
 protected:
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 	void  OnPaint(IRenderTarget* pRenderTarget);
 	void  OnPostPaint(IRenderTarget* pRenderTarget);
 

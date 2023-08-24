@@ -24,10 +24,10 @@ namespace ui
         virtual bool  IsDefaultValue() = 0;
 
 		// 加载、保存、编辑器显示
-		virtual void  Load(SERIALIZEDATA*);
-		virtual void  Save(SERIALIZEDATA*);
+		virtual void  Load(SerializeParam*);
+		virtual void  Save(SerializeParam*);
 		virtual void  Editor(
-						SERIALIZEDATA* pData, 
+						SerializeParam* pData, 
 						AttributeEditorProxy* p,
 						EditorAttributeFlag e) = 0;
 

@@ -176,15 +176,15 @@ public:                                                                        \
       return true;                                                             \
   }
 
-// wParam: SERIALIZEDATA
+// wParam: SerializeParam
 // lParam:
 // return:
 #define UI_MSG_SERIALIZE 139281928
-// void  OnSerialize(SERIALIZEDATA* pData);
+// void  OnSerialize(SerializeParam* pData);
 #define UIMSG_SERIALIZE(func)                                                  \
   if (uMsg == UI_MSG_SERIALIZE) {                                              \
     SetMsgHandled(true);                                                       \
-    func((SERIALIZEDATA *)wParam);                                             \
+    func((SerializeParam *)wParam);                                             \
     if (IsMsgHandled())                                                        \
       return true;                                                             \
   }

@@ -61,7 +61,7 @@ void  ImageRender::SetImageStretch9Region(const C9Region& r)
 	m_Region = r;
 }
 
-void  ImageRender::OnSerialize(SERIALIZEDATA* pData)
+void  ImageRender::OnSerialize(SerializeParam* pData)
 {
 	AttributeSerializer s(pData, TEXT("ImageRender"));
 	s.AddString(XML_RENDER_IMAGE, 
@@ -226,7 +226,7 @@ ImageListItemRender::~ImageListItemRender()
 	m_pImageList = nullptr;
 }
 
-void  ImageListItemRender::OnSerialize(SERIALIZEDATA* pData)
+void  ImageListItemRender::OnSerialize(SerializeParam* pData)
 {
 	ImageRender::OnSerialize(pData);
 
@@ -319,7 +319,7 @@ ImageListRender::~ImageListRender( )
 	DestroyAnimate();
 }
 
-void  ImageListRender::OnSerialize(SERIALIZEDATA* pData)
+void  ImageListRender::OnSerialize(SerializeParam* pData)
 {
 	{
 		AttributeSerializer s(pData, TEXT("ImageListItemRender"));

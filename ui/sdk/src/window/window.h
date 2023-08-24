@@ -80,7 +80,7 @@ private:
 protected:
   long FinalConstruct();
   // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   // void OnSetDefId(IObject *pButton);
   // IObject *OnGetDefId();
   void OnEraseBkgnd(IRenderTarget *);

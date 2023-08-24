@@ -105,7 +105,7 @@ void  ColorRender::SetBorderRegion(const Rect* prc)
     }
 }
 
-void ColorRender::OnSerialize(SERIALIZEDATA* pData)
+void ColorRender::OnSerialize(SerializeParam* pData)
 {
 	AttributeSerializer s(pData, TEXT("ColorRender"));
     s.AddColor(XML_RENDER_COLOR, m_pBkColor);
@@ -186,7 +186,7 @@ void SysColorRender::SetBorderColor(int nColorIndex)
 // 	UI_LOG_DEBUG(_T("%s,2. %d"), FUNC_NAME, m_bkColor);
 // }
 
-void SysColorRender::OnSerialize(SERIALIZEDATA* pData)
+void SysColorRender::OnSerialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("SysColorRender"));
     s.AddLong(XML_RENDER_COLOR, m_nBkColorIndex)->SetDefault(-1);
@@ -272,7 +272,7 @@ GradientRender::~GradientRender()
     SAFE_RELEASE(m_pBorderColor);
 }
 
-void GradientRender::OnSerialize(SERIALIZEDATA* pData)
+void GradientRender::OnSerialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("GradientRender"));
     s.AddString(XML_RENDER_COLORFROM, 
@@ -467,7 +467,7 @@ const wchar_t*  ColorListRender::SaveBorderColor()
     return nullptr;
 }
 
-void ColorListRender::OnSerialize(SERIALIZEDATA* pData)
+void ColorListRender::OnSerialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("ColorListRender"));
 

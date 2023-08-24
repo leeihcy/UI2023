@@ -38,7 +38,7 @@ HRESULT  ScrollPanel::FinalConstruct(IResource* p)
     return 0;
 }
 
-void  ScrollPanel::OnSerialize(SERIALIZEDATA* pData)
+void  ScrollPanel::OnSerialize(SerializeParam* pData)
 {
 	__super::OnSerialize(pData);
 

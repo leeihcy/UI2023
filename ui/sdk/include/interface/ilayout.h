@@ -24,10 +24,7 @@ struct ILayoutParam {
   virtual void UpdateByRect() {};
 
   // 序列化
-  virtual void Serialize(SERIALIZEDATA *pData) {};
-
-  // 自己是自适应大小，还是固定大小，用于优化updatelayout
-  virtual bool IsSizedByContent() = 0;
+  virtual void Serialize(SerializeParam *pData) {};
 };
 
 struct ICanvasLayoutParam : public ILayoutParam {
@@ -90,15 +87,24 @@ struct ICardLayoutParam : public ILayoutParam {
 struct IAverageLayoutParam : public ILayoutParam {
 };
 
+enum class ArrangeReason {
+  // 正常布局
+  None,
+  // obj_to_range显示隐藏变更
+  VisibleChanged,
+};
+struct ArrangeParam {
+  IObject * obj_to_arrange = nullptr;
+  ArrangeReason reason = ArrangeReason::None;
+};
+
 struct ILayout {
   virtual void Release() = 0;
 
   virtual Size Measure() = 0;
-  virtual void Arrange(IObject *pObjToArrage = nullptr) = 0;
-  virtual void Serialize(SERIALIZEDATA *pData) = 0;
-  virtual ILayoutParam *CreateLayoutParam(IObject *pObj) = 0;
-  virtual void ChildObjectVisibleChanged(IObject *pObj) = 0;
-  virtual void ChildObjectContentSizeChanged(IObject *pObj) = 0;
+  virtual void Arrange(ArrangeParam* param = nullptr) = 0;
+  virtual void Serialize(SerializeParam *param) = 0;
+  virtual ILayoutParam *CreateLayoutParam(IObject *obj) = 0;
 
   virtual bool IsDirty() = 0;
   virtual void SetDirty(bool b) = 0;

@@ -23,38 +23,38 @@ public:
   void UpdateByRect() override {};
 
   // 序列化
-  void Serialize(SERIALIZEDATA *pData) override {};
+  void Serialize(SerializeParam *pData) override;
 
-  // 自己是自适应大小，还是固定大小，用于优化updatelayout
-  bool IsSizedByContent() override { return false; }
-
-private:
+public:
   ui::IObject* m_obj = nullptr;
+
+  int m_x = 0;
+  int m_y = 0;
+  int m_width = 100;
+  int m_height = 100;
 };
 
 class SvgLayout : public ui::ILayout
 {
 public:
-    static Uuid UUID() { static Uuid s("42423748-3c34-11ee-ba0b-f45c89b0174f"); return s; }
+  static Uuid UUID() { static Uuid s("42423748-3c34-11ee-ba0b-f45c89b0174f"); return s; }
 
-  SvgLayout();
+  SvgLayout(IObject* bind_object);
   ~SvgLayout();
 
   void Release() override { delete this; }
 
   Size Measure() override { Size s = {0, 0}; return s; }
-  void Arrange(IObject *pObjToArrage = nullptr) override;
-  void Serialize(SERIALIZEDATA *pData) override { }
+  void Arrange(ArrangeParam* param) override;
+  void Serialize(SerializeParam *pData) override { }
   ILayoutParam *CreateLayoutParam(IObject *pObj) override;
-  void ChildObjectVisibleChanged(IObject *pObj) override;
-  void ChildObjectContentSizeChanged(IObject *pObj) override;
 
   bool IsDirty() override;
   void SetDirty(bool b) override;
 
 private:
   bool m_dirty = true;
-
+  ui::IObject* m_bind_object = nullptr;
 };
 
 }}

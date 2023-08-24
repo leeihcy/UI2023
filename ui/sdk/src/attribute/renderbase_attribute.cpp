@@ -59,7 +59,7 @@ const wchar_t *RenderBaseAttribute::Get() {
   return szType;
 }
 
-void RenderBaseAttribute::do_child_action(SERIALIZEDATA *pData) {
+void RenderBaseAttribute::do_child_action(SerializeParam *pData) {
   // 子属性序列化
   if (m_ppBindValue && *m_ppBindValue) {
     const wchar_t *szOldPrefix = pData->szPrefix;
@@ -75,14 +75,14 @@ void RenderBaseAttribute::do_child_action(SERIALIZEDATA *pData) {
   }
 }
 
-void RenderBaseAttribute::Load(SERIALIZEDATA *pData) {
+void RenderBaseAttribute::Load(SerializeParam *pData) {
   // 保存自己的类型
   AttributeBase::Load(pData);
 
   do_child_action(pData);
 }
 
-void RenderBaseAttribute::Save(SERIALIZEDATA *pData) {
+void RenderBaseAttribute::Save(SerializeParam *pData) {
   // 保存自己的类型
   AttributeBase::Save(pData);
 
@@ -98,7 +98,7 @@ bool RenderBaseAttribute::IsDefaultValue() {
   return false;
 }
 
-void RenderBaseAttribute::Editor(SERIALIZEDATA *pData, AttributeEditorProxy *p,
+void RenderBaseAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
                                  EditorAttributeFlag e) {
   p->RenderBase2Editor(this, e);
 

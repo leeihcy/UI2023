@@ -58,7 +58,7 @@ AttributeBase *AttributeClassFactory::CreateInstance(long lType) {
 
 //////////////////////////////////////////////////////////////////////////
 
-AttributeSerializer::AttributeSerializer(SERIALIZEDATA *p,
+AttributeSerializer::AttributeSerializer(SerializeParam *p,
                                          const wchar_t *szGroupName)
     : m_pData(p) {
   UIASSERT(p);
@@ -85,7 +85,7 @@ void AttributeSerializer::DoAction() {
   }
 }
 
-SERIALIZEDATA *AttributeSerializer::GetSerializeData() { return m_pData; }
+SerializeParam *AttributeSerializer::GetSerializeData() { return m_pData; }
 IApplication *AttributeSerializer::GetUIApplication() {
   if (m_pData)
     return m_pData->pUIApplication;
@@ -580,7 +580,7 @@ void AttributeEditorProxy::Clear() {
 
 AttributeEditorProxy::~AttributeEditorProxy() { Clear(); }
 
-void AttributeEditorProxy::AddAttribute(AttributeBase *p, SERIALIZEDATA *pData,
+void AttributeEditorProxy::AddAttribute(AttributeBase *p, SerializeParam *pData,
                                         const wchar_t *szGroupName) {
   UIASSERT(p);
   m_list.push_back(p);
@@ -627,7 +627,7 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
   if (!m_bLoaded) {
     m_bLoaded = true;
 
-    SERIALIZEDATA data = {0};
+    SerializeParam data = {0};
     data.pAttributeEditorProxy = &m_oIProxy;
     data.pUIApplication = pObj->GetUIApplication();
     data.pSkinRes = pObj->GetResource();

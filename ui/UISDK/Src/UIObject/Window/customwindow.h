@@ -122,7 +122,7 @@ public:
     IWindowTransparent*  GetWindowTransparentPtr();
 
 protected:
-	void  OnSerialize(SERIALIZEDATA* pData);
+	void  OnSerialize(SerializeParam* pData);
 
 private:
 	BOOL  PreCreateWindow(CREATESTRUCT* pcs);

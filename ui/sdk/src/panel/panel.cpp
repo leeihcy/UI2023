@@ -106,7 +106,7 @@ void Panel::OnGetDesiredSize(Size *pSize) {
   pSize->height += rcNonClient.top + rcNonClient.bottom;
 }
 
-void Panel::OnSerialize(SERIALIZEDATA *pData) {
+void Panel::OnSerialize(SerializeParam *pData) {
   Object::OnSerialize(pData);
 
   if (pData->IsReload()) {
@@ -150,7 +150,7 @@ void Panel::OnSerialize(SERIALIZEDATA *pData) {
   }
 
   if (m_pLayout) {
-    SERIALIZEDATA data(*pData);
+    SerializeParam data(*pData);
     data.szParentKey = XML_LAYOUT;
     m_pLayout->Serialize(&data);
   }

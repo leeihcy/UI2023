@@ -256,7 +256,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 // 		iter->second.c_str(), pBindObj, ppGet);
 //     if (*ppGet)
 //     {
-//         SERIALIZEDATA data = {0};
+//         SerializeParam data = {0};
 //         data.pUIApplication = pUIApp;
 // 		data.pSkinRes = pBindObj?pBindObj->GetResource():nullptr;
 //         data.pMapAttrib = static_cast<IMapAttribute*>(this);
@@ -303,7 +303,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //             (BSTR)iter->second.c_str(), pBindObj, ppGet);
 //     if (*ppGet)
 //     {
-//         SERIALIZEDATA data = {0};
+//         SerializeParam data = {0};
 //         data.pUIApplication = pUIApp;
 // 		data.pSkinRes = pBindObj ? pBindObj->GetResource() : nullptr;
 //         data.pMapAttrib = static_cast<IMapAttribute*>(this);

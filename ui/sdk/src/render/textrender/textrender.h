@@ -91,7 +91,7 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   IRenderFont *GetRenderFont() { return m_pRenderFont; }
 
@@ -134,7 +134,7 @@ public:
   void SetRenderFont(IRenderFont *);
 
 protected:
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   IRenderFont *GetRenderFont() { return m_pRenderFont; }
   long OnSkinTextureChanged(unsigned int, long, long);
@@ -172,7 +172,7 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   long OnSkinTextureChanged(unsigned int, long, long);
 
@@ -213,7 +213,7 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
   IRenderFont *GetRenderFont();
@@ -269,7 +269,7 @@ public:
   UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
-  void OnSerialize(SERIALIZEDATA *pData);
+  void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
   IRenderFont *GetRenderFont();
