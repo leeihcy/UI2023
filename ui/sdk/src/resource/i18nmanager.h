@@ -19,8 +19,8 @@ public:
 		return m_i18nRes;
 	}
 
-	static long  UIParseI18nTagCallback(IUIElement*, IResource* pSkinRes);
-	long  ParseNewElement(UIElement*);
+	static int  UIParseI18nTagCallback(IUIElement*, IResource* pSkinRes);
+	int  ParseNewElement(UIElement*);
 
     void  Reload();
     

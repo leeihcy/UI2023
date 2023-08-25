@@ -28,40 +28,40 @@ struct ILayoutParam {
 };
 
 struct ICanvasLayoutParam : public ILayoutParam {
-  virtual void SetConfigWidth(long) = 0;
-  virtual void SetConfigHeight(long) = 0;
-  virtual void SetConfigLayoutFlags(long) = 0;
-  virtual void SetConfigLeft(long) = 0;
-  virtual void SetConfigRight(long) = 0;
-  virtual void SetConfigTop(long) = 0;
-  virtual void SetConfigBottom(long) = 0;
+  virtual void SetConfigWidth(int) = 0;
+  virtual void SetConfigHeight(int) = 0;
+  virtual void SetConfigLayoutFlags(int) = 0;
+  virtual void SetConfigLeft(int) = 0;
+  virtual void SetConfigRight(int) = 0;
+  virtual void SetConfigTop(int) = 0;
+  virtual void SetConfigBottom(int) = 0;
 
-  virtual long GetConfigWidth() = 0;
-  virtual long GetConfigHeight() = 0;
-  virtual long GetConfigLayoutFlags() = 0;
-  virtual long GetConfigLeft() = 0;
-  virtual long GetConfigRight() = 0;
-  virtual long GetConfigTop() = 0;
-  virtual long GetConfigBottom() = 0;
+  virtual int GetConfigWidth() = 0;
+  virtual int GetConfigHeight() = 0;
+  virtual int GetConfigLayoutFlags() = 0;
+  virtual int GetConfigLeft() = 0;
+  virtual int GetConfigRight() = 0;
+  virtual int GetConfigTop() = 0;
+  virtual int GetConfigBottom() = 0;
 };
 
 struct IHorzLayoutParam : public ILayoutParam {
-  virtual void SetConfigWidth(long) = 0;
-  virtual void SetConfigHeight(long) = 0;
-  virtual void SetConfigLayoutFlags(long) = 0;
+  virtual void SetConfigWidth(int) = 0;
+  virtual void SetConfigHeight(int) = 0;
+  virtual void SetConfigLayoutFlags(int) = 0;
 
-  virtual long GetConfigWidth() = 0;
-  virtual long GetConfigHeight() = 0;
-  virtual long GetConfigLayoutFlags() = 0;
+  virtual int GetConfigWidth() = 0;
+  virtual int GetConfigHeight() = 0;
+  virtual int GetConfigLayoutFlags() = 0;
 };
 struct IVertLayoutParam : public ILayoutParam {
-  virtual void SetConfigWidth(long) = 0;
-  virtual void SetConfigHeight(long) = 0;
-  virtual void SetConfigLayoutFlags(long) = 0;
+  virtual void SetConfigWidth(int) = 0;
+  virtual void SetConfigHeight(int) = 0;
+  virtual void SetConfigLayoutFlags(int) = 0;
 
-  virtual long GetConfigWidth() = 0;
-  virtual long GetConfigHeight() = 0;
-  virtual long GetConfigLayoutFlags() = 0;
+  virtual int GetConfigWidth() = 0;
+  virtual int GetConfigHeight() = 0;
+  virtual int GetConfigLayoutFlags() = 0;
 };
 
 struct IGridLayoutParam : public ILayoutParam {

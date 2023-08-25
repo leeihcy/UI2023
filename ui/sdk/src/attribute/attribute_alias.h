@@ -1,6 +1,9 @@
 #pragma once
-#include "include/interface/iattribute.h"
 #include <map>
+#include <string>
+
+#include "include/interface/iattribute.h"
+
 //
 // 别名映射 (对于枚举类型有用)
 //
@@ -9,18 +12,18 @@
 
 namespace ui
 {
-class LongAttributeAlias
+class IntAttributeAlias
 {
 public:
-    const wchar_t*  GetAlias(long);
-    bool  GetAlias(const wchar_t*, long* pOut);
-    void  AddAlias(long, const wchar_t*);
+    const wchar_t*  GetAlias(int);
+    bool  GetAlias(const wchar_t*, int* pOut);
+    void  AddAlias(int, const wchar_t*);
 
 	uint  GetCount();
-	long  EnumAlias(pfnEnumAliasCallback, long, long);
+	int  EnumAlias(pfnEnumAliasCallback, int, int);
 
 private:
-    typedef std::multimap<long, String>  AliasMap;
+    typedef std::multimap<int, std::wstring>  AliasMap;
     typedef AliasMap::iterator  AliasIter;
 
     AliasMap  m_mapAlias;

@@ -7,7 +7,7 @@
 namespace ui
 {
 
-class EnumAttribute : public LongAttribute
+class EnumAttribute : public IntAttribute
 {
 public:
     EnumAttribute();
@@ -19,7 +19,7 @@ public:
 	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
 
 public:
-    EnumAttribute*  AddOption(long, const wchar_t*);
+    EnumAttribute*  AddOption(int, const wchar_t*);
 	EnumAttribute*  FillGraphicsRenderLibraryData();
 
 private:

@@ -20,7 +20,7 @@ AttributeClassFactory::AttributeClassFactory() {
   Register(ATTRIBUTE_TYPE_BOOL, CreateBoolAttribute);
   Register(ATTRIBUTE_TYPE_RECT, CreateRectAttribute);
   Register(ATTRIBUTE_TYPE_9REGION, CreateRegion9Attribute);
-  Register(ATTRIBUTE_TYPE_LONG, CreateLongAttribute);
+  Register(ATTRIBUTE_TYPE_LONG, CreateIntAttribute);
   Register(ATTRIBUTE_TYPE_FLAGS, CreateFlagsAttribute);
   Register(ATTRIBUTE_TYPE_STRINGENUM, CreateStringEnumAttribute);
   Register(ATTRIBUTE_TYPE_ENUM, CreateEnumAttribute);
@@ -37,7 +37,7 @@ AttributeClassFactory &GetAttributeClassFactory() {
 
 AttributeClassFactory::~AttributeClassFactory() { m_map.clear(); }
 
-bool AttributeClassFactory::Register(long lType, pfnCreateAttributeClass p) {
+bool AttributeClassFactory::Register(int lType, pfnCreateAttributeClass p) {
   if (!p)
     return false;
 
@@ -48,7 +48,7 @@ bool AttributeClassFactory::Register(long lType, pfnCreateAttributeClass p) {
   return true;
 }
 
-AttributeBase *AttributeClassFactory::CreateInstance(long lType) {
+AttributeBase *AttributeClassFactory::CreateInstance(int lType) {
   _ClassIter iter = m_map.find(lType);
   if (iter == m_map.end())
     return nullptr;
@@ -221,37 +221,37 @@ BoolAttribute *AttributeSerializer::AddBool(const wchar_t *szKey,
   }
   return p;
 }
-LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey,
-                                            long &lBindValue) {
-  return static_cast<LongAttribute *>(
+IntAttribute *AttributeSerializer::AddInt(const wchar_t *szKey,
+                                            int &lBindValue) {
+  return static_cast<IntAttribute *>(
       Add(ATTRIBUTE_TYPE_LONG, szKey, &lBindValue));
 }
-// LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey, void
+// IntAttribute *AttributeSerializer::AddInt(const wchar_t *szKey, void
 // *_this,
 //                                             pfnLongSetter s, pfnLongGetter g)
 //                                             {
-//   return static_cast<LongAttribute *>(
+//   return static_cast<IntAttribute *>(
 //       Add(ATTRIBUTE_TYPE_LONG, szKey, _this, s, g));
 // }
-LongAttribute *AttributeSerializer::AddLong(const wchar_t *szKey,
-                                            slot<void(long)> &&s,
-                                            slot<long()> &&g) {
-  LongAttribute *p =
-      static_cast<LongAttribute *>(Add(ATTRIBUTE_TYPE_LONG, szKey, nullptr));
+IntAttribute *AttributeSerializer::AddInt(const wchar_t *szKey,
+                                            slot<void(int)> &&s,
+                                            slot<int()> &&g) {
+  IntAttribute *p =
+      static_cast<IntAttribute *>(Add(ATTRIBUTE_TYPE_LONG, szKey, nullptr));
   if (p) {
-    p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
+    p->Bind(std::forward<slot<void(int)>>(s), std::forward<slot<int()>>(g));
   }
   return p;
 }
 
 FlagsAttribute *AttributeSerializer::AddFlags(const wchar_t *szKey,
-                                              long &lBindValue) {
+                                              int &lBindValue) {
   return static_cast<FlagsAttribute *>(
       Add(ATTRIBUTE_TYPE_FLAGS, szKey, &lBindValue));
 }
 
 EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey,
-                                            long &lBindValue) {
+                                            int &lBindValue) {
   return static_cast<EnumAttribute *>(
       Add(ATTRIBUTE_TYPE_ENUM, szKey, &lBindValue));
 }
@@ -263,12 +263,12 @@ EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey,
 //       Add(ATTRIBUTE_TYPE_ENUM, szKey, _this, s, g));
 // }
 EnumAttribute *AttributeSerializer::AddEnum(const wchar_t *szKey,
-                                            slot<void(long)> &&s,
-                                            slot<long()> &&g) {
+                                            slot<void(int)> &&s,
+                                            slot<int()> &&g) {
   EnumAttribute *p =
       static_cast<EnumAttribute *>(Add(ATTRIBUTE_TYPE_ENUM, szKey, nullptr));
   if (p) {
-    p->Bind(std::forward<slot<void(long)>>(s), std::forward<slot<long()>>(g));
+    p->Bind(std::forward<slot<void(int)>>(s), std::forward<slot<int()>>(g));
   }
   return p;
 }
@@ -414,7 +414,7 @@ AttributeSerializer::AddTextRenderBase(const wchar_t *szPrefix, Object *pObj,
 }
 
 // 添加一个属性
-AttributeBase *AttributeSerializer::Add(long eType, const wchar_t *szKey) {
+AttributeBase *AttributeSerializer::Add(int eType, const wchar_t *szKey) {
   AttributeBase *pAttribute = GetAttributeClassFactory().CreateInstance(eType);
   if (!pAttribute) {
     UI_LOG_ERROR(TEXT("Create Attribute Class Factory Failed. Type=%d"), eType);
@@ -439,7 +439,7 @@ AttributeBase *AttributeSerializer::Add(long eType, const wchar_t *szKey) {
   return pAttribute;
 }
 
-AttributeBase *AttributeSerializer::Add(long eType, const wchar_t *szKey,
+AttributeBase *AttributeSerializer::Add(int eType, const wchar_t *szKey,
                                         void *pBindValue) {
   AttributeBase *pAttribute = GetAttributeClassFactory().CreateInstance(eType);
   if (!pAttribute) {
@@ -467,7 +467,7 @@ AttributeBase *AttributeSerializer::Add(long eType, const wchar_t *szKey,
   return pAttribute;
 }
 #if 0
-AttributeBase *AttributeSerializer::Add(long eType, const wchar_t *szKey,
+AttributeBase *AttributeSerializer::Add(int eType, const wchar_t *szKey,
                                         void *_this, void *_setter,
                                         void *_getter) {
   AttributeBase *pAttribute = GetAttributeClassFactory().CreateInstance(eType);
@@ -633,7 +633,7 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 
-    static_cast<IMessage *>(pObj)->SendMessage(UI_MSG_SERIALIZE, (long)&data);
+    static_cast<IMessage *>(pObj)->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
   } else {
     _AttrIter iter = m_list.begin();
     for (; iter != m_list.end(); ++iter) {
@@ -672,9 +672,9 @@ void AttributeEditorProxy::Bool2Editor(BoolAttribute *p,
                                        EditorAttributeFlag e) {
   m_pEditor->EditorBoolAttribute(p->GetIBoolAttribute(), e);
 }
-void AttributeEditorProxy::Long2Editor(LongAttribute *p,
+void AttributeEditorProxy::Long2Editor(IntAttribute *p,
                                        EditorAttributeFlag e) {
-  m_pEditor->EditorLongAttribute(p->GetILongAttribute(), e);
+  m_pEditor->EditorIntAttribute(p->GetIIntAttribute(), e);
 }
 void AttributeEditorProxy::Enum2Editor(EnumAttribute *p,
                                        EditorAttributeFlag e) {

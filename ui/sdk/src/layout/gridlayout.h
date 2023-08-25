@@ -34,14 +34,14 @@ public:
 private:
   Object *m_pObj;
 
-  long m_nConfigWidth;
-  long m_nConfigHeight;
-  long m_nConfigLayoutFlags;
+  int m_nConfigWidth;
+  int m_nConfigHeight;
+  int m_nConfigLayoutFlags;
 
-  long m_nRow;
-  long m_nCol;
-  long m_nRowSpan;
-  long m_nColSpan;
+  int m_nRow;
+  int m_nCol;
+  int m_nRowSpan;
+  int m_nColSpan;
 };
 
 enum GridWHType {

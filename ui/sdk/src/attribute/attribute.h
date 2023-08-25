@@ -39,11 +39,11 @@ class AttributeClassFactory
 public:
     AttributeClassFactory();
     ~AttributeClassFactory();
-    bool  Register(long, pfnCreateAttributeClass);
-    AttributeBase*  CreateInstance(long);
+    bool  Register(int, pfnCreateAttributeClass);
+    AttributeBase*  CreateInstance(int);
 
 private:
-    typedef std::map<long, pfnCreateAttributeClass>  _ClassMap;
+    typedef std::map<int, pfnCreateAttributeClass>  _ClassMap;
     typedef _ClassMap::iterator  _ClassIter;
 
     _ClassMap  m_map;
@@ -57,9 +57,9 @@ class AttributeSerializer
 public:
     AttributeSerializer(SerializeParam*, const wchar_t* szGroupName);
     ~AttributeSerializer();
-    AttributeBase*  Add(long eType, const wchar_t* szKey);
-    AttributeBase*  Add(long eType, const wchar_t* szKey, void* pBindValue);
-    // AttributeBase*  Add(long eType, const wchar_t* szKey, void* _this, void* _setter, void* _getter);
+    AttributeBase*  Add(int eType, const wchar_t* szKey);
+    AttributeBase*  Add(int eType, const wchar_t* szKey, void* pBindValue);
+    // AttributeBase*  Add(int eType, const wchar_t* szKey, void* _this, void* _setter, void* _getter);
 
     void  DoAction();
     void  Load();
@@ -89,15 +89,15 @@ public:
     // BoolAttribute*  AddBool(const wchar_t*, void* _this, pfnBoolSetter s, pfnBoolGetter g);
     BoolAttribute*  AddBool(const wchar_t*, slot<void(bool)>&& s, slot<bool()>&& g);
 
-    LongAttribute*  AddLong(const wchar_t*, long& lBindValue);
-    // LongAttribute*  AddLong(const wchar_t*, void* _this, pfnLongSetter s, pfnLongGetter g);
-    LongAttribute*  AddLong(const wchar_t*, slot<void(long)>&& s, slot<long()>&& g);
+    IntAttribute*  AddInt(const wchar_t*, int& lBindValue);
+    // IntAttribute*  AddInt(const wchar_t*, void* _this, pfnLongSetter s, pfnLongGetter g);
+    IntAttribute*  AddInt(const wchar_t*, slot<void(int)>&& s, slot<int()>&& g);
 
-    FlagsAttribute*  AddFlags(const wchar_t*, long& lBindValue);
+    FlagsAttribute*  AddFlags(const wchar_t*, int& lBindValue);
 
-    EnumAttribute*  AddEnum(const wchar_t*, long& lBindValue);
+    EnumAttribute*  AddEnum(const wchar_t*, int& lBindValue);
     // EnumAttribute*  AddEnum(const wchar_t*, void* _this, pfnLongSetter s, pfnLongGetter g);
-    EnumAttribute*  AddEnum(const wchar_t*, slot<void(long)>&& s, slot<long()>&& g);
+    EnumAttribute*  AddEnum(const wchar_t*, slot<void(int)>&& s, slot<int()>&& g);
 
 
 	RectAttribute*  AddRect(const wchar_t*, Rect& rcBindValue);
@@ -155,7 +155,7 @@ public:
     void  String2Editor(StringAttribute* p, EditorAttributeFlag e);
     void  CharArray2Editor(CharArrayAttribute* p, EditorAttributeFlag e);
     void  Bool2Editor(BoolAttribute* p, EditorAttributeFlag e);
-    void  Long2Editor(LongAttribute* p, EditorAttributeFlag e);
+    void  Long2Editor(IntAttribute* p, EditorAttributeFlag e);
 	void  Enum2Editor(EnumAttribute* p, EditorAttributeFlag e);
     void  Flags2Editor(FlagsAttribute* p, EditorAttributeFlag e);
     void  Rect2Editor(RectAttribute* p, EditorAttributeFlag e);

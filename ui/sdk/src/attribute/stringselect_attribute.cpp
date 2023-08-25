@@ -46,8 +46,8 @@ bool StringEnumAttribute::IsExist(const wchar_t *szText) {
   return false;
 }
 
-void StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, long w,
-                                     long l) {
+void StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, llong w,
+                                     llong l) {
   std::list<String>::iterator iter = m_list.begin();
   for (; iter != m_list.end(); ++iter) {
     callback((*iter).c_str(), w, l);
@@ -78,8 +78,8 @@ void StringEnumAttribute::Set(const wchar_t *szValue) {
   StringAttribute::Set(szValue);
 }
 
-bool EnumLayoutTypeCallback(const wchar_t *szName, long wParam,
-                            long) {
+bool EnumLayoutTypeCallback(const wchar_t *szName, llong wParam,
+                            llong) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szName);
 
@@ -93,13 +93,13 @@ StringEnumAttribute *StringEnumAttribute::FillLayoutTypeData() {
   Application *pUIApp = GetUIApplication();
   if (pUIApp)
     pUIApp->GetIUIApplication()->EnumLayoutType(EnumLayoutTypeCallback,
-                                                (long)this, 0);
+                                                (llong)this, 0);
 
   return this;
 }
 
-void EnumRenderBaseNameCallback(const wchar_t *szText, long wParam,
-                                long lParam) {
+void EnumRenderBaseNameCallback(const wchar_t *szText, llong wParam,
+                                llong lParam) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szText);
 }
@@ -107,19 +107,19 @@ StringEnumAttribute *StringEnumAttribute::FillRenderBaseTypeData() {
   m_list.clear();
   this->Add(EMPTYTEXT); // 增加一项默认值，取消当前的选项
   m_pUIApplication->GetIUIApplication()->EnumRenderBaseName(
-      EnumRenderBaseNameCallback, (long)this, 0);
+      EnumRenderBaseNameCallback, (llong)this, 0);
   return this;
 }
 
-void EnumTextRenderBaseNameCallback(const wchar_t *szText, long wParam,
-                                    long lParam) {
+void EnumTextRenderBaseNameCallback(const wchar_t *szText, llong wParam,
+                                    llong lParam) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szText);
 }
 StringEnumAttribute *StringEnumAttribute::FillTextRenderBaseTypeData() {
   m_list.clear();
   m_pUIApplication->GetIUIApplication()->EnumTextRenderBaseName(
-      EnumTextRenderBaseNameCallback, (long)this, 0);
+      EnumTextRenderBaseNameCallback, (llong)this, 0);
   return this;
 }
 

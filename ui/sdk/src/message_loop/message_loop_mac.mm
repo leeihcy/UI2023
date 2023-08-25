@@ -115,17 +115,14 @@ static void onTimerEntry(__CFRunLoopTimer *timer, void *info) {
 }
 
 void MessageLoopPlatformMac::onIdle() {
-  printf("onIdle\n");
   if (m_idle_tasks.empty()) {
     return;
   }
   m_idle_tasks.emit();
   m_idle_tasks.clear();
-  printf("onIdle2\n");
 }
 
 void MessageLoopPlatformMac::PostTask(PostTaskType &&task) {
-  printf("PostTask\n");
   m_idle_tasks.connect(std::forward<PostTaskType>(task));
 
   CFRunLoopSourceSignal(m_idle_source);

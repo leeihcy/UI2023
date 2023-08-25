@@ -1,55 +1,55 @@
 #pragma once
-#include "attributebase.h"
 #include "attribute_alias.h"
+#include "attributebase.h"
 
-namespace ui
-{
+namespace ui {
 
-class LongAttribute : public AttributeBase
-{
+class IntAttribute : public AttributeBase {
 public:
-    LongAttribute();
-    ~LongAttribute();
-    ILongAttribute*  GetILongAttribute();
+  IntAttribute();
+  ~IntAttribute();
+  IIntAttribute *GetIIntAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Reset() override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy*, EditorAttributeFlag e) override;
-    virtual bool  IsDefaultValue() override;
+  virtual const wchar_t *Get() override;
+  virtual void Set(const wchar_t *) override;
+  virtual void Reset() override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *,
+                      EditorAttributeFlag e) override;
+  virtual bool IsDefaultValue() override;
 
-    void  SetBindValue(void*) override;
-    // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
-    void Bind(slot<void(long)>&& s, slot<long()>&& g);
+  void SetBindValue(void *) override;
+  // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
+  void Bind(slot<void(int)> &&s, slot<int()> &&g);
 
 public:
-	LongAttribute*  SetDefault(long l);
-    LongAttribute*  AddAlias(long, const wchar_t*);
-	LongAttribute*  SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
+  IntAttribute *SetDefault(int l);
+  IntAttribute *AddAlias(int, const wchar_t *);
+  IntAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
 
-    long  GetLong();
-    void  SetLong(long);
+  int GetLong();
+  void SetLong(int);
 
-	uint  GetAliasCount();
-	long  EnumAlias(pfnEnumAliasCallback, long, long);
+  uint GetAliasCount();
+  int EnumAlias(pfnEnumAliasCallback, int, int);
 
 protected:
-    long*  m_pBindValue;
-    long   m_lDefault;
+  int *m_pBindValue;
+  int m_lDefault;
 
-    // void*   _this;
-    // pfnLongSetter  _setter;
-    // pfnLongGetter  _getter;
-    signal<void(long)> m_setter;
-    signal<long()> m_getter;
+  // void*   _this;
+  // pfnLongSetter  _setter;
+  // pfnLongGetter  _getter;
+  signal<void(int)> m_setter;
+  signal<int()> m_getter;
 
-    LongAttributeAlias  m_mapAlias;
+  IntAttributeAlias m_mapAlias;
 
-	LONGATTR_DPI_SCALE_TYPE  m_eDpiScaleType;
+  LONGATTR_DPI_SCALE_TYPE m_eDpiScaleType;
+
 private:
-    ILongAttribute*  m_pILongAttribute;
+  IIntAttribute *m_pIIntAttribute;
 };
 
-AttributeBase*  CreateLongAttribute();
+AttributeBase *CreateIntAttribute();
 
-}
+} // namespace ui

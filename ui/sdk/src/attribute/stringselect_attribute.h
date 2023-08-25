@@ -20,7 +20,7 @@ public:
 public:
     StringEnumAttribute*  Add(const wchar_t*);
     bool  IsExist(const wchar_t*);
-    void  EnumString(pfnEnumStringEnumCallback, long, long);
+    void  EnumString(pfnEnumStringEnumCallback, llong, llong);
     
     StringEnumAttribute*  FillRenderBaseTypeData();
     StringEnumAttribute*  FillTextRenderBaseTypeData();

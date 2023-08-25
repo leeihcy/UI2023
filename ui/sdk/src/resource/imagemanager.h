@@ -44,11 +44,11 @@ public:
 	void  Clear();
 	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	static long  UIParseImageTagCallback(IUIElement*, IResource* pSkinRes);
+	static int  UIParseImageTagCallback(IUIElement*, IResource* pSkinRes);
 
 private:
     // ISkinTagParse
-    long  ParseNewElement(UIElement* pElem);
+    int  ParseNewElement(UIElement* pElem);
     void  OnNewChild(UIElement* pElem);
 
 private:

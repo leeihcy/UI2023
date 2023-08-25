@@ -40,8 +40,8 @@ public:
   void Arrange(Window *pWindow);
 };
 
-void LoadConfigWH(const wchar_t *szText, long &wh, long &whtype);
-const wchar_t *SaveConfigWH(long wh, long whtype);
+void LoadConfigWH(const wchar_t *szText, int &wh, int &whtype);
+const wchar_t *SaveConfigWH(int wh, int whtype);
 
 template <class T, class IT, class TParam> class LayoutImpl : public IT {
 public:

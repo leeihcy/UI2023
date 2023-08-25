@@ -23,7 +23,7 @@ public:
     ~ColorManager(void);
 
     ColorRes&  GetColorRes();
-    long  ParseNewElement(UIElement* pElem);
+    int  ParseNewElement(UIElement* pElem);
     IColorManager&  GetIColorManager();
 
 public:
@@ -33,7 +33,7 @@ public:
 
     bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-    static long  UIParseColorTagCallback(IUIElement*, IResource* pSkinRes);
+    static int  UIParseColorTagCallback(IUIElement*, IResource* pSkinRes);
 
 private:
     void  OnNewChild(UIElement* pElem);

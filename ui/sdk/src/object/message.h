@@ -64,7 +64,7 @@ public:
   void RemoveHook(IMessage *pObj);
   void ClearHook();
 
-  long SendMessage(uint message, long wParam = 0, long lParam = 0);
+  llong SendMessage(uint message, llong wParam = 0, llong lParam = 0);
 
   // 返回TRUE，表示该消息已被处理，FALSE表示该消息没被处理
   bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
@@ -72,7 +72,7 @@ public:
                                      bool bDoHook = false);
 
   bool DoHook(UIMSG *pMsg, int nMsgMapID);
-  long DoNotify(UIMSG *pMsg);
+  llong DoNotify(UIMSG *pMsg);
 
   // void AddDelayRef(void** pp);
   // void RemoveDelayRef(void** pp);

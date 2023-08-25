@@ -22,8 +22,8 @@ public:
   bool Create(int nType, IObject *pObject, ILayout **ppOut);
   bool CreateByName(const wchar_t *szName, IObject *pObject,
                     bool bCreateDefault, ILayout **ppOut);
-  void EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam,
-                      long lParam);
+  void EnumLayoutType(pfnEnumLayoutTypeCallback callback, llong wParam,
+                      llong lParam);
 
 private:
   struct UILAYOUT_CREATE_INFO {

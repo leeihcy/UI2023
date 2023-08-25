@@ -149,7 +149,7 @@ void  ListCtrlBase::OnSerialize(SerializeParam* pData)
 
 	{
 		AttributeSerializer  s(pData, TEXT("ListCtrl"));
-		s.AddLong(XML_LISTCTRL_ITEM_HEIGHT, m_nItemHeight)
+		s.AddInt(XML_LISTCTRL_ITEM_HEIGHT, m_nItemHeight)
 			->SetDpiScaleType(LONGATTR_DPI_SCALE_ENABLE)
             ->SetDefault(20);
 		s.AddRect(XML_LISTCTRL_ITEM_PADDING, m_rItemContentPadding);

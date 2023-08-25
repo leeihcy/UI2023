@@ -52,13 +52,13 @@ ColorRes &ColorManager::GetColorRes() { return m_resColor; }
 
 //////////////////////////////////////////////////////////////////////////
 
-long ColorManager::UIParseColorTagCallback(IUIElement *pElem,
+int ColorManager::UIParseColorTagCallback(IUIElement *pElem,
                                            IResource *pSkinRes) {
   IColorManager &pColorMgr = pSkinRes->GetColorManager();
   return pColorMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
-long ColorManager::ParseNewElement(UIElement *pElem) {
+int ColorManager::ParseNewElement(UIElement *pElem) {
   ColorTagElementInfo info;
   info.pXmlElement = pElem;
   pElem->AddRef();

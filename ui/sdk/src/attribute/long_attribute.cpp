@@ -1,229 +1,185 @@
-#include "include/inc.h"
 #include "long_attribute.h"
 #include "attribute.h"
+#include "include/inc.h"
 #include "src/util/DPI/dpihelper.h"
 // #include "attributex64.h"
 
+namespace ui {
+AttributeBase *CreateIntAttribute() { return new IntAttribute(); }
 
-namespace ui
-{
-    AttributeBase*  CreateLongAttribute()
-    {
-        return new LongAttribute();
-    }
+IntAttribute::IntAttribute() {
+  m_pIIntAttribute = nullptr;
+  m_pBindValue = nullptr;
+  m_lDefault = 0;
 
+  m_eDpiScaleType = LONGATTR_DPI_SCALE_DISABLE;
 
-LongAttribute::LongAttribute() 
-{
-    m_pILongAttribute = nullptr;
-    m_pBindValue = nullptr;
-    m_lDefault = 0;
-
-	m_eDpiScaleType = LONGATTR_DPI_SCALE_DISABLE;
-
-    // _this = nullptr;
-    // _setter = nullptr;
-    // _getter = nullptr;
+  // _this = nullptr;
+  // _setter = nullptr;
+  // _getter = nullptr;
 }
 
-LongAttribute::~LongAttribute()
-{
-    SAFE_DELETE(m_pILongAttribute);
+IntAttribute::~IntAttribute() { SAFE_DELETE(m_pIIntAttribute); }
+
+IIntAttribute *IntAttribute::GetIIntAttribute() {
+  if (!m_pIIntAttribute)
+    m_pIIntAttribute = new IIntAttribute(this);
+
+  return m_pIIntAttribute;
 }
 
-ILongAttribute*  LongAttribute::GetILongAttribute()
-{
-    if (!m_pILongAttribute)    
-        m_pILongAttribute = new ILongAttribute(this);
+void IntAttribute::SetBindValue(void *p) { m_pBindValue = (int *)p; }
 
-    return m_pILongAttribute;
+void IntAttribute::Bind(slot<void(int)> &&s, slot<int()> &&g) {
+  m_setter.connect(std::forward<slot<void(int)>>(s));
+  m_getter.connect(std::forward<slot<int()>>(g));
 }
-
-void  LongAttribute::SetBindValue(void* p)
-{
-    m_pBindValue = (long*)p;
-}
-
-void LongAttribute::Bind(slot<void(long)>&& s, slot<long()>&& g)
-{
-    m_setter.connect(std::forward<slot<void(long)>>(s));
-    m_getter.connect(std::forward<slot<long()>>(g));
-}
-// void  LongAttribute::SetBindFuction(void* _this, void* _setter, void* _getter)
+// void  IntAttribute::SetBindFuction(void* _this, void* _setter, void*
+// _getter)
 // {
 //     this->_this = _this;
 //     this->_setter = (pfnLongSetter)_setter;
 //     this->_getter = (pfnLongGetter)_getter;
 // }
 
-LongAttribute*  LongAttribute::SetDefault(long l)
-{
-	m_lDefault = l;
+IntAttribute *IntAttribute::SetDefault(int l) {
+  m_lDefault = l;
 
-	return this;
+  return this;
 }
 
 //
-// ×¢£º²»ÄÜÖ±½ÓÐ´£ºb = _getter();
-//     ÕâÑùµÄ½á¹ûÊÇ½«LongAttributeµÄthisÓÖmovµ½ecxÁË
+// æ³¨ï¼šä¸èƒ½ç›´æŽ¥å†™ï¼šb = _getter();
+//     è¿™æ ·çš„ç»“æžœæ˜¯å°†IntAttributeçš„thisåˆmovåˆ°ecxäº†
 //
-long  LongAttribute::GetLong()
-{
-	long lReturn = m_lDefault;
-    if (m_pBindValue)
-    {
-        lReturn = (*m_pBindValue);
-    }
-//     else if (_getter && _this)
-//     {
-//         lReturn = m_lDefault;
-// #ifdef _WIN64
-// 		lReturn = UIx64::GetLong(_this, _getter);
-// #else 
-// 		ULONG_PTR localVarThis = (ULONG_PTR)_this;
-// 		ULONG_PTR localVarGetter = (ULONG_PTR)_getter;
+int IntAttribute::GetLong() {
+  int lReturn = m_lDefault;
+  if (m_pBindValue) {
+    lReturn = (*m_pBindValue);
+  }
+  //     else if (_getter && _this)
+  //     {
+  //         lReturn = m_lDefault;
+  // #ifdef _WIN64
+  // 		lReturn = UIx64::GetLong(_this, _getter);
+  // #else
+  // 		ULONG_PTR localVarThis = (ULONG_PTR)_this;
+  // 		ULONG_PTR localVarGetter = (ULONG_PTR)_getter;
 
-//         __asm
-//         {
-//             mov ecx, localVarThis;  // ÉèÖÃthis
-//             call localVarGetter;    // µ÷ÓÃ
-//             mov lReturn, eax;       // »ñÈ¡·µ»ØÖµ
-//         }
-// #endif
-//     }
-    else if (!m_getter.empty()) {
-        lReturn = m_getter.emit();
-    }
-    else
-    {
-        lReturn = m_lDefault;
-    }
-	
-	switch (m_eDpiScaleType)
-	{
-	case LONGATTR_DPI_SCALE_ENABLE:
-		lReturn = ui::RestoreByDpi(lReturn);
-		break;
+  //         __asm
+  //         {
+  //             mov ecx, localVarThis;  // è®¾ç½®this
+  //             call localVarGetter;    // è°ƒç”¨
+  //             mov lReturn, eax;       // èŽ·å–è¿”å›žå€¼
+  //         }
+  // #endif
+  //     }
+  else if (!m_getter.empty()) {
+    lReturn = m_getter.emit();
+  } else {
+    lReturn = m_lDefault;
+  }
 
-	case LONGATTR_DPI_SCALE_GRATETHAN_0:
-		lReturn = ui::RestoreByDpi_if_gt0(lReturn);
-		break;
-    
-    default:
-        break;
-	}
+  switch (m_eDpiScaleType) {
+  case LONGATTR_DPI_SCALE_ENABLE:
+    lReturn = ui::RestoreByDpi(lReturn);
+    break;
 
-	return lReturn;
+  case LONGATTR_DPI_SCALE_GRATETHAN_0:
+    lReturn = ui::RestoreByDpi_if_gt0(lReturn);
+    break;
+
+  default:
+    break;
+  }
+
+  return lReturn;
 }
 
-void  LongAttribute::SetLong(long l)
-{
-	switch (m_eDpiScaleType)
-	{
-	case LONGATTR_DPI_SCALE_ENABLE:
-		l = ui::ScaleByDpi(l);
-		break;
+void IntAttribute::SetLong(int l) {
+  switch (m_eDpiScaleType) {
+  case LONGATTR_DPI_SCALE_ENABLE:
+    l = ui::ScaleByDpi(l);
+    break;
 
-	case LONGATTR_DPI_SCALE_GRATETHAN_0:
-		l = ui::ScaleByDpi_if_gt0(l);
-		break;
-    default:
-        break;
-	}
+  case LONGATTR_DPI_SCALE_GRATETHAN_0:
+    l = ui::ScaleByDpi_if_gt0(l);
+    break;
+  default:
+    break;
+  }
 
-    if (m_pBindValue)
-    {
-        (*m_pBindValue) = l;
-    }
-//     else if (_setter && _this)
-//     {
-// #ifdef _WIN64
-// 		UIx64::SetLong(_this, l, _setter);
-// #else
-//         ULONG_PTR localVarThis = (ULONG_PTR)_this;
-// 		ULONG_PTR localVarSetter = (ULONG_PTR)_setter;
+  if (m_pBindValue) {
+    (*m_pBindValue) = l;
+  }
+  //     else if (_setter && _this)
+  //     {
+  // #ifdef _WIN64
+  // 		UIx64::SetLong(_this, l, _setter);
+  // #else
+  //         ULONG_PTR localVarThis = (ULONG_PTR)_this;
+  // 		ULONG_PTR localVarSetter = (ULONG_PTR)_setter;
 
-//         __asm
-//         {
-//             mov eax, dword ptr [l]   // Ñ¹Èë²ÎÊý
-//             push eax;
+  //         __asm
+  //         {
+  //             mov eax, dword ptr [l]   // åŽ‹å…¥å‚æ•°
+  //             push eax;
 
-//             mov ecx, localVarThis;   // ÉèÖÃthis
-//             call localVarSetter;     // µ÷ÓÃ
-//         }
-// #endif
-//     }
-    else if (!m_setter.empty()) {
-        m_setter.emit(l);
-    }
+  //             mov ecx, localVarThis;   // è®¾ç½®this
+  //             call localVarSetter;     // è°ƒç”¨
+  //         }
+  // #endif
+  //     }
+  else if (!m_setter.empty()) {
+    m_setter.emit(l);
+  }
 }
-const wchar_t*  LongAttribute::Get()
-{
-    long lValue = GetLong();
-    
-    const wchar_t* szAlias = m_mapAlias.GetAlias(lValue);
-    if (szAlias)
-    {
-        return szAlias;
-    }
-    else
-    {
-		wchar_t* szText = GetTempBuffer(64);
-        wprintf(szText, TEXT("%d"), lValue);
-        return szText;
-    }
+const wchar_t *IntAttribute::Get() {
+  int lValue = GetLong();
+
+  const wchar_t *szAlias = m_mapAlias.GetAlias(lValue);
+  if (szAlias) {
+    return szAlias;
+  } else {
+    wchar_t *szText = GetTempBuffer(64);
+    wprintf(szText, TEXT("%d"), lValue);
+    return szText;
+  }
 }
 
-void  LongAttribute::Set(const wchar_t* szValue)
-{
-    long lValue = m_lDefault;
+void IntAttribute::Set(const wchar_t *szValue) {
+  int lValue = m_lDefault;
 
-    if (m_mapAlias.GetAlias(szValue, &lValue))
-    {
-        SetLong(lValue);
-    }
-    else
-    {
-        lValue = util::wtoi(szValue);
-        SetLong(lValue);
-    }
+  if (m_mapAlias.GetAlias(szValue, &lValue)) {
+    SetLong(lValue);
+  } else {
+    lValue = util::wtoi(szValue);
+    SetLong(lValue);
+  }
 }
 
-void  LongAttribute::Reset()
-{
-	SetLong(m_lDefault);
+void IntAttribute::Reset() { SetLong(m_lDefault); }
+
+bool IntAttribute::IsDefaultValue() { return GetLong() == m_lDefault; }
+
+IntAttribute *IntAttribute::AddAlias(int l, const wchar_t *sz) {
+  m_mapAlias.AddAlias(l, sz);
+  return this;
 }
 
-bool  LongAttribute::IsDefaultValue()
-{
-    return GetLong() == m_lDefault;
+void IntAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                           EditorAttributeFlag e) {
+  p->Long2Editor(this, e);
 }
 
-LongAttribute*  LongAttribute::AddAlias(long l, const wchar_t* sz)
-{
-    m_mapAlias.AddAlias(l, sz);
-    return this;
+int IntAttribute::EnumAlias(pfnEnumAliasCallback c, int w, int l) {
+  return m_mapAlias.EnumAlias(c, w, l);
+}
+uint IntAttribute::GetAliasCount() { return m_mapAlias.GetCount(); }
+
+IntAttribute *IntAttribute::SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e) {
+  m_eDpiScaleType = e;
+  return this;
 }
 
-void  LongAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
-{
-    p->Long2Editor(this, e);
-}
-
-long  LongAttribute::EnumAlias(pfnEnumAliasCallback c, long w, long l)
-{
-	return m_mapAlias.EnumAlias(c, w, l);
-}
-uint  LongAttribute::GetAliasCount()
-{
-	return m_mapAlias.GetCount();
-}
-
-LongAttribute* LongAttribute::SetDpiScaleType( LONGATTR_DPI_SCALE_TYPE e )
-{
-	m_eDpiScaleType = e;
-	return this;
-}
-
-
-}
+} // namespace ui

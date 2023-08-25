@@ -24,10 +24,10 @@ struct UIAPI IMessage {
 
   IMeta *GetMeta(); // 返回值不会为空
 
-  // long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
-  static long SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
+  // llong UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
+  static llong SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
                           bool *pbHandled = nullptr);
-  long SendMessage(unsigned int message, long wParam = 0, long lParam = 0,
+  llong SendMessage(unsigned int message, llong wParam = 0, llong lParam = 0,
                    unsigned int nCode = 0, IMessage *pMsgFrom = nullptr,
                    int nMsgMapID = 0, bool *pbHandled = nullptr);
 
@@ -49,7 +49,7 @@ public:
   Message *GetImpl();
   void ClearNotify();
   void SetNotify(IMessage *pObj, int nMsgMapID);
-  long DoNotify(UIMSG *pMsg);
+  llong DoNotify(UIMSG *pMsg);
   IMessage *GetNotifyObj();
   void CopyNotifyTo(IMessage *pObjCopyTo);
 

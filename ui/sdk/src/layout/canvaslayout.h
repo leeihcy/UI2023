@@ -22,56 +22,56 @@ public:
   static int ParseAlignAttr(const wchar_t *);
 
 public:
-  virtual long GetConfigLeft() override;
-  virtual void SetConfigLeft(long) override;
-  void LoadConfigLeft(long);
-  long SaveConfigLeft();
+  virtual int GetConfigLeft() override;
+  virtual void SetConfigLeft(int) override;
+  void LoadConfigLeft(int);
+  int SaveConfigLeft();
 
-  virtual long GetConfigTop() override;
-  virtual void SetConfigTop(long) override;
-  void LoadConfigTop(long);
-  long SaveConfigTop();
+  virtual int GetConfigTop() override;
+  virtual void SetConfigTop(int) override;
+  void LoadConfigTop(int);
+  int SaveConfigTop();
 
-  virtual long GetConfigRight() override;
-  virtual void SetConfigRight(long) override;
-  void LoadConfigRight(long);
-  long SaveConfigRight();
+  virtual int GetConfigRight() override;
+  virtual void SetConfigRight(int) override;
+  void LoadConfigRight(int);
+  int SaveConfigRight();
 
-  virtual long GetConfigBottom() override;
-  virtual void SetConfigBottom(long) override;
-  void LoadConfigBottom(long);
-  long SaveConfigBottom();
+  virtual int GetConfigBottom() override;
+  virtual void SetConfigBottom(int) override;
+  void LoadConfigBottom(int);
+  int SaveConfigBottom();
 
-  virtual long GetConfigWidth() override;
-  virtual void SetConfigWidth(long) override;
-  void LoadConfigWidth(long);
-  long SaveConfigWidth();
+  virtual int GetConfigWidth() override;
+  virtual void SetConfigWidth(int) override;
+  void LoadConfigWidth(int);
+  int SaveConfigWidth();
 
-  virtual long GetConfigHeight() override;
-  virtual void SetConfigHeight(long) override;
-  void LoadConfigHeight(long);
-  long SaveConfigHeight();
+  virtual int GetConfigHeight() override;
+  virtual void SetConfigHeight(int) override;
+  void LoadConfigHeight(int);
+  int SaveConfigHeight();
 
-  virtual void SetConfigLayoutFlags(long) override;
-  virtual long GetConfigLayoutFlags() override;
+  virtual void SetConfigLayoutFlags(int) override;
+  virtual int GetConfigLayoutFlags() override;
 
 private:
   Object *m_pObj;
 
-  long
+  int
       m_nConfigWidth; // 对象的宽度，可取值： 数值 | "auto" .
                       // （对于window对象，width
                       // 是指client区域的大小，不是整个窗口的大小；width包括padding，但不包括margin）
-  long
+  int
       m_nConfigHeight; // 对象的高度，可取值： 数值 | "auto" .
                        // （对于window对象，height是指client区域的大小，不是整个窗口的大小；height包括padding，但不包括margin）
   // 在这里需要说明，对象的最终占用的宽度= margin.left + width + margin.right
   // 也就是说这里的width = padding.left + padding.right + content.width
-  long m_nConfigLeft;
-  long m_nConfigRight;
-  long m_nConfigTop;
-  long m_nConfigBottom;
-  long m_nConfigLayoutFlags;
+  int m_nConfigLeft;
+  int m_nConfigRight;
+  int m_nConfigTop;
+  int m_nConfigBottom;
+  int m_nConfigLayoutFlags;
 };
 
 //

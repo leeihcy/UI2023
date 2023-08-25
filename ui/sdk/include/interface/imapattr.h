@@ -25,20 +25,20 @@ struct IMapAttribute {
   virtual const wchar_t *GetAttr(const wchar_t *szKey, bool bErase) = 0;
   virtual const wchar_t *GetAttr(const wchar_t *szPrefix, const wchar_t *szKey,
                                  bool bErase) = 0;
-  virtual long GetAttr_bool(const wchar_t *szKey, bool bErase, bool *pbGet) = 0;
-  virtual long GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_bool(const wchar_t *szKey, bool bErase, bool *pbGet) = 0;
+  virtual int GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
                             bool bErase, bool *pbGet) = 0;
-  virtual long GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) = 0;
-  virtual long GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) = 0;
+  virtual int GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
                            bool bErase, int *pnGet) = 0;
-  virtual long GetAttr_intarray(const wchar_t *szKey, bool bErase,
+  virtual int GetAttr_intarray(const wchar_t *szKey, bool bErase,
                                 int *pIntArray, unsigned int nSize) = 0;
-  virtual long GetAttr_intarray(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_intarray(const wchar_t *szPrefix, const wchar_t *szKey,
                                 bool bErase, int *pIntArray,
                                 unsigned int nSize) = 0;
-  virtual long GetAttr_REGION4(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_REGION4(const wchar_t *szPrefix, const wchar_t *szKey,
                                bool bErase, Rect *prcGet) = 0;
-  virtual long GetAttr_Image9Region(const wchar_t *szPrefix,
+  virtual int GetAttr_Image9Region(const wchar_t *szPrefix,
                                     const wchar_t *szKey, bool bErase,
                                     C9Region *pRegion) = 0;
 
@@ -65,11 +65,11 @@ struct IListAttribute {
   virtual bool EnumNext(const wchar_t **szKey, const wchar_t **szValue) = 0;
   virtual void EndEnum() = 0;
 
-  virtual long Release() = 0;
-  virtual long AddRef() = 0;
+  virtual int Release() = 0;
+  virtual int AddRef() = 0;
 };
-UIAPI long UICreateIMapAttribute(IMapAttribute **ppOut);
-UIAPI long UICreateIListAttribute(IListAttribute **ppOut);
+UIAPI int UICreateIMapAttribute(IMapAttribute **ppOut);
+UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
 
 } // namespace ui
 

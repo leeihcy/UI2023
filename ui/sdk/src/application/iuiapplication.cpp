@@ -61,7 +61,7 @@ IResource*  IApplication::LoadResource(const wchar_t* szSkinResPath)
 	return nullptr;
 }
 
-IResource*  IApplication::LoadResource(long hInstance, int resId)
+IResource*  IApplication::LoadResource(llong hInstance, llong resId)
 {
 	Resource* p = m_pImpl->GetResourceManager().LoadResource(hInstance, resId); 
 	if (p)
@@ -179,7 +179,7 @@ bool  IApplication::CreateRenderBase(int nType, IObject* pObject, IRenderBase** 
     return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType, pObject, ppOut);
 }
 
-void  IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam, long lParam)
+void  IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam, llong lParam)
 {
     m_pImpl->GetRenderBaseFactory().EnumRenderBaseName(callback, wParam, lParam);
 }
@@ -208,7 +208,7 @@ bool  IApplication::CreateTextRenderBase(int nType, IObject* pObject, ITextRende
         pSkinRes = GetDefaultSkinRes();
     return m_pImpl->GetTextRenderFactroy().CreateTextRender(pSkinRes, nType, pObject, ppOut); 
 }
-void  IApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback, long wParam, long lParam)
+void  IApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback, llong wParam, llong lParam)
 {
     m_pImpl->GetTextRenderFactroy().EnumTextRenderBaseName(callback, wParam, lParam);
 }
@@ -219,7 +219,7 @@ bool IApplication::CreateLayoutByName(const wchar_t *szName, IObject *pObject,
                                                   bCreateDefault, ppOut);
 }
 void IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback,
-                                  long wParam, long lParam) {
+                                  llong wParam, llong lParam) {
   m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
 }
 bool IApplication::RegisterLayout(const wchar_t *name,

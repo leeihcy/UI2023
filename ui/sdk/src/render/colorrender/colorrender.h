@@ -69,8 +69,8 @@ public:
 
 public:
     ISysColorRender*  m_pISysColorRender;
-	long  m_nBkColorIndex;
-	long  m_nBorderColorIndex;
+	int  m_nBkColorIndex;
+	int  m_nBorderColorIndex;
     REGION4  m_rcBorder;
 
 	// COLORREF    m_bkColor;     // 由于在WM_THEMECHANGED消息中，直接调用GetSysColor获取到的值仍然有可能是旧的
@@ -121,7 +121,7 @@ public:
     Color*  m_pBorderColor;
     REGION4  m_rcBorder;
 
-    long  m_nGradientDir;
+    int  m_nGradientDir;
 };
 
 
@@ -150,8 +150,8 @@ public:
 
 	void  SetStateColor(int nState, COLORREF colorBk, bool bSetBk, COLORREF colBorder, bool bSetBorder);
 	
-    void  SetCount(long n);
-    long  GetCount();
+    void  SetCount(int n);
+    int  GetCount();
     void  LoadBkColor(const wchar_t* szColor);
     const wchar_t*  SaveBkColor();
     void  LoadBorderColor(const wchar_t* szColor);

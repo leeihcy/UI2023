@@ -373,7 +373,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
 #endif
 }
 
-void LoadConfigWH(const wchar_t *szText, long &wh, long &whtype) {
+void LoadConfigWH(const wchar_t *szText, int &wh, int &whtype) {
   if (!szText || !szText[0] || 0 == wcscmp(szText, XML_AUTO)) {
     whtype = WH_AUTO;
     wh = 0;
@@ -401,7 +401,7 @@ void LoadConfigWH(const wchar_t *szText, long &wh, long &whtype) {
   whtype = WH_SET;
 }
 
-const wchar_t *SaveConfigWH(long wh, long whtype) {
+const wchar_t *SaveConfigWH(int wh, int whtype) {
   wchar_t *szBuffer = GetTempBuffer();
 
   switch (whtype) {

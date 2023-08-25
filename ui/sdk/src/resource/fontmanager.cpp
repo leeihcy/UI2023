@@ -21,7 +21,7 @@ namespace ui
 
 int FontSize2Height(int nSize)
 {
-	long dpi = ui::GetDpi();
+	int dpi = ui::GetDpi();
 	int nHeight = 0;
 	nHeight = -(nSize * dpi / 72);  // MulDiv
 	return nHeight;
@@ -39,7 +39,7 @@ int FontSize2Height(int nSize)
 //
 int FontHeight2Size(int nHeight)
 {
-	long dpi = ui::GetDpi();
+	int dpi = ui::GetDpi();
 	int nSize = 0;
 	nSize = -(nHeight * 72 / dpi);  // 96  // MulDiv
 	return nSize;
@@ -50,7 +50,7 @@ int /*CALLBACK*/ IsFontExistEnumFontsProc(
 						   const LOGFONT *lplf,     // logical-font data
 						   const TEXTMETRIC *lptm,  // physical-font data
 						   unsigned int dwType,     // font type
-						   long lpData              // application-defined data
+						   int lpData              // application-defined data
 						   )
 {
 	bool* pbFind = (bool*)lpData;
@@ -75,7 +75,7 @@ bool IsFontExist(const wchar_t* pszFaceName)
 #if defined(OS_WIN)
 	HDC hDC = GetDC(nullptr);
 	bool bFind = false;
-	int nRet = EnumFonts(hDC, pszFaceName, IsFontExistEnumFontsProc, (long)&bFind);
+	int nRet = EnumFonts(hDC, pszFaceName, IsFontExistEnumFontsProc, (int)&bFind);
 	::ReleaseDC(nullptr, hDC);
 
 	return bFind;
@@ -139,13 +139,13 @@ FontRes&  FontManager::GetFontRes()
 }
 
 
-long  FontManager::UIParseFontTagCallback(IUIElement* pElem, IResource* pSkinRes)
+int  FontManager::UIParseFontTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
     IFontManager&  pFontMgr = pSkinRes->GetFontManager();
     return pFontMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
-long  FontManager::ParseNewElement(UIElement* pElem)
+int  FontManager::ParseNewElement(UIElement* pElem)
 {
 	FontTagElementInfo info;
 	info.pXmlElement = pElem;
@@ -186,7 +186,7 @@ int CALLBACK _EnumFontsProc(
                    CONST LOGFONT *lplf,     // logical-font data
                    CONST TEXTMETRIC *lptm,  // physical-font data
                    unsigned int dwType,            // font type
-                   long lpData            // application-defined data
+                   int lpData            // application-defined data
                            )
 {
     BYTE* pbChatSet = (BYTE*)lpData;
@@ -288,7 +288,7 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
     // 获取这个字体的chatset。
     // 场景 ♪ 在xp下面，gdi显示成口，将chatset修改为gb2312之后显示正常
 #if defined(OS_WIN)
-    EnumFonts(hDC, lf.lfFaceName, _EnumFontsProc, (long)&lf.lfCharSet);
+    EnumFonts(hDC, lf.lfFaceName, _EnumFontsProc, (int)&lf.lfCharSet);
 #else
     UIASSERT(false);
 #endif

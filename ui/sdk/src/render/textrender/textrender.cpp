@@ -62,7 +62,7 @@ void TextRenderBase::Serialize(AttributeSerializer* ps)
 		->AddFlag(DT_NOPREFIX, XML_TEXTRENDER_ALIGN_NO_PREFIX)
         ->SetDefault(DEFAULT_DRAWTEXT_FLAG);
 
-	ps->AddEnum(XML_TEXTRENDER_EFFECT, *(long*)&m_eDrawTextEffect)
+	ps->AddEnum(XML_TEXTRENDER_EFFECT, *(int*)&m_eDrawTextEffect)
 		->AddOption(TEXT_EFFECT_NONE, XML_TEXTRENDER_EFFECT_NONE)
 		->AddOption(TEXT_EFFECT_HALO, XML_TEXTRENDER_EFFECT_HALO)
         ->AddOption(TEXT_EFFECT_ENDALPHAMASK, XML_TEXTRENDER_EFFECT_ENDALPHAMASK);
@@ -478,7 +478,7 @@ void ContrastColorTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct)
 #endif
 }
 
-long  ContrastColorTextRender::OnSkinTextureChanged(unsigned int, long, long)
+int  ContrastColorTextRender::OnSkinTextureChanged(unsigned int, int, int)
 {
     SAFE_RELEASE(m_pColorText);
     return 0;
@@ -510,7 +510,7 @@ void  ContrastColorListTextRender::Clear()
 }
 
 
-long  ContrastColorListTextRender::OnSkinTextureChanged(unsigned int, long, long)
+int  ContrastColorListTextRender::OnSkinTextureChanged(unsigned int, int, int)
 {
     for (int i = 0; i < m_nCount; i++)
     {
@@ -526,7 +526,7 @@ void ContrastColorListTextRender::OnSerialize(SerializeParam* pData)
         AttributeSerializer s(pData, TEXT("ContrastColorListTextRender"));
         TextRenderBase::Serialize(&s);
 
-        s.AddLong(XML_TEXTRENDER_COLORLIST_COUNT,
+        s.AddInt(XML_TEXTRENDER_COLORLIST_COUNT,
             Slot(&ContrastColorListTextRender::SetCount, this),
             Slot(&ContrastColorListTextRender::GetCount, this));
 
@@ -581,7 +581,7 @@ void ContrastColorListTextRender::SetRenderFont(IRenderFont* pFont)
         pFont->AddRef();
 }
 
-void ContrastColorListTextRender::SetCount(long nCount)
+void ContrastColorListTextRender::SetCount(int nCount)
 {
     this->Clear();
     m_nCount = nCount;
@@ -591,9 +591,9 @@ void ContrastColorListTextRender::SetCount(long nCount)
         m_vTextColor.push_back(nullptr);
     }
 }
-long  ContrastColorListTextRender::GetCount()
+int  ContrastColorListTextRender::GetCount()
 {
-    return (long)m_vTextColor.size();
+    return (int)m_vTextColor.size();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -626,7 +626,7 @@ void ColorListTextRender::OnSerialize(SerializeParam* pData)
         AttributeSerializer s(pData, TEXT("ColorListTextRender"));
         TextRenderBase::Serialize(&s);
 
-        s.AddLong(XML_TEXTRENDER_COLORLIST_COUNT,
+        s.AddInt(XML_TEXTRENDER_COLORLIST_COUNT,
             Slot(&ColorListTextRender::SetCount, this),
             Slot(&ColorListTextRender::GetCount, this));
 
@@ -742,7 +742,7 @@ void ColorListTextRender::SetRenderFont(IRenderFont* pFont)
 		pFont->AddRef();
 }
 
-void ColorListTextRender::SetCount(long nCount)
+void ColorListTextRender::SetCount(int nCount)
 {
 	this->Clear();
 	m_nCount = nCount;
@@ -752,9 +752,9 @@ void ColorListTextRender::SetCount(long nCount)
 		m_vTextColor.push_back(nullptr);
 	}
 }
-long  ColorListTextRender::GetCount()
+int  ColorListTextRender::GetCount()
 {
-    return (long)m_vTextColor.size();
+    return (int)m_vTextColor.size();
 }
 
 void ColorListTextRender::SetColor(int nIndex, COLORREF col)
@@ -799,7 +799,7 @@ void FontColorListTextRender::OnSerialize(SerializeParam* pData)
         AttributeSerializer s(pData, TEXT("FontColorListTextRender"));
         TextRenderBase::Serialize(&s);
 
-        s.AddLong(XML_TEXTRENDER_FONTCOLORLIST_COUNT,
+        s.AddInt(XML_TEXTRENDER_FONTCOLORLIST_COUNT,
             Slot(&FontColorListTextRender::SetCount, this),
             Slot(&FontColorListTextRender::GetCount, this));
 
@@ -958,7 +958,7 @@ void FontColorListTextRender::SetRenderFont(IRenderFont* pRenderFont)
 	}
 }
 
-void FontColorListTextRender::SetCount(long nCount)
+void FontColorListTextRender::SetCount(int nCount)
 {
 	this->Clear();
 	m_nCount = nCount;
@@ -970,7 +970,7 @@ void FontColorListTextRender::SetCount(long nCount)
 	}
 }
 
-long  FontColorListTextRender::GetCount()
+int  FontColorListTextRender::GetCount()
 {
     return m_nCount;
 }

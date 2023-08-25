@@ -9,7 +9,7 @@ struct IAttributeEditorProxy;
 struct IStringAttribute;
 struct IBoolAttribute;
 struct IColorAttribute;
-struct ILongAttribute;
+struct IIntAttribute;
 struct IEnumAttribute;
 struct IFlagsAttribute;
 struct IRectAttribute;
@@ -84,7 +84,7 @@ struct IUIEditor {
   virtual void EditorStringAttribute(IStringAttribute *,
                                      EditorAttributeFlag e) = 0;
   virtual void EditorBoolAttribute(IBoolAttribute *, EditorAttributeFlag e) = 0;
-  virtual void EditorLongAttribute(ILongAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorIntAttribute(IIntAttribute *, EditorAttributeFlag e) = 0;
   virtual void EditorEnumAttribute(IEnumAttribute *, EditorAttributeFlag e) = 0;
   virtual void EditorFlagsAttribute(IFlagsAttribute *,
                                     EditorAttributeFlag e) = 0;

@@ -64,10 +64,10 @@ void  RoundPanel::OnSerialize(SerializeParam* pData)
 	__super::OnSerialize(pData);
 
 	AttributeSerializer s(pData, TEXT("RoundPanel"));
-	s.AddLong(XML_ROUNDPANEL_CORNER_LEFTTOP, *(long*)&m_lefttop);
-	s.AddLong(XML_ROUNDPANEL_CORNER_RIGHTTOP, *(long*)&m_righttop);
-	s.AddLong(XML_ROUNDPANEL_CORNER_LEFTBOTTOM, *(long*)&m_leftbottom);
-	s.AddLong(XML_ROUNDPANEL_CORNER_RIGHTBOTTOM, *(long*)&m_rightbottom);
+	s.AddInt(XML_ROUNDPANEL_CORNER_LEFTTOP, *(int*)&m_lefttop);
+	s.AddInt(XML_ROUNDPANEL_CORNER_RIGHTTOP, *(int*)&m_righttop);
+	s.AddInt(XML_ROUNDPANEL_CORNER_LEFTBOTTOM, *(int*)&m_leftbottom);
+	s.AddInt(XML_ROUNDPANEL_CORNER_RIGHTBOTTOM, *(int*)&m_rightbottom);
 }
 
 void RoundPanel::OnPaint(IRenderTarget* pRenderTarget)

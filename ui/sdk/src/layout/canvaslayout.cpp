@@ -218,7 +218,7 @@ Size CanvasLayoutParam::CalcDesiredSize() {
     size.height = this->m_nConfigHeight;
   } else {
     // 获取子对象所需要的空间
-    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
+    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (llong)&size);
 
     // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
     if (this->m_nConfigWidth != AUTO)
@@ -281,38 +281,38 @@ void CanvasLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializer s(pData, TEXT("CanvasLayoutParam"));
 
   // width=""，也支持 layout.width=""
-  s.AddLong(XML_WIDTH, Slot(&CanvasLayoutParam::LoadConfigWidth, this),
+  s.AddInt(XML_WIDTH, Slot(&CanvasLayoutParam::LoadConfigWidth, this),
             Slot(&CanvasLayoutParam::SaveConfigWidth, this))
       ->AddAlias(AUTO, XML_AUTO)
       ->AddAlias(NDEF, XML_NDEF)
       ->SetDefault(AUTO)
       ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_WIDTH);
 
-  s.AddLong(XML_HEIGHT, Slot(&CanvasLayoutParam::LoadConfigHeight, this),
+  s.AddInt(XML_HEIGHT, Slot(&CanvasLayoutParam::LoadConfigHeight, this),
             Slot(&CanvasLayoutParam::SaveConfigHeight, this))
       ->AddAlias(AUTO, XML_AUTO)
       ->AddAlias(NDEF, XML_NDEF)
       ->SetDefault(AUTO)
       ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_HEIGHT);
 
-  s.AddLong(XML_LAYOUT_ITEM_LEFT,
+  s.AddInt(XML_LAYOUT_ITEM_LEFT,
             Slot(&CanvasLayoutParam::LoadConfigLeft, this),
             Slot(&CanvasLayoutParam::SaveConfigLeft, this))
       ->AddAlias(NDEF, XML_NDEF)
       ->SetDefault(NDEF);
 
-  s.AddLong(XML_LAYOUT_ITEM_TOP, Slot(&CanvasLayoutParam::LoadConfigTop, this),
+  s.AddInt(XML_LAYOUT_ITEM_TOP, Slot(&CanvasLayoutParam::LoadConfigTop, this),
             Slot(&CanvasLayoutParam::SaveConfigTop, this))
       ->AddAlias(NDEF, XML_NDEF)
       ->SetDefault(NDEF);
 
-  s.AddLong(XML_LAYOUT_ITEM_RIGHT,
+  s.AddInt(XML_LAYOUT_ITEM_RIGHT,
             Slot(&CanvasLayoutParam::LoadConfigRight, this),
             Slot(&CanvasLayoutParam::SaveConfigRight, this))
       ->AddAlias(NDEF, XML_NDEF)
       ->SetDefault(NDEF);
 
-  s.AddLong(XML_LAYOUT_ITEM_BOTTOM,
+  s.AddInt(XML_LAYOUT_ITEM_BOTTOM,
             Slot(&CanvasLayoutParam::LoadConfigBottom, this),
             Slot(&CanvasLayoutParam::SaveConfigBottom, this))
       ->AddAlias(NDEF, XML_NDEF)
@@ -330,64 +330,64 @@ void CanvasLayoutParam::Serialize(SerializeParam *pData) {
       ;
 }
 
-long CanvasLayoutParam::GetConfigLeft() { return m_nConfigLeft; }
-void CanvasLayoutParam::LoadConfigLeft(long n) {
+int CanvasLayoutParam::GetConfigLeft() { return m_nConfigLeft; }
+void CanvasLayoutParam::LoadConfigLeft(int n) {
   m_nConfigLeft = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigLeft() {
+int CanvasLayoutParam::SaveConfigLeft() {
   return RestoreByDpi_if_gt0(m_nConfigLeft);
 }
-void CanvasLayoutParam::SetConfigLeft(long n) { m_nConfigLeft = n; }
+void CanvasLayoutParam::SetConfigLeft(int n) { m_nConfigLeft = n; }
 
-long CanvasLayoutParam::GetConfigTop() { return m_nConfigTop; }
-void CanvasLayoutParam::LoadConfigTop(long n) {
+int CanvasLayoutParam::GetConfigTop() { return m_nConfigTop; }
+void CanvasLayoutParam::LoadConfigTop(int n) {
   m_nConfigTop = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigTop() {
+int CanvasLayoutParam::SaveConfigTop() {
   return RestoreByDpi_if_gt0(m_nConfigTop);
 }
-void CanvasLayoutParam::SetConfigTop(long n) { m_nConfigTop = n; }
+void CanvasLayoutParam::SetConfigTop(int n) { m_nConfigTop = n; }
 
-long CanvasLayoutParam::GetConfigRight() { return m_nConfigRight; }
-void CanvasLayoutParam::LoadConfigRight(long n) {
+int CanvasLayoutParam::GetConfigRight() { return m_nConfigRight; }
+void CanvasLayoutParam::LoadConfigRight(int n) {
   m_nConfigRight = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigRight() {
+int CanvasLayoutParam::SaveConfigRight() {
   return RestoreByDpi_if_gt0(m_nConfigRight);
 }
-void CanvasLayoutParam::SetConfigRight(long n) { m_nConfigRight = n; }
+void CanvasLayoutParam::SetConfigRight(int n) { m_nConfigRight = n; }
 
-long CanvasLayoutParam::GetConfigBottom() { return m_nConfigBottom; }
-void CanvasLayoutParam::LoadConfigBottom(long n) {
+int CanvasLayoutParam::GetConfigBottom() { return m_nConfigBottom; }
+void CanvasLayoutParam::LoadConfigBottom(int n) {
   m_nConfigBottom = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigBottom() {
+int CanvasLayoutParam::SaveConfigBottom() {
   return RestoreByDpi_if_gt0(m_nConfigBottom);
 }
-void CanvasLayoutParam::SetConfigBottom(long n) { m_nConfigBottom = n; }
+void CanvasLayoutParam::SetConfigBottom(int n) { m_nConfigBottom = n; }
 
-long CanvasLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
-void CanvasLayoutParam::SetConfigWidth(long n) { m_nConfigWidth = n; }
-void CanvasLayoutParam::LoadConfigWidth(long n) {
+int CanvasLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
+void CanvasLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
+void CanvasLayoutParam::LoadConfigWidth(int n) {
   m_nConfigWidth = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigWidth() {
+int CanvasLayoutParam::SaveConfigWidth() {
   return RestoreByDpi_if_gt0(m_nConfigWidth);
 }
 
-long CanvasLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
-void CanvasLayoutParam::SetConfigHeight(long n) { m_nConfigHeight = n; }
-void CanvasLayoutParam::LoadConfigHeight(long n) {
+int CanvasLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
+void CanvasLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
+void CanvasLayoutParam::LoadConfigHeight(int n) {
   m_nConfigHeight = ScaleByDpi_if_gt0(n);
 }
-long CanvasLayoutParam::SaveConfigHeight() {
+int CanvasLayoutParam::SaveConfigHeight() {
   return RestoreByDpi_if_gt0(m_nConfigHeight);
 }
 
-void CanvasLayoutParam::SetConfigLayoutFlags(long n) {
+void CanvasLayoutParam::SetConfigLayoutFlags(int n) {
   m_nConfigLayoutFlags = n;
 }
-long CanvasLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
+int CanvasLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
 
 int CanvasLayoutParam::ParseAlignAttr(const wchar_t *szAttr) {
   util::ISplitStringEnum *pEnum = nullptr;

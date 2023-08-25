@@ -16,7 +16,7 @@ struct IUIEditor;
 class C9Region;
 
 // 属性类型枚举，默认支持的一些属性类型。
-// 对于外部自定义的属性类型，可以用一个大数字来定义(long)
+// 对于外部自定义的属性类型，可以用一个大数字来定义(int)
 enum DEFAULT_ATTRIBUTE_TYPE {
   ATTRIBUTE_TYPE_STRING = 0,
   ATTRIBUTE_TYPE_I18N_STRING,
@@ -62,9 +62,9 @@ template <class To, class From> To memfun_cast(From memfunc) {
   return u.addr;
 }
 
-typedef void (*pfnEnumAliasCallback)(const wchar_t *szText, long lValue, long,
-                                     long);
-typedef void (*pfnEnumStringEnumCallback)(const wchar_t *szText, long, long);
+typedef void (*pfnEnumAliasCallback)(const wchar_t *szText, int lValue, int,
+                                     int);
+typedef void (*pfnEnumStringEnumCallback)(const wchar_t *szText, int, int);
 
 enum LONGATTR_DPI_SCALE_TYPE {
   LONGATTR_DPI_SCALE_DISABLE,     // 不是dpi属性
@@ -72,26 +72,26 @@ enum LONGATTR_DPI_SCALE_TYPE {
   LONGATTR_DPI_SCALE_GRATETHAN_0, // 大于0的情况下拉伸
 };
 
-class LongAttribute;
-struct UIAPI ILongAttribute {
-  ILongAttribute(LongAttribute *);
-  ILongAttribute *SetDefault(long l);
-  ILongAttribute *AddAlias(long, const wchar_t *);
-  ILongAttribute *AsData();
-  ILongAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
+class IntAttribute;
+struct UIAPI IIntAttribute {
+  IIntAttribute(IntAttribute *);
+  IIntAttribute *SetDefault(int l);
+  IIntAttribute *AddAlias(int, const wchar_t *);
+  IIntAttribute *AsData();
+  IIntAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
 
   const wchar_t *GetKey();
   const wchar_t *GetDesc();
   const wchar_t *GetGroupName();
   const wchar_t *GetParentKey();
   const wchar_t *Get();
-  long GetLong();
+  int GetLong();
 
   unsigned int GetAliasCount();
-  long EnumAlias(pfnEnumAliasCallback, long, long);
+  int EnumAlias(pfnEnumAliasCallback, int, int);
 
 private:
-  LongAttribute *m_pImpl;
+  IntAttribute *m_pImpl;
 };
 
 class BoolAttribute;
@@ -141,8 +141,8 @@ private:
 class EnumAttribute;
 struct UIAPI IEnumAttribute {
   IEnumAttribute(EnumAttribute *);
-  IEnumAttribute *AddOption(long, const wchar_t *);
-  IEnumAttribute *SetDefault(long l);
+  IEnumAttribute *AddOption(int, const wchar_t *);
+  IEnumAttribute *SetDefault(int l);
   IEnumAttribute *AsData();
 
   const wchar_t *GetKey();
@@ -150,10 +150,10 @@ struct UIAPI IEnumAttribute {
   const wchar_t *GetGroupName();
   const wchar_t *GetParentKey();
   const wchar_t *Get();
-  long GetLong();
+  int GetLong();
 
   unsigned int GetAliasCount();
-  long EnumAlias(pfnEnumAliasCallback, long, long);
+  int EnumAlias(pfnEnumAliasCallback, int, int);
 
   IEnumAttribute *ReloadOnChanged();
 
@@ -164,8 +164,8 @@ private:
 class FlagsAttribute;
 struct UIAPI IFlagsAttribute {
   IFlagsAttribute(FlagsAttribute *);
-  IFlagsAttribute *AddFlag(long, const wchar_t *);
-  IFlagsAttribute *SetDefault(long l);
+  IFlagsAttribute *AddFlag(int, const wchar_t *);
+  IFlagsAttribute *SetDefault(int l);
   IFlagsAttribute *AsData();
 
   const wchar_t *GetKey();
@@ -173,10 +173,10 @@ struct UIAPI IFlagsAttribute {
   const wchar_t *GetGroupName();
   const wchar_t *GetParentKey();
   const wchar_t *Get();
-  long GetLong();
+  int GetLong();
 
   unsigned int GetAliasCount();
-  long EnumAlias(pfnEnumAliasCallback, long, long);
+  int EnumAlias(pfnEnumAliasCallback, int, int);
 
 private:
   FlagsAttribute *m_pImpl;
@@ -237,7 +237,7 @@ struct UIAPI IStringEnumAttribute {
   const wchar_t *GetGroupName();
   const wchar_t *GetParentKey();
   const wchar_t *Get();
-  void EnumString(pfnEnumStringEnumCallback, long, long);
+  void EnumString(pfnEnumStringEnumCallback, int, int);
 
   IStringEnumAttribute *FillRenderBaseTypeData();
   IStringEnumAttribute *FillTextRenderBaseTypeData();
@@ -316,13 +316,12 @@ struct UIAPI AttributeSerializerWrap {
   // IBoolAttribute*  AddBool(const wchar_t* szKey, void* _this, pfnBoolSetter
   // s, pfnBoolGetter g);
 
-  ILongAttribute *AddLong(const wchar_t *szKey, long &lBindValue);
-  ILongAttribute *AddLong(const wchar_t *szKey, int &lBindValue);
-  // ILongAttribute*  AddLong(const wchar_t* szKey, void* _this, pfnLongSetter
+  IIntAttribute *AddInt(const wchar_t *szKey, int &lBindValue);
+  // IIntAttribute*  AddInt(const wchar_t* szKey, void* _this, pfnLongSetter
   // s, pfnLongGetter g);
 
-  IFlagsAttribute *AddFlags(const wchar_t *, long &lBindValue);
-  IEnumAttribute *AddEnum(const wchar_t *szKey, long &lBindValue);
+  IFlagsAttribute *AddFlags(const wchar_t *, int &lBindValue);
+  IEnumAttribute *AddEnum(const wchar_t *szKey, int &lBindValue);
   // IEnumAttribute*  AddEnum(const wchar_t* szKey, void* _this, pfnLongSetter
   // s, pfnLongGetter g);
 

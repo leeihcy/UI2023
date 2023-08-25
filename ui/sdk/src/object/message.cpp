@@ -66,7 +66,7 @@ void Message::emit(const char *event_name, Event *event) {
   iter->second.emit(event);
 }
 
-long Message::SendMessage(uint message, long wParam, long lParam)
+llong Message::SendMessage(uint message, llong wParam, llong lParam)
 {
   return m_pIMessage->SendMessage(message, wParam, lParam);
 }
@@ -113,10 +113,10 @@ void Message::CopyNotifyTo(IMessage *pObjCopyTo) {
 
 // 发送Notify消息到注册过Notify的对象.(修改为只通知给一个人.通知多个人太乱了)
 // 当bPost为true时，才需要pUIApp参数
-long Message::DoNotify(UIMSG *pMsg /*, bool bPost, IApplication* pUIApp*/) {
+llong Message::DoNotify(UIMSG *pMsg /*, bool bPost, IApplication* pUIApp*/) {
   //	IMessage* pNotifyObj = pMsg->pMsgTo;
   int nMsgMapID = 0;
-  long lRet =
+  llong lRet =
       0; // 如果在UIMSG中指定了pObjMsgTo，则优先发送给该对象，并且nMsgMapID = 0;
 
   if (nullptr == pMsg->pMsgTo) {

@@ -44,10 +44,10 @@ public:
 //  bool     GetStyleItemInfo( int nIndex, IStyleResItem** ppStyleItemInfo );
 //  bool     GetStyleItemInfo( STYLE_SELECTOR_TYPE eType, const wchar_t* szSelectorID, IStyleResItem** ppStyleItemInfo );
 
-    static long  UIParseStyleTagCallback(IUIElement*, IResource* pSkinRes);
+    static int  UIParseStyleTagCallback(IUIElement*, IResource* pSkinRes);
 
 private:
-    long  ParseNewElement(UIElement* pElem);
+    int  ParseNewElement(UIElement* pElem);
     void  OnNewChild(UIElement* pElem);
 
     bool  parse_inherit(tree<StyleResItem*>* pTreeItem, StyleRes* pStyleRes);

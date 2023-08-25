@@ -15,7 +15,7 @@ I18nManager::~I18nManager()
     m_listElement.clear();
 }
 
-long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes)
+int  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
 	I18nManager& mgr = pSkinRes->GetImpl()->GetI18nManager();
 	return mgr.ParseNewElement(pElem->GetImpl());
@@ -28,7 +28,7 @@ long  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes
     </string>
   </i18n>
 */
-long  I18nManager::ParseNewElement(UIElement* p)
+int  I18nManager::ParseNewElement(UIElement* p)
 {
     UIASSERT(p);
     p->AddRef();

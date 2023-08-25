@@ -45,8 +45,8 @@
 //
 namespace ui
 {
-    long  ScaleByDpi_if_gt0(long x);
-    long  RestoreByDpi(long x);
-    long  RestoreByDpi_if_gt0(long x);
+    int  ScaleByDpi_if_gt0(int x);
+    int  RestoreByDpi(int x);
+    int  RestoreByDpi_if_gt0(int x);
 	float  GetDpiScale();
 }

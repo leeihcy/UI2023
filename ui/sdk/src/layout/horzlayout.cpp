@@ -16,14 +16,14 @@ HorzLayout::~HorzLayout() {}
 void HorzLayout::Serialize(SerializeParam *pData) {
   //     AttributeSerializer s(pData, TEXT("HorzLayout"));
   //
-  //     s.AddLong(XML_LAYOUT_HORZ_GAP, this,
+  //     s.AddInt(XML_LAYOUT_HORZ_GAP, this,
   //         memfun_cast<pfnLongSetter>(&HorzLayout::LoadGap),
   //         memfun_cast<pfnLongGetter>(&HorzLayout::SaveGap));
   //
 }
 
-void HorzLayout::LoadGap(long n) { m_nSpace = ScaleByDpi_if_gt0(n); }
-long HorzLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
+void HorzLayout::LoadGap(int n) { m_nSpace = ScaleByDpi_if_gt0(n); }
+int HorzLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
 
 void HorzLayout::SetSpace(int n) { m_nSpace = n; }
 
@@ -307,8 +307,8 @@ void HorzLayoutParam::Serialize(SerializeParam *pData) {
       ->AddFlag(LAYOUT_ITEM_ALIGN_FILL, XML_LAYOUT_ITEM_ALIGN_FILL);
 }
 
-long HorzLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
-void HorzLayoutParam::SetConfigWidth(long n) { m_nConfigWidth = n; }
+int HorzLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
+void HorzLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
 
 void HorzLayoutParam::LoadConfigWidth(const wchar_t *szText) {
   LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
@@ -318,8 +318,8 @@ const wchar_t *HorzLayoutParam::SaveConfigWidth() {
   return SaveConfigWH(m_nConfigWidth, m_eWidthType);
 }
 
-long HorzLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
-void HorzLayoutParam::SetConfigHeight(long n) { m_nConfigHeight = n; }
+int HorzLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
+void HorzLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
 void HorzLayoutParam::LoadConfigHeight(const wchar_t *szText) {
   LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
 }
@@ -327,15 +327,15 @@ const wchar_t *HorzLayoutParam::SaveConfigHeight() {
   return SaveConfigWH(m_nConfigHeight, m_eHeightType);
 }
 
-void HorzLayoutParam::SetConfigLayoutFlags(long n) { m_nConfigLayoutFlags = n; }
-long HorzLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
+void HorzLayoutParam::SetConfigLayoutFlags(int n) { m_nConfigLayoutFlags = n; }
+int HorzLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
 
 Size HorzLayoutParam::CalcDesiredSize() {
   Size size = {0, 0};
 
   if (IsSizedByContent()) {
     // 获取子对象所需要的空间
-    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
+    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (llong)&size);
 
     // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
     if (this->m_eWidthType != AUTO)

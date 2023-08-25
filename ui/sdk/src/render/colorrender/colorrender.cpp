@@ -189,8 +189,8 @@ void SysColorRender::SetBorderColor(int nColorIndex)
 void SysColorRender::OnSerialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("SysColorRender"));
-    s.AddLong(XML_RENDER_COLOR, m_nBkColorIndex)->SetDefault(-1);
-    s.AddLong(XML_RENDER_BORDERCOLOR, m_nBorderColorIndex)->SetDefault(-1);
+    s.AddInt(XML_RENDER_COLOR, m_nBkColorIndex)->SetDefault(-1);
+    s.AddInt(XML_RENDER_BORDERCOLOR, m_nBorderColorIndex)->SetDefault(-1);
     s.AddRect(XML_RENDER_BORDER, m_rcBorder);
 }
 
@@ -285,7 +285,7 @@ void GradientRender::OnSerialize(SerializeParam* pData)
         Slot(&GradientRender::LoadBorderColor, this),
         Slot(&GradientRender::SaveBorderColor, this));
     s.AddRect(XML_RENDER_BORDER, m_rcBorder);
-    s.AddEnum(XML_RENDER_COLOR_GRADIENT_DIR, *(long*)&m_nGradientDir)
+    s.AddEnum(XML_RENDER_COLOR_GRADIENT_DIR, *(int*)&m_nGradientDir)
         ->AddOption(RENDER_COLOR_GRADIENT_DIR_H, XML_RENDER_COLOR_GRADIENT_DIR_H)
         ->AddOption(RENDER_COLOR_GRADIENT_DIR_V, XML_RENDER_COLOR_GRADIENT_DIR_V);
 } 
@@ -362,7 +362,7 @@ void ColorListRender::SetStateColor(int nState, COLORREF colorBk, bool bSetBk, C
 	}
 }
 
-void  ColorListRender::SetCount(long n)
+void  ColorListRender::SetCount(int n)
 {
 	if (n < 0)
 		return;
@@ -376,7 +376,7 @@ void  ColorListRender::SetCount(long n)
 	}
 	m_nCount = n;
 }
-long  ColorListRender::GetCount()
+int  ColorListRender::GetCount()
 {
     return m_nCount;
 }
@@ -471,7 +471,7 @@ void ColorListRender::OnSerialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("ColorListRender"));
 
-    s.AddLong(XML_RENDER_COLORLIST_COUNT, 
+    s.AddInt(XML_RENDER_COLORLIST_COUNT, 
         Slot(&ColorListRender::SetCount, this),
         Slot(&ColorListRender::GetCount, this));
     s.AddString(XML_RENDER_COLOR, 

@@ -77,7 +77,7 @@ void  ImageRender::OnSerialize(SerializeParam* pData)
 	s.Add9Region(XML_RENDER_IMAGE9REGION, m_Region);
 
 	// 绘制透明度
-	s.AddLong(XML_RENDER_IMAGE_ALPHA, m_nAlpha)->SetDefault(255);
+	s.AddInt(XML_RENDER_IMAGE_ALPHA, m_nAlpha)->SetDefault(255);
 
 	// 源区域
 	s.AddRect(XML_RENDER_IMAGE_SRC_REGION, m_rcSrc);
@@ -232,7 +232,7 @@ void  ImageListItemRender::OnSerialize(SerializeParam* pData)
 
 	{
 		AttributeSerializer s(pData, TEXT("ImageListItemRender"));
-		s.AddLong(XML_RENDER_IMAGELISTITEM_INDEX, m_nImagelistIndex);
+		s.AddInt(XML_RENDER_IMAGELISTITEM_INDEX, m_nImagelistIndex);
 	}
 
 	if (pData->IsLoad())

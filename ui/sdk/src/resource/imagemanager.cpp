@@ -168,13 +168,13 @@ GifRes&  ImageManager::GetGifRes()
 
 //////////////////////////////////////////////////////////////////////////
 
-long  ImageManager::UIParseImageTagCallback(IUIElement* pElem, IResource* pSkinRes)
+int  ImageManager::UIParseImageTagCallback(IUIElement* pElem, IResource* pSkinRes)
 {
     IImageManager&  pImageMgr = pSkinRes->GetImageManager();
     return pImageMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
-long  ImageManager::ParseNewElement(UIElement* pElem)
+int  ImageManager::ParseNewElement(UIElement* pElem)
 {
 	if (!pElem)
 		return 1;//E_INVALIDARG;

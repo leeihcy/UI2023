@@ -60,7 +60,7 @@ public:
 
   IResource *RootBundle();
   IResource *LoadResource(const wchar_t *szSkinPath);
-  IResource *LoadResource(long hInstance, int resId = -1);
+  IResource *LoadResource(llong hInstance, llong resId = -1);
 
   void SetEditorMode(bool b);
   bool IsEditorMode();
@@ -88,8 +88,8 @@ public:
   bool RegisterUIRenderBaseCreateData(const wchar_t *szName, int nType,
                                       pfnUICreateRenderBasePtr pfunc);
   bool CreateRenderBase(int nType, IObject *pObject, IRenderBase **ppOut);
-  void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam,
-                          long lParam);
+  void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
+                          llong lParam);
 
   bool RegisterUITextRenderBaseCreateData(const wchar_t *szName, int nType,
                                           pfnUICreateTextRenderBasePtr pfunc);
@@ -98,12 +98,12 @@ public:
   bool CreateTextRenderBase(int nType, IObject *pObject,
                             ITextRenderBase **ppOut);
   void EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback,
-                              long wParam, long lParam);
+                              llong wParam, llong lParam);
 
   bool CreateLayoutByName(const wchar_t *szName, IObject *pObject,
                           bool bCreateDefault, ILayout **ppOut);
-  void EnumLayoutType(pfnEnumLayoutTypeCallback callback, long wParam,
-                      long lParam);
+  void EnumLayoutType(pfnEnumLayoutTypeCallback callback, llong wParam,
+                      llong lParam);
   bool RegisterLayout(const wchar_t* name, pfnUICreateLayoutPtr pfn);  
 
 #if 0

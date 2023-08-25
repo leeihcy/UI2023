@@ -86,17 +86,17 @@ void  Object::OnSerialize(SerializeParam* pData)
 		    Slot(&Object::IsTransparent, this))
             ->SetDefault(m_objStyle.default_transparent);
 
-		s.AddLong(XML_ZORDER, *(long*)&m_lzOrder);  // z序 (注：默认在从xml加载之后，AddChild之前会先解析一次)
-		s.AddLong(XML_MAXWIDTH, *(long*)&m_nMaxWidth)
+		s.AddInt(XML_ZORDER, *(int*)&m_lzOrder);  // z序 (注：默认在从xml加载之后，AddChild之前会先解析一次)
+		s.AddInt(XML_MAXWIDTH, *(int*)&m_nMaxWidth)
 			->SetDefault(NDEF)
 			->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-		s.AddLong(XML_MAXHEIGHT, *(long*)&m_nMaxHeight)
+		s.AddInt(XML_MAXHEIGHT, *(int*)&m_nMaxHeight)
 			->SetDefault(NDEF)
 			->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-		s.AddLong(XML_MINWIDTH, m_lMinWidth)
+		s.AddInt(XML_MINWIDTH, m_lMinWidth)
 			->SetDefault(NDEF)
 			->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-		s.AddLong(XML_MINHEIGHT, m_lMinHeight)
+		s.AddInt(XML_MINHEIGHT, m_lMinHeight)
 			->SetDefault(NDEF)
 			->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
 

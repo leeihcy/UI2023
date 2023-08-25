@@ -26,22 +26,22 @@ struct ILayout;
 struct IApplication;
 
 // UI对象创建函数
-// typedef  long(*pfnUICreateRenderBasePtr)(IResource* pSkinRes, void** ppOut);
-// typedef  long(*pfnUICreateTextRenderBasePtr)(IResource* pSkinRes, void**
+// typedef  int(*pfnUICreateRenderBasePtr)(IResource* pSkinRes, void** ppOut);
+// typedef  int(*pfnUICreateTextRenderBasePtr)(IResource* pSkinRes, void**
 // ppOut);
-typedef long (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
-// typedef  long(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
+typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
+// typedef  int(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 // UI对象创建函数
 typedef void (*pfnUICreateRenderBasePtr)(IResource *pSkinRes, void **ppOut);
 typedef void (*pfnUICreateTextRenderBasePtr)(IResource *pSkinRes,
                                              void **ppOut);
-typedef long (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
+typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 
 // uiapplication中的枚举回调
-typedef bool (*pfnEnumLayoutTypeCallback)(const wchar_t *, long, long);
-typedef void (*pfnEnumRenderBaseNameCallback)(const wchar_t *, long, long);
-typedef void (*pfnEnumTextRenderBaseNameCallback)(const wchar_t *, long, long);
+typedef bool (*pfnEnumLayoutTypeCallback)(const wchar_t *, llong, llong);
+typedef void (*pfnEnumRenderBaseNameCallback)(const wchar_t *, llong, llong);
+typedef void (*pfnEnumTextRenderBaseNameCallback)(const wchar_t *, llong, llong);
 
 // 返回值:
 enum PARSE_CONTROL_RETURN {
@@ -56,7 +56,7 @@ typedef PARSE_CONTROL_RETURN (*pfnParseControlTag)(IUIElement *, IResource *,
 
 // 外部UI对象注册入口，由外部DLL实现该导出函数
 #define FUN_RegisterUIObject_NAME "RegisterUIObject"
-typedef long (*funRegisterUIObjectPtr)(IApplication *p);
+typedef int (*funRegisterUIObjectPtr)(IApplication *p);
 
 struct UIMSG;
 struct IMessage;
@@ -64,7 +64,7 @@ struct IMessage;
 struct IMapAttribute;
 struct IListAttribute;
 UIAPI IMapAttribute* UICreateIMapAttribute();
-UIAPI long UICreateIListAttribute(IListAttribute **ppOut);
+UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
 
 struct IRenderBitmap;
 UIAPI void
@@ -77,8 +77,8 @@ UIAPI IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
                                           GRAPHICS_RENDER_LIBRARY_TYPE eType,
                                           bool bNeedAlphaChannel);
 
-UIAPI long GetDpi();
-UIAPI long ScaleByDpi(long x);
+UIAPI int GetDpi();
+UIAPI int ScaleByDpi(int x);
 #define dpi(x) ui::ScaleByDpi(x)
 
 UIAPI void UIUnitTest();

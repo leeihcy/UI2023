@@ -18,60 +18,60 @@
 using namespace ui;
 
 //////////////////////////////////////////////////////////////////////////
-ILongAttribute::ILongAttribute(LongAttribute* p)
+IIntAttribute::IIntAttribute(IntAttribute* p)
 {
     m_pImpl = p;
 }
-ILongAttribute*  ILongAttribute::SetDefault(long l)
+IIntAttribute*  IIntAttribute::SetDefault(int l)
 {
     m_pImpl->SetDefault(l);
     return this;
 }
-ILongAttribute*  ILongAttribute::AddAlias(long l, const wchar_t* sz)
+IIntAttribute*  IIntAttribute::AddAlias(int l, const wchar_t* sz)
 {
     m_pImpl->AddAlias(l, sz);
     return this;
 }
-ILongAttribute*  ILongAttribute::AsData()
+IIntAttribute*  IIntAttribute::AsData()
 {
     m_pImpl->AsData();
     return this;
 }
-ILongAttribute*  ILongAttribute::SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e)
+IIntAttribute*  IIntAttribute::SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e)
 {
 	m_pImpl->SetDpiScaleType(e);
 	return this;
 }
 
-const wchar_t*  ILongAttribute::GetKey()
+const wchar_t*  IIntAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  ILongAttribute::GetDesc()
+const wchar_t*  IIntAttribute::GetDesc()
 {
     return EMPTYTEXT;
 }
-const wchar_t*  ILongAttribute::GetGroupName()
+const wchar_t*  IIntAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  ILongAttribute::GetParentKey()
+const wchar_t*  IIntAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-long  ILongAttribute::GetLong()
+int  IIntAttribute::GetLong()
 {
     return m_pImpl->GetLong();
 }
-const wchar_t*  ILongAttribute::Get()
+const wchar_t*  IIntAttribute::Get()
 {
     return m_pImpl->Get();
 }
-long  ILongAttribute::EnumAlias(pfnEnumAliasCallback c, long w, long l)
+int  IIntAttribute::EnumAlias(pfnEnumAliasCallback c, int w, int l)
 {
 	return m_pImpl->EnumAlias(c, w, l);
 }
-uint  ILongAttribute::GetAliasCount()
+uint  IIntAttribute::GetAliasCount()
 {
 	return m_pImpl->GetAliasCount();
 }
@@ -186,12 +186,12 @@ IEnumAttribute::IEnumAttribute(EnumAttribute* p)
 {
     m_pImpl = p;
 }
-IEnumAttribute*  IEnumAttribute::AddOption(long l, const wchar_t* sz)
+IEnumAttribute*  IEnumAttribute::AddOption(int l, const wchar_t* sz)
 {
     m_pImpl->AddOption(l ,sz);
     return this;
 }
-IEnumAttribute*  IEnumAttribute::SetDefault(long l)
+IEnumAttribute*  IEnumAttribute::SetDefault(int l)
 {
     m_pImpl->SetDefault(l);
     return this;
@@ -222,11 +222,11 @@ const wchar_t*  IEnumAttribute::Get()
 {
     return m_pImpl->Get();
 }
-long  IEnumAttribute::GetLong()
+int  IEnumAttribute::GetLong()
 {
 	return m_pImpl->GetLong();
 }
-long  IEnumAttribute::EnumAlias(pfnEnumAliasCallback c, long w, long l)
+int  IEnumAttribute::EnumAlias(pfnEnumAliasCallback c, int w, int l)
 {
 	return m_pImpl->EnumAlias(c, w, l);
 }
@@ -247,12 +247,12 @@ IFlagsAttribute::IFlagsAttribute(FlagsAttribute* p)
 {
     m_pImpl = p;
 }
-IFlagsAttribute*  IFlagsAttribute::AddFlag(long l, const wchar_t* sz)
+IFlagsAttribute*  IFlagsAttribute::AddFlag(int l, const wchar_t* sz)
 {
     m_pImpl->AddFlag(l ,sz);
     return this;
 }
-IFlagsAttribute*  IFlagsAttribute::SetDefault(long l)
+IFlagsAttribute*  IFlagsAttribute::SetDefault(int l)
 {
     m_pImpl->SetDefault(l);
     return this;
@@ -283,11 +283,11 @@ const wchar_t*  IFlagsAttribute::Get()
 {
     return m_pImpl->Get();
 }
-long  IFlagsAttribute::GetLong()
+int  IFlagsAttribute::GetLong()
 {
     return m_pImpl->GetLong();
 }
-long  IFlagsAttribute::EnumAlias(pfnEnumAliasCallback c, long w, long l)
+int  IFlagsAttribute::EnumAlias(pfnEnumAliasCallback c, int w, int l)
 {
     return m_pImpl->EnumAlias(c, w, l);
 }
@@ -409,7 +409,7 @@ const wchar_t*  IStringEnumAttribute::Get()
     return m_pImpl->Get();
 }
 
-void  IStringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, long w, long l)
+void  IStringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, int w, int l)
 {
     m_pImpl->EnumString(callback, w, l);
 }
@@ -630,28 +630,24 @@ IBoolAttribute*  AttributeSerializerWrap::AddBool(const wchar_t* szKey, bool& bB
 //     return p->GetIBoolAttribute();
 // }
 
-ILongAttribute*  AttributeSerializerWrap::AddLong(const wchar_t* szKey, long& lBindValue)
+IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, int& lBindValue)
 {
-    LongAttribute* p = m_pImpl->AddLong(szKey, lBindValue);
+    IntAttribute* p = m_pImpl->AddInt(szKey, lBindValue);
     if (!p)
         return nullptr;
 
-    return p->GetILongAttribute();
+    return p->GetIIntAttribute();
 }
-ILongAttribute*  AttributeSerializerWrap::AddLong(const wchar_t* szKey, int& lBindValue)
-{
-	return AddLong(szKey, *(long*)&lBindValue);
-}
-// ILongAttribute*  AttributeSerializerWrap::AddLong(const wchar_t* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
+// IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
 // {
-//     LongAttribute* p = m_pImpl->AddLong(szKey, _this, s, g);
+//     IntAttribute* p = m_pImpl->AddInt(szKey, _this, s, g);
 //     if (!p)
 //         return nullptr;
 
-//     return p->GetILongAttribute();
+//     return p->GetIIntAttribute();
 // }
 
-IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const wchar_t* szKey, long& lBindValue)
+IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const wchar_t* szKey, int& lBindValue)
 {
 	FlagsAttribute* p = m_pImpl->AddFlags(szKey, lBindValue);
 	if (!p)
@@ -660,7 +656,7 @@ IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const wchar_t* szKey, long& 
 	return p->GetIFlagsAttribute();
 }
 
-IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, long& lBindValue)
+IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, int& lBindValue)
 {
     EnumAttribute* p = m_pImpl->AddEnum(szKey, lBindValue);
     if (!p)

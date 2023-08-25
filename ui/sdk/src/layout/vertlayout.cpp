@@ -16,14 +16,14 @@ VertLayout::~VertLayout() {}
 void VertLayout::Serialize(SerializeParam *pData) {
   //     AttributeSerializer s(pData, TEXT("VertLayout"));
   //
-  //     s.AddLong(XML_LAYOUT_VERT_GAP, this,
+  //     s.AddInt(XML_LAYOUT_VERT_GAP, this,
   //         memfun_cast<pfnLongSetter>(&VertLayout::LoadGap),
   //         memfun_cast<pfnLongGetter>(&VertLayout::SaveGap));
   //
 }
 
-void VertLayout::LoadGap(long n) { m_nSpace = ScaleByDpi_if_gt0(n); }
-long VertLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
+void VertLayout::LoadGap(int n) { m_nSpace = ScaleByDpi_if_gt0(n); }
+int VertLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
 
 void VertLayout::SetSpace(int n) { m_nSpace = n; }
 
@@ -302,8 +302,8 @@ void VertLayoutParam::Serialize(SerializeParam *pData) {
       ->AddFlag(LAYOUT_ITEM_ALIGN_FILL, XML_LAYOUT_ITEM_ALIGN_FILL);
 }
 
-long VertLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
-void VertLayoutParam::SetConfigWidth(long n) { m_nConfigWidth = n; }
+int VertLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
+void VertLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
 void VertLayoutParam::LoadConfigWidth(const wchar_t *szText) {
   LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
 }
@@ -311,8 +311,8 @@ const wchar_t *VertLayoutParam::SaveConfigWidth() {
   return SaveConfigWH(m_nConfigWidth, m_eWidthType);
 }
 
-long VertLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
-void VertLayoutParam::SetConfigHeight(long n) { m_nConfigHeight = n; }
+int VertLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
+void VertLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
 void VertLayoutParam::LoadConfigHeight(const wchar_t *szText) {
   LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
 }
@@ -320,15 +320,15 @@ const wchar_t *VertLayoutParam::SaveConfigHeight() {
   return SaveConfigWH(m_nConfigHeight, m_eHeightType);
 }
 
-void VertLayoutParam::SetConfigLayoutFlags(long n) { m_nConfigLayoutFlags = n; }
-long VertLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
+void VertLayoutParam::SetConfigLayoutFlags(int n) { m_nConfigLayoutFlags = n; }
+int VertLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
 
 Size VertLayoutParam::CalcDesiredSize() {
   Size size = {0, 0};
 
   if (IsSizedByContent()) {
     // 获取子对象所需要的空间
-    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
+    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (llong)&size);
 
     // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
     if (this->m_eWidthType != AUTO)

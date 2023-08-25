@@ -15,22 +15,22 @@ public:
   virtual const wchar_t *GetAttr(const wchar_t *szKey, bool bErase) override;
   virtual const wchar_t *GetAttr(const wchar_t *szPrefix, const wchar_t *szKey,
                                  bool bErase) override;
-  virtual long GetAttr_bool(const wchar_t *szKey, bool bErase,
+  virtual int GetAttr_bool(const wchar_t *szKey, bool bErase,
                             bool *pbGet) override;
-  virtual long GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
                             bool bErase, bool *pbGet) override;
-  virtual long GetAttr_int(const wchar_t *szKey, bool bErase,
+  virtual int GetAttr_int(const wchar_t *szKey, bool bErase,
                            int *pnGet) override;
-  virtual long GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
                            bool bErase, int *pnGet) override;
-  virtual long GetAttr_intarray(const wchar_t *szKey, bool bErase,
+  virtual int GetAttr_intarray(const wchar_t *szKey, bool bErase,
                                 int *pIntArray, unsigned int nSize) override;
-  virtual long GetAttr_intarray(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_intarray(const wchar_t *szPrefix, const wchar_t *szKey,
                                 bool bErase, int *pIntArray,
                                 unsigned int nSize) override;
-  virtual long GetAttr_REGION4(const wchar_t *szPrefix, const wchar_t *szKey,
+  virtual int GetAttr_REGION4(const wchar_t *szPrefix, const wchar_t *szKey,
                                bool bErase, REGION4 *prcGet) override;
-  virtual long GetAttr_Image9Region(const wchar_t *szPrefix,
+  virtual int GetAttr_Image9Region(const wchar_t *szPrefix,
                                     const wchar_t *szKey, bool bErase,
                                     C9Region *pRegion) override;
 
@@ -85,8 +85,8 @@ public:
   virtual bool EnumNext(const wchar_t **szKey, const wchar_t **szValue);
   virtual void EndEnum();
 
-  virtual long Release();
-  virtual long AddRef();
+  virtual int Release();
+  virtual int AddRef();
 
 private:
   ListAttrItem *FindItem(const wchar_t *szKey);

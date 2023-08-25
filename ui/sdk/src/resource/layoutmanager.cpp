@@ -449,13 +449,13 @@ void LayoutManager::ReloadChildObjects(
 
 //////////////////////////////////////////////////////////////////////////
 
-long LayoutManager::UIParseLayoutTagCallback(IUIElement *pElem,
+int LayoutManager::UIParseLayoutTagCallback(IUIElement *pElem,
                                              IResource *pSkinRes) {
   ILayoutManager &pLayoutMgr = pSkinRes->GetLayoutManager();
   pLayoutMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
   return true;
 }
-long LayoutManager::UIParseLayoutConfigTagCallback(IUIElement *pElem,
+int LayoutManager::UIParseLayoutConfigTagCallback(IUIElement *pElem,
                                                    IResource *pSkinRes) {
   ILayoutManager &pLayoutMgr = pSkinRes->GetLayoutManager();
   pLayoutMgr.GetImpl()->ParseLayoutConfigTag(pElem->GetImpl());
@@ -603,7 +603,7 @@ class LayoutWindowNodeList : public ILayoutWindowNodeList {
 public:
   static LayoutWindowNodeList *Create() { return new LayoutWindowNodeList; }
   virtual void Release() override { delete this; }
-  virtual unsigned int GetCount() override { return (long)m_array.size(); }
+  virtual unsigned int GetCount() override { return (int)m_array.size(); }
   virtual const wchar_t *GetWindowName(unsigned int index) override {
     if (index >= m_array.size())
       return nullptr;

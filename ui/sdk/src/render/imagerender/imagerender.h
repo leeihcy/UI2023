@@ -71,8 +71,8 @@ protected:
 	C9Region  m_Region;   // 拉伸绘制时才用
     Rect  m_rcSrc;     // 绘制区域(为空表示未设置)，有可能只是绘制图片的一部分.子类可以通过修改该值实现某些需求
     BKCOLOR_FILL_TYPE  m_eBkColorFillType;
-	long   m_nImageDrawType;
-    long  m_nAlpha;
+	int   m_nImageDrawType;
+    int  m_nAlpha;
 
 };
 
@@ -101,7 +101,7 @@ protected:
     IImageListItemRender*  m_pIImageListItemRender;
 
 	IImageListRenderBitmap*  m_pImageList;
-	long  m_nImagelistIndex;
+	int  m_nImagelistIndex;
 };
 
 
@@ -131,8 +131,8 @@ public:
 	void  LoadImageList(const wchar_t*);
 	const wchar_t*  GetImageListId();
 
-    void  SetImageDrawType(long n) { m_nImageDrawType = n; }
-    long   GetImageDrawType() { return m_nImageDrawType; }
+    void  SetImageDrawType(int n) { m_nImageDrawType = n; }
+    int   GetImageDrawType() { return m_nImageDrawType; }
     void  SetImageStretch9Region(C9Region* p);
 	void  SetState2Index(const wchar_t*);
 	const wchar_t*  GetState2Index();
@@ -156,7 +156,7 @@ protected:
     IImageListRender*  m_pIImageListRender;
 
 	IImageListRenderBitmap*   m_pImageList;
-	long  m_nImageDrawType; 
+	int  m_nImageDrawType; 
 	C9Region  m_9Region;
 
 	int  m_nPrevState;        // 用于判断当前状态变化是否需要进行渐变

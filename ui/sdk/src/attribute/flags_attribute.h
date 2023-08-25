@@ -7,7 +7,7 @@
 namespace ui
 {
 
-class FlagsAttribute : public LongAttribute
+class FlagsAttribute : public IntAttribute
 {
 public:
     FlagsAttribute();
@@ -18,7 +18,7 @@ public:
 	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy*, EditorAttributeFlag e) override;
 
 public:
-    FlagsAttribute*  AddFlag(long, const wchar_t*);
+    FlagsAttribute*  AddFlag(int, const wchar_t*);
     IFlagsAttribute*  GetIFlagsAttribute();
 
 private:

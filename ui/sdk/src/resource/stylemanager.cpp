@@ -241,14 +241,14 @@ bool  StyleManager::parse_inherit(
     return true;
 }
 
-long  StyleManager::UIParseStyleTagCallback(
+int  StyleManager::UIParseStyleTagCallback(
             IUIElement* pElem, IResource* pSkinRes)
 {
     IStyleManager&  pStyleMgr = pSkinRes->GetStyleManager();
     return pStyleMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
-long  StyleManager::ParseNewElement(UIElement* pElem)
+int  StyleManager::ParseNewElement(UIElement* pElem)
 {
     if (!pElem)
         return 1;

@@ -670,12 +670,12 @@ void  GridLayoutParam::UpdateByRect()
 void  GridLayoutParam::Serialize(SerializeParam* pData)
 {
     AttributeSerializer s(pData, TEXT("GridLayoutParam"));
-    s.AddLong(XML_WIDTH, m_nConfigWidth)->AddAlias(AUTO, XML_AUTO)->SetDefault(AUTO);
-    s.AddLong(XML_HEIGHT, m_nConfigHeight)->AddAlias(AUTO, XML_AUTO)->SetDefault(AUTO);
-    s.AddLong(XML_LAYOUT_GRID_COL, m_nCol);
-    s.AddLong(XML_LAYOUT_GRID_ROW, m_nRow);
-    s.AddLong(XML_LAYOUT_GRID_COLSPAN, m_nColSpan)->SetDefault(1);
-    s.AddLong(XML_LAYOUT_GRID_ROWSPAN, m_nRowSpan)->SetDefault(1);
+    s.AddInt(XML_WIDTH, m_nConfigWidth)->AddAlias(AUTO, XML_AUTO)->SetDefault(AUTO);
+    s.AddInt(XML_HEIGHT, m_nConfigHeight)->AddAlias(AUTO, XML_AUTO)->SetDefault(AUTO);
+    s.AddInt(XML_LAYOUT_GRID_COL, m_nCol);
+    s.AddInt(XML_LAYOUT_GRID_ROW, m_nRow);
+    s.AddInt(XML_LAYOUT_GRID_COLSPAN, m_nColSpan)->SetDefault(1);
+    s.AddInt(XML_LAYOUT_GRID_ROWSPAN, m_nRowSpan)->SetDefault(1);
 
     s.AddFlags(XML_LAYOUT_ITEM_ALIGN, m_nConfigLayoutFlags)
         ->AddFlag(LAYOUT_ITEM_ALIGN_LEFT, XML_LAYOUT_ITEM_ALIGN_LEFT)
@@ -696,7 +696,7 @@ Size  GridLayoutParam::CalcDesiredSize()
     if (bWidthNotConfiged || bHeightNotConfiged)
     {
         // 获取子对象所需要的空间
-        m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (long)&size);
+        m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (llong)&size);
 
         // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
         if (this->m_nConfigWidth != AUTO)

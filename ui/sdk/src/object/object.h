@@ -69,9 +69,9 @@ public:
   Object *FindNcObject(const wchar_t *szobjId);
   Object *FindObject(Uuid uuid);
   Object *FindNcObject(Uuid uuid);
-  unsigned long GetChildCount();
-  Object *GetChildObjectByIndex(unsigned long lIndex);
-  unsigned long GetChildObjectIndex(Object *pChild);
+  unsigned int GetChildCount();
+  Object *GetChildObjectByIndex(unsigned int lIndex);
+  unsigned int GetChildObjectIndex(Object *pChild);
 
   bool IsTransparent();
   void SetTransparent(bool b);
@@ -91,8 +91,8 @@ public:
   bool IsCollapsed();
   bool IsSelfCollapsed();
   virtual bool IsEnable();
-  void LoadVisibleEx(long l);
-  long SaveVisibleEx();
+  void LoadVisibleEx(int l);
+  int SaveVisibleEx();
   void SetVisible(bool b);
   void SetVisibleEx(VISIBILITY_TYPE eType);
   void SetDisableDirect(bool b);
@@ -319,7 +319,7 @@ public:
   void ScaleTo(float x, float y, LayerAnimateParam *param = nullptr);
 
 protected:
-  long FinalConstruct(IResource *pSkinRes);
+  int FinalConstruct(IResource *pSkinRes);
   void FinalRelease();
   unsigned int OnHitTest(Point *ptInParent, Point *ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
@@ -396,8 +396,8 @@ protected:
   // 控件的最大尺寸限制
   int m_nMaxWidth;
   int m_nMaxHeight;
-  long m_lMinWidth;
-  long m_lMinHeight;
+  int m_lMinWidth;
+  int m_lMinHeight;
 
   IMapAttribute *m_pIMapAttributeRemain; // 用于扩展。未解析的属性
   IRenderBase *m_pBkgndRender;           // 背景渲染

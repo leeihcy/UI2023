@@ -19,29 +19,29 @@ public:
   virtual Size CalcDesiredSize() override;
 
 public:
-  virtual long GetConfigWidth() override;
-  virtual void SetConfigWidth(long) override;
+  virtual int GetConfigWidth() override;
+  virtual void SetConfigWidth(int) override;
   void LoadConfigWidth(const wchar_t *);
   const wchar_t *SaveConfigWidth();
 
-  virtual long GetConfigHeight() override;
-  virtual void SetConfigHeight(long) override;
+  virtual int GetConfigHeight() override;
+  virtual void SetConfigHeight(int) override;
   void LoadConfigHeight(const wchar_t *);
   const wchar_t *SaveConfigHeight();
 
-  virtual void SetConfigLayoutFlags(long) override;
-  virtual long GetConfigLayoutFlags() override;
+  virtual void SetConfigLayoutFlags(int) override;
+  virtual int GetConfigLayoutFlags() override;
 
   bool IsSizedByContent();
 private:
   Object *m_pObj;
   
-  long m_nConfigWidth;
-  long m_nConfigHeight;
-  long m_nConfigLayoutFlags;
+  int m_nConfigWidth;
+  int m_nConfigHeight;
+  int m_nConfigLayoutFlags;
 
-  long m_eWidthType;
-  long m_eHeightType;
+  int m_eWidthType;
+  int m_eHeightType;
 
   friend class HorzLayout;
 };
@@ -64,11 +64,11 @@ protected:
   void ArrangeObject_Right(Object *pChildObj, int &nLeftCustom,
                            int &nRightCustom, Size size);
 
-  void LoadGap(long);
-  long SaveGap();
+  void LoadGap(int);
+  int SaveGap();
 
 public:
-  long m_nSpace; // 两个子对象之间间隙
+  int m_nSpace; // 两个子对象之间间隙
 };
 
 } // namespace ui

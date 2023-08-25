@@ -1,136 +1,119 @@
-#include "include/inc.h"
 #include "skinparseengine.h"
-#include "include/interface/ixmlwrap.h"
-#include "include/interface/iskindatasource.h"
-#include "src/resource/res_bundle.h"
-#include "include/interface/iuires.h"
-#include "xml/pugixmlwrap/pugixmlwrap.h"
 #include "datasource/skindatasource.h"
+#include "include/inc.h"
+#include "include/interface/iskindatasource.h"
+#include "include/interface/iuires.h"
+#include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
+#include "src/resource/res_bundle.h"
+#include "xml/pugixmlwrap/pugixmlwrap.h"
 
 namespace ui {
 
-SkinParseEngine::SkinParseEngine(Resource* pSkinRes)
-{   
-	UIASSERT(pSkinRes);
-    m_pSkinRes = pSkinRes;
-	m_pUIApplication = m_pSkinRes->GetUIApplication();
+SkinParseEngine::SkinParseEngine(Resource *pSkinRes) {
+  UIASSERT(pSkinRes);
+  m_pSkinRes = pSkinRes;
+  m_pUIApplication = m_pSkinRes->GetUIApplication();
 }
 
-SkinParseEngine::~SkinParseEngine()
-{
-}
+SkinParseEngine::~SkinParseEngine() {}
 
-bool  SkinParseEngine::Parse(
-			SkinDataSource* pDataSource, 
-			const wchar_t* szXmlFile)
-{
+bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
+                            const wchar_t *szXmlFile) {
 #if 0
-	1. ²éÕÒ <skin> root element£¬Èç¹ûÃ»ÓĞÕÒµ½ÔòÖ±½Ó·µ»Ø£¬±íÊ¾Õâ²»ÊÇÒ»¸öºÏ·¨ÎÄ¼ş
-		2. ±éÀú <skin> µÄchild element
+	1. æŸ¥æ‰¾ <skin> root elementï¼Œå¦‚æœæ²¡æœ‰æ‰¾åˆ°åˆ™ç›´æ¥è¿”å›ï¼Œè¡¨ç¤ºè¿™ä¸æ˜¯ä¸€ä¸ªåˆæ³•æ–‡ä»¶
+		2. éå† <skin> çš„child element
 
-		2.1 »ñÈ¡tagName£¬ÀıÈçimage
-		2.2 »ñÈ¡image±êÇ©¶ÔÓ¦µÄ½âÎöÆ÷ IImageParse
-		2.3 µ÷ÓÃIImageParseµÄNewElement
-		2.4 IImageParse×Ô¼ºÈ¥¸ºÔğ±éÀú×Ó½áµã
+		2.1 è·å–tagNameï¼Œä¾‹å¦‚image
+		2.2 è·å–imageæ ‡ç­¾å¯¹åº”çš„è§£æå™¨ IImageParse
+		2.3 è°ƒç”¨IImageParseçš„NewElement
+		2.4 IImageParseè‡ªå·±å»è´Ÿè´£éå†å­ç»“ç‚¹
 #endif
-	if (!pDataSource || !szXmlFile)
-		return false;
+  if (!pDataSource || !szXmlFile)
+    return false;
 
-    UIDocument*  pUIDocument = nullptr;
-    CreateXmlDocument(XML_ENGINE_DEFAULT, &pUIDocument);
-	if (!pDataSource->Load_UIDocument(pUIDocument, szXmlFile))
-	{
-		SAFE_RELEASE(pUIDocument);
-		return false;
-	}
-	pUIDocument->SetSkinPath(szXmlFile);	
+  UIDocument *pUIDocument = nullptr;
+  CreateXmlDocument(XML_ENGINE_DEFAULT, &pUIDocument);
+  if (!pDataSource->Load_UIDocument(pUIDocument, szXmlFile)) {
+    SAFE_RELEASE(pUIDocument);
+    return false;
+  }
+  pUIDocument->SetSkinPath(szXmlFile);
 
-	do 
-	{
-		UIElementProxy rootElem = pUIDocument->FindElem(XML_SKIN);
-		if (!rootElem)
-		{
-			UI_LOG_ERROR(_T("Cannot find root element: %s"), XML_SKIN);
-			break;
-		}
-
-		m_pSkinRes->OnNewUIDocument(pUIDocument);
-
-		UIElementProxy childElem = rootElem->FirstChild();
-		while (childElem)
-		{
-			this->NewChild(childElem.get());
-			childElem = childElem->NextElement();
-		}
-	}
-	while (0);
-
-	SAFE_RELEASE(pUIDocument);	
-	return true;
-}
-
-void  SkinParseEngine::NewChild(UIElement* pElement)
-{
-	if (!pElement)
-		return;
-
-    pfnParseSkinTag func;
-    if (!m_pUIApplication->GetSkinTagParseFunc(
-				(const wchar_t*)pElement->GetTagName(), &func))
-	{
-        return;
-	}
-
-    func(pElement->GetIUIElement(), m_pSkinRes->GetIResource());
-}
-
-
-long  SkinParseEngine::UIParseIncludeTagCallback(IUIElement* pElement, IResource* pSkinRes)
-{
-    if (nullptr == pElement || nullptr == pSkinRes)
-        return -1; // E_FAIL;
-
-    const wchar_t* szData = pElement->GetData();
-    if (!szData)
-		return -1; // E_FAIL;
-
-    SkinParseEngine  parse(pSkinRes->GetImpl());
-	SkinDataSource*  pDataSource = pSkinRes->GetImpl()->GetDataSource();
-
-    if (!parse.Parse(pDataSource, szData))
-        return -1; // E_FAIL;
-
-    return 0;
-}
-
-bool  CreateXmlDocument(XML_ENGINE e, UIDocument** pp)
-{
-	if (!pp)
-		return false;
-
-	*pp = nullptr;
-
-    switch (e)
-    {
-//     case MSXML:
-//         {
-//             return MsXmlDocument::CreateInstance(pp);
-//         }
-//         break;
-
-    case PUGIXML:
-    case XML_ENGINE_DEFAULT:
-        {
-            UIDocument* p = new PugiXmlDocument;
-			p->AddRef();
-			*pp = p;
-			return true;
-        }
-        break;
+  do {
+    UIElementProxy rootElem = pUIDocument->FindElem(XML_SKIN);
+    if (!rootElem) {
+      UI_LOG_ERROR(_T("Cannot find root element: %s"), XML_SKIN);
+      break;
     }
 
-    return false;
+    m_pSkinRes->OnNewUIDocument(pUIDocument);
+
+    UIElementProxy childElem = rootElem->FirstChild();
+    while (childElem) {
+      this->NewChild(childElem.get());
+      childElem = childElem->NextElement();
+    }
+  } while (0);
+
+  SAFE_RELEASE(pUIDocument);
+  return true;
 }
 
+void SkinParseEngine::NewChild(UIElement *pElement) {
+  if (!pElement)
+    return;
+
+  pfnParseSkinTag func;
+  if (!m_pUIApplication->GetSkinTagParseFunc(
+          (const wchar_t *)pElement->GetTagName(), &func)) {
+    return;
+  }
+
+  func(pElement->GetIUIElement(), m_pSkinRes->GetIResource());
 }
+
+int SkinParseEngine::UIParseIncludeTagCallback(IUIElement *pElement,
+                                               IResource *pSkinRes) {
+  if (nullptr == pElement || nullptr == pSkinRes)
+    return -1; // E_FAIL;
+
+  const wchar_t *szData = pElement->GetData();
+  if (!szData)
+    return -1; // E_FAIL;
+
+  SkinParseEngine parse(pSkinRes->GetImpl());
+  SkinDataSource *pDataSource = pSkinRes->GetImpl()->GetDataSource();
+
+  if (!parse.Parse(pDataSource, szData))
+    return -1; // E_FAIL;
+
+  return 0;
+}
+
+bool CreateXmlDocument(XML_ENGINE e, UIDocument **pp) {
+  if (!pp)
+    return false;
+
+  *pp = nullptr;
+
+  switch (e) {
+    //     case MSXML:
+    //         {
+    //             return MsXmlDocument::CreateInstance(pp);
+    //         }
+    //         break;
+
+  case PUGIXML:
+  case XML_ENGINE_DEFAULT: {
+    UIDocument *p = new PugiXmlDocument;
+    p->AddRef();
+    *pp = p;
+    return true;
+  } break;
+  }
+
+  return false;
+}
+
+} // namespace ui

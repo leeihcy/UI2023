@@ -27,15 +27,15 @@ IEnumAttribute*  EnumAttribute::GetIEnumAttribute()
     return m_pIEnumAttribute;
 }
 
-EnumAttribute*  EnumAttribute::AddOption(long l, const wchar_t* sz)
+EnumAttribute*  EnumAttribute::AddOption(int l, const wchar_t* sz)
 {
-    LongAttribute::AddAlias(l, sz);
+    IntAttribute::AddAlias(l, sz);
     return this;
 }
 
 void  EnumAttribute::Set(const wchar_t* szValue)
 {
-    long lValue = m_lDefault;
+    int lValue = m_lDefault;
 
     if (m_mapAlias.GetAlias(szValue, &lValue))
     {
@@ -73,7 +73,7 @@ void  EnumAttribute::Set(const wchar_t* szValue)
 
 const wchar_t*  EnumAttribute::Get()
 {
-    long lValue = GetLong();
+    int lValue = GetLong();
 
     const wchar_t* szAlias = m_mapAlias.GetAlias(lValue);
     if (szAlias)
@@ -90,10 +90,10 @@ namespace ui
 {
 // void  EnumGraphicsRenderLibraryType(
 // 		pfnEnumGraphicsRenderLibraryTypeCallback callback, 
-// 		long w, long l);
+// 		int w, int l);
 }
 
-void EnumGraphicsRenderLibraryTypeCallback(long lType, const wchar_t* szName, long wParam, long)
+void EnumGraphicsRenderLibraryTypeCallback(int lType, const wchar_t* szName, int wParam, int)
 {
 	EnumAttribute* pThis = (EnumAttribute*)wParam;
 	pThis->AddOption(lType, szName);
@@ -105,7 +105,7 @@ void EnumGraphicsRenderLibraryTypeCallback(long lType, const wchar_t* szName, lo
 //  ...
 EnumAttribute*  EnumAttribute::FillGraphicsRenderLibraryData()
 {
-	// EnumGraphicsRenderLibraryType(EnumGraphicsRenderLibraryTypeCallback, (long)this, 0);
+	// EnumGraphicsRenderLibraryType(EnumGraphicsRenderLibraryTypeCallback, (int)this, 0);
 	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_GDI, L"gdi");
 	return this;
 }

@@ -34,7 +34,7 @@ public:
   int GetTextAlignment() { return m_nDrawTextFlag; }
   void SetTextEffect(TEXT_EFFECT e) { m_eDrawTextEffect = e; }
   TEXT_EFFECT GetTextEffect() { return m_eDrawTextEffect; }
-  void SetDrawTextParam(long w, long l) {
+  void SetDrawTextParam(int w, int l) {
     m_wparamDrawText = w;
     m_lparamDrawText = l;
   }
@@ -68,12 +68,12 @@ protected:
 
   Object *m_pObject;                 // 绑定的对象，要绘制谁的文字
   TEXTRENDER_TYPE m_nTextRenderType; // 自己的类型
-  long m_nDrawTextFlag;              // DrawText的flag标识
+  int m_nDrawTextFlag;              // DrawText的flag标识
 
   TEXT_EFFECT m_eDrawTextEffect;
   Color *m_pColorTextBkgnd;
-  long m_wparamDrawText;
-  long m_lparamDrawText;
+  int m_wparamDrawText;
+  int m_lparamDrawText;
 };
 
 class SimpleTextRender : public TextRenderBase {
@@ -137,7 +137,7 @@ protected:
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   IRenderFont *GetRenderFont() { return m_pRenderFont; }
-  long OnSkinTextureChanged(unsigned int, long, long);
+  int OnSkinTextureChanged(unsigned int, int, int);
 
   void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
   const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
@@ -174,13 +174,13 @@ public:
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  long OnSkinTextureChanged(unsigned int, long, long);
+  int OnSkinTextureChanged(unsigned int, int, int);
 
   IRenderFont *GetRenderFont();
   void SetRenderFont(IRenderFont *);
 
-  void SetCount(long nCount);
-  long GetCount();
+  void SetCount(int nCount);
+  int GetCount();
 
   void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
   const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
@@ -222,8 +222,8 @@ public:
   void LoadFont(const wchar_t *szFontId);
   const wchar_t *GetFontId();
 
-  void SetCount(long nCount);
-  long GetCount();
+  void SetCount(int nCount);
+  int GetCount();
 
   void LoadColor(const wchar_t *szText);
   const wchar_t *GetColor();
@@ -275,8 +275,8 @@ public:
   IRenderFont *GetRenderFont();
   void SetRenderFont(IRenderFont *);
 
-  void SetCount(long nCount);
-  long GetCount();
+  void SetCount(int nCount);
+  int GetCount();
 
   void LoadColor(const wchar_t *szText);
   const wchar_t *GetColor();

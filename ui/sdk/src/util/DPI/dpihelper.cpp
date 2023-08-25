@@ -1,116 +1,101 @@
-#include "include/util/math.h"
 #include "dpihelper.h"
+#include "include/util/math.h"
 
-namespace ui
-{
+namespace ui {
 
-long  GetDpi()
-{
-    static long dpi = 0;
+int GetDpi() {
+  static int dpi = 0;
 #if defined(OS_WIN)
-    if (0 == dpi)
-    {
-        // œ»ºÏ≤‚”√ªß «∑ÒΩ˚”√¡ÀDPIÀı∑≈
-        bool bDisableScale = false;
+  if (0 == dpi) {
+    // ÂÖàÊ£ÄÊµãÁî®Êà∑ÊòØÂê¶Á¶ÅÁî®‰∫ÜDPIÁº©Êîæ
+    bool bDisableScale = false;
 
-        ATL::CRegKey reg;
-        if (ERROR_SUCCESS == reg.Open(
-            HKEY_CURRENT_USER, 
-            TEXT("Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers"),
-            KEY_READ))
-        {
-            //REG_SZ
-            wchar_t szExePath[MAX_PATH] = {0};
-            GetModuleFileName(nullptr, szExePath, MAX_PATH-1);
+    ATL::CRegKey reg;
+    if (ERROR_SUCCESS ==
+        reg.Open(HKEY_CURRENT_USER,
+                 TEXT("Software\\Microsoft\\Windows "
+                      "NT\\CurrentVersion\\AppCompatFlags\\Layers"),
+                 KEY_READ)) {
+      // REG_SZ
+      wchar_t szExePath[MAX_PATH] = {0};
+      GetModuleFileName(nullptr, szExePath, MAX_PATH - 1);
 
-            wchar_t szValue[256] = {0};
-            unsigned long count = 256;
-            if (ERROR_SUCCESS == reg.QueryStringValue(szExePath, szValue, &count))
-            {
-                if (_tcsstr(szValue, TEXT("HIGHDPIAWARE")))
-                {
-                    bDisableScale = true;
-                }
-            }
+      wchar_t szValue[256] = {0};
+      unsigned int count = 256;
+      if (ERROR_SUCCESS == reg.QueryStringValue(szExePath, szValue, &count)) {
+        if (_tcsstr(szValue, TEXT("HIGHDPIAWARE"))) {
+          bDisableScale = true;
         }
-
-        if (bDisableScale)
-        {
-            dpi = DEFAULT_SCREEN_DPI;
-        }
-        else
-        {
-            // ”…≥Ã–Ú◊‘º∫ µœ÷DPIÀı∑≈£¨≤ª”√œµÕ≥∞Ô√¶°£
-            HMODULE hModule = GetModuleHandle(L"User32.dll");
-            if (hModule)
-            {
-                // SetProcessDPIAware();
-                FARPROC f = GetProcAddress(hModule, "SetProcessDPIAware");
-                if (f)
-                    f();
-            }
-
-            HDC hDC = GetDC(nullptr);
-            dpi = GetDeviceCaps(hDC, LOGPIXELSY);
-            ReleaseDC(nullptr, hDC);
-        }
+      }
     }
+
+    if (bDisableScale) {
+      dpi = DEFAULT_SCREEN_DPI;
+    } else {
+      // Áî±Á®ãÂ∫èËá™Â∑±ÂÆûÁé∞DPIÁº©ÊîæÔºå‰∏çÁî®Á≥ªÁªüÂ∏ÆÂøô„ÄÇ
+      HMODULE hModule = GetModuleHandle(L"User32.dll");
+      if (hModule) {
+        // SetProcessDPIAware();
+        FARPROC f = GetProcAddress(hModule, "SetProcessDPIAware");
+        if (f)
+          f();
+      }
+
+      HDC hDC = GetDC(nullptr);
+      dpi = GetDeviceCaps(hDC, LOGPIXELSY);
+      ReleaseDC(nullptr, hDC);
+    }
+  }
 #else
-    dpi = DEFAULT_SCREEN_DPI;
+  dpi = DEFAULT_SCREEN_DPI;
 #endif
-    return dpi;
+  return dpi;
 }
 
-float  GetDpiScale()
-{
-    static bool bInit = false;
-    static float fScale = 1;
+float GetDpiScale() {
+  static bool bInit = false;
+  static float fScale = 1;
 
-    if (!bInit)
-    {
-        bInit = true;
-        fScale = (float)GetDpi() / DEFAULT_SCREEN_DPI;
-    }
+  if (!bInit) {
+    bInit = true;
+    fScale = (float)GetDpi() / DEFAULT_SCREEN_DPI;
+  }
 
-    return fScale;
+  return fScale;
 }
 
-long  ScaleByDpi(long x)
-{
-    if (0==x)
-        return 0;
+int ScaleByDpi(int x) {
+  if (0 == x)
+    return 0;
 
-    if (GetDpi() == DEFAULT_SCREEN_DPI)
-        return x;
+  if (GetDpi() == DEFAULT_SCREEN_DPI)
+    return x;
 
-    return _round(x * GetDpiScale());
+  return _round(x * GetDpiScale());
 }
-long  RestoreByDpi(long x)
-{
-    if (0==x)
-        return 0;
+int RestoreByDpi(int x) {
+  if (0 == x)
+    return 0;
 
-    if (GetDpi() == DEFAULT_SCREEN_DPI)
-        return x;
+  if (GetDpi() == DEFAULT_SCREEN_DPI)
+    return x;
 
-	return _round(x / GetDpiScale());
+  return _round(x / GetDpiScale());
 }
 
-// øÌ∂»°¢∏ﬂ∂»–°”⁄0 ±£¨»ÁAUTO/NDEF≤ª  ”¶”⁄dpi
-long  ScaleByDpi_if_gt0(long x)
-{
-    if (x <= 0)
-        return x;
+// ÂÆΩÂ∫¶„ÄÅÈ´òÂ∫¶Â∞è‰∫é0Êó∂ÔºåÂ¶ÇAUTO/NDEF‰∏çÈÄÇÂ∫î‰∫édpi
+int ScaleByDpi_if_gt0(int x) {
+  if (x <= 0)
+    return x;
 
-    return ScaleByDpi(x);
+  return ScaleByDpi(x);
 }
 
-long  RestoreByDpi_if_gt0(long x)
-{
-    if (x <= 0)
-        return x;
+int RestoreByDpi_if_gt0(int x) {
+  if (x <= 0)
+    return x;
 
-    return RestoreByDpi(x);
+  return RestoreByDpi(x);
 }
 
-}
+} // namespace ui

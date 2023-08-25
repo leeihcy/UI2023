@@ -29,9 +29,9 @@ public:
 	int        GetFontCount();
 	IFontResItem*  GetFontItemInfo(int nIndex);
 	
-    static long  UIParseFontTagCallback(IUIElement*, IResource* pSkinRes);
+    static int  UIParseFontTagCallback(IUIElement*, IResource* pSkinRes);
 private:
-    long  ParseNewElement(UIElement* pElem);
+    int  ParseNewElement(UIElement* pElem);
     void  OnNewChild(UIElement* pElem, HDC);
 
 private:

@@ -34,7 +34,7 @@ IWindowRender *WindowRender::GetIWindowRender() {
 void WindowRender::OnSerialize(SerializeParam *pData) {
   AttributeSerializer s(pData, TEXT("WindowRender"));
 
-  s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(long *)&m_grl_type)
+  s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(int *)&m_grl_type)
       ->FillGraphicsRenderLibraryData()
       ->SetDefault(GRAPHICS_RENDER_LIBRARY_TYPE_SKIA);
 

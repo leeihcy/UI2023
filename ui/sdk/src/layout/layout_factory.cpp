@@ -76,7 +76,7 @@ bool LayoutFactory::CreateByName(const wchar_t *szName, IObject *pObject,
 }
 
 void LayoutFactory::EnumLayoutType(pfnEnumLayoutTypeCallback callback,
-                                   long wParam, long lParam) {
+                                   llong wParam, llong lParam) {
   if (!callback)
     return;
 

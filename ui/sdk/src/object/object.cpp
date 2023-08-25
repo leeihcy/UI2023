@@ -89,7 +89,7 @@ void Object::RouteMessage(ui::Msg *msg) {
   }
 }
 
-long Object::FinalConstruct(IResource *pSkinRes) {
+int Object::FinalConstruct(IResource *pSkinRes) {
   m_pSkinRes = pSkinRes->GetImpl();
   return 0;
 }
@@ -357,7 +357,7 @@ void Object::LoadAttributes(bool bReload) {
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
 
-  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
+  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
@@ -549,7 +549,7 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
 //         m_pForegndRender->CheckThemeChanged();
 // }
 //
-// long  Object::OnSkinTextureChanged(unsigned int, long, long)
+// int  Object::OnSkinTextureChanged(unsigned int, int, int)
 // {
 //     if (m_pTextRender)
 //     {
@@ -741,7 +741,7 @@ bool Object::TestObjectStyle(const OBJSTYLE &test) {
 //
 //     if (bNotify)
 //     {
-//         ::UISendMessage(this, WM_STYLECHANGING, (long)GWL_EXSTYLE, (long)&s);
+//         ::UISendMessage(this, WM_STYLECHANGING, (int)GWL_EXSTYLE, (int)&s);
 //     }
 //
 //     m_nStyle2 = s.styleNew;
@@ -749,7 +749,7 @@ bool Object::TestObjectStyle(const OBJSTYLE &test) {
 //     if (bNotify)
 //     {
 //         s.styleOld = s.styleOld;
-//         ::UISendMessage(this, WM_STYLECHANGED, (long)GWL_EXSTYLE, (long)&s);
+//         ::UISendMessage(this, WM_STYLECHANGED, (int)GWL_EXSTYLE, (int)&s);
 //     }
 // }
 
@@ -870,10 +870,10 @@ bool Object::IsSelfCollapsed() {
 
 bool Object::IsEnable() { return !m_objState.disable; }
 
-void Object::LoadVisibleEx(long l) {
+void Object::LoadVisibleEx(int l) {
   m_objState.visibility_ = static_cast<VISIBILITY_TYPE>(l);
 }
-long Object::SaveVisibleEx() { return m_objState.visibility_; }
+int Object::SaveVisibleEx() { return m_objState.visibility_; }
 
 void Object::SetVisible(bool b) {
   SetVisibleEx(b ? VISIBILITY_VISIBLE : VISIBILITY_COLLAPSED);
@@ -949,12 +949,12 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
 
   // 通知子对象
   SendMessage(UI_MSG_VISIBLE_CHANGED, bVisibleCompatible ? true : false,
-              (long)this);
+              (llong)this);
 
   UIMSG msg;
   msg.message = UI_MSG_VISIBLE_CHANGED;
   msg.wParam = bVisibleCompatible ? true : false;
-  msg.lParam = (long)this;
+  msg.lParam = (llong)this;
   Object::ForwardMessageToChildObject(this, &msg);
 
   if (m_pParent) {
@@ -996,7 +996,7 @@ void Object::SetEnable(bool b, bool bNoitfy) {
   virtualSetEnable(b);
 
   if (bNoitfy && b != bOld)
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, (long)OSB_DISABLE);
+    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, (int)OSB_DISABLE);
 
   if (b != bOld) {
     // [注] 如果没有指定刷新，则需要外部显示调用UpdateObject，因为该控件所在层
@@ -1139,7 +1139,7 @@ void Object::InitDefaultAttrib() {
   m_pIMapAttributeRemain = pMapAttrib;
   pMapAttrib = nullptr;
 
-  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (long)&data);
+  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
@@ -1605,8 +1605,8 @@ const wchar_t*  Object::SaveColor(Color*& pColor)
 */
 
 // 辅助函数
-unsigned long Object::GetChildCount() {
-  long lCount = 0;
+unsigned int Object::GetChildCount() {
+  int lCount = 0;
   Object *p = this->GetChildObject();
   while (p) {
     lCount++;
@@ -1621,8 +1621,8 @@ unsigned long Object::GetChildCount() {
   return lCount;
 }
 
-Object *Object::GetChildObjectByIndex(unsigned long lIndex) {
-  unsigned long lCount = 0;
+Object *Object::GetChildObjectByIndex(unsigned int lIndex) {
+  unsigned int lCount = 0;
   Object *p = this->GetChildObject();
   while (p) {
     if (lCount == lIndex)
@@ -1642,8 +1642,8 @@ Object *Object::GetChildObjectByIndex(unsigned long lIndex) {
   return nullptr;
 }
 
-unsigned long Object::GetChildObjectIndex(Object *pChild) {
-  unsigned long lCount = 0;
+unsigned int Object::GetChildObjectIndex(Object *pChild) {
+  unsigned int lCount = 0;
   Object *p = this->GetChildObject();
   while (p) {
     if (p == pChild)
@@ -1690,7 +1690,7 @@ bool Object::CreateAccesible(IAccessible **pp) {
 
     // 添加其它accessible
     UISendMessage(m_pIObject, UI_WM_CREATE_ACCESSIBLE,
-                  (long)static_cast<IUIAccessibleCreator *>(&creator), 0);
+                  (int)static_cast<IUIAccessibleCreator *>(&creator), 0);
 
     // 添加默认的object accessible
     // 内部会调用addref

@@ -53,7 +53,7 @@ bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
 //         return 0;
 //     }
 /*static*/
-long IMessage::SendMessage(UIMSG *pMsg, int nMsgMapID, bool *pbHandled) {
+llong IMessage::SendMessage(UIMSG *pMsg, int nMsgMapID, bool *pbHandled) {
   UIASSERT(pMsg != nullptr);
   if (nullptr == pMsg) {
     UI_LOG_ERROR("UISendMessage, pMsg==nullptr! ");
@@ -77,7 +77,7 @@ long IMessage::SendMessage(UIMSG *pMsg, int nMsgMapID, bool *pbHandled) {
   return pMsg->lRet;
 }
 
-long IMessage::SendMessage(uint message, long wParam, long lParam, uint nCode,
+llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode,
                            IMessage *pMsgFrom, int nMsgMapID, bool *pbHandled) {
   UIMSG msg;
   msg.pMsgFrom = pMsgFrom;
@@ -96,13 +96,13 @@ long IMessage::SendMessage(uint message, long wParam, long lParam, uint nCode,
   return msg.lRet;
 }
 
-// long IMessage::SendMessage(uint message, long wParam, long lParam) {
+// llong IMessage::SendMessage(uint message, llong wParam, llong lParam) {
 //   return SendMessage(message, wParam, lParam, 0,
 //                        nullptr, 0, nullptr);
 // }
 
 // 不支持跨线程调用
-// long UIPostMessage(HWND hForwardMsgWnd, UIMSG *pMsg, int nMsgMapID) {
+// llong UIPostMessage(HWND hForwardMsgWnd, UIMSG *pMsg, int nMsgMapID) {
 //   if (!pMsg->pMsgTo)
 //     return 0;
 
@@ -113,8 +113,8 @@ long IMessage::SendMessage(uint message, long wParam, long lParam, uint nCode,
 
 //   // -->ForwardPostMessageWindow::ProcessWindowMessage
 // #if defined(OS_WIN)
-//   ::PostMessage(hForwardMsgWnd, UI_MSG_POSTMESSAGE, (long)pCloneMsg,
-//                 (long)nMsgMapID);
+//   ::PostMessage(hForwardMsgWnd, UI_MSG_POSTMESSAGE, (llong)pCloneMsg,
+//                 (llong)nMsgMapID);
 // #else
 //   UIASSERT(0);
 // #endif
@@ -123,7 +123,7 @@ long IMessage::SendMessage(uint message, long wParam, long lParam, uint nCode,
 // }
 
 // 由于pMsg.pObjTo是一个Message类型，无法获取pUIApp指针，只能再增加一个参数
-// long UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID) {
+// llong UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID) {
 //   if (nullptr == pUIApp)
 //     return 0;
 // #if defined(OS_WIN)
@@ -170,7 +170,7 @@ void IMessage::CopyNotifyTo(IMessage *pObjCopyTo) {
 
   return m_pImpl->CopyNotifyTo(pObjCopyTo);
 }
-long IMessage::DoNotify(UIMSG *pMsg) { return m_pImpl->DoNotify(pMsg); }
+llong IMessage::DoNotify(UIMSG *pMsg) { return m_pImpl->DoNotify(pMsg); }
 
 IMessage *IMessage::GetNotifyObj() { return m_pImpl->GetNotifyObj(); }
 
@@ -210,7 +210,7 @@ void IMessage::ClearHook() { return m_pImpl->ClearHook(); }
 // }
 
 void *IMessage::QueryInterface(const Uuid &iid) {
-  return (void *)SendMessage(UI_MSG_QUERYINTERFACE, (long)&iid);
+  return (void *)SendMessage(UI_MSG_QUERYINTERFACE, (llong)&iid);
 }
 
 MessageProxy::MessageProxy(IMessage *p) : m_pImpl(p->GetImpl()) {}

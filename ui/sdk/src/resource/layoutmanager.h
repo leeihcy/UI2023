@@ -1,11 +1,10 @@
 #pragma once
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "src/util/DataStruct/list.h"
-#include <vector>
 #include <map>
+#include <vector>
 
-namespace ui
-{
+namespace ui {
 class Object;
 struct UIElement;
 class Resource;
@@ -14,102 +13,91 @@ struct ILayoutManager;
 struct IMessage;
 struct IResource;
 
-
-//  ÑÓ³Ù¼ÓÔØµÄ²¼¾ÖÅäÖÃ
-//  Ò»¸öxmlÅäÖÃÖĞ£¬ÔÊĞíÅäÖÃ¶à¸öÏà¹ØÁªµÄ´°¿Ú¡¢×Ô¶¨ÒåÁĞ±íÏî
-class LayoutConfigItem
-{
+//  å»¶è¿ŸåŠ è½½çš„å¸ƒå±€é…ç½®
+//  ä¸€ä¸ªxmlé…ç½®ä¸­ï¼Œå…è®¸é…ç½®å¤šä¸ªç›¸å…³è”çš„çª—å£ã€è‡ªå®šä¹‰åˆ—è¡¨é¡¹
+class LayoutConfigItem {
 public:
-    void  SetPath(const wchar_t* szPath);
-    const wchar_t*  GetPath();
+  void SetPath(const wchar_t *szPath);
+  const wchar_t *GetPath();
 
-    void  AddWindow(const wchar_t* szName);
-    bool  FindWindow(const wchar_t* szName);
+  void AddWindow(const wchar_t *szName);
+  bool FindWindow(const wchar_t *szName);
 
-    void  AddListItem(const wchar_t* szName);
-    bool  FindListItem(const wchar_t* szName);
+  void AddListItem(const wchar_t *szName);
+  bool FindListItem(const wchar_t *szName);
 
-    bool  Find(const wchar_t* szTagName, const wchar_t* szName);
+  bool Find(const wchar_t *szTagName, const wchar_t *szName);
 
-    unsigned int GetWindowCount();
-    const wchar_t*  GetWindowName(unsigned int index);
+  unsigned int GetWindowCount();
+  const wchar_t *GetWindowName(unsigned int index);
 
 private:
-	std::wstring  m_strPath;
-    std::vector<std::wstring>  m_vecWindow;
-    std::vector<std::wstring>  m_vecListItem;
+  std::wstring m_strPath;
+  std::vector<std::wstring> m_vecWindow;
+  std::vector<std::wstring> m_vecListItem;
 };
 
-// ĞÂ¼ÓÔØµÄ×Ó¿Ø¼şµÄnotifyÉèÖÃÎªË­
-#define NOTIFY_TARGET_ROOT  (IMessage*)1  // ´°¿Ú£¨¸ù¶ÔÏó£©
-#define NOTIFY_TARGET_NULL  (IMessage*)0  // ²»Ö¸¶¨
+// æ–°åŠ è½½çš„å­æ§ä»¶çš„notifyè®¾ç½®ä¸ºè°
+#define NOTIFY_TARGET_ROOT (IMessage *)1 // çª—å£ï¼ˆæ ¹å¯¹è±¡ï¼‰
+#define NOTIFY_TARGET_NULL (IMessage *)0 // ä¸æŒ‡å®š
 
-class LayoutManager
-{
+class LayoutManager {
 public:
-	LayoutManager(Resource*);
-	~LayoutManager(void);
-	
-    ILayoutManager&  GetILayoutManager();
+  LayoutManager(Resource *);
+  ~LayoutManager(void);
 
-    Object*  LoadPluginLayout(
-                const wchar_t* szId, 
-                Object* pNewParemt, 
-                IMessage* pNotifyTarget = NOTIFY_TARGET_ROOT);
+  ILayoutManager &GetILayoutManager();
 
-	UIElementProxy  FindWindowElement(const wchar_t* szTagName, const wchar_t* szId);
-    UIElementProxy  FindListItemElement(const wchar_t* szId);
+  Object *LoadPluginLayout(const wchar_t *szId, Object *pNewParemt,
+                           IMessage *pNotifyTarget = NOTIFY_TARGET_ROOT);
 
-	enum PARSEFLAG
-	{
-		PARSEFLAG_LOADCHILD = 1,
-		PARSEFLAG_RELOAD = 2,
-	};
-    Object*  ParseElement(
-                UIElement* pUIElement, 
-                Object* pParent, 
-                IMessage* pNotifyTarget = NOTIFY_TARGET_ROOT,
-				int flags = PARSEFLAG_LOADCHILD);
-    Object*  ParseChildElement(
-                UIElement* pParentElement, 
-                Object* pParent,
-                IMessage* pNotifyTarget = NOTIFY_TARGET_ROOT,
-				int flags = PARSEFLAG_LOADCHILD);
+  UIElementProxy FindWindowElement(const wchar_t *szTagName,
+                                   const wchar_t *szId);
+  UIElementProxy FindListItemElement(const wchar_t *szId);
 
-	bool  ReLoadLayout(
-                Object* pRootObj, 
-				const wchar_t* szNewLayoutId,
-                std::map<std::wstring, Object*>& listAllChild);
-	void  ReloadChildObjects(
-                Object* pObjParent,
-                UIElement* pObjElement,
-                std::map<std::wstring, Object*>& listAllChild);
+  enum PARSEFLAG {
+    PARSEFLAG_LOADCHILD = 1,
+    PARSEFLAG_RELOAD = 2,
+  };
+  Object *ParseElement(UIElement *pUIElement, Object *pParent,
+                       IMessage *pNotifyTarget = NOTIFY_TARGET_ROOT,
+                       int flags = PARSEFLAG_LOADCHILD);
+  Object *ParseChildElement(UIElement *pParentElement, Object *pParent,
+                            IMessage *pNotifyTarget = NOTIFY_TARGET_ROOT,
+                            int flags = PARSEFLAG_LOADCHILD);
 
-    static long  UIParseLayoutTagCallback(
-                IUIElement*, IResource* pSkinRes);
-	static long  UIParseLayoutConfigTagCallback(
-                IUIElement*, IResource* pSkinRes);
-	
-	// ±à¼­Æ÷×¨ÓÃº¯Êı
-	bool  LoadWindowNodeList(ILayoutWindowNodeList** pp);
+  bool ReLoadLayout(Object *pRootObj, const wchar_t *szNewLayoutId,
+                    std::map<std::wstring, Object *> &listAllChild);
+  void ReloadChildObjects(Object *pObjParent, UIElement *pObjElement,
+                          std::map<std::wstring, Object *> &listAllChild);
+
+  static int UIParseLayoutTagCallback(IUIElement *, IResource *pSkinRes);
+  static int UIParseLayoutConfigTagCallback(IUIElement *, IResource *pSkinRes);
+
+  // ç¼–è¾‘å™¨ä¸“ç”¨å‡½æ•°
+  bool LoadWindowNodeList(ILayoutWindowNodeList **pp);
 
 private:
-    void  ParseNewElement(UIElement* pElem);
-	void  ParseLayoutConfigTag(UIElement* pElem);
-    bool  ParseLayoutConfigFileTag(UIElement* pElem);
+  void ParseNewElement(UIElement *pElem);
+  void ParseLayoutConfigTag(UIElement *pElem);
+  bool ParseLayoutConfigFileTag(UIElement *pElem);
 
-    UIElementProxy  find_element_from_cache(const wchar_t* szTagName, const wchar_t* szId);
-	UIElementProxy  load_window_by_id(const wchar_t* szTagName, const wchar_t* szId);
-	UIElementProxy  load_element_from_layout_config(const wchar_t* szTagName, const wchar_t* szId);
-	bool  testUIElement(UIElement* pParentElem, const wchar_t* szTagName, const wchar_t* szId);
+  UIElementProxy find_element_from_cache(const wchar_t *szTagName,
+                                         const wchar_t *szId);
+  UIElementProxy load_window_by_id(const wchar_t *szTagName,
+                                   const wchar_t *szId);
+  UIElementProxy load_element_from_layout_config(const wchar_t *szTagName,
+                                                 const wchar_t *szId);
+  bool testUIElement(UIElement *pParentElem, const wchar_t *szTagName,
+                     const wchar_t *szId);
 
 private:
-    ILayoutManager*  m_pILayoutManager;
-    UIList<UIElement*>  m_listUIElement;  // ÒÑ¼ÓÔØµÄ²¼¾ÖÏî<layout>½áµãÁĞ±í
-	UIList<LayoutConfigItem*>  m_listLayoutConfig;  // »¹Î´¼ÓÔØµÄ²¼¾ÖÏî
+  ILayoutManager *m_pILayoutManager;
+  UIList<UIElement *> m_listUIElement; // å·²åŠ è½½çš„å¸ƒå±€é¡¹<layout>ç»“ç‚¹åˆ—è¡¨
+  UIList<LayoutConfigItem *> m_listLayoutConfig; // è¿˜æœªåŠ è½½çš„å¸ƒå±€é¡¹
 
-	// ¶ÔÏóÊôĞÔ
-	Resource*         m_pSkinRes;
+  // å¯¹è±¡å±æ€§
+  Resource *m_pSkinRes;
 };
 
-}
+} // namespace ui

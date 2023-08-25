@@ -28,10 +28,10 @@ Uuid SvgLayoutParam::UUID() { return SvgLayout::UUID(); }
 
 void SvgLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializerWrap s(pData, L"SvgLayoutParam");
-  s.AddLong(L"x", m_x);
-  s.AddLong(L"y", m_y);
-  s.AddLong(L"width", m_width);
-  s.AddLong(L"height", m_height);
+  s.AddInt(L"x", m_x);
+  s.AddInt(L"y", m_y);
+  s.AddInt(L"width", m_width);
+  s.AddInt(L"height", m_height);
 }
 
 SvgLayout::SvgLayout(IObject *bind_object) { m_bind_object = bind_object; }

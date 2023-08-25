@@ -9,11 +9,14 @@
 
 namespace ui {
 
+// 注：long不是跨平台的，win32/win64/linux32下是4 bytes，但linux64(mac)下是8bytes
+// 尽量不要使用long作为变量类型。long long固定是8 bytes，可以使用。
 using byte = unsigned char;
+using wchar = wchar_t;
 using ushort = unsigned short;
 using uint = unsigned int;
-using ulong = unsigned long;
-using wchar = wchar_t;
+using llong = long long;
+using ullong = unsigned long long;
 
 // 导入导出定义
 // linux默认所有函数都导出，添加编译参数 -fvisibility=hidden 控制默认不导出

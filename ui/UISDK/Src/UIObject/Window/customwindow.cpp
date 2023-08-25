@@ -96,8 +96,8 @@ void  CustomWindow::OnSerialize(SerializeParam* pData)
 
     AttributeSerializer s(pData, TEXT("CustomWindow"));
 
-    s.AddLong(XML_WINDOW_RESIZE_BORDER, m_lResizeBorder);
-    s.AddLong(XML_WINDOW_MAXIMIZE_BORDER, m_lMaximizeBorder);
+    s.AddInt(XML_WINDOW_RESIZE_BORDER, m_lResizeBorder);
+    s.AddInt(XML_WINDOW_MAXIMIZE_BORDER, m_lMaximizeBorder);
 
     s.AddEnum(XML_WINDOW_RESIZE_CAPABILITY, this,
         memfun_cast<pfnLongSetter>(&CustomWindow::SetResizeCapability),

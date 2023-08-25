@@ -38,11 +38,11 @@ void  FlagsAttribute::Set(const wchar_t* szValue)
         return;
     }
 
-    long lValue = 0;
+    int lValue = 0;
     for (unsigned int i = 0; i < nCount; i++)
     {
         const wchar_t*  szFlag = pEnum->GetText(i);
-        long lFlag = 0;
+        int lFlag = 0;
         if (m_mapAlias.GetAlias(szFlag, &lFlag))
         {
             lValue |= lFlag;
@@ -61,12 +61,12 @@ const wchar_t*  FlagsAttribute::Get()
 {
 	String&  strBuffer = GetTempBufferString();
 
-    long lValue = GetLong();
-    long lRemainValue = 0;  // 没有别名的flag值，统一放在最后，用16进制数字显示
-	int nSize = sizeof(long)*8;
+    int lValue = GetLong();
+    int lRemainValue = 0;  // 没有别名的flag值，统一放在最后，用16进制数字显示
+	int nSize = sizeof(int)*8;
     for (int i = 0; i < nSize; i++)  // 逐位判断
     {
-        long lFlag = 1<<i;
+        int lFlag = 1<<i;
         if (lValue & lFlag)
         {
             const wchar_t* szFlag = m_mapAlias.GetAlias(lFlag);
@@ -97,9 +97,9 @@ const wchar_t*  FlagsAttribute::Get()
     return strBuffer.c_str();
 }
 
-FlagsAttribute*  FlagsAttribute::AddFlag(long l, const wchar_t* sz)
+FlagsAttribute*  FlagsAttribute::AddFlag(int l, const wchar_t* sz)
 {
-    LongAttribute::AddAlias(l, sz);
+    IntAttribute::AddAlias(l, sz);
     return this;
 }
 

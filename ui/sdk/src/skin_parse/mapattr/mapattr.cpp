@@ -78,7 +78,7 @@ const wchar_t *CMapAttribute::GetAttr(const wchar_t *szPrefix,
   return GetAttr(strKey.c_str(), bErase);
 }
 
-long CMapAttribute::GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
+int CMapAttribute::GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
                                  bool bErase, bool *pbGet) {
   String strKey;
   if (szPrefix)
@@ -87,7 +87,7 @@ long CMapAttribute::GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
 
   return GetAttr_bool(strKey.c_str(), bErase, pbGet);
 }
-long CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
                                  bool *pbGet) {
   if (nullptr == szKey || nullptr == pbGet)
     return MAPATTR_RET_ERROR;
@@ -96,7 +96,7 @@ long CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
   if (iter == m_mapAttr.end())
     return MAPATTR_RET_NOT_EXIST;
 
-  long lRet = MAPATTR_RET_OK;
+  int lRet = MAPATTR_RET_OK;
 
   const wchar_t *szValue = iter->second.c_str();
   if (0 == wcscmp(szValue, XML_BOOL_VALUE_TRUE) ||
@@ -117,7 +117,7 @@ long CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
   return lRet;
 }
 
-long CMapAttribute::GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
+int CMapAttribute::GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
                                 bool bErase, int *pnGet) {
   String strKey;
   if (szPrefix)
@@ -126,7 +126,7 @@ long CMapAttribute::GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
 
   return GetAttr_int(strKey.c_str(), bErase, pnGet);
 }
-long CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
+int CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
   if (nullptr == szKey || nullptr == pnGet)
     return MAPATTR_RET_ERROR;
 
@@ -142,7 +142,7 @@ long CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
   return MAPATTR_RET_OK;
 }
 
-long CMapAttribute::GetAttr_intarray(const wchar_t *szPrefix,
+int CMapAttribute::GetAttr_intarray(const wchar_t *szPrefix,
                                      const wchar_t *szKey, bool bErase,
                                      int *pIntArray, unsigned int nSize) {
   String strKey;
@@ -152,7 +152,7 @@ long CMapAttribute::GetAttr_intarray(const wchar_t *szPrefix,
 
   return GetAttr_intarray(strKey.c_str(), bErase, pIntArray, nSize);
 }
-long CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
                                      int *pIntArray, unsigned int nSize) {
   if (nullptr == szKey || nullptr == pIntArray)
     return MAPATTR_RET_ERROR;
@@ -179,7 +179,7 @@ long CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
   return MAPATTR_RET_OK;
 }
 
-long CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
+int CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
                                     const wchar_t *szKey, bool bErase,
                                     REGION4 *prcGet) {
   if (nullptr == szKey || nullptr == prcGet)
@@ -194,7 +194,7 @@ long CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
   if (iter == m_mapAttr.end())
     return MAPATTR_RET_NOT_EXIST;
 
-  long lRet = MAPATTR_RET_OK;
+  int lRet = MAPATTR_RET_OK;
   if (false == util::TranslateRECT(iter->second.c_str(), prcGet))
     lRet = MAPATTR_RET_INVLID_VALUE;
 
@@ -204,7 +204,7 @@ long CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
   return lRet;
 }
 
-long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
+int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
                                          const wchar_t *szKey, bool bErase,
                                          C9Region *pRegion) {
   if (nullptr == szKey || nullptr == pRegion)
@@ -219,7 +219,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
   if (iter == m_mapAttr.end())
     return MAPATTR_RET_NOT_EXIST;
 
-  long lRet = MAPATTR_RET_OK;
+  int lRet = MAPATTR_RET_OK;
   if (false == util::TranslateImage9Region(iter->second.c_str(), pRegion))
     lRet = MAPATTR_RET_INVLID_VALUE;
 
@@ -229,7 +229,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
   return lRet;
 }
 
-// long CMapAttribute::GetAttr_RenderBase(
+// int CMapAttribute::GetAttr_RenderBase(
 //     const wchar_t* szPrefix,
 //     const wchar_t* szKey,
 //     bool bErase,
@@ -276,7 +276,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //     return lRet;
 // }
 //
-// long CMapAttribute::GetAttr_TextRenderBase(
+// int CMapAttribute::GetAttr_TextRenderBase(
 //     const wchar_t* szPrefix,
 //     const wchar_t* szKey,
 //     bool bErase,
@@ -323,7 +323,7 @@ long CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //     return lRet;
 // }
 //
-// long  CMapAttribute::GetAttr_Color(
+// int  CMapAttribute::GetAttr_Color(
 //         const wchar_t* szPrefix,
 //         const wchar_t* szKey,
 //         bool bErase,
@@ -492,7 +492,7 @@ IMapAttribute* UICreateIMapAttribute() {
   return static_cast<IMapAttribute *>(p);
 }
 
-long UICreateIListAttribute(IListAttribute **ppOut) {
+int UICreateIListAttribute(IListAttribute **ppOut) {
   if (nullptr == ppOut)
     return -1; // E_INVALIDARG;
 
@@ -616,7 +616,7 @@ bool CListAttribute::EnumNext(const wchar_t **szKey, const wchar_t **szValue) {
 }
 void CListAttribute::EndEnum() { m_pEnum = nullptr; }
 
-long CListAttribute::Release() {
+int CListAttribute::Release() {
   UIASSERT(m_lRef > 0);
   --m_lRef;
   if (0 == m_lRef) {
@@ -625,6 +625,6 @@ long CListAttribute::Release() {
   }
   return m_lRef;
 }
-long CListAttribute::AddRef() { return ++m_lRef; }
+int CListAttribute::AddRef() { return ++m_lRef; }
 
 } // namespace ui

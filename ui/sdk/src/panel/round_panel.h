@@ -1,100 +1,96 @@
 #pragma once
-#include "panel.h"
 #include "Src\Atl\image.h"
+#include "panel.h"
 
-// 2016.4.1  libo 
-// ÊµÏÖÔ²½ÇPanel£¬ÒÔ¾¡Á¿ÉÙµÄÄÚ´æÕ¼ÓÃÊµÏÖ¡£
+// 2016.4.1  libo
+// å®ç°åœ†è§’Panelï¼Œä»¥å°½é‡å°‘çš„å†…å­˜å ç”¨å®ç°ã€‚
 //
-// Ô­Àí£º
-//   ŞğÆúÒÔÇ°½«ÄÚÈİ»­ÔÚÒ»¸öµ¥¶ÀµÄbufferÉÏ£¬È»ºó¶Ôbuffer×öroundrect£¬×îºó½«
-//   ¸ÃbufferÌá½»µ½dcÉÏµÄ·½·¨¡£
+// åŸç†ï¼š
+//   æ‘’å¼ƒä»¥å‰å°†å†…å®¹ç”»åœ¨ä¸€ä¸ªå•ç‹¬çš„bufferä¸Šï¼Œç„¶åå¯¹bufferåšroundrectï¼Œæœ€åå°†
+//   è¯¥bufferæäº¤åˆ°dcä¸Šçš„æ–¹æ³•ã€‚
 //
-//   1. ÔÚ»­panelÄÚÈİÖ®Ç°£¬½«ËÄ¸öÔ²½ÇµÄ¸¸±³¾°ÄÚÈİ»º´æÆğÀ´£»
-//   2. »­panelÄÚÈİ£»
-//   3. ¶ÔpanelµÄÄÚÈİÖ±½Ó×öroundrect£¬²»ÆôÓÃĞÂ»º´æ£»
-//   4. ½«panelµÄËÄ¸öĞÂÔ²½ÇÌùµ½Ö®Ç°»º´æµÄ¸¸±³¾°»º´æÉÏÈ¥£¬´ËÊ±Õâ¸ö»º´æÉÏµÄ
-//      ÄÚÈİ½«ÊÇËÄ¸öÔ²½ÇµÄ×îÖÕÏÔÊ¾£»
-//   5. ½«»º´æÉÏµÄËÄ¸öÔ²½Ç»¹Ô­µ½dcÉÏÈ¥£»
-//      Íê³É
+//   1. åœ¨ç”»panelå†…å®¹ä¹‹å‰ï¼Œå°†å››ä¸ªåœ†è§’çš„çˆ¶èƒŒæ™¯å†…å®¹ç¼“å­˜èµ·æ¥ï¼›
+//   2. ç”»panelå†…å®¹ï¼›
+//   3. å¯¹panelçš„å†…å®¹ç›´æ¥åšroundrectï¼Œä¸å¯ç”¨æ–°ç¼“å­˜ï¼›
+//   4. å°†panelçš„å››ä¸ªæ–°åœ†è§’è´´åˆ°ä¹‹å‰ç¼“å­˜çš„çˆ¶èƒŒæ™¯ç¼“å­˜ä¸Šå»ï¼Œæ­¤æ—¶è¿™ä¸ªç¼“å­˜ä¸Šçš„
+//      å†…å®¹å°†æ˜¯å››ä¸ªåœ†è§’çš„æœ€ç»ˆæ˜¾ç¤ºï¼›
+//   5. å°†ç¼“å­˜ä¸Šçš„å››ä¸ªåœ†è§’è¿˜åŸåˆ°dcä¸Šå»ï¼›
+//      å®Œæˆ
 //
 
-// ×¢£ºback.renderµÄÊı¾İ²»»á×öÔ²½Ç»¯£¬fore.render+childµÄÊı¾İ»á±»Ô²½Ç»¯
+// æ³¨ï¼šback.renderçš„æ•°æ®ä¸ä¼šåšåœ†è§’åŒ–ï¼Œfore.render+childçš„æ•°æ®ä¼šè¢«åœ†è§’åŒ–
 
-namespace ui
-{
+namespace ui {
 
-class RoundPanel : public Panel
-{
+class RoundPanel : public Panel {
 public:
-    RoundPanel(IRoundPanel*);
-    ~RoundPanel();
+  RoundPanel(IRoundPanel *);
+  ~RoundPanel();
 
-	UI_BEGIN_MSG_MAP()
-		UIMSG_PAINT(OnPaint)
-        UIMSG_POSTPAINT(OnPostPaint)
-        UIMSG_QUERYINTERFACE(RoundPanel)
-		UIMSG_SERIALIZE(OnSerialize)
-	UI_END_MSG_MAP_CHAIN_PARENT(Panel)
+  UI_BEGIN_MSG_MAP()
+  UIMSG_PAINT(OnPaint)
+  UIMSG_POSTPAINT(OnPostPaint)
+  UIMSG_QUERYINTERFACE(RoundPanel)
+  UIMSG_SERIALIZE(OnSerialize)
+  UI_END_MSG_MAP_CHAIN_PARENT(Panel)
 
 public:
-    void  PrePaint(HDC hDC, int width, int height);
-    void  PostPaint(HDC hDC, int width, int height);
+  void PrePaint(HDC hDC, int width, int height);
+  void PostPaint(HDC hDC, int width, int height);
 
-    void  SetRadius(
-            ULONG lefttop, ULONG righttop,
-            ULONG leftbottom, ULONG rightbottom);
+  void SetRadius(ULONG lefttop, ULONG righttop, ULONG leftbottom,
+                 ULONG rightbottom);
 
 protected:
-	void  OnSerialize(SerializeParam* pData);
-	void  OnPaint(IRenderTarget* pRenderTarget);
-	void  OnPostPaint(IRenderTarget* pRenderTarget);
+  void OnSerialize(SerializeParam *pData);
+  void OnPaint(IRenderTarget *pRenderTarget);
+  void OnPostPaint(IRenderTarget *pRenderTarget);
 
 private:
-    ULONG  m_lefttop;
-    ULONG  m_righttop;
-    ULONG  m_leftbottom;
-    ULONG  m_rightbottom;
+  uint m_lefttop;
+  uint m_righttop;
+  uint m_leftbottom;
+  uint m_rightbottom;
 
-	IRoundPanel*  m_pIRoundPanel;
+  IRoundPanel *m_pIRoundPanel;
 };
 
-// ¸ºÔğ±£´æÔ­Ê¼ÄÚÈİ¡¢¸üĞÂpanelÔ²½ÇÄÚÈİ¡¢½«ÄÚÈİÌù»Øµ½´°¿ÚÉÏÈ¥
-class BufferSwitcher
-{
+// è´Ÿè´£ä¿å­˜åŸå§‹å†…å®¹ã€æ›´æ–°panelåœ†è§’å†…å®¹ã€å°†å†…å®¹è´´å›åˆ°çª—å£ä¸Šå»
+class BufferSwitcher {
 public:
-    BufferSwitcher();
-    ~BufferSwitcher();
+  BufferSwitcher();
+  ~BufferSwitcher();
 
-    void  SaveLeftTop(HDC hDC, ULONG radius);
-    void  SaveRightTop(HDC hDC, ULONG radius, int width);
-    void  SaveLeftBottom(HDC hDC, ULONG radius, int height);
-    void  SaveRightBottom(HDC hDC, ULONG radius, int width, int height);
+  void SaveLeftTop(HDC hDC, ULONG radius);
+  void SaveRightTop(HDC hDC, ULONG radius, int width);
+  void SaveLeftBottom(HDC hDC, ULONG radius, int height);
+  void SaveRightBottom(HDC hDC, ULONG radius, int width, int height);
 
-    void  UpdateLeftTop(HDC hDC, ULONG radius);
-    void  UpdateRightTop(HDC hDC, ULONG radius, int width);
-    void  UpdateLeftBottom(HDC hDC, ULONG radius, int height);
-    void  UpdateRightBottom(HDC hDC, ULONG radius, int width, int height);
+  void UpdateLeftTop(HDC hDC, ULONG radius);
+  void UpdateRightTop(HDC hDC, ULONG radius, int width);
+  void UpdateLeftBottom(HDC hDC, ULONG radius, int height);
+  void UpdateRightBottom(HDC hDC, ULONG radius, int width, int height);
 
-    void  RestoreLeftTop(HDC hDC, ULONG radius);
-    void  RestoreRightTop(HDC hDC, ULONG radius, int width);
-    void  RestoreLeftBottom(HDC hDC, ULONG radius, int height);
-    void  RestoreRightBottom(HDC hDC, ULONG radius, int width, int height);
+  void RestoreLeftTop(HDC hDC, ULONG radius);
+  void RestoreRightTop(HDC hDC, ULONG radius, int width);
+  void RestoreLeftBottom(HDC hDC, ULONG radius, int height);
+  void RestoreRightBottom(HDC hDC, ULONG radius, int width, int height);
 
-    void  AddRef();
-    void  Release();
-
-private:
-    void  save(UI::Image&, HDC hDC, ULONG size, int x, int y);
-    void  update(UI::Image&, HDC hDC, ULONG size, int x, int y);
-    void  restore(UI::Image&, HDC hDC, ULONG size, int x, int y);
+  void AddRef();
+  void Release();
 
 private:
-	UI::Image  m_lefttop;
-	UI::Image  m_righttop;
-	UI::Image  m_leftbottom;
-	UI::Image  m_rightbottom;
+  void save(UI::Image &, HDC hDC, ULONG size, int x, int y);
+  void update(UI::Image &, HDC hDC, ULONG size, int x, int y);
+  void restore(UI::Image &, HDC hDC, ULONG size, int x, int y);
 
-    long  m_lRef;
+private:
+  UI::Image m_lefttop;
+  UI::Image m_righttop;
+  UI::Image m_leftbottom;
+  UI::Image m_rightbottom;
+
+  long m_lRef;
 };
 
-}
+} // namespace ui
