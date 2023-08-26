@@ -14,7 +14,7 @@ public:
 
 public:
 	HMODULE hModule;
-	String  strDllPath;
+	std::wstring  strDllPath;
 };
 class SkinBuilderRes
 {
@@ -23,8 +23,8 @@ public:
 	~SkinBuilderRes() {Clear();}
 
 	void  SetUIApplication(IApplication* pUIApp){ m_pUIApp = pUIApp; }
-	void  AddOuterCtrlsDllPath(const String&  strDll);
-	OutCtrlDllItem*  FindOuterCtrlsDll(const String& strDll);
+	void  AddOuterCtrlsDllPath(const std::string&  strDll);
+	OutCtrlDllItem*  FindOuterCtrlsDll(const std::string& strDll);
 	OutCtrlDllItem*  FindOuterCtrlsDll(HMODULE hModule);
 	void  Clear();
 
@@ -59,12 +59,12 @@ public:
 	SkinConfigRes();
 
 private:
-	String   m_strImageXmlPath;       // 全路径，保存到文件中的才是相对路径 
-	String   m_strFontXmlPath;
-	String   m_strColorXmlPath;
-	String   m_strStyleXmlPath;
-	String   m_strLayoutXmlPath;
-	String   m_strI18nXmlPath;
+	std::wstring   m_strImageXmlPath;       // 全路径，保存到文件中的才是相对路径 
+	std::wstring   m_strFontXmlPath;
+	std::wstring   m_strColorXmlPath;
+	std::wstring   m_strStyleXmlPath;
+	std::wstring   m_strLayoutXmlPath;
+	std::wstring   m_strI18nXmlPath;
 
 	SKIN_HLS_INFO  m_sHlsInfo;
 public:

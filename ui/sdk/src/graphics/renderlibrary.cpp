@@ -183,16 +183,16 @@ void UICreateRenderBitmap(IApplication *pUIApp,
 }
 
 GRAPHICS_RENDER_LIBRARY_TYPE
-UIParseGraphicsRenderLibraryType(const wchar_t *szText) {
+UIParseGraphicsRenderLibraryType(const char *szText) {
   if (szText) {
-    if (0 == wcscmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDIPLUS)) {
+    if (0 == strcmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_GDIPLUS)) {
       return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS;
-    } else if (0 == wcscmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D2D) ||
-               0 == wcscmp(szText,
+    } else if (0 == strcmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D2D) ||
+               0 == strcmp(szText,
                            XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT2D)) {
       return GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT2D;
-    } else if (0 == wcscmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D3D) ||
-               0 == wcscmp(szText,
+    } else if (0 == strcmp(szText, XML_WINDOW_GRAPHICS_RENDER_LIBRARY_D3D) ||
+               0 == strcmp(szText,
                            XML_WINDOW_GRAPHICS_RENDER_LIBRARY_DIRECT3D)) {
       return GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT3D;
     } else {

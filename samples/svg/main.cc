@@ -5,7 +5,7 @@ using namespace std;
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
 #include "svg/include/inc.h"
-#include "svg/include/interface/irect.h"
+// #include "svg/include/interface/irect.h"
 #include "svg/include/interface/isvg.h"
 
 class MainWindow {
@@ -25,20 +25,20 @@ public:
 
   void create_ui() {
     ui::svg::SvgPtr panel(m_window->GetResource());
-    panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, L"0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_TOP, L"0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, L"0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, L"0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, "0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_TOP, "0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
+    panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
     panel->InitDefaultAttrib();
 
-    ui::svg::RectPtr rect(m_window->GetResource());
-    rect->AddAttribute(L"x", L"100");
-    rect->AddAttribute(L"y", L"100");
-    rect->AddAttribute(L"width", L"100");
-    rect->AddAttribute(L"height", L"100");
-    rect->InitDefaultAttrib();
+    // ui::svg::RectPtr rect(m_window->GetResource());
+    // rect->AddAttribute(L"x", L"100");
+    // rect->AddAttribute(L"y", L"100");
+    // rect->AddAttribute(L"width", L"100");
+    // rect->AddAttribute(L"height", L"100");
+    // rect->InitDefaultAttrib();
 
-    panel->AddChild(rect.release());
+    // panel->AddChild(rect.release());
     m_window->AddChild(panel.release());
     // m_window->AddChild(rect.release());
   }

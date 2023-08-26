@@ -44,14 +44,14 @@ void  TextRenderFactory::Clear()
 
 
 bool  TextRenderFactory::RegisterUITextRenderBaseCreateData(
-        const wchar_t* szName, 
+        const char* szName, 
         int nType, 
         pfnUICreateTextRenderBasePtr pfunc)
 {
 	if (nullptr == szName || nullptr == pfunc)
 		return false;
 
-	String strName(szName);
+	std::string strName(szName);
 
 	UITEXTRENDERBASE_CREATE_INFO* pInfo = new UITEXTRENDERBASE_CREATE_INFO;
 	pInfo->m_func = pfunc;
@@ -65,7 +65,7 @@ bool  TextRenderFactory::RegisterUITextRenderBaseCreateData(
 
 bool  TextRenderFactory::CreateTextRenderBaseByName(
         IResource* pSkinRes, 
-        const wchar_t* bstrName, 
+        const char* bstrName, 
         IObject* pObject, 
         ITextRenderBase** ppOut)
 {
@@ -134,7 +134,7 @@ bool  TextRenderFactory::CreateTextRender(
 	return false;
 }
 
-const wchar_t*  TextRenderFactory::GetTextRenderBaseName(int nType)
+const char*  TextRenderFactory::GetTextRenderBaseName(int nType)
 {
     UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
 	for (; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)

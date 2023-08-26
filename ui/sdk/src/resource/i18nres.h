@@ -3,30 +3,28 @@
 
 #include "include/interface/iuires.h"
 
-namespace ui
-{
+namespace ui {
 class Resource;
-class I18nRes : public II18nCallback
-{
+class I18nRes : public II18nCallback {
 public:
-	I18nRes(Resource*);
-	~I18nRes();
+  I18nRes(Resource *);
+  ~I18nRes();
 
 public:
-	void  Add(const wchar_t* szId, const wchar_t* szValue);
+  void Add(const char *szId, const char *szValue);
 
-    const wchar_t*  MapConfigValue(const wchar_t* configText);
-    void  Clear();
+  const char *MapConfigValue(const char *configText);
+  void Clear();
 
-	II18nRes&  GetII18nRes();
+  II18nRes &GetII18nRes();
 
 private:
-    virtual const wchar_t* Map(const wchar_t* key) override;
+  virtual const char *Map(const char *key) override;
 
 private:
-	Resource*  m_pSkinRes;
-	II18nRes*  m_pII18nRes;
+  Resource *m_pSkinRes;
+  II18nRes *m_pII18nRes;
 
-	std::map<std::wstring, std::wstring>  m_dict;
+  std::map<std::string, std::string> m_dict;
 };
-}
+} // namespace ui

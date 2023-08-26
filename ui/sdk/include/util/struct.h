@@ -8,7 +8,7 @@ struct IDataObject;
 
 namespace ui {
 //
-// 9¹¬À­ÉìÇøÓò¶¨Òå
+// 9å®«æ‹‰ä¼¸åŒºåŸŸå®šä¹‰
 //
 class UIAPI C9Region {
 public:
@@ -46,29 +46,29 @@ struct RENDERBASE_DRAWSTATE {
 
 struct TEXTRENDERBASE_DRAWSTATE {
   RENDERBASE_DRAWSTATE ds_renderbase;
-  const wchar_t *szText;
+  const char *szText;
   int nDrawTextFlag;
 };
 
 enum {
   TOOLTIP_ACTION_FLAG_NORMAL =
-      0, // Õı³£ÏµÍ³ÌáÊ¾Ìõ£¬Ğü¸¡¿Ø¼şÊ±£¬¼ÆÊ±ÏÔÊ¾£»ÒÆ¿ª¿Ø¼şÊ±£¬Á¢¼´Òş²Ø
+      0, // æ­£å¸¸ç³»ç»Ÿæç¤ºæ¡ï¼Œæ‚¬æµ®æ§ä»¶æ—¶ï¼Œè®¡æ—¶æ˜¾ç¤ºï¼›ç§»å¼€æ§ä»¶æ—¶ï¼Œç«‹å³éšè—
 };
 
 struct IMessage;
-// ShowToolTipµÄ²ÎÊı
+// ShowToolTipçš„å‚æ•°
 struct TOOLTIPITEM {
-  // ÒªÌáÊ¾µÄÄÚÈİ£¨Èç¹û¸ÃÖµÓĞĞ§£¬ÔòºöÂÔpNotifyObj/pItemData£©
+  // è¦æç¤ºçš„å†…å®¹ï¼ˆå¦‚æœè¯¥å€¼æœ‰æ•ˆï¼Œåˆ™å¿½ç•¥pNotifyObj/pItemDataï¼‰
   const wchar_t *szToolTipContent;
 
-  // ÒªÏÔÊ¾ÌáÊ¾ÌõµÄ¿Ø¼ş£¬ÒÔ¼°ÏûÏ¢Í¨ÖªµÄ¶ÔÏó
+  // è¦æ˜¾ç¤ºæç¤ºæ¡çš„æ§ä»¶ï¼Œä»¥åŠæ¶ˆæ¯é€šçŸ¥çš„å¯¹è±¡
   IMessage *pNotifyObj;
 
-  // Èç¹ûÊÇÒªÏÔÊ¾¿Ø¼şÄÚ²¿Ò»¸öitemµÄÌáÊ¾ĞÅÏ¢£¬¿É½«¸ÃÖµÉèÖÃÎªºÏÊÊµÄÖµ£¬
-  // È»ºómgr»áÏòpNotifyObj·¢ËÍUI_WM_GET_TOOLTIPINFOÏûÏ¢
+  // å¦‚æœæ˜¯è¦æ˜¾ç¤ºæ§ä»¶å†…éƒ¨ä¸€ä¸ªitemçš„æç¤ºä¿¡æ¯ï¼Œå¯å°†è¯¥å€¼è®¾ç½®ä¸ºåˆé€‚çš„å€¼ï¼Œ
+  // ç„¶åmgrä¼šå‘pNotifyObjå‘é€UI_WM_GET_TOOLTIPINFOæ¶ˆæ¯
   void *pItemData;
 
-  // ÌáÊ¾ÌõµÄĞĞÎª±êÖ¾¡£ £¨20120928 ÏÖÔÚÖ»Ö§³Önormal£©
+  // æç¤ºæ¡çš„è¡Œä¸ºæ ‡å¿—ã€‚ ï¼ˆ20120928 ç°åœ¨åªæ”¯æŒnormalï¼‰
   int nToolTipFlag;
 };
 
@@ -78,9 +78,9 @@ typedef void (*UITimerProc)(unsigned int *nTimerID, TimerItem *pTimerItem);
 struct IMessage;
 class TimerItem {
 public:
-  int nRepeatCount; // ÏìÓ¦´ÎÊı,-1±íÊ¾ÎŞÏŞ
+  int nRepeatCount; // å“åº”æ¬¡æ•°,-1è¡¨ç¤ºæ— é™
 
-  IMessage *pNotify; // ÏìÓ¦WM_TIMERµÄ¶ÔÏó
+  IMessage *pNotify; // å“åº”WM_TIMERçš„å¯¹è±¡
   UITimerProc pProc;
   std::function<bool(unsigned int *, TimerItem *)> func;
 
@@ -98,7 +98,7 @@ public:
   }
 };
 
-// UI_WM_DROPTARGETEVENT ÏûÏ¢²ÎÊı
+// UI_WM_DROPTARGETEVENT æ¶ˆæ¯å‚æ•°
 enum DROPTARGETEVENT_TYPE {
   _DragEnter,
   _DragOver,

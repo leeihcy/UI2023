@@ -3,13 +3,13 @@
 
 using namespace ui;
 
-void IntAttributeAlias::AddAlias(int l, const wchar_t *sz) {
+void IntAttributeAlias::AddAlias(int l, const char *sz) {
   if (sz) {
-    m_mapAlias.insert(make_pair(l, std::wstring(sz)));
+    m_mapAlias.insert(make_pair(l, std::string(sz)));
   }
 }
 
-const wchar_t *IntAttributeAlias::GetAlias(int l) {
+const char *IntAttributeAlias::GetAlias(int l) {
   AliasIter iter = m_mapAlias.find(l);
   if (iter == m_mapAlias.end())
     return nullptr;
@@ -17,7 +17,7 @@ const wchar_t *IntAttributeAlias::GetAlias(int l) {
   return iter->second.c_str();
 }
 
-bool IntAttributeAlias::GetAlias(const wchar_t *sz, int *pOut) {
+bool IntAttributeAlias::GetAlias(const char *sz, int *pOut) {
   if (!sz || !pOut)
     return false;
 

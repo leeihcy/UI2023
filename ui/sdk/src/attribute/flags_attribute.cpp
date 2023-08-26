@@ -1,111 +1,87 @@
-#include "include/inc.h"
 #include "flags_attribute.h"
 #include "attribute.h"
+#include "include/inc.h"
 
 using namespace ui;
 
-namespace ui
-{
-    AttributeBase*  CreateFlagsAttribute()
-    {
-        return new FlagsAttribute();
-    }
+namespace ui {
+AttributeBase *CreateFlagsAttribute() { return new FlagsAttribute(); }
 
-FlagsAttribute::FlagsAttribute()
-{
-    m_pIFlagsAttribute = nullptr;
-}
-FlagsAttribute::~FlagsAttribute()
-{
-    SAFE_DELETE(m_pIFlagsAttribute);
+FlagsAttribute::FlagsAttribute() { m_pIFlagsAttribute = nullptr; }
+FlagsAttribute::~FlagsAttribute() { SAFE_DELETE(m_pIFlagsAttribute); }
+
+IFlagsAttribute *FlagsAttribute::GetIFlagsAttribute() {
+  if (!m_pIFlagsAttribute)
+    m_pIFlagsAttribute = new IFlagsAttribute(this);
+
+  return m_pIFlagsAttribute;
 }
 
-IFlagsAttribute*  FlagsAttribute::GetIFlagsAttribute()
-{
-    if (!m_pIFlagsAttribute)
-        m_pIFlagsAttribute = new IFlagsAttribute(this);
+void FlagsAttribute::Set(const char *szValue) {
+  util::ISplitStringEnum *pEnum = nullptr;
+  unsigned int nCount = util::SplitString(szValue, XML_FLAG_SEPARATOR, &pEnum);
+  if (!nCount) {
+    SetLong(m_lDefault);
+    return;
+  }
 
-    return m_pIFlagsAttribute;
+  int lValue = 0;
+  for (unsigned int i = 0; i < nCount; i++) {
+    const char *szFlag = pEnum->GetText(i);
+    int lFlag = 0;
+    if (m_mapAlias.GetAlias(szFlag, &lFlag)) {
+      lValue |= lFlag;
+    } else {
+      // è§„å®šflagså¿…é¡»16è¿›åˆ¶æ•°å€¼
+      lValue |= strtol(szFlag, nullptr, 16); // util::wtoi(szFlag);
+    }
+  }
+  SAFE_RELEASE(pEnum);
+  SetLong(lValue);
 }
 
-void  FlagsAttribute::Set(const wchar_t* szValue)
-{
-    util::ISplitStringEnum*  pEnum = nullptr;
-    unsigned int nCount = util::SplitString(szValue, XML_FLAG_SEPARATOR, &pEnum);
-    if (!nCount)
-    {
-        SetLong(m_lDefault);
-        return;
-    }
+const char *FlagsAttribute::Get() {
+  std::string &strBuffer = GetTempBufferString();
 
-    int lValue = 0;
-    for (unsigned int i = 0; i < nCount; i++)
-    {
-        const wchar_t*  szFlag = pEnum->GetText(i);
-        int lFlag = 0;
-        if (m_mapAlias.GetAlias(szFlag, &lFlag))
-        {
-            lValue |= lFlag;
-        }
-        else
-        {
-            // ¹æ¶¨flags±ØÐë16½øÖÆÊýÖµ
-            lValue |= wcstol(szFlag, nullptr, 16); // util::wtoi(szFlag);
-        }
-    }
-    SAFE_RELEASE(pEnum);
-    SetLong(lValue);
-}
-
-const wchar_t*  FlagsAttribute::Get()
-{
-	String&  strBuffer = GetTempBufferString();
-
-    int lValue = GetLong();
-    int lRemainValue = 0;  // Ã»ÓÐ±ðÃûµÄflagÖµ£¬Í³Ò»·ÅÔÚ×îºó£¬ÓÃ16½øÖÆÊý×ÖÏÔÊ¾
-	int nSize = sizeof(int)*8;
-    for (int i = 0; i < nSize; i++)  // ÖðÎ»ÅÐ¶Ï
-    {
-        int lFlag = 1<<i;
-        if (lValue & lFlag)
-        {
-            const wchar_t* szFlag = m_mapAlias.GetAlias(lFlag);
-            if (szFlag)
-            {
-                if (!strBuffer.empty())
-                    strBuffer.push_back(XML_FLAG_SEPARATOR);
-
-                strBuffer.append(szFlag);
-            }
-            else
-            {
-                lRemainValue |= lValue;
-            }
-        }
-    }
-
-    if (lRemainValue)
-    {
+  int lValue = GetLong();
+  int lRemainValue = 0; // æ²¡æœ‰åˆ«åçš„flagå€¼ï¼Œç»Ÿä¸€æ”¾åœ¨æœ€åŽï¼Œç”¨16è¿›åˆ¶æ•°å­—æ˜¾ç¤º
+  int nSize = sizeof(int) * 8;
+  for (int i = 0; i < nSize; i++) // é€ä½åˆ¤æ–­
+  {
+    int lFlag = 1 << i;
+    if (lValue & lFlag) {
+      const char *szFlag = m_mapAlias.GetAlias(lFlag);
+      if (szFlag) {
         if (!strBuffer.empty())
-            strBuffer.push_back(XML_FLAG_SEPARATOR);
+          strBuffer.push_back(XML_FLAG_SEPARATOR);
 
-		wchar_t  szText[16] = {0};
-        wprintf(szText, TEXT("%x"), lValue);
-        strBuffer.append(szText);
+        strBuffer.append(szFlag);
+      } else {
+        lRemainValue |= lValue;
+      }
     }
+  }
 
-    return strBuffer.c_str();
+  if (lRemainValue) {
+    if (!strBuffer.empty())
+      strBuffer.push_back(XML_FLAG_SEPARATOR);
+
+    char szText[16] = {0};
+    sprintf(szText, "%x", lValue);
+    strBuffer.append(szText);
+  }
+
+  return strBuffer.c_str();
 }
 
-FlagsAttribute*  FlagsAttribute::AddFlag(int l, const wchar_t* sz)
-{
-    IntAttribute::AddAlias(l, sz);
-    return this;
+FlagsAttribute *FlagsAttribute::AddFlag(int l, const char *sz) {
+  IntAttribute::AddAlias(l, sz);
+  return this;
 }
 
-void  FlagsAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
-{
-     p->Flags2Editor(this, e);
+void FlagsAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                            EditorAttributeFlag e) {
+  p->Flags2Editor(this, e);
 }
 
-}
+} // namespace ui

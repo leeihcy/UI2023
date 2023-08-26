@@ -14,8 +14,8 @@ public:
     virtual int   read(char* pread, int nread);
     virtual void  seek(int npos, std::ios_base::seekdir dir);
     virtual int   tell();
-    virtual bool  load(const wchar_t* szPath);
-    virtual bool  save(const wchar_t* szPath);
+    virtual bool  load(const char* szPath);
+    virtual bool  save(const char* szPath);
 
 private:
     std::fstream  f;

@@ -5,27 +5,25 @@
 #include "include/interface/iattribute.h"
 
 //
-// ±ðÃûÓ³Éä (¶ÔÓÚÃ¶¾ÙÀàÐÍÓÐÓÃ)
+// åˆ«åæ˜ å°„ (å¯¹äºŽæžšä¸¾ç±»åž‹æœ‰ç”¨)
 //
-// ÁíÍâ¶ÔÓÚÒ»Ð©ÌØÊâÊýÖµÒ²ÓÐÓÃ£¬ÀýÈç"auto" --> AUTO
-// 
+// å¦å¤–å¯¹äºŽä¸€äº›ç‰¹æ®Šæ•°å€¼ä¹Ÿæœ‰ç”¨ï¼Œä¾‹å¦‚"auto" --> AUTO
+//
 
-namespace ui
-{
-class IntAttributeAlias
-{
+namespace ui {
+class IntAttributeAlias {
 public:
-    const wchar_t*  GetAlias(int);
-    bool  GetAlias(const wchar_t*, int* pOut);
-    void  AddAlias(int, const wchar_t*);
+  const char *GetAlias(int);
+  bool GetAlias(const char *, int *pOut);
+  void AddAlias(int, const char *);
 
-	uint  GetCount();
-	int  EnumAlias(pfnEnumAliasCallback, int, int);
+  uint GetCount();
+  int EnumAlias(pfnEnumAliasCallback, int, int);
 
 private:
-    typedef std::multimap<int, std::wstring>  AliasMap;
-    typedef AliasMap::iterator  AliasIter;
+  typedef std::multimap<int, std::string> AliasMap;
+  typedef AliasMap::iterator AliasIter;
 
-    AliasMap  m_mapAlias;
+  AliasMap m_mapAlias;
 };
-}
+} // namespace ui

@@ -133,13 +133,13 @@ void Object::FinalRelease() {
 IObject *Object::GetIObject() { return m_pIObject; }
 
 // 注：如果在其它模块直接调用 pCtrl->m_strID=L"..."的话，在对象释放时将会崩溃
-void Object::SetId(const wchar_t *szText) {
+void Object::SetId(const char *szText) {
   if (szText)
     m_strId = szText;
   else
     m_strId.clear();
 }
-const wchar_t *Object::GetId() { return m_strId.c_str(); }
+const char *Object::GetId() { return m_strId.c_str(); }
 
 Layer *Object::GetSelfLayer() const { return m_objLayer.GetLayer(); }
 
@@ -219,7 +219,7 @@ Object *Object::GetLayerCreator() {
 //	Return
 //		成功返回对象地址，失败返回nullptr
 //
-Object *Object::FindObject(const wchar_t *szObjId) {
+Object *Object::FindObject(const char *szObjId) {
   if (!szObjId)
     return nullptr;
 
@@ -233,7 +233,7 @@ Object *Object::FindObject(const wchar_t *szObjId) {
 }
 
 // 不写日志
-Object *Object::TryFindObject(const wchar_t *szObjId) {
+Object *Object::TryFindObject(const char *szObjId) {
   if (!szObjId)
     return nullptr;
 
@@ -242,13 +242,13 @@ Object *Object::TryFindObject(const wchar_t *szObjId) {
 }
 
 // 没有递归
-Object *Object::FindNcObject(const wchar_t *szobjId) {
+Object *Object::FindNcObject(const char *szobjId) {
   if (nullptr == szobjId)
     return nullptr;
 
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumNcChildObject(pObjChild))) {
-    if (0 == wcscmp(pObjChild->GetId(), szobjId)) {
+    if (0 == strcmp(pObjChild->GetId(), szobjId)) {
       return pObjChild;
     }
   }
@@ -262,13 +262,13 @@ Object *Object::FindNcObject(Uuid uuid) {
   return this->find_ncchild_object(uuid, true);
 }
 
-Object *Object::find_child_object(const wchar_t *szobjId, bool bFindDecendant) {
+Object *Object::find_child_object(const char *szobjId, bool bFindDecendant) {
   if (nullptr == szobjId)
     return nullptr;
 
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumChildObject(pObjChild))) {
-    if (0 == wcscmp(pObjChild->GetId(), szobjId)) {
+    if (0 == strcmp(pObjChild->GetId(), szobjId)) {
       return pObjChild;
     }
   }
@@ -334,10 +334,10 @@ void Object::LoadAttributes(bool bReload) {
   if (!m_pIMapAttributeRemain)
     return;
 
-  String strStyle;
-  String strId;
+  std::string strStyle;
+  std::string strId;
 
-  const wchar_t *szText = m_pIMapAttributeRemain->GetAttr(XML_STYLECLASS, false);
+  const char *szText = m_pIMapAttributeRemain->GetAttr(XML_STYLECLASS, false);
   if (szText)
     strStyle = szText;
 
@@ -390,13 +390,13 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
 }
 
 // 获取一个未解析的属性。如果bErase==true，则将返回一个临时的字符串指针，调用者应该尽快保存或者仅临时使用
-const wchar_t *Object::GetAttribute(const wchar_t *szKey, bool bErase) {
+const char *Object::GetAttribute(const char *szKey, bool bErase) {
   if (nullptr == szKey || nullptr == m_pIMapAttributeRemain)
     return nullptr;
 
   return m_pIMapAttributeRemain->GetAttr(szKey, bErase);
 }
-void Object::AddAttribute(const wchar_t *szKey, const wchar_t *szValue) {
+void Object::AddAttribute(const char *szKey, const char *szValue) {
   if (nullptr == m_pIMapAttributeRemain) {
     m_pIMapAttributeRemain = UICreateIMapAttribute();
   }
@@ -1122,8 +1122,8 @@ void Object::InitDefaultAttrib() {
 
   StyleRes &styleRes = m_pSkinRes->GetStyleRes();
 
-  const wchar_t *szStyle = pMapAttrib->GetAttr(nullptr, XML_STYLE, true);
-  String strStyle;
+  const char *szStyle = pMapAttrib->GetAttr(nullptr, XML_STYLE, true);
+  std::string strStyle;
   if (szStyle)
     strStyle = szStyle;
 
@@ -1298,7 +1298,7 @@ IRenderFont *Object::GetRenderFont() {
   return nullptr;
 }
 
-void Object::load_renderbase(const wchar_t *szName, IRenderBase *&pRender) {
+void Object::load_renderbase(const char *szName, IRenderBase *&pRender) {
   UIASSERT(false);
 //   SAFE_RELEASE(pRender);
 //   if (szName) {
@@ -1311,7 +1311,7 @@ void Object::load_renderbase(const wchar_t *szName, IRenderBase *&pRender) {
   // }
 }
 
-void Object::load_textrender(const wchar_t *szName,
+void Object::load_textrender(const char *szName,
                              ITextRenderBase *&pTextRender) {
                               UIASSERT(false);
 //   SAFE_RELEASE(pTextRender);
@@ -1323,7 +1323,7 @@ void Object::load_textrender(const wchar_t *szName,
 //   }
 }
 
-const wchar_t *Object::get_renderbase_name(IRenderBase *&pRender) {
+const char *Object::get_renderbase_name(IRenderBase *&pRender) {
   if (!pRender)
     return nullptr;
 #if defined(OS_WIN)
@@ -1333,7 +1333,7 @@ const wchar_t *Object::get_renderbase_name(IRenderBase *&pRender) {
   return nullptr;
 #endif
 }
-const wchar_t *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
+const char *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
   if (!pTextRender)
     return nullptr;
 #if defined(OS_WIN)
@@ -1344,22 +1344,22 @@ const wchar_t *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
 #endif
 }
 
-void Object::LoadBkgndRender(const wchar_t *szName) {
+void Object::LoadBkgndRender(const char *szName) {
   load_renderbase(szName, m_pBkgndRender);
 }
-void Object::LoadForegndRender(const wchar_t *szName) {
+void Object::LoadForegndRender(const char *szName) {
   load_renderbase(szName, m_pForegndRender);
 }
-void Object::LoadTextRender(const wchar_t *szName) {
+void Object::LoadTextRender(const char *szName) {
   load_textrender(szName, m_pTextRender);
 }
-const wchar_t *Object::SaveBkgndRender() {
+const char *Object::SaveBkgndRender() {
   return get_renderbase_name(m_pBkgndRender);
 }
-const wchar_t *Object::SaveForegndRender() {
+const char *Object::SaveForegndRender() {
   return get_renderbase_name(m_pForegndRender);
 }
-const wchar_t *Object::SaveTextRender() {
+const char *Object::SaveTextRender() {
   return get_textrender_name(m_pTextRender);
 }
 
@@ -1572,7 +1572,7 @@ void Object::OnLayerCreate() {
 
 // 序列化辅助函数
 /*
-void  Object::LoadColor(const wchar_t* szColorId, Color*& pColor)
+void  Object::LoadColor(const char* szColorId, Color*& pColor)
 {
     SAFE_RELEASE(pColor);
     if (!szColorId || !m_pUIApplication)
@@ -1585,7 +1585,7 @@ void  Object::LoadColor(const wchar_t* szColorId, Color*& pColor)
     pColorRes->GetColor(szColorId, &pColor);
 }
 
-const wchar_t*  Object::SaveColor(Color*& pColor)
+const char*  Object::SaveColor(Color*& pColor)
 {
     if (!pColor || !m_pUIApplication)
         return nullptr;
@@ -1593,12 +1593,12 @@ const wchar_t*  Object::SaveColor(Color*& pColor)
     ColorRes* pColorRes = m_pUIApplication->GetActiveSkinColorRes();
     if (pColorRes)
     {
-        const wchar_t* szId = pColorRes->GetColorId(pColor);
+        const char* szId = pColorRes->GetColorId(pColor);
         if (szId)
             return szId;
     }
 
-    wchar_t* szBuffer = GetTempBuffer();
+    char* szBuffer = GetTempBuffer();
     pColor->ToHexString(szBuffer);
     return szBuffer;
 }

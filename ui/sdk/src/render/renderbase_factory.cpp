@@ -38,11 +38,11 @@ void RenderBaseFactory::Clear() {
 }
 
 bool RenderBaseFactory::RegisterUIRenderBaseCreateData(
-    const wchar_t *bstrName, int nType, pfnUICreateRenderBasePtr pfunc) {
+    const char *bstrName, int nType, pfnUICreateRenderBasePtr pfunc) {
   if (nullptr == bstrName || nullptr == pfunc)
     return false;
 
-  String strName(bstrName);
+  std::string strName(bstrName);
 
   UIRENDERBASE_CREATE_INFO *pInfo = new UIRENDERBASE_CREATE_INFO;
   pInfo->m_func = pfunc;
@@ -55,7 +55,7 @@ bool RenderBaseFactory::RegisterUIRenderBaseCreateData(
 }
 
 bool RenderBaseFactory::CreateRenderBaseByName(IResource *pSkinRes,
-                                               const wchar_t *strName,
+                                               const char *strName,
                                                IObject *pObject,
                                                IRenderBase **ppOut) {
   if (!strName || !strName[0] || !pObject || !ppOut)
@@ -129,7 +129,7 @@ bool RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType,
 }
 
 // 根据类型获取对应的xml name
-const wchar_t *RenderBaseFactory::GetRenderBaseName(int nType) {
+const char *RenderBaseFactory::GetRenderBaseName(int nType) {
   UIRENDERBASE_CREATE_DATA::iterator iter = m_vecUIRenderBaseCreateData.begin();
   for (; iter != m_vecUIRenderBaseCreateData.end(); ++iter) {
     UIRENDERBASE_CREATE_INFO *pData = *iter;

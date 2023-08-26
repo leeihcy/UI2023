@@ -44,7 +44,7 @@ bool SkinBuilderRes::Register(OutCtrlDllItem* pItem)
 	pFunc(m_pUIApp);
 	return true;
 }
-void SkinBuilderRes::AddOuterCtrlsDllPath(const String& strDll)
+void SkinBuilderRes::AddOuterCtrlsDllPath(const std::string& strDll)
 {
 	if (FindOuterCtrlsDll(strDll))
 		return;
@@ -55,7 +55,7 @@ void SkinBuilderRes::AddOuterCtrlsDllPath(const String& strDll)
 
 	this->Register(pItem);
 }
-OutCtrlDllItem*  SkinBuilderRes::FindOuterCtrlsDll(const String& strDll)
+OutCtrlDllItem*  SkinBuilderRes::FindOuterCtrlsDll(const std::string& strDll)
 {
 	vector<OutCtrlDllItem*>::iterator  iter = m_vecOuterCtrlsDll.begin();
 	vector<OutCtrlDllItem*>::iterator  iterEnd = m_vecOuterCtrlsDll.end();

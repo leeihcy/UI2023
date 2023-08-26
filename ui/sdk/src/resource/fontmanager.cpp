@@ -68,14 +68,14 @@ int /*CALLBACK*/ IsFontExistEnumFontsProc(
 //		pszFaceName
 //			[in]	要检测的字体名称
 //
-bool IsFontExist(const wchar_t* pszFaceName)
+bool IsFontExist(const char* pszFaceName)
 {
 	if (nullptr == pszFaceName)
 		return false;
 #if defined(OS_WIN)
 	HDC hDC = GetDC(nullptr);
 	bool bFind = false;
-	int nRet = EnumFonts(hDC, pszFaceName, IsFontExistEnumFontsProc, (int)&bFind);
+	int nRet = EnumFontsA(hDC, pszFaceName, IsFontExistEnumFontsProc, (int)&bFind);
 	::ReleaseDC(nullptr, hDC);
 
 	return bFind;
@@ -151,7 +151,7 @@ int  FontManager::ParseNewElement(UIElement* pElem)
 	info.pXmlElement = pElem;
 	pElem->AddRef();
 
-	std::wstring bstrId = pElem->GetAttrib(XML_ID);
+	std::string bstrId = pElem->GetAttrib(XML_ID);
 	if (!bstrId.empty())
 	{
 		info.strId = bstrId;
@@ -218,14 +218,14 @@ int CALLBACK _EnumFontsProc(
 //
 void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
 {
-    const wchar_t* szText = nullptr;
+    const char* szText = nullptr;
 
     //	先加载默认配置，再遍历检查当前语言的配置
     IMapAttribute* pMapAttrib = UICreateIMapAttribute();
     pElem->GetAttribList(pMapAttrib);
 
-    String  strID;
-    String  strFaceName;
+    std::string  strID;
+    std::string  strFaceName;
     int   nFontHeight = 9;
     int   lfOrientation = 0;
     bool  bBold = false;
@@ -240,8 +240,8 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
 
     // 1. 支持前一个字体不存在时，使用后一个字体
     // 2. 支持不同的语言使用不同的字体
-    const wchar_t* szFaceId[] = { XML_FONT_FACENAME, XML_FONT_FACENAME2 };
-    int nFaceIdCount = sizeof(szFaceId) / sizeof(const wchar_t*);
+    const char* szFaceId[] = { XML_FONT_FACENAME, XML_FONT_FACENAME2 };
+    int nFaceIdCount = sizeof(szFaceId) / sizeof(const char*);
 
     for (int i = 0; i < nFaceIdCount; ++i)
     {
@@ -268,11 +268,11 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
     pMapAttrib->GetAttr_bool(XML_FONT_CLEARTYPE, true, &bClearType);
 
     if (strFaceName.empty() )
-        strFaceName = _T("SYSTEM");
+        strFaceName = "SYSTEM";
     
     LOGFONT lf;
     ::memset( &lf, 0, sizeof(lf) );
-    wcsncpy(lf.lfFaceName, strFaceName.c_str(), 31);
+    strncpy(lf.lfFaceName, strFaceName.c_str(), 31);
 
     lf.lfHeight = FontSize2Height(nFontHeight);
     lf.lfOrientation = lfOrientation;

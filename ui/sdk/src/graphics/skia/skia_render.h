@@ -47,7 +47,7 @@ public:
   virtual bool BeginDraw() override;
   virtual void EndDraw() override;
   virtual void Clear(Rect *prc) override;
-  virtual void Save(const wchar_t *szPath) override;
+  virtual void Save(const char *szPath) override;
   virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) override {};
   virtual void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
 

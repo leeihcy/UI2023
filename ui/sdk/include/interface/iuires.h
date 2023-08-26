@@ -34,8 +34,8 @@ struct UIAPI IColorRes : public IRootInterface {
 
   long GetColorCount();
   IColorResItem *GetColorResItem(long lIndex);
-  void GetColor(const wchar_t *szColorId, Color **pp);
-  const wchar_t *GetColorId(Color *p);
+  void GetColor(const char *szColorId, Color **pp);
+  const char *GetColorId(Color *p);
 
 private:
   ColorRes *m_pImpl;
@@ -46,8 +46,8 @@ struct UIAPI IColorResItem : public IRootInterface {
   IColorResItem(ColorResItem *p);
   ColorResItem *GetImpl();
 
-  const wchar_t *GetId();
-  const wchar_t *GetColorString();
+  const char *GetId();
+  const char *GetColorString();
 
 private:
   ColorResItem *m_pImpl;
@@ -58,15 +58,15 @@ struct UIAPI IImageResItem : public IRootInterface {
   IImageResItem(ImageResItem *p);
   ImageResItem *GetImpl();
 
-  void SetId(const wchar_t *);
-  void SetPath(const wchar_t *);
-  const wchar_t *GetId();
-  const wchar_t *GetPath();
+  void SetId(const char *);
+  void SetPath(const char *);
+  const char *GetId();
+  const char *GetPath();
   bool GetUseSkinHLS();
   bool GetNeedAntiAliasing();
   void SetUseSkinHLS(bool b);
   void SetNeedAntiAliasing(bool b);
-  bool ModifyImage(const wchar_t *szPath);
+  bool ModifyImage(const char *szPath);
   IMAGE_ITEM_TYPE GetImageItemType();
   //        void  SetImageItemType(IMAGE_ITEM_TYPE e);
 
@@ -103,15 +103,15 @@ struct UIAPI IImageRes : public IRootInterface {
 
   long GetImageCount();
   IImageResItem *GetImageResItem(long lIndex);
-  IImageResItem *GetImageResItem(const wchar_t *szId);
-  bool ModifyImage(const wchar_t *szId, const wchar_t *szPath);
-  bool GetBitmap(const wchar_t *szImageId,
+  IImageResItem *GetImageResItem(const char *szId);
+  bool ModifyImage(const char *szId, const char *szPath);
+  bool GetBitmap(const char *szImageId,
                  GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                  /*out*/ IRenderBitmap **ppRenderBitmap);
 #if defined(OS_WIN)
-  HBITMAP LoadBitmap(const wchar_t *szId);
+  HBITMAP LoadBitmap(const char *szId);
 #endif
-  const wchar_t *GetRenderBitmapId(IRenderBitmap *pBitmap);
+  const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
 
 private:
   ImageRes *m_pImpl;
@@ -123,8 +123,8 @@ struct UIAPI ICursorRes : public IRootInterface {
   ICursorRes(CursorRes *p);
   CursorRes *GetImpl();
 
-  void GetCursor(const wchar_t *szCursorID, IUICursor **pp);
-  const wchar_t *GetCursorId(IUICursor *p);
+  void GetCursor(const char *szCursorID, IUICursor **pp);
+  const char *GetCursorId(IUICursor *p);
 
 private:
   CursorRes *m_pImpl;
@@ -144,7 +144,7 @@ struct UIAPI IFontResItem : public IRootInterface {
   IFontResItem(FontResItem *);
   FontResItem *GetImpl();
 
-  const wchar_t *GetId();
+  const char *GetId();
 #if defined(OS_WIN)
   LOGFONT *GetLogFont();
 #endif
@@ -158,7 +158,7 @@ struct UIAPI IGifRes : public IRootInterface {
   IGifRes(GifRes *p);
   GifRes *GetImpl();
 
-  long GetGifImage(const wchar_t *szId, IGifImage **ppGifImage);
+  long GetGifImage(const char *szId, IGifImage **ppGifImage);
 
 private:
   GifRes *m_pImpl;
@@ -180,13 +180,13 @@ struct UIAPI IFontRes : public IRootInterface {
 
   long GetFontCount();
   bool GetFontResItem(long lIndex, IFontResItem **ppResItem);
-  bool GetFont(const wchar_t *szFontId,
+  bool GetFont(const char *szFontId,
                GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                /*__out*/ IRenderFont **ppOut);
   bool GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                       /*__out*/ IRenderFont **ppFont);
-  const wchar_t *GetDefaultFontId();
-  const wchar_t *GetRenderFontId(IRenderFont *pFont);
+  const char *GetDefaultFontId();
+  const char *GetRenderFontId(IRenderFont *pFont);
 
 private:
   FontRes *m_pImpl;
@@ -198,16 +198,16 @@ struct UIAPI IStyleResItem : public IRootInterface {
   StyleResItem *GetImpl();
 
   STYLE_SELECTOR_TYPE GetSelectorType();
-  const wchar_t *GetId();
-  const wchar_t *GetInherits();
-  const wchar_t *GetAttribute(const wchar_t *szKey);
+  const char *GetId();
+  const char *GetInherits();
+  const char *GetAttribute(const char *szKey);
 
   // 不提供。editor需要的话使用styleres::moidfy才会触发on moidify
   // 		void  SetSelectorType(STYLE_SELECTOR_TYPE type);
-  // 		void  SetId(const wchar_t* szId);
-  // 		void  SetInherits(const wchar_t*);
-  // 		void  SetAttribute(const wchar_t* key, const wchar_t* value);
-  // 		void  RemoveAttribute(const wchar_t* key);
+  // 		void  SetId(const char* szId);
+  // 		void  SetInherits(const char*);
+  // 		void  SetAttribute(const char* key, const char* value);
+  // 		void  RemoveAttribute(const char* key);
 
   IMapAttribute *GetAttributeMap();
 
@@ -224,31 +224,31 @@ struct UIAPI IStyleRes : public IRootInterface {
   IStyleRes(StyleRes *p);
   StyleRes *GetImpl();
 
-  IStyleResItem *Add(STYLE_SELECTOR_TYPE type, const wchar_t *szId,
-                     const wchar_t *szInherit);
-  IStyleResItem *Insert(STYLE_SELECTOR_TYPE type, const wchar_t *szId,
+  IStyleResItem *Add(STYLE_SELECTOR_TYPE type, const char *szId,
+                     const char *szInherit);
+  IStyleResItem *Insert(STYLE_SELECTOR_TYPE type, const char *szId,
                         long lPos);
   bool Modify(IStyleResItem *pItem, STYLE_SELECTOR_TYPE type,
-              const wchar_t *szId, const wchar_t *szInherit);
-  bool Remove(STYLE_SELECTOR_TYPE type, const wchar_t *szId);
+              const char *szId, const char *szInherit);
+  bool Remove(STYLE_SELECTOR_TYPE type, const char *szId);
   bool Remove(IStyleResItem *pItem);
 
-  bool AddAttribute(IStyleResItem *pItem, const wchar_t *szKey,
-                    const wchar_t *szValue);
-  bool ModifyAttribute(IStyleResItem *pItem, const wchar_t *szKey,
-                       const wchar_t *szValue);
-  bool RemoveAttribute(IStyleResItem *pItem, const wchar_t *szKey);
+  bool AddAttribute(IStyleResItem *pItem, const char *szKey,
+                    const char *szValue);
+  bool ModifyAttribute(IStyleResItem *pItem, const char *szKey,
+                       const char *szValue);
+  bool RemoveAttribute(IStyleResItem *pItem, const char *szKey);
 
   long GetStyleCount();
   IStyleResItem *GetItem(long lIndex);
   long GetItemPos(IStyleResItem *p);
 
-  IStyleResItem *FindItem(STYLE_SELECTOR_TYPE type, const wchar_t *szId);
+  IStyleResItem *FindItem(STYLE_SELECTOR_TYPE type, const char *szId);
 
-  bool LoadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
-                 const wchar_t *szID, IMapAttribute *pMapStyle);
-  bool UnloadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
-                   const wchar_t *szID, IListAttribute *pListAttribte);
+  bool LoadStyle(const char *szTagName, const char *szStyleClass,
+                 const char *szID, IMapAttribute *pMapStyle);
+  bool UnloadStyle(const char *szTagName, const char *szStyleClass,
+                   const char *szID, IListAttribute *pListAttribte);
 
 private:
   StyleRes *m_pImpl;
@@ -264,15 +264,15 @@ struct UIAPI IImageManager : public IRootInterface {
   ICursorRes *GetCursorRes();
   IGifRes *GetGifRes();
 #endif
-  IUIElement *GetImageXmlElem(const wchar_t *szId);
+  IUIElement *GetImageXmlElem(const char *szId);
 
-  IImageResItem *InsertImageItem(IMAGE_ITEM_TYPE eType, const wchar_t *szID,
-                                 const wchar_t *szPath);
-  bool ModifyImageItem(const wchar_t *szID, const wchar_t *szPath);
-  bool RemoveImageItem(const wchar_t *szID);
+  IImageResItem *InsertImageItem(IMAGE_ITEM_TYPE eType, const char *szID,
+                                 const char *szPath);
+  bool ModifyImageItem(const char *szID, const char *szPath);
+  bool RemoveImageItem(const char *szID);
 
-  bool ModifyImageItemInRunTime(const wchar_t *szID, const wchar_t *szPath);
-  bool ModifyImageItemAlpha(const wchar_t *szID, byte nAlphaPercent);
+  bool ModifyImageItemInRunTime(const char *szID, const char *szPath);
+  bool ModifyImageItemAlpha(const char *szID, byte nAlphaPercent);
 
 private:
   ImageManager *m_pImpl;
@@ -295,7 +295,7 @@ struct UIAPI IStyleManager {
   StyleManager *GetImpl();
 
   IStyleRes &GetStyleRes();
-  IUIElement *GetStyleXmlElem(const wchar_t *szId);
+  IUIElement *GetStyleXmlElem(const char *szId);
 
 private:
   StyleManager *m_pImpl;
@@ -304,9 +304,9 @@ private:
 struct ILayoutWindowNodeList {
   virtual void Release() = 0;
   virtual unsigned int GetCount() = 0;
-  virtual const wchar_t *GetWindowName(unsigned int index) = 0;
-  virtual const wchar_t *GetWindowId(unsigned int index) = 0;
-  virtual const wchar_t *GetWindowPath(unsigned int index) = 0;
+  virtual const char *GetWindowName(unsigned int index) = 0;
+  virtual const char *GetWindowId(unsigned int index) = 0;
+  virtual const char *GetWindowPath(unsigned int index) = 0;
 };
 
 class LayoutManager;
@@ -314,11 +314,11 @@ struct UIAPI ILayoutManager {
   ILayoutManager(LayoutManager *);
   LayoutManager *GetImpl();
 
-  IObject *LoadPluginLayout(const wchar_t *szWndId, IObject *pParent,
+  IObject *LoadPluginLayout(const char *szWndId, IObject *pParent,
                             IMessage *pNotifyTarget);
   IObject *ParseElement(IUIElement *pUIElement, IObject *pParent);
 
-  bool FindWindowElement(const wchar_t *szTagName, const wchar_t *szId,
+  bool FindWindowElement(const char *szTagName, const char *szId,
                          IUIElement **ppElem);
   bool LoadWindowNodeList(ILayoutWindowNodeList **);
 
@@ -328,13 +328,13 @@ private:
 
 // 国际化
 struct II18nCallback {
-  virtual const wchar_t *Map(const wchar_t *key) = 0;
+  virtual const char *Map(const char *key) = 0;
 };
 
 class I18nRes;
 struct UIAPI II18nRes {
   II18nRes(I18nRes *);
-  const wchar_t *MapConfigValue(const wchar_t *);
+  const char *MapConfigValue(const char *);
 
 private:
   I18nRes *m_pImpl;

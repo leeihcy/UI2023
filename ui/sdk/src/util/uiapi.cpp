@@ -1,19 +1,19 @@
-#include "include/inc.h"
 #include "include/uiapi.h"
-#include "src/object/object.h"
+#include "include/inc.h"
 #include "src/application/uiapplication.h"
+#include "src/object/object.h"
 // #include "src/Renderlibrary\gdi\gdifont.h"
 // #include "src/ATL\image.h"
-#include "include/util/util.h"
 #include "include/interface/iuiapplication.h"
+#include "include/util/util.h"
 // #include "..\Layer\layer.h"
 
 // 内部全局方法
-namespace ui
-{
+namespace ui {
 
 /*
-void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
+void  UI_AttachFont(IRenderFont** pOut, HFONT hFont,
+GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
 {
     if( nullptr == hFont || nullptr == pOut)
         return;
@@ -46,56 +46,51 @@ void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYP
         break;
 #endif
 
-    default: 
+    default:
         return ;
     }
 
     return ;
 }
 */
-void  UI_ExtendPath(String& strPath)
-{
+void UI_ExtendPath(std::string &strPath) {
 #if defined(OS_WIN)
-    if (!util::IsFullPath(strPath.c_str()))
-    {
-        wchar_t szModulePath[MAX_PATH] = _T("");
+  if (!util::IsFullPath(strPath.c_str())) {
+    wchar_t szModulePath[MAX_PATH] = _T("");
 
-        GetModuleFileName(/*Application::GetModuleInstance()*/g_hInstance, szModulePath, MAX_PATH);
-        wchar_t* szTemp = _tcsrchr(szModulePath, _T('\\'));
-        if (szTemp)
-            *(szTemp+1) = 0;
+    GetModuleFileName(/*Application::GetModuleInstance()*/ g_hInstance,
+                      szModulePath, MAX_PATH);
+    wchar_t *szTemp = _tcsrchr(szModulePath, _T('\\'));
+    if (szTemp)
+      *(szTemp + 1) = 0;
 
-        String strTemp = szModulePath;
-        strPath = strTemp;
-        strPath.append(strPath);
-    }
+    std::string strTemp = szModulePath;
+    strPath = strTemp;
+    strPath.append(strPath);
+  }
 #else
-    UIASSERT(false);
+  UIASSERT(false);
 #endif
 }
 
-
-void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType)
-{
+void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
+                   GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
 #if defined(OS_WIN)
-	if (nullptr == hFont || nullptr == pOut)
-		return;
+  if (nullptr == hFont || nullptr == pOut)
+    return;
 
-	switch (eRenderType)
-	{
-	case GRAPHICS_RENDER_LIBRARY_TYPE_GDI:
-	{
-		GDIRenderFont::CreateInstance(pOut);
-		IRenderFont* pRenderFont = (IRenderFont*)*pOut;
-		pRenderFont->Attach(hFont);
-	}
-	break;
+  switch (eRenderType) {
+  case GRAPHICS_RENDER_LIBRARY_TYPE_GDI: {
+    GDIRenderFont::CreateInstance(pOut);
+    IRenderFont *pRenderFont = (IRenderFont *)*pOut;
+    pRenderFont->Attach(hFont);
+  } break;
 
-	default:
-		return;
-	}
+  default:
+    return;
+  }
 
-	return;
+  return;
 #endif
 }
 
@@ -106,63 +101,83 @@ void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYP
 //		在向DLL之间使用stl作为参数进行传递，会导致内存释放时的崩溃，因此这里没有直接去调用UI_Split方法
 //		而是直接在ULDLL中重写这么一个函数
 //
-void  UI_Split(const String& str, wchar_t szSep, std::vector<String>& vRet)
-{
-	if (str.empty())
-		return;
+void UI_Split(const std::string &str, wchar_t szSep,
+              std::vector<std::string> &vRet) {
+  if (str.empty())
+    return;
 
-    int nIndex = 0;
-    while (true)
-    {
-        int nResult = (int)str.find( szSep, nIndex );
-        if (-1 == nResult)
-        {
-            vRet.push_back( str.substr( nIndex, str.length()-nIndex ) );
-            break;
-        }
-        else
-        {
-            vRet.push_back( str.substr( nIndex, nResult-nIndex ) );
-            nIndex = ++nResult;
-        }
+  int nIndex = 0;
+  while (true) {
+    int nResult = (int)str.find(szSep, nIndex);
+    if (-1 == nResult) {
+      vRet.push_back(str.substr(nIndex, str.length() - nIndex));
+      break;
+    } else {
+      vRet.push_back(str.substr(nIndex, nResult - nIndex));
+      nIndex = ++nResult;
     }
+  }
+}
+void UI_SplitW(const std::wstring &str, wchar_t szSep,
+               std::vector<std::wstring> &vRet) {
+  if (str.empty())
+    return;
+
+  int nIndex = 0;
+  while (true) {
+    int nResult = (int)str.find(szSep, nIndex);
+    if (-1 == nResult) {
+      vRet.push_back(str.substr(nIndex, str.length() - nIndex));
+      break;
+    } else {
+      vRet.push_back(str.substr(nIndex, nResult - nIndex));
+      nIndex = ++nResult;
+    }
+  }
 }
 
 // 用于支持Get时返回一个LPCTSTR临时变量
-#define GlobalTempBufferSize  256
-wchar_t   g_szGlobalTempBuffer[GlobalTempBufferSize];
-String  g_strGlobalTempBuffer;
+#define GlobalTempBufferSize 256
+char g_szGlobalTempBuffer[GlobalTempBufferSize];
+wchar_t g_szGlobalTempBufferW[GlobalTempBufferSize];
+std::string g_strGlobalTempBuffer;
+std::wstring g_strGlobalTempBufferW;
 
-wchar_t*  GetTempBuffer(int nMaxSize)
-{
-	UIASSERT(nMaxSize < GlobalTempBufferSize);
-	memset(g_szGlobalTempBuffer, 0, sizeof(g_szGlobalTempBuffer));
-	return g_szGlobalTempBuffer;
+char *GetTempBuffer(int nMaxSize) {
+  UIASSERT(nMaxSize < GlobalTempBufferSize);
+  memset(g_szGlobalTempBuffer, 0, sizeof(g_szGlobalTempBuffer));
+  return g_szGlobalTempBuffer;
 }
-String&  GetTempBufferString()
-{
-	g_strGlobalTempBuffer.clear();
-	return g_strGlobalTempBuffer;
+wchar_t *GetTempBufferW(int nMaxSize) {
+  UIASSERT(nMaxSize < GlobalTempBufferSize);
+  memset(g_szGlobalTempBufferW, 0, sizeof(g_szGlobalTempBufferW));
+  return g_szGlobalTempBufferW;
+}
+std::string &GetTempBufferString() {
+  g_strGlobalTempBuffer.clear();
+  return g_strGlobalTempBuffer;
+}
+std::wstring &GetTempBufferStringW() {
+  g_strGlobalTempBufferW.clear();
+  return g_strGlobalTempBufferW;
 }
 
-
-HBITMAP CreateMemBitmap(int nWidth, int nHeight, int* pnPitch, byte** ppBits)
-{
+HBITMAP CreateMemBitmap(int nWidth, int nHeight, int *pnPitch, byte **ppBits) {
 #if defined(OS_WIN)
-    Image image;
-    image.Create(nWidth, nHeight, 32, Image::createAlphaChannel);
+  Image image;
+  image.Create(nWidth, nHeight, 32, Image::createAlphaChannel);
 
-    if (ppBits)
-        *ppBits = (BYTE*)image.GetBits();
+  if (ppBits)
+    *ppBits = (BYTE *)image.GetBits();
 
-    if (pnPitch)
-        *pnPitch = image.GetPitch();
-    
-    return image.Detach();
+  if (pnPitch)
+    *pnPitch = image.GetPitch();
+
+  return image.Detach();
 #else
-    UIASSERT(0);
-    return 0;
+  UIASSERT(0);
+  return 0;
 #endif
 }
 
-} // namespace
+} // namespace ui

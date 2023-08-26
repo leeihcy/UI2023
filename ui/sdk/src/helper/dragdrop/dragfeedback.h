@@ -21,7 +21,7 @@ public:
     void  Unbind2DropSource(IDropSource* p);
 
 public:
-    virtual void  SetMeta(HBITMAP hIcon, LPCWSTR szText) override;
+    virtual void  SetDescription(HBITMAP hIcon, LPCWSTR szText) override;
     virtual HRESULT  GiveFeedback(unsigned int dwEffect) override;
 
 private:
@@ -39,11 +39,11 @@ private:
     HFONT  m_hFont;
 
     Point  m_ptOffset;
-    String  m_strDescription;
+    std::string  m_strDescription;
 	HBITMAP  m_hIcon;     // 仅引用，不负责销毁
 
 	// 如果本次的文本与上次一样，则不用更新窗口
-    String  m_strPrevDescription;  
+    std::string  m_strPrevDescription;  
 
 	UI::Image  m_imageBkg;
 };

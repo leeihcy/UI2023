@@ -65,17 +65,17 @@ StyleRes&  StyleManager::GetStyleRes()
 //         return false;
 // 
 //     // 避免pMapAttrib->GetAttr返回临时变量。
-//     String strId, strStyleClass, strName;  
+//     std::string strId, strStyleClass, strName;  
 //     {
-//         const wchar_t*  szId = pMapAttrib->GetAttr(XML_ID, false);
+//         const char*  szId = pMapAttrib->GetAttr(XML_ID, false);
 //         if (szId)
 //             strId = szId;
 // 
-//         const wchar_t*  szStyleClass = pMapAttrib->GetAttr(XML_STYLECLASS, false);
+//         const char*  szStyleClass = pMapAttrib->GetAttr(XML_STYLECLASS, false);
 //         if (szStyleClass)
 //             strStyleClass = szStyleClass;
 // 
-// 		const wchar_t*  szName = pMapAttrib->GetTag();
+// 		const char*  szName = pMapAttrib->GetTag();
 // 		if (szName)
 // 			strName = szName;
 //     }
@@ -93,17 +93,17 @@ StyleRes&  StyleManager::GetStyleRes()
 //     if (!pListAttrib)
 //         return false;
 // 
-//     String strId, strStyleClass, strName;  // 避免pMapAttrib->GetAttr返回临时变量。
+//     std::string strId, strStyleClass, strName;  // 避免pMapAttrib->GetAttr返回临时变量。
 //     {
-//         const wchar_t*  szId = pListAttrib->GetAttr(XML_ID);
+//         const char*  szId = pListAttrib->GetAttr(XML_ID);
 //         if (szId)
 //             strId = szId;
 // 
-//         const wchar_t*  szStyleClass = pListAttrib->GetAttr(XML_STYLECLASS);
+//         const char*  szStyleClass = pListAttrib->GetAttr(XML_STYLECLASS);
 //         if (szStyleClass)
 //             strStyleClass = szStyleClass;
 // 
-//         const wchar_t*  szName = pListAttrib->GetTag();
+//         const char*  szName = pListAttrib->GetTag();
 //         if (szName)
 //             strName = szName;
 //     }
@@ -116,9 +116,9 @@ StyleRes&  StyleManager::GetStyleRes()
 // 解析一个继承字符串所属的样式类型，如将#button解析为 id选择类型，id=button
 //
 bool  StyleManager::ParseInheritString(
-        const String& strInherit,
+        const std::string& strInherit,
         STYLE_SELECTOR_TYPE& eStyletype, 
-        wchar_t* szStyleName)
+        char* szStyleName)
 {
     if (strInherit.length() <= 0 || nullptr == szStyleName )
         return false;
@@ -126,43 +126,43 @@ bool  StyleManager::ParseInheritString(
     if (strInherit[0] == STYLE_ID_PREFIX )
     {
         eStyletype = STYLE_SELECTOR_TYPE_ID;
-        wcsncpy( szStyleName, strInherit.substr( 1, strInherit.length()-1 ).c_str(), MAX_STRING_LEN-1 );
+        strncpy( szStyleName, strInherit.substr( 1, strInherit.length()-1 ).c_str(), MAX_STRING_LEN-1 );
     }
     else if (strInherit[0] == STYLE_CLASS_PREFIX )
     {
         eStyletype = STYLE_SELECTOR_TYPE_CLASS;
-        wcsncpy( szStyleName, strInherit.substr( 1, strInherit.length()-1 ).c_str(), MAX_STRING_LEN-1 );
+        strncpy( szStyleName, strInherit.substr( 1, strInherit.length()-1 ).c_str(), MAX_STRING_LEN-1 );
     }
     else
     {
         eStyletype = STYLE_SELECTOR_TYPE_TAG;
-        wcsncpy( szStyleName, strInherit.c_str(), MAX_STRING_LEN-1 );
+        strncpy( szStyleName, strInherit.c_str(), MAX_STRING_LEN-1 );
     }
     return true;
 }
 bool  StyleManager::MakeInheritString(
     const STYLE_SELECTOR_TYPE& eStyletype, 
-    const String& strStypeName, 
-    wchar_t* szInherit)
+    const std::string& strStypeName, 
+    char* szInherit)
 {
     if (strStypeName.length() <= 0 || nullptr == szInherit )
         return false;
 
     if (eStyletype == STYLE_SELECTOR_TYPE_ID )
     {
-        wcscpy( szInherit, _T(" ") );
+        strcpy( szInherit, " ");
         szInherit[0] = STYLE_ID_PREFIX ;
-        wcscat( szInherit, strStypeName.c_str() );
+        strcat( szInherit, strStypeName.c_str() );
     }
     else if (eStyletype == STYLE_SELECTOR_TYPE_CLASS )
     {
-        wcscpy( szInherit, _T(" ") );
+        strcpy( szInherit, " ");
         szInherit[0] = STYLE_CLASS_PREFIX ;
-        wcscat( szInherit, strStypeName.c_str() );
+        strcat( szInherit, strStypeName.c_str() );
     }
     else
     {
-        wcscpy( szInherit, strStypeName.c_str() );
+        strcpy( szInherit, strStypeName.c_str() );
     }
     return true;
 }
@@ -209,12 +209,12 @@ bool  StyleManager::parse_inherit(
 
     for( int i = nSize-1; i >= 0; i-- )
     {
-        String strInherit;
+        std::string strInherit;
         if (false == pStyleItem->GetInheritItem(i, strInherit) )
             continue;
 
         STYLE_SELECTOR_TYPE type = STYLE_SELECTOR_TYPE_TAG;
-        wchar_t szStyleName[MAX_STRING_LEN] = _T("");
+        char szStyleName[MAX_STRING_LEN] = "";
         ParseInheritString(strInherit, type, szStyleName);
 
         StyleResItem* pInheritItem = pStyleRes->GetItem(type, szStyleName);
@@ -257,7 +257,7 @@ int  StyleManager::ParseNewElement(UIElement* pElem)
 	info.pXmlElement = pElem;
 	info.pXmlElement->AddRef();
 
-	std::wstring bstrId = pElem->GetAttrib(XML_ID);
+	std::string bstrId = pElem->GetAttrib(XML_ID);
 	if (!bstrId.empty())
 	{
 		info.strId = bstrId;
@@ -294,7 +294,7 @@ int  StyleManager::ParseNewElement(UIElement* pElem)
 
 void  StyleManager::OnNewChild(UIElement* pElem)
 {
-    std::wstring bstrTagName = pElem->GetTagName();
+    std::string bstrTagName = pElem->GetTagName();
 
     //	加载所有属性
     IMapAttribute* pMapAttrib = UICreateIMapAttribute();
@@ -311,8 +311,8 @@ void  StyleManager::OnNewChild(UIElement* pElem)
         {
             pStyleItem->SetSelectorType(STYLE_SELECTOR_TYPE_ID);
 
-            String strID;
-            const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
+            std::string strID;
+            const char* szText = pMapAttrib->GetAttr(XML_ID, true);
             if (nullptr == szText)
             {
                 UI_LOG_WARN(L"Can't find the %s attribute of %s", XML_ID, bstrTagName.c_str());
@@ -326,8 +326,8 @@ void  StyleManager::OnNewChild(UIElement* pElem)
         {
             pStyleItem->SetSelectorType(STYLE_SELECTOR_TYPE_CLASS);
 
-            String strID;
-            const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
+            std::string strID;
+            const char* szText = pMapAttrib->GetAttr(XML_ID, true);
             if (nullptr == szText)
             {
                 UI_LOG_WARN(L"Can't find the %s attribute of %s", XML_ID, bstrTagName.c_str());
@@ -344,7 +344,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
         }
 
         // 解析 inherit 属性
-        const wchar_t* szText = pMapAttrib->GetAttr(XML_STYLE_INHERIT, true);  // 不是一个属性，它是需要被扩展的，删除它
+        const char* szText = pMapAttrib->GetAttr(XML_STYLE_INHERIT, true);  // 不是一个属性，它是需要被扩展的，删除它
         if (szText)
             pStyleItem->SetInherits(szText);
 
@@ -359,7 +359,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
     pMapAttrib->Delete();
 }
 
-UIElement*  StyleManager::GetStyleXmlElem(const wchar_t* szId)
+UIElement*  StyleManager::GetStyleXmlElem(const char* szId)
 {
     if (0 == m_listUIElement.GetCount())
         return nullptr;
@@ -409,7 +409,7 @@ void  StyleManager::OnStlyeModify(StyleResItem* p)
 			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), Editor_Modify);
 	}
 }
-void  StyleManager::OnStyleAttributeAdd(StyleResItem* p, const wchar_t* szKey)
+void  StyleManager::OnStyleAttributeAdd(StyleResItem* p, const char* szKey)
 {
 	IUIEditor* pUIEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
 	if (pUIEditor)
@@ -418,7 +418,7 @@ void  StyleManager::OnStyleAttributeAdd(StyleResItem* p, const wchar_t* szKey)
 			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), szKey, Editor_Add);
 	}
 }
-void  StyleManager::OnStyleAttributeRemove(StyleResItem* p, const wchar_t* szKey)
+void  StyleManager::OnStyleAttributeRemove(StyleResItem* p, const char* szKey)
 {
 	IUIEditor* pUIEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
 	if (pUIEditor)
@@ -427,7 +427,7 @@ void  StyleManager::OnStyleAttributeRemove(StyleResItem* p, const wchar_t* szKey
 			m_pSkinRes->GetIResource(), p->GetIStyleResItem(), szKey, Editor_Remove);
 	}
 }
-void  StyleManager::OnStyleAttributeModify(StyleResItem* p, const wchar_t* szKey)
+void  StyleManager::OnStyleAttributeModify(StyleResItem* p, const char* szKey)
 {
 	IUIEditor* pUIEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
 	if (pUIEditor)

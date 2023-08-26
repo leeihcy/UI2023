@@ -270,7 +270,7 @@ bool Application::IsVistaOrWin7etc() {
 }
 #endif
 
-bool Application::GetSkinTagParseFunc(const wchar_t *szTag,
+bool Application::GetSkinTagParseFunc(const char *szTag,
                                       pfnParseSkinTag *pFunc) {
   if (nullptr == szTag || nullptr == pFunc)
     return false;
@@ -283,7 +283,7 @@ bool Application::GetSkinTagParseFunc(const wchar_t *szTag,
   return true;
 }
 
-bool Application::RegisterControlTagParseFunc(const wchar_t *szTag,
+bool Application::RegisterControlTagParseFunc(const char *szTag,
                                               pfnParseControlTag func) {
   if (nullptr == szTag || nullptr == func)
     return false;
@@ -292,7 +292,7 @@ bool Application::RegisterControlTagParseFunc(const wchar_t *szTag,
   return true;
 }
 
-bool Application::GetControlTagParseFunc(const wchar_t *szTag,
+bool Application::GetControlTagParseFunc(const char *szTag,
                                          pfnParseControlTag *pFunc) {
   if (nullptr == szTag || nullptr == pFunc)
     return false;
@@ -379,14 +379,14 @@ void Application::RestoreRegisterUIObject() {
   RegisterDefaultUIObject();
 }
 
-IObject *Application::CreateUIObjectByName(const wchar_t *szXmlName,
+IObject *Application::CreateUIObjectByName(const char *szXmlName,
                                            IResource *pSkinRes) {
   if (!szXmlName)
     return nullptr;
 
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
-    if (0 == wcscmp(szXmlName, m_vecUIObjectDesc[i]->Name())) {
+    if (0 == strcmp(szXmlName, m_vecUIObjectDesc[i]->Name())) {
       IObject *p = nullptr;
       m_vecUIObjectDesc[i]->Create(pSkinRes, (void **)&p);
       return p;
@@ -733,7 +733,7 @@ void Application::LoadUIObjectListToToolBox() {
   }
 }
 
-bool Application::CreateRenderBaseByName(const wchar_t *szName,
+bool Application::CreateRenderBaseByName(const char *szName,
                                          IObject *pObject,
                                          IRenderBase **ppOut) {
   IResource *pSkinRes = nullptr;
@@ -748,7 +748,7 @@ bool Application::CreateRenderBaseByName(const wchar_t *szName,
                                                     ppOut);
 }
 
-const wchar_t *Application::GetRenderBaseName(int nType) {
+const char *Application::GetRenderBaseName(int nType) {
   return m_renderBaseFactory.GetRenderBaseName(nType);
 }
 

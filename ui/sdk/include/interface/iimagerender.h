@@ -1,9 +1,11 @@
 #ifndef _UI_IIMAGERENDER_H_
 #define _UI_IIMAGERENDER_H_
 #include "irenderbase.h"
+#include "sdk/include/util/color.h"
 
 namespace ui {
 struct IRenderBitmap;
+class C9Region;
 
 enum BKCOLOR_FILL_TYPE {
   BKCOLOR_FILL_ALL, // 默认

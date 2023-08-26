@@ -16,7 +16,7 @@ public:
     SkinParseEngine(Resource* pSkinRes);
     ~SkinParseEngine();
 
-    bool  Parse(SkinDataSource* pDataSource, const wchar_t* szXmlFile);
+    bool  Parse(SkinDataSource* pDataSource, const char* szXmlFile);
     void  NewChild(UIElement* pElement);
 
     static int UIParseIncludeTagCallback(IUIElement*, IResource* pSkinRes);

@@ -5,18 +5,18 @@ namespace ui
 {
     class Object;
 
-	// »ùÀà
+	// åŸºç±»
     class IParseBase : IRootInterface
 	{
 	protected:
-		String   m_strDataSource;    // Êı¾İÔ´£¬ÈçxmlÎÄ¼şÂ·¾¶
-		IApplication*  m_pUIApp;   // UIÊµÀı
+		std::string   m_strDataSource;    // æ•°æ®æºï¼Œå¦‚xmlæ–‡ä»¶è·¯å¾„
+		IApplication*  m_pUIApp;   // UIå®ä¾‹
 
 	public:
 		void  SetUIApplicationPtr(IApplication* p) { m_pUIApp = p; }
-		void  SetDataSource(const String& strDataSource) { m_strDataSource = strDataSource; }
+		void  SetDataSource(const std::string& strDataSource) { m_strDataSource = strDataSource; }
 		void  Release(){ delete this; }
-		const String& GetDataSourceStringRef() { return m_strDataSource; }
+		const std::string& GetDataSourceStringRef() { return m_strDataSource; }
 	};
 
 #if 0
@@ -26,20 +26,20 @@ namespace ui
 		virtual ~IImageParse() {};
 
 	public:
-		// ´´½¨Êı¾İÎÄ¼ş
+		// åˆ›å»ºæ•°æ®æ–‡ä»¶
 		virtual  bool Create() = 0;
-		// ±£´æÎÄ¼ş
+		// ä¿å­˜æ–‡ä»¶
 		virtual  bool Save(ImageRes*  pImageInfo) = 0;
-		// ¼ÓÔØ
+		// åŠ è½½
 		virtual  bool Load(ImageRes*  pImageInfo, CursorRes* pCursorInfo, GifRes* pGifInfo) = 0;
-		// ´ÓtempÎÄ¼şÖĞÖØĞÂ¼ÓÔØ
+		// ä»tempæ–‡ä»¶ä¸­é‡æ–°åŠ è½½
 		virtual  bool Reload(ImageRes* pImageInfo, CursorRes* pCursorInfo, GifRes* pGifInfo) = 0;
-		// ²åÈëÒ»ÕÅÍ¼Æ¬
+		// æ’å…¥ä¸€å¼ å›¾ç‰‡
 		virtual  bool InsertImage(ImageResItem *pImageItemInfo) = 0;
-		// ĞŞ¸ÄÒ»ÕÅÍ¼Æ¬
+		// ä¿®æ”¹ä¸€å¼ å›¾ç‰‡
 		virtual  bool ModifyImage(ImageResItem *pImageItemInfo) = 0;
-		// É¾³ıÒ»ÕÅÍ¼Æ¬
-		virtual  bool RemoveImage(const String& strID) = 0;
+		// åˆ é™¤ä¸€å¼ å›¾ç‰‡
+		virtual  bool RemoveImage(const std::string& strID) = 0;
 		
 	};
 
@@ -50,20 +50,20 @@ namespace ui
 		virtual ~IColorParse() {};
 
 	public:
-		// ´´½¨Êı¾İÎÄ¼ş
+		// åˆ›å»ºæ•°æ®æ–‡ä»¶
 		virtual  bool Create() = 0;
-		// ±£´æÎÄ¼ş
+		// ä¿å­˜æ–‡ä»¶
 		virtual  bool Save( ColorRes*  pColorInfo ) = 0;
-		// ¼ÓÔØ
+		// åŠ è½½
 		virtual  bool Load( ColorRes*  pColorInfo ) = 0;
-		// ´ÓtempÎÄ¼şÖĞÖØĞÂ¼ÓÔØ
+		// ä»tempæ–‡ä»¶ä¸­é‡æ–°åŠ è½½
 		virtual  bool Reload( ColorRes* pColorInfo ) = 0;
-		// ²åÈë
+		// æ’å…¥
 		virtual  bool InsertColor( ColorResItem *pColorItemInfo ) = 0;
-		// ĞŞ¸Ä
+		// ä¿®æ”¹
 		virtual  bool ModifyColor( ColorResItem *pColorItemInfo ) = 0;
-		// É¾³ı
-		virtual  bool RemoveColor( const String& strID ) = 0;
+		// åˆ é™¤
+		virtual  bool RemoveColor( const std::string& strID ) = 0;
 	};
 
 	class IFontParse : public IParseBase
@@ -71,18 +71,18 @@ namespace ui
 	protected:
 		virtual ~IFontParse(){};
 	public:
-		// ´´½¨Êı¾İÎÄ¼ş
+		// åˆ›å»ºæ•°æ®æ–‡ä»¶
 		virtual  bool Create() = 0;
-		// ±£´æÎÄ¼ş
+		// ä¿å­˜æ–‡ä»¶
 		virtual bool Save( FontRes* pFontInfo ) = 0;
-		// ¼ÓÔØ
+		// åŠ è½½
 		virtual bool Load( FontRes* pFontInfo ) = 0;
-		// ÖØĞÂ¼ÓÔØ
+		// é‡æ–°åŠ è½½
 		virtual bool Reload( FontRes* pFontInfo ) = 0;
 
 		virtual  bool InsertFont( FontResItem *pFontItemInfo ) = 0;
 		virtual  bool ModifyFont( FontResItem *pFontItemInfo ) = 0;
-		virtual  bool RemoveFont( const String& strID ) = 0;
+		virtual  bool RemoveFont( const std::string& strID ) = 0;
 
 	};
 
@@ -92,21 +92,21 @@ namespace ui
 		virtual ~IStyleParse(){};
 
 	public:
-		// ´´½¨Êı¾İÎÄ¼ş
+		// åˆ›å»ºæ•°æ®æ–‡ä»¶
 		virtual bool Create() = 0;
-		// ±£´æÎÄ¼ş
+		// ä¿å­˜æ–‡ä»¶
 		virtual bool Save( StyleRes* pStyleInfo ) = 0;
-		// ¼ÓÔØ
+		// åŠ è½½
 		virtual bool Load( StyleRes* pStyleInfo ) = 0;
-		// ÖØĞÂ¼ÓÔØ
+		// é‡æ–°åŠ è½½
 		virtual bool Reload( StyleRes* pStyleInfo ) = 0;
 
 		virtual  bool InsertStyle( StyleResItem *pStyleItemInfo ) = 0;
 		virtual  bool ModifyStyle( StyleResItem *pStyleItemInfo ) = 0;
-		virtual  bool RemoveStyle( STYLE_SELECTOR_TYPE type, const String& strID ) = 0;
-		virtual  bool InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey, const String& strValue ) = 0;
-		virtual  bool ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey, const String& strValue ) = 0;
-		virtual  bool RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey ) = 0;
+		virtual  bool RemoveStyle( STYLE_SELECTOR_TYPE type, const std::string& strID ) = 0;
+		virtual  bool InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey, const std::string& strValue ) = 0;
+		virtual  bool ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey, const std::string& strValue ) = 0;
+		virtual  bool RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey ) = 0;
 	};
 
 
@@ -116,21 +116,21 @@ namespace ui
 		virtual ~ILayoutParse(){};
 
 	public:
-		// ´´½¨Êı¾İÎÄ¼ş
+		// åˆ›å»ºæ•°æ®æ–‡ä»¶
 		virtual bool Create() = 0;
-		// ±£´æÎÄ¼ş
+		// ä¿å­˜æ–‡ä»¶
 		virtual bool Save( LayoutRes* pLayoutInfo ) = 0;
-		// ¼ÓÔØ
+		// åŠ è½½
 		virtual bool Load( LayoutRes* pLayoutInfo ) = 0;
 
 		virtual bool LoadLayout(Object* pRootObj, LayoutRes* pResLayout ) = 0;
 
 		virtual bool ReLoadLayout(Object* pRootObj, list<Object*>& listAllChild ) = 0;
-#if 0 // -- ¼Ü¹¹¸ÄÔì
-		virtual Menu* LoadMenu( const String& strMenuId ) = 0;
+#if 0 // -- æ¶æ„æ”¹é€ 
+		virtual Menu* LoadMenu( const std::string& strMenuId ) = 0;
 #endif
 
-		// ±à¼­Æ÷×¨ÓÃº¯Êı
+		// ç¼–è¾‘å™¨ä¸“ç”¨å‡½æ•°
 		virtual bool LoadAllWindowNodeInfo( LayoutWindowNodeInfo* pInfoArray, int* pArraySize ) = 0;
 	};
 #endif

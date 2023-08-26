@@ -22,13 +22,13 @@ public:
 public:
   virtual int GetConfigWidth() override;
   virtual void SetConfigWidth(int) override;
-  void LoadConfigWidth(const wchar_t *);
-  const wchar_t *SaveConfigWidth();
+  void LoadConfigWidth(const char *);
+  const char *SaveConfigWidth();
 
   virtual int GetConfigHeight() override;
   virtual void SetConfigHeight(int) override;
-  void LoadConfigHeight(const wchar_t *);
-  const wchar_t *SaveConfigHeight();
+  void LoadConfigHeight(const char *);
+  const char *SaveConfigHeight();
 
   virtual void SetConfigLayoutFlags(int) override;
   virtual int GetConfigLayoutFlags() override;

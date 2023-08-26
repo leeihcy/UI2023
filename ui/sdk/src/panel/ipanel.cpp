@@ -8,7 +8,7 @@ UI_IMPLEMENT_INTERFACE(Panel, Object)
 
 ILayout *IPanel::GetLayout() { return __pImpl->GetLayout(); }
 void IPanel::SetLayout(ILayout *p) { __pImpl->SetLayout(p); }
-void IPanel::SetLayoutType(const wchar_t *name) {
+void IPanel::SetLayoutType(const char *name) {
   __pImpl->SetLayoutType(name);
 }
 void IPanel::SetTextureRender(IRenderBase *p) { __pImpl->SetTextureRender(p); }

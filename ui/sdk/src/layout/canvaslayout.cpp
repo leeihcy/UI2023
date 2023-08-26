@@ -278,7 +278,7 @@ void CanvasLayoutParam::UpdateByRect() {
   }
 }
 void CanvasLayoutParam::Serialize(SerializeParam *pData) {
-  AttributeSerializer s(pData, TEXT("CanvasLayoutParam"));
+  AttributeSerializer s(pData, "CanvasLayoutParam");
 
   // width=""，也支持 layout.width=""
   s.AddInt(XML_WIDTH, Slot(&CanvasLayoutParam::LoadConfigWidth, this),
@@ -389,26 +389,26 @@ void CanvasLayoutParam::SetConfigLayoutFlags(int n) {
 }
 int CanvasLayoutParam::GetConfigLayoutFlags() { return m_nConfigLayoutFlags; }
 
-int CanvasLayoutParam::ParseAlignAttr(const wchar_t *szAttr) {
+int CanvasLayoutParam::ParseAlignAttr(const char *szAttr) {
   util::ISplitStringEnum *pEnum = nullptr;
   int nCount = util::SplitString(szAttr, XML_FLAG_SEPARATOR, &pEnum);
 
   int nRet = 0;
   for (int i = 0; i < nCount; i++) {
-    const wchar_t *szFlag = pEnum->GetText(i);
-    if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_LEFT))
+    const char *szFlag = pEnum->GetText(i);
+    if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_LEFT))
       nRet |= LAYOUT_ITEM_ALIGN_LEFT;
-    else if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_RIGHT))
+    else if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_RIGHT))
       nRet |= LAYOUT_ITEM_ALIGN_RIGHT;
-    else if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_TOP))
+    else if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_TOP))
       nRet |= LAYOUT_ITEM_ALIGN_TOP;
-    else if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_BOTTOM))
+    else if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_BOTTOM))
       nRet |= LAYOUT_ITEM_ALIGN_BOTTOM;
-    else if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_CENTER))
+    else if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_CENTER))
       nRet |= LAYOUT_ITEM_ALIGN_CENTER;
-    else if (0 == wcscmp(szFlag, XML_LAYOUT_ITEM_ALIGN_VCENTER))
+    else if (0 == strcmp(szFlag, XML_LAYOUT_ITEM_ALIGN_VCENTER))
       nRet |= LAYOUT_ITEM_ALIGN_VCENTER;
-    // 		else if (0 == wcscmp(szFlag,
+    // 		else if (0 == strcmp(szFlag,
     // XML_LAYOUT_ALIGN_FORCE_DESIREDSIZE)) 			nRet |=
     // LAYOUT_FLAG_FORCE_DESIREDSIZE;
   }

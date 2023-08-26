@@ -26,7 +26,7 @@ void RenderBaseAttribute::SetBindValue(void *p) {
   m_ppBindValue = (IRenderBase **)p;
 }
 
-void RenderBaseAttribute::Set(const wchar_t *szType) {
+void RenderBaseAttribute::Set(const char *szType) {
   if (!m_ppBindValue)
     return;
 
@@ -47,7 +47,7 @@ void RenderBaseAttribute::Reset() {
   }
 }
 
-const wchar_t *RenderBaseAttribute::Get() {
+const char *RenderBaseAttribute::Get() {
   if (!m_ppBindValue)
     return nullptr;
   if (!*m_ppBindValue)
@@ -55,15 +55,15 @@ const wchar_t *RenderBaseAttribute::Get() {
 
   RENDER_TYPE eType = (*m_ppBindValue)->GetType();
   RenderBaseFactory &factory = m_pUIApplication->GetRenderBaseFactory();
-  const wchar_t *szType = factory.GetRenderBaseName(eType);
+  const char *szType = factory.GetRenderBaseName(eType);
   return szType;
 }
 
 void RenderBaseAttribute::do_child_action(SerializeParam *pData) {
   // 子属性序列化
   if (m_ppBindValue && *m_ppBindValue) {
-    const wchar_t *szOldPrefix = pData->szPrefix;
-    const wchar_t *szOldParentKey = pData->szParentKey;
+    const char *szOldPrefix = pData->szPrefix;
+    const char *szOldParentKey = pData->szParentKey;
 
     pData->szPrefix = m_strPrefix.c_str();
     pData->szParentKey = GetKey();

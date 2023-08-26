@@ -16,20 +16,20 @@ public:
 	GifResItem(Application* pUIApp);
 	~GifResItem();
 
-	String&  GetIdRef();
+	std::string&  GetIdRef();
 	void  SetId(const wchar_t* text);
 	const wchar_t*  GetId() { return m_strId.c_str(); }
 
 	void  SetPath(const wchar_t* path);
 
 private:
-	String      m_strId;      // image id
-	String      m_strPath;    // image path
+	std::string      m_strId;      // image id
+	std::string      m_strPath;    // image path
 	bool        m_bUseSkinHLS;         // 该图片是否参与皮肤色调改变 
 	ImageData*  m_pOriginImageData;    // 该图片的原始数据（改变图片色调时使用）
 
 public:
-	bool  ModifyGif(const String& strPath) { UIASSERT(0); return false; } // TODO:
+	bool  ModifyGif(const std::string& strPath) { UIASSERT(0); return false; } // TODO:
 	bool  ModifyHLS(short h, short l, short s, int nFlag){ UIASSERT(0); return false; } // TODO:
 	void  SetAttribute(IMapAttribute* pMapAttrib);
 	GifImageBase*  GetGifImage(Resource* pSkinRes);
@@ -55,7 +55,7 @@ public:
 	IGifImage* GetGifImage(const wchar_t* szId);
 
 public:
-	GifResItem*  LoadItem(IMapAttribute* pMapAttrib, const String& strFullPath);
+	GifResItem*  LoadItem(IMapAttribute* pMapAttrib, const std::string& strFullPath);
 	void SetUIApplication(Application* p)
 	{ m_pUIApp = p; }
 
@@ -63,9 +63,9 @@ public:
 	GifResItem* GetGifItem(int nIndex);
 	GifResItem* GetGifItem(const wchar_t*  szId);
 
-	bool InsertGif(const String& strID, const String& strPath, GifResItem** pRet);
-	bool ModifyGif(const String& strID, const String& strPath);
-	bool RemoveGif(const String& strID);
+	bool InsertGif(const std::string& strID, const std::string& strPath, GifResItem** pRet);
+	bool ModifyGif(const std::string& strID, const std::string& strPath);
+	bool RemoveGif(const std::string& strID);
 	bool Clear();
 	bool ChangeSkinHLS(short h, short l, short s, int nFlag){UIASSERT(0); return false;};  // TODO:
 

@@ -72,7 +72,7 @@ ISkinDataSource::ISkinDataSource(SkinDataSource* p)
 	m_pImpl = p;
 }
 
-const wchar_t*  ISkinDataSource::GetPath()
+const char*  ISkinDataSource::GetPath()
 {
 	return m_pImpl->GetPath();
 }
@@ -81,16 +81,16 @@ SKIN_PACKET_TYPE  ISkinDataSource::GetType()
 	return m_pImpl->GetType();
 }
 #if defined(OS_WIN)
-bool  ISkinDataSource::Load_Image(const wchar_t* szPath, ImageWrap* pImage)
+bool  ISkinDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {
 	return m_pImpl->Load_Image(szPath, pImage);
 }
-bool  ISkinDataSource::Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadWrap* pImage)
+bool  ISkinDataSource::Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage)
 {
 	return m_pImpl->Load_GdiplusImage(szPath, pImage);
 }
 
-bool  ISkinDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReader** pp)
+bool  ISkinDataSource::Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp)
 {
 	return m_pImpl->Load_StreamBuffer(szPath, pp);
 }
@@ -111,7 +111,7 @@ void  GdiplusBitmapLoadWrap::Destroy()
 {
     SAFE_DELETE(m_pBitmap);
 }
-bool  GdiplusBitmapLoadWrap::LoadFromFile(const wchar_t* szPath)
+bool  GdiplusBitmapLoadWrap::LoadFromFile(const char* szPath)
 {
     SAFE_DELETE(m_pBitmap);
     m_pBitmap = Gdiplus::Bitmap::FromFile(szPath);

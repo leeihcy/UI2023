@@ -43,7 +43,7 @@ IResource*  Resource::GetIResource()
     return m_pISkinRes; 
 }
 
-void  Resource::SetName(const wchar_t* szName)
+void  Resource::SetName(const char* szName)
 {
 	if (szName)
 		m_strSkinResName = szName;
@@ -51,7 +51,7 @@ void  Resource::SetName(const wchar_t* szName)
 		m_strSkinResName.clear();
 }
 
-void  Resource::SetPath(const wchar_t* szPath)
+void  Resource::SetPath(const char* szPath)
 {
 	UIASSERT(m_pDataSource);
 	if (!m_pDataSource)
@@ -67,12 +67,12 @@ SkinDataSource*  Resource::CreateDataSource(SKIN_PACKET_TYPE eType)
 	return m_pDataSource;
 }
 
-const wchar_t*  Resource::GetName()
+const char*  Resource::GetName()
 { 
     return m_strSkinResName.c_str();
 }
 
-const wchar_t*  Resource::GetPath() 
+const char*  Resource::GetPath() 
 { 
     if (nullptr == m_pDataSource)
         return nullptr;
@@ -97,7 +97,7 @@ bool  Resource::Load()
 		
 #if 0        
 		__int64 lCost = watch.Now();
-		wchar_t szText[128] = {0};
+		char szText[128] = {0};
 		wprintf(szText, _T("Load Skin File Cost: %d ms\r\n"), (int)lCost);
 		::OutputDebugString(szText);
 
@@ -204,20 +204,21 @@ UIDocument*  Resource::GetXmlDoc(unsigned int nIndex)
     return m_listDoc[nIndex];
 }
 
-UIDocument* Resource::GetXmlDocByName(const wchar_t* szName)
+UIDocument* Resource::GetXmlDocByName(const char* szName)
 {
-	if (!szName)
-		return nullptr;
+  UIASSERT(0);
+	// if (!szName)
+	// 	return nullptr;
 
-	_DocList::iterator iter = m_listDoc.begin();
-	for (; iter != m_listDoc.end(); iter++)
-	{
-		UIDocument* po = *iter;
-		if (0 == wcscmp(szName, po->GetSkinPath()))
-		{
-			return po;
-		}
-	}
+	// _DocList::iterator iter = m_listDoc.begin();
+	// for (; iter != m_listDoc.end(); iter++)
+	// {
+	// 	UIDocument* po = *iter;
+	// 	if (0 == strcmp(szName, po->GetSkinPath()))
+	// 	{
+	// 		return po;
+	// 	}
+	// }
 	return nullptr;
 }
 

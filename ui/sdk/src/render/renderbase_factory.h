@@ -17,16 +17,16 @@ public:
   void Init();
   void Clear();
 
-  bool RegisterUIRenderBaseCreateData(const wchar_t *szName, int nType,
+  bool RegisterUIRenderBaseCreateData(const char *szName, int nType,
                                       pfnUICreateRenderBasePtr pfunc);
 
-  bool CreateRenderBaseByName(IResource *pSkinRes, const wchar_t *szName,
+  bool CreateRenderBaseByName(IResource *pSkinRes, const char *szName,
                               IObject *pObject, IRenderBase **ppOut);
 
   bool CreateRenderBase(IResource *pSkinRes, int nType, IObject *pObject,
                         IRenderBase **ppOut);
 
-  const wchar_t *GetRenderBaseName(int nType);
+  const char *GetRenderBaseName(int nType);
 
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam,
                           long lParam);
@@ -35,7 +35,7 @@ private:
   Application &m_app;
 
   struct UIRENDERBASE_CREATE_INFO {
-    std::wstring m_strName; // 存在很多种theme类型，但对应的控件类型不一样
+    std::string m_strName; // 存在很多种theme类型，但对应的控件类型不一样
     int m_nRenderType;
     pfnUICreateRenderBasePtr m_func;
   };

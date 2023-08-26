@@ -14,7 +14,7 @@ VertLayout::VertLayout() {
 }
 VertLayout::~VertLayout() {}
 void VertLayout::Serialize(SerializeParam *pData) {
-  //     AttributeSerializer s(pData, TEXT("VertLayout"));
+  //     AttributeSerializer s(pData, "VertLayout");
   //
   //     s.AddInt(XML_LAYOUT_VERT_GAP, this,
   //         memfun_cast<pfnLongSetter>(&VertLayout::LoadGap),
@@ -279,7 +279,7 @@ void VertLayoutParam::UpdateByRect() {
 }
 
 void VertLayoutParam::Serialize(SerializeParam *pData) {
-  AttributeSerializer s(pData, TEXT("VertLayoutParam"));
+  AttributeSerializer s(pData, "VertLayoutParam");
 
   s.AddString(XML_WIDTH, Slot(&VertLayoutParam::LoadConfigWidth, this),
               Slot(&VertLayoutParam::SaveConfigWidth, this))
@@ -304,19 +304,19 @@ void VertLayoutParam::Serialize(SerializeParam *pData) {
 
 int VertLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
 void VertLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
-void VertLayoutParam::LoadConfigWidth(const wchar_t *szText) {
+void VertLayoutParam::LoadConfigWidth(const char *szText) {
   LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
 }
-const wchar_t *VertLayoutParam::SaveConfigWidth() {
+const char *VertLayoutParam::SaveConfigWidth() {
   return SaveConfigWH(m_nConfigWidth, m_eWidthType);
 }
 
 int VertLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
 void VertLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
-void VertLayoutParam::LoadConfigHeight(const wchar_t *szText) {
+void VertLayoutParam::LoadConfigHeight(const char *szText) {
   LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
 }
-const wchar_t *VertLayoutParam::SaveConfigHeight() {
+const char *VertLayoutParam::SaveConfigHeight() {
   return SaveConfigWH(m_nConfigHeight, m_eHeightType);
 }
 

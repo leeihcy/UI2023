@@ -68,8 +68,8 @@ struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
   IResource *GetResource();
 	IWindow*  GetWindow();
-  const wchar_t *GetId();
-  void SetId(const wchar_t *szText);
+  const char *GetId();
+  void SetId(const char *szText);
   HWND GetHWND();
   void InitDefaultAttrib();
   IMapAttribute* GetMapAttribute();
@@ -77,13 +77,13 @@ struct UIAPI IObject : public IMessage {
   void SetOutRef(void **ppOutRef);
   // void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);
   void LoadAttributeFromXml(IUIElement *pXmlElement, bool bReload);
-  const wchar_t *GetAttribute(const wchar_t *szKey, bool bErase);
-  void AddAttribute(const wchar_t *szKey, const wchar_t *szValue);
+  const char *GetAttribute(const char *szKey, bool bErase);
+  void AddAttribute(const char *szKey, const char *szValue);
 
   IObject *GetParentObject();
-  IObject *FindObject(const wchar_t *szObjId);
-  IObject *TryFindObject(const wchar_t *szObjId);
-  IObject *FindNcObject(const wchar_t *szObjId);
+  IObject *FindObject(const char *szObjId);
+  IObject *TryFindObject(const char *szObjId);
+  IObject *FindNcObject(const char *szObjId);
   IObject *FindObject(Uuid uuid);
   IObject *FindNcObject(Uuid uuid);
   IObject *GetChildObject();

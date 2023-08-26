@@ -3,7 +3,7 @@
 
 namespace ui { namespace svg {
 
-#define CATEGORY_SVG L"SVG";
+#define CATEGORY_SVG "SVG";
 
 }}
 #endif

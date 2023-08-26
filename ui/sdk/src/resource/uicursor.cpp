@@ -18,7 +18,7 @@ UICursor::~UICursor()
     UIASSERT(nullptr == m_hCursor);
 }
 
-void UICursor::CreateInstance2(const String strCurFilePath, UICursor** ppOutRef)
+void UICursor::CreateInstance2(const std::string strCurFilePath, UICursor** ppOutRef)
 {
     if (nullptr == ppOutRef)
         return;

@@ -17,14 +17,14 @@ public:
 
   Uuid UUID() override { return {0x4AD17FBE, 0x3E8B, 0x11EE, {0xB9, 0x0E, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
 
-  const wchar_t* Name() override { return L"Svg"; }
+  const char* Name() override { return "Svg"; }
 
   MetaDetail Detail() override {
     MetaDetail param;
     param.major_type = OBJ_CONTROL;
     param.minor_type = CONTROL_SVG;
     param.category = CATEGORY_SVG;
-    param.descrption = L"svg svg element";
+    param.descrption = "svg svg element";
     param.default_size = {200, 20};
     return param;
   }

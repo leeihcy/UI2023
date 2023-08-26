@@ -11,8 +11,8 @@ namespace ui
 class  StyleTagElementInfo
 {
 public:
-	String  strId;  // ƒ£øÈ√˚
-	UIElement*  pXmlElement;  // xmlΩ·µ„
+	std::string  strId;  // Ê®°ÂùóÂêç
+	UIElement*  pXmlElement;  // xmlÁªìÁÇπ
 };
 
 class StyleManager
@@ -24,7 +24,7 @@ public:
 	StyleRes&  GetStyleRes();
     IStyleManager&  GetIStyleManager();
 
-    UIElement*  GetStyleXmlElem(const wchar_t* szId);
+    UIElement*  GetStyleXmlElem(const char* szId);
 
     // bool  ParseStyle(IMapAttribute* pMapAttrib);
     // bool  ReverseParseStyle(IListAttribute* pListAttrib);
@@ -34,15 +34,15 @@ public:
 	void  OnStyleAdd(StyleResItem* p);
 	void  OnStyleRemove(StyleResItem* p);
 	void  OnStlyeModify(StyleResItem* p);
-	void  OnStyleAttributeAdd(StyleResItem* p, const wchar_t* szKey);
-	void  OnStyleAttributeRemove(StyleResItem* p, const wchar_t* szKey);
-	void  OnStyleAttributeModify(StyleResItem* p, const wchar_t* szKey);
+	void  OnStyleAttributeAdd(StyleResItem* p, const char* szKey);
+	void  OnStyleAttributeRemove(StyleResItem* p, const char* szKey);
+	void  OnStyleAttributeModify(StyleResItem* p, const char* szKey);
 
 public:
 	void  Clear();
 	int   GetStyleCount( );
 //  bool     GetStyleItemInfo( int nIndex, IStyleResItem** ppStyleItemInfo );
-//  bool     GetStyleItemInfo( STYLE_SELECTOR_TYPE eType, const wchar_t* szSelectorID, IStyleResItem** ppStyleItemInfo );
+//  bool     GetStyleItemInfo( STYLE_SELECTOR_TYPE eType, const char* szSelectorID, IStyleResItem** ppStyleItemInfo );
 
     static int  UIParseStyleTagCallback(IUIElement*, IResource* pSkinRes);
 
@@ -51,18 +51,18 @@ private:
     void  OnNewChild(UIElement* pElem);
 
     bool  parse_inherit(tree<StyleResItem*>* pTreeItem, StyleRes* pStyleRes);
-    bool  MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const String& strStypeName, wchar_t* szInherit);
-    bool  ParseInheritString(const String& strInherit, STYLE_SELECTOR_TYPE& eStyletype, wchar_t* szStyleName);
+    bool  MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const std::string& strStypeName, char* szInherit);
+    bool  ParseInheritString(const std::string& strInherit, STYLE_SELECTOR_TYPE& eStyletype, char* szStyleName);
     
 private:
-	//  ˝æ›≥÷æ√≤„
+	// Êï∞ÊçÆÊåÅ‰πÖÂ±Ç
     IStyleManager*  m_pIStyleManager;
     
 	typedef UIList<StyleTagElementInfo> _MyList;
 	typedef UIListItem<StyleTagElementInfo> _MyListItem;
 	_MyList  m_listUIElement;
 
-	// ∂‘œÛ Ù–‘
+	// ÂØπË±°Â±ûÊÄß
 	StyleRes  m_StyleRes;
 	Resource*  m_pSkinRes;
 };;

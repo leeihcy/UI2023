@@ -64,7 +64,7 @@ public:
     void  SetBorderColor(int nColorIndex);
 
     // 由于改成每次重新获取颜色值，因此不需要响应主题改变的消息
-	// virtual const wchar_t* GetThemeName() { return nullptr; }
+	// virtual const char* GetThemeName() { return nullptr; }
 	// virtual void  OnThemeChanged();
 
 public:
@@ -96,22 +96,22 @@ public:
 	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
-    void  LoadFromColor(const wchar_t* sz){
+    void  LoadFromColor(const char* sz){
         _LoadColor(sz, m_pColorFrom);
     }
-    void  LoadToColor(const wchar_t* sz){
+    void  LoadToColor(const char* sz){
         _LoadColor(sz, m_pColorTo);
     }
-    void  LoadBorderColor(const wchar_t* sz){
+    void  LoadBorderColor(const char* sz){
         _LoadColor(sz, m_pBorderColor);
     }
-    const wchar_t*  SaveFromColor(){
+    const char*  SaveFromColor(){
         return _GetColorId(m_pColorFrom);
     }
-    const wchar_t*  SaveToColor(){
+    const char*  SaveToColor(){
         return _GetColorId(m_pColorTo);
     }
-    const wchar_t*  SaveBorderColor(){
+    const char*  SaveBorderColor(){
         return _GetColorId(m_pBorderColor);
     }
 public:
@@ -152,10 +152,10 @@ public:
 	
     void  SetCount(int n);
     int  GetCount();
-    void  LoadBkColor(const wchar_t* szColor);
-    const wchar_t*  SaveBkColor();
-    void  LoadBorderColor(const wchar_t* szColor);
-    const wchar_t*  SaveBorderColor();
+    void  LoadBkColor(const char* szColor);
+    const char*  SaveBkColor();
+    void  LoadBorderColor(const char* szColor);
+    const char*  SaveBorderColor();
 
 private:
     IColorListRender*  m_pIColorListRender;

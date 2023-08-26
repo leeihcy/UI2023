@@ -44,11 +44,11 @@ bool StyleResItem::GetXmlElement2(UIElement **pp) {
   return true;
 }
 
-void StyleResItem::SetInherits(const wchar_t *sz) {
+void StyleResItem::SetInherits(const char *sz) {
   SETSTRING(m_strInherits, sz);
   m_vInheritList.clear();
 
-  std::vector<String> vStrArray;
+  std::vector<std::string> vStrArray;
   UI_Split(m_strInherits, XML_MULTI_SEPARATOR, vStrArray);
   int nSize = (int)vStrArray.size();
   if (0 != nSize) {
@@ -59,7 +59,7 @@ void StyleResItem::SetInherits(const wchar_t *sz) {
 }
 int StyleResItem::GetInheritCount() { return (int)m_vInheritList.size(); }
 
-bool StyleResItem::GetInheritItem(int i, String &str) {
+bool StyleResItem::GetInheritItem(int i, std::string &str) {
   if (i < 0 || i >= GetInheritCount())
     return false;
 
@@ -70,13 +70,13 @@ bool StyleResItem::GetInheritItem(int i, String &str) {
 //
 // 仅从m_vInheritList中删除，不从m_strInherit中删除
 //
-bool StyleResItem::RemoveInheritItem(const wchar_t *sz) {
+bool StyleResItem::RemoveInheritItem(const char *sz) {
   if (!sz)
     return false;
 
-  std::vector<String>::iterator iter = m_vInheritList.begin();
+  std::vector<std::string>::iterator iter = m_vInheritList.begin();
   for (; iter != m_vInheritList.end(); ++iter) {
-    if (wcscmp(iter->c_str(), sz) == 0) {
+    if (strcmp(iter->c_str(), sz) == 0) {
       m_vInheritList.erase(iter);
       return true;
     }
@@ -97,7 +97,7 @@ IMapAttribute* StyleResItem::GetAttributeMap() {
   return m_pMapAttrib;
 }
 
-void StyleResItem::SetAttribute(const wchar_t *key, const wchar_t *value) {
+void StyleResItem::SetAttribute(const char *key, const char *value) {
   if (!m_pMapAttrib) {
    m_pMapAttrib = UICreateIMapAttribute();
   }
@@ -105,21 +105,21 @@ void StyleResItem::SetAttribute(const wchar_t *key, const wchar_t *value) {
   m_pMapAttrib->AddAttr(key, value);
 }
 
-const wchar_t *StyleResItem::GetAttribute(const wchar_t *key) {
+const char *StyleResItem::GetAttribute(const char *key) {
   if (!key || !m_pMapAttrib)
     return nullptr;
 
-  if (0 == wcscmp(key, XML_ID))
+  if (0 == strcmp(key, XML_ID))
     return m_strID.c_str();
 
   return m_pMapAttrib->GetAttr(key, false);
 }
 
-bool StyleResItem::ModifyAttribute(const wchar_t *key, const wchar_t *value) {
+bool StyleResItem::ModifyAttribute(const char *key, const char *value) {
   if (!key || !m_pMapAttrib)
     return false;
 
-  if (0 == wcscmp(key, XML_ID)) {
+  if (0 == strcmp(key, XML_ID)) {
     SetId(value);
     return true;
   }
@@ -131,7 +131,7 @@ bool StyleResItem::ModifyAttribute(const wchar_t *key, const wchar_t *value) {
   return true;
 }
 
-bool StyleResItem::RemoveAttribute(const wchar_t *key) {
+bool StyleResItem::RemoveAttribute(const char *key) {
   if (!m_pMapAttrib)
     return false;
 
@@ -141,7 +141,7 @@ bool StyleResItem::RemoveAttribute(const wchar_t *key) {
   return false;
 }
 
-bool StyleResItem::InheritAttribute(const wchar_t *key, const wchar_t *value) {
+bool StyleResItem::InheritAttribute(const char *key, const char *value) {
   // 继承一个属性值。如果自己已经定义了这个属性，则使用自身的值
   if (nullptr == m_pMapAttrib->GetAttr(key, false)) {
     m_pMapAttrib->AddAttr(key, value);
@@ -211,8 +211,8 @@ void StyleRes::Clear() {
   m_vStyles.clear();
 }
 
-StyleResItem *StyleRes::Add(STYLE_SELECTOR_TYPE type, const wchar_t *szId,
-                            const wchar_t *szInherit) {
+StyleResItem *StyleRes::Add(STYLE_SELECTOR_TYPE type, const char *szId,
+                            const char *szInherit) {
   StyleResItem *pStyleItem = new StyleResItem;
   pStyleItem->SetSelectorType(type);
   pStyleItem->SetId(szId);
@@ -244,7 +244,7 @@ bool StyleRes::Add(StyleResItem *pNewItem) {
   return true;
 }
 
-StyleResItem *StyleRes::Insert(STYLE_SELECTOR_TYPE type, const wchar_t *szId,
+StyleResItem *StyleRes::Insert(STYLE_SELECTOR_TYPE type, const char *szId,
                                long lPos) {
   if (!szId)
     return nullptr;
@@ -270,7 +270,7 @@ StyleResItem *StyleRes::Insert(STYLE_SELECTOR_TYPE type, const wchar_t *szId,
 }
 
 bool StyleRes::Modify(StyleResItem *pItem, STYLE_SELECTOR_TYPE type,
-                      const wchar_t *szId, const wchar_t *szInherit) {
+                      const char *szId, const char *szInherit) {
   if (!pItem)
     return false;
 
@@ -282,11 +282,11 @@ bool StyleRes::Modify(StyleResItem *pItem, STYLE_SELECTOR_TYPE type,
   return true;
 }
 
-bool StyleRes::Remove(STYLE_SELECTOR_TYPE type, const wchar_t *szId) {
+bool StyleRes::Remove(STYLE_SELECTOR_TYPE type, const char *szId) {
   std::vector<StyleResItem *>::iterator iter = m_vStyles.begin();
   for (; iter != m_vStyles.end(); ++iter) {
     StyleResItem *p = *iter;
-    if (p->GetSelectorType() == type && 0 == wcscmp(p->GetId(), szId)) {
+    if (p->GetSelectorType() == type && 0 == strcmp(p->GetId(), szId)) {
       m_pSkinRes->GetStyleManager().OnStyleRemove(p);
       delete p;
       p = nullptr;
@@ -309,8 +309,8 @@ bool StyleRes::Remove(StyleResItem *pNewItem) {
   return true;
 }
 
-bool StyleRes::AddAttribute(StyleResItem *pItem, const wchar_t *szKey,
-                            const wchar_t *szValue) {
+bool StyleRes::AddAttribute(StyleResItem *pItem, const char *szKey,
+                            const char *szValue) {
   if (!pItem)
     return false;
 
@@ -320,8 +320,8 @@ bool StyleRes::AddAttribute(StyleResItem *pItem, const wchar_t *szKey,
   return true;
 }
 
-bool StyleRes::ModifyAttribute(StyleResItem *pItem, const wchar_t *szKey,
-                               const wchar_t *szValue) {
+bool StyleRes::ModifyAttribute(StyleResItem *pItem, const char *szKey,
+                               const char *szValue) {
   if (!pItem)
     return false;
 
@@ -331,7 +331,7 @@ bool StyleRes::ModifyAttribute(StyleResItem *pItem, const wchar_t *szKey,
   return true;
 }
 
-bool StyleRes::RemoveAttribute(StyleResItem *pItem, const wchar_t *szKey) {
+bool StyleRes::RemoveAttribute(StyleResItem *pItem, const char *szKey) {
   if (!pItem)
     return false;
 
@@ -352,14 +352,14 @@ StyleResItem *StyleRes::GetItem(long nIndex) {
   return m_vStyles[nIndex];
 }
 
-StyleResItem *StyleRes::GetItem(STYLE_SELECTOR_TYPE type, const wchar_t *szId) {
+StyleResItem *StyleRes::GetItem(STYLE_SELECTOR_TYPE type, const char *szId) {
   if (nullptr == szId)
     return nullptr;
 
   std::vector<StyleResItem *>::iterator iter = m_vStyles.begin();
   for (; iter != m_vStyles.end(); ++iter) {
     StyleResItem *p = *iter;
-    if (p->GetSelectorType() == type && 0 == wcscmp(p->GetId(), szId)) {
+    if (p->GetSelectorType() == type && 0 == strcmp(p->GetId(), szId)) {
       return p;
     }
   }
@@ -385,8 +385,8 @@ long StyleRes::GetItemPos(StyleResItem *p) {
   return (long)(iter - m_vStyles.begin());
 }
 
-// bool StyleRes::AddStyleAttribute(STYLE_SELECTOR_TYPE type, const wchar_t*
-// szId, const wchar_t* szKey, const wchar_t* szValue)
+// bool StyleRes::AddStyleAttribute(STYLE_SELECTOR_TYPE type, const char*
+// szId, const char* szKey, const char* szValue)
 // {
 // 	StyleResItem* pItem = this->GetItem(type, szId);
 // 	if (false == pItem)
@@ -395,8 +395,8 @@ long StyleRes::GetItemPos(StyleResItem *p) {
 // 	return pItem->InsertAttribute(szKey, szValue);
 // }
 //
-// bool StyleRes::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const wchar_t*
-// szId, const wchar_t* szKey, const wchar_t* szValue)
+// bool StyleRes::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const char*
+// szId, const char* szKey, const char* szValue)
 // {
 // 	StyleResItem* pItem = this->GetItem(type, szId);
 // 	if (false == pItem)
@@ -405,8 +405,8 @@ long StyleRes::GetItemPos(StyleResItem *p) {
 // 	return pItem->ModifyAttribute(szKey, szValue);
 // }
 //
-// bool StyleRes::RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const wchar_t*
-// szId, const wchar_t* szKey)
+// bool StyleRes::RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const char*
+// szId, const char* szKey)
 // {
 // 	StyleResItem* pItem = this->GetItem(type, szId);
 // 	if (false == pItem)
@@ -437,9 +437,9 @@ long StyleRes::GetItemPos(StyleResItem *p) {
 //			级别4. CLASS列表中，排后面的样式匹配的属性 >
 //前面的样式匹配的属性 			级别5. 通过TAG匹配的属性
 //
-bool StyleRes::LoadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
-                         const wchar_t *szID, IMapAttribute *pMapStyle) {
-  if (szID && wcslen(szID) > 0) {
+bool StyleRes::LoadStyle(const char *szTagName, const char *szStyleClass,
+                         const char *szID, IMapAttribute *pMapStyle) {
+  if (szID && strlen(szID) > 0) {
     StyleResItem *pIDStyleItem = this->GetItem(STYLE_SELECTOR_TYPE_ID, szID);
     if (pIDStyleItem) {
       pIDStyleItem->Apply(pMapStyle, false);
@@ -447,8 +447,8 @@ bool StyleRes::LoadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
   }
 
   // strStyleClass可能有多个
-  if (szStyleClass && wcslen(szStyleClass) > 0) {
-    std::vector<String> vStrArray;
+  if (szStyleClass && strlen(szStyleClass) > 0) {
+    std::vector<std::string> vStrArray;
     UI_Split(szStyleClass, XML_MULTI_SEPARATOR, vStrArray);
     int nCount = (int)vStrArray.size();
     if (0 != nCount) {
@@ -465,7 +465,7 @@ bool StyleRes::LoadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
     }
   }
 
-  if (szTagName && wcslen(szTagName) > 0) {
+  if (szTagName && strlen(szTagName) > 0) {
     StyleResItem *pTagStyleItem =
         this->GetItem(STYLE_SELECTOR_TYPE_TAG, szTagName);
     if (pTagStyleItem) {
@@ -477,8 +477,8 @@ bool StyleRes::LoadStyle(const wchar_t *szTagName, const wchar_t *szStyleClass,
 }
 
 // 将pListAttribte中属于style的属性过滤掉
-bool StyleRes::UnloadStyle(const wchar_t *szTagName,
-                           const wchar_t *szStyleClass, const wchar_t *szID,
+bool StyleRes::UnloadStyle(const char *szTagName,
+                           const char *szStyleClass, const char *szID,
                            IListAttribute *pListAttribte) {
   // 先拿到所有的样式列表
   IMapAttribute *pStyleAttr = UICreateIMapAttribute();
@@ -486,15 +486,15 @@ bool StyleRes::UnloadStyle(const wchar_t *szTagName,
 
   pListAttribte->BeginEnum();
 
-  const wchar_t *szKey = nullptr;
-  const wchar_t *szValue = nullptr;
+  const char *szKey = nullptr;
+  const char *szValue = nullptr;
   while (pListAttribte->EnumNext(&szKey, &szValue)) {
-    const wchar_t *szStyleValue = pStyleAttr->GetAttr(nullptr, szKey, true);
+    const char *szStyleValue = pStyleAttr->GetAttr(nullptr, szKey, true);
     if (!szStyleValue)
       continue;
 
     // 该属性已包含于style中，不需要配置，删掉
-    if (0 == wcscmp(szStyleValue, szValue)) {
+    if (0 == strcmp(szStyleValue, szValue)) {
       pListAttribte->EraseAttr(szKey);
       continue;
     }
@@ -507,7 +507,7 @@ bool StyleRes::UnloadStyle(const wchar_t *szTagName,
   // 还剩下一个style没有被删干净，则需要额外添加一些空值给控件，避免使用style中的样式
   pStyleAttr->BeginEnum();
   while (pStyleAttr->EnumNext(&szKey, &szValue)) {
-    pListAttribte->AddAttr(szKey, L"");
+    pListAttribte->AddAttr(szKey, "");
   }
   pStyleAttr->EndEnum();
 

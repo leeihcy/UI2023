@@ -35,7 +35,7 @@ private:
 	bool  Init();
 
 private:
-    String  m_strPath;
+    std::string  m_strPath;
 
     HZIP  m_hZip;
 	ISkinDataSource  m_ISkinDataSource;

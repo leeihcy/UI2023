@@ -6,6 +6,7 @@
 #endif
 
 #include "include/interface/itextrenderbase.h"
+#include "include/macro/uimsg.h"
 #include "src/object/message.h"
 
 namespace ui {
@@ -13,6 +14,8 @@ class AttributeSerializer;
 class Application;
 class Object;
 struct TEXTRENDERBASE_DRAWSTATE;
+struct IFontRes;
+class Resource;
 
 class TextRenderBase : public Message {
 public:
@@ -25,7 +28,7 @@ public:
 
   void Serialize(AttributeSerializer *ps);
   void OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo);
-  Size GetDesiredSize(const wchar_t *szText, int nLimitWidth = -1);
+  Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
 
 public:
   void SetRenderFont(IRenderFont *pFont) {}
@@ -54,14 +57,14 @@ public:
   bool IsThemeRender();
   void CheckSkinTextureChanged();
 
-  void _LoadFont(const wchar_t *szFontId, IRenderFont *&pRenderFont);
-  const wchar_t *_SaveFont(IRenderFont *&pRenderFont);
+  void _LoadFont(const char *szFontId, IRenderFont *&pRenderFont);
+  const char *_SaveFont(IRenderFont *&pRenderFont);
   void _LoadDefalutFont(IRenderFont **ppRenderFont);
-  void _LoadColor(const wchar_t *szColorId, Color *&pColor);
-  const wchar_t *_SaveColor(Color *&pColor);
+  void _LoadColor(const char *szColorId, Color *&pColor);
+  const char *_SaveColor(Color *&pColor);
 
-  void LoadHaloColor(const wchar_t *szColorId);
-  const wchar_t *GetHaloColorId();
+  void LoadHaloColor(const char *szColorId);
+  const char *GetHaloColorId();
 
 protected:
   ITextRenderBase *m_pITextRenderBase;
@@ -99,8 +102,8 @@ public:
   void SetColor(Color *pColText);
   bool GetColor(COLORREF &color);
 
-  void LoadFont(const wchar_t *szFontId);
-  const wchar_t *GetFontId();
+  void LoadFont(const char *szFontId);
+  const char *GetFontId();
 
 protected:
   ISimpleTextRender *m_pISimpleTextRender;
@@ -108,7 +111,7 @@ protected:
   IRenderFont *m_pRenderFont;
 
 #ifdef EDITOR_MODE
-  String m_strFontId;
+  std::string m_strFontId;
 #endif
 };
 
@@ -139,12 +142,12 @@ protected:
   IRenderFont *GetRenderFont() { return m_pRenderFont; }
   int OnSkinTextureChanged(unsigned int, int, int);
 
-  void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
-  const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
-  void LoadColor(const wchar_t *szColorId) {
+  void LoadFont(const char *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
+  const char *GetFontId() { return _SaveFont(m_pRenderFont); }
+  void LoadColor(const char *szColorId) {
     _LoadColor(szColorId, m_pColorText);
   }
-  const wchar_t *GetColorId() { return _SaveColor(m_pColorText); }
+  const char *GetColorId() { return _SaveColor(m_pColorText); }
 
 private:
   IContrastColorTextRender *m_pIContrastColorTextRender;
@@ -182,8 +185,8 @@ public:
   void SetCount(int nCount);
   int GetCount();
 
-  void LoadFont(const wchar_t *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
-  const wchar_t *GetFontId() { return _SaveFont(m_pRenderFont); }
+  void LoadFont(const char *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
+  const char *GetFontId() { return _SaveFont(m_pRenderFont); }
 
 protected:
   void Clear();
@@ -219,14 +222,14 @@ public:
   IRenderFont *GetRenderFont();
   void SetRenderFont(IRenderFont *);
 
-  void LoadFont(const wchar_t *szFontId);
-  const wchar_t *GetFontId();
+  void LoadFont(const char *szFontId);
+  const char *GetFontId();
 
   void SetCount(int nCount);
   int GetCount();
 
-  void LoadColor(const wchar_t *szText);
-  const wchar_t *GetColor();
+  void LoadColor(const char *szText);
+  const char *GetColor();
 
   void SetColor(int nIndex, COLORREF col);
 
@@ -241,7 +244,7 @@ private:
   int m_nCount;
 
 #ifdef EDITOR_MODE
-  String m_strFontId;
+  std::string m_strFontId;
 #endif
 };
 #if 0
@@ -278,10 +281,10 @@ public:
   void SetCount(int nCount);
   int GetCount();
 
-  void LoadColor(const wchar_t *szText);
-  const wchar_t *GetColor();
-  void LoadFont(const wchar_t *szText);
-  const wchar_t *GetFont();
+  void LoadColor(const char *szText);
+  const char *GetColor();
+  void LoadFont(const char *szText);
+  const char *GetFont();
 
   void SetColor(int nIndex, unsigned int color);
   void SetFont(int nIndex, IRenderFont *);

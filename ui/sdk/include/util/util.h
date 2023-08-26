@@ -6,6 +6,8 @@
 namespace ui {
 class C9Region;
 struct Rect;
+struct Size;
+struct IRenderTarget;
 
 class CTimeout;
 struct ITimeoutCallback {
@@ -13,28 +15,36 @@ struct ITimeoutCallback {
 };
 
 namespace util {
-COLORREF TranslateHexColor(const wchar_t *szColor);
-COLORREF UIAPI TranslateColor(const wchar_t *szColor);
-COLORREF TranslateRGB(const wchar_t *szCol, wchar_t szSep = L',');
-bool TranslateSIZE(const wchar_t *szText, Size *pSize, wchar_t szSep = L',');
-bool TranslateRECT(const wchar_t *szRect, Rect *pRect, wchar_t szSep = L',');
-bool TranslateImage9Region(const wchar_t *str, C9Region *p9Region,
-                           wchar_t szSep = ',');
+uint TranslateHexColor(const char *szColor);
+uint UIAPI TranslateColor(const char *szColor);
+uint TranslateRGB(const char *szCol, char szSep = ',');
+bool TranslateSIZE(const char *szText, Size *pSize, char szSep = ',');
+bool TranslateRECT(const char *szRect, Rect *pRect, char szSep = ',');
+bool TranslateImage9Region(const char *str, C9Region *p9Region,
+                           char szSep = ',');
 bool UIAPI IsKeyDown(unsigned int vk);
 
 void UIAPI DeflatRect(Rect *pfc, const Rect *pDeflatRc);
 
 struct ISplitStringEnum {
   virtual void Release() = 0;
+  virtual const char *GetText(unsigned int nIndex) = 0;
+  virtual int GetCount() = 0;
+};
+unsigned int UIAPI SplitString(const char *szText, char szSep,
+                               ISplitStringEnum **pEnum);
+
+struct ISplitStringEnumW {
+  virtual void Release() = 0;
   virtual const wchar_t *GetText(unsigned int nIndex) = 0;
   virtual int GetCount() = 0;
 };
-unsigned int UIAPI SplitString(const wchar_t *szText, wchar_t szSep,
-                               ISplitStringEnum **pEnum);
+unsigned int UIAPI SplitStringW(const wchar_t *szText, wchar_t szSep,
+                               ISplitStringEnumW **pEnum);
 
-bool IsFullPath(const wchar_t *szPath);
-bool GetPathFileName(const wchar_t *szPath, wchar_t *szOutDir);
-bool GetPathFileExt(const wchar_t *szPath, wchar_t *szOutExt);
+bool IsFullPath(const char *szPath);
+bool GetPathFileName(const char *szPath, char *szOutDir);
+bool GetPathFileExt(const char *szPath, char *szOutExt);
 
 bool UIAPI IsWin7OrLater();
 bool UIAPI IsWin8OrLater();
@@ -93,10 +103,10 @@ struct FixAlphaData {
 bool UIAPI FixBitmapAlpha(FixAlphaData *pData);
 bool UIAPI FixRenderTargetClipRegionAlpha(IRenderTarget *);
 
-void UIAPI PathInBin(const wchar_t *szRelative, wchar_t szAbsolution[MAX_PATH]);
+void UIAPI PathInBin(const char *szRelative, char szAbsolution[MAX_PATH]);
 
-bool PathIsDirectory(const wchar_t *path);
-bool PathFileExists(const wchar_t *path);
+bool PathIsDirectory(const char *path);
+bool PathFileExists(const char *path);
 int wtoi(const wchar_t *text);
 } // namespace util
 } // namespace ui

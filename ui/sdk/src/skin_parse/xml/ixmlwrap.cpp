@@ -9,22 +9,22 @@ IUIElement::IUIElement(UIElement* p) : m_pImpl(p)
 
 }
 
-const wchar_t*  IUIElement::GetData()
+const char*  IUIElement::GetData()
 {
     return m_pImpl->GetData();
 }
 
-const wchar_t*  IUIElement::GetTagName()
+const char*  IUIElement::GetTagName()
 {
     return m_pImpl->GetTagName();
 }
 
-bool  IUIElement::SetData(const wchar_t* szText)
+bool  IUIElement::SetData(const char* szText)
 {
     return m_pImpl->SetData(szText);
 }
 
-void  IUIElement::SetTagName(const wchar_t* sz)
+void  IUIElement::SetTagName(const char* sz)
 {
     m_pImpl->SetTagName(sz);
 }
@@ -44,29 +44,29 @@ long  IUIElement::Release()
 }
 
 #if defined(OS_WIN)
-bool  IUIElement::GetAttrib(const wchar_t* szKey, BSTR* pbstrValue)
+bool  IUIElement::GetAttrib(const char* szKey, BSTR* pbstrValue)
 {   
     return m_pImpl->GetAttrib(szKey, pbstrValue);
 }
 #endif
 
-bool  IUIElement::HasAttrib(const wchar_t* szKey)
+bool  IUIElement::HasAttrib(const char* szKey)
 {
     return m_pImpl->HasAttrib(szKey);
 }
-bool  IUIElement::AddAttrib(const wchar_t* szKey, const wchar_t* szValue)
+bool  IUIElement::AddAttrib(const char* szKey, const char* szValue)
 {
     return m_pImpl->AddAttrib(szKey, szValue);
 }
-bool  IUIElement::SetAttrib(const wchar_t* szKey, const wchar_t* szValue)
+bool  IUIElement::SetAttrib(const char* szKey, const char* szValue)
 {
     return m_pImpl->SetAttrib(szKey, szValue);
 }
-bool  IUIElement::RemoveAttrib(const wchar_t* szKey)
+bool  IUIElement::RemoveAttrib(const char* szKey)
 {
     return m_pImpl->RemoveAttrib(szKey);
 }
-bool  IUIElement::ModifyAttrib(const wchar_t* szKey, const wchar_t* szValue)
+bool  IUIElement::ModifyAttrib(const char* szKey, const char* szValue)
 {
     return m_pImpl->ModifyAttrib(szKey, szValue);
 }
@@ -98,7 +98,7 @@ bool  IUIElement::SetAttribList2(IListAttribute* pListAttrib)
     else \
         return IUIElementProxy();
 
-IUIElementProxy  IUIElement::AddChild(const wchar_t* szNodeName)
+IUIElementProxy  IUIElement::AddChild(const char* szNodeName)
 {
     UIElementProxy proxy = m_pImpl->AddChild(szNodeName);
     RETURN_IUIElementProxy(proxy);
@@ -129,7 +129,7 @@ bool  IUIElement::AddChildAfter(IUIElement*  pElem, IUIElement* pInsertAfter)
             pElem ? pElem->GetImpl():nullptr,
             pInsertAfter ? pInsertAfter->GetImpl():nullptr);
 }
-IUIElementProxy  IUIElement::AddChildBefore(const wchar_t* szNodeName, IUIElement* pInsertBefore)
+IUIElementProxy  IUIElement::AddChildBefore(const char* szNodeName, IUIElement* pInsertBefore)
 {
     UIElementProxy proxy = m_pImpl->AddChildBefore(
             szNodeName,
@@ -137,7 +137,7 @@ IUIElementProxy  IUIElement::AddChildBefore(const wchar_t* szNodeName, IUIElemen
 
     RETURN_IUIElementProxy(proxy);
 }
-IUIElementProxy  IUIElement::AddChildAfter(const wchar_t* szNodeName, IUIElement* pInsertAfter)
+IUIElementProxy  IUIElement::AddChildAfter(const char* szNodeName, IUIElement* pInsertAfter)
 {
     UIElementProxy proxy = m_pImpl->AddChildAfter(
             szNodeName,
@@ -172,7 +172,7 @@ IUIElementProxy  IUIElement::NextElement()
     RETURN_IUIElementProxy(proxy);
 }
 
-IUIElementProxy  IUIElement::FindChild(const wchar_t* szChildName)
+IUIElementProxy  IUIElement::FindChild(const char* szChildName)
 {
     UIElementProxy proxy = m_pImpl->FindChild(szChildName);
     RETURN_IUIElementProxy(proxy);
@@ -211,13 +211,13 @@ bool  IUIDocument::IsDirty()
     return m_pImpl->IsDirty();
 }
 
-IUIElementProxy  IUIDocument::FindElem(const wchar_t* szText)
+IUIElementProxy  IUIDocument::FindElem(const char* szText)
 {
     UIElementProxy proxy = m_pImpl->FindElem(szText);
     RETURN_IUIElementProxy(proxy);
 }
 
-const wchar_t*  IUIDocument::GetSkinPath()
+const char*  IUIDocument::GetSkinPath()
 {
     return m_pImpl->GetSkinPath();
 }

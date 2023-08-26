@@ -27,7 +27,7 @@ IIntAttribute*  IIntAttribute::SetDefault(int l)
     m_pImpl->SetDefault(l);
     return this;
 }
-IIntAttribute*  IIntAttribute::AddAlias(int l, const wchar_t* sz)
+IIntAttribute*  IIntAttribute::AddAlias(int l, const char* sz)
 {
     m_pImpl->AddAlias(l, sz);
     return this;
@@ -43,19 +43,19 @@ IIntAttribute*  IIntAttribute::SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e)
 	return this;
 }
 
-const wchar_t*  IIntAttribute::GetKey()
+const char*  IIntAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IIntAttribute::GetDesc()
+const char*  IIntAttribute::GetDesc()
 {
     return EMPTYTEXT;
 }
-const wchar_t*  IIntAttribute::GetGroupName()
+const char*  IIntAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IIntAttribute::GetParentKey()
+const char*  IIntAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
@@ -63,7 +63,7 @@ int  IIntAttribute::GetLong()
 {
     return m_pImpl->GetLong();
 }
-const wchar_t*  IIntAttribute::Get()
+const char*  IIntAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -92,24 +92,24 @@ IBoolAttribute*  IBoolAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IBoolAttribute::GetKey()
+const char*  IBoolAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
 
-const wchar_t*  IBoolAttribute::GetDesc()
+const char*  IBoolAttribute::GetDesc()
 {
     return EMPTYTEXT;
 }
-const wchar_t*  IBoolAttribute::GetGroupName()
+const char*  IBoolAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IBoolAttribute::GetParentKey()
+const char*  IBoolAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-const wchar_t*  IBoolAttribute::Get()
+const char*  IBoolAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -135,7 +135,7 @@ IStringAttribute::IStringAttribute(StringAttribute* p)
     m_pImpl = p;
 }
 
-IStringAttribute*  IStringAttribute::SetDefault(const wchar_t* sz)
+IStringAttribute*  IStringAttribute::SetDefault(const char* sz)
 {
     m_pImpl->SetDefault(sz);
     return this;
@@ -151,23 +151,23 @@ IStringAttribute*  IStringAttribute::AsData()
 // 	return this;
 // }
 
-const wchar_t*  IStringAttribute::GetKey()
+const char*  IStringAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IStringAttribute::Get()
+const char*  IStringAttribute::Get()
 {
     return m_pImpl->Get();
 }
-const wchar_t*  IStringAttribute::GetDesc()
+const char*  IStringAttribute::GetDesc()
 {
     return EMPTYTEXT;
 }
-const wchar_t*  IStringAttribute::GetGroupName()
+const char*  IStringAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IStringAttribute::GetParentKey()
+const char*  IStringAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
@@ -186,7 +186,7 @@ IEnumAttribute::IEnumAttribute(EnumAttribute* p)
 {
     m_pImpl = p;
 }
-IEnumAttribute*  IEnumAttribute::AddOption(int l, const wchar_t* sz)
+IEnumAttribute*  IEnumAttribute::AddOption(int l, const char* sz)
 {
     m_pImpl->AddOption(l ,sz);
     return this;
@@ -202,23 +202,23 @@ IEnumAttribute*  IEnumAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IEnumAttribute::GetKey()
+const char*  IEnumAttribute::GetKey()
 {
 	return m_pImpl->GetKey();
 }
-const wchar_t*  IEnumAttribute::GetDesc()
+const char*  IEnumAttribute::GetDesc()
 {
 	return EMPTYTEXT;
 }
-const wchar_t*  IEnumAttribute::GetGroupName()
+const char*  IEnumAttribute::GetGroupName()
 {
 	return  m_pImpl->GetGroupName();
 }
-const wchar_t*  IEnumAttribute::GetParentKey()
+const char*  IEnumAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-const wchar_t*  IEnumAttribute::Get()
+const char*  IEnumAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -247,7 +247,7 @@ IFlagsAttribute::IFlagsAttribute(FlagsAttribute* p)
 {
     m_pImpl = p;
 }
-IFlagsAttribute*  IFlagsAttribute::AddFlag(int l, const wchar_t* sz)
+IFlagsAttribute*  IFlagsAttribute::AddFlag(int l, const char* sz)
 {
     m_pImpl->AddFlag(l ,sz);
     return this;
@@ -263,23 +263,23 @@ IFlagsAttribute*  IFlagsAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IFlagsAttribute::GetKey()
+const char*  IFlagsAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IFlagsAttribute::GetDesc()
+const char*  IFlagsAttribute::GetDesc()
 {
     return EMPTYTEXT;
 }
-const wchar_t*  IFlagsAttribute::GetGroupName()
+const char*  IFlagsAttribute::GetGroupName()
 {
     return  m_pImpl->GetGroupName();
 }
-const wchar_t*  IFlagsAttribute::GetParentKey()
+const char*  IFlagsAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-const wchar_t*  IFlagsAttribute::Get()
+const char*  IFlagsAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -308,23 +308,23 @@ IRectAttribute*  IRectAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IRectAttribute::GetKey()
+const char*  IRectAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IRectAttribute::GetDesc()
+const char*  IRectAttribute::GetDesc()
 {
     return m_pImpl->GetDesc();
 }
-const wchar_t*  IRectAttribute::GetGroupName()
+const char*  IRectAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IRectAttribute::GetParentKey()
+const char*  IRectAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-const wchar_t*  IRectAttribute::Get()
+const char*  IRectAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -342,23 +342,23 @@ ISizeAttribute*  ISizeAttribute::AsData()
 	return this;
 }
 
-const wchar_t*  ISizeAttribute::GetKey()
+const char*  ISizeAttribute::GetKey()
 {
 	return m_pImpl->GetKey();
 }
-const wchar_t*  ISizeAttribute::GetDesc()
+const char*  ISizeAttribute::GetDesc()
 {
 	return m_pImpl->GetDesc();
 }
-const wchar_t*  ISizeAttribute::GetGroupName()
+const char*  ISizeAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  ISizeAttribute::GetParentKey()
+const char*  ISizeAttribute::GetParentKey()
 {
 	return m_pImpl->GetParentKey();
 }
-const wchar_t*  ISizeAttribute::Get()
+const char*  ISizeAttribute::Get()
 {
 	return m_pImpl->Get();
 }
@@ -376,23 +376,23 @@ IRegion9Attribute*  IRegion9Attribute::AsData()
 	return this;
 }
 
-const wchar_t*  IRegion9Attribute::GetKey()
+const char*  IRegion9Attribute::GetKey()
 {
 	return m_pImpl->GetKey();
 }
-const wchar_t*  IRegion9Attribute::GetDesc()
+const char*  IRegion9Attribute::GetDesc()
 {
 	return m_pImpl->GetDesc();
 }
-const wchar_t*  IRegion9Attribute::GetGroupName()
+const char*  IRegion9Attribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IRegion9Attribute::GetParentKey()
+const char*  IRegion9Attribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
-const wchar_t*  IRegion9Attribute::Get()
+const char*  IRegion9Attribute::Get()
 {
 	return m_pImpl->Get();
 }
@@ -404,7 +404,7 @@ IStringEnumAttribute::IStringEnumAttribute(StringEnumAttribute* p)
     m_pImpl = p;
 }
 
-const wchar_t*  IStringEnumAttribute::Get()
+const char*  IStringEnumAttribute::Get()
 {
     return m_pImpl->Get();
 }
@@ -436,19 +436,19 @@ IStringEnumAttribute*  IStringEnumAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IStringEnumAttribute::GetKey()
+const char*  IStringEnumAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IStringEnumAttribute::GetDesc()
+const char*  IStringEnumAttribute::GetDesc()
 {
     return m_pImpl->GetDesc();
 }
-const wchar_t*  IStringEnumAttribute::GetGroupName()
+const char*  IStringEnumAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IStringEnumAttribute::GetParentKey()
+const char*  IStringEnumAttribute::GetParentKey()
 {
     return m_pImpl->GetParentKey();
 }
@@ -459,23 +459,23 @@ IColorAttribute::IColorAttribute(ColorAttribute* p)
 	m_pImpl = p;
 }
 
-const wchar_t*  IColorAttribute::GetKey()
+const char*  IColorAttribute::GetKey()
 {
 	return m_pImpl->GetKey();
 }
-const wchar_t*  IColorAttribute::GetDesc()
+const char*  IColorAttribute::GetDesc()
 {
 	return m_pImpl->GetDesc();
 }
-const wchar_t*  IColorAttribute::GetGroupName()
+const char*  IColorAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IColorAttribute::GetParentKey()
+const char*  IColorAttribute::GetParentKey()
 {
 	return m_pImpl->GetParentKey();
 }
-const wchar_t*  IColorAttribute::Get()
+const char*  IColorAttribute::Get()
 {
 	return m_pImpl->Get();
 }
@@ -492,24 +492,24 @@ IRenderBaseAttribute*  IRenderBaseAttribute::AsData()
     return this;
 }
 
-const wchar_t*  IRenderBaseAttribute::GetKey()
+const char*  IRenderBaseAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  IRenderBaseAttribute::GetDesc()
+const char*  IRenderBaseAttribute::GetDesc()
 {
     return m_pImpl->GetDesc();
 }
-const wchar_t*  IRenderBaseAttribute::Get()
+const char*  IRenderBaseAttribute::Get()
 {
     return m_pImpl->Get();
 }
 
-const wchar_t*  IRenderBaseAttribute::GetGroupName()
+const char*  IRenderBaseAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  IRenderBaseAttribute::GetParentKey()
+const char*  IRenderBaseAttribute::GetParentKey()
 {
 	return m_pImpl->GetParentKey();
 }
@@ -526,30 +526,30 @@ ITextRenderBaseAttribute*  ITextRenderBaseAttribute::AsData()
     return this;
 }
 
-const wchar_t*  ITextRenderBaseAttribute::GetKey()
+const char*  ITextRenderBaseAttribute::GetKey()
 {
     return m_pImpl->GetKey();
 }
-const wchar_t*  ITextRenderBaseAttribute::GetDesc()
+const char*  ITextRenderBaseAttribute::GetDesc()
 {
     return m_pImpl->GetDesc();
 }
-const wchar_t*  ITextRenderBaseAttribute::Get()
+const char*  ITextRenderBaseAttribute::Get()
 {
     return m_pImpl->Get();
 }
-const wchar_t*  ITextRenderBaseAttribute::GetGroupName()
+const char*  ITextRenderBaseAttribute::GetGroupName()
 {
 	return m_pImpl->GetGroupName();
 }
-const wchar_t*  ITextRenderBaseAttribute::GetParentKey()
+const char*  ITextRenderBaseAttribute::GetParentKey()
 {
 	return m_pImpl->GetParentKey();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-AttributeSerializerWrap::AttributeSerializerWrap(SerializeParam* p, const wchar_t* szGroupName)
+AttributeSerializerWrap::AttributeSerializerWrap(SerializeParam* p, const char* szGroupName)
 {
     m_pImpl = new AttributeSerializer(p, szGroupName);
 }
@@ -562,7 +562,7 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 	return m_pImpl;
 }
 
-// IStringAttribute*  AttributeSerializerWrap::AddString(const wchar_t* szKey, void* _this, pfnStringSetter s, pfnStringGetter g)
+// IStringAttribute*  AttributeSerializerWrap::AddString(const char* szKey, void* _this, pfnStringSetter s, pfnStringGetter g)
 // {
 //     StringAttribute* p = m_pImpl->AddString(szKey, _this, s, g);
 //     if (!p)
@@ -572,9 +572,9 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 // }
 
 // IStringAttribute*  AttributeSerializerWrap::AddString(
-//     const wchar_t* szKey, 
-//     const std::function<void(const wchar_t*)>& s, 
-//     const std::function<const wchar_t*()>& g)
+//     const char* szKey, 
+//     const std::function<void(const char*)>& s, 
+//     const std::function<const char*()>& g)
 // {
 //     StringAttribute* p = m_pImpl->AddString(szKey, s, g);
 //     if (!p)
@@ -583,7 +583,7 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 //     return p->GetIStringAttribute();
 // }
 
-// IStringAttribute*  AttributeSerializerWrap::AddI18nString(const wchar_t* szKey, void* _this, pfnStringExSetter s, pfnStringGetter g)
+// IStringAttribute*  AttributeSerializerWrap::AddI18nString(const char* szKey, void* _this, pfnStringExSetter s, pfnStringGetter g)
 // {
 //     StringAttribute* p = m_pImpl->AddI18nString(szKey, _this, s, g);
 //     if (!p)
@@ -593,9 +593,9 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 // }
 
 // IStringAttribute*  AttributeSerializerWrap::AddI18nString(
-//     const wchar_t* szKey, 
-//     const std::function<void(const wchar_t*, int)>& s, 
-//     const std::function<const wchar_t*()>& g)
+//     const char* szKey, 
+//     const std::function<void(const char*, int)>& s, 
+//     const std::function<const char*()>& g)
 // {
 //     StringAttribute* p = m_pImpl->AddI18nString(szKey, s, g);
 //     if (!p)
@@ -604,7 +604,7 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 //     return p->GetIStringAttribute();
 // }
 
-// IStringEnumAttribute*  AttributeSerializerWrap::AddStringEnum(const wchar_t* szKey, void* _this, pfnStringSetter s, pfnStringGetter g)
+// IStringEnumAttribute*  AttributeSerializerWrap::AddStringEnum(const char* szKey, void* _this, pfnStringSetter s, pfnStringGetter g)
 // {
 // 	StringEnumAttribute* p = m_pImpl->AddStringEnum(szKey, _this, s, g);
 // 	if (!p)
@@ -613,7 +613,7 @@ AttributeSerializer*  AttributeSerializerWrap::GetImpl()
 // 	return p->GetIStringEnumAttribute();
 // }
 
-IBoolAttribute*  AttributeSerializerWrap::AddBool(const wchar_t* szKey, bool& bBindValue)
+IBoolAttribute*  AttributeSerializerWrap::AddBool(const char* szKey, bool& bBindValue)
 {
     BoolAttribute* p = m_pImpl->AddBool(szKey, bBindValue);
     if (!p)
@@ -621,7 +621,7 @@ IBoolAttribute*  AttributeSerializerWrap::AddBool(const wchar_t* szKey, bool& bB
 
     return p->GetIBoolAttribute();
 }
-// IBoolAttribute*  AttributeSerializerWrap::AddBool(const wchar_t* szKey, void* _this, pfnBoolSetter s, pfnBoolGetter g)
+// IBoolAttribute*  AttributeSerializerWrap::AddBool(const char* szKey, void* _this, pfnBoolSetter s, pfnBoolGetter g)
 // {
 //     BoolAttribute* p = m_pImpl->AddBool(szKey, _this, s, g);
 //     if (!p)
@@ -630,7 +630,7 @@ IBoolAttribute*  AttributeSerializerWrap::AddBool(const wchar_t* szKey, bool& bB
 //     return p->GetIBoolAttribute();
 // }
 
-IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, int& lBindValue)
+IIntAttribute*  AttributeSerializerWrap::AddInt(const char* szKey, int& lBindValue)
 {
     IntAttribute* p = m_pImpl->AddInt(szKey, lBindValue);
     if (!p)
@@ -638,7 +638,7 @@ IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, int& lBind
 
     return p->GetIIntAttribute();
 }
-// IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
+// IIntAttribute*  AttributeSerializerWrap::AddInt(const char* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
 // {
 //     IntAttribute* p = m_pImpl->AddInt(szKey, _this, s, g);
 //     if (!p)
@@ -647,7 +647,7 @@ IIntAttribute*  AttributeSerializerWrap::AddInt(const wchar_t* szKey, int& lBind
 //     return p->GetIIntAttribute();
 // }
 
-IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const wchar_t* szKey, int& lBindValue)
+IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const char* szKey, int& lBindValue)
 {
 	FlagsAttribute* p = m_pImpl->AddFlags(szKey, lBindValue);
 	if (!p)
@@ -656,7 +656,7 @@ IFlagsAttribute*  AttributeSerializerWrap::AddFlags(const wchar_t* szKey, int& l
 	return p->GetIFlagsAttribute();
 }
 
-IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, int& lBindValue)
+IEnumAttribute*  AttributeSerializerWrap::AddEnum(const char* szKey, int& lBindValue)
 {
     EnumAttribute* p = m_pImpl->AddEnum(szKey, lBindValue);
     if (!p)
@@ -664,7 +664,7 @@ IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, int& lBi
 
     return p->GetIEnumAttribute();
 }
-// IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
+// IEnumAttribute*  AttributeSerializerWrap::AddEnum(const char* szKey, void* _this, pfnLongSetter s, pfnLongGetter g)
 // {
 //     EnumAttribute* p = m_pImpl->AddEnum(szKey, _this, s, g);
 //     if (!p)
@@ -673,7 +673,7 @@ IEnumAttribute*  AttributeSerializerWrap::AddEnum(const wchar_t* szKey, int& lBi
 //     return p->GetIEnumAttribute();
 // }
 
-IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, Rect& rcBindValue)
+IRectAttribute*  AttributeSerializerWrap::AddRect(const char* szKey, Rect& rcBindValue)
 {
 	RectAttribute* p = m_pImpl->AddRect(szKey, rcBindValue);
 	if (!p)
@@ -681,7 +681,7 @@ IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, Rect& rc
 
 	return p->GetIRectAttribute();
 }
-// IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, void* _this, pfnRectSetter s, pfnRectGetter g)
+// IRectAttribute*  AttributeSerializerWrap::AddRect(const char* szKey, void* _this, pfnRectSetter s, pfnRectGetter g)
 // {
 // 	RectAttribute* p = m_pImpl->AddRect(szKey, _this, s, g);
 // 	if (!p)
@@ -690,7 +690,7 @@ IRectAttribute*  AttributeSerializerWrap::AddRect(const wchar_t* szKey, Rect& rc
 // 	return p->GetIRectAttribute();
 // }
 
-ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, Size& sBindValue)
+ISizeAttribute*  AttributeSerializerWrap::AddSize(const char* szKey, Size& sBindValue)
 {
 	SizeAttribute* p = m_pImpl->AddSize(szKey, sBindValue);
 	if (!p)
@@ -698,7 +698,7 @@ ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, Size& sB
 
 	return p->GetISizeAttribute();
 }
-// ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, void* _this, pfnSizeSetter s, pfnSizeGetter g)
+// ISizeAttribute*  AttributeSerializerWrap::AddSize(const char* szKey, void* _this, pfnSizeSetter s, pfnSizeGetter g)
 // {
 // 	SizeAttribute* p = m_pImpl->AddSize(szKey, _this, s, g);
 // 	if (!p)
@@ -707,7 +707,7 @@ ISizeAttribute*  AttributeSerializerWrap::AddSize(const wchar_t* szKey, Size& sB
 // 	return p->GetISizeAttribute();
 // }
 
-IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const wchar_t* szKey, C9Region& rBindValue)
+IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const char* szKey, C9Region& rBindValue)
 {
 	Region9Attribute* p = m_pImpl->Add9Region(szKey, rBindValue);
 	if (!p)
@@ -716,7 +716,7 @@ IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const wchar_t* szKey, C9
 	return p->GetIRegion9Attribute();
 }
 
-IColorAttribute*  AttributeSerializerWrap::AddColor(const wchar_t* szKey, Color*& pBindValue)
+IColorAttribute*  AttributeSerializerWrap::AddColor(const char* szKey, Color*& pBindValue)
 {
 	ColorAttribute* p = m_pImpl->AddColor(szKey, pBindValue);
 	if (!p)
@@ -724,7 +724,7 @@ IColorAttribute*  AttributeSerializerWrap::AddColor(const wchar_t* szKey, Color*
 
 	return p->GetIColorAttribute();
 }
-IColorAttribute*  AttributeSerializerWrap::AddColor(const wchar_t* szKey, Color& pBindValue)
+IColorAttribute*  AttributeSerializerWrap::AddColor(const char* szKey, Color& pBindValue)
 {
 	ColorAttribute* p = m_pImpl->AddColor(szKey, pBindValue);
 	if (!p)
@@ -733,7 +733,7 @@ IColorAttribute*  AttributeSerializerWrap::AddColor(const wchar_t* szKey, Color&
 	return p->GetIColorAttribute();
 }
 
-// IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const wchar_t* szKey, void* _this, pfnRectSetter s, pfnRectGetter g)
+// IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const char* szKey, void* _this, pfnRectSetter s, pfnRectGetter g)
 // {
 // 	Region9Attribute* p = m_pImpl->Add9Region(szKey, _this, s, g);
 // 	if (!p)
@@ -742,7 +742,7 @@ IColorAttribute*  AttributeSerializerWrap::AddColor(const wchar_t* szKey, Color&
 // 	return p->GetIRegion9Attribute();
 // }
 
-IRenderBaseAttribute*  AttributeSerializerWrap::AddRenderBase(const wchar_t* szPrefix, IObject* pObj, IRenderBase*& pBindValue)
+IRenderBaseAttribute*  AttributeSerializerWrap::AddRenderBase(const char* szPrefix, IObject* pObj, IRenderBase*& pBindValue)
 {
 	RenderBaseAttribute* p = m_pImpl->AddRenderBase(
 		szPrefix, pObj?pObj->GetImpl():nullptr, pBindValue);
@@ -753,7 +753,7 @@ IRenderBaseAttribute*  AttributeSerializerWrap::AddRenderBase(const wchar_t* szP
 }
 
 ITextRenderBaseAttribute*  AttributeSerializerWrap::AddTextRenderBase(
-		const wchar_t* szPrefix, IObject* pObj, ITextRenderBase*& pBindValue)
+		const char* szPrefix, IObject* pObj, ITextRenderBase*& pBindValue)
 {
 	TextRenderBaseAttribute* p = m_pImpl->AddTextRenderBase(
 		szPrefix, pObj?pObj->GetImpl():nullptr, pBindValue);
@@ -781,16 +781,16 @@ void  IAttributeEditorProxy::LoadAttribute2Editor(IObject* pObj)
 {
     m_pImpl->LoadAttribute2Editor(pObj);
 }
-UpdateAttribute2EditorResult  IAttributeEditorProxy::UpdateAttribute2Editor(const wchar_t* szKey)
+UpdateAttribute2EditorResult  IAttributeEditorProxy::UpdateAttribute2Editor(const char* szKey)
 {
 	 return m_pImpl->UpdateAttribute2Editor(szKey);
 }
-bool  IAttributeEditorProxy::SetAttribute(const wchar_t* szKey, const wchar_t* szValue)
+bool  IAttributeEditorProxy::SetAttribute(const char* szKey, const char* szValue)
 {
     return m_pImpl->Set(szKey, szValue);
 }
 
-const wchar_t*  IAttributeEditorProxy::GetAttribute(const wchar_t* szKey)
+const char*  IAttributeEditorProxy::GetAttribute(const char* szKey)
 {
     return m_pImpl->Get(szKey);
 }

@@ -27,7 +27,7 @@ Size  DockLayout::MeasureChildObject()
 		else if (0 == (nFlag&LAYOUT_ITEM_ALIGN_LTRB))
 			pCenterObj = pChild;
 #else
-		String  strDock;
+		std::string  strDock;
 		pChild->GetAttribute(XML_LAYOUT_DOCK_DOCK, strDock);
 
 		if (XML_LAYOUT_DOCK_DOCK_CENTER == strDock ||
@@ -54,7 +54,7 @@ Size  DockLayout::MeasureChildObject()
 #if 1
 		if (nFlag & LAYOUT_ITEM_ALIGN_LEFT || LAYOUT_ITEM_ALIGN_RIGHT)
 #else
-		String  strDock;
+		std::string  strDock;
 		pChild->GetAttribute(XML_LAYOUT_DOCK_DOCK, strDock);
 
 		if (XML_LAYOUT_DOCK_DOCK_LEFT == strDock ||
@@ -112,7 +112,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 #if 1
 		int nFlag = pChild->GetConfigLayoutFlags();
 #else
-		String  strDock;
+		std::string  strDock;
 		pChild->GetAttribute(XML_LAYOUT_DOCK_DOCK, strDock);
 #endif
 
@@ -373,14 +373,14 @@ void DesktopLayout::Arrange(Window *pWindow) {
 #endif
 }
 
-void LoadConfigWH(const wchar_t *szText, int &wh, int &whtype) {
-  if (!szText || !szText[0] || 0 == wcscmp(szText, XML_AUTO)) {
+void LoadConfigWH(const char *szText, int &wh, int &whtype) {
+  if (!szText || !szText[0] || 0 == strcmp(szText, XML_AUTO)) {
     whtype = WH_AUTO;
     wh = 0;
     return;
   }
 
-  int nLength = (int)wcslen(szText);
+  int nLength = (int)strlen(szText);
   if (szText[nLength - 1] == XML_AVERAGE_CHAR) {
     // 只支持平均分配，不支持平均系数
     whtype = WH_AVG;
@@ -389,27 +389,27 @@ void LoadConfigWH(const wchar_t *szText, int &wh, int &whtype) {
   }
 
   if (szText[nLength - 1] == XML_PERCENT_CHAR) {
-    String str(szText);
+    std::string str(szText);
     str[nLength - 1] = 0;
 
     whtype = WH_PERCENT;
-    wh = util::wtoi(str.c_str());
+    wh = atoi(str.c_str());
     return;
   }
 
-  wh = ScaleByDpi(util::wtoi(szText));
+  wh = ScaleByDpi(atoi(szText));
   whtype = WH_SET;
 }
 
-const wchar_t *SaveConfigWH(int wh, int whtype) {
-  wchar_t *szBuffer = GetTempBuffer();
+const char *SaveConfigWH(int wh, int whtype) {
+  char *szBuffer = GetTempBuffer();
 
   switch (whtype) {
   case WH_AUTO:
     return nullptr;
 
   case WH_SET: {
-    wprintf(szBuffer, TEXT("%d"), RestoreByDpi(wh));
+    sprintf(szBuffer, "%d", RestoreByDpi(wh));
     return szBuffer;
   }
 
@@ -419,7 +419,7 @@ const wchar_t *SaveConfigWH(int wh, int whtype) {
   }
 
   case WH_PERCENT: {
-    wprintf(szBuffer, TEXT("%d%%"), wh);
+    sprintf(szBuffer, "%d%%", wh);
     return szBuffer;
   }
   }

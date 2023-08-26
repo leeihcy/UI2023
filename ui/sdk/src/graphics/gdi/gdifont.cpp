@@ -98,7 +98,7 @@ bool  GDIRenderFont::IsAttach()
 SIZE GDIRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 {
 	CSize sizeText(0, 0);
-    uint nLength = (uint)wcslen(szText);
+    uint nLength = (uint)strlen(szText);
     if (!nLength)
         return sizeText;
 

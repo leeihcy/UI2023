@@ -39,9 +39,9 @@ typedef void (*pfnUICreateTextRenderBasePtr)(IResource *pSkinRes,
 typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 
 // uiapplication中的枚举回调
-typedef bool (*pfnEnumLayoutTypeCallback)(const wchar_t *, llong, llong);
-typedef void (*pfnEnumRenderBaseNameCallback)(const wchar_t *, llong, llong);
-typedef void (*pfnEnumTextRenderBaseNameCallback)(const wchar_t *, llong, llong);
+typedef bool (*pfnEnumLayoutTypeCallback)(const char *, llong, llong);
+typedef void (*pfnEnumRenderBaseNameCallback)(const char *, llong, llong);
+typedef void (*pfnEnumTextRenderBaseNameCallback)(const char *, llong, llong);
 
 // 返回值:
 enum PARSE_CONTROL_RETURN {

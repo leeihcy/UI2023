@@ -191,7 +191,7 @@ IColorResItem*  ColorResItem::GetIColorResItem()
 
     return m_pIColorResItem;
 }
-const wchar_t* ColorResItem::GetColorString()
+const char* ColorResItem::GetColorString()
 {
 	return m_strColor.c_str();
 }
@@ -202,23 +202,23 @@ bool  ColorResItem::IsMyColor(Color* p)
 
 	return false;
 }
-const String& ColorResItem::GetColorStringRef()
+const std::string& ColorResItem::GetColorStringRef()
 { 
 	return m_strColor; 
 }
 
-void  ColorResItem::SetId(const wchar_t* szId)
+void  ColorResItem::SetId(const char* szId)
 {
 	if (szId)
 		m_strId = szId;
 	else
 		m_strId.clear();
 }
-const wchar_t*  ColorResItem::GetId()
+const char*  ColorResItem::GetId()
 {
 	return m_strId.c_str();
 }
-const String&  ColorResItem::GetIdRef()
+const std::string&  ColorResItem::GetIdRef()
 {
 	return m_strId;
 }
@@ -250,7 +250,7 @@ bool ColorResItem::GetColor(Color** ppColor, bool* pbFirstTimeCreate)
 	return  true;
 }
 
-void ColorResItem::SetColor(const String& strColor) 
+void ColorResItem::SetColor(const std::string& strColor) 
 {
 	m_strColor = strColor;
 
@@ -330,7 +330,7 @@ ColorResItem* ColorRes::GetColorItem(int nIndex)
 	return m_vColors[nIndex];
 }
 
-ColorResItem* ColorRes::GetColorItem( const String& strID )
+ColorResItem* ColorRes::GetColorItem( const std::string& strID )
 {
 	std::vector<ColorResItem*>::iterator  iter = m_vColors.begin();
 	std::vector<ColorResItem*>::iterator  iterEnd = m_vColors.end();
@@ -346,25 +346,25 @@ ColorResItem* ColorRes::GetColorItem( const String& strID )
 	return nullptr;
 }
 
-void ColorRes::GetColor(const wchar_t* szColorId, Color** pp)
+void ColorRes::GetColor(const char* szColorId, Color** pp)
 {
 	if (!szColorId || !szColorId[0] || !pp)
 		return;
 
      // 直接翻译，不根据ID去映射
-    if (szColorId[0] == _T('#'))
+    if (szColorId[0] == '#')
     {
         COLORREF color = util::TranslateHexColor(szColorId+1); 
         *pp = Color::CreateInstance(color);
         return;
     }
-    else if (szColorId[0] == _T('0') && szColorId[1] == _T('x'))
+    else if (szColorId[0] == '0' && szColorId[1] == 'x')
     {
         COLORREF color = util::TranslateHexColor(szColorId+2);
         *pp = Color::CreateInstance(color);
         return;
     }
-    else if (wcsstr(szColorId, TEXT(",")))
+    else if (strstr(szColorId, ","))
     {
         COLORREF color = util::TranslateColor(szColorId);
         *pp = Color::CreateInstance(color);
@@ -374,7 +374,7 @@ void ColorRes::GetColor(const wchar_t* szColorId, Color** pp)
 	ColorResItem* pItem = this->GetColorItem(szColorId);
 	if (nullptr == pItem)
 	{
-		UI_LOG_WARN( _T("failed, id=%s"), szColorId);
+		UI_LOG_WARN( "failed, id=%s", szColorId);
 		return;
 	}
 
@@ -395,11 +395,11 @@ void ColorRes::GetColor(const wchar_t* szColorId, Color** pp)
 //
 // 从文件中加载一项(由CXmlImageParse::load_from_file中调用)
 //
-bool ColorRes::LoadItem(IMapAttribute* pMapAttrib, const wchar_t* szValue)
+bool ColorRes::LoadItem(IMapAttribute* pMapAttrib, const char* szValue)
 {
-	String strID;
+	std::string strID;
 
-    const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
+    const char* szText = pMapAttrib->GetAttr(XML_ID, true);
 	if (szText)
 		strID = szText;
 
@@ -415,7 +415,7 @@ bool ColorRes::LoadItem(IMapAttribute* pMapAttrib, const wchar_t* szValue)
 		return false;
 	}
 }
-bool ColorRes::InsertColor(const String& strID, const wchar_t* szColor, ColorResItem** pItem )
+bool ColorRes::InsertColor(const std::string& strID, const char* szColor, ColorResItem** pItem )
 {
     if (nullptr == szColor)
         return false;
@@ -439,7 +439,7 @@ bool ColorRes::InsertColor(const String& strID, const wchar_t* szColor, ColorRes
 	return true;
 }
 
-bool ColorRes::ModifyColor( const String& strID, const String& strColor )
+bool ColorRes::ModifyColor( const std::string& strID, const std::string& strColor )
 {
 	ColorResItem* p = this->GetColorItem(strID);
 	if (p)
@@ -451,7 +451,7 @@ bool ColorRes::ModifyColor( const String& strID, const String& strColor )
 	return false;
 }
 
-bool ColorRes::RemoveColor(const String& strID )
+bool ColorRes::RemoveColor(const std::string& strID )
 {
 	std::vector<ColorResItem*>::iterator  iter = m_vColors.begin();
 	std::vector<ColorResItem*>::iterator  iterEnd = m_vColors.end();
@@ -499,7 +499,7 @@ bool ColorRes::ChangeSkinHLS(short h, short l, short s, int nFlag)
 	return true;
 }
 
-const wchar_t*  ColorRes::GetColorId(Color* p)
+const char*  ColorRes::GetColorId(Color* p)
 {
 	std::vector<ColorResItem*>::iterator  iter = m_vColors.begin();
 	for( ; iter != m_vColors.end(); ++iter)

@@ -29,7 +29,7 @@ namespace ui
 // 	UIASSERT(nullptr == m_hCursor);
 // }
 // 
-// void UICursor::CreateInstance(const String strCurFilePath, UICursor** ppOutRef)
+// void UICursor::CreateInstance(const std::string strCurFilePath, UICursor** ppOutRef)
 // {
 // 	if (nullptr == ppOutRef)
 // 		return;
@@ -71,7 +71,7 @@ namespace ui
 // 	return m_hCursor; 
 // }
 // 
-// bool UICursor::Load(const wchar_t* szCursorFile)
+// bool UICursor::Load(const char* szCursorFile)
 // {
 // 	if (nullptr == szCursorFile)
 // 		return false;
@@ -204,7 +204,7 @@ IUICursor*  CursorResItem::GetCursor()
 
 	return static_cast<IUICursor*>(m_pCursor);
 }
-bool  CursorResItem::ModifyCursor( const String& strCurFilePath )
+bool  CursorResItem::ModifyCursor( const std::string& strCurFilePath )
 {
 	UIASSERT( false && _T("TODO: CursorResItem::ModifyCursor not implement"));
 	return false;
@@ -222,7 +222,7 @@ CursorRes::CursorRes()
 {
 	m_pICursorRes = nullptr;
 
-	// Ìí¼ÓÄ¬ÈÏµÄÏµÍ³Í¼±ê
+	// æ·»åŠ é»˜è®¤çš„ç³»ç»Ÿå›¾æ ‡
 	this->InsertCursor( XML_CURSOR_IDC_ARROW, _T(""), nullptr);
 	this->InsertCursor( XML_CURSOR_IDC_IBEAM, _T(""), nullptr);
 	this->InsertCursor( XML_CURSOR_IDC_WAIT, _T(""), nullptr);
@@ -240,7 +240,7 @@ CursorRes::CursorRes()
 	this->InsertCursor( XML_CURSOR_IDC_APPSTARTING, _T(""), nullptr);
 	this->InsertCursor( XML_CURSOR_IDC_HELP, _T(""), nullptr);
 
-	// UIDLL ×ÊÔ´
+	// UIDLL èµ„æº
 	this->InsertCursor( XML_CURSOR_IDC_DRAG_SEPERATOR, _T(""), nullptr);
 	this->InsertCursor( XML_CURSOR_IDC_SPLITBAR_H, _T(""), nullptr);
 	this->InsertCursor( XML_CURSOR_IDC_SPLITBAR_V, _T(""), nullptr);
@@ -284,13 +284,13 @@ CursorResItem*  CursorRes::GetCursorItem(UICursor* p)
 	return nullptr;
 }
 
-CursorResItem* CursorRes::GetCursorItem(const wchar_t* szId)
+CursorResItem* CursorRes::GetCursorItem(const char* szId)
 {
 	vector<CursorResItem*>::iterator  iter = m_vCursors.begin();
 	for (; iter != m_vCursors.end(); ++iter)
 	{
 		CursorResItem* p = *iter;
-		if (0 == wcscmp(p->GetId(), szId))
+		if (0 == strcmp(p->GetId(), szId))
 		{
 			return p;
 		}
@@ -302,7 +302,7 @@ int   CursorRes::GetCursorCount()
 	return (int)m_vCursors.size();
 }
 
-void CursorRes::GetCursor(const wchar_t* szCursorId, IUICursor** pp)
+void CursorRes::GetCursor(const char* szCursorId, IUICursor** pp)
 {
 	if (nullptr == szCursorId  || nullptr == pp)
 		return;
@@ -317,7 +317,7 @@ void CursorRes::GetCursor(const wchar_t* szCursorId, IUICursor** pp)
 	*pp = p->GetCursor();
 }
 
-const wchar_t*  CursorRes::GetCursorId(IUICursor* p)
+const char*  CursorRes::GetCursorId(IUICursor* p)
 {
 	if (!p)
 		return nullptr;
@@ -329,12 +329,12 @@ const wchar_t*  CursorRes::GetCursorId(IUICursor* p)
 	return nullptr;
 }
 
-CursorResItem*  CursorRes::LoadItem(IMapAttribute* pMapAttrib, const wchar_t* szFullPath)
+CursorResItem*  CursorRes::LoadItem(IMapAttribute* pMapAttrib, const char* szFullPath)
 {
 	if (nullptr == szFullPath)
 		return nullptr;
 
-	const wchar_t* szId = pMapAttrib->GetAttr(XML_ID, true);
+	const char* szId = pMapAttrib->GetAttr(XML_ID, true);
 
 	CursorResItem* pItem = nullptr;
 	if (this->InsertCursor(szId, szFullPath, &pItem))
@@ -349,7 +349,7 @@ CursorResItem*  CursorRes::LoadItem(IMapAttribute* pMapAttrib, const wchar_t* sz
 	}
 }
 
-bool  CursorRes::InsertCursor(const wchar_t* szId, const wchar_t* szCurFilePath, CursorResItem** ppItem)
+bool  CursorRes::InsertCursor(const char* szId, const char* szCurFilePath, CursorResItem** ppItem)
 {
 	CursorResItem* p = this->GetCursorItem(szId);
 	if (p)
@@ -369,7 +369,7 @@ bool  CursorRes::InsertCursor(const wchar_t* szId, const wchar_t* szCurFilePath,
 	}
 	return true;
 }
-bool  CursorRes::ModifyCursor( const wchar_t* szId, const wchar_t* szCursor )
+bool  CursorRes::ModifyCursor( const char* szId, const char* szCursor )
 {
 	CursorResItem* p = this->GetCursorItem(szId);
 	if (p)
@@ -381,7 +381,7 @@ bool  CursorRes::ModifyCursor( const wchar_t* szId, const wchar_t* szCursor )
 	return false;
 }
 
-bool  CursorRes::RemoveCursor( const wchar_t* szId )
+bool  CursorRes::RemoveCursor( const char* szId )
 {
 	if (nullptr == szId)
 		return false;
@@ -392,7 +392,7 @@ bool  CursorRes::RemoveCursor( const wchar_t* szId )
 	for (; iter != iterEnd; iter++)
 	{
 		CursorResItem* p = *iter;
-		if (0 == wcscmp(p->GetId(), szId))
+		if (0 == strcmp(p->GetId(), szId))
 		{
 			delete p;
 			p = nullptr;

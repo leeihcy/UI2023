@@ -14,7 +14,7 @@ struct UIAPI IPanel : public IObject {
 
   ILayout *GetLayout();
   void SetLayout(ILayout* p);
-  void SetLayoutType(const wchar_t* name);
+  void SetLayoutType(const char* name);
 
   void SetTextureRender(IRenderBase *p);
   IRenderBase *GetTextureRender();

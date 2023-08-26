@@ -82,8 +82,8 @@ public:
   void SetHSL(HSL &hsl);
   void SetHSV(HSV &hsv);
 
-  void ToHexString(wchar_t *szBuffer);
-  void ToWebString(wchar_t *szBuffer);
+  void ToHexString(char *szBuffer);
+  void ToWebString(char *szBuffer);
 
   // 在外部使用Color对象时，既有可能是通过GetColor获取到的Color*指针，也有可能外部自己直接设置
   // 一个COLORREF值，这个时候就得new一个Color*，使得逻辑与GetColor保持一致。为了达到释放逻辑一
@@ -97,8 +97,8 @@ private:
 #ifdef EDITOR_MODE
 public:
   // 为了在编辑器中区分开是使用id引用的颜色，还是直接书写的颜色值，增加该逻辑
-  void SetResId(const wchar_t *);
-  const wchar_t *GetResId();
+  void SetResId(const char *);
+  const char *GetResId();
 
 private:
   LPTSTR m_szResId;

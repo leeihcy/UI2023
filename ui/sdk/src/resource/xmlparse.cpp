@@ -300,7 +300,7 @@ font.xml <- FontXmlParse
 // 加载一个xml，(并将内容全部转换成小写[废弃])
 //
 #if 0
-bool LoadXml_ToLower( CMarkup* pXml, const String& strDataSource )
+bool LoadXml_ToLower( CMarkup* pXml, const std::string& strDataSource )
 {
 	if (NULL == pXml )
 		return false;
@@ -316,7 +316,7 @@ bool LoadXml_ToLower( CMarkup* pXml, const String& strDataSource )
 	// 统一切换为小写字母，防止配置大小写错误 注：由于涉及到一些英文文本内容配置，如text,tooltip
 	// 因此不能随便就能内容全部转成小写
 
-	//String content = pXml->GetDoc();
+	//std::string content = pXml->GetDoc();
 	//transform(content.begin(),content.end(),content.begin(),tolower);
 	//return pXml->SetDoc(content);
 	return bRet;
@@ -325,15 +325,15 @@ bool LoadXml_ToLower( CMarkup* pXml, const String& strDataSource )
 //
 //	获取一个路径对应的临时文件路径
 //
-String Get_TempFile( const String& strDataSource )
+std::string Get_TempFile( const std::string& strDataSource )
 {
 	return strDataSource + TEMP_FILE_EXT;
 }
 
 // 将CMarkup中的内容保存到一个temp文件中，用于与外界共享
-bool Commit_2_TempFile(CMarkup& markup, const String& strDataSource)
+bool Commit_2_TempFile(CMarkup& markup, const std::string& strDataSource)
 {
-	String strTempFilePath = Get_TempFile(strDataSource);
+	std::string strTempFilePath = Get_TempFile(strDataSource);
 
 // #ifdef _UNICODE
 // 	wofstream f;
@@ -362,14 +362,14 @@ bool Commit_2_TempFile(CMarkup& markup, const String& strDataSource)
 	return true;
  }
 // 从一个temp文件中重新加载数据到CMarkup中
-bool Update_From_TempFile(CMarkup& markup, const String& strDataSource)
+bool Update_From_TempFile(CMarkup& markup, const std::string& strDataSource)
 {
 	return false;
 }
 
-bool Delete_TempFile(const String& strDataSource)
+bool Delete_TempFile(const std::string& strDataSource)
 {
-	String strTempFilePath = Get_TempFile(strDataSource);
+	std::string strTempFilePath = Get_TempFile(strDataSource);
 	if (PathFileExists(strTempFilePath.c_str() ))
 	{
 		::DeleteFile(strTempFilePath.c_str());
@@ -526,7 +526,7 @@ bool CXmlImageParse::ModifyImage( ImageResItem *pImageItemInfo )
 	return bRet;
 }
 
-bool CXmlImageParse::RemoveImage( const String& strID )
+bool CXmlImageParse::RemoveImage( const std::string& strID )
 {
 	UIASSERT(m_pUIApp->IsDesignMode());
 
@@ -624,7 +624,7 @@ bool CXmlImageParse::clear_save( ImageRes*  pImageInfo )
 	return bRet;
 }
 
-bool CXmlImageParse::load_from_file( CMarkup* pXml, const String& strDataSource, ImageRes *pImageInfo, CursorRes* pCursorInfo, GifRes* pGifInfo )
+bool CXmlImageParse::load_from_file( CMarkup* pXml, const std::string& strDataSource, ImageRes *pImageInfo, CursorRes* pCursorInfo, GifRes* pGifInfo )
 {
 #if 0 // TODO: 删除，重新架构了
 	if (NULL == pXml || NULL == pImageInfo || NULL == pCursorInfo || NULL == pGifInfo)
@@ -653,26 +653,26 @@ bool CXmlImageParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 //			if (false == pXml->FindElem( XML_ITEM ))        { break; }
 			if (false == pXml->FindElem())                  { break; }
 
-			String strTagName = pXml->GetTagName();
+			std::string strTagName = pXml->GetTagName();
 
 			//	加载所有属性
 			ATTRMAP  mapAttrib;
 			for( int j = 0; ; j++ )
 			{
-				String key = pXml->GetAttribName(j);
+				std::string key = pXml->GetAttribName(j);
 				if (_T("") == key )
 					break;
 
-				String value = pXml->GetAttrib( key );
+				std::string value = pXml->GetAttrib( key );
 				mapAttrib[key]= value;
 			}
 
-			String  strPath = pXml->GetData();
+			std::string  strPath = pXml->GetData();
 			if (strPath.empty())
 			{
 				strPath = pXml->GetAttrib(XML_PATH);   // 如果没有配置在内容中，就检查一下是否是配置成属性了
 			}
-			String  strFullPath;
+			std::string  strFullPath;
 			if (util::IsFullPath(strPath.c_str()) )
 			{
 				strFullPath = strPath;
@@ -716,7 +716,7 @@ bool CXmlImageParse::insert_image_2_xml( ImageResItem *pImageItemInfo )
 	wchar_t szRelative[MAX_PATH] = _T("");
 	util::CalcRelativePathToFile(m_strDataSource.c_str(), pImageItemInfo->GetPathRef().c_str(), szRelative );
 
-	if (false == m_xml.AddElem( XML_ITEM, String(szRelative)) )    
+	if (false == m_xml.AddElem( XML_ITEM, std::string(szRelative)) )    
 		return false;
 	if (false == m_xml.SetAttrib( XML_ID, pImageItemInfo->GetIDRef()) )  
 		return false;
@@ -837,7 +837,7 @@ bool CXmlColorParse::Load( ColorRes*  pColorInfo )
 	}
 	return bRet;
 }
-bool CXmlColorParse::load_from_file( CMarkup* pXml, const String& strDataSource, ColorRes *pColorInfo )
+bool CXmlColorParse::load_from_file( CMarkup* pXml, const std::string& strDataSource, ColorRes *pColorInfo )
 {
 #if 0
 	if(NULL == pXml || NULL == pColorInfo)
@@ -868,15 +868,15 @@ bool CXmlColorParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 			ATTRMAP  mapAttrib;
 			for( int j = 0; ; j++ )
 			{
-				String key = pXml->GetAttribName(j);
+				std::string key = pXml->GetAttribName(j);
 				if (_T("") == key )
 					break;
 
-				String value = pXml->GetAttrib( key );
+				std::string value = pXml->GetAttrib( key );
 				mapAttrib[key]= value;
 			}
 
-			String strValue = pXml->GetData();
+			std::string strValue = pXml->GetData();
 			if (false == pColorInfo->LoadItem(mapAttrib, strValue))
 						UI_LOG_WARN(_T("%s insert color failed."), FUNC_NAME);
 		}
@@ -974,7 +974,7 @@ bool CXmlColorParse::ModifyColor( ColorResItem *pColorItemInfo )
 		Commit_2_TempFile(m_xml, m_strDataSource );
 	return bRet;
 }
-bool CXmlColorParse::RemoveColor( const String& strID )
+bool CXmlColorParse::RemoveColor( const std::string& strID )
 {
 	UIASSERT(m_pUIApp->IsDesignMode());
 
@@ -1155,7 +1155,7 @@ bool CXmlFontParse::Load( FontRes* pFontInfo )
 	return bRet;
 }
 
-bool CXmlFontParse::load_from_file( CMarkup* pXml, const String& strDataSource, FontRes *pFontInfo )
+bool CXmlFontParse::load_from_file( CMarkup* pXml, const std::string& strDataSource, FontRes *pFontInfo )
 {
 	if(NULL == pXml || NULL == pFontInfo )
 		return false;
@@ -1182,14 +1182,14 @@ bool CXmlFontParse::load_from_file( CMarkup* pXml, const String& strDataSource, 
 		{
 			if (false == pXml->FindElem( XML_ITEM ) )        { break; }
 
-			String strID = pXml->GetAttrib( XML_ID );
-			String strFaceName = pXml->GetAttrib( XML_FONT_FACENAME );
-			String strFontHeight = pXml->GetAttrib( XML_FONT_HEIGHT );
-			String strOrientation = pXml->GetAttrib( XML_FONT_ORIENTATION );
-			String strBold = pXml->GetAttrib( XML_FONT_BOLD );
-			String strItalic = pXml->GetAttrib( XML_FONT_ITALIC );
-			String strUnderline = pXml->GetAttrib( XML_FONT_UNDERLINE );
-			String strStrikeout = pXml->GetAttrib( XML_FONT_STRIKEOUT );
+			std::string strID = pXml->GetAttrib( XML_ID );
+			std::string strFaceName = pXml->GetAttrib( XML_FONT_FACENAME );
+			std::string strFontHeight = pXml->GetAttrib( XML_FONT_HEIGHT );
+			std::string strOrientation = pXml->GetAttrib( XML_FONT_ORIENTATION );
+			std::string strBold = pXml->GetAttrib( XML_FONT_BOLD );
+			std::string strItalic = pXml->GetAttrib( XML_FONT_ITALIC );
+			std::string strUnderline = pXml->GetAttrib( XML_FONT_UNDERLINE );
+			std::string strStrikeout = pXml->GetAttrib( XML_FONT_STRIKEOUT );
 
 			if (strFaceName.empty() )
 			{
@@ -1340,7 +1340,7 @@ bool CXmlFontParse::ModifyFont( FontResItem *pFontItemInfo )
 		Commit_2_TempFile(m_xml, m_strDataSource );
 	return bRet;
 }
-bool CXmlFontParse::RemoveFont( const String& strID )
+bool CXmlFontParse::RemoveFont( const std::string& strID )
 {
 	UIASSERT(m_pUIApp->IsDesignMode());
 
@@ -1470,7 +1470,7 @@ bool CXmlStyleParse::Reload( StyleRes* pStyleInfo )
 //
 // 解析一个继承字符串所属的样式类型，如将#button解析为 id选择类型，id=button
 //
-/*static*/ bool ParseInheritString(const String& strInherit, STYLE_SELECTOR_TYPE& eStyletype, wchar_t* szStyleName )
+/*static*/ bool ParseInheritString(const std::string& strInherit, STYLE_SELECTOR_TYPE& eStyletype, wchar_t* szStyleName )
 {
 	if (strInherit.length() <= 0 || NULL == szStyleName )
 		return false;
@@ -1492,7 +1492,7 @@ bool CXmlStyleParse::Reload( StyleRes* pStyleInfo )
 	}
 	return true;
 }
-/*static*/ bool MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const String& strStypeName, wchar_t* szInherit )
+/*static*/ bool MakeInheritString(const STYLE_SELECTOR_TYPE& eStyletype, const std::string& strStypeName, wchar_t* szInherit )
 {
 	if (strStypeName.length() <= 0 || NULL == szInherit )
 		return false;
@@ -1558,7 +1558,7 @@ bool CXmlStyleParse::parse_inherit( tree<StyleResItem*>* pTreeItem, StyleRes* pS
 
 	for( int i = nSize-1; i >= 0; i-- )
 	{
-		String strInherit;
+		std::string strInherit;
 		if (false == pStyleItem->GetInheritItem(i, strInherit) )
 			continue;
 
@@ -1587,7 +1587,7 @@ bool CXmlStyleParse::parse_inherit( tree<StyleResItem*>* pTreeItem, StyleRes* pS
 	return true;
 }
 
-bool CXmlStyleParse::load_from_file( CMarkup* pXml, const String& strDataSource, StyleRes *pStyleInfo )
+bool CXmlStyleParse::load_from_file( CMarkup* pXml, const std::string& strDataSource, StyleRes *pStyleInfo )
 {
 	if (NULL == pXml || NULL == pStyleInfo )
 		return false;
@@ -1619,21 +1619,21 @@ bool CXmlStyleParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 			// 加载所有属性
 			for( int j = 0; ; j++ )
 			{
-				String key = pXml->GetAttribName(j);
+				std::string key = pXml->GetAttribName(j);
 				if (_T("") == key )
 					break;
 
-				String value = pXml->GetAttrib( key );
+				std::string value = pXml->GetAttrib( key );
 				pStyleItem->SetAttribute(key,value);
 			}
 
 			// 解析  SELECTOR_TPYE, ID
-			String strTagName = pXml->GetTagName();
+			std::string strTagName = pXml->GetTagName();
 			if (XML_STYLE_SELECTOR_TYPE_ID == strTagName )
 			{
 				pStyleItem->SetSelectorType( STYLE_SELECTOR_TYPE_ID );
 				
-				String strID;
+				std::string strID;
 				if (false == pStyleItem->GetAttribute( XML_ID, strID ) )
 				{
 					UI_LOG_WARN( _T("CXmlStyleParse::load_from_file Can't find the %s attribute of %s"), XML_ID, strTagName.c_str() );
@@ -1647,7 +1647,7 @@ bool CXmlStyleParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 			{
 				pStyleItem->SetSelectorType( STYLE_SELECTOR_TYPE_CLASS );
 
-				String strID;
+				std::string strID;
 				if (false == pStyleItem->GetAttribute( XML_ID, strID ) )
 				{
 					UI_LOG_WARN( _T("CXmlStyleParse::load_from_file Can't find the %s attribute of %s"), XML_ID, strTagName.c_str() );
@@ -1664,7 +1664,7 @@ bool CXmlStyleParse::load_from_file( CMarkup* pXml, const String& strDataSource,
 			}
 
 			// 解析 inherit 属性
-			String strInherit;
+			std::string strInherit;
 			if (pStyleItem->GetAttribute(XML_STYLE_INHERIT, strInherit) )
 			{
 				pStyleItem->RemoveAttribute(XML_STYLE_INHERIT);  // 不是一个属性，它是需要被扩展的
@@ -1710,8 +1710,8 @@ bool CXmlStyleParse::insert_style_2_xml( StyleResItem *pStyleItemInfo )
 		return false;
 
 	STYLE_SELECTOR_TYPE type = pStyleItemInfo->GetSelectorType();
-	const String& strID = pStyleItemInfo->GetIDRef();
-	const String& strInherit = pStyleItemInfo->GetInheritsRef();
+	const std::string& strID = pStyleItemInfo->GetIDRef();
+	const std::string& strInherit = pStyleItemInfo->GetInheritsRef();
 
 	switch( type )
 	{
@@ -1740,7 +1740,7 @@ bool CXmlStyleParse::insert_style_2_xml( StyleResItem *pStyleItemInfo )
 //
 //	查找指定的style item所在的xml位置，忽视当前所在位置，全文搜索
 //
-bool CXmlStyleParse::find_elem_in_xml( STYLE_SELECTOR_TYPE type, const String& strID )
+bool CXmlStyleParse::find_elem_in_xml( STYLE_SELECTOR_TYPE type, const std::string& strID )
 {
 	m_xml.ResetPos();
 
@@ -1764,7 +1764,7 @@ bool CXmlStyleParse::find_elem_in_xml( STYLE_SELECTOR_TYPE type, const String& s
 //
 //	查找指定的style item所在的xml位置，默认当前位置处于<style>下的最开始
 //
-bool CXmlStyleParse::find_elem_under_style( STYLE_SELECTOR_TYPE type, const String& strID )
+bool CXmlStyleParse::find_elem_under_style( STYLE_SELECTOR_TYPE type, const std::string& strID )
 {
 	bool bLoopRet = false;
 	switch( type )
@@ -1857,7 +1857,7 @@ bool CXmlStyleParse::ModifyStyle( StyleResItem *pStyleItemInfo )
 		
 	return true;
 }
-bool CXmlStyleParse::RemoveStyle( STYLE_SELECTOR_TYPE type, const String& strID )
+bool CXmlStyleParse::RemoveStyle( STYLE_SELECTOR_TYPE type, const std::string& strID )
 {
 	UIASSERT(m_pUIApp->IsDesignMode());
 
@@ -1873,7 +1873,7 @@ bool CXmlStyleParse::RemoveStyle( STYLE_SELECTOR_TYPE type, const String& strID 
 	return true;
 }
 
-bool CXmlStyleParse::InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey, const String& strValue )
+bool CXmlStyleParse::InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey, const std::string& strValue )
 {
 	UIASSERT( m_pUIApp->IsDesignMode() );
 
@@ -1887,7 +1887,7 @@ bool CXmlStyleParse::InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const String
 	Commit_2_TempFile(m_xml, m_strDataSource );
 	return true;
 }
-bool CXmlStyleParse::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey, const String& strValue )
+bool CXmlStyleParse::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey, const std::string& strValue )
 {
 	UIASSERT( m_pUIApp->IsDesignMode() );
 
@@ -1901,7 +1901,7 @@ bool CXmlStyleParse::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const String
 	Commit_2_TempFile(m_xml, m_strDataSource );
 	return true;
 }
-bool CXmlStyleParse::RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const String& strID, const String& strKey )
+bool CXmlStyleParse::RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const std::string& strID, const std::string& strKey )
 {
 	UIASSERT( m_pUIApp->IsDesignMode() );
 
@@ -1977,7 +1977,7 @@ bool CXmlLayoutParse::Load(LayoutRes* pLayoutInfo)
 	return bRet;
 }
 
-bool CXmlLayoutParse::load_from_file( CMarkup* pXml, const String& strDataSource, LayoutRes* pLayoutInfo )
+bool CXmlLayoutParse::load_from_file( CMarkup* pXml, const std::string& strDataSource, LayoutRes* pLayoutInfo )
 {
 	if (NULL == pXml || NULL == pLayoutInfo)
 		return false;
@@ -2138,8 +2138,8 @@ IObject*  CXmlLayoutParse::LoadRootObject(const wchar_t* szTag, const wchar_t sz
     IObject*  pObject = NULL;
     bool  bRet = false;
 
-    String  strTag = szTag;
-    String  strId = szId;
+    std::string  strTag = szTag;
+    std::string  strId = szId;
 
     this->m_xml.ResetPos();
 
@@ -2204,7 +2204,7 @@ IObject*  CXmlLayoutParse::LoadRootObject(const wchar_t* szTag, const wchar_t sz
 }
 #endif
 #if 0 // -- 架构改造
-Menu* CXmlLayoutParse::LoadMenu(const String& strMenuId)
+Menu* CXmlLayoutParse::LoadMenu(const std::string& strMenuId)
 {
 	Menu*    pMenu = NULL;
 	bool     bRet = false;
@@ -2313,7 +2313,7 @@ bool CXmlLayoutParse::loadMenuItems(MenuBase* pParentMenu)
 		if (false == bRet )     break;
 
 		Object*  pObj = NULL;
-		String   tagName = this->m_xml.GetTagName();
+		std::string   tagName = this->m_xml.GetTagName();
 		if (_T("") == tagName)
 		{
 			UI_LOG_WARN( _T("%s, xml invalid tag name."), FUNC_NAME );
@@ -2324,7 +2324,7 @@ bool CXmlLayoutParse::loadMenuItems(MenuBase* pParentMenu)
 		ATTRMAP  mapAttrib;
 		for( int j = 0; ; j++ )
 		{
-			String key = m_xml.GetAttribName(j);
+			std::string key = m_xml.GetAttribName(j);
 			if (_T("") == key )
 				break;
 
@@ -2332,7 +2332,7 @@ bool CXmlLayoutParse::loadMenuItems(MenuBase* pParentMenu)
 		}
 
 		// 特殊处理：扩展style
-		String strTagName, strStyleClass, strID;
+		std::string strTagName, strStyleClass, strID;
 
 		ATTRMAP::iterator iter = mapAttrib.find(XML_ID); // id = Menu.id，因为这里的id都是整数值
 		if (mapAttrib.end() != iter)
@@ -2346,7 +2346,7 @@ bool CXmlLayoutParse::loadMenuItems(MenuBase* pParentMenu)
 		{
 			strStyleClass = iter->second;
 		}
-		strTagName = pParentMenu->GetObjectName();   // tagName = Menu.String / Menu.Popup / Menu.Separator
+		strTagName = pParentMenu->GetObjectName();   // tagName = Menu.std::string / Menu.Popup / Menu.Separator
 		strTagName.push_back(XML_CHILD_SEPARATOR);
 		strTagName.append(tagName);
 
@@ -2368,7 +2368,7 @@ bool CXmlLayoutParse::loadMenuItems(MenuBase* pParentMenu)
 }
 #endif
 
-Object*  CXmlLayoutParse::mapXmlToClass(const String& strXmlName)
+Object*  CXmlLayoutParse::mapXmlToClass(const std::string& strXmlName)
 {
 	IObject* pIObject = NULL;
 	m_pUIApp->CreateInstanceByName((BSTR)strXmlName.c_str(), &pIObject);
@@ -2411,7 +2411,7 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 	//
 	for (int j = 0; ; j++)
 	{
-		String key = m_xml.GetAttribName(j);
+		std::string key = m_xml.GetAttribName(j);
 		if (_T("") == key)
 			break;
 
@@ -2427,7 +2427,7 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 	// 特殊处理：扩展style
 	//
 
-    String strID, strStyleClass;  // 避免pMapAttrib->GetAttr返回临时变量。
+    std::string strID, strStyleClass;  // 避免pMapAttrib->GetAttr返回临时变量。
     {
 	    const wchar_t*  szID = pMapAttrib->GetAttr(XML_ID, false);
         if (szID)
@@ -2502,7 +2502,7 @@ bool CXmlLayoutParse::loadObjects(Object* pObjParent, LayoutRes* pResLayout )
 		if (false == bRet)     break;
 
 		Object*  pObj = NULL;
-		String   tagName = this->m_xml.GetTagName();
+		std::string   tagName = this->m_xml.GetTagName();
 		if (_T("") == tagName)
 		{
 			UI_LOG_WARN( _T("LayoutXmlParse::loadObjects, xml invalid tag name.") );
@@ -2564,13 +2564,13 @@ bool CXmlLayoutParse::reloadObjects(Object* pObjParent, list<Object*>& listAllCh
 		if (false == bRet)     break;
 
 		Object*  pObj = NULL;
-		String   tagName = this->m_xml.GetTagName();
+		std::string   tagName = this->m_xml.GetTagName();
 		if (_T("") == tagName)
 		{
 			UI_LOG_WARN( _T("LayoutXmlParse::loadObjects, xml invalid tag name.") );
 			continue;
 		}
-		String   strID = this->m_xml.GetAttrib( XML_ID );
+		std::string   strID = this->m_xml.GetAttrib( XML_ID );
 		if (strID.empty())
 		{
 		}
@@ -2664,11 +2664,11 @@ bool CXmlLayoutParse::loadRenderChain(Object* pObjParent)
 
 		for (int j = 0; ; j++)
 		{
-			String key = m_xml.GetAttribName(j);
+			std::string key = m_xml.GetAttribName(j);
 			if (_T("") == key)
 				break;
 
-			String value = m_xml.GetAttrib( key );
+			std::string value = m_xml.GetAttrib( key );
             pMapAttrib->AddAttr(key.c_str(), m_xml.GetAttrib(key).c_str());
 		}
 		pWindow->InsertRenderLayer(pMapAttrib);
@@ -2697,8 +2697,8 @@ bool CXmlLayoutParse::LoadAllWindowNodeInfo(LayoutWindowNodeInfo* pInfoArray, in
 		{
 			if (pInfoArray)
 			{
-				String strTagName = m_xml.GetTagName();
-				String strNodeID = m_xml.GetAttrib(XML_ID);
+				std::string strTagName = m_xml.GetTagName();
+				std::string strNodeID = m_xml.GetAttrib(XML_ID);
 
 				_tcsncpy(pInfoArray[nIndex].szNodeName, strTagName.c_str(), MAX_STRING_LEN-1);
 				_tcsncpy(pInfoArray[nIndex].szNodeID,   strNodeID.c_str(),   MAX_STRING_LEN-1);

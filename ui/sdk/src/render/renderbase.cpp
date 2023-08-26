@@ -50,7 +50,7 @@ void RenderBase::CheckThemeChanged() {
   }
 }
 
-void RenderBase::_LoadColor(const wchar_t *szColorId, Color *&pColorRef) {
+void RenderBase::_LoadColor(const char *szColorId, Color *&pColorRef) {
   SAFE_RELEASE(pColorRef);
   if (!szColorId)
     return;
@@ -61,23 +61,23 @@ void RenderBase::_LoadColor(const wchar_t *szColorId, Color *&pColorRef) {
 
   pColorRes->GetColor(szColorId, &pColorRef);
 }
-const wchar_t *RenderBase::_GetColorId(Color *&pColorRef) {
+const char *RenderBase::_GetColorId(Color *&pColorRef) {
   if (!pColorRef)
     return nullptr;
 
   ColorRes *pColorRes = GetSkinColorRes();
   if (pColorRes) {
-    const wchar_t *szId = pColorRes->GetColorId(pColorRef);
+    const char *szId = pColorRes->GetColorId(pColorRef);
     if (szId)
       return szId;
   }
 
-  wchar_t *szBuffer = GetTempBuffer();
+  char *szBuffer = GetTempBuffer();
   pColorRef->ToWebString(szBuffer);
   return szBuffer;
 }
 
-void RenderBase::_LoadBitmap(const wchar_t *szBitmapId,
+void RenderBase::_LoadBitmap(const char *szBitmapId,
                              IRenderBitmap *&pBitmapRef) {
 #if defined(OS_WIN)
   SAFE_RELEASE(pBitmapRef);
@@ -111,7 +111,7 @@ void RenderBase::_LoadBitmap(const wchar_t *szBitmapId,
 #endif
 }
 
-const wchar_t *RenderBase::_GetBitmapId(IRenderBitmap *&pBitmapRef) {
+const char *RenderBase::_GetBitmapId(IRenderBitmap *&pBitmapRef) {
   if (!pBitmapRef)
     return nullptr;
 

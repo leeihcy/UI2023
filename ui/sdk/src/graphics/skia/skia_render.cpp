@@ -329,7 +329,7 @@ IRenderBrush *SkiaRenderTarget::CreateSolidBrush(Color *pColor) {
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
                                      Render2TargetParam *pParam) {}
 
-void SkiaRenderTarget::Save(const wchar_t *szPath) {
+void SkiaRenderTarget::Save(const char *szPath) {
   // if (m_pRenderBuffer)
   // {
   //     m_pRenderBuffer->Dump(szPath);

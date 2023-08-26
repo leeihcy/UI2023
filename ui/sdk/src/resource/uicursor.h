@@ -10,7 +10,7 @@ private:
 public:
     ~UICursor();
 
-    static void CreateInstance2( const String strCurFilePath, UICursor** pOutRef );
+    static void CreateInstance2( const std::string strCurFilePath, UICursor** pOutRef );
     static void CreateInstance2( LPTSTR nCursorID, HINSTANCE hInstance, UICursor** ppOutRef );
     void     SetOutRef(UICursor** ppOutRef) { m_pOutRef = ppOutRef; }
     bool     Load(LPTSTR nCursorID, HINSTANCE hInstance);

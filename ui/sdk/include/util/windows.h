@@ -59,7 +59,7 @@ typedef struct tagLOGFONT {
   unsigned char lfClipPrecision;
   unsigned char lfQuality;
   unsigned char lfPitchAndFamily;
-  wchar_t lfFaceName[LF_FACESIZE];
+  char lfFaceName[LF_FACESIZE];
 } LOGFONT;
 #define FW_NORMAL 400
 #define FW_BOLD 700
@@ -120,13 +120,6 @@ typedef struct tagWINDOWPOS {
 #define wcsicmp wcscasecmp
 
 #endif
-
-// #ifdef _UNICODE
-typedef std::wstring String;
-// #else
-//     typedef std::string  String;
-// #endif
-
 }
 
 #endif

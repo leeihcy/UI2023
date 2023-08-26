@@ -115,7 +115,7 @@ void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPa
     wchar_t* p2 = szLastPath;
 
     // 跳过 .\xxx 表示的当前目录
-    if (wcslen(szOrignPath) > 2 &&
+    if (strlen(szOrignPath) > 2 &&
         szOrignPath[0] == _T('.') && 
         (szOrignPath[1] == _T('/') || szOrignPath[1] == _T('\\')))
     {

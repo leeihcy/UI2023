@@ -53,10 +53,10 @@ public:
   ColorRes *GetSkinColorRes();
   ImageRes *GetSkinImageRes();
 
-  void _LoadColor(const wchar_t *szColorId, Color *&pColorRef);
-  void _LoadBitmap(const wchar_t *szBitmapId, IRenderBitmap *&pBitmapRef);
-  const wchar_t *_GetColorId(Color *&pColorRef);
-  const wchar_t *_GetBitmapId(IRenderBitmap *&pBitmapRef);
+  void _LoadColor(const char *szColorId, Color *&pColorRef);
+  void _LoadBitmap(const char *szBitmapId, IRenderBitmap *&pBitmapRef);
+  const char *_GetColorId(Color *&pColorRef);
+  const char *_GetBitmapId(IRenderBitmap *&pBitmapRef);
 
 protected:
   Application *m_pUIApplication;

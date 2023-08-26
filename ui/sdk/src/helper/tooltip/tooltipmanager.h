@@ -22,7 +22,7 @@ public:
     void  Reset();
     
 public:
-    String  strContent;
+    std::string  strContent;
 
     IMessage*  pNotifyObj;   
     void*  pItemData;    

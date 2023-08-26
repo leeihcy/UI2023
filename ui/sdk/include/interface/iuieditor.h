@@ -30,7 +30,7 @@ struct EditorAddObjectResData {
   bool bNcChild;
 
   Uuid objiid;
-  const wchar_t *szId;
+  const char *szId;
   void **ppCreateObj;
   IUIElement **ppCreateXml;
 };
@@ -79,7 +79,7 @@ struct IUIEditor {
   virtual void OnStyleChanged(IResource *pSkinRes, IStyleResItem *p,
                               EditorOPType e) = 0;
   virtual void OnStyleAttributeChanged(IResource *pSkinRes, IStyleResItem *p,
-                                       const wchar_t *szKey,
+                                       const char *szKey,
                                        EditorOPType e) = 0;
   virtual void EditorStringAttribute(IStringAttribute *,
                                      EditorAttributeFlag e) = 0;

@@ -12,7 +12,7 @@ class Resource;
 class  ColorTagElementInfo
 {
 public:
-	std::wstring  strId;  // 模块名
+	std::string  strId;  // 模块名
 	UIElement*  pXmlElement;  // xml结点
 };
 

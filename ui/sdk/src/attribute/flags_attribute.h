@@ -2,29 +2,28 @@
 #include "long_attribute.h"
 
 //
-// Àý£º layout.align="left|top"
+// layout.align="left|top"
 //
-namespace ui
-{
+namespace ui {
 
-class FlagsAttribute : public IntAttribute
-{
+class FlagsAttribute : public IntAttribute {
 public:
-    FlagsAttribute();
-    ~FlagsAttribute();
+  FlagsAttribute();
+  ~FlagsAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy*, EditorAttributeFlag e) override;
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *,
+                      EditorAttributeFlag e) override;
 
 public:
-    FlagsAttribute*  AddFlag(int, const wchar_t*);
-    IFlagsAttribute*  GetIFlagsAttribute();
+  FlagsAttribute *AddFlag(int, const char *);
+  IFlagsAttribute *GetIFlagsAttribute();
 
 private:
-    IFlagsAttribute*  m_pIFlagsAttribute;
+  IFlagsAttribute *m_pIFlagsAttribute;
 };
 
-AttributeBase*  CreateFlagsAttribute();
+AttributeBase *CreateFlagsAttribute();
 
-}
+} // namespace ui

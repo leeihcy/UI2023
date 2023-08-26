@@ -1,43 +1,42 @@
 #pragma once
 #include "attributebase.h"
 
-namespace ui
-{
+namespace ui {
 
-class CharArrayAttribute : public AttributeBase
-{
+class CharArrayAttribute : public AttributeBase {
 public:
-    CharArrayAttribute();
-    ~CharArrayAttribute();
-    ICharArrayAttribute*  GetICharArrayAttribute();
+  CharArrayAttribute();
+  ~CharArrayAttribute();
+  ICharArrayAttribute *GetICharArrayAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Reset() override;
-    virtual bool  IsDefaultValue() override;
-    void  SetBindValue(void*);
-    void  SetBindFuction(void* _this, void* _setter, void* _getter);
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy *, EditorAttributeFlag) override;
-    void  SetBindValueSize(long lSize);
-    
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Reset() override;
+  virtual bool IsDefaultValue() override;
+  void SetBindValue(void *);
+  void SetBindFuction(void *_this, void *_setter, void *_getter);
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *,
+                      EditorAttributeFlag) override;
+  void SetBindValueSize(long lSize);
+
 public:
-	CharArrayAttribute*  SetDefault(const wchar_t*);
-	const wchar_t*  GetDefault();
+  CharArrayAttribute *SetDefault(const char *);
+  const char *GetDefault();
 
 protected:
-    ICharArrayAttribute*  m_pICharArrayAttribute;
+  ICharArrayAttribute *m_pICharArrayAttribute;
 
-    wchar_t*  m_pBindValue;
-    long  m_lBindValueSize;
+  char *m_pBindValue;
+  long m_lBindValueSize;
 
-    String   m_strDefault;
-	bool  m_bDefaultIsNULL;   // ƒ¨»œ «nullptr£¨∂¯≤ª «""
+  std::string m_strDefault;
+  bool m_bDefaultIsNULL; // ÈªòËÆ§ÊòØnullptrÔºåËÄå‰∏çÊòØ""
 
-    void*  _this;
-    pfnStringSetter  _setter;
-    pfnStringGetter  _getter;
+  void *_this;
+  pfnStringSetter _setter;
+  pfnStringGetter _getter;
 };
 
-AttributeBase*  CreateCharArrayAttribute();
+AttributeBase *CreateCharArrayAttribute();
 
-}
+} // namespace ui

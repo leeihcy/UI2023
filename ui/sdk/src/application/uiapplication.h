@@ -67,8 +67,8 @@ public:
   TextRenderFactory &GetTextRenderFactroy() { return m_textRenderFactroy; }
   LayoutFactory &GetLayoutFactory() { return m_layoutFactory; }
 
-  const wchar_t *GetRenderBaseName(int nType);
-  bool CreateRenderBaseByName(const wchar_t *szName, IObject *pObject,
+  const char *GetRenderBaseName(int nType);
+  bool CreateRenderBaseByName(const char *szName, IObject *pObject,
                               IRenderBase **ppOut);
 
   Resource *GetDefaultSkinRes();
@@ -77,12 +77,12 @@ public:
 	void  HideToolTip();
 #endif
   void RestoreRegisterUIObject();
-  bool RegisterControlTagParseFunc(const wchar_t *szTag,
+  bool RegisterControlTagParseFunc(const char *szTag,
                                    pfnParseControlTag func);
-  bool GetSkinTagParseFunc(const wchar_t *szTag, pfnParseSkinTag *pFunc);
-  bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
+  bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
+  bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
   bool RegisterUIObject(IMeta *);
-  IObject *CreateUIObjectByName(const wchar_t *szXmlName, IResource *);
+  IObject *CreateUIObjectByName(const char *szXmlName, IResource *);
   IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *);
 
   void LoadUIObjectListToToolBox();
@@ -113,8 +113,8 @@ private:
   bool m_bGpuEnable;
 
   typedef std::vector<IMeta *> UIOBJ_CREATE_DATA;
-  typedef std::map<String, pfnParseSkinTag> UISKINTAGPARSE_DATA;
-  typedef std::map<String, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
+  typedef std::map<std::string, pfnParseSkinTag> UISKINTAGPARSE_DATA;
+  typedef std::map<std::string, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
 
   // 保存UI对象的XML字符串，用于从字符串创建UI对象
   UIOBJ_CREATE_DATA m_vecUIObjectDesc;

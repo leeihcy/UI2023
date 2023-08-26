@@ -63,7 +63,7 @@ int ColorManager::ParseNewElement(UIElement *pElem) {
   info.pXmlElement = pElem;
   pElem->AddRef();
 
-  std::wstring bstrId = pElem->GetAttrib(XML_ID);
+  std::string bstrId = pElem->GetAttrib(XML_ID);
   if (!bstrId.empty()) {
     info.strId = bstrId;
   }

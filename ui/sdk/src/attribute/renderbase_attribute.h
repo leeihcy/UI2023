@@ -9,8 +9,8 @@ public:
     RenderBaseAttribute();
 	~RenderBaseAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
+    virtual const char*  Get() override; 
+    virtual void  Set(const char*) override;
 	virtual void  Reset() override;
     virtual bool  IsDefaultValue() override;
     void  SetBindValue(void*) override;
@@ -24,7 +24,7 @@ public:
     {
         m_pObject = p; 
     }
-    void  SetPrefix(const wchar_t* szPrefix)
+    void  SetPrefix(const char* szPrefix)
     {
         if (szPrefix)
             m_strPrefix = szPrefix;
@@ -42,7 +42,7 @@ private:
     IRenderBase**  m_ppBindValue;
     Object*  m_pObject;
 
-    String  m_strPrefix;
+    std::string  m_strPrefix;
 
 //     void*  _this;
 //     pfnStringSetter  _setter;

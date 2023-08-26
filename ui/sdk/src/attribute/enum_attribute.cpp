@@ -27,13 +27,13 @@ IEnumAttribute*  EnumAttribute::GetIEnumAttribute()
     return m_pIEnumAttribute;
 }
 
-EnumAttribute*  EnumAttribute::AddOption(int l, const wchar_t* sz)
+EnumAttribute*  EnumAttribute::AddOption(int l, const char* sz)
 {
     IntAttribute::AddAlias(l, sz);
     return this;
 }
 
-void  EnumAttribute::Set(const wchar_t* szValue)
+void  EnumAttribute::Set(const char* szValue)
 {
     int lValue = m_lDefault;
 
@@ -45,8 +45,8 @@ void  EnumAttribute::Set(const wchar_t* szValue)
 
 	// 如果szValue是一个数字，则取出来。否则用默认值覆盖
 	bool isNumber = false;
-	const wchar_t* p = szValue;
-	wchar_t c = 0;
+	const char* p = szValue;
+	char c = 0;
 	while ((c = *p++))
 	{
 		if (c >= 0x30 && c < 0x39)
@@ -63,7 +63,7 @@ void  EnumAttribute::Set(const wchar_t* szValue)
 
 	if (isNumber)
 	{
-		SetLong(util::wtoi(szValue));
+		SetLong(atoi(szValue));
 	}
 	else
 	{
@@ -71,11 +71,11 @@ void  EnumAttribute::Set(const wchar_t* szValue)
 	}
 }
 
-const wchar_t*  EnumAttribute::Get()
+const char*  EnumAttribute::Get()
 {
     int lValue = GetLong();
 
-    const wchar_t* szAlias = m_mapAlias.GetAlias(lValue);
+    const char* szAlias = m_mapAlias.GetAlias(lValue);
     if (szAlias)
     {
         return szAlias;
@@ -93,7 +93,7 @@ namespace ui
 // 		int w, int l);
 }
 
-void EnumGraphicsRenderLibraryTypeCallback(int lType, const wchar_t* szName, int wParam, int)
+void EnumGraphicsRenderLibraryTypeCallback(int lType, const char* szName, llong wParam, llong)
 {
 	EnumAttribute* pThis = (EnumAttribute*)wParam;
 	pThis->AddOption(lType, szName);
@@ -106,7 +106,7 @@ void EnumGraphicsRenderLibraryTypeCallback(int lType, const wchar_t* szName, int
 EnumAttribute*  EnumAttribute::FillGraphicsRenderLibraryData()
 {
 	// EnumGraphicsRenderLibraryType(EnumGraphicsRenderLibraryTypeCallback, (int)this, 0);
-	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_GDI, L"gdi");
+	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_GDI, "gdi");
 	return this;
 }
 

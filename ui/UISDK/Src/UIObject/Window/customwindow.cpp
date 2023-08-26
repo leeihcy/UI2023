@@ -94,7 +94,7 @@ void  CustomWindow::OnSerialize(SerializeParam* pData)
         }
     }
 
-    AttributeSerializer s(pData, TEXT("CustomWindow"));
+    AttributeSerializer s(pData, "CustomWindow");
 
     s.AddInt(XML_WINDOW_RESIZE_BORDER, m_lResizeBorder);
     s.AddInt(XML_WINDOW_MAXIMIZE_BORDER, m_lMaximizeBorder);

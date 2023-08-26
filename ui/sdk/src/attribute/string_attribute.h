@@ -2,63 +2,59 @@
 #include "attributebase.h"
 #include <functional>
 
-namespace ui
-{
+namespace ui {
 
-class StringAttribute : public AttributeBase
-{
+class StringAttribute : public AttributeBase {
 public:
-    StringAttribute();
-    ~StringAttribute();
-    IStringAttribute*  GetIStringAttribute();
+  StringAttribute();
+  ~StringAttribute();
+  IStringAttribute *GetIStringAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Reset() override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
-    virtual bool  IsDefaultValue() override;
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Reset() override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                      EditorAttributeFlag e) override;
+  virtual bool IsDefaultValue() override;
 
 public:
-	StringAttribute*  SetDefault(const wchar_t*);
-	const wchar_t*  GetDefault();
-	// void  Internationalization();
+  StringAttribute *SetDefault(const char *);
+  const char *GetDefault();
+  // void  Internationalization();
 
-    void  BindReference(String&);
-    // void  BindFunction(void* _this, pfnStringSetter s, pfnStringGetter g);
-    void Bind(slot<void(const wchar_t*)>&& s, slot<const wchar_t*()>&& g);
-    // void  BindFunction(
-    //     const std::function<void(const wchar_t*)>& s, 
-    //     const std::function<const wchar_t*()>& g);
+  void BindReference(std::string &);
+  // void  BindFunction(void* _this, pfnStringSetter s, pfnStringGetter g);
+  void Bind(slot<void(const char *)> &&s, slot<const char *()> &&g);
+  // void  BindFunction(
+  //     const std::function<void(const char*)>& s,
+  //     const std::function<const char*()>& g);
 
 protected:
-    IStringAttribute*  m_pIStringAttribute;
-    String   m_strDefault;
-    String*  m_pBindValue;
+  IStringAttribute *m_pIStringAttribute;
+  std::string m_strDefault;
+  std::string *m_pBindValue;
 
-    // void*  _this;
-    // pfnStringSetter  _setter;
-    // pfnStringGetter  _getter;
+  // void*  _this;
+  // pfnStringSetter  _setter;
+  // pfnStringGetter  _getter;
 
-    signal<void(const wchar_t*)>  m_setter;
-    signal<const wchar_t*()> m_getter;
+  signal<void(const char *)> m_setter;
+  signal<const char *()> m_getter;
 };
 
-class I18nStringAttribute : public StringAttribute
-{
+class I18nStringAttribute : public StringAttribute {
 public:
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
 
-    virtual const wchar_t*  Get() override;
-    virtual void  Set(const wchar_t*) override;
+  void BindEx(slot<void(const char *, int)> &&s,
+              slot<const char *()> &&g);
+  // void  BindFunctionEx(void* _this, pfnStringExSetter s, pfnStringGetter g);
 
-    void  BindEx(
-        slot<void(const wchar_t*, int)>&& s, 
-        slot<const wchar_t*()>&& g);
-    // void  BindFunctionEx(void* _this, pfnStringExSetter s, pfnStringGetter g);
-
-    // pfnStringExSetter  _setter_ex;
-    signal<void(const wchar_t*, int)>  m_setter_ex;
+  // pfnStringExSetter  _setter_ex;
+  signal<void(const char *, int)> m_setter_ex;
 };
 
-AttributeBase*  CreateStringAttribute();
-AttributeBase*  CreateI18nStringAttribute();
-}
+AttributeBase *CreateStringAttribute();
+AttributeBase *CreateI18nStringAttribute();
+} // namespace ui

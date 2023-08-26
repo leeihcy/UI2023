@@ -25,7 +25,7 @@ ISkinDataSource*  FileDataSource::GetISkinDataSource()
 	return &m_ISkinDataSource;
 }
 
-void  FileDataSource::SetPath(const wchar_t* szPath)
+void  FileDataSource::SetPath(const char* szPath)
 {
     if (szPath)
         m_strPath = szPath;
@@ -35,14 +35,14 @@ void  FileDataSource::SetPath(const wchar_t* szPath)
 	int nLength = (int)m_strPath.length();
 	if (nLength > 1)
 	{
-		if (m_strPath[nLength-1] != _T('\\'))
+		if (m_strPath[nLength-1] != '\\')
 		{
-			m_strPath.append(_T("\\"));
+			m_strPath.append("\\");
 		}
 	}
 }
 
-const wchar_t*  FileDataSource::GetPath()
+const char*  FileDataSource::GetPath()
 {
     return m_strPath.c_str();
 }
@@ -56,58 +56,58 @@ SKIN_PACKET_TYPE  FileDataSource::GetType()
 {
     return SKIN_PACKET_TYPE_DIR;
 }
-bool FileDataSource::Load_UIDocument(UIDocument* pDocument, const wchar_t* szPath)
+bool FileDataSource::Load_UIDocument(UIDocument* pDocument, const char* szPath)
 {
     if (nullptr == pDocument || nullptr == szPath)
         return false;
 
-    String strTemp = m_strPath;
+    std::string strTemp = m_strPath;
     strTemp.append(szPath);
 
     return pDocument->LoadFile(strTemp.c_str());
 }
 
-bool  FileDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e)
+bool  FileDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPath, RENDER_BITMAP_LOAD_FLAG e)
 {
     if (nullptr == pBitmap || nullptr == szPath)
         return false;
 
-    String strTemp = m_strPath;
+    std::string strTemp = m_strPath;
     strTemp.append(szPath);
 
     return pBitmap->LoadFromFile(strTemp.c_str(), e);
 }
 
 #if defined(OS_WIN)
-bool  FileDataSource::Load_Image(const wchar_t* szPath, ImageWrap* pImage)
+bool  FileDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {
     if (nullptr == pImage || nullptr == szPath)
         return false;
 
-    String strTemp = m_strPath;
+    std::string strTemp = m_strPath;
     strTemp.append(szPath);
 
     pImage->GetImpl()->Load(strTemp.c_str());
     return pImage->IsNull()? false:true;
 }
 
-bool  FileDataSource::Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadWrap* pImage)
+bool  FileDataSource::Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage)
 {
     if (nullptr == pImage || nullptr == szPath)
         return false;
 
-    String strTemp = m_strPath;
+    std::string strTemp = m_strPath;
     strTemp.append(szPath);
 
     return pImage->LoadFromFile(strTemp.c_str());
 }
 
-bool  FileDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReader** pp)
+bool  FileDataSource::Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp)
 {
     if (nullptr == pp || nullptr == szPath)
         return false;
 
-    String strTemp = m_strPath;
+    std::string strTemp = m_strPath;
     strTemp.append(szPath);
 
     FileBufferReader*  pBuffer = new FileBufferReader;
@@ -121,21 +121,21 @@ bool  FileDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferRead
     return true;
 }
 #endif
-bool FileDataSource::FileExist(const wchar_t* szPath)
+bool FileDataSource::FileExist(const char* szPath)
 {
-	String strTemp = m_strPath;
+	std::string strTemp = m_strPath;
 	strTemp.append(szPath);
 
 	return ui::util::PathFileExists(strTemp.c_str()) ? true : false;
 }
 
 // 
-// bool  FileDataSource::CalcFilePath(const wchar_t* szPath, IResource* pSkinRes, String& strLastPath)
+// bool  FileDataSource::CalcFilePath(const char* szPath, IResource* pSkinRes, std::string& strLastPath)
 // {
 //     if (nullptr == szPath || nullptr == pSkinRes)
 //         return false;
 // 
-//     if (wcslen(szPath) >= MAX_PATH)
+//     if (strlen(szPath) >= MAX_PATH)
 //         return false;
 // 
 //     // 1. 直接就是绝对路径
@@ -148,10 +148,10 @@ bool FileDataSource::FileExist(const wchar_t* szPath)
 //         return true;
 //     }
 // 
-//     wchar_t  szFullPath[MAX_PATH] = _T("");
+//     char  szFullPath[MAX_PATH] = _T("");
 // 
 //     // 相对于皮肤包路径
-//     const wchar_t* szSkinDir = pSkinRes->GetPath();
+//     const char* szSkinDir = pSkinRes->GetPath();
 //     if (util::CalcFullPathByRelative(szSkinDir, szPath, szFullPath))
 //     {
 //         if (PathFileExists(szFullPath))
@@ -168,7 +168,7 @@ bool FileDataSource::FileExist(const wchar_t* szPath)
 //     if (nullptr == pDoc)
 //         return false;
 // 
-//     wchar_t  szFileDir[MAX_PATH] = _T("");
+//     char  szFileDir[MAX_PATH] = _T("");
 //     if (false == util::GetPathDir(pDoc->GetPath(), szFileDir))
 //     {
 //         SAFE_RELEASE(pDoc);

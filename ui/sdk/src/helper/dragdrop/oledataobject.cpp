@@ -505,8 +505,8 @@ BOOL _AfxCopyStgMedium(CLIPFORMAT cfFormat, LPSTGMEDIUM lpDest, LPSTGMEDIUM lpSo
 		{
 			UIASSERT(lpSource->lpszFileName != nullptr);
 			UIASSERT(lpDest->lpszFileName != nullptr);
-			String strSource(lpDest->lpszFileName);
-			String strDest(lpDest->lpszFileName);
+			std::string strSource(lpDest->lpszFileName);
+			std::string strDest(lpDest->lpszFileName);
 			return CopyFile(lpSource->lpszFileName ? strSource.c_str() : nullptr,
 				lpDest->lpszFileName ? strDest.c_str() : nullptr, FALSE);
 		}

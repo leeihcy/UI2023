@@ -35,8 +35,8 @@ public:
 public:
   IObject *GetIObject();
 
-  const wchar_t *GetId();
-  void SetId(const wchar_t *szText);
+  const char *GetId();
+  void SetId(const char *szText);
 
 #if defined(OS_WIN)
   bool CreateAccesible(IAccessible **pp);
@@ -64,9 +64,9 @@ public:
   void DrawToLayer__(IRenderTarget *pRenderTarget);
   void DrawChildObject__(IRenderTarget *pRenderTarget, Object *pChildStart);
 
-  Object *FindObject(const wchar_t *szObjId);
-  Object *TryFindObject(const wchar_t *szObjId);
-  Object *FindNcObject(const wchar_t *szobjId);
+  Object *FindObject(const char *szObjId);
+  Object *TryFindObject(const char *szObjId);
+  Object *FindNcObject(const char *szobjId);
   Object *FindObject(Uuid uuid);
   Object *FindNcObject(Uuid uuid);
   unsigned int GetChildCount();
@@ -126,8 +126,8 @@ public:
   void LoadAttributes(bool bReload);
   void LoadAttributeFromXml(UIElement *pElement, bool bReload);
 
-  const wchar_t *GetAttribute(const wchar_t *szKey, bool bErase);
-  void AddAttribute(const wchar_t *szKey, const wchar_t *szValue);
+  const char *GetAttribute(const char *szKey, bool bErase);
+  void AddAttribute(const char *szKey, const char *szValue);
   IMapAttribute* GetMapAttribute();
   void ClearMapAttribute();
   void InitDefaultAttrib();
@@ -147,12 +147,12 @@ public:
   IRenderBase *GetForeRender();
   IRenderFont *GetRenderFont();
 
-  void LoadBkgndRender(const wchar_t *szName);
-  void LoadForegndRender(const wchar_t *szName);
-  void LoadTextRender(const wchar_t *szName);
-  const wchar_t *SaveBkgndRender();
-  const wchar_t *SaveForegndRender();
-  const wchar_t *SaveTextRender();
+  void LoadBkgndRender(const char *szName);
+  void LoadForegndRender(const char *szName);
+  void LoadTextRender(const char *szName);
+  const char *SaveBkgndRender();
+  const char *SaveForegndRender();
+  const char *SaveTextRender();
 
   Size GetDesiredSize();
   void UpdateLayout();
@@ -329,13 +329,13 @@ protected:
   void position_in_tree_changed();
 
 protected:
-  Object *find_child_object(const wchar_t *szobjId, bool bFindDecendant);
+  Object *find_child_object(const char *szobjId, bool bFindDecendant);
   Object *find_child_object(Uuid uuid, bool bFindDecendant);
   Object *find_ncchild_object(Uuid uuid, bool bFindDecendant);
-  void load_renderbase(const wchar_t *szName, IRenderBase *&pRender);
-  void load_textrender(const wchar_t *szName, ITextRenderBase *&pTextRender);
-  const wchar_t *get_renderbase_name(IRenderBase *&pRender);
-  const wchar_t *get_textrender_name(ITextRenderBase *&pTextRender);
+  void load_renderbase(const char *szName, IRenderBase *&pRender);
+  void load_textrender(const char *szName, ITextRenderBase *&pTextRender);
+  const char *get_renderbase_name(IRenderBase *&pRender);
+  const char *get_textrender_name(ITextRenderBase *&pTextRender);
 
   void load_layer_config(bool b);
 
@@ -367,9 +367,9 @@ protected:
   // 用于支持多皮肤包共存（插件模式）
   Resource *m_pSkinRes; 
 
-  String m_strId; // 该对象在XML中的标识
+  std::string m_strId; // 该对象在XML中的标识
 #ifdef EDITOR_MODE
-  String m_strStyle; // 控件样式
+  std::string m_strStyle; // 控件样式
 #endif
 
 #pragma region //坐标相关数据
@@ -406,8 +406,9 @@ protected:
 #if defined(OS_WIN)
   IAccessible *m_pAccessible;
 #endif
-  void **
-      m_ppOutRef; // 为了解决一个类成员对象，有可能被自己的父对象删除后，这个类却不知道，再删除该对象时崩溃了.
+  
+  // 为了解决一个类成员对象，有可能被自己的父对象删除后，这个类却不知道，再删除该对象时崩溃了.
+  void ** m_ppOutRef; 
 
   friend class ObjectAccessible;
 };

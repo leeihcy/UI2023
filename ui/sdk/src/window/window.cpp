@@ -51,7 +51,7 @@ void Window::OnSerialize(SerializeParam *pData) {
   m_window_render.OnSerialize(pData);
   Panel::OnSerialize(pData);
 
-  AttributeSerializer s(pData, TEXT("Window"));
+  AttributeSerializer s(pData, "Window");
 #if 0
   s.AddString(XML_FONT, this,
               memfun_cast<pfnStringSetter>(&Window::SetDefaultRenderFont),
@@ -182,16 +182,16 @@ void Window::Invalidate(const Rect *prc) { m_platform->Invalidate(prc); }
 // void Window::on_erase_bkgnd(SkCanvas &canvas) {}
 // void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
 
-bool Window::CreateUI(const wchar_t *szId) {
+bool Window::CreateUI(const char *szId) {
   if (!m_pSkinRes) {
     UI_LOG_ERROR(TEXT("未初始化皮肤"));
     return false;
   }
 
-  if (szId && wcslen(szId) > 0) {
+  if (szId && strlen(szId) > 0) {
     LayoutManager &layoutmanager = m_pSkinRes->GetLayoutManager();
     //	加载子控件
-    const wchar_t *szName = L"";
+    const char *szName = "";
     if (GetMeta())
       szName = GetMeta()->Name();
 

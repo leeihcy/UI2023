@@ -17,24 +17,24 @@ struct IResource;
 //  一个xml配置中，允许配置多个相关联的窗口、自定义列表项
 class LayoutConfigItem {
 public:
-  void SetPath(const wchar_t *szPath);
-  const wchar_t *GetPath();
+  void SetPath(const char *szPath);
+  const char *GetPath();
 
-  void AddWindow(const wchar_t *szName);
-  bool FindWindow(const wchar_t *szName);
+  void AddWindow(const char *szName);
+  bool FindWindow(const char *szName);
 
-  void AddListItem(const wchar_t *szName);
-  bool FindListItem(const wchar_t *szName);
+  void AddListItem(const char *szName);
+  bool FindListItem(const char *szName);
 
-  bool Find(const wchar_t *szTagName, const wchar_t *szName);
+  bool Find(const char *szTagName, const char *szName);
 
   unsigned int GetWindowCount();
-  const wchar_t *GetWindowName(unsigned int index);
+  const char *GetWindowName(unsigned int index);
 
 private:
-  std::wstring m_strPath;
-  std::vector<std::wstring> m_vecWindow;
-  std::vector<std::wstring> m_vecListItem;
+  std::string m_strPath;
+  std::vector<std::string> m_vecWindow;
+  std::vector<std::string> m_vecListItem;
 };
 
 // 新加载的子控件的notify设置为谁
@@ -48,12 +48,12 @@ public:
 
   ILayoutManager &GetILayoutManager();
 
-  Object *LoadPluginLayout(const wchar_t *szId, Object *pNewParemt,
+  Object *LoadPluginLayout(const char *szId, Object *pNewParemt,
                            IMessage *pNotifyTarget = NOTIFY_TARGET_ROOT);
 
-  UIElementProxy FindWindowElement(const wchar_t *szTagName,
-                                   const wchar_t *szId);
-  UIElementProxy FindListItemElement(const wchar_t *szId);
+  UIElementProxy FindWindowElement(const char *szTagName,
+                                   const char *szId);
+  UIElementProxy FindListItemElement(const char *szId);
 
   enum PARSEFLAG {
     PARSEFLAG_LOADCHILD = 1,
@@ -66,10 +66,10 @@ public:
                             IMessage *pNotifyTarget = NOTIFY_TARGET_ROOT,
                             int flags = PARSEFLAG_LOADCHILD);
 
-  bool ReLoadLayout(Object *pRootObj, const wchar_t *szNewLayoutId,
-                    std::map<std::wstring, Object *> &listAllChild);
+  bool ReLoadLayout(Object *pRootObj, const char *szNewLayoutId,
+                    std::map<std::string, Object *> &listAllChild);
   void ReloadChildObjects(Object *pObjParent, UIElement *pObjElement,
-                          std::map<std::wstring, Object *> &listAllChild);
+                          std::map<std::string, Object *> &listAllChild);
 
   static int UIParseLayoutTagCallback(IUIElement *, IResource *pSkinRes);
   static int UIParseLayoutConfigTagCallback(IUIElement *, IResource *pSkinRes);
@@ -82,14 +82,14 @@ private:
   void ParseLayoutConfigTag(UIElement *pElem);
   bool ParseLayoutConfigFileTag(UIElement *pElem);
 
-  UIElementProxy find_element_from_cache(const wchar_t *szTagName,
-                                         const wchar_t *szId);
-  UIElementProxy load_window_by_id(const wchar_t *szTagName,
-                                   const wchar_t *szId);
-  UIElementProxy load_element_from_layout_config(const wchar_t *szTagName,
-                                                 const wchar_t *szId);
-  bool testUIElement(UIElement *pParentElem, const wchar_t *szTagName,
-                     const wchar_t *szId);
+  UIElementProxy find_element_from_cache(const char *szTagName,
+                                         const char *szId);
+  UIElementProxy load_window_by_id(const char *szTagName,
+                                   const char *szId);
+  UIElementProxy load_element_from_layout_config(const char *szTagName,
+                                                 const char *szId);
+  bool testUIElement(UIElement *pParentElem, const char *szTagName,
+                     const char *szId);
 
 private:
   ILayoutManager *m_pILayoutManager;

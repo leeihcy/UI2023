@@ -44,13 +44,13 @@ void  Object::OnSerialize(SerializeParam* pData)
     }
 
     {
-		AttributeSerializer s(pData, TEXT("Object"));
+		AttributeSerializer s(pData, "Object");
         s.AddString(XML_ID, m_strId)->AsData();
 
 #ifdef EDITOR_MODE
         s.AddString(XML_STYLECLASS,
-            [this](const wchar_t* t){ if (t){m_strStyle = t;}else {m_strStyle.clear();} },
-            [this]()->const wchar_t*{ return m_strStyle.c_str(); })
+            [this](const char* t){ if (t){m_strStyle = t;}else {m_strStyle.clear();} },
+            [this]()->const char*{ return m_strStyle.c_str(); })
             ->ReloadOnChanged();
 #endif
 

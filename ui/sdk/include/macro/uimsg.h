@@ -409,7 +409,7 @@ public:                                                                        \
   }
 
 struct GETDESIREDSIZEINFO {
-  wchar_t *szText;
+  char *szText;
   int nLimitWidth;
 };
 

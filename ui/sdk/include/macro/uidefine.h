@@ -17,7 +17,7 @@ enum {
 };
 
 
-#define EMPTYTEXT TEXT("")
+#define EMPTYTEXT ""
 
 #define __pImpl static_cast<ImplName *>(m_pImpl)
 
@@ -160,8 +160,8 @@ struct SerializeParam {
 
   IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
   IResource *pSkinRes;
-  const wchar_t *szPrefix;    // 属性前缀
-  const wchar_t *szParentKey; // 父属性（仅用于editor），如bkg.render.type
+  const char *szPrefix;    // 属性前缀
+  const char *szParentKey; // 父属性（仅用于editor），如bkg.render.type
   unsigned int nFlags;
 
   bool IsReload() {
@@ -223,20 +223,20 @@ enum OBJECT_STATE_BIT {
   0x10000000 // 即使大小没有改变，也强制柠檬素，用于走通逻辑
 
 #define UI_DECLARE_RENDERBASE(className, xml, rendertype)                      \
-  static const wchar_t *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                           \
   static int GetType() { return rendertype; }
 
 // 本宏定义主要是用于theme类型的renderbase，要根据控件类型进行创建
 #define UI_DECLARE_RENDERBASE2(className, xml, rendertype)                     \
-  static const wchar_t *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                           \
   static int GetType() { return rendertype; }
 
 #define UI_DECLARE_TEXTRENDERBASE(className, xml, rendertype)                  \
-  static const wchar_t *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                           \
   static int GetType() { return rendertype; }
 
 #define UI_DECLARE_TEXTRENDERBASE2(className, xml, rendertype)                 \
-  static const wchar_t *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                           \
   static int GetType() { return rendertype; }
 
 #define TESTWNDSTYLE(hWnd, flag) GetWindowLongPtr(hWnd, GWL_STYLE) & flag

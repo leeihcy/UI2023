@@ -1,6 +1,6 @@
 #pragma once
 
-// Ä£¿éÄÚ²¿¹«¹²Í·ÎÄ¼ş
+// æ¨¡å—å†…éƒ¨å…¬å…±å¤´æ–‡ä»¶
 
 #include "include/util/struct.h"
 #include "include/util/color.h"
@@ -25,7 +25,7 @@
 	unsigned char  Get##xxx() { return m_byte##xxx; } \
 	void    Set##xxx( byte b ) { m_byte##xxx = b; }
 
-// String°²È«¸³Öµ
+// Stringå®‰å…¨èµ‹å€¼
 #define SETSTRING(str, sz) \
 	if (sz){str = sz;} else {str.clear();}
 
@@ -40,16 +40,20 @@ typedef unsigned int uint;
 
 // typedef Rect Rect;
 
-typedef std::map<std::wstring, std::wstring>  ATTRMAP;
+typedef std::map<std::string, std::string>  ATTRMAP;
 
 
-// ÄÚ²¿api
+// å†…éƒ¨api
 class Message;
-void  UI_Split(const std::wstring& str, wchar_t szSep, std::vector<std::wstring>& vRet);
+void UI_SplitW(const std::wstring& str, wchar_t szSep, std::vector<std::wstring>& vRet);
+void UI_Split(const std::string &str, wchar_t szSep,
+              std::vector<std::string> &vRet);
 struct IRenderFont;
 void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
-wchar_t*  GetTempBuffer(int nMaxSize = 255);
-std::wstring&  GetTempBufferString();
+char*  GetTempBuffer(int nMaxSize = 255);
+wchar_t*  GetTempBufferW(int nMaxSize = 255);
+std::string&  GetTempBufferString();
+std::wstring&  GetTempBufferStringW();
 
 class Object;
 struct IMKMgr : public IRootInterface

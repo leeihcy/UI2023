@@ -79,9 +79,9 @@ enum E_BOOL_CREATE_IMPL {
   CREATE_IMPL_TRUE = 1,
 };
 
-#define CATEGORY_CONTROL  L"Control";
-#define CATEGORY_CONTAINER L"Container";
-#define CATEGORY_WINDOW L"Window";
+#define CATEGORY_CONTROL  "Control";
+#define CATEGORY_CONTAINER "Container";
+#define CATEGORY_WINDOW "Window";
 
 // meta 类的作用：
 // 1. 静态成员变量，如UUID
@@ -92,8 +92,8 @@ enum E_BOOL_CREATE_IMPL {
 struct MetaDetail {
   long major_type;  // OBJ_TYPE
   long minor_type;
-  const wchar_t* category;
-  const wchar_t* descrption;
+  const char* category;
+  const char* descrption;
   Size default_size;
   // TODO:
   // icon
@@ -113,7 +113,7 @@ struct IMeta {
   virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) = 0;
 
   // 对应xml中的名字
-  virtual const wchar_t* Name() = 0;
+  virtual const char* Name() = 0;
 
   // 编辑器参数
   virtual MetaDetail Detail() = 0;

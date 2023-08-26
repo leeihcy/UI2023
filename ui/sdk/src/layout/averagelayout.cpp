@@ -16,14 +16,14 @@ void AverageLayout::Serialize(SerializeParam *pData) {
   if (nullptr == pMapAttrib)
     return;
 
-  const wchar_t *szDirection =
+  const char *szDirection =
       pMapAttrib->GetAttr(XML_LAYOUT_AVERAGE_DIRECTION, true);
   if (nullptr == szDirection)
     return;
 
-  if (0 == wcscmp(XML_LAYOUT_AVERAGE_H, szDirection)) {
+  if (0 == strcmp(XML_LAYOUT_AVERAGE_H, szDirection)) {
     this->direction = LAYOUT_AVERAGE_H;
-  } else if (0 == wcscmp(XML_LAYOUT_AVERAGE_V, szDirection)) {
+  } else if (0 == strcmp(XML_LAYOUT_AVERAGE_V, szDirection)) {
     this->direction = LAYOUT_AVERAGE_V;
   } else {
     UI_LOG_WARN(L"AverageLayout::SetAttribute，属性%s=\"%s\"的值不正确",

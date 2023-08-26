@@ -1,45 +1,44 @@
 #pragma once
 #include "attributebase.h"
 
-namespace ui
-{
+namespace ui {
 
-class RectAttribute : public AttributeBase
-{
+class RectAttribute : public AttributeBase {
 public:
-    RectAttribute();
-    ~RectAttribute();
+  RectAttribute();
+  ~RectAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Reset() override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
-    virtual bool  IsDefaultValue() override;
-    void  SetBindValue(void*) override;
-    // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
-    void Bind(slot<void(Rect*)>&& s, slot<void(Rect*)>&& g);
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Reset() override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                      EditorAttributeFlag e) override;
+  virtual bool IsDefaultValue() override;
+  void SetBindValue(void *) override;
+  // void  SetBindFuction(void* _this, void* _setter, void* _getter) override;
+  void Bind(slot<void(Rect *)> &&s, slot<void(Rect *)> &&g);
 
 public:
-	RectAttribute*  SetDefault(Rect*);
-    IRectAttribute*  GetIRectAttribute();
+  RectAttribute *SetDefault(Rect *);
+  IRectAttribute *GetIRectAttribute();
 
 private:
-    void  get(Rect*);
-    void  set(Rect*);
+  void get(Rect *);
+  void set(Rect *);
 
 private:
-    IRectAttribute*  m_pIRectAttribute;
+  IRectAttribute *m_pIRectAttribute;
 
-    Rect*  m_pBindValue;
-    Rect   m_rcDefault;
+  Rect *m_pBindValue;
+  Rect m_rcDefault;
 
-    // void*   _this;
-    // pfnRectSetter  _setter;
-    // pfnRectGetter  _getter;
-    signal<void(Rect*)> m_setter;
-    signal<void(Rect*)> m_getter;
+  // void*   _this;
+  // pfnRectSetter  _setter;
+  // pfnRectGetter  _getter;
+  signal<void(Rect *)> m_setter;
+  signal<void(Rect *)> m_getter;
 };
 
-AttributeBase*  CreateRectAttribute();
+AttributeBase *CreateRectAttribute();
 
-}
+} // namespace ui

@@ -183,15 +183,15 @@ long  Color::Release()
     return lRef;
 }
 
-void  Color::ToHexString(wchar_t* szBuffer)
+void  Color::ToHexString(char* szBuffer)
 {
-    wprintf(szBuffer, TEXT("0x%02X%02X%02X%02X"), a,r,g,b);
+    sprintf(szBuffer, "0x%02X%02X%02X%02X", a,r,g,b);
 }
-void  Color::ToWebString(wchar_t* szBuffer)
+void  Color::ToWebString(char* szBuffer)
 {
     if (a == 255)
     {
-        wprintf(szBuffer, TEXT("#%02X%02X%02X"), r, g, b);
+        sprintf(szBuffer, "#%02X%02X%02X", r, g, b);
         if (szBuffer[1] == szBuffer[2] &&
             szBuffer[3] == szBuffer[4] &&
             szBuffer[5] == szBuffer[6])
@@ -203,7 +203,7 @@ void  Color::ToWebString(wchar_t* szBuffer)
     }
     else
     {
-        wprintf(szBuffer, TEXT("#%02X%02X%02X%02X"), a, r, g, b);
+        sprintf(szBuffer, "#%02X%02X%02X%02X", a, r, g, b);
         if (szBuffer[1] == szBuffer[2] &&
             szBuffer[3] == szBuffer[4] &&
             szBuffer[5] == szBuffer[6] &&
@@ -449,7 +449,7 @@ void  Color::SetResId(const wchar_t* szId)
 
     if (szId && szId[0])
     {
-        m_szResId = new wchar_t[wcslen(szId) + 1];
+        m_szResId = new wchar_t[strlen(szId) + 1];
         wcscpy(m_szResId, szId);
     }
 }

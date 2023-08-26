@@ -15,8 +15,8 @@ public:
   virtual ~AttributeBase(){};
   virtual void Release() { delete this; };
 
-  virtual const wchar_t *Get() = 0;
-  virtual void Set(const wchar_t *) = 0;
+  virtual const char *Get() = 0;
+  virtual void Set(const char *) = 0;
   // reload时，如果在xml中没有显式配置该属性，则调用Reset，而不是Set
   virtual void Reset() = 0;
   virtual bool IsDefaultValue() = 0;
@@ -32,43 +32,43 @@ public:
   virtual void SetBindFuction(void *_this, void *_setter, void *_getter){};
 
 public:
-  void SetKey(const wchar_t *szKey);
-  const wchar_t *GetKey();
-  AttributeBase *SetCompatibleKey(const wchar_t *szKey);
-  const wchar_t *GetCompatibleKey();
-  bool IsKey(const wchar_t *szKey);
+  void SetKey(const char *szKey);
+  const char *GetKey();
+  AttributeBase *SetCompatibleKey(const char *szKey);
+  const char *GetCompatibleKey();
+  bool IsKey(const char *szKey);
 
-  const wchar_t *GetDesc();
+  const char *GetDesc();
   AttributeBase *AsData();
   bool IsData();
   AttributeBase *ReloadOnChanged();
   bool IsReloadOnChanged();
 
-  AttributeBase *SetParentKey(const wchar_t *szParent);
-  const wchar_t *GetParentKey();
+  AttributeBase *SetParentKey(const char *szParent);
+  const char *GetParentKey();
 
-  void SetGroupName(const wchar_t *szGroupName);
-  const wchar_t *GetGroupName();
+  void SetGroupName(const char *szGroupName);
+  const char *GetGroupName();
   void SetUIApplication(Application *p);
   void SetSkinRes(Resource *p);
   Application *GetUIApplication();
 
 protected:
-  const wchar_t *ConstructTempLPCTSTR(long lValue);
+  const char *ConstructTempLPCTSTR(long lValue);
 
 private:
-  String m_strKey;
-  String m_strKeyCompatible; // 兼容key。例如：width="100"，也可以写成
+  std::string m_strKey;
+  std::string m_strKeyCompatible; // 兼容key。例如：width="100"，也可以写成
                              // layout.width="100"
-  String m_strDesc;
+  std::string m_strDesc;
 
   // 例如back.render.image，它的groupname是ImageRender，它的
   // parentkey是back.render.type
 
   // 属性所属的对象名，例如"Object" "ImageRender"
-  String m_strGroupName;
+  std::string m_strGroupName;
   // 父结点fullkey。例如bkg.render.type
-  String m_strParentKey;
+  std::string m_strParentKey;
   bool m_bParentKeyIsNull;
 
   // 该属性是否是一个控件data。data在换肤的时候不用再加载一次

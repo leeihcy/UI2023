@@ -395,7 +395,7 @@ void GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect &rcText,
     // 文字会将255->0，因此再inverse一次，即可拿到只有文字的内存图片
     FillAlpha255(hMemDC, &rcMemText);
     // 阴影
-    ::DrawText(hMemDC, pParam->szText, wcslen(pParam->szText), 
+    ::DrawText(hMemDC, pParam->szText, strlen(pParam->szText), 
         (RECT*)&rcMemText, pParam->nFormatFlag);
     InverseAlpha(hMemDC, &rcMemText);
 
@@ -423,7 +423,7 @@ void GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect &rcText,
     oldColor = ::SetTextColor(hDC, color);
     hOldFont = (HFONT)::SelectObject(hDC, hFont);
 
-    ::DrawText(hDC, pParam->szText, wcslen(pParam->szText),
+    ::DrawText(hDC, pParam->szText, strlen(pParam->szText),
         (LPRECT)&rcText, pParam->nFormatFlag);
 
     ::SetTextColor(hDC, oldColor);
@@ -446,7 +446,7 @@ void GdiRenderTarget::draw_string_endalphamask(HFONT hFont, LPRECT prcText,
 
     int nWidth = prcText->right-prcText->left;
     int nHeight = prcText->bottom-prcText->top;
-    uint nTextLength = wcslen(pParam->szText);
+    uint nTextLength = strlen(pParam->szText);
     HDC hDC = GetHDC();
 
     // 如果指定的区域内能够显示下这些文本，直接绘制即可
@@ -548,7 +548,7 @@ void GdiRenderTarget::draw_string_normal(HFONT hFont, LPRECT prcText,
   ::OutputDebugString(L"\r\n");
 #endif
 
-  ::DrawText(hDC, pParam->szText, (int)wcslen(pParam->szText), prcText,
+  ::DrawText(hDC, pParam->szText, (int)strlen(pParam->szText), prcText,
              pParam->nFormatFlag);
 
   ::SetTextColor(hDC, oldCol);

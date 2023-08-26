@@ -1,37 +1,36 @@
 #pragma once
 #include "attributebase.h"
 
-namespace ui
-{
+namespace ui {
 
-class ColorAttribute : public AttributeBase
-{
+class ColorAttribute : public AttributeBase {
 public:
-    ColorAttribute();
-	~ColorAttribute();
+  ColorAttribute();
+  ~ColorAttribute();
 
-    virtual const wchar_t*  Get() override; 
-    virtual void  Set(const wchar_t*) override;
-	virtual void  Reset() override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
-    virtual bool  IsDefaultValue() override;
-	void  SetBindValue(void*) override;
-    void  SetBindValue2(void**);
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Reset() override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                      EditorAttributeFlag e) override;
+  virtual bool IsDefaultValue() override;
+  void SetBindValue(void *) override;
+  void SetBindValue2(void **);
 
 public:
-    IColorAttribute*  GetIColorAttribute();
+  IColorAttribute *GetIColorAttribute();
 
 private:
-    IColorAttribute*  m_pIColorAttribute;
+  IColorAttribute *m_pIColorAttribute;
 
-    Color**  m_ppBindValue;
-	Color*   m_pBindValue;
+  Color **m_ppBindValue;
+  Color *m_pBindValue;
 
-//     void*  _this;
-//     pfnLongSetter  _setter;
-//     pfnLongGetter  _getter;
+  //     void*  _this;
+  //     pfnLongSetter  _setter;
+  //     pfnLongGetter  _getter;
 };
 
-AttributeBase*  CreateColorAttribute();
+AttributeBase *CreateColorAttribute();
 
-}
+} // namespace ui

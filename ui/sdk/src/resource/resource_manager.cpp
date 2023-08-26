@@ -12,7 +12,7 @@ namespace ui {
 
 ResourceManager::ResourceManager(Application &a)
     : m_root_bundle(*this), m_pUIApplication(&a) {
-  m_strLanguage = L"zh_cn";
+  m_strLanguage = "zh_cn";
   // m_strLanguage = TEXT("en_us");
 }
 
@@ -42,9 +42,9 @@ void ResourceManager::Destroy() {
 
 // 遍历该目录下的皮肤列表
 /* 过期
-void  ResourceManager::SetSkinDirection(const wchar_t* szDir)
+void  ResourceManager::SetSkinDirection(const char* szDir)
 {
-    if (nullptr == szDir || 0 == wcslen(szDir))
+    if (nullptr == szDir || 0 == strlen(szDir))
         return;
 
     m_strSkinDir = szDir;
@@ -56,7 +56,7 @@ void  ResourceManager::SetSkinDirection(const wchar_t* szDir)
         m_strSkinDir.append(_T("\\"));
     }
 
-    String strFind(m_strSkinDir);
+    std::string strFind(m_strSkinDir);
     strFind.append(_T("*.*"));
 
     HANDLE hFind=::FindFirstFile(strFind.c_str(),&finddata);
@@ -70,10 +70,10 @@ void  ResourceManager::SetSkinDirection(const wchar_t* szDir)
             if (finddata.cFileName[0] != '.')
             {
                 // 判断目录下面是否存在skin.xml文件
-                String strPath = m_strSkinDir;
+                std::string strPath = m_strSkinDir;
                 strPath.append(finddata.cFileName);
 
-                String strFile = strPath;
+                std::string strFile = strPath;
                 strFile.append(_T("\\") XML_SKIN_XML);
 
                 if (PathFileExists(strFile.c_str()))
@@ -86,11 +86,11 @@ finddata.cFileName, strPath.c_str());
         else
         {
             // 判断文件后缀是否是*.skn格式
-            wchar_t szExt[MAX_PATH] = _T("");
+            char szExt[MAX_PATH] = _T("");
             util::GetPathFileExt(finddata.cFileName, szExt);
-            if (0 == wcscmp(szExt, XML_SKIN_PACKET_EXT))
+            if (0 == strcmp(szExt, XML_SKIN_PACKET_EXT))
             {
-                                int nLength = wcslen(finddata.cFileName);
+                                int nLength = strlen(finddata.cFileName);
                                 finddata.cFileName[nLength-4] = L'';
                 OnFindSkinInSkinDir(SKIN_PACKET_TYPE_ZIP, finddata.cFileName,
 m_strSkinDir.c_str());
@@ -102,7 +102,7 @@ m_strSkinDir.c_str());
     FindClose(hFind);
 }
 
-void  ResourceManager::GetSkinDirection(wchar_t*  szOut)
+void  ResourceManager::GetSkinDirection(char*  szOut)
 {
     if (szOut)
     {
@@ -111,12 +111,12 @@ void  ResourceManager::GetSkinDirection(wchar_t*  szOut)
 }
 
 // 在皮肤目录中添加一个新皮肤
-IResource*  ResourceManager::AddSkin(const wchar_t*  szPath)
+IResource*  ResourceManager::AddSkin(const char*  szPath)
 {
     if (nullptr == szPath)
         return nullptr;
 
-    String  strFilePath = m_strSkinDir;
+    std::string  strFilePath = m_strSkinDir;
     strFilePath.append(_T("\\"));
     strFilePath.append(szPath);
 
@@ -132,7 +132,7 @@ strFilePath.c_str()); if (p) return p->GetIResource();
 
 // 在调用SetSkinDirection后，如果发现一个皮肤文件，则调用该响应函数
 Resource*  ResourceManager::OnFindSkinInSkinDir(SKIN_PACKET_TYPE eType, const
-wchar_t* szPath, const wchar_t* szPath)
+char* szPath, const char* szPath)
 {
     Resource*  pSkin = new Resource(*this);
     pSkin->SetParam(eType, szPath, szPath);
@@ -274,27 +274,27 @@ void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 //
 //	加载皮肤数据
 //
-Resource *ResourceManager::LoadResource(const wchar_t *szPath) {
+Resource *ResourceManager::LoadResource(const char *szPath) {
   if (!szPath)
     return nullptr;
 
   UI_LOG_INFO(L"\n\n------------  LoadResource: %s ----------------\n",
               szPath);
 
-  wchar_t szSkinName[MAX_PATH] = {0};
+  char szSkinName[MAX_PATH] = {0};
   SKIN_PACKET_TYPE eSkinPackageType = SKIN_PACKET_TYPE_DIR;
 
-  String strPath(szPath);
+  std::string strPath(szPath);
   if (ui::util::PathIsDirectory(szPath)) {
     // 从路径中获取皮肤名。
-    wchar_t szDir[MAX_PATH] = {0};
-    wcscpy(szDir, szPath);
-    int nLength = (int)wcslen(szDir);
+    char szDir[MAX_PATH] = {0};
+    strcpy(szDir, szPath);
+    int nLength = (int)strlen(szDir);
     if (nLength < 1)
       return nullptr;
 
     // 如果最后一个字符是 \，删除。
-    if (szDir[nLength - 1] == TEXT('\\'))
+    if (szDir[nLength - 1] == '\\')
       szDir[nLength - 1] = 0;
     ui::util::GetPathFileName(szDir, szSkinName);
 
@@ -307,27 +307,27 @@ Resource *ResourceManager::LoadResource(const wchar_t *szPath) {
     // 		}
     eSkinPackageType = SKIN_PACKET_TYPE_DIR;
   } else {
-    wchar_t szExt[MAX_PATH] = _T("");
+    char szExt[MAX_PATH] = "";
     util::GetPathFileExt(szPath, szExt);
 
     int nExtLength = 0;
 
     // 如果没有带后缀名，尝试一下补个后缀
     if (!szExt[0]) {
-      strPath.append(TEXT(".") XML_SKIN_PACKET_EXT);
+      strPath.append("." XML_SKIN_PACKET_EXT);
       if (!ui::util::PathFileExists(strPath.c_str())) {
         UI_LOG_ERROR(TEXT("Skin File not exist: %s"), strPath.c_str());
         return nullptr;
       }
-    } else if (0 != wcscmp(szExt, XML_SKIN_PACKET_EXT)) {
+    } else if (0 != strcmp(szExt, XML_SKIN_PACKET_EXT)) {
       UI_LOG_ERROR(TEXT("Skin File Format Error: %s"), szExt);
       return nullptr;
     } else {
-      nExtLength = (int)wcslen(XML_SKIN_PACKET_EXT) + 1;
+      nExtLength = (int)strlen(XML_SKIN_PACKET_EXT) + 1;
     }
 
     util::GetPathFileName(szPath, szSkinName);
-    szSkinName[wcslen(szSkinName) - nExtLength] = 0;
+    szSkinName[strlen(szSkinName) - nExtLength] = 0;
     Resource *pTest = GetResourceByName(szSkinName);
     if (pTest) {
       UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
@@ -443,14 +443,14 @@ bool ResourceManager::Save(Resource *pSkinRes) {
   return bRet;
 }
 
-Resource *ResourceManager::GetResourceByName(const wchar_t *szName) {
+Resource *ResourceManager::GetResourceByName(const char *szName) {
   if (nullptr == szName)
     return nullptr;
 
   std::vector<Resource *>::iterator iter = m_resoures.begin();
   for (; iter != m_resoures.end(); iter++) {
     Resource *p = *iter;
-    if (0 == wcscmp(szName, p->GetName()))
+    if (0 == strcmp(szName, p->GetName()))
       return p;
   }
 
@@ -467,10 +467,10 @@ Resource *ResourceManager::GetResourceByIndex(unsigned int i) {
   return m_resoures[i];
 }
 
-const wchar_t *ResourceManager::GetCurrentLanguage() {
+const char *ResourceManager::GetCurrentLanguage() {
   return m_strLanguage.c_str();
 }
-void ResourceManager::SetCurrentLanguage(const wchar_t *szText) {
+void ResourceManager::SetCurrentLanguage(const char *szText) {
   if (!szText)
     return;
 

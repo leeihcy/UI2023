@@ -41,34 +41,34 @@ public:
 
   IUIDocument *GetDocument();
 
-  const wchar_t *GetData();
-  const wchar_t *GetTagName();
-  bool SetData(const wchar_t *szText);
-  void SetTagName(const wchar_t *);
+  const char *GetData();
+  const char *GetTagName();
+  bool SetData(const char *szText);
+  void SetTagName(const char *);
 
   void GetAttribList(IMapAttribute *ppMapAttrib);
   void GetAttribList2(IListAttribute **ppListAttrib);
   bool SetAttribList2(IListAttribute *pListAttrib);
 
 #if defined(OS_WIN)
-  bool GetAttrib(const wchar_t *szKey, BSTR *pbstrValue);
+  bool GetAttrib(const char *szKey, BSTR *pbstrValue);
 #endif
-  bool HasAttrib(const wchar_t *szKey);
-  bool AddAttrib(const wchar_t *szKey, const wchar_t *szValue);
-  bool SetAttrib(const wchar_t *szKey, const wchar_t *szValue);
-  bool RemoveAttrib(const wchar_t *szKey);
-  bool ModifyAttrib(const wchar_t *szKey, const wchar_t *szValue);
+  bool HasAttrib(const char *szKey);
+  bool AddAttrib(const char *szKey, const char *szValue);
+  bool SetAttrib(const char *szKey, const char *szValue);
+  bool RemoveAttrib(const char *szKey);
+  bool ModifyAttrib(const char *szKey, const char *szValue);
   bool ClearAttrib();
 
-  IUIElementProxy AddChild(const wchar_t *szNodeName);
+  IUIElementProxy AddChild(const char *szNodeName);
   bool RemoveChild(IUIElement *);
   bool RemoveSelfInParent();
 
   bool AddChildBefore(IUIElement *pElem, IUIElement *pInsertBefore);
   bool AddChildAfter(IUIElement *pElem, IUIElement *pInsertAfter);
-  IUIElementProxy AddChildBefore(const wchar_t *szNodeName,
+  IUIElementProxy AddChildBefore(const char *szNodeName,
                                  IUIElement *pInsertBefore);
-  IUIElementProxy AddChildAfter(const wchar_t *szNodeName,
+  IUIElementProxy AddChildAfter(const char *szNodeName,
                                 IUIElement *pInsertAfter);
   // bool  MoveChildAfterChild(IUIElement* pChild2Move, IUIElement*
   // pChildInsertAfter);
@@ -76,7 +76,7 @@ public:
 
   IUIElementProxy FirstChild();
   IUIElementProxy NextElement();
-  IUIElementProxy FindChild(const wchar_t *szChildName);
+  IUIElementProxy FindChild(const char *szChildName);
 
 private:
   UIElement *m_pImpl;
@@ -93,8 +93,8 @@ public:
   void SetDirty(bool b);
   bool IsDirty();
 
-  const wchar_t *GetSkinPath();
-  IUIElementProxy FindElem(const wchar_t *szText);
+  const char *GetSkinPath();
+  IUIElementProxy FindElem(const char *szText);
 
 private:
   UIDocument *m_pImpl;

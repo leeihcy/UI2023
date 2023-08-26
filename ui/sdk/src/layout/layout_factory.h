@@ -18,16 +18,16 @@ public:
   void Init();
   void Clear();
 
-  bool Register(const wchar_t *szName, pfnUICreateLayoutPtr);
+  bool Register(const char *szName, pfnUICreateLayoutPtr);
   bool Create(int nType, IObject *pObject, ILayout **ppOut);
-  bool CreateByName(const wchar_t *szName, IObject *pObject,
+  bool CreateByName(const char *szName, IObject *pObject,
                     bool bCreateDefault, ILayout **ppOut);
   void EnumLayoutType(pfnEnumLayoutTypeCallback callback, llong wParam,
                       llong lParam);
 
 private:
   struct UILAYOUT_CREATE_INFO {
-    std::wstring m_strName;
+    std::string m_strName;
     // Uuid m_guid;
     pfnUICreateLayoutPtr m_func;
   };

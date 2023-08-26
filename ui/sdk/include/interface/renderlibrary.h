@@ -2,6 +2,7 @@
 #define _UI_RENDERLIBRARY_H_
 #include "sdk/include/util/color.h"
 #include "sdk/include/util/windows.h"
+#include "sdk/include/macro/xmldefine.h"
 
 namespace ui {
 struct IRenderFont;
@@ -75,7 +76,7 @@ typedef struct tagDRAWTEXTPARAM {
   int nEffectFlag; // 特效标志
 
   ui::Color color;
-  const wchar_t *szText;
+  const char *szText;
   const Rect *prc;
 
   // 特效中可能会使用到的参数
@@ -125,7 +126,7 @@ enum RENDER_BITMAP_LOAD_FLAG {
   // (2 << 24) | DPI_ADAPT
 };
 struct IRenderBitmap : public IRenderResource {
-  virtual bool LoadFromFile(const wchar_t *szPath,
+  virtual bool LoadFromFile(const char *szPath,
                             RENDER_BITMAP_LOAD_FLAG e) = 0;
   virtual bool LoadFromData(unsigned char *pData, int nSize,
                             RENDER_BITMAP_LOAD_FLAG e) = 0;
@@ -188,7 +189,7 @@ public:
   virtual bool IsAttach() = 0;
 
   virtual unsigned int GetCaretHeight() = 0;
-  virtual Size MeasureString(const wchar_t *szText, int nLimitWidth = -1) = 0;
+  virtual Size MeasureString(const char *szText, int nLimitWidth = -1) = 0;
 
   virtual HFONT GetHFONT() = 0;
   virtual bool GetLogFont(LOGFONT *plf) = 0;
@@ -235,7 +236,7 @@ struct IRenderTarget {
   virtual bool BeginDraw() = 0;
   virtual void EndDraw() = 0;
   virtual void Clear(Rect *prc) = 0;
-  virtual void Save(const wchar_t *szPath) = 0;
+  virtual void Save(const char *szPath) = 0;
   virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) = 0;
   virtual void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) = 0;

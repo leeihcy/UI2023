@@ -35,18 +35,18 @@ public:
 
   Resource& RootBundle() { return m_root_bundle; }
 
-  Resource *LoadResource(const wchar_t *szPath);
+  Resource *LoadResource(const char *szPath);
   Resource *LoadResource(long hInstance, int resId = -1);
   Resource *GetDefaultSkinRes();
-  Resource *GetResourceByName(const wchar_t *szName);
+  Resource *GetResourceByName(const char *szName);
   unsigned int GetResourceCount();
   Resource *GetResourceByIndex(unsigned int i);
 
   bool Save(Resource *pSkinRes = nullptr);
   void ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-  const wchar_t *GetCurrentLanguage();
-  void SetCurrentLanguage(const wchar_t *);
+  const char *GetCurrentLanguage();
+  void SetCurrentLanguage(const char *);
 
 private:
   IResourceManager *m_pIResourceManager = nullptr;
@@ -64,6 +64,6 @@ private:
   std::vector<Resource *> m_resoures;
 
   // TODO: 运行过程中如何切换语言
-  std::wstring m_strLanguage; // 当前使用的语言
+  std::string m_strLanguage; // 当前使用的语言
 };
 } // namespace ui

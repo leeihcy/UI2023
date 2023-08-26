@@ -11,7 +11,7 @@ namespace ui
 class  FontTagElementInfo
 {
 public:
-	String  strId;  // 模块名
+	std::string  strId;  // 模块名
 	UIElement*  pXmlElement;  // xml结点
 };
 

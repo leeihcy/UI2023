@@ -23,21 +23,21 @@ IStringEnumAttribute *StringEnumAttribute::GetIStringEnumAttribute() {
   return m_pIStringEnumAttribute;
 }
 
-StringEnumAttribute *StringEnumAttribute::Add(const wchar_t *szText) {
+StringEnumAttribute *StringEnumAttribute::Add(const char *szText) {
   if (IsExist(szText))
     return this;
 
   if (szText)
-    m_list.push_back(String(szText));
+    m_list.push_back(std::string(szText));
 
   return this;
 }
 
-bool StringEnumAttribute::IsExist(const wchar_t *szText) {
+bool StringEnumAttribute::IsExist(const char *szText) {
   if (!szText)
     return false;
 
-  std::list<String>::iterator iter = m_list.begin();
+  std::list<std::string>::iterator iter = m_list.begin();
   for (; iter != m_list.end(); ++iter) {
     if ((*iter) == szText)
       return true;
@@ -46,17 +46,17 @@ bool StringEnumAttribute::IsExist(const wchar_t *szText) {
   return false;
 }
 
-void StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback, llong w,
-                                     llong l) {
-  std::list<String>::iterator iter = m_list.begin();
+void StringEnumAttribute::EnumString(pfnEnumStringEnumCallback callback,
+                                     llong w, llong l) {
+  std::list<std::string>::iterator iter = m_list.begin();
   for (; iter != m_list.end(); ++iter) {
     callback((*iter).c_str(), w, l);
   }
   return;
 }
 
-const wchar_t *StringEnumAttribute::Get() {
-  const wchar_t *szValue = StringAttribute::Get();
+const char *StringEnumAttribute::Get() {
+  const char *szValue = StringAttribute::Get();
   if (!szValue)
     return nullptr;
 
@@ -70,7 +70,7 @@ const wchar_t *StringEnumAttribute::Get() {
   }
 }
 
-void StringEnumAttribute::Set(const wchar_t *szValue) {
+void StringEnumAttribute::Set(const char *szValue) {
   if (!m_bEditable && !IsExist(szValue)) {
     return StringAttribute::Set(m_strDefault.c_str());
   }
@@ -78,8 +78,7 @@ void StringEnumAttribute::Set(const wchar_t *szValue) {
   StringAttribute::Set(szValue);
 }
 
-bool EnumLayoutTypeCallback(const wchar_t *szName, llong wParam,
-                            llong) {
+bool EnumLayoutTypeCallback(const char *szName, llong wParam, llong) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szName);
 
@@ -98,7 +97,7 @@ StringEnumAttribute *StringEnumAttribute::FillLayoutTypeData() {
   return this;
 }
 
-void EnumRenderBaseNameCallback(const wchar_t *szText, llong wParam,
+void EnumRenderBaseNameCallback(const char *szText, llong wParam,
                                 llong lParam) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szText);
@@ -111,7 +110,7 @@ StringEnumAttribute *StringEnumAttribute::FillRenderBaseTypeData() {
   return this;
 }
 
-void EnumTextRenderBaseNameCallback(const wchar_t *szText, llong wParam,
+void EnumTextRenderBaseNameCallback(const char *szText, llong wParam,
                                     llong lParam) {
   StringEnumAttribute *pThis = (StringEnumAttribute *)wParam;
   pThis->Add(szText);

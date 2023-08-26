@@ -45,20 +45,20 @@ struct UIAPI ITextRenderBase : public IMessage {
   TEXT_EFFECT GetTextEffect();
   void SetDrawTextParam(long w, long l);
 
-  Size GetDesiredSize(const wchar_t *szText, int nLimitWidth = -1);
+  Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
   void DrawState(IRenderTarget *pRenderTarget, const Rect *prc, int nState,
-                 const wchar_t *szText, int nDrawTextFlag = -1);
+                 const char *szText, int nDrawTextFlag = -1);
   void Init();
   void CheckSkinTextureChanged();
 
   void Serialize(SerializeParam *pData);
 
 protected:
-  void _LoadFont(const wchar_t *szFontId, IRenderFont *&pRenderFont);
-  const wchar_t *_SaveFont(IRenderFont *&pRenderFont);
+  void _LoadFont(const char *szFontId, IRenderFont *&pRenderFont);
+  const char *_SaveFont(IRenderFont *&pRenderFont);
   void _LoadDefalutFont(IRenderFont **ppRenderFont);
-  void _LoadColor(const wchar_t *szColorId, Color *&pColor);
-  const wchar_t *_SaveColor(Color *&pColor);
+  void _LoadColor(const char *szColorId, Color *&pColor);
+  const char *_SaveColor(Color *&pColor);
 
   ITextRenderBase();
   UI_DECLARE_INTERFACE(TextRenderBase);
@@ -71,7 +71,7 @@ class ThemeTextRenderBase;
 // {
 // 	IThemeTextRenderBase() {};
 //
-//     const wchar_t*  GetThemeName();
+//     const char*  GetThemeName();
 //     HTHEME  GetTHEME();
 // 	void  Serialize(AttributeSerializerWrap* ps);
 //

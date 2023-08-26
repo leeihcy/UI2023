@@ -24,7 +24,7 @@ void LayoutFactory::Init() {
   Register(XML_LAYOUT_AVERAGE, AverageLayout::CreateInstance);
 }
 
-bool LayoutFactory::Register(const wchar_t *szName, pfnUICreateLayoutPtr pfun) {
+bool LayoutFactory::Register(const char *szName, pfnUICreateLayoutPtr pfun) {
   if (nullptr == pfun || nullptr == szName) {
     UI_LOG_WARN(_T("invalid arg. name=%s, pfun=%x"), szName, pfun);
     return false;
@@ -48,7 +48,7 @@ bool LayoutFactory::Register(const wchar_t *szName, pfnUICreateLayoutPtr pfun) {
   return true;
 }
 
-bool LayoutFactory::CreateByName(const wchar_t *szName, IObject *pObject,
+bool LayoutFactory::CreateByName(const char *szName, IObject *pObject,
                                  bool bCreateDefault, ILayout **ppOut) {
   if (nullptr == ppOut)
     return false;

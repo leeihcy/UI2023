@@ -1,51 +1,46 @@
 #include "fontres.h"
 // #include "src/Renderlibrary/gdi/gdifont.h"
-#include "src/resource/res_bundle.h"
 #include "include/interface/iuires.h"
+#include "src/resource/res_bundle.h"
 
-namespace ui
-{
+namespace ui {
 
 int FontHeight2Size(int nHeight);
 
-FontResItem::FontResItem() 
-{ 
-    m_pIFontResItem = nullptr;
+FontResItem::FontResItem() {
+  m_pIFontResItem = nullptr;
 #if 0
 	m_pGdiFont = nullptr;
 #endif
 }
-FontResItem::~FontResItem()
-{
+FontResItem::~FontResItem() {
 #if 0
 	SAFE_DELETE(m_pGdiFont);
 #endif
-    SAFE_DELETE(m_pIFontResItem);
+  SAFE_DELETE(m_pIFontResItem);
 }
 
-IFontResItem*  FontResItem::GetIFontResItem()
-{
-    if (nullptr == m_pIFontResItem)
-        m_pIFontResItem = new IFontResItem(this);
+IFontResItem *FontResItem::GetIFontResItem() {
+  if (nullptr == m_pIFontResItem)
+    m_pIFontResItem = new IFontResItem(this);
 
-    return m_pIFontResItem;
+  return m_pIFontResItem;
 }
 //
-// Í¨¹ý½á¹¹ÌåÀ´¿ìËÙ¸³Öµ
+// é€šè¿‡ç»“æž„ä½“æ¥å¿«é€Ÿèµ‹å€¼
 //
-void FontResItem::SetLogFont( LOGFONT* pLogFont )
-{
-	if (!pLogFont)
-		return;
+void FontResItem::SetLogFont(LOGFONT *pLogFont) {
+  if (!pLogFont)
+    return;
 
-	memcpy(&m_lf, pLogFont, sizeof(LOGFONT));
-	wcscpy(m_lf.lfFaceName, pLogFont->lfFaceName);
-	m_lf.lfEscapement = m_lf.lfOrientation;    // TODO: ÊµÏÖ×ÖÌå½Ç¶ÈµÄ»°£¬ÕâÁ½¸öÖµºÃÏñÒªÏàµÈ
+  memcpy(&m_lf, pLogFont, sizeof(LOGFONT));
+  strcpy(m_lf.lfFaceName, pLogFont->lfFaceName);
+  m_lf.lfEscapement =
+      m_lf.lfOrientation; // TODO: å®žçŽ°å­—ä½“è§’åº¦çš„è¯ï¼Œè¿™ä¸¤ä¸ªå€¼å¥½åƒè¦ç›¸ç­‰
 }
 
-void FontResItem::ModifyFont(LOGFONT* pLogFont)
-{
-	this->SetLogFont(pLogFont);
+void FontResItem::ModifyFont(LOGFONT *pLogFont) {
+  this->SetLogFont(pLogFont);
 #if 0
 	if (m_pGdiFont)
 	{
@@ -54,13 +49,10 @@ void FontResItem::ModifyFont(LOGFONT* pLogFont)
 #endif
 }
 
-int FontResItem::GetFontSize()
-{
-	return FontHeight2Size(m_lf.lfHeight); 
-}
+int FontResItem::GetFontSize() { return FontHeight2Size(m_lf.lfHeight); }
 
-IRenderFont* FontResItem::GetFont(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
-{
+IRenderFont *FontResItem::GetFont(Resource *pSkinRes,
+                                  GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
 #if 0
 	switch(eRenderType)
 	{
@@ -89,256 +81,222 @@ IRenderFont* FontResItem::GetFont(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TY
 		return nullptr;
 	}
 #endif
-	return nullptr;
+  return nullptr;
 }
 
-bool FontResItem::IsMyRenderFont(IRenderFont* pRenderFont)
-{ 
+bool FontResItem::IsMyRenderFont(IRenderFont *pRenderFont) {
 #if 0
     if (m_pGdiFont == pRenderFont) 
     {
         return true;
-    }  
+    }
 #endif
+  return false;
+}
+
+FontRes::FontRes(Resource *pSkinRes) {
+  m_pSkinRes = pSkinRes;
+  m_pIFontRes = nullptr;
+}
+FontRes::~FontRes() {
+  this->Clear();
+  SAFE_DELETE(m_pIFontRes);
+}
+IFontRes &FontRes::GetIFontRes() {
+  if (!m_pIFontRes)
+    m_pIFontRes = new IFontRes(this);
+
+  return *m_pIFontRes;
+}
+long FontRes::GetFontCount() { return (long)m_vFonts.size(); }
+bool FontRes::GetFontResItem(long lIndex, IFontResItem **ppResItem) {
+  if (nullptr == ppResItem)
     return false;
+
+  FontResItem *pItem = this->GetFontItem(lIndex);
+  if (nullptr == pItem)
+    return false;
+
+  *ppResItem = pItem->GetIFontResItem();
+  return true;
 }
 
-FontRes::FontRes(Resource* pSkinRes)
-{
-    m_pSkinRes = pSkinRes;
-    m_pIFontRes = nullptr;
-}
-FontRes::~FontRes()
-{
-	this->Clear();
-    SAFE_DELETE(m_pIFontRes);
-}
-IFontRes&  FontRes::GetIFontRes()
-{
-    if (!m_pIFontRes)
-        m_pIFontRes = new IFontRes(this);
+FontResItem *FontRes::GetFontItem(int nIndex) {
+  if (nIndex < 0)
+    return nullptr;
+  if (nIndex >= (int)m_vFonts.size())
+    return nullptr;
 
-    return *m_pIFontRes;
-}
-long  FontRes::GetFontCount() 
-{ 
-	return (long) m_vFonts.size(); 
-}
-bool  FontRes::GetFontResItem(long lIndex, IFontResItem** ppResItem)
-{
-	if (nullptr == ppResItem)
-		return false;
-	
-	FontResItem* pItem = this->GetFontItem(lIndex);
-	if (nullptr == pItem)
-		return false;
-
-    *ppResItem = pItem->GetIFontResItem();
-	return true;
+  return m_vFonts[nIndex];
 }
 
-FontResItem*  FontRes::GetFontItem( int nIndex )
-{
-	if (nIndex < 0)
-		return nullptr;
-	if (nIndex >= (int)m_vFonts.size() )
-		return nullptr;
+FontResItem *FontRes::GetFontItem(const std::string &strId) {
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  std::vector<FontResItem *>::iterator iterEnd = m_vFonts.end();
 
-	return m_vFonts[nIndex];
+  for (; iter != iterEnd; iter++) {
+    FontResItem *p = *iter;
+    const char *szId = p->GetId();
+    if (strId == szId)
+      return p;
+  }
+  return nullptr;
 }
 
-FontResItem*  FontRes::GetFontItem(const String& strId)
-{
-	std::vector<FontResItem*>::iterator  iter = m_vFonts.begin();
-	std::vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
+bool FontRes::GetFont(const char *szFontId,
+                      GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                      IRenderFont **ppOut) {
+  if (!szFontId || !ppOut)
+    return false;
 
-	for( ; iter != iterEnd; iter++ )
-	{
-		FontResItem* p = *iter;
-		const wchar_t* szId = p->GetId();
-		if (strId == szId)
-			return p;
-	}
-	return nullptr;
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  for (; iter != m_vFonts.end(); ++iter) {
+    if (0 == strcmp((*iter)->GetId(), szFontId)) {
+      // if (p->GetWParam() == 0 && p->GetLParam() == 0 )
+      {
+        *ppOut = (*iter)->GetFont(m_pSkinRes, eRenderType);
+        return true;
+      }
+    }
+  }
+
+  // èŽ·å–å¤±è´¥ï¼Œå°è¯•å‘ä¸Šä¸€çº§èµ„æºèŽ·å–
+  if (m_pSkinRes->GetParentSkinRes()) {
+    return m_pSkinRes->GetParentSkinRes()->GetFontRes().GetFont(
+        szFontId, eRenderType, ppOut);
+  }
+
+  return false;
 }
 
-bool FontRes::GetFont(const wchar_t* szFontId, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, IRenderFont** ppOut)
-{
-	if (!szFontId || !ppOut)
-		return false;
+bool FontRes::GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                             IRenderFont **ppFont) {
+  if (nullptr == ppFont)
+    return false;
 
-	std::vector<FontResItem*>::iterator iter = m_vFonts.begin();
-	for (;iter != m_vFonts.end(); ++iter)
-	{
-		if (0 == wcscmp((*iter)->GetId(), szFontId))
-		{
-			// if (p->GetWParam() == 0 && p->GetLParam() == 0 )
-			{
-				*ppOut = (*iter)->GetFont(m_pSkinRes, eRenderType);
-				return true;
-			}
-		}
-	}
+  if (!m_vFonts.empty()) {
+    if (m_vFonts[0]) {
+      *ppFont = m_vFonts[0]->GetFont(m_pSkinRes, eRenderType);
+      return true;
+    }
+  }
 
-	// »ñÈ¡Ê§°Ü£¬³¢ÊÔÏòÉÏÒ»¼¶×ÊÔ´»ñÈ¡
-	if (m_pSkinRes->GetParentSkinRes())
-	{
-		return m_pSkinRes->GetParentSkinRes()->
-			GetFontRes().GetFont(szFontId, eRenderType, ppOut);
-	}
+  Resource *pParentRes = m_pSkinRes->GetParentSkinRes();
+  if (pParentRes) {
+    return pParentRes->GetFontRes().GetDefaultFont(eRenderType, ppFont);
+  }
 
-	return false;
+  return false;
 }
 
-bool  FontRes::GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, IRenderFont** ppFont)
-{
-	if (nullptr == ppFont)
-		return false;
+const char *FontRes::GetDefaultFontId() {
+  if (0 == (int)m_vFonts.size())
+    return nullptr;
 
-	if (!m_vFonts.empty())
-	{
-		if (m_vFonts[0])
-		{
-			*ppFont = m_vFonts[0]->GetFont(m_pSkinRes, eRenderType);
-			return true;
-		}
-	}
+  if (nullptr == m_vFonts[0])
+    return nullptr;
 
-	Resource* pParentRes = m_pSkinRes->GetParentSkinRes();
-	if (pParentRes)
-	{
-		return pParentRes->GetFontRes().GetDefaultFont(eRenderType, ppFont);
-	}
-
-	return false;
+  return m_vFonts[0]->GetId();
 }
 
-const wchar_t*  FontRes::GetDefaultFontId()
-{
-	if (0 == (int)m_vFonts.size())
-		return nullptr;
+const char *FontRes::GetRenderFontId(IRenderFont *pFont) {
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  std::vector<FontResItem *>::iterator iterEnd = m_vFonts.end();
 
-	if (nullptr == m_vFonts[0])
-		return nullptr;
-
-	return m_vFonts[0]->GetId();
+  for (; iter != iterEnd; iter++) {
+    FontResItem *p = *iter;
+    if (p->IsMyRenderFont(pFont)) {
+      return p->GetId();
+    }
+  }
+  return nullptr;
 }
 
-const wchar_t*  FontRes::GetRenderFontId(IRenderFont* pFont)
-{
-	std::vector<FontResItem*>::iterator iter = m_vFonts.begin();
-	std::vector<FontResItem*>::iterator iterEnd = m_vFonts.end();
+bool FontRes::InsertFont(const char *szId, LOGFONT *pLogFont) {
+  FontResItem *pItem = this->InsertFont(szId, pLogFont, 0, 0);
+  if (!pItem)
+    return false;
 
-	for( ; iter != iterEnd; iter++ )
-	{
-		FontResItem* p = *iter;
-		if (p->IsMyRenderFont(pFont) )
-		{
-			return p->GetId();
-		}
-	}
-	return nullptr;
+  return true;
 }
 
-bool FontRes::InsertFont(const wchar_t* szId, LOGFONT* pLogFont)
-{
-	FontResItem* pItem = this->InsertFont(szId, pLogFont, 0,0 );
-	if (!pItem)
-		return false;
-	
-	return true;
+FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
+                                 long wParam, long lParam) {
+  if (nullptr == pLogFont) {
+    UI_LOG_ERROR(_T("FontRes::InsertFont failed."));
+    return nullptr;
+  }
+  // 	vector<FontResItem*>::iterator  iter = m_vFonts.begin();
+  // 	vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
+  //
+  // 	for( ; iter != iterEnd; iter++ )
+  // 	{
+  // 		FontResItem* p = *iter;
+  //
+  // 		if (strID == p->GetId() /*&& p->GetWParam() == wParam &&
+  // p->GetLParam() == lParam */)
+  // 		{
+  // 			UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"),
+  // strID.c_str() ); 			return nullptr;
+  // 		}
+  // 	}
+
+  FontResItem *pFontItem = new FontResItem;
+  pFontItem->SetId(szId);
+  pFontItem->SetLogFont(pLogFont);
+
+  this->m_vFonts.push_back(pFontItem);
+  return pFontItem;
 }
 
-FontResItem* FontRes::InsertFont( 
-	const wchar_t* szId,
-	LOGFONT* pLogFont,
-	long wParam,
-	long lParam)
-{
-	if (nullptr == pLogFont)
-	{
-		UI_LOG_ERROR(_T("FontRes::InsertFont failed."));
-		return nullptr;
-	}
-// 	vector<FontResItem*>::iterator  iter = m_vFonts.begin();
-// 	vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
-// 
-// 	for( ; iter != iterEnd; iter++ )
-// 	{
-// 		FontResItem* p = *iter;
-// 
-// 		if (strID == p->GetId() /*&& p->GetWParam() == wParam && p->GetLParam() == lParam */)
-// 		{
-// 			UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"), strID.c_str() );
-// 			return nullptr;
-// 		}
-// 	}
+bool FontRes::ModifyFont(const std::string &strID, LOGFONT *pLogFont) {
+  if (nullptr == pLogFont) {
+    UI_LOG_ERROR(_T("FontRes::ModifyFont failed."));
+    return false;
+  }
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  std::vector<FontResItem *>::iterator iterEnd = m_vFonts.end();
 
-	FontResItem*  pFontItem = new FontResItem;
-	pFontItem->SetId(szId);
-	pFontItem->SetLogFont( pLogFont );
+  for (; iter != iterEnd; iter++) {
+    FontResItem *p = *iter;
 
-	this->m_vFonts.push_back(pFontItem);  
-	return pFontItem;
+    if (strID == p->GetId()) {
+      p->ModifyFont(pLogFont);
+      return true;
+    }
+  }
+  UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"), strID.c_str());
+  return false;
 }
 
-bool FontRes::ModifyFont( const String& strID, LOGFONT* pLogFont )
-{
-	if (nullptr == pLogFont )
-	{
-		UI_LOG_ERROR(_T("FontRes::ModifyFont failed."));
-		return false;
-	}
-	std::vector<FontResItem*>::iterator  iter = m_vFonts.begin();
-	std::vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
+bool FontRes::RemoveFont(const std::string &strID) {
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  std::vector<FontResItem *>::iterator iterEnd = m_vFonts.end();
 
-	for (; iter != iterEnd; iter++)
-	{
-		FontResItem* p = *iter;
+  for (; iter != iterEnd; iter++) {
+    FontResItem *p = *iter;
 
-		if (strID == p->GetId())
-		{
-			p->ModifyFont(pLogFont);
-			return true;
-		}
-	}
-	UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"), strID.c_str() );
-	return false;
+    if (strID == p->GetId()) {
+      delete p;
+      p = nullptr;
+      m_vFonts.erase(iter);
+      return true;
+    }
+  }
+  return false;
 }
 
-bool FontRes::RemoveFont( const String& strID )
-{
-	std::vector<FontResItem*>::iterator  iter = m_vFonts.begin();
-	std::vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
+void FontRes::Clear() {
+  std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
+  std::vector<FontResItem *>::iterator iterEnd = m_vFonts.end();
 
-	for( ; iter != iterEnd; iter++ )
-	{
-		FontResItem* p = *iter;
+  for (; iter != iterEnd; iter++) {
+    FontResItem *p = *iter;
+    delete p;
+    p = nullptr;
+  }
 
-		if (strID == p->GetId())
-		{
-			delete p;
-			p = nullptr;
-			m_vFonts.erase(iter);
-			return true;
-		}
-	}
-	return false;
+  m_vFonts.clear();
 }
 
-void FontRes::Clear()
-{
-	std::vector<FontResItem*>::iterator  iter = m_vFonts.begin();
-	std::vector<FontResItem*>::iterator  iterEnd = m_vFonts.end();
-
-	for (; iter != iterEnd; iter++)
-	{
-		FontResItem* p = *iter;
-		delete p;
-		p = nullptr;
-	}
-
-	m_vFonts.clear();
-}
-
-}
+} // namespace ui

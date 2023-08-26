@@ -132,7 +132,7 @@ public:
 			Create();
 		}
 
-		String strTooltipText;
+		std::string strTooltipText;
 		FixStringWordBreakUnderXP(szText, strTooltipText);
 
 		m_toolinfo.lpszText = (wchar_t*)strTooltipText.c_str();
@@ -186,7 +186,7 @@ protected:
 	//
 	// 解决 tooltip一个长单词在xp下面不会按照max width自动分行的bug
 	//
-	void    FixStringWordBreakUnderXP(const String& src, String& strOut)
+	void    FixStringWordBreakUnderXP(const std::string& src, std::string& strOut)
 	{
 		// 只在XP下处理该字符串
 		if (m_pUIApp && false == m_pUIApp->IsUnderXpOS())

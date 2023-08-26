@@ -25,7 +25,7 @@ void  Control::OnSerialize(SerializeParam* pData)
     __super::OnSerialize(pData);
 
 	{
-		AttributeSerializer s(pData, TEXT("Control"));
+		AttributeSerializer s(pData, "Control");
 
 		s.AddBool(XML_CONTROL_STYLE_TABABLE, this, 
 			memfun_cast<pfnBoolSetter>(&Object::SetTabstop),

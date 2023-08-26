@@ -62,9 +62,9 @@ template <class To, class From> To memfun_cast(From memfunc) {
   return u.addr;
 }
 
-typedef void (*pfnEnumAliasCallback)(const wchar_t *szText, int lValue, int,
+typedef void (*pfnEnumAliasCallback)(const char *szText, int lValue, int,
                                      int);
-typedef void (*pfnEnumStringEnumCallback)(const wchar_t *szText, int, int);
+typedef void (*pfnEnumStringEnumCallback)(const char *szText, int, int);
 
 enum LONGATTR_DPI_SCALE_TYPE {
   LONGATTR_DPI_SCALE_DISABLE,     // 不是dpi属性
@@ -76,15 +76,15 @@ class IntAttribute;
 struct UIAPI IIntAttribute {
   IIntAttribute(IntAttribute *);
   IIntAttribute *SetDefault(int l);
-  IIntAttribute *AddAlias(int, const wchar_t *);
+  IIntAttribute *AddAlias(int, const char *);
   IIntAttribute *AsData();
   IIntAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
   int GetLong();
 
   unsigned int GetAliasCount();
@@ -100,11 +100,11 @@ struct UIAPI IBoolAttribute {
   IBoolAttribute *SetDefault(bool b);
   IBoolAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
   bool GetBool();
   bool GetDefaultBool();
 
@@ -117,14 +117,14 @@ private:
 class StringAttribute;
 struct UIAPI IStringAttribute {
   IStringAttribute(StringAttribute *);
-  IStringAttribute *SetDefault(const wchar_t *);
+  IStringAttribute *SetDefault(const char *);
   IStringAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
 
 private:
   StringAttribute *m_pImpl;
@@ -141,15 +141,15 @@ private:
 class EnumAttribute;
 struct UIAPI IEnumAttribute {
   IEnumAttribute(EnumAttribute *);
-  IEnumAttribute *AddOption(int, const wchar_t *);
+  IEnumAttribute *AddOption(int, const char *);
   IEnumAttribute *SetDefault(int l);
   IEnumAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
   int GetLong();
 
   unsigned int GetAliasCount();
@@ -164,15 +164,15 @@ private:
 class FlagsAttribute;
 struct UIAPI IFlagsAttribute {
   IFlagsAttribute(FlagsAttribute *);
-  IFlagsAttribute *AddFlag(int, const wchar_t *);
+  IFlagsAttribute *AddFlag(int, const char *);
   IFlagsAttribute *SetDefault(int l);
   IFlagsAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
   int GetLong();
 
   unsigned int GetAliasCount();
@@ -187,11 +187,11 @@ struct UIAPI IRectAttribute {
   IRectAttribute(RectAttribute *);
   IRectAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
 
 private:
   RectAttribute *m_pImpl;
@@ -202,11 +202,11 @@ struct UIAPI ISizeAttribute {
   ISizeAttribute(SizeAttribute *);
   ISizeAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
 
 private:
   SizeAttribute *m_pImpl;
@@ -217,11 +217,11 @@ struct UIAPI IRegion9Attribute {
   IRegion9Attribute(Region9Attribute *);
   IRegion9Attribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
 
 private:
   Region9Attribute *m_pImpl;
@@ -232,11 +232,11 @@ struct UIAPI IStringEnumAttribute {
   IStringEnumAttribute(StringEnumAttribute *);
   IStringEnumAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
   void EnumString(pfnEnumStringEnumCallback, int, int);
 
   IStringEnumAttribute *FillRenderBaseTypeData();
@@ -251,11 +251,11 @@ class ColorAttribute;
 struct UIAPI IColorAttribute {
   IColorAttribute(ColorAttribute *);
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
 
 private:
   ColorAttribute *m_pImpl;
@@ -266,12 +266,12 @@ struct UIAPI IRenderBaseAttribute {
   IRenderBaseAttribute(RenderBaseAttribute *);
   IRenderBaseAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *Get();
 
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
+  const char *GetGroupName();
+  const char *GetParentKey();
 
 private:
   RenderBaseAttribute *m_pImpl;
@@ -281,12 +281,12 @@ struct UIAPI ITextRenderBaseAttribute {
   ITextRenderBaseAttribute(TextRenderBaseAttribute *);
   ITextRenderBaseAttribute *AsData();
 
-  const wchar_t *GetKey();
-  const wchar_t *GetDesc();
-  const wchar_t *Get();
+  const char *GetKey();
+  const char *GetDesc();
+  const char *Get();
 
-  const wchar_t *GetGroupName();
-  const wchar_t *GetParentKey();
+  const char *GetGroupName();
+  const char *GetParentKey();
 
 private:
   TextRenderBaseAttribute *m_pImpl;
@@ -294,54 +294,54 @@ private:
 
 class AttributeSerializer;
 struct UIAPI AttributeSerializerWrap {
-  AttributeSerializerWrap(SerializeParam *, const wchar_t *szGroupName);
+  AttributeSerializerWrap(SerializeParam *, const char *szGroupName);
   ~AttributeSerializerWrap();
   AttributeSerializer *GetImpl();
 
-  // IStringAttribute*  AddString(const wchar_t* szKey, void* _this,
+  // IStringAttribute*  AddString(const char* szKey, void* _this,
   // pfnStringSetter s, pfnStringGetter g);
-  IStringAttribute *AddString(const wchar_t *szKey,
-                              slot<void(const wchar_t *)> &&s,
-                              slot<const wchar_t *()> &&g);
-  // IStringAttribute*  AddString(const wchar_t* szKey, const
-  // std::function<void(const wchar_t*)>& s, const std::function<const
-  // wchar_t*()>& g); IStringAttribute*  AddI18nString(const wchar_t* szKey,
+  IStringAttribute *AddString(const char *szKey,
+                              slot<void(const char *)> &&s,
+                              slot<const char *()> &&g);
+  // IStringAttribute*  AddString(const char* szKey, const
+  // std::function<void(const char*)>& s, const std::function<const
+  // char*()>& g); IStringAttribute*  AddI18nString(const char* szKey,
   // void* _this, pfnStringExSetter s, pfnStringGetter g); IStringAttribute*
-  // AddI18nString(const wchar_t* szKey, const std::function<void(const
-  // wchar_t*, int)>& s, const std::function<const wchar_t*()>& g);
-  // IStringEnumAttribute*  AddStringEnum(const wchar_t*, void* _this,
+  // AddI18nString(const char* szKey, const std::function<void(const
+  // char*, int)>& s, const std::function<const char*()>& g);
+  // IStringEnumAttribute*  AddStringEnum(const char*, void* _this,
   // pfnStringSetter s, pfnStringGetter g);
 
-  IBoolAttribute *AddBool(const wchar_t *szKey, bool &bBindValue);
-  // IBoolAttribute*  AddBool(const wchar_t* szKey, void* _this, pfnBoolSetter
+  IBoolAttribute *AddBool(const char *szKey, bool &bBindValue);
+  // IBoolAttribute*  AddBool(const char* szKey, void* _this, pfnBoolSetter
   // s, pfnBoolGetter g);
 
-  IIntAttribute *AddInt(const wchar_t *szKey, int &lBindValue);
-  // IIntAttribute*  AddInt(const wchar_t* szKey, void* _this, pfnLongSetter
+  IIntAttribute *AddInt(const char *szKey, int &lBindValue);
+  // IIntAttribute*  AddInt(const char* szKey, void* _this, pfnLongSetter
   // s, pfnLongGetter g);
 
-  IFlagsAttribute *AddFlags(const wchar_t *, int &lBindValue);
-  IEnumAttribute *AddEnum(const wchar_t *szKey, int &lBindValue);
-  // IEnumAttribute*  AddEnum(const wchar_t* szKey, void* _this, pfnLongSetter
+  IFlagsAttribute *AddFlags(const char *, int &lBindValue);
+  IEnumAttribute *AddEnum(const char *szKey, int &lBindValue);
+  // IEnumAttribute*  AddEnum(const char* szKey, void* _this, pfnLongSetter
   // s, pfnLongGetter g);
 
-  IRectAttribute *AddRect(const wchar_t *, Rect &rcBindValue);
-  // IRectAttribute*  AddRect(const wchar_t*, void* _this, pfnRectSetter s,
+  IRectAttribute *AddRect(const char *, Rect &rcBindValue);
+  // IRectAttribute*  AddRect(const char*, void* _this, pfnRectSetter s,
   // pfnRectGetter g);
 
-  ISizeAttribute *AddSize(const wchar_t *, Size &sBindValue);
-  // ISizeAttribute*  AddSize(const wchar_t*, void* _this, pfnSizeSetter s,
+  ISizeAttribute *AddSize(const char *, Size &sBindValue);
+  // ISizeAttribute*  AddSize(const char*, void* _this, pfnSizeSetter s,
   // pfnSizeGetter g);
 
-  IColorAttribute *AddColor(const wchar_t *, Color *&pBindValue);
-  IColorAttribute *AddColor(const wchar_t *, Color &pBindValue);
-  IRegion9Attribute *Add9Region(const wchar_t *, C9Region &rBindValue);
-  // IRegion9Attribute*  Add9Region(const wchar_t*, void* _this, pfnRectSetter
+  IColorAttribute *AddColor(const char *, Color *&pBindValue);
+  IColorAttribute *AddColor(const char *, Color &pBindValue);
+  IRegion9Attribute *Add9Region(const char *, C9Region &rBindValue);
+  // IRegion9Attribute*  Add9Region(const char*, void* _this, pfnRectSetter
   // s, pfnRectGetter g);
 
-  IRenderBaseAttribute *AddRenderBase(const wchar_t *szPrefix, IObject *pObj,
+  IRenderBaseAttribute *AddRenderBase(const char *szPrefix, IObject *pObj,
                                       IRenderBase *&pBindValue);
-  ITextRenderBaseAttribute *AddTextRenderBase(const wchar_t *szPrefix,
+  ITextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix,
                                               IObject *pObj,
                                               ITextRenderBase *&pBindValue);
 
@@ -362,10 +362,10 @@ public:
   ~IAttributeEditorProxy();
   AttributeEditorProxy *GetImpl();
 
-  bool SetAttribute(const wchar_t *szKey, const wchar_t *szValue);
-  const wchar_t *GetAttribute(const wchar_t *szKey);
+  bool SetAttribute(const char *szKey, const char *szValue);
+  const char *GetAttribute(const char *szKey);
   void LoadAttribute2Editor(IObject *);
-  UpdateAttribute2EditorResult UpdateAttribute2Editor(const wchar_t *szKey);
+  UpdateAttribute2EditorResult UpdateAttribute2Editor(const char *szKey);
 
 private:
   AttributeEditorProxy *m_pImpl;

@@ -27,11 +27,11 @@ void SvgLayoutParam::Load() {
 Uuid SvgLayoutParam::UUID() { return SvgLayout::UUID(); }
 
 void SvgLayoutParam::Serialize(SerializeParam *pData) {
-  AttributeSerializerWrap s(pData, L"SvgLayoutParam");
-  s.AddInt(L"x", m_x);
-  s.AddInt(L"y", m_y);
-  s.AddInt(L"width", m_width);
-  s.AddInt(L"height", m_height);
+  AttributeSerializerWrap s(pData, "SvgLayoutParam");
+  s.AddInt("x", m_x);
+  s.AddInt("y", m_y);
+  s.AddInt("width", m_width);
+  s.AddInt("height", m_height);
 }
 
 SvgLayout::SvgLayout(IObject *bind_object) { m_bind_object = bind_object; }

@@ -3,80 +3,76 @@
 
 #include "sdk/include/macro/uidefine.h"
 
-namespace ui
-{
-	struct IResourceManager;
-	struct IImageManager;
-	struct IImageManager;
-	struct IColorManager;
-	struct IFontManager;
-	struct IStyleManager;
-	struct ILayoutManager;
-	struct IImageRes;
-	struct IFontRes;
-	struct IColorRes;
-	struct IStyleRes;
-	struct ISkinDataSource;
-	struct IUIDocument;
-	struct II18nRes;
+namespace ui {
+struct IResourceManager;
+struct IImageManager;
+struct IImageManager;
+struct IColorManager;
+struct IFontManager;
+struct IStyleManager;
+struct ILayoutManager;
+struct IImageRes;
+struct IFontRes;
+struct IColorRes;
+struct IStyleRes;
+struct ISkinDataSource;
+struct IUIDocument;
+struct II18nRes;
 
-	class Resource;
-	struct UIAPI IResource
-	{
-		IResource(Resource*);
-		Resource*  GetImpl();
-		void  SetParentSkinRes(IResource*);
+class Resource;
+struct UIAPI IResource {
+  IResource(Resource *);
+  Resource *GetImpl();
+  void SetParentSkinRes(IResource *);
 
-		IApplication*  GetUIApplication();
-        IResourceManager&    GetResourceManager();
-        IImageManager&   GetImageManager();
-        IColorManager&   GetColorManager();
-        IFontManager&    GetFontManager();
-        IStyleManager&   GetStyleManager();
-        ILayoutManager&  GetLayoutManager();
-        IImageRes&       GetImageRes();
-        IFontRes&        GetFontRes();
-        IColorRes&       GetColorRes();
-        IStyleRes&       GetStyleRes();
-		II18nRes&        GetI18nRes();
+  IApplication *GetUIApplication();
+  IResourceManager &GetResourceManager();
+  IImageManager &GetImageManager();
+  IColorManager &GetColorManager();
+  IFontManager &GetFontManager();
+  IStyleManager &GetStyleManager();
+  ILayoutManager &GetLayoutManager();
+  IImageRes &GetImageRes();
+  IFontRes &GetFontRes();
+  IColorRes &GetColorRes();
+  IStyleRes &GetStyleRes();
+  II18nRes &GetI18nRes();
 
-		ISkinDataSource*  GetDataSource();
+  ISkinDataSource *GetDataSource();
 
-		unsigned int  GetXmlDocCount();
-		IUIDocument*  GetXmlDoc(unsigned int nIndex);
-		IUIDocument*  GetXmlDocByName(const wchar_t* szName);
+  unsigned int GetXmlDocCount();
+  IUIDocument *GetXmlDoc(unsigned int nIndex);
+  IUIDocument *GetXmlDocByName(const char *szName);
 
-		const wchar_t* GetName();
-		const wchar_t* GetPath();
+  const char *GetName();
+  const char *GetPath();
 
-		bool  Load();
-		bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
+  bool Load();
+  bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	private:
-		Resource*  m_pImpl;
-	};
+private:
+  Resource *m_pImpl;
+};
 
+struct ISkinDataSource;
+class ResourceManager;
+struct UIAPI IResourceManager : public IRootInterface {
+  IResourceManager(ResourceManager *);
+  ResourceManager *GetImpl();
 
-	struct ISkinDataSource;
-	class ResourceManager;
-	struct UIAPI IResourceManager : public IRootInterface
-	{
-		IResourceManager(ResourceManager*);
-		ResourceManager*  GetImpl();
+  IApplication *GetUIApplication();
+  void ChangeSkinHLS(short h, short l, short s, int nFlag);
+  bool Save(IResource *pSkinRes);
 
-		IApplication*  GetUIApplication();
-		void  ChangeSkinHLS(short h, short l, short s, int nFlag);
-		bool  Save(IResource* pSkinRes);
+  unsigned int GetResourceCount();
+  IResource *GetResourceByIndex(unsigned int i);
+  IResource *GetResourceByName(const char *szName);
 
-		unsigned int  GetResourceCount();
-		IResource*  GetResourceByIndex(unsigned int i);
-		IResource*  GetResourceByName(const wchar_t* szName);
+  void SetCurrentLanguage(const char *);
+  const char *GetCurrentLanguage();
 
-        void  SetCurrentLanguage(const wchar_t*);
-        const wchar_t*  GetCurrentLanguage();
-
-	private:
-		ResourceManager*  m_pImpl;
-	};
-}
+private:
+  ResourceManager *m_pImpl;
+};
+} // namespace ui
 #endif

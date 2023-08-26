@@ -59,7 +59,7 @@ public:
   void Quit();
 
   IResource *RootBundle();
-  IResource *LoadResource(const wchar_t *szSkinPath);
+  IResource *LoadResource(const char *szSkinPath);
   IResource *LoadResource(llong hInstance, llong resId = -1);
 
   void SetEditorMode(bool b);
@@ -75,36 +75,36 @@ public:
   IResource *GetDefaultSkinRes();
 
   void RestoreRegisterUIObject();
-  bool RegisterControlTagParseFunc(const wchar_t *szTag,
+  bool RegisterControlTagParseFunc(const char *szTag,
                                    pfnParseControlTag func);
-  bool GetSkinTagParseFunc(const wchar_t *szTag, pfnParseSkinTag *pFunc);
-  bool GetControlTagParseFunc(const wchar_t *szTag, pfnParseControlTag *pFunc);
+  bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
+  bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
 
-  IObject *CreateUIObjectByName(const wchar_t *szName, IResource *pISkinRes);
+  IObject *CreateUIObjectByName(const char *szName, IResource *pISkinRes);
   IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *pISkinRes);
   bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 
-  bool RegisterUIRenderBaseCreateData(const wchar_t *szName, int nType,
+  bool RegisterUIRenderBaseCreateData(const char *szName, int nType,
                                       pfnUICreateRenderBasePtr pfunc);
   bool CreateRenderBase(int nType, IObject *pObject, IRenderBase **ppOut);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
 
-  bool RegisterUITextRenderBaseCreateData(const wchar_t *szName, int nType,
+  bool RegisterUITextRenderBaseCreateData(const char *szName, int nType,
                                           pfnUICreateTextRenderBasePtr pfunc);
-  bool CreateTextRenderBaseByName(const wchar_t *szName, IObject *pObject,
+  bool CreateTextRenderBaseByName(const char *szName, IObject *pObject,
                                   ITextRenderBase **ppOut);
   bool CreateTextRenderBase(int nType, IObject *pObject,
                             ITextRenderBase **ppOut);
   void EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback,
                               llong wParam, llong lParam);
 
-  bool CreateLayoutByName(const wchar_t *szName, IObject *pObject,
+  bool CreateLayoutByName(const char *szName, IObject *pObject,
                           bool bCreateDefault, ILayout **ppOut);
   void EnumLayoutType(pfnEnumLayoutTypeCallback callback, llong wParam,
                       llong lParam);
-  bool RegisterLayout(const wchar_t* name, pfnUICreateLayoutPtr pfn);  
+  bool RegisterLayout(const char* name, pfnUICreateLayoutPtr pfn);  
 
 #if 0
     bool  IsDialogMessage(MSG* pMsg);

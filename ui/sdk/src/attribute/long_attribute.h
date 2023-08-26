@@ -10,8 +10,8 @@ public:
   ~IntAttribute();
   IIntAttribute *GetIIntAttribute();
 
-  virtual const wchar_t *Get() override;
-  virtual void Set(const wchar_t *) override;
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
   virtual void Reset() override;
   virtual void Editor(SerializeParam *pData, AttributeEditorProxy *,
                       EditorAttributeFlag e) override;
@@ -23,7 +23,7 @@ public:
 
 public:
   IntAttribute *SetDefault(int l);
-  IntAttribute *AddAlias(int, const wchar_t *);
+  IntAttribute *AddAlias(int, const char *);
   IntAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
 
   int GetLong();

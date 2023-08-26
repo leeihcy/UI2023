@@ -30,7 +30,7 @@ int  FileBufferReader::tell()
 {
     return (int)f.tellg();
 }
-bool  FileBufferReader::load(const wchar_t* szPath)
+bool  FileBufferReader::load(const char* szPath)
 {
     if (f.is_open())
         f.close();
@@ -42,7 +42,7 @@ bool  FileBufferReader::load(const wchar_t* szPath)
     return true;
 }
 
-bool  FileBufferReader::save(const wchar_t* szPath)
+bool  FileBufferReader::save(const char* szPath)
 {
     UIASSERT(0 && _T("not implement"));
     return false;  // not implement;

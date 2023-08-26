@@ -6,66 +6,64 @@
 #endif
 #include "src/util/DataStruct/list.h"
 
-namespace ui
-{
-	struct UIElement;
-	struct IUIElement;
-	struct IImageManager;
+namespace ui {
+struct UIElement;
+struct IUIElement;
+struct IImageManager;
 
-class  ImageTagElementInfo
-{
+class ImageTagElementInfo {
 public:
-	String  strId;  // ƒ£øÈ√˚
-	UIElement*  pXmlElement;  // xmlΩ·µ„
+  std::string strId;
+  UIElement *pXmlElement; // xmlÁªìÁÇπ
 };
 
-class ImageManager
-{
+class ImageManager {
 public:
-	ImageManager(Resource* pSkinRes);
-	~ImageManager(void);
+  ImageManager(Resource *pSkinRes);
+  ~ImageManager(void);
 
-    IImageManager&  GetIImageManager();
+  IImageManager &GetIImageManager();
 
-	ImageRes&    GetImageRes();
+  ImageRes &GetImageRes();
 #if defined(OS_WIN)
-	CursorRes&   GetCursorRes();
-	GifRes&      GetGifRes();
+  CursorRes &GetCursorRes();
+  GifRes &GetGifRes();
 #endif
-    UIElement*  GetImageXmlElem(const wchar_t* szId);
+  UIElement *GetImageXmlElem(const char *szId);
 
-	IImageResItem*  InsertImageItem(IMAGE_ITEM_TYPE eType, const wchar_t* szID, const wchar_t* szPath);
-	bool  ModifyImageItem(const wchar_t* szID, const wchar_t* szPath);
-	bool  RemoveImageItem(const wchar_t* szID);
+  IImageResItem *InsertImageItem(IMAGE_ITEM_TYPE eType, const char *szID,
+                                 const char *szPath);
+  bool ModifyImageItem(const char *szID, const char *szPath);
+  bool RemoveImageItem(const char *szID);
 
-	bool  ModifyImageItemInRunTime(const wchar_t* szID, const wchar_t* szPath);
-	bool  ModifyImageItemAlpha(const wchar_t* szID, byte nAlphaPercent);
+  bool ModifyImageItemInRunTime(const char *szID, const char *szPath);
+  bool ModifyImageItemAlpha(const char *szID, byte nAlphaPercent);
 
-	void  Clear();
-	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
+  void Clear();
+  bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
-	static int  UIParseImageTagCallback(IUIElement*, IResource* pSkinRes);
+  static int UIParseImageTagCallback(IUIElement *, IResource *pSkinRes);
 
 private:
-    // ISkinTagParse
-    int  ParseNewElement(UIElement* pElem);
-    void  OnNewChild(UIElement* pElem);
+  // ISkinTagParse
+  int ParseNewElement(UIElement *pElem);
+  void OnNewChild(UIElement *pElem);
 
 private:
-	//  ˝æ›≥÷æ√≤„
-    IImageManager*  m_pIImageManager;
+  // Êï∞ÊçÆÊåÅ‰πÖÂ±Ç
+  IImageManager *m_pIImageManager;
 
-	typedef  UIList<ImageTagElementInfo>  _MyList;
-	typedef  UIListItem<ImageTagElementInfo>  _MyListItem;
-	_MyList  m_listUIElement;
+  typedef UIList<ImageTagElementInfo> _MyList;
+  typedef UIListItem<ImageTagElementInfo> _MyListItem;
+  _MyList m_listUIElement;
 
-	// ∂‘œÛ Ù–‘
-	ImageRes        m_resImage;    // ΩÁ√ÊÕº∆¨
+  // ÂØπË±°Â±ûÊÄß
+  ImageRes m_resImage; // ÁïåÈù¢ÂõæÁâá
 #if defined(OS_WIN)
-	CursorRes       m_resCursor;   //  Û±Í—˘ ΩÕº∆¨
-	GifRes          m_resGif;      // ∂Øª≠
+  CursorRes m_resCursor; // Èº†Ê†áÊ†∑ÂºèÂõæÁâá
+  GifRes m_resGif;       // Âä®Áîª
 #endif
-	Resource*        m_pSkinRes;
+  Resource *m_pSkinRes;
 };
 
-} 
+} // namespace ui

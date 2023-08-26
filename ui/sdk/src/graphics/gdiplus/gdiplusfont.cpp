@@ -116,7 +116,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 	if (NULL == m_pFont)
 		return sizeText;
 
-	if (NULL == szText || wcslen(szText)==0)
+	if (NULL == szText || strlen(szText)==0)
 		return sizeText;
 
 	HDC hDC = Image::GetCacheDC();
@@ -132,7 +132,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 		Gdiplus::RectF  layoutRect((Gdiplus::REAL)0,(Gdiplus::REAL)0, (Gdiplus::REAL)nLimitWidth, (Gdiplus::REAL)0 );
 		Gdiplus::RectF  boundingBox;
 
-		g.MeasureString( szText, -1/*wcslen(szText)*/, m_pFont, layoutRect, pStringFormat, &boundingBox, NULL,NULL );
+		g.MeasureString( szText, -1/*strlen(szText)*/, m_pFont, layoutRect, pStringFormat, &boundingBox, NULL,NULL );
 
 		sizeText.cx = (int)boundingBox.Width+1;
 		sizeText.cy = (int)boundingBox.Height+1;
@@ -142,7 +142,7 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 		Gdiplus::PointF origin((Gdiplus::REAL)0,(Gdiplus::REAL)0 );
 		Gdiplus::RectF  boundingBox;
 
-		g.MeasureString( szText, -1/*wcslen(szText)*/, m_pFont, origin, pStringFormat, &boundingBox );
+		g.MeasureString( szText, -1/*strlen(szText)*/, m_pFont, origin, pStringFormat, &boundingBox );
 
 		sizeText.cx = (int)boundingBox.Width+1;
 		sizeText.cy = (int)boundingBox.Height+1;

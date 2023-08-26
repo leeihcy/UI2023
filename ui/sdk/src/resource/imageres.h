@@ -1,156 +1,162 @@
 #pragma once
 #include "src/private_inc.h"
 
-namespace ui
-{
-	struct IImageResItem;
-	struct IRenderBitmap;
-	struct IImageRes;
+namespace ui {
+struct IImageResItem;
+struct IRenderBitmap;
+struct IImageRes;
 class ImageData;
 class GDIRenderBitmap;
 class GdiplusRenderBitmap;
 class Resource;
 
 //
-//	imageÖĞµÄÒ»ÏîĞÅÏ¢Êı¾İ
+//	imageä¸­çš„ä¸€é¡¹ä¿¡æ¯æ•°æ®
 //
-class ImageResItem
-{
+class ImageResItem {
 public:
-	ImageResItem();
-	~ImageResItem();
+  ImageResItem();
+  ~ImageResItem();
 
-	bool  ModifyImage(const wchar_t*  szPath);
-    IMAGE_ITEM_TYPE  GetImageItemType();
-    void  SetImageItemType(IMAGE_ITEM_TYPE e);
+  bool ModifyImage(const char *szPath);
+  IMAGE_ITEM_TYPE GetImageItemType();
+  void SetImageItemType(IMAGE_ITEM_TYPE e);
 
-	const wchar_t*  GetId();
-	void  SetId(const wchar_t* text);
-	void  SetPath(const wchar_t* text);
-	const wchar_t*  GetPath();
+  const char *GetId();
+  void SetId(const char *text);
+  void SetPath(const char *text);
+  const char *GetPath();
 
-	DECLARE_bool_SETGET(UseSkinHLS);
-	DECLARE_bool_SETGET(NeedAntiAliasing)
+  DECLARE_bool_SETGET(UseSkinHLS);
+  DECLARE_bool_SETGET(NeedAntiAliasing)
 
-    bool  NeedDpiAdapt();
-	void  SetFileDpiScale(int n){
-			m_nFileDpiScale = (byte)n;
-	}
+      bool NeedDpiAdapt();
+  void SetFileDpiScale(int n) { m_nFileDpiScale = (byte)n; }
 
 public:
-	bool  ModifyHLS(short h, short l, short s, int nFlag);
-	bool  ModifyHLS(IRenderBitmap* pBitmap, short h, short l, short s, int nFlag);
-	bool  ModifyAlpha(byte nAlphaPercent);
-	IRenderBitmap*  GetImage(Resource* pSkinRes, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI, bool* pbFirstTimeCreate=nullptr);
-    IRenderBitmap*  GetImage_gdi(Resource* pSkinRes, bool* pbFirstTimeCreate=nullptr);
+  bool ModifyHLS(short h, short l, short s, int nFlag);
+  bool ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s, int nFlag);
+  bool ModifyAlpha(byte nAlphaPercent);
+  IRenderBitmap *GetImage(Resource *pSkinRes,
+                          GRAPHICS_RENDER_LIBRARY_TYPE eRenderType =
+                              GRAPHICS_RENDER_LIBRARY_TYPE_GDI,
+                          bool *pbFirstTimeCreate = nullptr);
+  IRenderBitmap *GetImage_gdi(Resource *pSkinRes,
+                              bool *pbFirstTimeCreate = nullptr);
 
-	bool  IsMyRenderBitmap(IRenderBitmap* pRenderBitmap);
+  bool IsMyRenderBitmap(IRenderBitmap *pRenderBitmap);
 
-    // ´´½¨Ixxx½Ó¿Ú
-    virtual IImageResItem*  GetIImageResItem(); 
-    // ¶ÁÈ¡xmlÊôĞÔ£¬ÈçimagelistµÄlayout¡¢count
-	virtual void  SetAttribute(IMapAttribute* pMapAttrib);
-    // ÔÚ´´½¨ÁËRenderBitmapÖ®ºó£¬ÓÉ¸÷¸ö×ÓÀàÈ¥ÎªÆäÉèÖÃÀ©Õ¹ÊôĞÔ
-    virtual void  SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap);
+  // åˆ›å»ºIxxxæ¥å£
+  virtual IImageResItem *GetIImageResItem();
+  // è¯»å–xmlå±æ€§ï¼Œå¦‚imagelistçš„layoutã€count
+  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  // åœ¨åˆ›å»ºäº†RenderBitmapä¹‹åï¼Œç”±å„ä¸ªå­ç±»å»ä¸ºå…¶è®¾ç½®æ‰©å±•å±æ€§
+  virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
 protected:
-	IImageResItem*  m_pIImageResItem;
+  IImageResItem *m_pIImageResItem;
 
-    String    m_strId;      // image id
-    String    m_strPath;    // image path
-	byte   m_nFileDpiScale;  // Í¼Æ¬dpi·Å´óÏµÊı¡£@2x @3x ...
+  std::string m_strId;       // image id
+  std::string m_strPath;     // image path
+  byte m_nFileDpiScale; // å›¾ç‰‡dpiæ”¾å¤§ç³»æ•°ã€‚@2x @3x ...
 
-    bool  m_bUseSkinHLS;                   // ¸ÃÍ¼Æ¬ÊÇ·ñ²ÎÓëÆ¤·ôÉ«µ÷¸Ä±ä 
-    bool  m_bNeedAntiAliasing;             // ĞèÒªÖ§³Ö¿¹¾â³İ(gdiµÄalphablendËõ·Å²»Ö§³ÖSetStretchBltModeµÄHALFTONE)
-    bool  m_bMustHasAlphaChannel;          // ¸ÃÍ¼Æ¬ÊÇ·ñĞèÒª´´½¨alpha channel¡£1. ÓĞalpha channelµÄÍ¼Æ¬Ò»ÂÊ²ÉÓÃgdi´´½¨£¬²ÉÓÃalphablend»æÖÆ¡£2. Ã»ÓĞalpha channelµÄgdiÍ¼Æ¬½«ÎŞ·¨ÔÚ·Ö²ã´°¿ÚÉÏÃæ»æÖÆ
-    bool  m_bDpiAdapt;                     // ÊÇ·ñ×ÔÊÊÓ¦DPIËõ·Å
+  bool m_bUseSkinHLS; // è¯¥å›¾ç‰‡æ˜¯å¦å‚ä¸çš®è‚¤è‰²è°ƒæ”¹å˜
+  bool
+      m_bNeedAntiAliasing; // éœ€è¦æ”¯æŒæŠ—é”¯é½¿(gdiçš„alphablendç¼©æ”¾ä¸æ”¯æŒSetStretchBltModeçš„HALFTONE)
+  bool m_bMustHasAlphaChannel; // è¯¥å›¾ç‰‡æ˜¯å¦éœ€è¦åˆ›å»ºalpha channelã€‚1. æœ‰alpha
+                               // channelçš„å›¾ç‰‡ä¸€ç‡é‡‡ç”¨gdiåˆ›å»ºï¼Œé‡‡ç”¨alphablendç»˜åˆ¶ã€‚2.
+                               // æ²¡æœ‰alpha
+                               // channelçš„gdiå›¾ç‰‡å°†æ— æ³•åœ¨åˆ†å±‚çª—å£ä¸Šé¢ç»˜åˆ¶
+  bool m_bDpiAdapt; // æ˜¯å¦è‡ªé€‚åº”DPIç¼©æ”¾
 
-    IMapAttribute*        m_pMapAttrib;    // Îª¸ÃÍ¼Æ¬ÅäÖÃµÄÊôĞÔ£¬ÀıÈçimagelistµÄcount£¬iconµÄwidth height
-    IMAGE_ITEM_TYPE       m_eType;         // Í¼Æ¬ÀàĞÍ
+  IMapAttribute *m_pMapAttrib; // ä¸ºè¯¥å›¾ç‰‡é…ç½®çš„å±æ€§ï¼Œä¾‹å¦‚imagelistçš„countï¼Œiconçš„width
+                               // height
+  IMAGE_ITEM_TYPE m_eType; // å›¾ç‰‡ç±»å‹
 
-    ImageData*            m_pOriginImageData;    // ¸ÃÍ¼Æ¬µÄÔ­Ê¼Êı¾İ£¨¸Ä±äÍ¼Æ¬É«µ÷Ê±Ê¹ÓÃ£©
+  ImageData *m_pOriginImageData; // è¯¥å›¾ç‰‡çš„åŸå§‹æ•°æ®ï¼ˆæ”¹å˜å›¾ç‰‡è‰²è°ƒæ—¶ä½¿ç”¨ï¼‰
 #if defined(OS_WIN)
-    GDIRenderBitmap*      m_pGdiBitmap;          // Íâ²¿ÒıÓÃ£¬¸Ã³ÉÔ±²»Ôö¼ÓÒıÓÃ¼ÆÊı
+  GDIRenderBitmap *m_pGdiBitmap; // å¤–éƒ¨å¼•ç”¨ï¼Œè¯¥æˆå‘˜ä¸å¢åŠ å¼•ç”¨è®¡æ•°
 #endif
-    //  ×¢£ºÎªÁËÌá¸ß»æÍ¼Ğ§ÂÊ£¬Í¬Ê±Ò²±ÜÃâÒ»ÕÅÍ¼Æ¬¼ÓÔØ¶àÖÖĞÎÊ½£¬¾¡Á¿Ê¹ÓÃGDI(AlphaBlend)À´»æÍ¼¡£
-    //	    ĞèÒª×¢ÒâµÄÊÇ£ºÈç¹ûĞèÒªÊ¹ÓÃalphaÍ¨µÀÊ±£¬±ØĞëÇ¿ÖÆ´´½¨Ò»¸ö32Î»µÄGDI BITMAP
-    // GdiplusRenderBitmap*  m_pGdiplusBitmap;      // Íâ²¿ÒıÓÃ
+  //  æ³¨ï¼šä¸ºäº†æé«˜ç»˜å›¾æ•ˆç‡ï¼ŒåŒæ—¶ä¹Ÿé¿å…ä¸€å¼ å›¾ç‰‡åŠ è½½å¤šç§å½¢å¼ï¼Œå°½é‡ä½¿ç”¨GDI(AlphaBlend)æ¥ç»˜å›¾ã€‚
+  //	    éœ€è¦æ³¨æ„çš„æ˜¯ï¼šå¦‚æœéœ€è¦ä½¿ç”¨alphaé€šé“æ—¶ï¼Œå¿…é¡»å¼ºåˆ¶åˆ›å»ºä¸€ä¸ª32ä½çš„GDI
+  //BITMAP
+  // GdiplusRenderBitmap*  m_pGdiplusBitmap;      // å¤–éƒ¨å¼•ç”¨
 };
 
-class ImageListResItem : public ImageResItem
-{
+class ImageListResItem : public ImageResItem {
 public:
-    ImageListResItem();
+  ImageListResItem();
 
-    virtual IImageResItem*  GetIImageResItem(); 
-    virtual void  SetAttribute(IMapAttribute* pMapAttrib);
-    virtual void  SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap);
+  virtual IImageResItem *GetIImageResItem();
+  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
-    IMAGELIST_LAYOUT_TYPE  GetLayoutType();
-    int  GetItemCount();
-    void  SetLayoutType(IMAGELIST_LAYOUT_TYPE);
-    void  SetItemCount(int);
+  IMAGELIST_LAYOUT_TYPE GetLayoutType();
+  int GetItemCount();
+  void SetLayoutType(IMAGELIST_LAYOUT_TYPE);
+  void SetItemCount(int);
 
 private:
-    IMAGELIST_LAYOUT_TYPE   m_eLayoutType;
-    int  m_nCount;
+  IMAGELIST_LAYOUT_TYPE m_eLayoutType;
+  int m_nCount;
 };
 
-class ImageIconResItem : public ImageResItem
-{
+class ImageIconResItem : public ImageResItem {
 public:
-    ImageIconResItem();
+  ImageIconResItem();
 
-    virtual IImageResItem*  GetIImageResItem(); 
-    virtual void  SetAttribute(IMapAttribute* pMapAttrib);
-    virtual void  SetRenderBitmapAttribute(IRenderBitmap* pRenderBitmap);
+  virtual IImageResItem *GetIImageResItem();
+  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
 private:
-    Size  m_sizeDraw;
+  Size m_sizeDraw;
 };
 
 //
-//	imageÁĞ±í
+//	imageåˆ—è¡¨
 //
-class ImageRes
-{
+class ImageRes {
 public:
-	ImageRes(Resource*  pSkinRes);
-	~ImageRes();
+  ImageRes(Resource *pSkinRes);
+  ~ImageRes();
 
-	IImageRes&  GetIImageRes();
+  IImageRes &GetIImageRes();
 
-	long  GetImageCount();
-	IImageResItem*  GetImageResItem(long lIndex);
-	IImageResItem*  GetImageResItem(const wchar_t* szID);
-	bool ModifyImage(const wchar_t* szId, const wchar_t* szPath);
+  long GetImageCount();
+  IImageResItem *GetImageResItem(long lIndex);
+  IImageResItem *GetImageResItem(const char *szID);
+  bool ModifyImage(const char *szId, const char *szPath);
 
-	HBITMAP  LoadBitmap(const wchar_t* szId);
-	bool  GetBitmap(const wchar_t* szImageID, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, 
-        /*__out*/ IRenderBitmap** pRenderBitmap);
+  HBITMAP LoadBitmap(const char *szId);
+  bool GetBitmap(const char *szImageID,
+                 GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                 /*__out*/ IRenderBitmap **pRenderBitmap);
 
-	const wchar_t*  GetRenderBitmapId(IRenderBitmap* pBitmap);
+  const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
 
 public:
-	ImageResItem*  LoadItem(const wchar_t* szType, IMapAttribute* pMapAttrib, const wchar_t* szFullPath);
+  ImageResItem *LoadItem(const char *szType, IMapAttribute *pMapAttrib,
+                         const char *szFullPath);
 
-	ImageResItem*  GetImageItem2(int nIndex);
-	ImageResItem*  GetImageItem2(const wchar_t* szId);
+  ImageResItem *GetImageItem2(int nIndex);
+  ImageResItem *GetImageItem2(const char *szId);
 
-	ImageResItem*  InsertImage(IMAGE_ITEM_TYPE eType, const wchar_t* szId, const wchar_t* szPath);
-	bool RemoveImage(const wchar_t* szId);
-    bool RemoveImage(IImageResItem* pItem);
-	bool Clear();
-	bool ChangeSkinHLS(short h, short l, short s, int nFlag);
-	bool ModifyImageItemAlpha(const String& strID, byte nAlphaPercent);
+  ImageResItem *InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
+                            const char *szPath);
+  bool RemoveImage(const char *szId);
+  bool RemoveImage(IImageResItem *pItem);
+  bool Clear();
+  bool ChangeSkinHLS(short h, short l, short s, int nFlag);
+  bool ModifyImageItemAlpha(const std::string &strID, byte nAlphaPercent);
 
-private: 
-	IImageRes*  m_pIImageRes;
-	Resource*  m_pSkinRes;
+private:
+  IImageRes *m_pIImageRes;
+  Resource *m_pSkinRes;
 
-    typedef  std::map<String,  ImageResItem*>::iterator  _MyIter;
-    std::map<std::wstring,  ImageResItem*>   m_mapImages;
-    //vector<ImageResItem*>   m_vImages;   // vectorµÄ²éÕÒĞ§ÂÊÌ«µÍÁË£¬Òò´Ë»»ÓÃmap
+  typedef std::map<std::string, ImageResItem *>::iterator _MyIter;
+  std::map<std::string, ImageResItem *> m_mapImages;
+  // vector<ImageResItem*>   m_vImages;   // vectorçš„æŸ¥æ‰¾æ•ˆç‡å¤ªä½äº†ï¼Œå› æ­¤æ¢ç”¨map
 };
 
-}
+} // namespace ui

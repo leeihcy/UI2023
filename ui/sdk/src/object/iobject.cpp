@@ -13,7 +13,7 @@ UI_IMPLEMENT_INTERFACE(Object, Message)
 
 //////////////////////////////////////////////////////////////////////////
 // 
-// wchar_t*  IObject::GetObjectName()                          
+// char*  IObject::GetObjectName()                          
 // { 
 // 	return __pImpl->GetObjectName();
 // }
@@ -26,11 +26,11 @@ UI_IMPLEMENT_INTERFACE(Object, Message)
 // 	return __pImpl->GetObjectExtentType();
 // }
 
-const wchar_t*  IObject::GetId()                          
+const char*  IObject::GetId()                          
 {
 	return __pImpl->GetId();
 }
-void  IObject::SetId(const wchar_t* szText)
+void  IObject::SetId(const char* szText)
 {
 	__pImpl->SetId(szText); 
 }
@@ -287,7 +287,7 @@ void  IObject::SortChildByZorder()
 	__pImpl->SortChildByZorder();
 }
 
-IObject*  IObject::FindObject(const wchar_t* szObjId) 
+IObject*  IObject::FindObject(const char* szObjId) 
 {
     Object* p = __pImpl->FindObject(szObjId); 
     if (p)
@@ -295,7 +295,7 @@ IObject*  IObject::FindObject(const wchar_t* szObjId)
     return nullptr;
 }
 
-IObject*  IObject::TryFindObject(const wchar_t* szObjId)
+IObject*  IObject::TryFindObject(const char* szObjId)
 {
     Object* p = __pImpl->TryFindObject(szObjId);
     if (p)
@@ -303,7 +303,7 @@ IObject*  IObject::TryFindObject(const wchar_t* szObjId)
     return nullptr;
 }
 
-IObject*  IObject::FindNcObject(const wchar_t* szObjId)
+IObject*  IObject::FindNcObject(const char* szObjId)
 {
 	Object* p = __pImpl->FindNcObject(szObjId); 
 	if (p)
@@ -897,7 +897,7 @@ void  IObject::SetTextRender(ITextRenderBase* p)
 	__pImpl->SetTextRender(p);
 }
 
-// void  IObject::SetAttributeByPrefix(const wchar_t* szPrefix, IMapAttribute* pMatAttrib, bool bReload, bool bErase) 
+// void  IObject::SetAttributeByPrefix(const char* szPrefix, IMapAttribute* pMatAttrib, bool bReload, bool bErase) 
 // { 
 // 	__pImpl->SetAttributeByPrefix(szPrefix, pMatAttrib, bReload, bErase); 
 // }
@@ -910,11 +910,11 @@ void  IObject::LoadAttributeFromXml(IUIElement* pXmlElement, bool bReload)
     __pImpl->LoadAttributeFromXml(
             pXmlElement ? pXmlElement->GetImpl():nullptr, bReload);
 }
-const wchar_t*  IObject::GetAttribute(const wchar_t* szKey, bool bErase) 
+const char*  IObject::GetAttribute(const char* szKey, bool bErase) 
 { 
 	return __pImpl->GetAttribute(szKey, bErase);
 }
-void  IObject::AddAttribute(const wchar_t* szKey, const wchar_t*  szValue)
+void  IObject::AddAttribute(const char* szKey, const char*  szValue)
 { 
 	__pImpl->AddAttribute(szKey, szValue); 
 }
@@ -956,19 +956,19 @@ bool  IObject::ReleaseMouseCapture()
 // 	return __pImpl->ReleaseKeyboardCapture(); 
 // }
 // 
-// void  IObject::LoadColor(const wchar_t* szColor, Color*& pColorRef)
+// void  IObject::LoadColor(const char* szColor, Color*& pColorRef)
 // {
 //     return __pImpl->LoadColor(szColor, pColorRef);
 // }
-// const wchar_t*  IObject::SaveColor(Color*& pColorRef)
+// const char*  IObject::SaveColor(Color*& pColorRef)
 // {
 //     return __pImpl->SaveColor(pColorRef);
 // }
-// void  IObject::LoadTextRender(const wchar_t* szName)
+// void  IObject::LoadTextRender(const char* szName)
 // {
 // 	__pImpl->LoadTextRender(szName);
 // }
-// const wchar_t*  IObject::SaveTextRender()
+// const char*  IObject::SaveTextRender()
 // {
 // 	return __pImpl->SaveTextRender();
 // }

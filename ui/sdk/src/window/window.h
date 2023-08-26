@@ -52,7 +52,7 @@ public:
   void SetTitle(const char *title);
   void Show();
 
-  bool CreateUI(const wchar_t *szId);
+  bool CreateUI(const char *szId);
 
 	void  SetGpuComposite(bool b);
 	bool  IsGpuComposite();
@@ -99,7 +99,7 @@ private:
 
 	WindowStyle  m_windowStyle;
 	
-  String  m_strConfigWindowText;   // 皮肤中配置的窗口标题
+  std::string  m_strConfigWindowText;   // 皮肤中配置的窗口标题
 };
 
 } // namespace ui

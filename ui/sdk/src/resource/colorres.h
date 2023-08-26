@@ -1,85 +1,84 @@
 #pragma once
-#include <vector>
 #include "include/inc.h"
 #include "include/util/color.h"
+#include <vector>
 
-namespace ui
-{
+namespace ui {
 struct IColorResItem;
 struct IColorRes;
 class Resource;
 
 //
-//	colorÖĞµÄÒ»ÏîĞÅÏ¢Êı¾İ
+//	colorä¸­çš„ä¸€é¡¹ä¿¡æ¯æ•°æ®
 //
-class  ColorResItem
-{
+class ColorResItem {
 public:
-	ColorResItem();
-	~ColorResItem();
+  ColorResItem();
+  ~ColorResItem();
 
-    IColorResItem*  GetIColorResItem();
-	const wchar_t* GetColorString();
-	bool  IsMyColor(Color* p);
+  IColorResItem *GetIColorResItem();
+  const char *GetColorString();
+  bool IsMyColor(Color *p);
 
 private:
-	std::wstring    m_strId;
-	std::wstring    m_strColor;     // ÑÕÉ«×Ö·û´®
-    ColorPtr  m_pColor;
+  std::string m_strId;
+  std::string m_strColor; // é¢œè‰²å­—ç¬¦ä¸²
+  ColorPtr m_pColor;
 
-	COLORREF*  m_pOriginColorValue;  // ¸ÃCOLORÎ´¸Ä±äÉ«µ÷Ç°µÄÑÕÉ«Öµ£¬ÓÃÓÚ»¹Ô­
+  COLORREF *m_pOriginColorValue; // è¯¥COLORæœªæ”¹å˜è‰²è°ƒå‰çš„é¢œè‰²å€¼ï¼Œç”¨äºè¿˜åŸ
 
-	// TODO: ¿ÉÒÔÔÙ½øĞĞÀ©Õ¹¡£ÀıÈçÎÄ×ÖµÄºÚ°×ÑÕÉ«±ä»»£¬ÊÇ¸ù¾İÎÄ×ÖºóÃæµÄ±³¾°É«À´¾ö¶¨µÄ£¬¶ø²»ÊÇÅäËÀµÄ
-	bool      m_bUseSkinHLS;  // ¸ÃCOLORÊÇ·ñ²ÎÓëÆ¤·ôÉ«µ÷¸Ä±ä 
+  // TODO:
+  // å¯ä»¥å†è¿›è¡Œæ‰©å±•ã€‚ä¾‹å¦‚æ–‡å­—çš„é»‘ç™½é¢œè‰²å˜æ¢ï¼Œæ˜¯æ ¹æ®æ–‡å­—åé¢çš„èƒŒæ™¯è‰²æ¥å†³å®šçš„ï¼Œè€Œä¸æ˜¯é…æ­»çš„
+  bool m_bUseSkinHLS; // è¯¥COLORæ˜¯å¦å‚ä¸çš®è‚¤è‰²è°ƒæ”¹å˜
 
 public:
-	void  SetId(const wchar_t* ID);
-	const wchar_t*  GetId();
-	const std::wstring&   GetIdRef();
-	void  SetUseSkinHLS(bool b);
-	bool  GetUseSkinHLS();
-	const std::wstring&   GetColorStringRef();
-	bool  GetColor(ColorPtr* pColor, bool *bFirstTimeCreate = nullptr);
-	void  SetColor(const std::wstring& strColor); 
+  void SetId(const char *ID);
+  const char *GetId();
+  const std::string &GetIdRef();
+  void SetUseSkinHLS(bool b);
+  bool GetUseSkinHLS();
+  const std::string &GetColorStringRef();
+  bool GetColor(ColorPtr *pColor, bool *bFirstTimeCreate = nullptr);
+  void SetColor(const std::string &strColor);
 
-	void  SetAttribute(IMapAttribute* p);
-	bool  ModifyHLS(short h, short l, short s, int nFlag);
+  void SetAttribute(IMapAttribute *p);
+  bool ModifyHLS(short h, short l, short s, int nFlag);
 
 private:
-    IColorResItem*  m_pIColorResItem;
+  IColorResItem *m_pIColorResItem;
 };
 
 //
-//	colorÁĞ±í
+//	coloråˆ—è¡¨
 //
-class ColorRes
-{
+class ColorRes {
 public:
-	ColorRes(Resource* p);
-	~ColorRes();
+  ColorRes(Resource *p);
+  ~ColorRes();
 
-    IColorRes&  GetIColorRes();
+  IColorRes &GetIColorRes();
 
-	long  GetColorCount();
-	IColorResItem*  GetColorResItem(long lIndex);
-	void  GetColor(const wchar_t* szColorId, Color** pp);
-	const wchar_t*  GetColorId(Color* p);
+  long GetColorCount();
+  IColorResItem *GetColorResItem(long lIndex);
+  void GetColor(const char *szColorId, Color **pp);
+  const char *GetColorId(Color *p);
 
 public:
-	ColorResItem* GetColorItem( int nIndex );
-	ColorResItem* GetColorItem( const std::wstring& strID );
-	bool  InsertColor( const std::wstring& strID, const wchar_t* szColor, ColorResItem** pItem );
-	bool  ModifyColor( const std::wstring& strID, const std::wstring& strColor );
-	bool  RemoveColor( const std::wstring& strID );
-	void  Clear();
+  ColorResItem *GetColorItem(int nIndex);
+  ColorResItem *GetColorItem(const std::string &strID);
+  bool InsertColor(const std::string &strID, const char *szColor,
+                   ColorResItem **pItem);
+  bool ModifyColor(const std::string &strID, const std::string &strColor);
+  bool RemoveColor(const std::string &strID);
+  void Clear();
 
-	bool  LoadItem(IMapAttribute* pMapAttrib, const wchar_t* szData);
-	bool  ChangeSkinHLS(short h, short l, short s, int nFlag);
+  bool LoadItem(IMapAttribute *pMapAttrib, const char *szData);
+  bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 private:
-	Resource*  m_pSkinRes;
-    IColorRes*  m_pIColorRes;
-    std::vector<ColorResItem*> m_vColors;
+  Resource *m_pSkinRes;
+  IColorRes *m_pIColorRes;
+  std::vector<ColorResItem *> m_vColors;
 };
 
-}
+} // namespace ui

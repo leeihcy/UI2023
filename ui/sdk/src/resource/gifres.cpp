@@ -24,7 +24,7 @@ GifResItem::~GifResItem()
 	SAFE_DELETE(m_pIGifResItem);
 }
 
-String& GifResItem::GetIdRef()
+std::string& GifResItem::GetIdRef()
 {
 	return m_strId;
 }
@@ -61,9 +61,9 @@ GifImageBase*  GifResItem::GetGifImage(Resource* pSkinRes)
 
 	if (nullptr == m_pGifImage)
 	{
-		String strExt = m_strPath.substr(m_strPath.length()-4, 4);
+		std::string strExt = m_strPath.substr(m_strPath.length()-4, 4);
 
-		if (0 == _tcsicmp(strExt.c_str(), _T(".gif")))
+		if (0 == strcasecmp(strExt.c_str(), ".gif"))
 		{
 			m_pGifImage = new GifImage();
 		}
@@ -116,9 +116,9 @@ IGifRes*  GifRes::GetIGifRes()
 	return m_pIGifRes;
 }
 
-GifResItem* GifRes::LoadItem(IMapAttribute* pMapAttrib, const String& strFullPath)
+GifResItem* GifRes::LoadItem(IMapAttribute* pMapAttrib, const std::string& strFullPath)
 {
-	String strID;
+	std::string strID;
 
 	const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
 	if (szText)
@@ -160,7 +160,7 @@ GifResItem* GifRes::GetGifItem(const wchar_t*  szId)
 	for  (; iter != m_vGifs.end(); iter++)
 	{
 		GifResItem* p = *iter;
-		if (0 == wcscmp(szId, p->GetId()))
+		if (0 == strcmp(szId, p->GetId()))
 			return p;
 	}
 	return nullptr;
@@ -190,7 +190,7 @@ IGifImage*  GifRes::GetGifImage(const wchar_t* szId)
 	return pGifImage->GetIGifImage();
 }
 
-bool GifRes::InsertGif(const String& strID, const String& strPath, GifResItem** pRet)
+bool GifRes::InsertGif(const std::string& strID, const std::string& strPath, GifResItem** pRet)
 {
 	GifResItem* pItem = this->GetGifItem(strID.c_str());
 	if (pItem)
@@ -208,7 +208,7 @@ bool GifRes::InsertGif(const String& strID, const String& strPath, GifResItem** 
 		*pRet = pGifItem;
 	return true;
 }
-bool GifRes::ModifyGif(const String& strID, const String& strPath)
+bool GifRes::ModifyGif(const std::string& strID, const std::string& strPath)
 {
 	GifResItem* p = this->GetGifItem(strID.c_str());
 	if (p)
@@ -219,7 +219,7 @@ bool GifRes::ModifyGif(const String& strID, const String& strPath)
 	UI_LOG_WARN(_T("failed. modify gif id=%s, path=%s"), strID.c_str(), strPath.c_str() );
 	return false;
 }
-bool GifRes::RemoveGif(const String& strID)
+bool GifRes::RemoveGif(const std::string& strID)
 {
 	vector<GifResItem*>::iterator  iter = m_vGifs.begin();
 	vector<GifResItem*>::iterator  iterEnd = m_vGifs.end();

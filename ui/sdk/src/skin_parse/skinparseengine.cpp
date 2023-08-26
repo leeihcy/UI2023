@@ -19,7 +19,7 @@ SkinParseEngine::SkinParseEngine(Resource *pSkinRes) {
 SkinParseEngine::~SkinParseEngine() {}
 
 bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
-                            const wchar_t *szXmlFile) {
+                            const char *szXmlFile) {
 #if 0
 	1. 查找 <skin> root element，如果没有找到则直接返回，表示这不是一个合法文件
 		2. 遍历 <skin> 的child element
@@ -66,7 +66,7 @@ void SkinParseEngine::NewChild(UIElement *pElement) {
 
   pfnParseSkinTag func;
   if (!m_pUIApplication->GetSkinTagParseFunc(
-          (const wchar_t *)pElement->GetTagName(), &func)) {
+          (const char *)pElement->GetTagName(), &func)) {
     return;
   }
 
@@ -78,7 +78,7 @@ int SkinParseEngine::UIParseIncludeTagCallback(IUIElement *pElement,
   if (nullptr == pElement || nullptr == pSkinRes)
     return -1; // E_FAIL;
 
-  const wchar_t *szData = pElement->GetData();
+  const char *szData = pElement->GetData();
   if (!szData)
     return -1; // E_FAIL;
 

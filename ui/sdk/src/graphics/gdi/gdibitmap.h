@@ -47,7 +47,7 @@ public:
 			m_image.ForceUseAlpha();
 		}
 
-        const TCHAR* szExt = szPath + (wcslen(szPath)-4);
+        const TCHAR* szExt = szPath + (strlen(szPath)-4);
 		if (0 == _tcsicmp(szExt, _T(".ico")))
 		{
 			const int ICON_SIZE = 16;

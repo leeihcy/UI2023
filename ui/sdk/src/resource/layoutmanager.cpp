@@ -36,7 +36,7 @@ ILayoutManager &LayoutManager::GetILayoutManager() {
 
 // 用于实现界面插件化，将一部分控件放在另外一个窗口配置文件中。
 // LoadControlLayout将找到指定的窗口，将窗口下面的所有控件加载到指定的父控件下面
-Object *LayoutManager::LoadPluginLayout(const wchar_t *szWndId,
+Object *LayoutManager::LoadPluginLayout(const char *szWndId,
                                         Object *pNewParent,
                                         IMessage *pNotifyTarget) {
   if (!pNewParent)
@@ -76,7 +76,7 @@ Object *LayoutManager::LoadPluginLayout(const wchar_t *szWndId,
 }
 
 // 外部只知道一个窗口id，相拿到该窗口的tagname好调用uiapplication->createinstancebyname
-// bool  LayoutManager::GetWindowNameById(const wchar_t* szId, BSTR* bstrName)
+// bool  LayoutManager::GetWindowNameById(const char* szId, BSTR* bstrName)
 // {
 //     UIElement* pElement = nullptr;
 //     if (!FindWindowElement(nullptr, szId, &pElement))
@@ -90,8 +90,8 @@ Object *LayoutManager::LoadPluginLayout(const wchar_t *szWndId,
 // 2. 用szId.xml在皮肤根目录中查找，例如加载maindlg，会匹配maindlg.xml
 // 3. 在layoutconfig中的配置加载，例如<layoutconfig> <item id="" path=""/>
 // </layoutconfig>
-UIElementProxy LayoutManager::FindWindowElement(const wchar_t *szTagName,
-                                                const wchar_t *szId) {
+UIElementProxy LayoutManager::FindWindowElement(const char *szTagName,
+                                                const char *szId) {
   UIElementProxy proxy;
 
   if (!m_pSkinRes || !szId)
@@ -121,7 +121,7 @@ UIElementProxy LayoutManager::FindWindowElement(const wchar_t *szTagName,
   return proxy;
 }
 
-UIElementProxy LayoutManager::FindListItemElement(const wchar_t *szId) {
+UIElementProxy LayoutManager::FindListItemElement(const char *szId) {
   UIElementProxy proxy;
 
   if (!m_pSkinRes || !szId)
@@ -140,15 +140,15 @@ UIElementProxy LayoutManager::FindListItemElement(const wchar_t *szId) {
   return proxy;
 }
 
-UIElementProxy LayoutManager::load_window_by_id(const wchar_t *szTagName,
-                                                const wchar_t *szId) {
+UIElementProxy LayoutManager::load_window_by_id(const char *szTagName,
+                                                const char *szId) {
   UIElementProxy proxy;
   SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
   if (!pDataSource)
     return proxy;
 
-  String strFile(szId);
-  strFile.append(TEXT(".") XML_XML);
+  std::string strFile(szId);
+  strFile.append("." XML_XML);
 
   SkinParseEngine engine(m_pSkinRes);
   if (engine.Parse(pDataSource, strFile.c_str())) {
@@ -163,8 +163,8 @@ UIElementProxy LayoutManager::load_window_by_id(const wchar_t *szTagName,
 }
 
 // 在<layout>下面查找指定的tag + id，返回UIElement
-UIElementProxy LayoutManager::find_element_from_cache(const wchar_t *szTagName,
-                                                      const wchar_t *szId) {
+UIElementProxy LayoutManager::find_element_from_cache(const char *szTagName,
+                                                      const char *szId) {
   // 允许szTagName为空，只匹配szId
   if (!szId)
     return UIElementProxy();
@@ -186,8 +186,8 @@ UIElementProxy LayoutManager::find_element_from_cache(const wchar_t *szTagName,
 }
 
 UIElementProxy
-LayoutManager::load_element_from_layout_config(const wchar_t *szTagName,
-                                               const wchar_t *szId) {
+LayoutManager::load_element_from_layout_config(const char *szTagName,
+                                               const char *szId) {
   if (!szId)
     return UIElementProxy();
 
@@ -223,16 +223,16 @@ LayoutManager::load_element_from_layout_config(const wchar_t *szTagName,
 
 // 测试一个结点的tag和id
 // 可以不指定szTagName
-bool LayoutManager::testUIElement(UIElement *pElem, const wchar_t *szTagName,
-                                  const wchar_t *szId) {
+bool LayoutManager::testUIElement(UIElement *pElem, const char *szTagName,
+                                  const char *szId) {
   if (!pElem || !szId)
     return false;
 
-  const wchar_t *szTagName2 = pElem->GetTagName();
-  if (szTagName && szTagName2 && 0 != wcscmp(szTagName2, szTagName))
+  const char *szTagName2 = pElem->GetTagName();
+  if (szTagName && szTagName2 && 0 != strcmp(szTagName2, szTagName))
     return false;
 
-  std::wstring bstrId = pElem->GetAttrib(XML_ID);
+  std::string bstrId = pElem->GetAttrib(XML_ID);
   if (bstrId != szId)
     return false;
 
@@ -261,10 +261,10 @@ Object *LayoutManager::ParseChildElement(UIElement *pParentElement,
   return pFirstChild;
 }
 
-bool IsTrue(const wchar_t *szValue) {
-  if (0 == wcscmp(szValue, XML_BOOL_VALUE_TRUE) ||
-      0 == wcscmp(szValue, XML_BOOL_VALUE_1) ||
-      0 == wcscmp(szValue, XML_BOOL_VALUE_YES)) {
+bool IsTrue(const char *szValue) {
+  if (0 == strcmp(szValue, XML_BOOL_VALUE_TRUE) ||
+      0 == strcmp(szValue, XML_BOOL_VALUE_1) ||
+      0 == strcmp(szValue, XML_BOOL_VALUE_YES)) {
     return true;
   }
   return false;
@@ -276,13 +276,13 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
   Application *pUIApp = m_pSkinRes->GetUIApplication();
 
   Object *pObj = nullptr;
-  std::wstring bstrTagName = pUIElement->GetTagName();
+  std::string bstrTagName = pUIElement->GetTagName();
 
   // 将标签名转化为类
   PARSE_CONTROL_RETURN eParseRet = ParseControl_CreateObject;
 
   // 特殊字段，跳过。
-  if (0 == wcscmp(XML_PROP, bstrTagName.c_str()))
+  if (0 == strcmp(XML_PROP, bstrTagName.c_str()))
     return nullptr;
 
   IObject *pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(),
@@ -363,9 +363,9 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
 //name和id来查找原有对象的新属性和布局
 //
 // TODO: 新增的控件，没有机会收到INITIALIZE消息？
-bool LayoutManager::ReLoadLayout(Object *pRootObj, const wchar_t *szNewLayoutId,
-                                 std::map<String, Object *> &mapNamedChildren) {
-  const wchar_t *szObjName = L"";
+bool LayoutManager::ReLoadLayout(Object *pRootObj, const char *szNewLayoutId,
+                                 std::map<std::string, Object *> &mapNamedChildren) {
+  const char *szObjName = "";
   if (pRootObj->GetMeta())
     szObjName = pRootObj->GetMeta()->Name();
 
@@ -384,7 +384,7 @@ bool LayoutManager::ReLoadLayout(Object *pRootObj, const wchar_t *szNewLayoutId,
 
 void LayoutManager::ReloadChildObjects(
     Object *pObjParent, UIElement *pObjElement,
-    std::map<String, Object *> &mapNamedChildren) {
+    std::map<std::string, Object *> &mapNamedChildren) {
   Application *pUIApp = m_pSkinRes->GetUIApplication();
   UIElementProxy childElem = pObjElement->FirstChild();
 
@@ -392,7 +392,7 @@ void LayoutManager::ReloadChildObjects(
   while (childElem) {
     Object *pObj = nullptr;
 
-    const wchar_t *szTagName = childElem->GetTagName();
+    const char *szTagName = childElem->GetTagName();
     if (!szTagName || !szTagName[0]) {
       UI_LOG_WARN(_T("xml invalid tag name."));
 
@@ -401,23 +401,23 @@ void LayoutManager::ReloadChildObjects(
     }
 
     // 特殊字段，跳过。
-    if (0 == wcscmp(XML_PROP, szTagName)) {
+    if (0 == strcmp(XML_PROP, szTagName)) {
       childElem = childElem->NextElement();
       continue;
     }
 
-    std::wstring bstrId = childElem->GetAttrib(XML_ID);
+    std::string bstrId = childElem->GetAttrib(XML_ID);
     if (!bstrId.empty()) {
       // 根据 tagName + id 从listAllChild中查找该对象
       auto iter = mapNamedChildren.find(bstrId);
       if (iter != mapNamedChildren.end()) {
         Object *pTempObj = iter->second;
 
-        const wchar_t *szObjName = L"";
+        const char *szObjName = "";
         if (pTempObj->GetMeta())
           szObjName = pTempObj->GetMeta()->Name();
 
-        if (szObjName && 0 == wcscmp(szObjName, szTagName)) {
+        if (szObjName && 0 == strcmp(szObjName, szTagName)) {
           pObj = pTempObj;
           mapNamedChildren.erase(iter);
         }
@@ -486,7 +486,7 @@ void LayoutManager::ParseLayoutConfigTag(UIElement *pElem) {
 
   // 遍历其子元素
 
-  std::wstring bstrTagName;
+  std::string bstrTagName;
 
   UIElementProxy childElement = pElem->FirstChild();
   while (childElement) {
@@ -503,7 +503,7 @@ bool LayoutManager::ParseLayoutConfigFileTag(UIElement *pElem) {
   if (!pElem)
     return false;
 
-  std::wstring bstrPath = pElem->GetAttrib(XML_PATH);
+  std::string bstrPath = pElem->GetAttrib(XML_PATH);
   if (bstrPath.empty())
     return false;
 
@@ -512,15 +512,15 @@ bool LayoutManager::ParseLayoutConfigFileTag(UIElement *pElem) {
 
   UIElementProxy childElement = pElem->FirstChild();
   while (childElement) {
-    const wchar_t *szTagName = childElement->GetTagName();
+    const char *szTagName = childElement->GetTagName();
 
-    if (0 == wcscmp(szTagName, XML_WINDOW)) {
-      std::wstring bstrWindowName = childElement->GetAttrib(XML_NAME);
+    if (0 == strcmp(szTagName, XML_WINDOW)) {
+      std::string bstrWindowName = childElement->GetAttrib(XML_NAME);
       if (!bstrWindowName.empty()) {
         pFileitem->AddWindow(bstrWindowName.c_str());
       }
-    } else if (0 == wcscmp(szTagName, XML_LISTITEM)) {
-      std::wstring bstrWindowName = childElement->GetAttrib(XML_NAME);
+    } else if (0 == strcmp(szTagName, XML_LISTITEM)) {
+      std::string bstrWindowName = childElement->GetAttrib(XML_NAME);
       if (!bstrWindowName.empty()) {
         pFileitem->AddListItem(szTagName);
       }
@@ -535,17 +535,17 @@ bool LayoutManager::ParseLayoutConfigFileTag(UIElement *pElem) {
 
 //////////////////////////////////////////////////////////////////////////
 
-void LayoutConfigItem::AddWindow(const wchar_t *szName) {
+void LayoutConfigItem::AddWindow(const char *szName) {
   if (szName) {
-    m_vecWindow.push_back(String(szName));
+    m_vecWindow.push_back(std::string(szName));
   }
 }
-bool LayoutConfigItem::FindWindow(const wchar_t *szName) {
+bool LayoutConfigItem::FindWindow(const char *szName) {
   if (!szName)
     return false;
 
-  std::vector<String>::iterator iter =
-      std::find(m_vecWindow.begin(), m_vecWindow.end(), String(szName));
+  std::vector<std::string>::iterator iter =
+      std::find(m_vecWindow.begin(), m_vecWindow.end(), std::string(szName));
 
   if (iter == m_vecWindow.end())
     return false;
@@ -553,17 +553,17 @@ bool LayoutConfigItem::FindWindow(const wchar_t *szName) {
   return true;
 }
 
-void LayoutConfigItem::AddListItem(const wchar_t *szName) {
+void LayoutConfigItem::AddListItem(const char *szName) {
   if (szName) {
-    m_vecListItem.push_back(String(szName));
+    m_vecListItem.push_back(std::string(szName));
   }
 }
-bool LayoutConfigItem::FindListItem(const wchar_t *szName) {
+bool LayoutConfigItem::FindListItem(const char *szName) {
   if (!szName)
     return false;
 
-  std::vector<String>::iterator iter =
-      std::find(m_vecListItem.begin(), m_vecListItem.end(), String(szName));
+  std::vector<std::string>::iterator iter =
+      std::find(m_vecListItem.begin(), m_vecListItem.end(), std::string(szName));
 
   if (iter == m_vecListItem.end())
     return false;
@@ -572,11 +572,11 @@ bool LayoutConfigItem::FindListItem(const wchar_t *szName) {
 }
 
 // 目前只有这两种类型
-bool LayoutConfigItem::Find(const wchar_t *szTagName, const wchar_t *szName) {
+bool LayoutConfigItem::Find(const char *szTagName, const char *szName) {
   if (!szTagName || !szName)
     return false;
 
-  if (0 == wcscmp(szTagName, XML_LISTITEM_))
+  if (0 == strcmp(szTagName, XML_LISTITEM_))
     return FindListItem(szName);
   else
     return FindWindow(szName);
@@ -585,17 +585,17 @@ bool LayoutConfigItem::Find(const wchar_t *szTagName, const wchar_t *szName) {
 unsigned int LayoutConfigItem::GetWindowCount() {
   return (unsigned int)m_vecWindow.size();
 }
-const wchar_t *LayoutConfigItem::GetWindowName(unsigned int index) {
+const char *LayoutConfigItem::GetWindowName(unsigned int index) {
   if (index <= m_vecWindow.size())
     return m_vecWindow[index].c_str();
 
   return nullptr;
 }
 
-void LayoutConfigItem::SetPath(const wchar_t *szPath) {
+void LayoutConfigItem::SetPath(const char *szPath) {
   SETSTRING(m_strPath, szPath);
 }
-const wchar_t *LayoutConfigItem::GetPath() { return m_strPath.c_str(); }
+const char *LayoutConfigItem::GetPath() { return m_strPath.c_str(); }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -604,19 +604,19 @@ public:
   static LayoutWindowNodeList *Create() { return new LayoutWindowNodeList; }
   virtual void Release() override { delete this; }
   virtual unsigned int GetCount() override { return (int)m_array.size(); }
-  virtual const wchar_t *GetWindowName(unsigned int index) override {
+  virtual const char *GetWindowName(unsigned int index) override {
     if (index >= m_array.size())
       return nullptr;
 
     return m_array[index].strName.c_str();
   }
-  virtual const wchar_t *GetWindowId(unsigned int index) override {
+  virtual const char *GetWindowId(unsigned int index) override {
     if (index >= m_array.size())
       return nullptr;
 
     return m_array[index].strId.c_str();
   }
-  virtual const wchar_t *GetWindowPath(unsigned int index) override {
+  virtual const char *GetWindowPath(unsigned int index) override {
     if (index >= m_array.size())
       return nullptr;
 
@@ -624,8 +624,8 @@ public:
   }
 
 public:
-  void AddWindow(const wchar_t *szPath, const wchar_t *szName,
-                 const wchar_t *szId) {
+  void AddWindow(const char *szPath, const char *szName,
+                 const char *szId) {
     if (szId && szPath) {
       WindowInfo info;
       SETSTRING(info.strName, szName);
@@ -637,9 +637,9 @@ public:
 
 private:
   struct WindowInfo {
-    String strPath;
-    String strName;
-    String strId;
+    std::string strPath;
+    std::string strName;
+    std::string strId;
   };
   std::vector<WindowInfo> m_array;
 };
@@ -657,15 +657,15 @@ bool LayoutManager::LoadWindowNodeList(ILayoutWindowNodeList **ppInfo) {
     UIElement *pLayoutElem = **pUIElementItem;
 
     // 获取该结点所在的xml名称
-    const wchar_t *szDocName = nullptr;
+    const char *szDocName = nullptr;
     UIDocument *pDoc = pLayoutElem->GetDocument();
     if (pDoc) {
       szDocName = pDoc->GetSkinPath();
     }
 
     //  遍历访<layout>下面的窗口结点
-    std::wstring bstrTagName;
-    std::wstring bstrId;
+    std::string bstrTagName;
+    std::string bstrId;
 
     UIElementProxy childElem = pLayoutElem->FirstChild();
     while (childElem) {

@@ -77,10 +77,10 @@ public:
   GridWH *GetHeight(unsigned int nIndex);
 
 private:
-  void LoadGridWidth(const wchar_t *szText);
-  const wchar_t *SaveGridWidth();
-  void LoadGridHeight(const wchar_t *szText);
-  const wchar_t *SaveGridHeight();
+  void LoadGridWidth(const char *szText);
+  const char *SaveGridWidth();
+  void LoadGridHeight(const char *szText);
+  const char *SaveGridHeight();
 
 private:
   std::vector<GridWH> widths;

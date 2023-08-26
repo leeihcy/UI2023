@@ -1,170 +1,140 @@
-#include "include/inc.h"
 #include "chararray_attribute.h"
 #include "attribute.h"
 #include "attributex64.h"
+#include "include/inc.h"
 
 using namespace ui;
 
-namespace ui
-{
-AttributeBase*  CreateCharArrayAttribute()
-{
-    return new CharArrayAttribute();
-}
-}
+namespace ui {
+AttributeBase *CreateCharArrayAttribute() { return new CharArrayAttribute(); }
+} // namespace ui
 
-CharArrayAttribute::CharArrayAttribute()
-{
-    m_pICharArrayAttribute = nullptr;
-    m_pBindValue = nullptr;
-    _this = nullptr;
-    _getter = nullptr;
-    _setter = nullptr;
-	m_bDefaultIsNULL = true;
-    m_lBindValueSize = 16;
+CharArrayAttribute::CharArrayAttribute() {
+  m_pICharArrayAttribute = nullptr;
+  m_pBindValue = nullptr;
+  _this = nullptr;
+  _getter = nullptr;
+  _setter = nullptr;
+  m_bDefaultIsNULL = true;
+  m_lBindValueSize = 16;
 }
 
-CharArrayAttribute::~CharArrayAttribute()
-{
-    SAFE_DELETE(m_pICharArrayAttribute);
+CharArrayAttribute::~CharArrayAttribute() {
+  SAFE_DELETE(m_pICharArrayAttribute);
 }
 
-ICharArrayAttribute*  CharArrayAttribute::GetICharArrayAttribute()
-{
-    if (!m_pICharArrayAttribute)
-        m_pICharArrayAttribute = new ICharArrayAttribute(this);
+ICharArrayAttribute *CharArrayAttribute::GetICharArrayAttribute() {
+  if (!m_pICharArrayAttribute)
+    m_pICharArrayAttribute = new ICharArrayAttribute(this);
 
-    return m_pICharArrayAttribute;
+  return m_pICharArrayAttribute;
 }
 
-void  CharArrayAttribute::SetBindValue(void* p)
-{
-    m_pBindValue = (wchar_t*)p;
-	m_bDefaultIsNULL = false;
+void CharArrayAttribute::SetBindValue(void *p) {
+  m_pBindValue = (char *)p;
+  m_bDefaultIsNULL = false;
 }
 
-void  CharArrayAttribute::SetBindValueSize(long lSize)
-{
-    m_lBindValueSize = lSize;
+void CharArrayAttribute::SetBindValueSize(long lSize) {
+  m_lBindValueSize = lSize;
 }
 
-// ÕâÖÖÇé¿öÏÂ£¬Ä¬ÈÏÖµÎªnullptr
-void  CharArrayAttribute::SetBindFuction(void* _this, void* _setter, void* _getter)
-{
-    this->_this = _this;
-    this->_setter = (pfnStringSetter)_setter;
-    this->_getter = (pfnStringGetter)_getter;   
-	m_bDefaultIsNULL = true;
+// è¿™ç§æƒ…å†µä¸‹ï¼Œé»˜è®¤å€¼ä¸ºnullptr
+void CharArrayAttribute::SetBindFuction(void *_this, void *_setter,
+                                        void *_getter) {
+  this->_this = _this;
+  this->_setter = (pfnStringSetter)_setter;
+  this->_getter = (pfnStringGetter)_getter;
+  m_bDefaultIsNULL = true;
 }
 
-const wchar_t*  CharArrayAttribute::Get()
-{
-    if (m_pBindValue)
-    {
-        return m_pBindValue;
-    }
-    else if (_this && _getter)
-    {
-        const wchar_t*  szReturn = nullptr;
+const char *CharArrayAttribute::Get() {
+  if (m_pBindValue) {
+    return m_pBindValue;
+  } else if (_this && _getter) {
+    const char *szReturn = nullptr;
 #ifdef _WIN64
-		szReturn = UIx64::GetString(_this, _getter);
+    szReturn = UIx64::GetString(_this, _getter);
 #else
-		long  localVarThis = (long)_this;
-		long  localVarGetter = (long)_getter;
+    long localVarThis = (long)_this;
+    long localVarGetter = (long)_getter;
 
-		__asm
-		{
-			mov  ecx, localVarThis;  // ÉèÖÃthis
-			call localVarGetter;    // µ÷ÓÃ
-			mov  szReturn, eax;        // »ñÈ¡·µ»ØÖµ
-		}
+    __asm
+    {
+			mov  ecx, localVarThis; // è®¾ç½®this
+			call localVarGetter; // è°ƒç”¨
+			mov  szReturn, eax; // èŽ·å–è¿”å›žå€¼
+    }
 #endif
-        return szReturn;
-    }
-    else
-    {
-        return nullptr;
-    }
+    return szReturn;
+  } else {
+    return nullptr;
+  }
 }
 
-void  CharArrayAttribute::Set(const wchar_t* szValue)
-{
-    if (m_pBindValue)
-    {
-        if (szValue)
-        {
-            _tcsncpy(m_pBindValue, szValue, m_lBindValueSize-1);
-            m_pBindValue[m_lBindValueSize-1] = 0;
-        }
-        else
-        {
-            m_pBindValue[0] = 0;
-        }
+void CharArrayAttribute::Set(const char *szValue) {
+  if (m_pBindValue) {
+    if (szValue) {
+      _tcsncpy(m_pBindValue, szValue, m_lBindValueSize - 1);
+      m_pBindValue[m_lBindValueSize - 1] = 0;
+    } else {
+      m_pBindValue[0] = 0;
     }
-    else if (_this && _setter)
-    {
+  } else if (_this && _setter) {
 #ifdef _WIN64
-		UIx64::SetString(_this, szValue, _setter);
+    UIx64::SetString(_this, szValue, _setter);
 #else
-		long  localVarThis = (long)_this;
-		long  localVarSetter = (long)_setter;
+    long localVarThis = (long)_this;
+    long localVarSetter = (long)_setter;
 
-		__asm
-		{
-			mov eax, dword ptr [szValue] // Ñ¹Èë²ÎÊý
+    __asm
+    {
+			mov eax, dword ptr [szValue] // åŽ‹å…¥å‚æ•°
 			push eax;
 
-			mov  ecx, localVarThis;   // ÉèÖÃthis
-			call localVarSetter;     // µ÷ÓÃ
-		}
-#endif
+			mov  ecx, localVarThis; // è®¾ç½®this
+			call localVarSetter; // è°ƒç”¨
     }
+#endif
+  }
 }
 
-void  CharArrayAttribute::Reset()
-{
-	Set(GetDefault());
+void CharArrayAttribute::Reset() { Set(GetDefault()); }
+
+bool CharArrayAttribute::IsDefaultValue() {
+  const char *szValue = Get();
+  const char *szDefault = GetDefault();
+
+  if (szValue == nullptr && szDefault == nullptr)
+    return true;
+
+  if (szValue && szDefault && 0 == strcmp(szValue, szDefault))
+    return true;
+
+  return false;
 }
 
-bool  CharArrayAttribute::IsDefaultValue()
-{
-    const wchar_t* szValue = Get();
-	const wchar_t* szDefault = GetDefault();
+CharArrayAttribute *CharArrayAttribute::SetDefault(const char *szValue) {
+  if (szValue) {
+    m_bDefaultIsNULL = false;
+    m_strDefault = szValue;
+  } else {
+    m_bDefaultIsNULL = true;
+    m_strDefault.clear();
+  }
 
-    if (szValue == nullptr && szDefault == nullptr)
-        return true;
-
-	if (szValue && szDefault && 0 ==wcscmp(szValue, szDefault))
-		return true;
-
-    return false;
+  return this;
 }
 
-CharArrayAttribute*  CharArrayAttribute::SetDefault(const wchar_t* szValue)
-{
-	if (szValue)
-	{
-		m_bDefaultIsNULL = false;
-		m_strDefault = szValue;
-	}
-	else
-	{
-		m_bDefaultIsNULL = true;
-		m_strDefault.clear();
-	}
+const char *CharArrayAttribute::GetDefault() {
+  if (m_bDefaultIsNULL)
+    return nullptr;
 
-	return this;
+  return m_strDefault.c_str();
 }
 
-const wchar_t*  CharArrayAttribute::GetDefault()
-{
-	if (m_bDefaultIsNULL)
-		return nullptr;
-
-	return m_strDefault.c_str();
-}
-
-void  CharArrayAttribute::Editor(SerializeParam* pData, UI::AttributeEditorProxy* p, UI::EditorAttributeFlag e)
-{
-    p->CharArray2Editor(this, e);
+void CharArrayAttribute::Editor(SerializeParam *pData,
+                                UI::AttributeEditorProxy *p,
+                                UI::EditorAttributeFlag e) {
+  p->CharArray2Editor(this, e);
 }

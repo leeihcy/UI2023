@@ -1,60 +1,44 @@
-#include "include/inc.h"
 #include "string_attribute.h"
 #include "attribute.h"
+#include "attributex64.h"
+#include "include/inc.h"
+#include "src/application/uiapplication.h"
 #include "src/resource/i18nres.h"
 #include "src/resource/res_bundle.h"
-#include "src/application/uiapplication.h"
-#include "attributex64.h"
 
+namespace ui {
+AttributeBase *CreateStringAttribute() { return new StringAttribute(); }
 
-namespace ui
-{
-AttributeBase*  CreateStringAttribute()
-{
-    return new StringAttribute();
+// TODO:
+// æ³¨ï¼šä¸ºäº†æ”¯æŒi18nå­—æ®µçš„ç¼–è¾‘åŠŸèƒ½ï¼Œä¸å¾—ä¸é¢å¤–å¢žåŠ ä¸€ä¸ªå­˜å‚¨ç©ºé—´æ¥å­˜æ”¾string id
+//    ä½†ä¸ºäº†å°½é‡é¿å…ç ´åéžç¼–è¾‘æ¨¡å¼ä¸‹çš„ä»£ç é€»è¾‘ï¼Œç›®å‰çš„åšæ³•æ˜¯å°†setå‡½æ•°ä¿®æ”¹ä¸º
+//    set(const char* text, int size)
+//    åœ¨ç¼–è¾‘æ¨¡å¼ä¸‹ï¼Œå°†textåˆ†ä¸ºä¸¤æ®µï¼Œå‰ä¸€æ®µè¡¨ç¤ºè½¬ä¹‰ä¹‹åŽçš„å†…å®¹ï¼ŒåŽä¸€æ®µå†…å®¹è¡¨ç¤º
+//    string idï¼Œä¸­é—´ç”¨\0åˆ†éš”ã€‚
+//    è¿™ç§æ–¹å¼å¼ºåˆ¶å¤–éƒ¨éœ€è¦å¢žåŠ ä¸€ä¸ªæ–°çš„å‡½æ•°ï¼Œä¸æ˜¯å¾ˆå¥½ï¼Œä½†æ²¡æƒ³åˆ°æ›´å¥½çš„åŠžæ³•
+
+AttributeBase *CreateI18nStringAttribute() { return new I18nStringAttribute(); }
+
+StringAttribute::StringAttribute() {
+  m_pIStringAttribute = nullptr;
+  m_pBindValue = nullptr;
+  // _this = nullptr;
+  // _getter = nullptr;
+  // _setter = nullptr;
 }
 
-// TODO: 
-// ×¢£ºÎªÁËÖ§³Öi18n×Ö¶ÎµÄ±à¼­¹¦ÄÜ£¬²»µÃ²»¶îÍâÔö¼ÓÒ»¸ö´æ´¢¿Õ¼äÀ´´æ·Åstring id
-//    µ«ÎªÁË¾¡Á¿±ÜÃâÆÆ»µ·Ç±à¼­Ä£Ê½ÏÂµÄ´úÂëÂß¼­£¬Ä¿Ç°µÄ×ö·¨ÊÇ½«setº¯ÊýÐÞ¸ÄÎª
-//    set(const wchar_t* text, int size)
-//    ÔÚ±à¼­Ä£Ê½ÏÂ£¬½«text·ÖÎªÁ½¶Î£¬Ç°Ò»¶Î±íÊ¾×ªÒåÖ®ºóµÄÄÚÈÝ£¬ºóÒ»¶ÎÄÚÈÝ±íÊ¾
-//    string id£¬ÖÐ¼äÓÃ\0·Ö¸ô¡£
-//    ÕâÖÖ·½Ê½Ç¿ÖÆÍâ²¿ÐèÒªÔö¼ÓÒ»¸öÐÂµÄº¯Êý£¬²»ÊÇºÜºÃ£¬µ«Ã»Ïëµ½¸üºÃµÄ°ì·¨ 
+StringAttribute::~StringAttribute() { SAFE_DELETE(m_pIStringAttribute); }
 
-AttributeBase*  CreateI18nStringAttribute()
-{
-    return new I18nStringAttribute();
+IStringAttribute *StringAttribute::GetIStringAttribute() {
+  if (!m_pIStringAttribute)
+    m_pIStringAttribute = new IStringAttribute(this);
+
+  return m_pIStringAttribute;
 }
 
-StringAttribute::StringAttribute()
-{
-    m_pIStringAttribute = nullptr;
-    m_pBindValue = nullptr;
-    // _this = nullptr;
-    // _getter = nullptr;
-    // _setter = nullptr;
-}
+void StringAttribute::BindReference(std::string &s) { m_pBindValue = &s; }
 
-StringAttribute::~StringAttribute()
-{
-    SAFE_DELETE(m_pIStringAttribute);
-}
-
-IStringAttribute*  StringAttribute::GetIStringAttribute()
-{
-    if (!m_pIStringAttribute)
-        m_pIStringAttribute = new IStringAttribute(this);
-
-    return m_pIStringAttribute;
-}
-
-void  StringAttribute::BindReference(String& s)
-{
-    m_pBindValue = &s;
-}
-
-// ÕâÖÖÇé¿öÏÂ£¬Ä¬ÈÏÖµÎªnullptr
+// è¿™ç§æƒ…å†µä¸‹ï¼Œé»˜è®¤å€¼ä¸ºnullptr
 // void  StringAttribute::BindFunction(
 //         void* _this, pfnStringSetter s, pfnStringGetter g)
 // {
@@ -63,133 +47,113 @@ void  StringAttribute::BindReference(String& s)
 //     this->_getter = g;
 // }
 
-void StringAttribute::Bind(slot<void(const wchar_t*)>&& s, slot<const wchar_t*()>&& g)
-{
-    m_setter.connect(std::forward<slot<void(const wchar_t*)>>(s));
-    m_getter.connect(std::forward<slot<const wchar_t*()>>(g));
+void StringAttribute::Bind(slot<void(const char *)> &&s,
+                           slot<const char *()> &&g) {
+  m_setter.connect(std::forward<slot<void(const char *)>>(s));
+  m_getter.connect(std::forward<slot<const char *()>>(g));
 }
 // void  StringAttribute::BindFunction(
-//         const std::function<void(const wchar_t*)>& s, 
-//         const std::function<const wchar_t*()>& g)
+//         const std::function<void(const char*)>& s,
+//         const std::function<const char*()>& g)
 // {
 //     _func_setter = s;
 //     _func_getter = g;
 // }
 
-const wchar_t*  StringAttribute::Get()
-{
-	const wchar_t* szValue = nullptr;
-    if (m_pBindValue)
-    {
-		szValue = m_pBindValue->c_str();
-    }
-//     else if (_this && _getter)
-//     {
-//         const wchar_t*  szReturn = nullptr;
-// #ifdef _WIN64
-// 		szReturn = UIx64::GetString(_this, _getter);
-// #else
-// 		long  localVarThis = (long)_this;
-// 		long  localVarGetter = (long)_getter;
+const char *StringAttribute::Get() {
+  const char *szValue = nullptr;
+  if (m_pBindValue) {
+    szValue = m_pBindValue->c_str();
+  }
+  //     else if (_this && _getter)
+  //     {
+  //         const char*  szReturn = nullptr;
+  // #ifdef _WIN64
+  // 		szReturn = UIx64::GetString(_this, _getter);
+  // #else
+  // 		long  localVarThis = (long)_this;
+  // 		long  localVarGetter = (long)_getter;
 
-// 		__asm
-// 		{
-// 			mov  ecx, localVarThis;  // ÉèÖÃthis
-// 			call localVarGetter;     // µ÷ÓÃ
-// 			mov  szReturn, eax;      // »ñÈ¡·µ»ØÖµ
-// 		}
-// #endif
-// 		szValue = szReturn;
-//     }
-    //else if (!_func_getter._Empty())
-	else if (!m_getter.empty())
-	{
-        szValue = m_getter.emit();
-    }
+  // 		__asm
+  // 		{
+  // 			mov  ecx, localVarThis;  // è®¾ç½®this
+  // 			call localVarGetter;     // è°ƒç”¨
+  // 			mov  szReturn, eax;      // èŽ·å–è¿”å›žå€¼
+  // 		}
+  // #endif
+  // 		szValue = szReturn;
+  //     }
+  // else if (!_func_getter._Empty())
+  else if (!m_getter.empty()) {
+    szValue = m_getter.emit();
+  }
 
-
-	return szValue;
+  return szValue;
 }
 
-void  StringAttribute::Set(const wchar_t* szValue)
-{
-    if (m_pBindValue)
-    {
-        if (szValue)
-            m_pBindValue->assign(szValue);
-        else
-            m_pBindValue->clear();
-    }
-//     else if (_this && _setter)
-//     {
-// #ifdef _WIN64
-// 		UIx64::SetString(_this, szValue, _setter);
-// #else
-// 		long  localVarThis = (long)_this;
-// 		long  localVarSetter = (long)_setter;
+void StringAttribute::Set(const char *szValue) {
+  if (m_pBindValue) {
+    if (szValue)
+      m_pBindValue->assign(szValue);
+    else
+      m_pBindValue->clear();
+  }
+  //     else if (_this && _setter)
+  //     {
+  // #ifdef _WIN64
+  // 		UIx64::SetString(_this, szValue, _setter);
+  // #else
+  // 		long  localVarThis = (long)_this;
+  // 		long  localVarSetter = (long)_setter;
 
-// 		__asm
-// 		{
-// 			mov eax, dword ptr [szValue] // Ñ¹Èë²ÎÊý
-// 			push eax;
+  // 		__asm
+  // 		{
+  // 			mov eax, dword ptr [szValue] // åŽ‹å…¥å‚æ•°
+  // 			push eax;
 
-// 			mov  ecx, localVarThis;   // ÉèÖÃthis
-// 			call localVarSetter;      // µ÷ÓÃ
-// 		}
-// #endif
-//     }
-    // else if (!_func_setter._Empty())
-	else if (!m_setter.empty())
-	{
-        m_setter.emit(szValue);
-    }
+  // 			mov  ecx, localVarThis;   // è®¾ç½®this
+  // 			call localVarSetter;      // è°ƒç”¨
+  // 		}
+  // #endif
+  //     }
+  // else if (!_func_setter._Empty())
+  else if (!m_setter.empty()) {
+    m_setter.emit(szValue);
+  }
 }
 
+void StringAttribute::Reset() { Set(GetDefault()); }
 
-void  StringAttribute::Reset()
-{
-	Set(GetDefault());
+bool StringAttribute::IsDefaultValue() {
+  const char *szValue = Get();
+  const char *szDefault = GetDefault();
+
+  if (m_strDefault.empty()) {
+    if (!szValue || !szValue[0])
+      return true;
+  }
+
+  if (szValue && m_strDefault == szValue)
+    return true;
+
+  return false;
 }
 
-bool  StringAttribute::IsDefaultValue()
-{
-    const wchar_t* szValue = Get();
-	const wchar_t* szDefault = GetDefault();
+StringAttribute *StringAttribute::SetDefault(const char *szValue) {
+  if (szValue) {
+    m_strDefault = szValue;
+  } else {
+    m_strDefault.clear();
+  }
 
-    if (m_strDefault.empty())
-    {
-        if (!szValue || !szValue[0])
-            return true;
-    }
-
-	if (szValue && m_strDefault == szValue)
-		return true;
-
-    return false;
+  return this;
 }
 
-StringAttribute*  StringAttribute::SetDefault(const wchar_t* szValue)
-{
-	if (szValue)
-	{
-		m_strDefault = szValue;
-	}
-	else
-	{
-		m_strDefault.clear();
-	}
+const char *StringAttribute::GetDefault() { return m_strDefault.c_str(); }
 
-	return this;
-}
-
-const wchar_t*  StringAttribute::GetDefault()
-{
-	return m_strDefault.c_str();
-}
-
-void StringAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e)
-{
-    p->String2Editor(this, e);
+void StringAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                             EditorAttributeFlag e) {
+  p->String2Editor(this, e);
 }
 
 // void  StringAttribute::Internationalization()
@@ -197,71 +161,60 @@ void StringAttribute::Editor(SerializeParam* pData, AttributeEditorProxy* p, Edi
 // 	m_bI18n = true;
 // }
 
+const char *I18nStringAttribute::Get() {
+  const char *szValue = StringAttribute::Get();
 
-
-const wchar_t*  I18nStringAttribute::Get()
-{
-    const wchar_t* szValue = StringAttribute::Get();
-
-    if (szValue)
-    {
-        if (GetUIApplication()->IsEditorMode())
-        {
-            // È¡³öÔ­Ê¼×Ö·û´®id
-            const wchar_t* szBuffer = szValue;
-            int nLength1 = (int)wcslen(szValue);
-            if (nLength1)
-                szValue = szBuffer + (nLength1 + 1);
-        }
+  if (szValue) {
+    if (GetUIApplication()->IsEditorMode()) {
+      // å–å‡ºåŽŸå§‹å­—ç¬¦ä¸²id
+      const char *szBuffer = szValue;
+      int nLength1 = (int)strlen(szValue);
+      if (nLength1)
+        szValue = szBuffer + (nLength1 + 1);
     }
+  }
 
-    return szValue;
+  return szValue;
 }
 
-void  I18nStringAttribute::Set(const wchar_t* szValue)
-{
-    int nSize = 0;
+void I18nStringAttribute::Set(const char *szValue) {
+  int nSize = 0;
+  if (szValue) {
+    int nLength1 = (int)strlen(szValue);
+    int nLength2 = 0;
+
+    const char *szValue2 = m_pSkinRes->GetI18nRes().MapConfigValue(szValue);
+    if (szValue2)
+      nLength2 = (int)strlen(szValue2);
+
+    int length1 = (nLength1);
+    int length2 = (nLength2);
+
+    // åœ¨ç¼–è¾‘æ¨¡å¼ä¸‹é¢ï¼Œä¸èƒ½å°†åŽŸå§‹çš„idä¸¢æŽ‰ï¼Œå› æ­¤ä¿å­˜åˆ°è½¬è¯‘åŽçš„å­—ç¬¦ä¸²åŽé¢ï¼Œåœ¨Getæ—¶é‡æ–°
+    // å–å‡ºæ¥ã€‚
+    if (GetUIApplication()->IsEditorMode()) {
+      char *szBuffer = GetTempBuffer(nLength1 + nLength2 + 2);
+      char *p = (char *)szBuffer;
+
+      int nSize1 = sizeof(char) * (length1 + 1);
+      int nSize2 = sizeof(char) * (length2 + 1);
+      memcpy(p, szValue2, nSize2);
+      memcpy(p + nSize2, szValue, nSize1);
+      szValue = szBuffer;
+
+      nSize = length1 + length1 + 2;
+    } else {
+      szValue = szValue2;
+      nSize = length1;
+    }
+  }
+
+  if (m_pBindValue) {
     if (szValue)
-    {
-        int nLength1 = (int)wcslen(szValue);
-        int nLength2 = 0;
-
-        const wchar_t* szValue2 = m_pSkinRes->GetI18nRes().MapConfigValue(szValue);
-        if (szValue2)
-            nLength2 = (int)wcslen(szValue2);
-
-        int length1 = (nLength1);
-        int length2 = (nLength2);
-
-        // ÔÚ±à¼­Ä£Ê½ÏÂÃæ£¬²»ÄÜ½«Ô­Ê¼µÄid¶ªµô£¬Òò´Ë±£´æµ½×ªÒëºóµÄ×Ö·û´®ºóÃæ£¬ÔÚGetÊ±ÖØÐÂ
-        // È¡³öÀ´¡£
-        if (GetUIApplication()->IsEditorMode())
-        {
-            wchar_t* szBuffer = GetTempBuffer(nLength1 + nLength2 + 2);
-            char* p = (char*)szBuffer;
-
-            int nSize1 = sizeof(wchar_t)*(length1 + 1);
-            int nSize2 = sizeof(wchar_t)*(length2 + 1);
-            memcpy(p, szValue2, nSize2);
-            memcpy(p + nSize2, szValue, nSize1);
-            szValue = szBuffer;
-
-            nSize = length1 + length1 + 2;
-        }
-        else
-        {
-            szValue = szValue2;
-            nSize = length1;
-        }
-    }
-
-    if (m_pBindValue)
-    {
-        if (szValue)
-            m_pBindValue->assign(szValue, nSize);
-        else
-            m_pBindValue->clear();
-    }
+      m_pBindValue->assign(szValue, nSize);
+    else
+      m_pBindValue->clear();
+  }
 #if 0 // x64TODO
     else if (_this && _setter_ex)
     {
@@ -272,22 +225,21 @@ void  I18nStringAttribute::Set(const wchar_t* szValue)
         {
             mov eax, nSize;
             push eax;
-            mov eax, dword ptr[szValue]; // Ñ¹Èë²ÎÊý
+            mov eax, dword ptr[szValue]; // åŽ‹å…¥å‚æ•°
             push eax;
 
-            mov  ecx, localVarThis;   // ÉèÖÃthis
-            call localVarSetter;      // µ÷ÓÃ
+            mov  ecx, localVarThis;   // è®¾ç½®this
+            call localVarSetter;      // è°ƒç”¨
         }
     }
 #endif
-    //else if (!_func_setter_ex._Empty())
-	else if (!m_setter_ex.empty())
-    {
-        m_setter_ex.emit(szValue, nSize);
-    }
+  // else if (!_func_setter_ex._Empty())
+  else if (!m_setter_ex.empty()) {
+    m_setter_ex.emit(szValue, nSize);
+  }
 }
 
-// ÕâÖÖÇé¿öÏÂ£¬Ä¬ÈÏÖµÎªnullptr
+// è¿™ç§æƒ…å†µä¸‹ï¼Œé»˜è®¤å€¼ä¸ºnullptr
 // void  I18nStringAttribute::BindFunctionEx(
 //         void* _this, pfnStringExSetter s, pfnStringGetter g)
 // {
@@ -296,12 +248,10 @@ void  I18nStringAttribute::Set(const wchar_t* szValue)
 //     this->_getter = g;
 // }
 
-void  I18nStringAttribute::BindEx(
-    slot<void(const wchar_t*, int)>&& s,
-    slot<const wchar_t*()>&& g)
-{
-    m_setter_ex.connect(std::forward<slot<void(const wchar_t*, int)>>(s));
-    m_getter.connect(std::forward<slot<const wchar_t*()>>(g));
+void I18nStringAttribute::BindEx(slot<void(const char *, int)> &&s,
+                                 slot<const char *()> &&g) {
+  m_setter_ex.connect(std::forward<slot<void(const char *, int)>>(s));
+  m_getter.connect(std::forward<slot<const char *()>>(g));
 }
 
-}
+} // namespace ui

@@ -36,8 +36,8 @@ private:
 
 	vector<int>      m_vWidths;
 	vector<int>      m_vHeights;
-	vector<String>   m_vWidthInXml;
-	vector<String>   m_vHeightInXml;
+	vector<std::string>   m_vWidthInXml;
+	vector<std::string>   m_vHeightInXml;
 
 	bool             m_bDrawBorder;           // ÊÇ·ñ»æÖÆ±ß¿ò
 	RECT             m_rcMargin;               // Áô°×¼ä¸ô

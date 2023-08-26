@@ -53,7 +53,7 @@ IResource* IApplication::RootBundle() {
     return m_pImpl->GetResourceManager().RootBundle().GetIResource();
 }
 
-IResource*  IApplication::LoadResource(const wchar_t* szSkinResPath)
+IResource*  IApplication::LoadResource(const char* szSkinResPath)
 {
     Resource* p = m_pImpl->GetResourceManager().LoadResource(szSkinResPath); 
 	if (p)
@@ -115,20 +115,20 @@ void  IApplication::RestoreRegisterUIObject()
 {
     m_pImpl->RestoreRegisterUIObject(); 
 }
-bool  IApplication::RegisterControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag func)
+bool  IApplication::RegisterControlTagParseFunc(const char* szTag, pfnParseControlTag func)
 { 
     return m_pImpl->RegisterControlTagParseFunc(szTag, func); 
 }
-bool  IApplication::GetSkinTagParseFunc(const wchar_t* szTag, pfnParseSkinTag* pFunc)
+bool  IApplication::GetSkinTagParseFunc(const char* szTag, pfnParseSkinTag* pFunc)
 { 
     return m_pImpl->GetSkinTagParseFunc(szTag, pFunc);
 }
-bool  IApplication::GetControlTagParseFunc(const wchar_t* szTag, pfnParseControlTag* pFunc) 
+bool  IApplication::GetControlTagParseFunc(const char* szTag, pfnParseControlTag* pFunc) 
 { 
     return m_pImpl->GetControlTagParseFunc(szTag, pFunc);
 }
 
-IObject*  IApplication::CreateUIObjectByName(const wchar_t* szName, IResource* pISkinRes)
+IObject*  IApplication::CreateUIObjectByName(const char* szName, IResource* pISkinRes)
 { 
     return m_pImpl->CreateUIObjectByName(szName, pISkinRes); 
 }
@@ -146,13 +146,13 @@ void     IApplication::LoadUIObjectListToToolBox()
 }
 
 bool  IApplication::RegisterUIRenderBaseCreateData(
-	const wchar_t* szName, int nType, pfnUICreateRenderBasePtr pfunc) 
+	const char* szName, int nType, pfnUICreateRenderBasePtr pfunc) 
 {
     return m_pImpl->GetRenderBaseFactory().RegisterUIRenderBaseCreateData(szName, nType, pfunc); 
 }
 
 // bool  IApplication::CreateRenderBaseByName(
-// 		const wchar_t* szName, IObject* pObject, IRenderBase** ppOut)
+// 		const char* szName, IObject* pObject, IRenderBase** ppOut)
 // {
 //     IResource* pSkinRes = nullptr;
 //     if (pObject)
@@ -164,7 +164,7 @@ bool  IApplication::RegisterUIRenderBaseCreateData(
 // 		pSkinRes, szName, pObject, ppOut); 
 // }
 // 
-// const wchar_t*  IApplication::GetRenderBaseName(int nType)
+// const char*  IApplication::GetRenderBaseName(int nType)
 // {
 // 	return m_pImpl->GetRenderBaseFactory().GetRenderBaseName(nType);
 // }
@@ -185,12 +185,12 @@ void  IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, l
 }
 
 bool  IApplication::RegisterUITextRenderBaseCreateData(
-	const wchar_t* szName, int nType,
+	const char* szName, int nType,
     pfnUICreateTextRenderBasePtr pfunc) 
 { 
     return m_pImpl->GetTextRenderFactroy().RegisterUITextRenderBaseCreateData(szName, nType, pfunc); 
 }
-bool  IApplication::CreateTextRenderBaseByName(const wchar_t* szName, IObject* pObject, ITextRenderBase** ppOut) 
+bool  IApplication::CreateTextRenderBaseByName(const char* szName, IObject* pObject, ITextRenderBase** ppOut) 
 {
     IResource* pSkinRes = nullptr;
     if (pObject)
@@ -213,7 +213,7 @@ void  IApplication::EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback cal
     m_pImpl->GetTextRenderFactroy().EnumTextRenderBaseName(callback, wParam, lParam);
 }
 
-bool IApplication::CreateLayoutByName(const wchar_t *szName, IObject *pObject,
+bool IApplication::CreateLayoutByName(const char *szName, IObject *pObject,
                                       bool bCreateDefault, ILayout **ppOut) {
   return m_pImpl->GetLayoutFactory().CreateByName(szName, pObject,
                                                   bCreateDefault, ppOut);
@@ -222,7 +222,7 @@ void IApplication::EnumLayoutType(pfnEnumLayoutTypeCallback callback,
                                   llong wParam, llong lParam) {
   m_pImpl->GetLayoutFactory().EnumLayoutType(callback, wParam, lParam);
 }
-bool IApplication::RegisterLayout(const wchar_t *name,
+bool IApplication::RegisterLayout(const char *name,
                                   pfnUICreateLayoutPtr pfn) {
   return m_pImpl->GetLayoutFactory().Register(name, pfn);
 }

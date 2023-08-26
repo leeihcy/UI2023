@@ -628,7 +628,7 @@ int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, un
 	// Draw string.
 	Gdiplus::Status s = /*m_pGraphics->*/g.DrawString(
 		szText,
-		-1/*wcslen(szText)*/,
+		-1/*strlen(szText)*/,
 		pFont,
 		region,
 		&format,
@@ -696,7 +696,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // Draw string.
        g.DrawString(
             pParam->szText,
-            -1/*wcslen(szText)*/,
+            -1/*strlen(szText)*/,
             pFont,
             region,
             &format,
@@ -738,7 +738,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // 阴影
         gMem.DrawString(
             pParam->szText,
-            -1/*wcslen(szText)*/,
+            -1/*strlen(szText)*/,
             pFont,
             regionMem,
             &format,
@@ -753,7 +753,7 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
         // 文字
         gMem.DrawString(
             pParam->szText,
-            -1/*wcslen(szText)*/,
+            -1/*strlen(szText)*/,
             pFont,
             regionMem,
             &format,

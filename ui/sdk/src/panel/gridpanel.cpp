@@ -53,9 +53,9 @@ void GridPanel::UpdateRect()
 
 	for( int i = 0; i < nWSize; i++ )
 	{
-		String value = m_vWidthInXml[i];
+		std::string value = m_vWidthInXml[i];
 		int  nIndex = (int)value.find( _T('*') );
-		if( String::npos != nIndex )
+		if( std::string::npos != nIndex )
 		{
 			int nScale = 0;
 			if( 0 != nIndex )

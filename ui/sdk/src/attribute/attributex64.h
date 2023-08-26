@@ -53,16 +53,16 @@ namespace UIx64
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
 
-	inline void SetString(void* _this, const wchar_t* value, pfnStringSetter func) {
+	inline void SetString(void* _this, const char* value, pfnStringSetter func) {
 		x64asm_Set64(_this, (INT_PTR)value, func);
 	}
-	inline const wchar_t* GetString(void* _this, pfnStringGetter func) {
-		return (const wchar_t*)x64asm_Get64(_this, func);
+	inline const char* GetString(void* _this, pfnStringGetter func) {
+		return (const char*)x64asm_Get64(_this, func);
 	}
 
-	typedef void(__thiscall *pfnStringSetter)(const wchar_t*);
-	typedef const wchar_t*(__thiscall *pfnStringGetter)();
-	typedef void(__thiscall *pfnStringExSetter)(const wchar_t*, int);
+	typedef void(__thiscall *pfnStringSetter)(const char*);
+	typedef const char*(__thiscall *pfnStringGetter)();
+	typedef void(__thiscall *pfnStringExSetter)(const char*, int);
 }
 #endif
 

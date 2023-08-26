@@ -1,441 +1,388 @@
-#include "include/inc.h"
 #include "imagerender.h"
-#include "src/object/object.h"
-#include "src/attribute/attribute.h"
-#include "src/attribute/bool_attribute.h"
-#include "src/attribute/string_attribute.h"
-#include "src/attribute/long_attribute.h"
-#include "src/attribute/enum_attribute.h"
-#include "src/attribute/rect_attribute.h"
-#include "src/attribute/9region_attribute.h"
+#include "include/inc.h"
 #include "include/interface/renderlibrary.h"
 #include "include/util/struct.h"
+#include "src/attribute/9region_attribute.h"
+#include "src/attribute/attribute.h"
+#include "src/attribute/bool_attribute.h"
+#include "src/attribute/enum_attribute.h"
+#include "src/attribute/long_attribute.h"
+#include "src/attribute/rect_attribute.h"
+#include "src/attribute/string_attribute.h"
+#include "src/object/object.h"
 
 namespace ui {
 
-ImageRender::ImageRender(IImageRender* p) : RenderBase(p)
-{
-    m_pIImageRender = p;
+ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
+  m_pIImageRender = p;
 
-	m_pBitmap = nullptr;
-	m_pColorBk = nullptr;
-	m_nImageDrawType = DRAW_BITMAP_BITBLT;
-    m_nAlpha = 255;
-    m_rcSrc.SetEmpty();
-    m_eBkColorFillType = BKCOLOR_FILL_ALL;
+  m_pBitmap = nullptr;
+  m_pColorBk = nullptr;
+  m_nImageDrawType = DRAW_BITMAP_BITBLT;
+  m_nAlpha = 255;
+  m_rcSrc.SetEmpty();
+  m_eBkColorFillType = BKCOLOR_FILL_ALL;
 }
-ImageRender::~ImageRender()
-{
-	SAFE_RELEASE(m_pBitmap);
-	SAFE_RELEASE(m_pColorBk);
+ImageRender::~ImageRender() {
+  SAFE_RELEASE(m_pBitmap);
+  SAFE_RELEASE(m_pColorBk);
 }
 
-void  ImageRender::SetAlpha(int nAlpha)
-{
-    m_nAlpha = nAlpha;
-}
-int   ImageRender::GetAlpha()
-{
-    return m_nAlpha;
-}
+void ImageRender::SetAlpha(int nAlpha) { m_nAlpha = nAlpha; }
+int ImageRender::GetAlpha() { return m_nAlpha; }
 
-Color  ImageRender::GetColor()
-{
-    if (nullptr == m_pColorBk)
-        return Color(0);
-    else
-        return *m_pColorBk;
+Color ImageRender::GetColor() {
+  if (nullptr == m_pColorBk)
+    return Color(0);
+  else
+    return *m_pColorBk;
 }
 
-void  ImageRender::SetImageDrawType(int n)
-{
-    m_nImageDrawType = n;
-}
-int   ImageRender::GetImageDrawType()
-{
-    return m_nImageDrawType;
-}
+void ImageRender::SetImageDrawType(int n) { m_nImageDrawType = n; }
+int ImageRender::GetImageDrawType() { return m_nImageDrawType; }
 
-void  ImageRender::SetImageStretch9Region(const C9Region& r)
-{
-	m_Region = r;
-}
+void ImageRender::SetImageStretch9Region(const C9Region &r) { m_Region = r; }
 
-void  ImageRender::OnSerialize(SerializeParam* pData)
-{
-	AttributeSerializer s(pData, TEXT("ImageRender"));
-	s.AddString(XML_RENDER_IMAGE, 
-		Slot(&ImageRender::LoadBitmap, this),
-		Slot(&ImageRender::GetBitmapId, this));
+void ImageRender::OnSerialize(SerializeParam *pData) {
+  AttributeSerializer s(pData, "ImageRender");
+  s.AddString(XML_RENDER_IMAGE, Slot(&ImageRender::LoadBitmap, this),
+              Slot(&ImageRender::GetBitmapId, this));
 
-	// ±≥æ∞—’…´
-	s.AddString(XML_RENDER_COLOR, 
-		Slot(&ImageRender::LoadColor, this),
-		Slot(&ImageRender::GetColorId, this));
+  // ËÉåÊôØÈ¢úËâ≤
+  s.AddString(XML_RENDER_COLOR, Slot(&ImageRender::LoadColor, this),
+              Slot(&ImageRender::GetColorId, this));
 
-	// ¿≠…Ï«¯”Ú
-	s.Add9Region(XML_RENDER_IMAGE9REGION, m_Region);
+  // Êãâ‰º∏Âå∫Âüü
+  s.Add9Region(XML_RENDER_IMAGE9REGION, m_Region);
 
-	// ªÊ÷∆Õ∏√˜∂»
-	s.AddInt(XML_RENDER_IMAGE_ALPHA, m_nAlpha)->SetDefault(255);
+  // ÁªòÂà∂ÈÄèÊòéÂ∫¶
+  s.AddInt(XML_RENDER_IMAGE_ALPHA, m_nAlpha)->SetDefault(255);
 
-	// ‘¥«¯”Ú
-	s.AddRect(XML_RENDER_IMAGE_SRC_REGION, m_rcSrc);
+  // Ê∫êÂå∫Âüü
+  s.AddRect(XML_RENDER_IMAGE_SRC_REGION, m_rcSrc);
 
-	// ªÊ÷∆¿‡–Õ
-	s.AddEnum(XML_RENDER_IMAGE_DRAWTYPE, m_nImageDrawType)
-		->AddOption(DRAW_BITMAP_BITBLT, XML_RENDER_IMAGE_DRAWTYPE_BITBLT)
-		->AddOption(DRAW_BITMAP_TILE, XML_RENDER_IMAGE_DRAWTYPE_TILE)
-		->AddOption(DRAW_BITMAP_STRETCH, XML_RENDER_IMAGE_DRAWTYPE_STRETCH)
-		->AddOption(DRAW_BITMAP_STRETCH_DISABLE_AA, XML_RENDER_IMAGE_DRAWTYPE_STRETCH_DISABLE_AA)
-		->AddOption(DRAW_BITMAP_ADAPT, XML_RENDER_IMAGE_DRAWTYPE_ADAPT)
-		->AddOption(DRAW_BITMAP_CENTER, XML_RENDER_IMAGE_DRAWTYPE_CENTER)
-		->AddOption(DRAW_BITMAP_STRETCH_BORDER, XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER)
-		->AddOption(DRAW_BITMAP_BITBLT_RIGHTTOP, XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTTOP)
-		->AddOption(DRAW_BITMAP_BITBLT_LEFTBOTTOM, XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTBOTTOM)
-		->AddOption(DRAW_BITMAP_BITBLT_RIGHTBOTTOM, XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTBOTTOM)
-		->AddOption(DRAW_BITMAP_BITBLT_LEFTVCENTER, XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER)
-        ->SetDefault(DRAW_BITMAP_BITBLT);
-} 
-
-void  ImageRender::SetRenderBitmap(IRenderBitmap* pBitmap)
-{
-	SAFE_RELEASE(m_pBitmap);
-	m_pBitmap = pBitmap;
-	if (m_pBitmap)
-		m_pBitmap->AddRef();
+  // ÁªòÂà∂Á±ªÂûã
+  s.AddEnum(XML_RENDER_IMAGE_DRAWTYPE, m_nImageDrawType)
+      ->AddOption(DRAW_BITMAP_BITBLT, XML_RENDER_IMAGE_DRAWTYPE_BITBLT)
+      ->AddOption(DRAW_BITMAP_TILE, XML_RENDER_IMAGE_DRAWTYPE_TILE)
+      ->AddOption(DRAW_BITMAP_STRETCH, XML_RENDER_IMAGE_DRAWTYPE_STRETCH)
+      ->AddOption(DRAW_BITMAP_STRETCH_DISABLE_AA,
+                  XML_RENDER_IMAGE_DRAWTYPE_STRETCH_DISABLE_AA)
+      ->AddOption(DRAW_BITMAP_ADAPT, XML_RENDER_IMAGE_DRAWTYPE_ADAPT)
+      ->AddOption(DRAW_BITMAP_CENTER, XML_RENDER_IMAGE_DRAWTYPE_CENTER)
+      ->AddOption(DRAW_BITMAP_STRETCH_BORDER,
+                  XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER)
+      ->AddOption(DRAW_BITMAP_BITBLT_RIGHTTOP,
+                  XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTTOP)
+      ->AddOption(DRAW_BITMAP_BITBLT_LEFTBOTTOM,
+                  XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTBOTTOM)
+      ->AddOption(DRAW_BITMAP_BITBLT_RIGHTBOTTOM,
+                  XML_RENDER_IMAGE_DRAWTYPE_BITBLT_RIGHTBOTTOM)
+      ->AddOption(DRAW_BITMAP_BITBLT_LEFTVCENTER,
+                  XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER)
+      ->SetDefault(DRAW_BITMAP_BITBLT);
 }
 
-void  ImageRender::SetColor(Color c)
-{
-    SAFE_RELEASE(m_pColorBk);
-    m_pColorBk = Color::CreateInstance(c);
+void ImageRender::SetRenderBitmap(IRenderBitmap *pBitmap) {
+  SAFE_RELEASE(m_pBitmap);
+  m_pBitmap = pBitmap;
+  if (m_pBitmap)
+    m_pBitmap->AddRef();
 }
 
-void  ImageRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
-{
-    Rect* prc = &pDrawStruct->rc;
+void ImageRender::SetColor(Color c) {
+  SAFE_RELEASE(m_pColorBk);
+  m_pColorBk = Color::CreateInstance(c);
+}
 
-	if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_ALL)
-    {
-        Color c = m_pColorBk->m_col;
-        c.a = (byte)m_nAlpha;
+void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
+  Rect *prc = &pDrawStruct->rc;
 
-        pDrawStruct->pRenderTarget->DrawRect(prc, &c);
+  if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_ALL) {
+    Color c = m_pColorBk->m_col;
+    c.a = (byte)m_nAlpha;
+
+    pDrawStruct->pRenderTarget->DrawRect(prc, &c);
+  }
+
+  Rect rcRealDraw = {0, 0, 0, 0};
+  if (m_pBitmap) {
+    DRAWBITMAPPARAM param;
+    param.nFlag = m_nImageDrawType;
+    param.xDest = prc->left;
+    param.yDest = prc->top;
+    param.wDest = prc->right - prc->left;
+    param.hDest = prc->bottom - prc->top;
+    if (!m_rcSrc.IsEmpty()) {
+      param.xSrc = m_rcSrc.left;
+      param.ySrc = m_rcSrc.top;
+      param.wSrc = m_rcSrc.right - m_rcSrc.left;
+      param.hSrc = m_rcSrc.bottom - m_rcSrc.top;
+    } else if (m_pBitmap) {
+      param.xSrc = 0;
+      param.ySrc = 0;
+      param.wSrc = m_pBitmap->GetWidth();
+      param.hSrc = m_pBitmap->GetHeight();
+    }
+    if (!m_Region.IsAll_0())
+      param.pRegion = &m_Region;
+    param.nAlpha = (byte)m_nAlpha;
+
+    if (pDrawStruct->nState & RENDER_STATE_DISABLE) {
+      param.nFlag |= DRAW_BITMAP_DISABLE;
     }
 
-    Rect rcRealDraw = {0, 0, 0, 0};
-	if (m_pBitmap)
-	{
-		DRAWBITMAPPARAM param;
-		param.nFlag = m_nImageDrawType;
-		param.xDest = prc->left;
-		param.yDest = prc->top;
-		param.wDest = prc->right-prc->left;
-		param.hDest = prc->bottom-prc->top;
-        if (!m_rcSrc.IsEmpty())
-        {
-		    param.xSrc  = m_rcSrc.left;
-		    param.ySrc  = m_rcSrc.top;
-			param.wSrc  = m_rcSrc.right-m_rcSrc.left;
-		    param.hSrc  = m_rcSrc.bottom-m_rcSrc.top;
-        }
-        else if (m_pBitmap)
-        {
-            param.xSrc  = 0;
-            param.ySrc  = 0;
-            param.wSrc  = m_pBitmap->GetWidth();
-            param.hSrc  = m_pBitmap->GetHeight();
-        }
-		if (!m_Region.IsAll_0())
-			param.pRegion = &m_Region;
-        param.nAlpha  = (byte)m_nAlpha;
-
-		if (pDrawStruct->nState & RENDER_STATE_DISABLE)
-		{
-			param.nFlag |= DRAW_BITMAP_DISABLE;
-		}
-
-        if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY)
-        {
-            param.prcRealDraw = &rcRealDraw;
-        }
-		pDrawStruct->pRenderTarget->DrawBitmap(m_pBitmap, &param);
-	}
-
-    if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY)
-    {
-        Color c = m_pColorBk->m_col;
-        c.a = (byte)m_nAlpha;
-
-        // Top
-        {
-            Rect rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
-            if (rc.Width() > 0 && rc.Height() > 0)
-            {
-                pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-            }
-        }
-        // Left
-        {
-            Rect rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
-            if (rc.Width() > 0 && rc.Height() > 0)
-            {
-                pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-            }
-        }
-        // Right
-        {
-            Rect rc = {rcRealDraw.right, rcRealDraw.top, prc->right, rcRealDraw.bottom};
-            if (rc.Width() > 0 && rc.Height() > 0)
-            {
-                pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-            }
-        }
-        // Bottom
-        {
-            Rect rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
-            if (rc.Width() > 0 && rc.Height() > 0)
-            {
-                pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-            }
-        }
+    if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
+      param.prcRealDraw = &rcRealDraw;
     }
-}
-void  ImageRender::GetDesiredSize(Size* pSize)
-{
-	pSize->width = pSize->height = 0;
-	if (nullptr == m_pBitmap)
-		return;
+    pDrawStruct->pRenderTarget->DrawBitmap(m_pBitmap, &param);
+  }
 
-	pSize->width = m_pBitmap->GetWidth();
-	pSize->height = m_pBitmap->GetHeight();
+  if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
+    Color c = m_pColorBk->m_col;
+    c.a = (byte)m_nAlpha;
+
+    // Top
+    {
+      Rect rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
+      if (rc.Width() > 0 && rc.Height() > 0) {
+        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+      }
+    }
+    // Left
+    {
+      Rect rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
+      if (rc.Width() > 0 && rc.Height() > 0) {
+        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+      }
+    }
+    // Right
+    {
+      Rect rc = {rcRealDraw.right, rcRealDraw.top, prc->right,
+                 rcRealDraw.bottom};
+      if (rc.Width() > 0 && rc.Height() > 0) {
+        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+      }
+    }
+    // Bottom
+    {
+      Rect rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
+      if (rc.Width() > 0 && rc.Height() > 0) {
+        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+      }
+    }
+  }
+}
+void ImageRender::GetDesiredSize(Size *pSize) {
+  pSize->width = pSize->height = 0;
+  if (nullptr == m_pBitmap)
+    return;
+
+  pSize->width = m_pBitmap->GetWidth();
+  pSize->height = m_pBitmap->GetHeight();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-ImageListItemRender::ImageListItemRender(IImageListItemRender* p) :ImageRender(p)
-{
-    m_pIImageListItemRender = p;
-	m_nImagelistIndex = -1;
-	m_pImageList = nullptr;
+ImageListItemRender::ImageListItemRender(IImageListItemRender *p)
+    : ImageRender(p) {
+  m_pIImageListItemRender = p;
+  m_nImagelistIndex = -1;
+  m_pImageList = nullptr;
 }
-ImageListItemRender::~ImageListItemRender()
-{
-	m_nImagelistIndex = 0;
-	m_pImageList = nullptr;
-}
-
-void  ImageListItemRender::OnSerialize(SerializeParam* pData)
-{
-	ImageRender::OnSerialize(pData);
-
-	{
-		AttributeSerializer s(pData, TEXT("ImageListItemRender"));
-		s.AddInt(XML_RENDER_IMAGELISTITEM_INDEX, m_nImagelistIndex);
-	}
-
-	if (pData->IsLoad())
-	{
-		if (m_pBitmap)
-		{
-			if (m_pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST)
-				SAFE_RELEASE(m_pBitmap);
-		}
-		if (m_pBitmap)
-		{
-			m_pImageList = static_cast<IImageListRenderBitmap*>(m_pBitmap);
-
-			Point pt = {0,0};
-			m_pImageList->GetIndexPos(m_nImagelistIndex, &pt);
-			m_rcSrc.left = pt.x;
-			m_rcSrc.top = pt.y;
-
-			Size s;
-			this->GetDesiredSize(&s);
-			m_rcSrc.right = m_rcSrc.left + s.width;
-			m_rcSrc.bottom = m_rcSrc.top + s.height;
-		}
-	}
+ImageListItemRender::~ImageListItemRender() {
+  m_nImagelistIndex = 0;
+  m_pImageList = nullptr;
 }
 
-void  ImageListItemRender::GetDesiredSize(Size* pSize)
-{
-	pSize->width = 0;
-    pSize->height = 0;
-	if (nullptr == m_pImageList )
-		return;
+void ImageListItemRender::OnSerialize(SerializeParam *pData) {
+  ImageRender::OnSerialize(pData);
 
-	pSize->width = m_pImageList->GetItemWidth();
-	pSize->height = m_pImageList->GetItemHeight();
-}
+  {
+    AttributeSerializer s(pData, "ImageListItemRender");
+    s.AddInt(XML_RENDER_IMAGELISTITEM_INDEX, m_nImagelistIndex);
+  }
 
-void  ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
-{
-	if (DRAW_BITMAP_TILE == m_nImageDrawType)
-	{
-		UI_LOG_WARN(_T("image list item donot support tile draw"));
-		UIASSERT(0 && _T("TODO:"));
-		return;
-	}
-
-    if (-1 == m_nImagelistIndex && m_pImageList)
-    {
-        Point pt = {0, 0};
-        Size  s = {0, 0};
-
-        if (false == m_pImageList->GetIndexPos(pDrawStruct->nState, &pt))
-            return;
-        this->GetDesiredSize(&s);
-
-		m_rcSrc.Set(pt.x, pt.y, pt.x+s.width, pt.y+s.height);
+  if (pData->IsLoad()) {
+    if (m_pBitmap) {
+      if (m_pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST)
+        SAFE_RELEASE(m_pBitmap);
     }
+    if (m_pBitmap) {
+      m_pImageList = static_cast<IImageListRenderBitmap *>(m_pBitmap);
 
-	SetMsgHandled(false);
+      Point pt = {0, 0};
+      m_pImageList->GetIndexPos(m_nImagelistIndex, &pt);
+      m_rcSrc.left = pt.x;
+      m_rcSrc.top = pt.y;
+
+      Size s;
+      this->GetDesiredSize(&s);
+      m_rcSrc.right = m_rcSrc.left + s.width;
+      m_rcSrc.bottom = m_rcSrc.top + s.height;
+    }
+  }
 }
 
+void ImageListItemRender::GetDesiredSize(Size *pSize) {
+  pSize->width = 0;
+  pSize->height = 0;
+  if (nullptr == m_pImageList)
+    return;
+
+  pSize->width = m_pImageList->GetItemWidth();
+  pSize->height = m_pImageList->GetItemHeight();
+}
+
+void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
+  if (DRAW_BITMAP_TILE == m_nImageDrawType) {
+    UI_LOG_WARN(_T("image list item donot support tile draw"));
+    UIASSERT(0 && _T("TODO:"));
+    return;
+  }
+
+  if (-1 == m_nImagelistIndex && m_pImageList) {
+    Point pt = {0, 0};
+    Size s = {0, 0};
+
+    if (false == m_pImageList->GetIndexPos(pDrawStruct->nState, &pt))
+      return;
+    this->GetDesiredSize(&s);
+
+    m_rcSrc.Set(pt.x, pt.y, pt.x + s.width, pt.y + s.height);
+  }
+
+  SetMsgHandled(false);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                      //
-//                               ImageListRender                                        //
+//                               ImageListRender //
 //                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-ImageListRender::ImageListRender(IImageListRender* p):RenderBase(p)
-{
-    m_pIImageListRender = p;
+ImageListRender::ImageListRender(IImageListRender *p) : RenderBase(p) {
+  m_pIImageListRender = p;
 
-	m_pImageList = nullptr;
-	m_nImageDrawType = DRAW_BITMAP_BITBLT;
+  m_pImageList = nullptr;
+  m_nImageDrawType = DRAW_BITMAP_BITBLT;
 
-	m_nPrevState = RENDER_STATE_NORMAL;
-	m_nCurrentAlpha = 255;
-	m_bIsAnimate = false;
-	m_bUseAlphaAnimate = false;
+  m_nPrevState = RENDER_STATE_NORMAL;
+  m_nCurrentAlpha = 255;
+  m_bIsAnimate = false;
+  m_bUseAlphaAnimate = false;
 }
-ImageListRender::~ImageListRender( )
-{
-	SAFE_RELEASE(m_pImageList);
-	DestroyAnimate();
+ImageListRender::~ImageListRender() {
+  SAFE_RELEASE(m_pImageList);
+  DestroyAnimate();
 }
 
-void  ImageListRender::OnSerialize(SerializeParam* pData)
-{
-	{
-		AttributeSerializer s(pData, TEXT("ImageListItemRender"));
-		s.AddBool(XML_RENDER_IMAGELIST_ALPHA_ANIMATE, m_bUseAlphaAnimate);
+void ImageListRender::OnSerialize(SerializeParam *pData) {
+  {
+    AttributeSerializer s(pData, "ImageListItemRender");
+    s.AddBool(XML_RENDER_IMAGELIST_ALPHA_ANIMATE, m_bUseAlphaAnimate);
 
-		s.Add9Region(XML_RENDER_IMAGE9REGION, m_9Region);
+    s.Add9Region(XML_RENDER_IMAGE9REGION, m_9Region);
 
-		s.AddEnum(XML_RENDER_IMAGE_DRAWTYPE, m_nImageDrawType)
-			->AddOption(DRAW_BITMAP_BITBLT, XML_RENDER_IMAGE_DRAWTYPE_BITBLT)
-			->AddOption(DRAW_BITMAP_TILE, XML_RENDER_IMAGE_DRAWTYPE_TILE)
-			->AddOption(DRAW_BITMAP_STRETCH, XML_RENDER_IMAGE_DRAWTYPE_STRETCH)
-			->AddOption(DRAW_BITMAP_ADAPT, XML_RENDER_IMAGE_DRAWTYPE_ADAPT)
-			->AddOption(DRAW_BITMAP_CENTER, XML_RENDER_IMAGE_DRAWTYPE_CENTER)
-			->AddOption(DRAW_BITMAP_STRETCH_BORDER, XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER)
-			->AddOption(DRAW_BITMAP_BITBLT_LEFTVCENTER, XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER)
-            ->SetDefault(DRAW_BITMAP_BITBLT);
+    s.AddEnum(XML_RENDER_IMAGE_DRAWTYPE, m_nImageDrawType)
+        ->AddOption(DRAW_BITMAP_BITBLT, XML_RENDER_IMAGE_DRAWTYPE_BITBLT)
+        ->AddOption(DRAW_BITMAP_TILE, XML_RENDER_IMAGE_DRAWTYPE_TILE)
+        ->AddOption(DRAW_BITMAP_STRETCH, XML_RENDER_IMAGE_DRAWTYPE_STRETCH)
+        ->AddOption(DRAW_BITMAP_ADAPT, XML_RENDER_IMAGE_DRAWTYPE_ADAPT)
+        ->AddOption(DRAW_BITMAP_CENTER, XML_RENDER_IMAGE_DRAWTYPE_CENTER)
+        ->AddOption(DRAW_BITMAP_STRETCH_BORDER,
+                    XML_RENDER_IMAGE_DRAWTYPE_STRETCH_BORDER)
+        ->AddOption(DRAW_BITMAP_BITBLT_LEFTVCENTER,
+                    XML_RENDER_IMAGE_DRAWTYPE_BITBLT_LEFTVCENTER)
+        ->SetDefault(DRAW_BITMAP_BITBLT);
 
-		s.AddString(XML_RENDER_LIST_STATEMAPINDEX, 
-			Slot(&ImageListRender::SetState2Index, this),
-			Slot(&ImageListRender::GetState2Index, this));
+    s.AddString(XML_RENDER_LIST_STATEMAPINDEX,
+                Slot(&ImageListRender::SetState2Index, this),
+                Slot(&ImageListRender::GetState2Index, this));
 
-		s.AddString(XML_RENDER_IMAGE, 
-			Slot(&ImageListRender::LoadImageList, this),
-			Slot(&ImageListRender::GetImageListId, this));
-	}
+    s.AddString(XML_RENDER_IMAGE, Slot(&ImageListRender::LoadImageList, this),
+                Slot(&ImageListRender::GetImageListId, this));
+  }
 }
 
-void  ImageListRender::LoadImageList(const wchar_t* szText)
-{
-	SAFE_RELEASE(m_pImageList);
+void ImageListRender::LoadImageList(const char *szText) {
+  SAFE_RELEASE(m_pImageList);
 
-	IRenderBitmap* pBitmap = nullptr;
-	_LoadBitmap(szText, pBitmap);
-	if (nullptr == pBitmap)
-		return;
+  IRenderBitmap *pBitmap = nullptr;
+  _LoadBitmap(szText, pBitmap);
+  if (nullptr == pBitmap)
+    return;
 
-	if (pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST)
-	{
-		UI_LOG_WARN(_T("ImageType != IMAGE_ITEM_TYPE_IMAGE_LIST. Bitmap: %s"), szText);
-		SAFE_RELEASE(pBitmap);
-		return;
-	}
-	m_pImageList = static_cast<IImageListRenderBitmap*>(pBitmap);
+  if (pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST) {
+    UI_LOG_WARN(_T("ImageType != IMAGE_ITEM_TYPE_IMAGE_LIST. Bitmap: %s"),
+                szText);
+    SAFE_RELEASE(pBitmap);
+    return;
+  }
+  m_pImageList = static_cast<IImageListRenderBitmap *>(pBitmap);
 
-	// »Áπ˚Õº∆¨√ª”–alphaÕ®µ¿£¨‘Ú≤ªƒ‹÷ß≥÷alpha∂Øª≠
-	if (m_pImageList)
-	{
-		if (m_pImageList->GetBPP() != 32)
-		{
-			m_bUseAlphaAnimate = false;
-		}
-	}
+  // Â¶ÇÊûúÂõæÁâáÊ≤°ÊúâalphaÈÄöÈÅìÔºåÂàô‰∏çËÉΩÊîØÊåÅalphaÂä®Áîª
+  if (m_pImageList) {
+    if (m_pImageList->GetBPP() != 32) {
+      m_bUseAlphaAnimate = false;
+    }
+  }
 }
-const wchar_t*  ImageListRender::GetImageListId()
-{
-	ui::IRenderBitmap* p = static_cast<ui::IRenderBitmap*>(m_pImageList);
-	return _GetBitmapId(p);
+const char *ImageListRender::GetImageListId() {
+  ui::IRenderBitmap *p = static_cast<ui::IRenderBitmap *>(m_pImageList);
+  return _GetBitmapId(p);
 }
 
-void  ImageListRender::SetState2Index(const wchar_t* szText)
-{ 
-	m_mapState2Index.clear();
+void ImageListRender::SetState2Index(const char *szText) {
+  m_mapState2Index.clear();
 
-	util::ISplitStringEnum* pEnum = nullptr;
-	int nCount = util::SplitString(szText, XML_SEPARATOR, &pEnum);
-	for (int i = 0; i < nCount; i++)
-	{
-		const wchar_t* szStateIndex = pEnum->GetText(i);
+  util::ISplitStringEnum *pEnum = nullptr;
+  int nCount = util::SplitString(szText, XML_SEPARATOR, &pEnum);
+  for (int i = 0; i < nCount; i++) {
+    const char *szStateIndex = pEnum->GetText(i);
 
-		util::ISplitStringEnum* pEnumInner = nullptr;
-		if (2 != util::SplitString(szStateIndex, _T(':'), &pEnumInner))
-		{
-			UI_LOG_WARN(_T("invalid state index: %s"), szStateIndex);
-			SAFE_RELEASE(pEnumInner);
-			continue;
-		}
-		int nState = util::wtoi(pEnumInner->GetText(0));
-		int nIndex = util::wtoi(pEnumInner->GetText(1));
-		m_mapState2Index[nState] = nIndex;
-		SAFE_RELEASE(pEnumInner);
-	}
-	SAFE_RELEASE(pEnum);
+    util::ISplitStringEnum *pEnumInner = nullptr;
+    if (2 != util::SplitString(szStateIndex, _T(':'), &pEnumInner)) {
+      UI_LOG_WARN(_T("invalid state index: %s"), szStateIndex);
+      SAFE_RELEASE(pEnumInner);
+      continue;
+    }
+    int nState = atoi(pEnumInner->GetText(0));
+    int nIndex = atoi(pEnumInner->GetText(1));
+    m_mapState2Index[nState] = nIndex;
+    SAFE_RELEASE(pEnumInner);
+  }
+  SAFE_RELEASE(pEnum);
 }
-const wchar_t*  ImageListRender::GetState2Index()
-{
-    if (m_mapState2Index.empty())
-        return nullptr;
+const char *ImageListRender::GetState2Index() {
+  if (m_mapState2Index.empty())
+    return nullptr;
 
-	String& strTempBuffer = GetTempBufferString();
+  std::string &strTempBuffer = GetTempBufferString();
 
-	wchar_t szItem[16] = {0};
-	std::map<int,int>::iterator iter = m_mapState2Index.begin();
-	for (; iter != m_mapState2Index.end(); ++iter)
-	{
-		wprintf(szItem, TEXT("%d%c%d"), iter->first, XML_KEYVALUE_SEPARATOR, iter->second);
+  char szItem[16] = {0};
+  std::map<int, int>::iterator iter = m_mapState2Index.begin();
+  for (; iter != m_mapState2Index.end(); ++iter) {
+    sprintf(szItem, "%d%c%d", iter->first, XML_KEYVALUE_SEPARATOR,
+            iter->second);
 
-		if (!strTempBuffer.empty())
-			strTempBuffer.push_back(XML_SEPARATOR);
-		strTempBuffer.append(szItem);
-	}
+    if (!strTempBuffer.empty())
+      strTempBuffer.push_back(XML_SEPARATOR);
+    strTempBuffer.append(szItem);
+  }
 
-	return strTempBuffer.c_str();
+  return strTempBuffer.c_str();
 }
 
-void  ImageListRender::SetIImageListRenderBitmap(IImageListRenderBitmap* pBitmap)
-{
-    SAFE_RELEASE(m_pImageList);
-    m_pImageList = pBitmap;
-    if (m_pImageList)
-        m_pImageList->AddRef();
+void ImageListRender::SetIImageListRenderBitmap(
+    IImageListRenderBitmap *pBitmap) {
+  SAFE_RELEASE(m_pImageList);
+  m_pImageList = pBitmap;
+  if (m_pImageList)
+    m_pImageList->AddRef();
 }
 
-IRenderBitmap*  ImageListRender::GetRenderBitmap()
-{
-    return m_pImageList;
-}
+IRenderBitmap *ImageListRender::GetRenderBitmap() { return m_pImageList; }
 #if 0
 uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pStoryboard)
 {
@@ -443,7 +390,7 @@ uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pSto
 		->GetCurrentIntValue();
 
     bool bFinish = pStoryboard->IsFinish();
-    //m_pObject->UpdateObject();  // ◊¢£∫‘⁄listbox’‚÷÷øÿº˛÷–£¨ª· π”√µ±«∞foregnd render¡¨–¯ªÊ÷∆À˘”–µƒitem£¨µº÷¬Imagelistrender÷–µƒ∂Øª≠±ª≤ª∂œµƒ…æ≥˝∫ÕÃÌº”£¨◊Ó∫Û±¿¿£
+    //m_pObject->UpdateObject();  // Ê≥®ÔºöÂú®listboxËøôÁßçÊéß‰ª∂‰∏≠Ôºå‰ºö‰ΩøÁî®ÂΩìÂâçforegnd renderËøûÁª≠ÁªòÂà∂ÊâÄÊúâÁöÑitemÔºåÂØºËá¥Imagelistrender‰∏≠ÁöÑÂä®ÁîªË¢´‰∏çÊñ≠ÁöÑÂà†Èô§ÂíåÊ∑ªÂä†ÔºåÊúÄÂêéÂ¥©Ê∫É
 	m_pObject->Invalidate();
 
     if (bFinish)
@@ -452,78 +399,69 @@ uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pSto
     return uia::ANIMATE_TICK_RESULT_CONTINUE;
 }
 #endif
-void  ImageListRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
-{
-	if (nullptr == m_pImageList)
-		return;
+void ImageListRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
+  if (nullptr == m_pImageList)
+    return;
 
-    IRenderTarget*  pRenderTarget = pDrawStruct->pRenderTarget;
-    Rect rc = pDrawStruct->rc;
-    int&  nState = pDrawStruct->nState;
+  IRenderTarget *pRenderTarget = pDrawStruct->pRenderTarget;
+  Rect rc = pDrawStruct->rc;
+  int &nState = pDrawStruct->nState;
 
-	int nRenderState = (pDrawStruct->nState) & RENDER_STATE_MASK;
-	int nRealIndex = (nState) & 0xFFFF;
-// 	if (nRealIndex >= m_pImageList->GetItemCount())  // ”√GetStateIndexªÒ»°
-// 		nRealIndex = 0;
+  int nRenderState = (pDrawStruct->nState) & RENDER_STATE_MASK;
+  int nRealIndex = (nState)&0xFFFF;
+  // 	if (nRealIndex >= m_pImageList->GetItemCount())  // Áî®GetStateIndexËé∑Âèñ
+  // 		nRealIndex = 0;
 
-	if (false == m_bUseAlphaAnimate)
-	{
-		DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
-		return;
-	}
+  if (false == m_bUseAlphaAnimate) {
+    DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
+    return;
+  }
 
-	// ¥”Normal->HoverªÚ’ﬂHover->Normal ±£¨ø™∆Ù∂Øª≠º∆ ±
-	if ((m_nPrevState&(RENDER_STATE_NORMAL|RENDER_STATE_DEFAULT)) && (nRenderState&RENDER_STATE_HOVER))
-	{
-        m_nCurrentAlpha = 0;  // ±‹√‚‘⁄µ⁄“ª¥ŒTickœÏ”¶÷Æ«∞±ªøÿº˛«ø÷∆À¢–¬¡À£¨Ω·π˚¥À ±µƒm_nCurrentAlpha≤ª «º∆À„µ√µΩµƒ÷µ°£
-        CreateAnimate(0, 255);
+  // ‰ªéNormal->HoverÊàñËÄÖHover->NormalÊó∂ÔºåÂºÄÂêØÂä®ÁîªËÆ°Êó∂
+  if ((m_nPrevState & (RENDER_STATE_NORMAL | RENDER_STATE_DEFAULT)) &&
+      (nRenderState & RENDER_STATE_HOVER)) {
+    m_nCurrentAlpha =
+        0; // ÈÅøÂÖçÂú®Á¨¨‰∏ÄÊ¨°TickÂìçÂ∫î‰πãÂâçË¢´Êéß‰ª∂Âº∫Âà∂Âà∑Êñ∞‰∫ÜÔºåÁªìÊûúÊ≠§Êó∂ÁöÑm_nCurrentAlpha‰∏çÊòØËÆ°ÁÆóÂæóÂà∞ÁöÑÂÄº„ÄÇ
+    CreateAnimate(0, 255);
 
-		DrawIndexWidthAlpha(pRenderTarget, &rc, (m_nPrevState)&0xFFFF, 255);
-	}
-	else if ((nRenderState&(RENDER_STATE_NORMAL|RENDER_STATE_DEFAULT)) && (m_nPrevState&RENDER_STATE_HOVER))
-	{
-        m_nCurrentAlpha = 255;
-        CreateAnimate(255, 0);
+    DrawIndexWidthAlpha(pRenderTarget, &rc, (m_nPrevState)&0xFFFF, 255);
+  } else if ((nRenderState & (RENDER_STATE_NORMAL | RENDER_STATE_DEFAULT)) &&
+             (m_nPrevState & RENDER_STATE_HOVER)) {
+    m_nCurrentAlpha = 255;
+    CreateAnimate(255, 0);
 
-		DrawIndexWidthAlpha(pRenderTarget, &rc, (m_nPrevState)&0xFFFF, 255);
-	}
-	else
-	{
-		if (m_bIsAnimate)
-		{
-			if (0==(nRenderState & (RENDER_STATE_NORMAL|RENDER_STATE_DEFAULT|RENDER_STATE_HOVER)))
-			{
-				// ‘⁄∂Øª≠π˝≥Ã÷–∞¥œ¬¡À£¨”¶∏√¡¢º¥Õ£÷π∂Øª≠
-				DestroyAnimate();
-				DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
-			}
-			else
-			{
-				bool bSelected = (nRenderState & RENDER_STATE_SELECTED)?true:false;
-                if (bSelected)  // checkbox
-                {
-					DrawIndexWidthAlpha(pRenderTarget, &rc, 4, (byte)(255 - m_nCurrentAlpha));
-					DrawIndexWidthAlpha(pRenderTarget, &rc, 5, (byte)m_nCurrentAlpha);
-                }
-                else   // pushbutton/defaultbutton
-                {
-                    bool bDefault = (nRenderState & RENDER_STATE_DEFAULT)?true:false;
+    DrawIndexWidthAlpha(pRenderTarget, &rc, (m_nPrevState)&0xFFFF, 255);
+  } else {
+    if (m_bIsAnimate) {
+      if (0 == (nRenderState & (RENDER_STATE_NORMAL | RENDER_STATE_DEFAULT |
+                                RENDER_STATE_HOVER))) {
+        // Âú®Âä®ÁîªËøáÁ®ã‰∏≠Êåâ‰∏ã‰∫ÜÔºåÂ∫îËØ•Á´ãÂç≥ÂÅúÊ≠¢Âä®Áîª
+        DestroyAnimate();
+        DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
+      } else {
+        bool bSelected = (nRenderState & RENDER_STATE_SELECTED) ? true : false;
+        if (bSelected) // checkbox
+        {
+          DrawIndexWidthAlpha(pRenderTarget, &rc, 4,
+                              (byte)(255 - m_nCurrentAlpha));
+          DrawIndexWidthAlpha(pRenderTarget, &rc, 5, (byte)m_nCurrentAlpha);
+        } else // pushbutton/defaultbutton
+        {
+          bool bDefault = (nRenderState & RENDER_STATE_DEFAULT) ? true : false;
 
-					DrawIndexWidthAlpha(pRenderTarget, &rc, bDefault ? 4 : 0, (byte)(255 - m_nCurrentAlpha));
-					DrawIndexWidthAlpha(pRenderTarget, &rc, 1, (byte)m_nCurrentAlpha);
-                }
-			}
-		}
-		else
-		{
-			DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
-		}
-	}
-	m_nPrevState = nState;
+          DrawIndexWidthAlpha(pRenderTarget, &rc, bDefault ? 4 : 0,
+                              (byte)(255 - m_nCurrentAlpha));
+          DrawIndexWidthAlpha(pRenderTarget, &rc, 1, (byte)m_nCurrentAlpha);
+        }
+      }
+    } else {
+      DrawIndexWidthAlpha(pRenderTarget, &rc, nRealIndex, 255);
+    }
+  }
+  m_nPrevState = nState;
 }
 
-void  ImageListRender::DestroyAnimate()
-{
+void ImageListRender::DestroyAnimate() {
 #if 0
     if (m_bUseAlphaAnimate && m_bIsAnimate)
     {
@@ -536,8 +474,7 @@ void  ImageListRender::DestroyAnimate()
 #endif
 }
 
-void  ImageListRender::CreateAnimate(int nFrom, int nTo)
-{
+void ImageListRender::CreateAnimate(int nFrom, int nTo) {
 #if 0
     IApplication* pUIApp = m_pObject->GetIUIApplication();
     uia::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateManager();
@@ -556,124 +493,117 @@ void  ImageListRender::CreateAnimate(int nFrom, int nTo)
 #endif
 }
 
-void  ImageListRender::DrawIndexWidthAlpha(IRenderTarget* pRenderTarget, const Rect* prc, int nIndex, byte bAlpha)
-{
-	if (nullptr == m_pImageList)
-		return;
+void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
+                                          const Rect *prc, int nIndex,
+                                          byte bAlpha) {
+  if (nullptr == m_pImageList)
+    return;
 
-//    UI_LOG_ERROR(_T("%s  nIndex=%d, nAlpha=%d"), FUNC_NAME, nIndex, bAlpha);
-    int nRealIndex = GetStateIndex(nIndex);
-    if (nRealIndex < 0)
-        return;
+  //    UI_LOG_ERROR(_T("%s  nIndex=%d, nAlpha=%d"), FUNC_NAME, nIndex, bAlpha);
+  int nRealIndex = GetStateIndex(nIndex);
+  if (nRealIndex < 0)
+    return;
 
-	DRAWBITMAPPARAM param;
-	param.nFlag = m_nImageDrawType;
-	param.xDest = prc->left;
-	param.yDest = prc->top;
-	param.wDest = prc->Width();
-	param.hDest = prc->Height();
-	param.wSrc = m_pImageList->GetItemWidth();
-	param.hSrc = m_pImageList->GetItemHeight();
-	if (!m_9Region.IsAll_0())
-		param.pRegion = &m_9Region;
-	param.nAlpha = bAlpha;
+  DRAWBITMAPPARAM param;
+  param.nFlag = m_nImageDrawType;
+  param.xDest = prc->left;
+  param.yDest = prc->top;
+  param.wDest = prc->Width();
+  param.hDest = prc->Height();
+  param.wSrc = m_pImageList->GetItemWidth();
+  param.hSrc = m_pImageList->GetItemHeight();
+  if (!m_9Region.IsAll_0())
+    param.pRegion = &m_9Region;
+  param.nAlpha = bAlpha;
 
-	Point pt = {0, 0};
-	m_pImageList->GetIndexPos(nRealIndex, &pt);
-	param.xSrc = pt.x;
-	param.ySrc = pt.y;
-// 	if (m_eImageLayout == IMAGELIST_LAYOUT_TYPE_H)
-// 	{
-// 		param.xSrc = nIndex*m_nItemWidth;
-// 		param.ySrc = 0;
-// 	}
-// 	else
-// 	{
-// 		param.xSrc = 0;
-// 		param.ySrc = nIndex*m_nItemHeight;
-// 	}
-	pRenderTarget->DrawBitmap(m_pImageList, &param);
+  Point pt = {0, 0};
+  m_pImageList->GetIndexPos(nRealIndex, &pt);
+  param.xSrc = pt.x;
+  param.ySrc = pt.y;
+  // 	if (m_eImageLayout == IMAGELIST_LAYOUT_TYPE_H)
+  // 	{
+  // 		param.xSrc = nIndex*m_nItemWidth;
+  // 		param.ySrc = 0;
+  // 	}
+  // 	else
+  // 	{
+  // 		param.xSrc = 0;
+  // 		param.ySrc = nIndex*m_nItemHeight;
+  // 	}
+  pRenderTarget->DrawBitmap(m_pImageList, &param);
 }
 
-void  ImageListRender::GetDesiredSize(Size* pSize)
-{
-	pSize->width = pSize->height = 0;
-	if (nullptr == m_pImageList)
-		return;
+void ImageListRender::GetDesiredSize(Size *pSize) {
+  pSize->width = pSize->height = 0;
+  if (nullptr == m_pImageList)
+    return;
 
-	pSize->width = m_pImageList->GetItemWidth();
-	pSize->height = m_pImageList->GetItemHeight();
+  pSize->width = m_pImageList->GetItemWidth();
+  pSize->height = m_pImageList->GetItemHeight();
 }
 
-int  ImageListRender::GetItemWidth()
-{
-	if (nullptr == m_pImageList)
-		return 0;
+int ImageListRender::GetItemWidth() {
+  if (nullptr == m_pImageList)
+    return 0;
 
-	return m_pImageList->GetItemWidth();
+  return m_pImageList->GetItemWidth();
 }
-int  ImageListRender::GetItemHeight()
-{
-	if (nullptr == m_pImageList)
-		return 0;
+int ImageListRender::GetItemHeight() {
+  if (nullptr == m_pImageList)
+    return 0;
 
-	return m_pImageList->GetItemHeight();
+  return m_pImageList->GetItemHeight();
 }
-int   ImageListRender::GetItemCount()
-{
-    if (nullptr == m_pImageList)
-        return 0;
+int ImageListRender::GetItemCount() {
+  if (nullptr == m_pImageList)
+    return 0;
 
-    return m_pImageList->GetItemCount();
+  return m_pImageList->GetItemCount();
 }
 
-void  ImageListRender::SetImageStretch9Region(C9Region* p)
-{
-	if (p)
-		m_9Region.Copy(*p);
-	else
-		m_9Region.Set(0);
+void ImageListRender::SetImageStretch9Region(C9Region *p) {
+  if (p)
+    m_9Region.Copy(*p);
+  else
+    m_9Region.Set(0);
 }
 //
-//	ªÒ»°÷∏∂®◊¥Ã¨∂‘”¶µƒÕº∆¨œÓ
+//	Ëé∑ÂèñÊåáÂÆöÁä∂ÊÄÅÂØπÂ∫îÁöÑÂõæÁâáÈ°π
 //
-int  ImageListRender::GetStateIndex(int nState)
-{
-	if (nullptr == m_pImageList)
-		return -1;
+int ImageListRender::GetStateIndex(int nState) {
+  if (nullptr == m_pImageList)
+    return -1;
 
-	if (m_pImageList->GetItemCount() <= 0)
-		return -1;
+  if (m_pImageList->GetItemCount() <= 0)
+    return -1;
 
-	if (m_mapState2Index.empty())
-		return nState; 
+  if (m_mapState2Index.empty())
+    return nState;
 
-	std::map<int, int>::iterator iter = m_mapState2Index.end();
-    if (m_mapState2Index.size() > 0)
-        iter = m_mapState2Index.find(nState);
+  std::map<int, int>::iterator iter = m_mapState2Index.end();
+  if (m_mapState2Index.size() > 0)
+    iter = m_mapState2Index.find(nState);
 
-	if (m_mapState2Index.end() == iter)
-	{
-		// √ª”–≈‰÷√∏√◊¥Ã¨ªÚ’ﬂ√ª”–≈‰÷√
-// 		if (nState < m_pImageList->GetItemCount())  // »Áπ˚Õº∆¨ ˝¡ø¥Û”⁄µ±«∞◊¥Ã¨£¨÷±Ω”»°µ±«∞◊¥Ã¨÷µ∂‘”¶µƒÕº∆¨
-// 		{
-// 			return nState;
-// 		}
-// 		else                    // ◊¥Ã¨÷µ¥Û”⁄Õº∆¨ ˝¡ø£¨»°ƒ¨»œ÷µ0
-// 		{
-// 			return 0;
-// 		}
-		return -1;
-	}
-	else
-	{
-		int& nRet = iter->second;
-		if (nRet < 0 || nRet >= m_pImageList->GetItemCount())
-			return -1;
+  if (m_mapState2Index.end() == iter) {
+    // Ê≤°ÊúâÈÖçÁΩÆËØ•Áä∂ÊÄÅÊàñËÄÖÊ≤°ÊúâÈÖçÁΩÆ
+    // 		if (nState < m_pImageList->GetItemCount())  //
+    // Â¶ÇÊûúÂõæÁâáÊï∞ÈáèÂ§ß‰∫éÂΩìÂâçÁä∂ÊÄÅÔºåÁõ¥Êé•ÂèñÂΩìÂâçÁä∂ÊÄÅÂÄºÂØπÂ∫îÁöÑÂõæÁâá
+    // 		{
+    // 			return nState;
+    // 		}
+    // 		else                    // Áä∂ÊÄÅÂÄºÂ§ß‰∫éÂõæÁâáÊï∞ÈáèÔºåÂèñÈªòËÆ§ÂÄº0
+    // 		{
+    // 			return 0;
+    // 		}
+    return -1;
+  } else {
+    int &nRet = iter->second;
+    if (nRet < 0 || nRet >= m_pImageList->GetItemCount())
+      return -1;
 
-		return nRet;
-	}
-	return -1;
+    return nRet;
+  }
+  return -1;
 }
 
-}
+} // namespace ui

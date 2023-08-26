@@ -107,7 +107,7 @@ void  ColorRender::SetBorderRegion(const Rect* prc)
 
 void ColorRender::OnSerialize(SerializeParam* pData)
 {
-	AttributeSerializer s(pData, TEXT("ColorRender"));
+	AttributeSerializer s(pData, "ColorRender");
     s.AddColor(XML_RENDER_COLOR, m_pBkColor);
     s.AddColor(XML_RENDER_BORDERCOLOR, m_pBorderColor);
 	s.AddRect(XML_RENDER_BORDER, m_rcBorder);
@@ -188,7 +188,7 @@ void SysColorRender::SetBorderColor(int nColorIndex)
 
 void SysColorRender::OnSerialize(SerializeParam* pData)
 {
-    AttributeSerializer s(pData, TEXT("SysColorRender"));
+    AttributeSerializer s(pData, "SysColorRender");
     s.AddInt(XML_RENDER_COLOR, m_nBkColorIndex)->SetDefault(-1);
     s.AddInt(XML_RENDER_BORDERCOLOR, m_nBorderColorIndex)->SetDefault(-1);
     s.AddRect(XML_RENDER_BORDER, m_rcBorder);
@@ -274,7 +274,7 @@ GradientRender::~GradientRender()
 
 void GradientRender::OnSerialize(SerializeParam* pData)
 {
-    AttributeSerializer s(pData, TEXT("GradientRender"));
+    AttributeSerializer s(pData, "GradientRender");
     s.AddString(XML_RENDER_COLORFROM, 
         Slot(&GradientRender::LoadFromColor, this),
         Slot(&GradientRender::SaveFromColor, this));
@@ -381,7 +381,7 @@ int  ColorListRender::GetCount()
     return m_nCount;
 }
 
-void  ColorListRender::LoadBkColor(const wchar_t* szText)
+void  ColorListRender::LoadBkColor(const char* szText)
 {
     if (!szText)
         return;
@@ -390,7 +390,7 @@ void  ColorListRender::LoadBkColor(const wchar_t* szText)
     if (nullptr == pColorRes)
         return;
 
-    std::vector<String> vColors;
+    std::vector<std::string> vColors;
     UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
     int nCount = (int)vColors.size();
 
@@ -405,22 +405,22 @@ void  ColorListRender::LoadBkColor(const wchar_t* szText)
         }
     }
 }
-const wchar_t*  ColorListRender::SaveBkColor()
+const char*  ColorListRender::SaveBkColor()
 {
-    String&  strBuffer = GetTempBufferString();
+    std::string&  strBuffer = GetTempBufferString();
     for (int i = 0; i < m_nCount; i++)
     {
         if (i > 0)
             strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-        const wchar_t* szTemp = _GetColorId(m_vBkColor[i]);
+        const char* szTemp = _GetColorId(m_vBkColor[i]);
         if (szTemp)
             strBuffer.append(szTemp);
     }
 
     return strBuffer.c_str();
 }
-void  ColorListRender::LoadBorderColor(const wchar_t* szText)
+void  ColorListRender::LoadBorderColor(const char* szText)
 {
     ColorRes* pColorRes = GetSkinColorRes();
     if (nullptr == pColorRes)
@@ -429,7 +429,7 @@ void  ColorListRender::LoadBorderColor(const wchar_t* szText)
     if (!szText)
         return;
     
-    std::vector<String> vColors;
+    std::vector<std::string> vColors;
     UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
     int nCount = (int)vColors.size();
 
@@ -445,16 +445,16 @@ void  ColorListRender::LoadBorderColor(const wchar_t* szText)
     }
 }
 
-const wchar_t*  ColorListRender::SaveBorderColor()
+const char*  ColorListRender::SaveBorderColor()
 {
     bool bHasValue = false;
-    String&  strBuffer = GetTempBufferString();
+    std::string&  strBuffer = GetTempBufferString();
     for (int i = 0; i < m_nCount; i++)
     {
         if (i > 0)
             strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-        const wchar_t* szTemp = _GetColorId(m_vBorderColor[i]);
+        const char* szTemp = _GetColorId(m_vBorderColor[i]);
         if (szTemp && szTemp[0])
         {
             bHasValue = true;
@@ -469,7 +469,7 @@ const wchar_t*  ColorListRender::SaveBorderColor()
 
 void ColorListRender::OnSerialize(SerializeParam* pData)
 {
-    AttributeSerializer s(pData, TEXT("ColorListRender"));
+    AttributeSerializer s(pData, "ColorListRender");
 
     s.AddInt(XML_RENDER_COLORLIST_COUNT, 
         Slot(&ColorListRender::SetCount, this),

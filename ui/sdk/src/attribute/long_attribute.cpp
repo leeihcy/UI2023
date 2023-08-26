@@ -134,26 +134,26 @@ void IntAttribute::SetLong(int l) {
     m_setter.emit(l);
   }
 }
-const wchar_t *IntAttribute::Get() {
+const char *IntAttribute::Get() {
   int lValue = GetLong();
 
-  const wchar_t *szAlias = m_mapAlias.GetAlias(lValue);
+  const char *szAlias = m_mapAlias.GetAlias(lValue);
   if (szAlias) {
     return szAlias;
   } else {
-    wchar_t *szText = GetTempBuffer(64);
-    wprintf(szText, TEXT("%d"), lValue);
+    char *szText = GetTempBuffer(64);
+    sprintf(szText, "%d", lValue);
     return szText;
   }
 }
 
-void IntAttribute::Set(const wchar_t *szValue) {
+void IntAttribute::Set(const char *szValue) {
   int lValue = m_lDefault;
 
   if (m_mapAlias.GetAlias(szValue, &lValue)) {
     SetLong(lValue);
   } else {
-    lValue = util::wtoi(szValue);
+    lValue = atoi(szValue);
     SetLong(lValue);
   }
 }
@@ -162,7 +162,7 @@ void IntAttribute::Reset() { SetLong(m_lDefault); }
 
 bool IntAttribute::IsDefaultValue() { return GetLong() == m_lDefault; }
 
-IntAttribute *IntAttribute::AddAlias(int l, const wchar_t *sz) {
+IntAttribute *IntAttribute::AddAlias(int l, const char *sz) {
   m_mapAlias.AddAlias(l, sz);
   return this;
 }

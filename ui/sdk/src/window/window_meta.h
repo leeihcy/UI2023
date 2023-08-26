@@ -13,14 +13,14 @@ struct WindowMeta : public MetaImpl<IWindow> {
 
   Uuid UUID() override { return {0x5C36801E, 0x5929, 0x4512, {0xA9, 0x98, 0xF9, 0x71, 0x9D, 0xCC, 0x69, 0x03}}; }
 
-  const wchar_t* Name() override { return L"Window"; }
+  const char* Name() override { return "Window"; }
 
   MetaDetail Detail() override {
     MetaDetail param;
     param.major_type = OBJ_WINDOW;
     param.minor_type = WINDOW_SIMPLE;
     param.category = CATEGORY_WINDOW;
-    param.descrption = L"窗口";
+    param.descrption = u8"窗口";
     param.default_size = {500, 500};
     return param;
   }

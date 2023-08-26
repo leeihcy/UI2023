@@ -17,18 +17,18 @@ CMapAttribute::CMapAttribute(const CMapAttribute &o) {
   m_mapAttr = o.m_mapAttr;
 }
 
-// void  CMapAttribute::SetTag(const wchar_t* szKey)
+// void  CMapAttribute::SetTag(const char* szKey)
 // {
 // 	if (szKey)
 // 		m_strTag = szKey;
 // 	else
 // 		m_strTag.clear();
 // }
-// const wchar_t*  CMapAttribute::GetTag()
+// const char*  CMapAttribute::GetTag()
 // {
 // 	return m_strTag.c_str();
 // }
-bool CMapAttribute::HasAttrib(const wchar_t *szKey) {
+bool CMapAttribute::HasAttrib(const char *szKey) {
   if (nullptr == szKey)
     return false;
 
@@ -38,7 +38,7 @@ bool CMapAttribute::HasAttrib(const wchar_t *szKey) {
 
   return true;
 }
-const wchar_t *CMapAttribute::GetAttr(const wchar_t *szKey, bool bErase) {
+const char *CMapAttribute::GetAttr(const char *szKey, bool bErase) {
   if (nullptr == szKey)
     return nullptr;
 
@@ -47,7 +47,7 @@ const wchar_t *CMapAttribute::GetAttr(const wchar_t *szKey, bool bErase) {
     return nullptr;
 
   if (bErase) {
-    String &str = GetTempBufferString();
+    std::string &str = GetTempBufferString();
     str = iter->second;
     m_mapAttr.erase(iter);
     return str.c_str();
@@ -55,22 +55,22 @@ const wchar_t *CMapAttribute::GetAttr(const wchar_t *szKey, bool bErase) {
   return iter->second.c_str();
 }
 
-const wchar_t *CMapAttribute::GetAttr(const String &strKey, bool bErase) {
+const char *CMapAttribute::GetAttr(const std::string &strKey, bool bErase) {
   ATTRMAP::iterator iter = m_mapAttr.find(strKey);
   if (iter == m_mapAttr.end())
     return nullptr;
 
   if (bErase) {
-    String &strTemp = GetTempBufferString();
+    std::string &strTemp = GetTempBufferString();
     strTemp = iter->second;
     m_mapAttr.erase(iter);
     return strTemp.c_str();
   }
   return iter->second.c_str();
 }
-const wchar_t *CMapAttribute::GetAttr(const wchar_t *szPrefix,
-                                      const wchar_t *szKey, bool bErase) {
-  String strKey;
+const char *CMapAttribute::GetAttr(const char *szPrefix,
+                                      const char *szKey, bool bErase) {
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
@@ -78,16 +78,16 @@ const wchar_t *CMapAttribute::GetAttr(const wchar_t *szPrefix,
   return GetAttr(strKey.c_str(), bErase);
 }
 
-int CMapAttribute::GetAttr_bool(const wchar_t *szPrefix, const wchar_t *szKey,
+int CMapAttribute::GetAttr_bool(const char *szPrefix, const char *szKey,
                                  bool bErase, bool *pbGet) {
-  String strKey;
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
 
   return GetAttr_bool(strKey.c_str(), bErase, pbGet);
 }
-int CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_bool(const char *szKey, bool bErase,
                                  bool *pbGet) {
   if (nullptr == szKey || nullptr == pbGet)
     return MAPATTR_RET_ERROR;
@@ -98,14 +98,14 @@ int CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
 
   int lRet = MAPATTR_RET_OK;
 
-  const wchar_t *szValue = iter->second.c_str();
-  if (0 == wcscmp(szValue, XML_BOOL_VALUE_TRUE) ||
-      0 == wcscmp(szValue, XML_BOOL_VALUE_1) ||
-      0 == wcscmp(szValue, XML_BOOL_VALUE_YES)) {
+  const char *szValue = iter->second.c_str();
+  if (0 == strcmp(szValue, XML_BOOL_VALUE_TRUE) ||
+      0 == strcmp(szValue, XML_BOOL_VALUE_1) ||
+      0 == strcmp(szValue, XML_BOOL_VALUE_YES)) {
     *pbGet = true;
-  } else if (0 == wcscmp(szValue, XML_BOOL_VALUE_FALSE) ||
-             0 == wcscmp(szValue, XML_BOOL_VALUE_0) ||
-             0 == wcscmp(szValue, XML_BOOL_VALUE_NO)) {
+  } else if (0 == strcmp(szValue, XML_BOOL_VALUE_FALSE) ||
+             0 == strcmp(szValue, XML_BOOL_VALUE_0) ||
+             0 == strcmp(szValue, XML_BOOL_VALUE_NO)) {
     *pbGet = false;
   } else {
     lRet = MAPATTR_RET_INVLID_VALUE;
@@ -117,16 +117,16 @@ int CMapAttribute::GetAttr_bool(const wchar_t *szKey, bool bErase,
   return lRet;
 }
 
-int CMapAttribute::GetAttr_int(const wchar_t *szPrefix, const wchar_t *szKey,
+int CMapAttribute::GetAttr_int(const char *szPrefix, const char *szKey,
                                 bool bErase, int *pnGet) {
-  String strKey;
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
 
   return GetAttr_int(strKey.c_str(), bErase, pnGet);
 }
-int CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
+int CMapAttribute::GetAttr_int(const char *szKey, bool bErase, int *pnGet) {
   if (nullptr == szKey || nullptr == pnGet)
     return MAPATTR_RET_ERROR;
 
@@ -134,7 +134,7 @@ int CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
   if (iter == m_mapAttr.end())
     return MAPATTR_RET_NOT_EXIST;
 
-  *pnGet = util::wtoi(iter->second.c_str());
+  *pnGet = atoi(iter->second.c_str());
 
   if (bErase)
     m_mapAttr.erase(iter);
@@ -142,17 +142,17 @@ int CMapAttribute::GetAttr_int(const wchar_t *szKey, bool bErase, int *pnGet) {
   return MAPATTR_RET_OK;
 }
 
-int CMapAttribute::GetAttr_intarray(const wchar_t *szPrefix,
-                                     const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_intarray(const char *szPrefix,
+                                     const char *szKey, bool bErase,
                                      int *pIntArray, unsigned int nSize) {
-  String strKey;
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
 
   return GetAttr_intarray(strKey.c_str(), bErase, pIntArray, nSize);
 }
-int CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_intarray(const char *szKey, bool bErase,
                                      int *pIntArray, unsigned int nSize) {
   if (nullptr == szKey || nullptr == pIntArray)
     return MAPATTR_RET_ERROR;
@@ -169,7 +169,7 @@ int CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
     return MAPATTR_RET_INVLID_VALUE;
   }
   for (unsigned int i = 0; i < nCount; i++) {
-    pIntArray[i] = util::wtoi(pEnum->GetText(i));
+    pIntArray[i] = atoi(pEnum->GetText(i));
   }
 
   SAFE_RELEASE(pEnum);
@@ -179,13 +179,13 @@ int CMapAttribute::GetAttr_intarray(const wchar_t *szKey, bool bErase,
   return MAPATTR_RET_OK;
 }
 
-int CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
-                                    const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_REGION4(const char *szPrefix,
+                                    const char *szKey, bool bErase,
                                     REGION4 *prcGet) {
   if (nullptr == szKey || nullptr == prcGet)
     return MAPATTR_RET_ERROR;
 
-  String strKey;
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
@@ -204,13 +204,13 @@ int CMapAttribute::GetAttr_REGION4(const wchar_t *szPrefix,
   return lRet;
 }
 
-int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
-                                         const wchar_t *szKey, bool bErase,
+int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
+                                         const char *szKey, bool bErase,
                                          C9Region *pRegion) {
   if (nullptr == szKey || nullptr == pRegion)
     return MAPATTR_RET_ERROR;
 
-  String strKey;
+  std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
   strKey.append(szKey);
@@ -230,8 +230,8 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 }
 
 // int CMapAttribute::GetAttr_RenderBase(
-//     const wchar_t* szPrefix,
-//     const wchar_t* szKey,
+//     const char* szPrefix,
+//     const char* szKey,
 //     bool bErase,
 //     IApplication* pUIApp,
 //     IObject* pBindObj,
@@ -241,7 +241,7 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //         return MAPATTR_RET_ERROR;
 //
 //     LRESULT lRet = MAPATTR_RET_OK;
-//     String strKey;
+//     std::string strKey;
 //     if (szPrefix)
 //         strKey = szPrefix;
 //     strKey.append(szKey);
@@ -277,8 +277,8 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 // }
 //
 // int CMapAttribute::GetAttr_TextRenderBase(
-//     const wchar_t* szPrefix,
-//     const wchar_t* szKey,
+//     const char* szPrefix,
+//     const char* szKey,
 //     bool bErase,
 //     IResource* pUIApp,
 //     IObject* pBindObj,
@@ -288,7 +288,7 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //         return MAPATTR_RET_ERROR;
 //
 //     LRESULT lRet = MAPATTR_RET_OK;
-//     String strKey;
+//     std::string strKey;
 //     if (szPrefix)
 //         strKey = szPrefix;
 //     strKey.append(szKey);
@@ -324,8 +324,8 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 // }
 //
 // int  CMapAttribute::GetAttr_Color(
-//         const wchar_t* szPrefix,
-//         const wchar_t* szKey,
+//         const char* szPrefix,
+//         const char* szKey,
 //         bool bErase,
 //         IResource* pSkinRes,
 //         Color** ppColor)
@@ -336,7 +336,7 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //         return MAPATTR_RET_ERROR;
 //
 //     LRESULT lRet = MAPATTR_RET_OK;
-//     String strKey;
+//     std::string strKey;
 //     if (szPrefix)
 //         strKey = szPrefix;
 //     strKey.append(szKey);
@@ -359,7 +359,7 @@ int CMapAttribute::GetAttr_Image9Region(const wchar_t *szPrefix,
 //     return lRet;
 // }
 
-bool CMapAttribute::AddAttr(const wchar_t *szKey, const wchar_t *szValue) {
+bool CMapAttribute::AddAttr(const char *szKey, const char *szValue) {
   if (nullptr == szKey)
     return false;
 
@@ -372,36 +372,36 @@ bool CMapAttribute::AddAttr(const wchar_t *szKey, const wchar_t *szValue) {
   }
   return true;
 }
-void CMapAttribute::AddAttr(const String &strKey, const String &strValue) {
+void CMapAttribute::AddAttr(const std::string &strKey, const std::string &strValue) {
   m_mapAttr[strKey] = strValue;
 }
 
-bool CMapAttribute::AddAttr_bool(const wchar_t *szKey, bool bValue) {
+bool CMapAttribute::AddAttr_bool(const char *szKey, bool bValue) {
   if (nullptr == szKey)
     return false;
 
-  m_mapAttr[szKey] = bValue ? _T("1") : _T("0");
+  m_mapAttr[szKey] = bValue ? "1" : "0";
   return true;
 }
 
-bool CMapAttribute::AddAttr_REGION4(const wchar_t *szKey, REGION4 *pr) {
+bool CMapAttribute::AddAttr_REGION4(const char *szKey, REGION4 *pr) {
   if (nullptr == szKey)
     return false;
 
-  wchar_t szText[32] = {0};
-  wprintf(szText, TEXT("%d,%d,%d,%d"), pr->left, pr->top, pr->right,
+  char szText[32] = {0};
+  sprintf(szText, "%d,%d,%d,%d", pr->left, pr->top, pr->right,
           pr->bottom);
 
   m_mapAttr[szKey] = szText;
   return true;
 }
 
-bool CMapAttribute::AddAttr_int(const wchar_t *szKey, int nValue) {
+bool CMapAttribute::AddAttr_int(const char *szKey, int nValue) {
   if (nullptr == szKey)
     return false;
 
-  wchar_t szText[8] = {0};
-  wprintf(szText, TEXT("%d"), nValue);
+  char szText[8] = {0};
+  sprintf(szText, "%d", nValue);
 
   m_mapAttr[szKey] = szText;
   return true;
@@ -410,12 +410,12 @@ bool CMapAttribute::AddAttr_int(const wchar_t *szKey, int nValue) {
 // 使用前缀Prefix，从当前属性中抽取出相应的属性集放在ppMapAttribute中返回给外部
 // 外部调用完之后，需要使用ppMapAttribute->Release释放内存
 bool CMapAttribute::ExtractMapAttrByPrefix(
-    const wchar_t *szPrefix, bool bErase,
+    const char *szPrefix, bool bErase,
     /*out*/ IMapAttribute **ppMapAttribute) {
   if (nullptr == ppMapAttribute)
     return false;
 
-  if (nullptr == szPrefix || 0 == wcslen(szPrefix)) {
+  if (nullptr == szPrefix || 0 == strlen(szPrefix)) {
     //         *ppMapAttribute = static_cast<IMapAttribute*>(this);
     //         this->AddRef();
     //         return true;
@@ -425,13 +425,13 @@ bool CMapAttribute::ExtractMapAttrByPrefix(
   ATTRMAP::iterator iter = m_mapAttr.begin();
   ATTRMAP::iterator iterEnd = m_mapAttr.end();
 
-  int nPrifixLength = (int)wcslen(szPrefix);
+  int nPrifixLength = (int)strlen(szPrefix);
 
   IMapAttribute *pSubMapAttrib = UICreateIMapAttribute();
 
   for (; iter != iterEnd;) {
-    wchar_t *szKey = const_cast<wchar_t *>(iter->first.c_str());
-    if (wcsstr(szKey, szPrefix) == szKey) {
+    char *szKey = const_cast<char *>(iter->first.c_str());
+    if (strstr(szKey, szPrefix) == szKey) {
       pSubMapAttrib->AddAttr(szKey + nPrifixLength, iter->second.c_str());
 
       if (bErase)
@@ -472,7 +472,7 @@ void CMapAttribute::CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) {
 }
 
 void CMapAttribute::BeginEnum() { m_iterEnum = m_mapAttr.begin(); }
-bool CMapAttribute::EnumNext(const wchar_t **szKey, const wchar_t **szValue) {
+bool CMapAttribute::EnumNext(const char **szKey, const char **szValue) {
   if (nullptr == szKey || nullptr == szValue)
     return false;
 
@@ -522,7 +522,7 @@ CListAttribute::~CListAttribute() {
   m_pLastItem = nullptr;
 }
 
-bool CListAttribute::AddAttr(const wchar_t *szKey, const wchar_t *szValue) {
+bool CListAttribute::AddAttr(const char *szKey, const char *szValue) {
   ListAttrItem *pItem = new ListAttrItem;
   if (szKey)
     pItem->strKey = szKey;
@@ -541,7 +541,7 @@ bool CListAttribute::AddAttr(const wchar_t *szKey, const wchar_t *szValue) {
   return true;
 }
 
-const wchar_t *CListAttribute::GetAttr(const wchar_t *szKey) {
+const char *CListAttribute::GetAttr(const char *szKey) {
   ListAttrItem *pItem = FindItem(szKey);
   if (pItem)
     return pItem->strValue.c_str();
@@ -549,7 +549,7 @@ const wchar_t *CListAttribute::GetAttr(const wchar_t *szKey) {
   return nullptr;
 }
 
-ListAttrItem *CListAttribute::FindItem(const wchar_t *szKey) {
+ListAttrItem *CListAttribute::FindItem(const char *szKey) {
   if (!szKey)
     return nullptr;
 
@@ -564,7 +564,7 @@ ListAttrItem *CListAttribute::FindItem(const wchar_t *szKey) {
   return nullptr;
 }
 
-bool CListAttribute::EraseAttr(const wchar_t *szKey) {
+bool CListAttribute::EraseAttr(const char *szKey) {
   ListAttrItem *pItem = FindItem(szKey);
   if (!pItem)
     return false;
@@ -588,7 +588,7 @@ bool CListAttribute::EraseAttr(const wchar_t *szKey) {
   return true;
 }
 
-// void  CListAttribute::SetTag(const wchar_t* szKey)
+// void  CListAttribute::SetTag(const char* szKey)
 // {
 // 	if (szKey)
 // 		m_strTag = szKey;
@@ -596,13 +596,13 @@ bool CListAttribute::EraseAttr(const wchar_t *szKey) {
 // 		m_strTag.clear();
 // }
 //
-// const wchar_t*  CListAttribute::GetTag()
+// const char*  CListAttribute::GetTag()
 // {
 //     return m_strTag.c_str();
 // }
 
 void CListAttribute::BeginEnum() { m_pEnum = m_pFirstItem; }
-bool CListAttribute::EnumNext(const wchar_t **szKey, const wchar_t **szValue) {
+bool CListAttribute::EnumNext(const char **szKey, const char **szValue) {
   if (nullptr == m_pEnum)
     return false;
 

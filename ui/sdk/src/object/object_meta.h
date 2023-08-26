@@ -11,7 +11,7 @@ struct ObjectMeta : public MetaImpl<IObject> {
   }
 
   Uuid UUID() override { return Uuid::Null(); }
-  const wchar_t* Name() override { return L"Object"; }
+  const char* Name() override { return "Object"; }
 
   MetaDetail Detail() override {
     MetaDetail param = {0};

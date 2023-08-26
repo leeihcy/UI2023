@@ -51,8 +51,8 @@ void Panel::RouteMessage(ui::Msg *msg) {
 
 ILayout *Panel::GetLayout() { return this->m_pLayout; }
 
-const wchar_t *Panel::GetLayoutName() { return m_layout_name.c_str(); }
-void Panel::SetLayoutName(const wchar_t *name) {
+const char *Panel::GetLayoutName() { return m_layout_name.c_str(); }
+void Panel::SetLayoutName(const char *name) {
   if (!name) {
     m_layout_name.clear();
   } else {
@@ -60,7 +60,7 @@ void Panel::SetLayoutName(const wchar_t *name) {
   }
 }
 
-void Panel::SetLayoutType(const wchar_t *layout_name) {
+void Panel::SetLayoutType(const char *layout_name) {
   // if (m_pLayout && m_pLayout->GetLayoutType() == eLayoutType)
   //   return;
 
@@ -115,7 +115,7 @@ void Panel::OnSerialize(SerializeParam *pData) {
   }
 
   {
-    AttributeSerializer s(pData, TEXT("Panel"));
+    AttributeSerializer s(pData, "Panel");
 
     // 纹理层
     s.AddRenderBase(XML_TEXTURE_RENDER_PREFIX, this, m_pTextureRender);

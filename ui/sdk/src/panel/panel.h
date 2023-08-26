@@ -28,10 +28,10 @@ public:
 public:
   ILayout *GetLayout();
   void SetLayout(ILayout*);
-  void SetLayoutType(const wchar_t* layout_name);
+  void SetLayoutType(const char* layout_name);
 
-  const wchar_t* GetLayoutName();
-  void SetLayoutName(const wchar_t* name);
+  const char* GetLayoutName();
+  void SetLayoutName(const char* name);
 
   void SetTextureRender(IRenderBase *p);
   IRenderBase *GetTextureRender();
@@ -60,7 +60,7 @@ protected:
   IRenderBase *m_pMaskRender;
   Rect m_rcMaskRenderRegion;
 
-  std::wstring m_layout_name;
+  std::string m_layout_name;
 };
 
 } // namespace ui

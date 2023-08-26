@@ -1,7 +1,7 @@
 #pragma once
 
 //
-//	鼠标样式
+//	榧犳爣鏍峰紡
 //
 namespace  ui
 {
@@ -16,19 +16,19 @@ public:
 	CursorResItem();
 	~CursorResItem();
 
-	void  SetId(const wchar_t* szId){ SETSTRING( m_strID, szId); }
-	const wchar_t*  GetId(){ return m_strID.c_str(); }
-	void  SetCurFilePath(const wchar_t* sz){ SETSTRING( m_strCurFilePath, sz); }
-	const wchar_t*  GetCurFilePath(){ return m_strCurFilePath.c_str(); }
+	void  SetId(const char* szId){ SETSTRING( m_strID, szId); }
+	const char*  GetId(){ return m_strID.c_str(); }
+	void  SetCurFilePath(const char* sz){ SETSTRING( m_strCurFilePath, sz); }
+	const char*  GetCurFilePath(){ return m_strCurFilePath.c_str(); }
 
 	IUICursor*  GetCursor();
-	bool  ModifyCursor( const String& strCurFilePath );
+	bool  ModifyCursor( const std::string& strCurFilePath );
 	void  SetAttribute(IMapAttribute* p){}
 
 	ICursorResItem*  GetICursorResItem();
 public:
-	String     m_strID;
-	String     m_strCurFilePath;     // .cur文件路径
+	std::string     m_strID;
+	std::string     m_strCurFilePath;     // .cur鏂囦欢璺緞
 	UICursor*  m_pCursor;  
 	ICursorResItem*  m_pICursorResItem;
 };
@@ -41,18 +41,18 @@ public:
 	~CursorRes();
 
 	ICursorRes*  GetICursorRes();
-	void  GetCursor(const wchar_t* szCursorId, IUICursor** pp);
-	const wchar_t*  GetCursorId(IUICursor* p);
+	void  GetCursor(const char* szCursorId, IUICursor** pp);
+	const char*  GetCursorId(IUICursor* p);
 
 public:
 	CursorResItem* GetCursorItem( int nIndex );
 	CursorResItem* GetCursorItem(UICursor* p);
-	CursorResItem* GetCursorItem(const wchar_t* szId);
+	CursorResItem* GetCursorItem(const char* szId);
 	int   GetCursorCount();
-	CursorResItem*  LoadItem(IMapAttribute* pMapAttrib, const wchar_t* szFullPath);
-	bool  InsertCursor(const wchar_t* strID, const wchar_t* strCurFilePath, CursorResItem** ppItem);
-	bool  ModifyCursor(const wchar_t* strID, const wchar_t* strCursor );
-	bool  RemoveCursor(const wchar_t* strID );
+	CursorResItem*  LoadItem(IMapAttribute* pMapAttrib, const char* szFullPath);
+	bool  InsertCursor(const char* strID, const char* strCurFilePath, CursorResItem** ppItem);
+	bool  ModifyCursor(const char* strID, const char* strCursor );
+	bool  RemoveCursor(const char* strID );
 	void  Clear();
 
 private:

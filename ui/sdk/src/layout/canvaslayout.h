@@ -19,7 +19,7 @@ public:
   // virtual LAYOUTTYPE  GetLayoutType() override { return LAYOUT_TYPE_CANVAS; }
   virtual Size CalcDesiredSize() override;
 
-  static int ParseAlignAttr(const wchar_t *);
+  static int ParseAlignAttr(const char *);
 
 public:
   virtual int GetConfigLeft() override;

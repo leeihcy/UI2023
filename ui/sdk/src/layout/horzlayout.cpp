@@ -14,7 +14,7 @@ HorzLayout::HorzLayout() {
 }
 HorzLayout::~HorzLayout() {}
 void HorzLayout::Serialize(SerializeParam *pData) {
-  //     AttributeSerializer s(pData, TEXT("HorzLayout"));
+  //     AttributeSerializer s(pData, "HorzLayout");
   //
   //     s.AddInt(XML_LAYOUT_HORZ_GAP, this,
   //         memfun_cast<pfnLongSetter>(&HorzLayout::LoadGap),
@@ -284,7 +284,7 @@ void HorzLayoutParam::UpdateByRect() {
   }
 }
 void HorzLayoutParam::Serialize(SerializeParam *pData) {
-  AttributeSerializer s(pData, TEXT("HorzLayoutParam"));
+  AttributeSerializer s(pData, "HorzLayoutParam");
 
   s.AddString(XML_WIDTH, Slot(&HorzLayoutParam::LoadConfigWidth, this),
               Slot(&HorzLayoutParam::SaveConfigWidth, this))
@@ -310,20 +310,20 @@ void HorzLayoutParam::Serialize(SerializeParam *pData) {
 int HorzLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
 void HorzLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
 
-void HorzLayoutParam::LoadConfigWidth(const wchar_t *szText) {
+void HorzLayoutParam::LoadConfigWidth(const char *szText) {
   LoadConfigWH(szText, m_nConfigWidth, m_eWidthType);
 }
 
-const wchar_t *HorzLayoutParam::SaveConfigWidth() {
+const char *HorzLayoutParam::SaveConfigWidth() {
   return SaveConfigWH(m_nConfigWidth, m_eWidthType);
 }
 
 int HorzLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
 void HorzLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
-void HorzLayoutParam::LoadConfigHeight(const wchar_t *szText) {
+void HorzLayoutParam::LoadConfigHeight(const char *szText) {
   LoadConfigWH(szText, m_nConfigHeight, m_eHeightType);
 }
-const wchar_t *HorzLayoutParam::SaveConfigHeight() {
+const char *HorzLayoutParam::SaveConfigHeight() {
   return SaveConfigWH(m_nConfigHeight, m_eHeightType);
 }
 

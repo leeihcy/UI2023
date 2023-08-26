@@ -37,7 +37,7 @@ CDragFeedback::~CDragFeedback()
 // 由drop target调用，设置当前显示文本。
 // 每次鼠标拖拽移动通知外部都要重新设置
 // 在接下来触发的GiveFeedback中渲染该文本
-void  CDragFeedback::SetMeta(HBITMAP hIcon, LPCWSTR szText)
+void  CDragFeedback::SetDescription(HBITMAP hIcon, LPCWSTR szText)
 {
     if (szText)
         m_strDescription = szText;
@@ -171,7 +171,7 @@ void  CDragFeedback::UpdateTextWnd(
     HDC hDC = CreateCompatibleDC(nullptr);
     HFONT hOldFont = (HFONT)SelectObject(hDC, m_hFont);
     Size sizeText = {0};
-    GetTextExtentPoint32(hDC, szText, (int)wcslen(szText), &sizeText);
+    GetTextExtentPoint32(hDC, szText, (int)strlen(szText), &sizeText);
     SelectObject(hDC, hOldFont);
     DeleteDC(hDC);
 

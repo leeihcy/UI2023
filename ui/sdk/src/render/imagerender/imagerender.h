@@ -3,6 +3,7 @@
 #include "include/interface/iimagerender.h"
 #include "src/render/renderbase.h"
 #include "include/util/struct.h"
+#include "include/macro/xmldefine.h"
 //#include "UISDK\Animate\Inc\animate_base_inc.h"
 #include <map>
 
@@ -46,19 +47,19 @@ protected:
 	void  GetDesiredSize(Size* pSize);
 
 private:
-	void  LoadBitmap(const wchar_t* szBitmapId)
+	void  LoadBitmap(const char* szBitmapId)
 	{
 		_LoadBitmap(szBitmapId, m_pBitmap);
 	}
-	const wchar_t*  GetBitmapId()
+	const char*  GetBitmapId()
 	{
 		return _GetBitmapId(m_pBitmap);
 	}
-	void  LoadColor(const wchar_t* szColorId)
+	void  LoadColor(const char* szColorId)
 	{
 		_LoadColor(szColorId, m_pColorBk); 
 	}
-	const wchar_t*  GetColorId()
+	const char*  GetColorId()
 	{
 		return _GetColorId(m_pColorBk);
 	}
@@ -128,14 +129,14 @@ public:
 
     void  SetIImageListRenderBitmap(IImageListRenderBitmap* pBitmap);
     IRenderBitmap*  GetRenderBitmap();
-	void  LoadImageList(const wchar_t*);
-	const wchar_t*  GetImageListId();
+	void  LoadImageList(const char*);
+	const char*  GetImageListId();
 
     void  SetImageDrawType(int n) { m_nImageDrawType = n; }
     int   GetImageDrawType() { return m_nImageDrawType; }
     void  SetImageStretch9Region(C9Region* p);
-	void  SetState2Index(const wchar_t*);
-	const wchar_t*  GetState2Index();
+	void  SetState2Index(const char*);
+	const char*  GetState2Index();
 	
 	void  OnSerialize(SerializeParam* pData);
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);

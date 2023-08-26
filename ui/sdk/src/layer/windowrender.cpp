@@ -32,7 +32,7 @@ IWindowRender *WindowRender::GetIWindowRender() {
 }
 
 void WindowRender::OnSerialize(SerializeParam *pData) {
-  AttributeSerializer s(pData, TEXT("WindowRender"));
+  AttributeSerializer s(pData, "WindowRender");
 
   s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(int *)&m_grl_type)
       ->FillGraphicsRenderLibraryData()

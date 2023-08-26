@@ -41,13 +41,13 @@ int  I18nManager::ParseNewElement(UIElement* p)
 
 void  I18nManager::parse(UIElement* p)
 {
-	const wchar_t* szLanguage = m_pSkinRes->GetSkinMgr().GetCurrentLanguage();
+	const char* szLanguage = m_pSkinRes->GetSkinMgr().GetCurrentLanguage();
 
 	UIElementProxy xml = p->FirstChild();
 	while (xml)
 	{
-		std::wstring strId = xml->GetAttrib(XML_ID);
-		std::wstring strValue = xml->GetAttrib(szLanguage);
+		std::string strId = xml->GetAttrib(XML_ID);
+		std::string strValue = xml->GetAttrib(szLanguage);
 
 		m_i18nRes.Add(strId.c_str(), strValue.c_str());
 		xml = xml->NextElement();
