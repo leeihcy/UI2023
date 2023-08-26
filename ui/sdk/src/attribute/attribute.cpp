@@ -630,7 +630,9 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 
-    static_cast<IMessage *>(pObj)->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
+    SerializeMessage msg;
+    msg.param = &data;
+    static_cast<IMessage *>(pObj)->RouteMessage(&msg);
   } else {
     _AttrIter iter = m_list.begin();
     for (; iter != m_list.end(); ++iter) {

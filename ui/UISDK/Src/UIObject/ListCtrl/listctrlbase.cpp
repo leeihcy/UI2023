@@ -1,1043 +1,934 @@
-#include "stdafx.h"
 #include "listctrlbase.h"
-#include <algorithm>
-#include "include/interface/iwindow.h"
 #include "include/interface/ilistitembase.h"
-#include "src/UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.h"
 #include "include/interface/irenderlayer.h"
+#include "include/interface/iwindow.h"
 #include "src/UIObject\ListCtrl\ListItemBase\listitembase.h"
-#include "src/layout/canvaslayout.h"
-#include "src/UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.h"
-#include "src/UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.h"
-#include "src/UIObject\ListCtrl\MouseKeyboard\menumkmgr.h"
+#include "src/UIObject\ListCtrl\ListItemRootPanel\listitemrootpanel.h"
 #include "src/UIObject\ListCtrl\MouseKeyboard\listctrl_inner_drag.h"
-#include "src/application/uiapplication.h"
-#include "src/Util\Gesture\gesturehelper.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\menumkmgr.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\multisellistctrlmkmgr.h"
+#include "src/UIObject\ListCtrl\MouseKeyboard\popuplistctrlmkmgr.h"
 #include "src/Util\DPI\dpihelper.h"
+#include "src/Util\Gesture\gesturehelper.h"
+#include "src/application/uiapplication.h"
+#include "src/layout/canvaslayout.h"
 #include "src/resource/res_bundle.h"
-namespace ui
-{
+#include "stdafx.h"
+#include <algorithm>
+namespace ui {
 
 //////////////////////////////////////////////////////////////////////////
 
-ListItemShareData::ListItemShareData(IListItemShareData* p) : Message(p)
-{
-    m_pIListItemShareData = p;
-    m_pListCtrlBase = nullptr;
+ListItemShareData::ListItemShareData(IListItemShareData *p) : Message(p) {
+  m_pIListItemShareData = p;
+  m_pListCtrlBase = nullptr;
 }
-ListItemShareData::~ListItemShareData()
-{
-
+ListItemShareData::~ListItemShareData() {}
+void ListItemShareData::SetListCtrlBase(ListCtrlBase *p) {
+  m_pListCtrlBase = p;
 }
-void  ListItemShareData::SetListCtrlBase(ListCtrlBase* p)
-{
-    m_pListCtrlBase = p;
-}
-IListCtrlBase*  ListItemShareData::GetListCtrlBase()
-{
-    if (m_pListCtrlBase)
-        return m_pListCtrlBase->GetIListCtrlBase();
-    return nullptr;
+IListCtrlBase *ListItemShareData::GetListCtrlBase() {
+  if (m_pListCtrlBase)
+    return m_pListCtrlBase->GetIListCtrlBase();
+  return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
-    
-ListCtrlBase::ListCtrlBase(IListCtrlBase* p) : Control(p)
-{
-    m_pIListCtrlBase = p;
 
-	m_pFirstItem         = nullptr;
-	m_pLastItem          = nullptr;
-	m_pFirstDrawItem     = nullptr;
-	m_pFirstSelectedItem = nullptr;
-	m_pLastDrawItem      = nullptr;
-	m_pCompareProc       = nullptr;
-    m_pFocusRender       = nullptr;
+ListCtrlBase::ListCtrlBase(IListCtrlBase *p) : Control(p) {
+  m_pIListCtrlBase = p;
 
-	m_nItemCount         = 0;
-	m_nItemHeight        = 20;
-	m_nVertSpacing       = 0;
-	m_nHorzSpacing       = 0;
-    m_nChildNodeIndent   = 20;
-    SetRectEmpty(&m_rItemContentPadding);
-	memset(&m_listctrlStyle, 0, sizeof(m_listctrlStyle));
+  m_pFirstItem = nullptr;
+  m_pLastItem = nullptr;
+  m_pFirstDrawItem = nullptr;
+  m_pFirstSelectedItem = nullptr;
+  m_pLastDrawItem = nullptr;
+  m_pCompareProc = nullptr;
+  m_pFocusRender = nullptr;
 
-	m_bNeedCalcFirstLastDrawItem = false;
-    m_bNeedLayoutItems = false;
-    m_bNeedSortItems = false;
-    m_bNeedUpdateItemIndex = true;
+  m_nItemCount = 0;
+  m_nItemHeight = 20;
+  m_nVertSpacing = 0;
+  m_nHorzSpacing = 0;
+  m_nChildNodeIndent = 20;
+  SetRectEmpty(&m_rItemContentPadding);
+  memset(&m_listctrlStyle, 0, sizeof(m_listctrlStyle));
 
-    // m_bRedrawInvalidItems = false;
-    m_bPaintingCtrlRef = 0;
+  m_bNeedCalcFirstLastDrawItem = false;
+  m_bNeedLayoutItems = false;
+  m_bNeedSortItems = false;
+  m_bNeedUpdateItemIndex = true;
 
-    m_pMKMgr = nullptr;
-	m_pEditingItem = nullptr;
-	m_pInnerDragMgr = nullptr;
-	m_pReusable = nullptr;
+  // m_bRedrawInvalidItems = false;
+  m_bPaintingCtrlRef = 0;
 
-    SetClipClient(true);
+  m_pMKMgr = nullptr;
+  m_pEditingItem = nullptr;
+  m_pInnerDragMgr = nullptr;
+  m_pReusable = nullptr;
+
+  SetClipClient(true);
 }
 
-ListCtrlBase::~ListCtrlBase()
-{
-    SAFE_DELETE(m_pMKMgr);
-	SAFE_DELETE(m_pInnerDragMgr);
-    SAFE_RELEASE(m_pFocusRender);
+ListCtrlBase::~ListCtrlBase() {
+  SAFE_DELETE(m_pMKMgr);
+  SAFE_DELETE(m_pInnerDragMgr);
+  SAFE_RELEASE(m_pFocusRender);
 }
 
-HRESULT  ListCtrlBase::FinalConstruct(IResource* p)
-{
-	DO_PARENT_PROCESS(IListCtrlBase, IControl);
-    if (FAILED(GetCurMsg()->lRet))
-        return (HRESULT) GetCurMsg()->lRet;
+HRESULT ListCtrlBase::FinalConstruct(IResource *p) {
+  DO_PARENT_PROCESS(IListCtrlBase, IControl);
+  if (FAILED(GetCurMsg()->lRet))
+    return (HRESULT)GetCurMsg()->lRet;
 
-    m_MgrLayout.SetListCtrlBase(this);
-    m_MgrFloatItem.SetListCtrlBase(this);
+  m_MgrLayout.SetListCtrlBase(this);
+  m_MgrFloatItem.SetListCtrlBase(this);
 
-	if (nullptr == m_MgrLayout.GetLayout())
-    {
-		SetLayout(CreateListCtrlLayout(LISTCTRL_ITEM_LAYOUT_TYPE_1, m_pIListCtrlBase));
+  if (nullptr == m_MgrLayout.GetLayout()) {
+    SetLayout(
+        CreateListCtrlLayout(LISTCTRL_ITEM_LAYOUT_TYPE_1, m_pIListCtrlBase));
+  }
+  if (nullptr == m_pMKMgr) {
+    m_pMKMgr = new SingleSelListCtrlMKMgr;
+    m_pMKMgr->SetListCtrlBase(p->GetImpl()->GetUIApplication(), this);
+  }
+
+  m_mgrScrollBar.SetBindObject(static_cast<IObject *>(m_pIListCtrlBase));
+
+  OBJSTYLE s = {0};
+  s.vscroll = 1;
+  s.hscroll = 1;
+  this->ModifyObjectStyle(&s, 0);
+
+  return 0;
+}
+
+void ListCtrlBase::FinalRelease() {
+  LISTCTRLSTYLE s = {0};
+  s.destroying = 1;
+  ModifyListCtrlStyle(&s, 0);
+
+  m_mgrScrollBar.SetHScrollBar(
+      nullptr); // ÊªöÂä®Êù°Ë¢´ÈîÄÊØÅ‰∫ÜÔºà_RemoveAllItem‰∏≠‰ºöË∞ÉÁî®ÊªöÂä®ÂáΩÊï∞Ôºâ
+  m_mgrScrollBar.SetVScrollBar(nullptr);
+
+  this->_RemoveAllItem(); // Âõ†‰∏∫_RemoveAllItem‰ºöË∞ÉÁî®ËôöÂáΩÊï∞ÔºåÂõ†Ê≠§Ëøô‰∏™Êìç‰ΩúÊ≤°ÊúâÊîæÂú®ÊûêÊûÑÂáΩÊï∞‰∏≠ÊâßË°å
+
+  // ÈîÄÊØÅÂÖ±‰∫´Êï∞ÊçÆ
+  map<int, IListItemShareData *>::iterator iter =
+      m_mapItemTypeShareData.begin();
+  for (; iter != m_mapItemTypeShareData.end(); iter++) {
+    iter->second->Release();
+  }
+  m_mapItemTypeShareData.clear();
+  m_mapItem.clear();
+
+  EnableReusable(false);
+  DO_PARENT_PROCESS(IListCtrlBase, IControl);
+}
+
+IListCtrlBase *ListCtrlBase::GetIListCtrlBase() { return m_pIListCtrlBase; }
+
+void ListCtrlBase::OnSerialize(SerializeParam *pData) {
+  DO_PARENT_PROCESS(IListCtrlBase, IControl);
+
+  {
+    AttributeSerializer s(pData, TEXT("ListCtrl"));
+    s.AddInt(XML_LISTCTRL_ITEM_HEIGHT, m_nItemHeight)
+        ->SetDpiScaleType(LONGATTR_DPI_SCALE_ENABLE)
+        ->SetDefault(20);
+    s.AddRect(XML_LISTCTRL_ITEM_PADDING, m_rItemContentPadding);
+  }
+
+  m_mgrScrollBar.Serialize(pData);
+  m_mgrScrollBar.SetVScrollLine(m_nItemHeight);
+  m_mgrScrollBar.SetHScrollLine(3);
+
+  // text render
+  // 	if (nullptr == m_pIListCtrlBase->GetTextRender())
+  // 	{
+  //         ITextRenderBase* pTextRender = nullptr;
+  //         pMapAttrib->GetAttr_TextRenderBase(nullptr, XML_TEXTRENDER_TYPE,
+  //         true, pUIApp, m_pIListCtrlBase, &pTextRender); if (pTextRender)
+  //         {
+  //             m_pIListCtrlBase->SetTextRender(pTextRender);
+  //             SAFE_RELEASE(pTextRender);
+  //         }
+  //     }
+  //     if (nullptr == m_pIListCtrlBase->GetTextRender())
+  //     {
+  //         ITextRenderBase* pTextRender = nullptr;
+  //         pUIApp->CreateTextRenderBase(TEXTRENDER_TYPE_SIMPLE,
+  //         m_pIListCtrlBase, &pTextRender); if (pTextRender)
+  //         {
+  //             SerializeParam data = {0};
+  //             data.pUIApplication = GetIUIApplication();
+  //             data.pMapAttrib = pMapAttrib;
+  //             data.szPrefix = nullptr;
+  //             data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;
+  //             pTextRender->Serialize(&data);
+  //
+  //             m_pIListCtrlBase->SetTextRender(pTextRender);
+  //             pTextRender->Release();
+  //         }
+  // 	}
+
+  {
+    map<int, IListItemShareData *>::iterator iter =
+        m_mapItemTypeShareData.begin();
+    for (; iter != m_mapItemTypeShareData.end(); iter++) {
+      // 		    SerializeParam data = {0};
+      //             data.pUIApplication = GetIUIApplication();
+      // 		    data.pMapAttrib = pData->pMapAttrib;
+      // 		    data.nFlags = SERIALIZEFLAG_LOAD;
+      // 		    if (data.IsReload())
+      // 			    data.nFlags |= SERIALIZEFLAG_RELOAD;
+      SerializeMessage msg;
+      msg.param = pData;
+      static_cast<IMessage *>(iter->second)->RouteMessage(msg);
+
+      // UISendMessage(iter->second, UI_WM_SETATTRIBUTE, (WPARAM)pMapAttrib,
+      // (LPARAM)bReload);
     }
-    if (nullptr == m_pMKMgr)
-    {
-        m_pMKMgr = new SingleSelListCtrlMKMgr;
-        m_pMKMgr->SetListCtrlBase(p->GetImpl()->GetUIApplication(), this);
-    }
-
-    m_mgrScrollBar.SetBindObject(static_cast<IObject*>(m_pIListCtrlBase));
-
-	OBJSTYLE s = {0};
-	s.vscroll = 1;
-	s.hscroll = 1;
-	this->ModifyObjectStyle(&s, 0);
-
-	return 0;
+  }
 }
 
-void  ListCtrlBase::FinalRelease()
-{
-    LISTCTRLSTYLE s = {0};
-    s.destroying = 1;
-    ModifyListCtrlStyle(&s, 0);
-
-    m_mgrScrollBar.SetHScrollBar(nullptr); // πˆ∂ØÃı±ªœ˙ªŸ¡À£®_RemoveAllItem÷–ª·µ˜”√πˆ∂Ø∫Ø ˝£©
-    m_mgrScrollBar.SetVScrollBar(nullptr);  
-
-    this->_RemoveAllItem();   // “ÚŒ™_RemoveAllItemª·µ˜”√–È∫Ø ˝£¨“Ú¥À’‚∏ˆ≤Ÿ◊˜√ª”–∑≈‘⁄Œˆππ∫Ø ˝÷–÷¥––
-
-    // œ˙ªŸπ≤œÌ ˝æ›
-    map<int, IListItemShareData*>::iterator iter = m_mapItemTypeShareData.begin();
-    for (; iter != m_mapItemTypeShareData.end(); iter++)
-    {
-        iter->second->Release();
-    }
-    m_mapItemTypeShareData.clear();
-    m_mapItem.clear();  
-
-	EnableReusable(false);
-    DO_PARENT_PROCESS(IListCtrlBase, IControl);
+IScrollBarManager *ListCtrlBase::GetIScrollBarMgr() {
+  return m_mgrScrollBar.GetIScrollBarMgr();
 }
 
-IListCtrlBase*  ListCtrlBase::GetIListCtrlBase()
-{
-    return m_pIListCtrlBase; 
+void ListCtrlBase::SetLayout(IListCtrlLayout *pLayout) {
+  if (pLayout)
+    pLayout->SetIListCtrlBase(m_pIListCtrlBase);
+
+  m_MgrLayout.SetLayout(pLayout);
 }
 
-void  ListCtrlBase::OnSerialize(SerializeParam* pData)
-{
-	DO_PARENT_PROCESS(IListCtrlBase, IControl);
-
-	{
-		AttributeSerializer  s(pData, TEXT("ListCtrl"));
-		s.AddInt(XML_LISTCTRL_ITEM_HEIGHT, m_nItemHeight)
-			->SetDpiScaleType(LONGATTR_DPI_SCALE_ENABLE)
-            ->SetDefault(20);
-		s.AddRect(XML_LISTCTRL_ITEM_PADDING, m_rItemContentPadding);
-	}
-
-	m_mgrScrollBar.Serialize(pData);
-	m_mgrScrollBar.SetVScrollLine(m_nItemHeight);
-	m_mgrScrollBar.SetHScrollLine(3);
-
-	// text render
-// 	if (nullptr == m_pIListCtrlBase->GetTextRender())
-// 	{
-//         ITextRenderBase* pTextRender = nullptr;
-//         pMapAttrib->GetAttr_TextRenderBase(nullptr, XML_TEXTRENDER_TYPE, true, pUIApp, m_pIListCtrlBase, &pTextRender);
-//         if (pTextRender)
-//         {
-//             m_pIListCtrlBase->SetTextRender(pTextRender);
-//             SAFE_RELEASE(pTextRender);
-//         }
-//     }
-//     if (nullptr == m_pIListCtrlBase->GetTextRender())
-//     {
-//         ITextRenderBase* pTextRender = nullptr;
-//         pUIApp->CreateTextRenderBase(TEXTRENDER_TYPE_SIMPLE, m_pIListCtrlBase, &pTextRender);
-//         if (pTextRender)
-//         {
-//             SerializeParam data = {0};
-//             data.pUIApplication = GetIUIApplication();
-//             data.pMapAttrib = pMapAttrib;
-//             data.szPrefix = nullptr;
-//             data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;
-//             pTextRender->Serialize(&data);
-// 
-//             m_pIListCtrlBase->SetTextRender(pTextRender);
-//             pTextRender->Release();
-//         }
-// 	}
-
-    {
-        map<int, IListItemShareData*>::iterator iter = m_mapItemTypeShareData.begin();
-        for (; iter != m_mapItemTypeShareData.end(); iter++)
-        {
-// 		    SerializeParam data = {0};
-//             data.pUIApplication = GetIUIApplication();
-// 		    data.pMapAttrib = pData->pMapAttrib;
-// 		    data.nFlags = SERIALIZEFLAG_LOAD;
-// 		    if (data.IsReload())
-// 			    data.nFlags |= SERIALIZEFLAG_RELOAD;
-		    UISendMessage(iter->second, UI_MSG_SERIALIZE, (WPARAM)pData/*data*/);
-            //UISendMessage(iter->second, UI_WM_SETATTRIBUTE, (WPARAM)pMapAttrib, (LPARAM)bReload);
-        }
-    }
+// Â∞ÜÂ∏ÉÂ±ÄÁ±ªÂûãËÆæÁΩÆ‰∏∫ListCtrlItemLayout1
+void ListCtrlBase::SetLayoutFixedHeight() {
+  this->SetLayout(new ListCtrlItemSimpleLayout());
+}
+// ÂèØÂèòÈ´òÂ∫¶
+void ListCtrlBase::SetLayoutVariableHeight() {
+  this->SetLayout(new ListCtrlItemVariableHeightLayout());
 }
 
+IListCtrlItemFixHeightFlowLayout *ListCtrlBase::SetLayoutFixedHeightFlow() {
+  IListCtrlItemFixHeightFlowLayout *p = new ListCtrlItemFixHeightFlowLayout();
 
-IScrollBarManager*  ListCtrlBase::GetIScrollBarMgr()
-{
-    return m_mgrScrollBar.GetIScrollBarMgr();
+  this->SetLayout(p);
+  return p;
+}
+IListCtrlLayout *ListCtrlBase::GetLayout() { return m_MgrLayout.GetLayout(); }
+
+void ListCtrlBase::RemoveItem(int nIndex) {
+  ListItemBase *pItem = this->GetItemByPos(nIndex, true);
+  if (nullptr == pItem)
+    return;
+
+  this->RemoveItem(pItem);
 }
 
-void ListCtrlBase::SetLayout(IListCtrlLayout* pLayout)
-{
-    if (pLayout)
-        pLayout->SetIListCtrlBase(m_pIListCtrlBase);
-    
-    m_MgrLayout.SetLayout(pLayout);
-}
+void ListCtrlBase::DelayRemoveItem(ListItemBase *pItem) {
+  IApplication *pUIApplication = m_pIListCtrlBase->GetUIApplication();
+  if (nullptr == pUIApplication)
+    return;
 
-// Ω´≤ºæ÷¿‡–Õ…Ë÷√Œ™ListCtrlItemLayout1
-void  ListCtrlBase::SetLayoutFixedHeight()
-{
-    this->SetLayout(new ListCtrlItemSimpleLayout());
-}
-// ø…±‰∏ﬂ∂»
-void  ListCtrlBase::SetLayoutVariableHeight()
-{
-    this->SetLayout(new ListCtrlItemVariableHeightLayout());
-}
-
-IListCtrlItemFixHeightFlowLayout*  ListCtrlBase::SetLayoutFixedHeightFlow()
-{
-	IListCtrlItemFixHeightFlowLayout* p = 
-		new ListCtrlItemFixHeightFlowLayout();
-
-	this->SetLayout(p);
-	return p;
-}
-IListCtrlLayout*  ListCtrlBase::GetLayout()
-{
-    return m_MgrLayout.GetLayout();
-}
-
-void ListCtrlBase::RemoveItem(int nIndex)
-{
-	ListItemBase* pItem = this->GetItemByPos(nIndex, true);
-	if (nullptr == pItem)
-		return ;
-
-	this->RemoveItem(pItem);
-}
-
-void  ListCtrlBase::DelayRemoveItem(ListItemBase* pItem)
-{
-    IApplication* pUIApplication = m_pIListCtrlBase->GetUIApplication();
-    if (nullptr == pUIApplication)
-        return;
-
-	{
-		LISTCTRLSTYLE s = {0};
-		s.destroying = 1;
-		if (TestListCtrlStyle(&s))
-			return;
-	}
-	{
-		LISTITEMSTYLE s = {0};
-		s.bDelayRemoving = 1;
-		if (pItem->TestStyle(s))
-			return;
-
-		// º”…œ±Í÷æ£¨∑¿÷πDelayRemoveItem÷ÿ»Î£¨∑¿÷π‘Ÿµ˜”√RemoveItem
-		pItem->ModifyStyle(&s, nullptr);
-	}
-	
-	// ¥” ˜÷–“∆≥˝£¨∑¿÷π‘Ÿµ˜”√RemoveAll/RemoveAllChildµ»
-	_RemoveItemFromTree(pItem);
-
-    UIMSG  msg;
-    msg.message = UI_MSG_NOTIFY;
-    msg.nCode = UI_LCN_INNER_DELAY_REMOVE_ITEM;
-    msg.wParam = (WPARAM)pItem;
-    msg.lParam = (LPARAM)0;
-    msg.pMsgFrom = m_pIListCtrlBase;
-    msg.pMsgTo = m_pIListCtrlBase;
-    UIPostMessage(pUIApplication, &msg);
-}
-
-long  ListCtrlBase::OnDelayRemoveItem(WPARAM w, LPARAM l)
-{
-	ListItemBase* pListItem = (ListItemBase*)w;
-
-	// “∆≥˝DelayRemoving—˘ Ω£¨RemoveItem÷–ª·≈–∂œ»Áπ˚”–’‚∏ˆ
-	// —˘ ΩΩ´≤ª¥¶¿Ì°£
-	LISTITEMSTYLE s = {0};
-	s.bDelayRemoving = 1;
-	pListItem->ModifyStyle(0, &s);
-
-    RemoveItem(pListItem);
-    return 0;
-}
-
-
-// ‘⁄…æ≥˝“ª∏ˆITEM ±£¨≥˝¡À“™Õ®÷™◊‘º∫±ªREMOVE£¨ªπ“™Õ®÷™Õ‚√Ê◊‘º∫µƒ
-// ◊”Ω·µ„“≤±ªREMOVE¡À£¨∑Ò‘ÚÕ‚≤øµ√µΩµƒÕ®÷™≤ª»´£¨ª·µº÷¬“∞÷∏’Î±¿¿£°£
-void  ListCtrlBase::_SendItemRemoveNotify(ListItemBase* pItem)
-{
-	if (!pItem)
-		return;
-
-	ListItemBase* pChildItem = pItem->GetChildItem();
-	while (pChildItem)
-	{
-		_SendItemRemoveNotify(pChildItem);
-		pChildItem = pChildItem->GetNextItem();
-	}
-
-	LONGLONG lId = pItem->GetId();
-	UIMSG  msg;
-	msg.pMsgTo = m_pIListCtrlBase;
-	msg.message = UI_MSG_NOTIFY;
-	msg.nCode  = UI_LCN_ITEMREMOVE;
-	msg.wParam = (WPARAM)&lId;
-	msg.lParam = (LPARAM)pItem->GetIListItemBase();
-	UISendMessage(&msg);
-}
-
-void ListCtrlBase::RemoveItem(ListItemBase* pItem)
-{
-	if (nullptr == pItem)
-		return;
-
-	// ’˝‘⁄—” ±…æ≥˝÷–
-	LISTITEMSTYLE s = {0};
-	s.bDelayRemoving = 1;
-	if (pItem->TestStyle(s))
-		return;
-
-	ListItemBase* pNextItem = pItem->GetNextItem();
-
-	bool bRet = _RemoveItem(pItem, true);
-	if (false == bRet)
-		return;
-
-	this->UpdateItemIndex(pNextItem);
-	
-	SetNeedLayoutItems();
-    Invalidate();
-}
-
-void  ListCtrlBase::RemoveAllChildItems(ListItemBase* pParent)
-{
-    if (nullptr == pParent)
-        return;
-
-    bool bRet = _RemoveAllChildItems(pParent);
-    if (false == bRet)
-        return;
-
-	SetNeedLayoutItems();
-    Invalidate();
-}
-
-bool  ListCtrlBase::_RemoveAllChildItems(ListItemBase* pParent)
-{
-    if (nullptr == pParent)
-        return false;
-
-    ListItemBase*  pItem = pParent->GetChildItem();
-    if (nullptr == pItem)
-        return false;
-
-    ListItemBase*  pFocusItem = GetFocusItem();
-    if (pParent->IsMyChildItem(pFocusItem, true))
-    {
-        SetFocusItem(pParent);
-    }
-
-    bool bSelChanged = false;
-    while (pItem)
-    {
-        m_nItemCount--;
-
-        if (m_pMKMgr)
-            m_pMKMgr->OnRemoveItem(pItem, &bSelChanged);
-        m_MgrFloatItem.OnRemoveItem(pItem);
-
-		_SendItemRemoveNotify(pItem);
-
-        ListItemBase* pNext = pItem->GetNextItem();
-        pItem->GetIListItemBase()->Release();;
-        pItem = pNext;
-    }
-
-    pParent->SetChildItem(nullptr);
-    pParent->SetLastChildItem(nullptr);
-    this->SetCalcFirstLastDrawItemFlag();
-
-    // µ»À˘”–◊¥Ã¨ ˝æ›∏¸–¬∫Û£¨‘ŸÕ®÷™°£“™≤ª»ªÕ‚≤ø‘⁄’‚∏ˆÕ®÷™÷–ø…ƒ‹¥•∑¢–¬µƒÀ¢–¬≤Ÿ◊˜
-    if (bSelChanged)
-        FireSelectItemChanged(nullptr);
-
-    return true;
-}
-
-
-//
-// itemŒˆππ¡À°£
-// ”√”⁄Ω‚Œˆ∂‡º∂∏¥‘” ˜øÿº˛£¨‘⁄…æ≥˝»Œ“‚“ªº∂∏∏Ω·µ„ ±£¨–Ë“™∞—À˘”–◊”Ω·µ„∂º◊ˆ“ª¥Œ«Â¿Ìπ§◊˜°£
-//
-void  ListCtrlBase::ItemDestructed(ListItemBase* pItem)
-{
-    if (!pItem)
-        return;
-
+  {
     LISTCTRLSTYLE s = {0};
     s.destroying = 1;
     if (TestListCtrlStyle(&s))
-        return;
+      return;
+  }
+  {
+    LISTITEMSTYLE s = {0};
+    s.bDelayRemoving = 1;
+    if (pItem->TestStyle(s))
+      return;
 
-    UINT_PTR lId = pItem->GetId();
-    if (lId != 0)
-    {
-        _mapItemIter iter = m_mapItem.find(lId);
-        if (iter != m_mapItem.end())
-            m_mapItem.erase(iter);
-    }
+    // Âä†‰∏äÊ†áÂøóÔºåÈò≤Ê≠¢DelayRemoveItemÈáçÂÖ•ÔºåÈò≤Ê≠¢ÂÜçË∞ÉÁî®RemoveItem
+    pItem->ModifyStyle(&s, nullptr);
+  }
+
+  // ‰ªéÊ†ë‰∏≠ÁßªÈô§ÔºåÈò≤Ê≠¢ÂÜçË∞ÉÁî®RemoveAll/RemoveAllChildÁ≠â
+  _RemoveItemFromTree(pItem);
+
+  UIMSG msg;
+  msg.message = UI_MSG_NOTIFY;
+  msg.nCode = UI_LCN_INNER_DELAY_REMOVE_ITEM;
+  msg.wParam = (WPARAM)pItem;
+  msg.lParam = (LPARAM)0;
+  msg.pMsgFrom = m_pIListCtrlBase;
+  msg.pMsgTo = m_pIListCtrlBase;
+  UIPostMessage(pUIApplication, &msg);
 }
 
+long ListCtrlBase::OnDelayRemoveItem(WPARAM w, LPARAM l) {
+  ListItemBase *pListItem = (ListItemBase *)w;
 
-// Œ¥À¢–¬£¨Œ¥∏¸–¬Item Rect, scroll bar
-// bool bReleaseItem «∑Òœ˙ªŸitem°£
-bool ListCtrlBase::_RemoveItem(ListItemBase* pItem, bool bReleaseItem)
-{
-	if (nullptr == pItem)
-		return false;
-	
-    {
-        UIMSG  msg;
-        msg.pMsgTo = m_pIListCtrlBase;
-        msg.message = UI_MSG_NOTIFY;
-        msg.wParam = (WPARAM)pItem->GetIListItemBase();
-        msg.nCode = UI_LCN_PRE_ITEMREMOVE;
-        UISendMessage(&msg);
-    }
+  // ÁßªÈô§DelayRemovingÊ†∑ÂºèÔºåRemoveItem‰∏≠‰ºöÂà§Êñ≠Â¶ÇÊûúÊúâËøô‰∏™
+  // Ê†∑ÂºèÂ∞Ü‰∏çÂ§ÑÁêÜ„ÄÇ
+  LISTITEMSTYLE s = {0};
+  s.bDelayRemoving = 1;
+  pListItem->ModifyStyle(0, &s);
 
-    bool  bSelChanged = false;
+  RemoveItem(pListItem);
+  return 0;
+}
+
+// Âú®Âà†Èô§‰∏Ä‰∏™ITEMÊó∂ÔºåÈô§‰∫ÜË¶ÅÈÄöÁü•Ëá™Â∑±Ë¢´REMOVEÔºåËøòË¶ÅÈÄöÁü•Â§ñÈù¢Ëá™Â∑±ÁöÑ
+// Â≠êÁªìÁÇπ‰πüË¢´REMOVE‰∫ÜÔºåÂê¶ÂàôÂ§ñÈÉ®ÂæóÂà∞ÁöÑÈÄöÁü•‰∏çÂÖ®Ôºå‰ºöÂØºËá¥ÈáéÊåáÈíàÂ¥©Ê∫É„ÄÇ
+void ListCtrlBase::_SendItemRemoveNotify(ListItemBase *pItem) {
+  if (!pItem)
+    return;
+
+  ListItemBase *pChildItem = pItem->GetChildItem();
+  while (pChildItem) {
+    _SendItemRemoveNotify(pChildItem);
+    pChildItem = pChildItem->GetNextItem();
+  }
+
+  LONGLONG lId = pItem->GetId();
+  UIMSG msg;
+  msg.pMsgTo = m_pIListCtrlBase;
+  msg.message = UI_MSG_NOTIFY;
+  msg.nCode = UI_LCN_ITEMREMOVE;
+  msg.wParam = (WPARAM)&lId;
+  msg.lParam = (LPARAM)pItem->GetIListItemBase();
+  UISendMessage(&msg);
+}
+
+void ListCtrlBase::RemoveItem(ListItemBase *pItem) {
+  if (nullptr == pItem)
+    return;
+
+  // Ê≠£Âú®Âª∂Êó∂Âà†Èô§‰∏≠
+  LISTITEMSTYLE s = {0};
+  s.bDelayRemoving = 1;
+  if (pItem->TestStyle(s))
+    return;
+
+  ListItemBase *pNextItem = pItem->GetNextItem();
+
+  bool bRet = _RemoveItem(pItem, true);
+  if (false == bRet)
+    return;
+
+  this->UpdateItemIndex(pNextItem);
+
+  SetNeedLayoutItems();
+  Invalidate();
+}
+
+void ListCtrlBase::RemoveAllChildItems(ListItemBase *pParent) {
+  if (nullptr == pParent)
+    return;
+
+  bool bRet = _RemoveAllChildItems(pParent);
+  if (false == bRet)
+    return;
+
+  SetNeedLayoutItems();
+  Invalidate();
+}
+
+bool ListCtrlBase::_RemoveAllChildItems(ListItemBase *pParent) {
+  if (nullptr == pParent)
+    return false;
+
+  ListItemBase *pItem = pParent->GetChildItem();
+  if (nullptr == pItem)
+    return false;
+
+  ListItemBase *pFocusItem = GetFocusItem();
+  if (pParent->IsMyChildItem(pFocusItem, true)) {
+    SetFocusItem(pParent);
+  }
+
+  bool bSelChanged = false;
+  while (pItem) {
+    m_nItemCount--;
+
     if (m_pMKMgr)
-        m_pMKMgr->OnRemoveItem(pItem, &bSelChanged);
+      m_pMKMgr->OnRemoveItem(pItem, &bSelChanged);
     m_MgrFloatItem.OnRemoveItem(pItem);
 
-    _RemoveItemFromTree(pItem);
-	_SendItemRemoveNotify(pItem);
-
-	if (bReleaseItem)
-	{
-		pItem->GetIListItemBase()->Release();;
-	}
-
-    // µ»À˘”–◊¥Ã¨ ˝æ›∏¸–¬∫Û£¨‘ŸÕ®÷™°£“™≤ª»ªÕ‚≤ø‘⁄’‚∏ˆÕ®÷™÷–ø…ƒ‹¥•∑¢–¬µƒÀ¢–¬≤Ÿ◊˜
-    if (bSelChanged)
-        FireSelectItemChanged(nullptr);
-
-	return true;
-}
-void ListCtrlBase::RemoveAllItem()
-{
-    bool bHaveSelection = m_pFirstSelectedItem?true:false;
-	if (false == _RemoveAllItem())
-		return;
-
-    if (bHaveSelection)
-        FireSelectItemChanged(nullptr);
-
-    m_bNeedLayoutItems = false;
-    m_pIListCtrlBase->Invalidate();
-}
-
-bool ListCtrlBase::_RemoveAllItem()
-{
-	if (nullptr == m_pFirstItem)
-		return false;
-
-    {
-        UIMSG  msg;
-        msg.pMsgTo = m_pIListCtrlBase;
-        msg.message = UI_MSG_NOTIFY;
-        msg.nCode = UI_LCN_PRE_ALLITEMREMOVE;
-        UISendMessage(&msg);
-    }
-
-	ListItemBase* p = m_pFirstItem;
-	while (p)
-	{
-		ListItemBase* pNext = p->GetNextItem();  // Save
-		p->GetIListItemBase()->Release();
-		p = pNext;
-	}
-
-	m_pFirstItem = nullptr;
-	m_pLastItem = nullptr;
-	m_pFirstDrawItem = nullptr;
-	m_pFirstSelectedItem = nullptr;
-	if (m_pEditingItem)
-	{
-		m_pEditingItem = nullptr;
-	}
-	m_nItemCount = 0;
-    m_mapItem.clear();
-    if (m_pMKMgr)
-        m_pMKMgr->OnRemoveAll();
-    m_MgrFloatItem.OnRemoveAllItem();
-
-	m_mgrScrollBar.SetScrollRange(0,0);
-
-    Invalidate();
-
-    {
-        UIMSG  msg;
-        msg.pMsgTo = m_pIListCtrlBase;
-        msg.message = UI_MSG_NOTIFY;
-        msg.nCode = UI_LCN_ALLITEMREMOVE;
-        UISendMessage(&msg);
-    }
-	return true;
-}
-void ListCtrlBase::SetSortCompareProc(ListItemCompareProc p)
-{
-	m_pCompareProc = p;
-}
-
-void  ListCtrlBase::Sort()
-{
-    if (nullptr == m_pCompareProc)
-        return;
-
-    m_bNeedSortItems = false;
-    SortChildren(nullptr);
-}
-
-void  ListCtrlBase::SortChildren(ListItemBase* pParent)
-{
-    if (nullptr == m_pCompareProc)
-        return;
-
-    if (!m_listctrlStyle.sort_ascend && !m_listctrlStyle.sort_descend)
-        return;
-
-    if (!pParent)
-    {
-        sort_by_first_item(m_pFirstItem, GetRootItemCount(), 
-			m_listctrlStyle.sort_child);
-    }
-    else
-    {
-        sort_by_first_item(pParent->GetChildItem(), pParent->GetChildCount(),
-			m_listctrlStyle.sort_child);
-    }
-
-    this->SetCalcFirstLastDrawItemFlag();
-	SetNeedLayoutItems();
-}
-
-// nCountŒ™pFirstItemµƒ¡⁄æ” ˝¡ø 
-void  ListCtrlBase::sort_by_first_item(ListItemBase* pFirstItem, int nNeighbourCount, bool bSortChildren)
-{
-    if (!pFirstItem)
-        return;
-
-    if (nNeighbourCount <= 1)
-    {
-        // ÷±Ω”≈≈◊”Ω⁄µ„
-        if (pFirstItem->GetChildItem() && bSortChildren)
-        {
-            sort_by_first_item(pFirstItem->GetChildItem(), pFirstItem->GetChildCount(), bSortChildren);
-        }
-        return;
-    }
-
-    IListItemBase**  pArray = new IListItemBase*[nNeighbourCount];
-    pArray[0] = pFirstItem->GetIListItemBase();
-
-    for (int i = 1; i < nNeighbourCount; i++)
-    {
-        pArray[i] = pArray[i-1]->GetNextItem();
-    }
-
-    std::sort(pArray, (pArray+nNeighbourCount), m_pCompareProc);
-
-    // ∏˘æ›…˝Ωµ–Ú÷ÿ–¬’˚¿Ì¡–±Ì
-    if (m_listctrlStyle.sort_ascend)
-    {
-        ListItemBase*  pFirstItem = pArray[0]->GetImpl();
-        ListItemBase*  pLastItem = pArray[nNeighbourCount-1]->GetImpl();
-
-        ListItemBase*  pParentItem = pFirstItem->GetParentItem();
-        if (pParentItem)
-        {
-            pParentItem->SetChildItem(pFirstItem);
-            pParentItem->SetLastChildItem(pLastItem);            
-        }
-        else
-        {
-            m_pFirstItem = pFirstItem;
-            m_pLastItem = pLastItem;
-        }
-
-        pFirstItem->SetPrevItem(nullptr);
-        pFirstItem->SetNextItem(pArray[1]->GetImpl());
-
-        pLastItem->SetNextItem(nullptr);
-        pLastItem->SetPrevItem(pArray[nNeighbourCount-2]->GetImpl());
-
-        for (int i = 1; i < nNeighbourCount-1; i++)
-        {
-            pArray[i]->SetNextItem(pArray[i+1]);
-            pArray[i]->SetPrevItem(pArray[i-1]);
-        }
-    }
-    else
-    {
-        ListItemBase*  pLastItem = pArray[0]->GetImpl();
-        ListItemBase*  pFirstItem = pArray[nNeighbourCount-1]->GetImpl();
-
-        ListItemBase*  pParentItem = pFirstItem->GetParentItem();
-        if (pParentItem)
-        {
-            pParentItem->SetChildItem(pFirstItem);
-            pParentItem->SetLastChildItem(pLastItem);            
-        }
-        else
-        {
-            m_pFirstItem = pFirstItem;
-            m_pLastItem = pLastItem;
-        }
-
-        pFirstItem->SetPrevItem(nullptr);
-        pFirstItem->SetNextItem(pArray[nNeighbourCount-2]->GetImpl());
-
-        pLastItem->SetNextItem(nullptr);
-        pLastItem->SetPrevItem(pArray[1]->GetImpl());
-
-        for (int i = 1; i < nNeighbourCount-1; i++)
-        {
-            pArray[i]->SetPrevItem(pArray[i+1]);
-            pArray[i]->SetNextItem(pArray[i-1]);
-        }
-    }
-
-    SAFE_ARRAY_DELETE(pArray);
-
-    if (bSortChildren)
-    {
-        ListItemBase*  pItem = pFirstItem;
-        while (pItem)
-        {
-            if (pItem->GetChildItem())
-                sort_by_first_item(pItem->GetChildItem(), pItem->GetChildCount(), bSortChildren);
-
-            pItem = pItem->GetNextItem();
-        }
-    }
-}
-
-// Ωªªª¡Ω∏ˆitemµƒŒª÷√
-void  ListCtrlBase::SwapItemPos(ListItemBase*  p1, ListItemBase* p2)
-{
-    if (nullptr == p1 || nullptr == p2 || p1 == p2)
-        return;
-
-    if (p1->GetNextItem() == p2)
-    {
-        ListItemBase* p1Prev = p1->GetPrevItem();
-        ListItemBase* p2Next = p2->GetNextItem();
-
-        if (p1Prev)
-            p1Prev->SetNextItem(p2);
-        p2->SetPrevItem(p1Prev);
-
-        if (p2Next)
-            p2Next->SetPrevItem(p1);
-        p1->SetNextItem(p2Next);
-
-        p2->SetNextItem(p1);
-        p1->SetPrevItem(p2);
-    }
-    else if (p1->GetPrevItem() == p2)
-    {
-        ListItemBase* p1Next = p1->GetNextItem();
-        ListItemBase* p2Prev = p2->GetPrevItem();
-
-        if (p2Prev)
-            p2Prev->SetNextItem(p1);
-        p1->SetPrevItem(p2Prev);
-
-        if (p1Next)
-            p1Next->SetPrevItem(p2);
-        p2->SetNextItem(p1Next);
-
-        p1->SetNextItem(p2);
-        p2->SetPrevItem(p1);
-    }
-    else
-    {
-        ListItemBase* p1Prev = p1->GetPrevItem();
-        ListItemBase* p1Next = p1->GetNextItem();
-
-        ListItemBase* p2Prev = p2->GetPrevItem();
-        ListItemBase* p2Next = p2->GetNextItem();
-
-        if (p2Next)
-            p2Next->SetPrevItem(p1);
-        p1->SetNextItem(p2Next);
-
-        if (p2Prev)
-            p2Prev->SetNextItem(p1);
-        p1->SetPrevItem(p2Prev);
-
-        if (p1Next)
-            p1Next->SetPrevItem(p2);
-        p2->SetNextItem(p1Next);
-
-        if (p1Prev)
-            p1Prev->SetNextItem(p2);
-        p2->SetPrevItem(p1Prev);       
-    }
-
-    // ÷ÿ÷√∆ ºœÓ
-    if (nullptr == p1->GetPrevItem())
-        m_pFirstItem = p1;
-    if (nullptr == p2->GetPrevItem())
-        m_pFirstItem = p2;
-
-    if (nullptr == p1->GetNextItem())
-        m_pLastItem = p1;
-    if (nullptr == p2->GetNextItem())
-        m_pLastItem = p2;
-
-    // ∏¸ªªÀ˜“˝––
-    int nIndex1 = p1->GetLineIndex();
-    int nIndex2 = p2->GetLineIndex();
-    p1->SetLineIndex(nIndex2);
-    p2->SetLineIndex(nIndex1);
-
-    // ∏¸–¬ø…º˚
-    this->SetCalcFirstLastDrawItemFlag();
-	SetNeedLayoutItems();
-    Invalidate();
-}
-
-int  ListCtrlBase::GetChildNodeIndent()
-{
-    return m_nChildNodeIndent;
-}
-void  ListCtrlBase::SetChildNodeIndent(int n)
-{
-    m_nChildNodeIndent = n;
-}
-
-void ListCtrlBase::SetItemHeight(int nHeight, bool bUpdate)
-{
-	if (m_nItemHeight == nHeight)
-		return;
-
-	m_nItemHeight = nHeight;
-//	this->MeasureAllItem();
-
-    if (bUpdate)
-    	this->LayoutItem(m_pFirstItem, true);
-}
-
-ListItemBase*  ListCtrlBase::GetItemByWindowPoint(POINT pt)
-{
-    if (!m_pMKMgr)
-        return nullptr;
-
-    return m_pMKMgr->GetItemByPos(pt);
-}
-ListItemBase*  ListCtrlBase::GetItemUnderCursor()
-{
-    POINT pt = {0};
-    GetCursorPos(&pt);
-    MapWindowPoints(nullptr, m_pIListCtrlBase->GetHWND(), &pt, 1);
-    return GetItemByWindowPoint(pt);
-}
-ListItemBase* ListCtrlBase::GetItemByPos(unsigned int nIndex, bool bVisibleOnly)
-{
-	if (nIndex < 0)
-		return nullptr;
-
-    if (bVisibleOnly)
-    {
-        ListItemBase* pItem = FindVisibleItemFrom(nullptr);
-
-        unsigned int i = 0;
-        while (pItem)
-        {
-            if (i == nIndex)
-                return pItem;
-
-            i++;
-            pItem = pItem->GetNextVisibleItem();
-        }
-    }
-    else
-    {
-        if (nIndex >= m_nItemCount)
-            return nullptr;
-
-	    ListItemBase* pItem = m_pFirstItem;
-
-	    unsigned int i = 0;
-	    while (pItem)
-	    {
-		    if (i == nIndex)
-			    return pItem;
-
-		    i++;
-		    pItem = pItem->GetNextItem();
-	    }
-    }
-    return nullptr;
-}
-
-int  ListCtrlBase::GetItemPos(ListItemBase* pFindItem, bool bVisibleOnly)
-{
-    if (!pFindItem)
-        return -1;
-
-    if (pFindItem->GetListCtrlBase() != this)
-        return -1;
-
-    if (bVisibleOnly)
-    {
-        ListItemBase* pItem = FindVisibleItemFrom(nullptr);
-
-        unsigned int i = 0;
-        while (pItem)
-        {
-            if (pFindItem == pItem)
-                return i;
-
-            i++;
-            pItem = pItem->GetNextVisibleItem();
-        }
-    }
-    else
-    {
-        ListItemBase* pItem = m_pFirstItem;
-
-        unsigned int i = 0;
-        while (pItem)
-        {
-            if (pFindItem == pItem)
-                return i;
-
-            i++;
-            pItem = pItem->GetNextItem();
-        }
-    }
-    return 0;
-}
-
-ListItemBase*  ListCtrlBase::GetItemById(long lId)
-{
-    if (0 == lId)
-    {
-        ListItemBase* pItem = m_pFirstItem;
-
-        while (pItem)
-        {
-            if (pItem->GetId() == lId)
-                return pItem;
-
-            pItem = pItem->GetNextTreeItem();
-        }
-        return nullptr;
-    }
-    else
-    {
-        _mapItemIter iter = m_mapItem.find(lId);
-        if (iter == m_mapItem.end())
-            return nullptr;
-
-        return iter->second->GetImpl();
-    }
-}
-void  ListCtrlBase::ItemIdChanged(
-		IListItemBase* pItem, UINT_PTR lOldId, UINT_PTR lNewId)
-{
-    if (!pItem)
-        return;
-
-    if (lOldId == lNewId)
-        return;
-
-    if (0 != lOldId)
-    {
-        _mapItemIter iter = m_mapItem.find(lOldId);
-        if (iter != m_mapItem.end())
-            m_mapItem.erase(iter);
-    }
-    if (0 != lNewId)
-    {
-        m_mapItem[lNewId] = pItem;
-    }
-}
-ListItemBase* ListCtrlBase::FindItemByText(const wchar_t*  szText, ListItemBase* pStart)
-{
-    if (nullptr == szText)
-        return nullptr;
-
-    ListItemBase* p = pStart;
-    if (nullptr == pStart)
-        p = m_pFirstItem;
-
-    if (nullptr == p)
-        return nullptr;
-
-    while (p)
-    {
-        if (0 == _tcscmp(p->GetText(), szText))
-        {
-            return p;
-        }
-        p = p->GetNextTreeItem();
-    }
-
-    return nullptr;
-}
-
-ListItemBase*  ListCtrlBase::EnumItemByProc(ListItemEnumProc pProc, ListItemBase* pEnumFrom, WPARAM w, LPARAM l)
-{
-    if (!pProc)
-        return nullptr;
-
-    ListItemBase* p = pEnumFrom;
-    if (nullptr == pEnumFrom)
-        p = m_pFirstItem;
-
-    if (nullptr == p)
-        return nullptr;
-
-    while (p)
-    {
-        if (!pProc(p->GetIListItemBase(), w, l))
-        {
-            return p;
-        }
-        p = p->GetNextTreeItem();
-    }
-
-    return nullptr;
-}
-
-// Ωˆ‘⁄pParentœ¬≤È’“£¨»Áπ˚pParentŒ™nullptr,‘ÚΩˆ‘⁄◊Ó∂•≤„≤È’“
-ListItemBase*  ListCtrlBase::FindChildItemByText(const wchar_t*  szText, ListItemBase* pParent, ListItemBase* pStart)
-{
-    if (nullptr == szText)
-        return nullptr;
-
-    if (!pStart)
-    {
-        if (pParent)
-            pStart = pParent->GetChildItem();
-        else
-            pStart = m_pFirstItem;
-    }
-
-    if (pStart)
-    {
-        ListItemBase* p = pStart;
-        while (p)
-        {
-            if (0 == _tcscmp(p->GetText(), szText))
-            {
-                return p;
-            }
-            p = p->GetNextItem();
-        }
-    }
-    return nullptr;
+    _SendItemRemoveNotify(pItem);
+
+    ListItemBase *pNext = pItem->GetNextItem();
+    pItem->GetIListItemBase()->Release();
+    ;
+    pItem = pNext;
+  }
+
+  pParent->SetChildItem(nullptr);
+  pParent->SetLastChildItem(nullptr);
+  this->SetCalcFirstLastDrawItemFlag();
+
+  // Á≠âÊâÄÊúâÁä∂ÊÄÅÊï∞ÊçÆÊõ¥Êñ∞ÂêéÔºåÂÜçÈÄöÁü•„ÄÇË¶Å‰∏çÁÑ∂Â§ñÈÉ®Âú®Ëøô‰∏™ÈÄöÁü•‰∏≠ÂèØËÉΩËß¶ÂèëÊñ∞ÁöÑÂà∑Êñ∞Êìç‰Ωú
+  if (bSelChanged)
+    FireSelectItemChanged(nullptr);
+
+  return true;
 }
 
 //
-//	‘⁄ƒ©Œ≤ÃÌº”“ªœÓ£¨∏˘æ›≈≈–ÚΩ·π˚£¨◊Ó∫Ûµ˜”√InsertItem
+// itemÊûêÊûÑ‰∫Ü„ÄÇ
+// Áî®‰∫éËß£ÊûêÂ§öÁ∫ßÂ§çÊùÇÊ†ëÊéß‰ª∂ÔºåÂú®Âà†Èô§‰ªªÊÑè‰∏ÄÁ∫ßÁà∂ÁªìÁÇπÊó∂ÔºåÈúÄË¶ÅÊääÊâÄÊúâÂ≠êÁªìÁÇπÈÉΩÂÅö‰∏ÄÊ¨°Ê∏ÖÁêÜÂ∑•‰Ωú„ÄÇ
 //
-bool ListCtrlBase::AddItem(ListItemBase* pItem)
-{
-	ListItemBase* pInsertAfter = m_pLastItem;
+void ListCtrlBase::ItemDestructed(ListItemBase *pItem) {
+  if (!pItem)
+    return;
 
-	bool bAscendSort = m_listctrlStyle.sort_ascend;
-	bool bDescendSort = m_listctrlStyle.sort_descend;
+  LISTCTRLSTYLE s = {0};
+  s.destroying = 1;
+  if (TestListCtrlStyle(&s))
+    return;
 
-	if ((bAscendSort||bDescendSort) && m_pCompareProc)
-	{
-		// ≈≈–Úæˆ∂®Œª÷√(”…”⁄≤…”√¡À¡¥Ω”µƒ ˝æ›Ω·ππ£¨≤ªƒ‹≤…”√∂˛∑÷≤È’“µƒ∑Ω Ω...)
-		ListItemBase* pEnumItem = m_pFirstItem;
-		while (nullptr != pEnumItem)
-		{
-			int nResult = m_pCompareProc(pEnumItem->GetIListItemBase(), 
-				pItem->GetIListItemBase());
-			if (bAscendSort)
-			{
-				// ≤È’“µ⁄“ª∏ˆ¥Û”⁄◊‘º∫µƒ∂‘œÛ
-				if (nResult<0)
-				{
-					pInsertAfter = pEnumItem->GetPrevItem();
-					break;
-				}
-			}
-			else if(bDescendSort)
-			{
-				// ≤È’“µ⁄“ª∏ˆ–°”⁄◊‘º∫µƒ∂‘œÛ 
-				if(nResult>0)
-				{
-					pInsertAfter = pEnumItem->GetPrevItem();
-					break;
-				}
-			}
-
-			pEnumItem = pEnumItem->GetNextItem();
-		}
-	}
-
-	// ≤Â»Î
-	return this->InsertItem(pItem, pInsertAfter);
+  UINT_PTR lId = pItem->GetId();
+  if (lId != 0) {
+    _mapItemIter iter = m_mapItem.find(lId);
+    if (iter != m_mapItem.end())
+      m_mapItem.erase(iter);
+  }
 }
 
-// ∏¸–¬√ø“ª∏ˆITEMµƒÀ˜“˝º∆ ˝
-void  ListCtrlBase::UpdateItemIndex(ListItemBase* pStart)
-{
-#if 0  // Œﬁ◊”∂‘œÛ∞Ê±æ
+// Êú™Âà∑Êñ∞ÔºåÊú™Êõ¥Êñ∞Item Rect, scroll bar
+// bool bReleaseItemÊòØÂê¶ÈîÄÊØÅitem„ÄÇ
+bool ListCtrlBase::_RemoveItem(ListItemBase *pItem, bool bReleaseItem) {
+  if (nullptr == pItem)
+    return false;
+
+  {
+    UIMSG msg;
+    msg.pMsgTo = m_pIListCtrlBase;
+    msg.message = UI_MSG_NOTIFY;
+    msg.wParam = (WPARAM)pItem->GetIListItemBase();
+    msg.nCode = UI_LCN_PRE_ITEMREMOVE;
+    UISendMessage(&msg);
+  }
+
+  bool bSelChanged = false;
+  if (m_pMKMgr)
+    m_pMKMgr->OnRemoveItem(pItem, &bSelChanged);
+  m_MgrFloatItem.OnRemoveItem(pItem);
+
+  _RemoveItemFromTree(pItem);
+  _SendItemRemoveNotify(pItem);
+
+  if (bReleaseItem) {
+    pItem->GetIListItemBase()->Release();
+    ;
+  }
+
+  // Á≠âÊâÄÊúâÁä∂ÊÄÅÊï∞ÊçÆÊõ¥Êñ∞ÂêéÔºåÂÜçÈÄöÁü•„ÄÇË¶Å‰∏çÁÑ∂Â§ñÈÉ®Âú®Ëøô‰∏™ÈÄöÁü•‰∏≠ÂèØËÉΩËß¶ÂèëÊñ∞ÁöÑÂà∑Êñ∞Êìç‰Ωú
+  if (bSelChanged)
+    FireSelectItemChanged(nullptr);
+
+  return true;
+}
+void ListCtrlBase::RemoveAllItem() {
+  bool bHaveSelection = m_pFirstSelectedItem ? true : false;
+  if (false == _RemoveAllItem())
+    return;
+
+  if (bHaveSelection)
+    FireSelectItemChanged(nullptr);
+
+  m_bNeedLayoutItems = false;
+  m_pIListCtrlBase->Invalidate();
+}
+
+bool ListCtrlBase::_RemoveAllItem() {
+  if (nullptr == m_pFirstItem)
+    return false;
+
+  {
+    UIMSG msg;
+    msg.pMsgTo = m_pIListCtrlBase;
+    msg.message = UI_MSG_NOTIFY;
+    msg.nCode = UI_LCN_PRE_ALLITEMREMOVE;
+    UISendMessage(&msg);
+  }
+
+  ListItemBase *p = m_pFirstItem;
+  while (p) {
+    ListItemBase *pNext = p->GetNextItem(); // Save
+    p->GetIListItemBase()->Release();
+    p = pNext;
+  }
+
+  m_pFirstItem = nullptr;
+  m_pLastItem = nullptr;
+  m_pFirstDrawItem = nullptr;
+  m_pFirstSelectedItem = nullptr;
+  if (m_pEditingItem) {
+    m_pEditingItem = nullptr;
+  }
+  m_nItemCount = 0;
+  m_mapItem.clear();
+  if (m_pMKMgr)
+    m_pMKMgr->OnRemoveAll();
+  m_MgrFloatItem.OnRemoveAllItem();
+
+  m_mgrScrollBar.SetScrollRange(0, 0);
+
+  Invalidate();
+
+  {
+    UIMSG msg;
+    msg.pMsgTo = m_pIListCtrlBase;
+    msg.message = UI_MSG_NOTIFY;
+    msg.nCode = UI_LCN_ALLITEMREMOVE;
+    UISendMessage(&msg);
+  }
+  return true;
+}
+void ListCtrlBase::SetSortCompareProc(ListItemCompareProc p) {
+  m_pCompareProc = p;
+}
+
+void ListCtrlBase::Sort() {
+  if (nullptr == m_pCompareProc)
+    return;
+
+  m_bNeedSortItems = false;
+  SortChildren(nullptr);
+}
+
+void ListCtrlBase::SortChildren(ListItemBase *pParent) {
+  if (nullptr == m_pCompareProc)
+    return;
+
+  if (!m_listctrlStyle.sort_ascend && !m_listctrlStyle.sort_descend)
+    return;
+
+  if (!pParent) {
+    sort_by_first_item(m_pFirstItem, GetRootItemCount(),
+                       m_listctrlStyle.sort_child);
+  } else {
+    sort_by_first_item(pParent->GetChildItem(), pParent->GetChildCount(),
+                       m_listctrlStyle.sort_child);
+  }
+
+  this->SetCalcFirstLastDrawItemFlag();
+  SetNeedLayoutItems();
+}
+
+// nCount‰∏∫pFirstItemÁöÑÈÇªÂ±ÖÊï∞Èáè
+void ListCtrlBase::sort_by_first_item(ListItemBase *pFirstItem,
+                                      int nNeighbourCount, bool bSortChildren) {
+  if (!pFirstItem)
+    return;
+
+  if (nNeighbourCount <= 1) {
+    // Áõ¥Êé•ÊéíÂ≠êËäÇÁÇπ
+    if (pFirstItem->GetChildItem() && bSortChildren) {
+      sort_by_first_item(pFirstItem->GetChildItem(),
+                         pFirstItem->GetChildCount(), bSortChildren);
+    }
+    return;
+  }
+
+  IListItemBase **pArray = new IListItemBase *[nNeighbourCount];
+  pArray[0] = pFirstItem->GetIListItemBase();
+
+  for (int i = 1; i < nNeighbourCount; i++) {
+    pArray[i] = pArray[i - 1]->GetNextItem();
+  }
+
+  std::sort(pArray, (pArray + nNeighbourCount), m_pCompareProc);
+
+  // Ê†πÊçÆÂçáÈôçÂ∫èÈáçÊñ∞Êï¥ÁêÜÂàóË°®
+  if (m_listctrlStyle.sort_ascend) {
+    ListItemBase *pFirstItem = pArray[0]->GetImpl();
+    ListItemBase *pLastItem = pArray[nNeighbourCount - 1]->GetImpl();
+
+    ListItemBase *pParentItem = pFirstItem->GetParentItem();
+    if (pParentItem) {
+      pParentItem->SetChildItem(pFirstItem);
+      pParentItem->SetLastChildItem(pLastItem);
+    } else {
+      m_pFirstItem = pFirstItem;
+      m_pLastItem = pLastItem;
+    }
+
+    pFirstItem->SetPrevItem(nullptr);
+    pFirstItem->SetNextItem(pArray[1]->GetImpl());
+
+    pLastItem->SetNextItem(nullptr);
+    pLastItem->SetPrevItem(pArray[nNeighbourCount - 2]->GetImpl());
+
+    for (int i = 1; i < nNeighbourCount - 1; i++) {
+      pArray[i]->SetNextItem(pArray[i + 1]);
+      pArray[i]->SetPrevItem(pArray[i - 1]);
+    }
+  } else {
+    ListItemBase *pLastItem = pArray[0]->GetImpl();
+    ListItemBase *pFirstItem = pArray[nNeighbourCount - 1]->GetImpl();
+
+    ListItemBase *pParentItem = pFirstItem->GetParentItem();
+    if (pParentItem) {
+      pParentItem->SetChildItem(pFirstItem);
+      pParentItem->SetLastChildItem(pLastItem);
+    } else {
+      m_pFirstItem = pFirstItem;
+      m_pLastItem = pLastItem;
+    }
+
+    pFirstItem->SetPrevItem(nullptr);
+    pFirstItem->SetNextItem(pArray[nNeighbourCount - 2]->GetImpl());
+
+    pLastItem->SetNextItem(nullptr);
+    pLastItem->SetPrevItem(pArray[1]->GetImpl());
+
+    for (int i = 1; i < nNeighbourCount - 1; i++) {
+      pArray[i]->SetPrevItem(pArray[i + 1]);
+      pArray[i]->SetNextItem(pArray[i - 1]);
+    }
+  }
+
+  SAFE_ARRAY_DELETE(pArray);
+
+  if (bSortChildren) {
+    ListItemBase *pItem = pFirstItem;
+    while (pItem) {
+      if (pItem->GetChildItem())
+        sort_by_first_item(pItem->GetChildItem(), pItem->GetChildCount(),
+                           bSortChildren);
+
+      pItem = pItem->GetNextItem();
+    }
+  }
+}
+
+// ‰∫§Êç¢‰∏§‰∏™itemÁöÑ‰ΩçÁΩÆ
+void ListCtrlBase::SwapItemPos(ListItemBase *p1, ListItemBase *p2) {
+  if (nullptr == p1 || nullptr == p2 || p1 == p2)
+    return;
+
+  if (p1->GetNextItem() == p2) {
+    ListItemBase *p1Prev = p1->GetPrevItem();
+    ListItemBase *p2Next = p2->GetNextItem();
+
+    if (p1Prev)
+      p1Prev->SetNextItem(p2);
+    p2->SetPrevItem(p1Prev);
+
+    if (p2Next)
+      p2Next->SetPrevItem(p1);
+    p1->SetNextItem(p2Next);
+
+    p2->SetNextItem(p1);
+    p1->SetPrevItem(p2);
+  } else if (p1->GetPrevItem() == p2) {
+    ListItemBase *p1Next = p1->GetNextItem();
+    ListItemBase *p2Prev = p2->GetPrevItem();
+
+    if (p2Prev)
+      p2Prev->SetNextItem(p1);
+    p1->SetPrevItem(p2Prev);
+
+    if (p1Next)
+      p1Next->SetPrevItem(p2);
+    p2->SetNextItem(p1Next);
+
+    p1->SetNextItem(p2);
+    p2->SetPrevItem(p1);
+  } else {
+    ListItemBase *p1Prev = p1->GetPrevItem();
+    ListItemBase *p1Next = p1->GetNextItem();
+
+    ListItemBase *p2Prev = p2->GetPrevItem();
+    ListItemBase *p2Next = p2->GetNextItem();
+
+    if (p2Next)
+      p2Next->SetPrevItem(p1);
+    p1->SetNextItem(p2Next);
+
+    if (p2Prev)
+      p2Prev->SetNextItem(p1);
+    p1->SetPrevItem(p2Prev);
+
+    if (p1Next)
+      p1Next->SetPrevItem(p2);
+    p2->SetNextItem(p1Next);
+
+    if (p1Prev)
+      p1Prev->SetNextItem(p2);
+    p2->SetPrevItem(p1Prev);
+  }
+
+  // ÈáçÁΩÆËµ∑ÂßãÈ°π
+  if (nullptr == p1->GetPrevItem())
+    m_pFirstItem = p1;
+  if (nullptr == p2->GetPrevItem())
+    m_pFirstItem = p2;
+
+  if (nullptr == p1->GetNextItem())
+    m_pLastItem = p1;
+  if (nullptr == p2->GetNextItem())
+    m_pLastItem = p2;
+
+  // Êõ¥Êç¢Á¥¢ÂºïË°å
+  int nIndex1 = p1->GetLineIndex();
+  int nIndex2 = p2->GetLineIndex();
+  p1->SetLineIndex(nIndex2);
+  p2->SetLineIndex(nIndex1);
+
+  // Êõ¥Êñ∞ÂèØËßÅ
+  this->SetCalcFirstLastDrawItemFlag();
+  SetNeedLayoutItems();
+  Invalidate();
+}
+
+int ListCtrlBase::GetChildNodeIndent() { return m_nChildNodeIndent; }
+void ListCtrlBase::SetChildNodeIndent(int n) { m_nChildNodeIndent = n; }
+
+void ListCtrlBase::SetItemHeight(int nHeight, bool bUpdate) {
+  if (m_nItemHeight == nHeight)
+    return;
+
+  m_nItemHeight = nHeight;
+  //	this->MeasureAllItem();
+
+  if (bUpdate)
+    this->LayoutItem(m_pFirstItem, true);
+}
+
+ListItemBase *ListCtrlBase::GetItemByWindowPoint(POINT pt) {
+  if (!m_pMKMgr)
+    return nullptr;
+
+  return m_pMKMgr->GetItemByPos(pt);
+}
+ListItemBase *ListCtrlBase::GetItemUnderCursor() {
+  POINT pt = {0};
+  GetCursorPos(&pt);
+  MapWindowPoints(nullptr, m_pIListCtrlBase->GetHWND(), &pt, 1);
+  return GetItemByWindowPoint(pt);
+}
+ListItemBase *ListCtrlBase::GetItemByPos(unsigned int nIndex,
+                                         bool bVisibleOnly) {
+  if (nIndex < 0)
+    return nullptr;
+
+  if (bVisibleOnly) {
+    ListItemBase *pItem = FindVisibleItemFrom(nullptr);
+
+    unsigned int i = 0;
+    while (pItem) {
+      if (i == nIndex)
+        return pItem;
+
+      i++;
+      pItem = pItem->GetNextVisibleItem();
+    }
+  } else {
+    if (nIndex >= m_nItemCount)
+      return nullptr;
+
+    ListItemBase *pItem = m_pFirstItem;
+
+    unsigned int i = 0;
+    while (pItem) {
+      if (i == nIndex)
+        return pItem;
+
+      i++;
+      pItem = pItem->GetNextItem();
+    }
+  }
+  return nullptr;
+}
+
+int ListCtrlBase::GetItemPos(ListItemBase *pFindItem, bool bVisibleOnly) {
+  if (!pFindItem)
+    return -1;
+
+  if (pFindItem->GetListCtrlBase() != this)
+    return -1;
+
+  if (bVisibleOnly) {
+    ListItemBase *pItem = FindVisibleItemFrom(nullptr);
+
+    unsigned int i = 0;
+    while (pItem) {
+      if (pFindItem == pItem)
+        return i;
+
+      i++;
+      pItem = pItem->GetNextVisibleItem();
+    }
+  } else {
+    ListItemBase *pItem = m_pFirstItem;
+
+    unsigned int i = 0;
+    while (pItem) {
+      if (pFindItem == pItem)
+        return i;
+
+      i++;
+      pItem = pItem->GetNextItem();
+    }
+  }
+  return 0;
+}
+
+ListItemBase *ListCtrlBase::GetItemById(long lId) {
+  if (0 == lId) {
+    ListItemBase *pItem = m_pFirstItem;
+
+    while (pItem) {
+      if (pItem->GetId() == lId)
+        return pItem;
+
+      pItem = pItem->GetNextTreeItem();
+    }
+    return nullptr;
+  } else {
+    _mapItemIter iter = m_mapItem.find(lId);
+    if (iter == m_mapItem.end())
+      return nullptr;
+
+    return iter->second->GetImpl();
+  }
+}
+void ListCtrlBase::ItemIdChanged(IListItemBase *pItem, UINT_PTR lOldId,
+                                 UINT_PTR lNewId) {
+  if (!pItem)
+    return;
+
+  if (lOldId == lNewId)
+    return;
+
+  if (0 != lOldId) {
+    _mapItemIter iter = m_mapItem.find(lOldId);
+    if (iter != m_mapItem.end())
+      m_mapItem.erase(iter);
+  }
+  if (0 != lNewId) {
+    m_mapItem[lNewId] = pItem;
+  }
+}
+ListItemBase *ListCtrlBase::FindItemByText(const wchar_t *szText,
+                                           ListItemBase *pStart) {
+  if (nullptr == szText)
+    return nullptr;
+
+  ListItemBase *p = pStart;
+  if (nullptr == pStart)
+    p = m_pFirstItem;
+
+  if (nullptr == p)
+    return nullptr;
+
+  while (p) {
+    if (0 == _tcscmp(p->GetText(), szText)) {
+      return p;
+    }
+    p = p->GetNextTreeItem();
+  }
+
+  return nullptr;
+}
+
+ListItemBase *ListCtrlBase::EnumItemByProc(ListItemEnumProc pProc,
+                                           ListItemBase *pEnumFrom, WPARAM w,
+                                           LPARAM l) {
+  if (!pProc)
+    return nullptr;
+
+  ListItemBase *p = pEnumFrom;
+  if (nullptr == pEnumFrom)
+    p = m_pFirstItem;
+
+  if (nullptr == p)
+    return nullptr;
+
+  while (p) {
+    if (!pProc(p->GetIListItemBase(), w, l)) {
+      return p;
+    }
+    p = p->GetNextTreeItem();
+  }
+
+  return nullptr;
+}
+
+// ‰ªÖÂú®pParent‰∏ãÊü•ÊâæÔºåÂ¶ÇÊûúpParent‰∏∫nullptr,Âàô‰ªÖÂú®ÊúÄÈ°∂Â±ÇÊü•Êâæ
+ListItemBase *ListCtrlBase::FindChildItemByText(const wchar_t *szText,
+                                                ListItemBase *pParent,
+                                                ListItemBase *pStart) {
+  if (nullptr == szText)
+    return nullptr;
+
+  if (!pStart) {
+    if (pParent)
+      pStart = pParent->GetChildItem();
+    else
+      pStart = m_pFirstItem;
+  }
+
+  if (pStart) {
+    ListItemBase *p = pStart;
+    while (p) {
+      if (0 == _tcscmp(p->GetText(), szText)) {
+        return p;
+      }
+      p = p->GetNextItem();
+    }
+  }
+  return nullptr;
+}
+
+//
+//	Âú®Êú´Â∞æÊ∑ªÂä†‰∏ÄÈ°πÔºåÊ†πÊçÆÊéíÂ∫èÁªìÊûúÔºåÊúÄÂêéË∞ÉÁî®InsertItem
+//
+bool ListCtrlBase::AddItem(ListItemBase *pItem) {
+  ListItemBase *pInsertAfter = m_pLastItem;
+
+  bool bAscendSort = m_listctrlStyle.sort_ascend;
+  bool bDescendSort = m_listctrlStyle.sort_descend;
+
+  if ((bAscendSort || bDescendSort) && m_pCompareProc) {
+    // ÊéíÂ∫èÂÜ≥ÂÆö‰ΩçÁΩÆ(Áî±‰∫éÈááÁî®‰∫ÜÈìæÊé•ÁöÑÊï∞ÊçÆÁªìÊûÑÔºå‰∏çËÉΩÈááÁî®‰∫åÂàÜÊü•ÊâæÁöÑÊñπÂºè...)
+    ListItemBase *pEnumItem = m_pFirstItem;
+    while (nullptr != pEnumItem) {
+      int nResult = m_pCompareProc(pEnumItem->GetIListItemBase(),
+                                   pItem->GetIListItemBase());
+      if (bAscendSort) {
+        // Êü•ÊâæÁ¨¨‰∏Ä‰∏™Â§ß‰∫éËá™Â∑±ÁöÑÂØπË±°
+        if (nResult < 0) {
+          pInsertAfter = pEnumItem->GetPrevItem();
+          break;
+        }
+      } else if (bDescendSort) {
+        // Êü•ÊâæÁ¨¨‰∏Ä‰∏™Â∞è‰∫éËá™Â∑±ÁöÑÂØπË±°
+        if (nResult > 0) {
+          pInsertAfter = pEnumItem->GetPrevItem();
+          break;
+        }
+      }
+
+      pEnumItem = pEnumItem->GetNextItem();
+    }
+  }
+
+  // ÊèíÂÖ•
+  return this->InsertItem(pItem, pInsertAfter);
+}
+
+// Êõ¥Êñ∞ÊØè‰∏Ä‰∏™ITEMÁöÑÁ¥¢ÂºïËÆ°Êï∞
+void ListCtrlBase::UpdateItemIndex(ListItemBase *pStart) {
+#if 0 // Êó†Â≠êÂØπË±°ÁâàÊú¨
 	if (nullptr == pStart)
 		pStart = m_pFirstItem;
 
 	ListItemBase* p = pStart;
 	while (p != nullptr)
 	{
-		if (nullptr == p->GetPrevItem())   // µ⁄“ª∏ˆ
+		if (nullptr == p->GetPrevItem())   // Á¨¨‰∏Ä‰∏™
 			p->SetLineIndex(0);
 		else
 			p->SetLineIndex(p->GetPrevItem()->GetLineIndex()+1);
@@ -1045,74 +936,68 @@ void  ListCtrlBase::UpdateItemIndex(ListItemBase* pStart)
 		p = p->GetNextItem();
 	}
 
-#else //  ˜Ω·ππ∞Ê±æ
+#else // Ê†ëÁªìÊûÑÁâàÊú¨
 
-    int nTreeIndex = -1;
-    int nLineIndex = -1;
-    ListItemBase* pItem = pStart;
-    if (nullptr == pItem)
-        pItem = m_pFirstItem;
+  int nTreeIndex = -1;
+  int nLineIndex = -1;
+  ListItemBase *pItem = pStart;
+  if (nullptr == pItem)
+    pItem = m_pFirstItem;
 
-    if (pItem)
-    {
-        ListItemBase*  pPrev = pItem->GetPrevTreeItem();
-        if (pPrev)
-            nTreeIndex = pPrev->GetTreeIndex();
+  if (pItem) {
+    ListItemBase *pPrev = pItem->GetPrevTreeItem();
+    if (pPrev)
+      nTreeIndex = pPrev->GetTreeIndex();
 
-        pPrev = pItem->GetPrevVisibleItem();
-        if (pPrev)
-            nLineIndex = pPrev->GetLineIndex();
-    }
+    pPrev = pItem->GetPrevVisibleItem();
+    if (pPrev)
+      nLineIndex = pPrev->GetLineIndex();
+  }
 
-    while (pItem)
-    {
-        pItem->SetTreeIndex(++nTreeIndex);
+  while (pItem) {
+    pItem->SetTreeIndex(++nTreeIndex);
 
-        if (pItem->IsVisible())
-            pItem->SetLineIndex(++nLineIndex);
-        else
-            pItem->SetLineIndex(-1);
+    if (pItem->IsVisible())
+      pItem->SetLineIndex(++nLineIndex);
+    else
+      pItem->SetLineIndex(-1);
 
-        if (nullptr == pItem->GetPrevItem())
-            pItem->SetNeighbourIndex(0);
-        else
-            pItem->SetNeighbourIndex((pItem->GetPrevItem())->GetNeighbourIndex()+1);
+    if (nullptr == pItem->GetPrevItem())
+      pItem->SetNeighbourIndex(0);
+    else
+      pItem->SetNeighbourIndex((pItem->GetPrevItem())->GetNeighbourIndex() + 1);
 
-        pItem = pItem->GetNextTreeItem();
-    }
+    pItem = pItem->GetNextTreeItem();
+  }
 
 #endif
 
-	m_bNeedUpdateItemIndex = false;
+  m_bNeedUpdateItemIndex = false;
 }
 
+void ListCtrlBase::LayoutItem(ListItemBase *pStart, bool bRedraw) {
+  SetCalcFirstLastDrawItemFlag();
+  m_bNeedLayoutItems = false;
 
-void ListCtrlBase::LayoutItem(ListItemBase* pStart, bool bRedraw)
-{
-	SetCalcFirstLastDrawItemFlag();
-    m_bNeedLayoutItems = false;
+  if (m_pLayoutParam && false /*m_pLayoutParam->IsSizedByContent()*/) {
+    ILayout *layout = __super::GetLayout();
+    if (layout) {
+      // REMARK: ÊúâÂèØËÉΩÂΩìÂâçÊ≠£Âú®ÁªòÂà∂‰∏≠ÔºåËß¶Âèë‰∫ÜUpdateIfNeedÔºåÂØºËá¥Êéß‰ª∂‰ΩçÁΩÆÂèòÂåñ„ÄÇ
+      // ‰ΩÜÊ≠§Êó∂rendertarget‰∏≠ËÑèÂå∫ÂüüËøòÊòØËÄÅÁöÑÊéß‰ª∂ËåÉÂõ¥Ôºå‰∏∫‰∫ÜÂà∑Êñ∞Êéß‰ª∂Êñ∞ÁöÑ‰ΩçÁΩÆÔºåÈáçÊñ∞
+      // Ëß¶Âèë‰∏ÄÊ¨°Âà∑Êñ∞„ÄÇ
+      // Êñ∞‰ΩçÁΩÆÂèØËÉΩÊõ¥Â∞èÔºåÂõ†Ê≠§Ë¶ÅÂÖàËÆ∞‰∏ãËÄÅ‰ΩçÁΩÆËøõË°åÂà∑Êñ∞
 
-	if (m_pLayoutParam && false/*m_pLayoutParam->IsSizedByContent()*/)
-	{
-		ILayout* layout = __super::GetLayout();
-		if (layout)
-		{
-			// REMARK: ”–ø…ƒ‹µ±«∞’˝‘⁄ªÊ÷∆÷–£¨¥•∑¢¡ÀUpdateIfNeed£¨µº÷¬øÿº˛Œª÷√±‰ªØ°£
-			// µ´¥À ±rendertarget÷–‘‡«¯”Úªπ «¿œµƒøÿº˛∑∂Œß£¨Œ™¡ÀÀ¢–¬øÿº˛–¬µƒŒª÷√£¨÷ÿ–¬
-			// ¥•∑¢“ª¥ŒÀ¢–¬°£
-			// –¬Œª÷√ø…ƒ‹∏¸–°£¨“Ú¥À“™œ»º«œ¬¿œŒª÷√Ω¯––À¢–¬
+      Invalidate();
 
-			Invalidate();
+      layout->Arrange(m_pIObject);
 
-			layout->Arrange(m_pIObject); 
-
-			// REMARK: ”–ø…ƒ‹µ±«∞’˝‘⁄ªÊ÷∆÷–£¨¥•∑¢¡ÀUpdateIfNeed£¨µº÷¬øÿº˛Œª÷√±‰ªØ°£
-			// µ´¥À ±rendertarget÷–‘‡«¯”Úªπ «¿œµƒøÿº˛∑∂Œß£¨Œ™¡ÀÀ¢–¬øÿº˛–¬µƒŒª÷√£¨÷ÿ–¬
-			// ¥•∑¢“ª¥ŒÀ¢–¬°£
-			Invalidate();  
-			return;
-		}
-	}
+      // REMARK: ÊúâÂèØËÉΩÂΩìÂâçÊ≠£Âú®ÁªòÂà∂‰∏≠ÔºåËß¶Âèë‰∫ÜUpdateIfNeedÔºåÂØºËá¥Êéß‰ª∂‰ΩçÁΩÆÂèòÂåñ„ÄÇ
+      // ‰ΩÜÊ≠§Êó∂rendertarget‰∏≠ËÑèÂå∫ÂüüËøòÊòØËÄÅÁöÑÊéß‰ª∂ËåÉÂõ¥Ôºå‰∏∫‰∫ÜÂà∑Êñ∞Êéß‰ª∂Êñ∞ÁöÑ‰ΩçÁΩÆÔºåÈáçÊñ∞
+      // Ëß¶Âèë‰∏ÄÊ¨°Âà∑Êñ∞„ÄÇ
+      Invalidate();
+      return;
+    }
+  }
 #if 0
     bool bWidthNotConfiged = false;
     bool bHeightNotConfiged = false;
@@ -1135,596 +1020,522 @@ void ListCtrlBase::LayoutItem(ListItemBase* pStart, bool bRedraw)
 	else
 
 #endif
-	{
-		SIZE sizeContent = {0,0};
-        IListItemBase*  p = nullptr;
-        if (pStart)
-            p = pStart->GetIListItemBase();
+  {
+    SIZE sizeContent = {0, 0};
+    IListItemBase *p = nullptr;
+    if (pStart)
+      p = pStart->GetIListItemBase();
 
-		arrange_item(p?p->GetImpl():nullptr, &sizeContent);
-		
-		m_mgrScrollBar.SetScrollRange(sizeContent.cx, sizeContent.cy);
+    arrange_item(p ? p->GetImpl() : nullptr, &sizeContent);
 
-        // ∏¸–¬hoveritem£¨≈≈–Ú°¢arrage∫Û∏√itemø…ƒ‹≤ª‘Ÿ «Œª”⁄ Û±Íœ¬√Ê
-        if (GetHoverItem())
-        {
-            POINT pt = {0, 0};
-            ::GetCursorPos(&pt);
-            ::MapWindowPoints(nullptr, m_pIListCtrlBase->GetHWND(), &pt, 1);
-            UISendMessage(m_pIListCtrlBase,
-                WM_MOUSEMOVE, 0, MAKELPARAM(pt.x, pt.y));
-        }
+    m_mgrScrollBar.SetScrollRange(sizeContent.cx, sizeContent.cy);
 
-		if (bRedraw)
-			Invalidate();
-	}
-}
-
-void ListCtrlBase::OnSize(unsigned int nType, int cx, int cy)
-{
-    SetMsgHandled(FALSE);
-
-	this->SetCalcFirstLastDrawItemFlag();
-
-	SIZE sizeContent = {0,0};
-	arrange_item(nullptr, &sizeContent);
-
-	// ∏¸–¬πˆ∂ØÃıµƒ Ù–‘
-	CRect rcClient;
-	m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-
-    SIZE sizePage = { rcClient.Width(), rcClient.Height() };
-    m_mgrScrollBar.SetScrollPageAndRange(&sizePage, &sizeContent);
-}
-
-void  ListCtrlBase::arrange_item(ListItemBase* pFrom, __out SIZE* pContent)
-{
-	m_MgrLayout.Arrange(nullptr, pContent);
-
-	// TODO:
-// 	if (m_pEditingItem)
-// 	{
-// 		CRect  rcOleEditingItem(0,0,0,0);
-// 		m_pEditingItem->GetParentRect(&rcOleEditingItem);
-// 
-// 		m_MgrLayout.Arrange(p, &sizeContent);
-// 		long lVisiblePos = 0;
-// 		IsItemVisibleInScreenEx(m_pEditingItem, lVisiblePos);
-// 		if (lVisiblePos != LISTITEM_VISIBLE)
-// 		{
-// 			// ≤ª «ÕÍ»´ø…º˚£¨÷±Ω”Õ£÷π 
-// 			this->DiscardEdit();
-// 		}
-// 		else
-// 		{
-// 			// ∏¸–¬±‡º≠øÚŒª÷√
-// 			long lRet = UISendMessage(m_pEditingItem->GetIListItemBase(), 
-// 				UI_MSG_NOTIFY, w, l, UI_WEN_UPDATEEDITPOS);
-// 		}
-// 	}
-// 	else
-// 	{
-// 		m_MgrLayout.Arrange(p, &sizeContent);
-// 	}
-}
-
-void ListCtrlBase::update_mouse_mgr_type()
-{
-    SAFE_DELETE(m_pMKMgr);
-
-    if (m_listctrlStyle.multiple_sel)
-    {
-        m_pMKMgr = new MultiSelListCtrlMKMgr;
-    }
-    else if (m_listctrlStyle.popuplistbox)
-    {
-        m_pMKMgr = new PopupListCtrlMKMgr;
-    }
-    else if (m_listctrlStyle.menu)
-    {
-        m_pMKMgr = new MenuMKMgr;
-    }
-    else
-    {
-        m_pMKMgr = new SingleSelListCtrlMKMgr;
-    }
-    m_pMKMgr->SetListCtrlBase(m_pIListCtrlBase->GetUIApplication()->GetImpl(), this);
-}
-
-#pragma  region  // selection
-
-bool ListCtrlBase::IsSelected(ListItemBase* pItem)
-{
-	if (nullptr == pItem)
-		return false;
-
-// 	if (m_pFirstSelectedItem == pItem || nullptr != pItem->GetPrevSelection())
-// 		return true;
-
-    return pItem->IsSelected();
-}
-
-// …Ë÷√“ª∏ˆ—°‘ÒœÓ(÷ª—°÷–“ª∏ˆ)
-void ListCtrlBase::SelectItem(ListItemBase* pItem, bool bNotify, bool bMakeVisible)
-{
-	if (nullptr == pItem)  
-		return;
-
-    if (!pItem->IsSelectable())
-        return;
-
-    // ∂®ŒªµΩ∏√ITEM£¨»∑±£ÕÍ»´ø…º˚
-	if (m_pFirstSelectedItem == pItem && nullptr == m_pFirstSelectedItem->GetNextSelection())
-	{
-        if (bMakeVisible)
-        {
-            bool bNeedUpdate = false;
-		    this->MakeItemVisible(m_pFirstSelectedItem, &bNeedUpdate);
-            if (bNeedUpdate)
-			    this->Invalidate();
-        }
-
-        if (GetFocusItem() != pItem)
-            SetFocusItem(pItem);
-
-		return;
-	}
-
-	ListItemBase* pOldSelectoinItem = m_pFirstSelectedItem;
-	ClearSelectItem(false);
-	m_pFirstSelectedItem = pItem;
-    if (pItem)
-        pItem->SetSelected(true);
-
-    if (bMakeVisible)
-    {
-        bool bNeedUpdate = false;
-        this->MakeItemVisible(m_pFirstSelectedItem, &bNeedUpdate);
-        if (bNeedUpdate)
-            this->Invalidate();
+    // Êõ¥Êñ∞hoveritemÔºåÊéíÂ∫è„ÄÅarrageÂêéËØ•itemÂèØËÉΩ‰∏çÂÜçÊòØ‰Ωç‰∫éÈº†Ê†á‰∏ãÈù¢
+    if (GetHoverItem()) {
+      POINT pt = {0, 0};
+      ::GetCursorPos(&pt);
+      ::MapWindowPoints(nullptr, m_pIListCtrlBase->GetHWND(), &pt, 1);
+      UISendMessage(m_pIListCtrlBase, WM_MOUSEMOVE, 0, MAKELPARAM(pt.x, pt.y));
     }
 
-    this->SetFocusItem(pItem);
-
-	if (m_pFirstSelectedItem != pOldSelectoinItem)
-	{
-		this->InvalidateItem(m_pFirstSelectedItem);
-		this->InvalidateItem(pOldSelectoinItem);
-
-        if (bNotify)
-        {
-            FireSelectItemChanged(pOldSelectoinItem);
-        }
-	}
+    if (bRedraw)
+      Invalidate();
+  }
 }
 
-// ∂‘”⁄∂‡—°—˘ Ω£¨≤ª‘Ÿ’Î∂‘√ø“ª∏ˆITEM∑¢ÀÕ“ª¥Œ—°÷–œ˚œ¢£¨∂¯ «÷ª∑¢œ˚œ¢£¨≤ª∑¢◊¥Ã¨£¨
-// ”…Õ‚≤ø◊‘º∫»•≈–∂œÀ˘–Ë“™µƒ◊¥Ã¨
-void  ListCtrlBase::FireSelectItemChanged(ListItemBase* pOldSelectoinItem)
-{
-    // Õ®÷™ctrl
-	UIMSG  msg;
-	msg.message = UI_MSG_NOTIFY;
-	msg.nCode = UI_LCN_SELCHANGED_SELF;
+void ListCtrlBase::OnSize(unsigned int nType, int cx, int cy) {
+  SetMsgHandled(FALSE);
 
-	if (!m_listctrlStyle.multiple_sel)
-	{
-        msg.wParam = (WPARAM)(pOldSelectoinItem?pOldSelectoinItem->GetIListItemBase():nullptr);
-        msg.lParam = (LPARAM)(m_pFirstSelectedItem?m_pFirstSelectedItem->GetIListItemBase():nullptr);
-	}
-	msg.pMsgFrom = m_pIListCtrlBase;
+  this->SetCalcFirstLastDrawItemFlag();
 
-    // œ»Ωª∏¯◊”¿‡¥¶¿Ì
-    msg.pMsgTo = m_pIListCtrlBase;
-    UISendMessage(&msg, 0, 0);
+  SIZE sizeContent = {0, 0};
+  arrange_item(nullptr, &sizeContent);
 
-    // ‘ŸÕ®÷™Õ‚≤ø¥¶¿Ì 
-//  msg.pMsgTo = nullptr;
-//  msg.bHandled = FALSE;
-// 	msg.nCode = UI_LCN_SELCHANGED;
-// 	m_pIListCtrlBase->DoNotify(&msg);
-	select_changed.emit(m_pIListCtrlBase);
+  // Êõ¥Êñ∞ÊªöÂä®Êù°ÁöÑÂ±ûÊÄß
+  CRect rcClient;
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+
+  SIZE sizePage = {rcClient.Width(), rcClient.Height()};
+  m_mgrScrollBar.SetScrollPageAndRange(&sizePage, &sizeContent);
 }
 
-ListItemBase* ListCtrlBase::GetLastSelectItem()
-{
-	ListItemBase* pItem = m_pFirstSelectedItem;
-	while (pItem)
-	{
-		ListItemBase* pNext = pItem->GetNextSelection();
-		if (nullptr == pNext)
-			break;
-		
-		pItem = pNext;
-	}
+void ListCtrlBase::arrange_item(ListItemBase *pFrom, __out SIZE *pContent) {
+  m_MgrLayout.Arrange(nullptr, pContent);
 
-	return pItem;
+  // TODO:
+  // 	if (m_pEditingItem)
+  // 	{
+  // 		CRect  rcOleEditingItem(0,0,0,0);
+  // 		m_pEditingItem->GetParentRect(&rcOleEditingItem);
+  //
+  // 		m_MgrLayout.Arrange(p, &sizeContent);
+  // 		long lVisiblePos = 0;
+  // 		IsItemVisibleInScreenEx(m_pEditingItem, lVisiblePos);
+  // 		if (lVisiblePos != LISTITEM_VISIBLE)
+  // 		{
+  // 			// ‰∏çÊòØÂÆåÂÖ®ÂèØËßÅÔºåÁõ¥Êé•ÂÅúÊ≠¢
+  // 			this->DiscardEdit();
+  // 		}
+  // 		else
+  // 		{
+  // 			// Êõ¥Êñ∞ÁºñËæëÊ°Ü‰ΩçÁΩÆ
+  // 			long lRet =
+  // UISendMessage(m_pEditingItem->GetIListItemBase(), 				UI_MSG_NOTIFY, w, l,
+  // UI_WEN_UPDATEEDITPOS);
+  // 		}
+  // 	}
+  // 	else
+  // 	{
+  // 		m_MgrLayout.Arrange(p, &sizeContent);
+  // 	}
 }
 
-// »Áπ˚µ±«∞√ª”–—°‘ÒœÓ£¨÷ª…Ë÷√Œ™—°‘ÒœÓ°£»Áπ˚“—æ≠”–—°‘ÒœÓ£¨‘Ú‘ˆº”Œ™œ¬“ª∏ˆ—°‘ÒœÓ
-void ListCtrlBase::AddSelectItem(ListItemBase* pItem, bool bNotify)
-{
-	if (nullptr == pItem)
-		return;
+void ListCtrlBase::update_mouse_mgr_type() {
+  SAFE_DELETE(m_pMKMgr);
 
-    if (!pItem->IsSelectable())
-        return;
-
-	if (m_listctrlStyle.multiple_sel)
-	{
-		if (pItem->IsSelected())
-			return;
-
-		ListItemBase* pLastSelItem = this->GetLastSelectItem();
-        if (pLastSelItem)
-        {
-            pLastSelItem->SetNextSelection(pItem);
-            pItem->SetPrevSelection(pLastSelItem);
-        }
-        else
-        {
-            m_pFirstSelectedItem = pItem;
-        }
-
-        pItem->SetSelected(true);
-
-        if (nullptr == GetFocusItem())
-            this->SetFocusItem(pItem);
-
-        this->InvalidateItem(pItem);
-
-        if (bNotify)
-        {
-            this->FireSelectItemChanged(nullptr);
-        }
-	}
-	else   // µ•—°
-	{
-		if (m_pFirstSelectedItem == pItem)
-			return;
-
-		SelectItem(pItem, false, bNotify);
-	}	
-}
-void ListCtrlBase::RemoveSelectItem(ListItemBase* pItem, bool bNotify)
-{
-	if (nullptr == pItem || nullptr == m_pFirstSelectedItem)
-		return;
-
-	if (!pItem->IsSelected())
-		return;
-
-	ListItemBase* pOldSelection = m_pFirstSelectedItem;
-	if (pItem->GetPrevSelection())
-		pItem->GetPrevSelection()->SetNextSelection(pItem->GetNextSelection());
-	if (pItem->GetNextSelection())
-		pItem->GetNextSelection()->SetPrevSelection(pItem->GetPrevSelection());
-
-    if (m_pFirstSelectedItem == pItem)
-        m_pFirstSelectedItem = pItem->GetNextSelection();
-
-	pItem->SetPrevSelection(nullptr);
-	pItem->SetNextSelection(nullptr);
-
-    pItem->SetSelected(false);
-	if (bNotify)
-		this->FireSelectItemChanged(pOldSelection);
-}
-void ListCtrlBase::ClearSelectItem(bool bNotify)
-{
-	if (nullptr == m_pFirstSelectedItem)
-		return;
-
-	ListItemBase* pOldSelection = m_pFirstSelectedItem;
-	
-	ListItemBase* pItem = m_pFirstSelectedItem;
-	while (pItem)
-	{
-		this->InvalidateItem(pItem);
-        pItem->SetSelected(false);
-
-		ListItemBase* pNextItem = pItem->GetNextSelection();
-		if (nullptr == pNextItem)
-			break;
-
-		pNextItem->SetPrevSelection(nullptr);
-		pItem->SetNextSelection(nullptr);
-		pItem = pNextItem;
-	}
-	m_pFirstSelectedItem = nullptr;
-
-	if (bNotify)
-	{
-		this->FireSelectItemChanged(pOldSelection);
-	}
-}
-unsigned int  ListCtrlBase::GetSelectedItemCount()
-{
-    unsigned int  nCount = 0;
-    ListItemBase* p = m_pFirstSelectedItem;
-    while (p)
-    {
-        nCount ++;
-        p = p->GetNextSelection();
-    }
-    return nCount;
+  if (m_listctrlStyle.multiple_sel) {
+    m_pMKMgr = new MultiSelListCtrlMKMgr;
+  } else if (m_listctrlStyle.popuplistbox) {
+    m_pMKMgr = new PopupListCtrlMKMgr;
+  } else if (m_listctrlStyle.menu) {
+    m_pMKMgr = new MenuMKMgr;
+  } else {
+    m_pMKMgr = new SingleSelListCtrlMKMgr;
+  }
+  m_pMKMgr->SetListCtrlBase(m_pIListCtrlBase->GetUIApplication()->GetImpl(),
+                            this);
 }
 
-//  «∑Ò—°»°¡À∂‡∏ˆ£®¥Û”⁄1∏ˆ£©
-bool  ListCtrlBase::IsSelectMulti()
-{
-    if (!m_pFirstSelectedItem)
-        return false;
-    if (m_pFirstSelectedItem->GetNextSelection())
-        return true;
+#pragma region // selection
 
+bool ListCtrlBase::IsSelected(ListItemBase *pItem) {
+  if (nullptr == pItem)
     return false;
+
+  // 	if (m_pFirstSelectedItem == pItem || nullptr !=
+  // pItem->GetPrevSelection()) 		return true;
+
+  return pItem->IsSelected();
 }
 
-void  ListCtrlBase::SelectAll(bool bUpdate)
-{
-    ClearSelectItem(false);
-    ListItemBase*  p = FindSelectableItemFrom(nullptr);
-    m_pFirstSelectedItem = p;
+// ËÆæÁΩÆ‰∏Ä‰∏™ÈÄâÊã©È°π(Âè™ÈÄâ‰∏≠‰∏Ä‰∏™)
+void ListCtrlBase::SelectItem(ListItemBase *pItem, bool bNotify,
+                              bool bMakeVisible) {
+  if (nullptr == pItem)
+    return;
 
-    ListItemBase*  pNext = nullptr;
-    while (p)
-    {
-        p->SetSelected(true);
+  if (!pItem->IsSelectable())
+    return;
 
-        pNext = p->GetNextSelectableItem();
-        p->SetNextSelection(pNext);
-        if (pNext)
-            pNext->SetPrevSelection(p);
-
-        p = pNext;
+  // ÂÆö‰ΩçÂà∞ËØ•ITEMÔºåÁ°Æ‰øùÂÆåÂÖ®ÂèØËßÅ
+  if (m_pFirstSelectedItem == pItem &&
+      nullptr == m_pFirstSelectedItem->GetNextSelection()) {
+    if (bMakeVisible) {
+      bool bNeedUpdate = false;
+      this->MakeItemVisible(m_pFirstSelectedItem, &bNeedUpdate);
+      if (bNeedUpdate)
+        this->Invalidate();
     }
 
-    this->FireSelectItemChanged(nullptr);
+    if (GetFocusItem() != pItem)
+      SetFocusItem(pItem);
 
-    Invalidate();
+    return;
+  }
+
+  ListItemBase *pOldSelectoinItem = m_pFirstSelectedItem;
+  ClearSelectItem(false);
+  m_pFirstSelectedItem = pItem;
+  if (pItem)
+    pItem->SetSelected(true);
+
+  if (bMakeVisible) {
+    bool bNeedUpdate = false;
+    this->MakeItemVisible(m_pFirstSelectedItem, &bNeedUpdate);
+    if (bNeedUpdate)
+      this->Invalidate();
+  }
+
+  this->SetFocusItem(pItem);
+
+  if (m_pFirstSelectedItem != pOldSelectoinItem) {
+    this->InvalidateItem(m_pFirstSelectedItem);
+    this->InvalidateItem(pOldSelectoinItem);
+
+    if (bNotify) {
+      FireSelectItemChanged(pOldSelectoinItem);
+    }
+  }
+}
+
+// ÂØπ‰∫éÂ§öÈÄâÊ†∑ÂºèÔºå‰∏çÂÜçÈíàÂØπÊØè‰∏Ä‰∏™ITEMÂèëÈÄÅ‰∏ÄÊ¨°ÈÄâ‰∏≠Ê∂àÊÅØÔºåËÄåÊòØÂè™ÂèëÊ∂àÊÅØÔºå‰∏çÂèëÁä∂ÊÄÅÔºå
+// Áî±Â§ñÈÉ®Ëá™Â∑±ÂéªÂà§Êñ≠ÊâÄÈúÄË¶ÅÁöÑÁä∂ÊÄÅ
+void ListCtrlBase::FireSelectItemChanged(ListItemBase *pOldSelectoinItem) {
+  // ÈÄöÁü•ctrl
+  UIMSG msg;
+  msg.message = UI_MSG_NOTIFY;
+  msg.nCode = UI_LCN_SELCHANGED_SELF;
+
+  if (!m_listctrlStyle.multiple_sel) {
+    msg.wParam =
+        (WPARAM)(pOldSelectoinItem ? pOldSelectoinItem->GetIListItemBase()
+                                   : nullptr);
+    msg.lParam =
+        (LPARAM)(m_pFirstSelectedItem ? m_pFirstSelectedItem->GetIListItemBase()
+                                      : nullptr);
+  }
+  msg.pMsgFrom = m_pIListCtrlBase;
+
+  // ÂÖà‰∫§ÁªôÂ≠êÁ±ªÂ§ÑÁêÜ
+  msg.pMsgTo = m_pIListCtrlBase;
+  UISendMessage(&msg, 0, 0);
+
+  // ÂÜçÈÄöÁü•Â§ñÈÉ®Â§ÑÁêÜ
+  //  msg.pMsgTo = nullptr;
+  //  msg.bHandled = FALSE;
+  // 	msg.nCode = UI_LCN_SELCHANGED;
+  // 	m_pIListCtrlBase->DoNotify(&msg);
+  select_changed.emit(m_pIListCtrlBase);
+}
+
+ListItemBase *ListCtrlBase::GetLastSelectItem() {
+  ListItemBase *pItem = m_pFirstSelectedItem;
+  while (pItem) {
+    ListItemBase *pNext = pItem->GetNextSelection();
+    if (nullptr == pNext)
+      break;
+
+    pItem = pNext;
+  }
+
+  return pItem;
+}
+
+// Â¶ÇÊûúÂΩìÂâçÊ≤°ÊúâÈÄâÊã©È°πÔºåÂè™ËÆæÁΩÆ‰∏∫ÈÄâÊã©È°π„ÄÇÂ¶ÇÊûúÂ∑≤ÁªèÊúâÈÄâÊã©È°πÔºåÂàôÂ¢ûÂä†‰∏∫‰∏ã‰∏Ä‰∏™ÈÄâÊã©È°π
+void ListCtrlBase::AddSelectItem(ListItemBase *pItem, bool bNotify) {
+  if (nullptr == pItem)
+    return;
+
+  if (!pItem->IsSelectable())
+    return;
+
+  if (m_listctrlStyle.multiple_sel) {
+    if (pItem->IsSelected())
+      return;
+
+    ListItemBase *pLastSelItem = this->GetLastSelectItem();
+    if (pLastSelItem) {
+      pLastSelItem->SetNextSelection(pItem);
+      pItem->SetPrevSelection(pLastSelItem);
+    } else {
+      m_pFirstSelectedItem = pItem;
+    }
+
+    pItem->SetSelected(true);
+
+    if (nullptr == GetFocusItem())
+      this->SetFocusItem(pItem);
+
+    this->InvalidateItem(pItem);
+
+    if (bNotify) {
+      this->FireSelectItemChanged(nullptr);
+    }
+  } else // ÂçïÈÄâ
+  {
+    if (m_pFirstSelectedItem == pItem)
+      return;
+
+    SelectItem(pItem, false, bNotify);
+  }
+}
+void ListCtrlBase::RemoveSelectItem(ListItemBase *pItem, bool bNotify) {
+  if (nullptr == pItem || nullptr == m_pFirstSelectedItem)
+    return;
+
+  if (!pItem->IsSelected())
+    return;
+
+  ListItemBase *pOldSelection = m_pFirstSelectedItem;
+  if (pItem->GetPrevSelection())
+    pItem->GetPrevSelection()->SetNextSelection(pItem->GetNextSelection());
+  if (pItem->GetNextSelection())
+    pItem->GetNextSelection()->SetPrevSelection(pItem->GetPrevSelection());
+
+  if (m_pFirstSelectedItem == pItem)
+    m_pFirstSelectedItem = pItem->GetNextSelection();
+
+  pItem->SetPrevSelection(nullptr);
+  pItem->SetNextSelection(nullptr);
+
+  pItem->SetSelected(false);
+  if (bNotify)
+    this->FireSelectItemChanged(pOldSelection);
+}
+void ListCtrlBase::ClearSelectItem(bool bNotify) {
+  if (nullptr == m_pFirstSelectedItem)
+    return;
+
+  ListItemBase *pOldSelection = m_pFirstSelectedItem;
+
+  ListItemBase *pItem = m_pFirstSelectedItem;
+  while (pItem) {
+    this->InvalidateItem(pItem);
+    pItem->SetSelected(false);
+
+    ListItemBase *pNextItem = pItem->GetNextSelection();
+    if (nullptr == pNextItem)
+      break;
+
+    pNextItem->SetPrevSelection(nullptr);
+    pItem->SetNextSelection(nullptr);
+    pItem = pNextItem;
+  }
+  m_pFirstSelectedItem = nullptr;
+
+  if (bNotify) {
+    this->FireSelectItemChanged(pOldSelection);
+  }
+}
+unsigned int ListCtrlBase::GetSelectedItemCount() {
+  unsigned int nCount = 0;
+  ListItemBase *p = m_pFirstSelectedItem;
+  while (p) {
+    nCount++;
+    p = p->GetNextSelection();
+  }
+  return nCount;
+}
+
+// ÊòØÂê¶ÈÄâÂèñ‰∫ÜÂ§ö‰∏™ÔºàÂ§ß‰∫é1‰∏™Ôºâ
+bool ListCtrlBase::IsSelectMulti() {
+  if (!m_pFirstSelectedItem)
+    return false;
+  if (m_pFirstSelectedItem->GetNextSelection())
+    return true;
+
+  return false;
+}
+
+void ListCtrlBase::SelectAll(bool bUpdate) {
+  ClearSelectItem(false);
+  ListItemBase *p = FindSelectableItemFrom(nullptr);
+  m_pFirstSelectedItem = p;
+
+  ListItemBase *pNext = nullptr;
+  while (p) {
+    p->SetSelected(true);
+
+    pNext = p->GetNextSelectableItem();
+    p->SetNextSelection(pNext);
+    if (pNext)
+      pNext->SetPrevSelection(p);
+
+    p = pNext;
+  }
+
+  this->FireSelectItemChanged(nullptr);
+
+  Invalidate();
 }
 #pragma endregion
 
-ListItemBase* ListCtrlBase::GetHoverItem()
-{
-    if (nullptr == m_pMKMgr)
-        return nullptr;
+ListItemBase *ListCtrlBase::GetHoverItem() {
+  if (nullptr == m_pMKMgr)
+    return nullptr;
 
-    return m_pMKMgr->GetHoverItem();
+  return m_pMKMgr->GetHoverItem();
 }
-ListItemBase* ListCtrlBase::GetPressItem()
-{
-    if (nullptr == m_pMKMgr)
-        return nullptr;
+ListItemBase *ListCtrlBase::GetPressItem() {
+  if (nullptr == m_pMKMgr)
+    return nullptr;
 
-    return m_pMKMgr->GetPressItem();
+  return m_pMKMgr->GetPressItem();
 }
 
-ListItemBase* ListCtrlBase::GetFocusItem()
-{
-    if (nullptr == m_pMKMgr)
-        return nullptr;
+ListItemBase *ListCtrlBase::GetFocusItem() {
+  if (nullptr == m_pMKMgr)
+    return nullptr;
 
-    return m_pMKMgr->GetFocusItem();
+  return m_pMKMgr->GetFocusItem();
 }
-void  ListCtrlBase::SetFocusItem(ListItemBase* pItem)
-{
-    m_pMKMgr->SetFocusItem(pItem);
-    return;
-// 
-// 	UIASSERT(0 && _T("focus“—∑≈µΩmkmgr÷– µœ÷ "));
-// 	if (m_pFocusItem == pItem)
-// 		return;
-// 
-// 	if (m_pFocusItem)
-// 		this->InvalidateItem(m_pFocusItem);
-// 
-//     if (m_pFocusItem)
-//         m_pFocusItem->SetFocus(false);
-// 
-// 	m_pFocusItem = pItem;
-// 
-//     if (m_pFocusItem)
-//         m_pFocusItem->SetFocus(true);
-// 
-// 	if (m_pFocusItem)
-// 		this->InvalidateItem(m_pFocusItem);
+void ListCtrlBase::SetFocusItem(ListItemBase *pItem) {
+  m_pMKMgr->SetFocusItem(pItem);
+  return;
+  //
+  // 	UIASSERT(0 && _T("focusÂ∑≤ÊîæÂà∞mkmgr‰∏≠ÂÆûÁé∞ "));
+  // 	if (m_pFocusItem == pItem)
+  // 		return;
+  //
+  // 	if (m_pFocusItem)
+  // 		this->InvalidateItem(m_pFocusItem);
+  //
+  //     if (m_pFocusItem)
+  //         m_pFocusItem->SetFocus(false);
+  //
+  // 	m_pFocusItem = pItem;
+  //
+  //     if (m_pFocusItem)
+  //         m_pFocusItem->SetFocus(true);
+  //
+  // 	if (m_pFocusItem)
+  // 		this->InvalidateItem(m_pFocusItem);
 }
 
-Object*  ListCtrlBase::GetHoverObject()
-{
-    return m_pMKMgr->GetHoverObject();
+Object *ListCtrlBase::GetHoverObject() { return m_pMKMgr->GetHoverObject(); }
+Object *ListCtrlBase::GetPressObject() { return m_pMKMgr->GetPressObject(); }
+void ListCtrlBase::SetFocusObject(Object *pObj) {
+  m_pMKMgr->SetFocusObject(pObj);
 }
-Object*  ListCtrlBase::GetPressObject()
-{
-    return m_pMKMgr->GetPressObject();
-}
-void  ListCtrlBase::SetFocusObject(Object* pObj)
-{
-    m_pMKMgr->SetFocusObject(pObj);
-}
-Object*  ListCtrlBase::GetFocusObject()
-{
-    return m_pMKMgr->GetFocusObject();
-}
-SIZE ListCtrlBase::GetAdaptWidthHeight(int nWidth, int nHeight)
-{
-	SIZE s = {nWidth,nHeight};
+Object *ListCtrlBase::GetFocusObject() { return m_pMKMgr->GetFocusObject(); }
+SIZE ListCtrlBase::GetAdaptWidthHeight(int nWidth, int nHeight) {
+  SIZE s = {nWidth, nHeight};
 
-	if (m_lMinWidth != NDEF && nWidth < m_lMinWidth)
-		s.cx = m_lMinWidth;
-	if (m_nMaxWidth != NDEF && nWidth > m_nMaxWidth)
-		s.cx = m_nMaxWidth;
+  if (m_lMinWidth != NDEF && nWidth < m_lMinWidth)
+    s.cx = m_lMinWidth;
+  if (m_nMaxWidth != NDEF && nWidth > m_nMaxWidth)
+    s.cx = m_nMaxWidth;
 
-	if (m_lMinHeight != NDEF && nHeight < m_lMinHeight)
-		s.cy = m_lMinHeight;
-	if (m_nMaxHeight != NDEF && nHeight > m_nMaxHeight)
-		s.cy = m_nMaxHeight;
+  if (m_lMinHeight != NDEF && nHeight < m_lMinHeight)
+    s.cy = m_lMinHeight;
+  if (m_nMaxHeight != NDEF && nHeight > m_nMaxHeight)
+    s.cy = m_nMaxHeight;
 
-	return s;
+  return s;
 }
 
-bool ListCtrlBase::Scroll2Y(int nY, bool bUpdate)
-{
-	return this->SetScrollPos(-1, nY, bUpdate);
+bool ListCtrlBase::Scroll2Y(int nY, bool bUpdate) {
+  return this->SetScrollPos(-1, nY, bUpdate);
 }
-bool ListCtrlBase::Scroll2X(int nX, bool bUpdate)
-{
-	return this->SetScrollPos(nX, -1, bUpdate);
+bool ListCtrlBase::Scroll2X(int nX, bool bUpdate) {
+  return this->SetScrollPos(nX, -1, bUpdate);
 }
-bool  ListCtrlBase::ScrollY(int nY, bool bUpdate)
-{
-    return this->SetScrollPos(-1, m_mgrScrollBar.GetVScrollPos() + nY, bUpdate);
+bool ListCtrlBase::ScrollY(int nY, bool bUpdate) {
+  return this->SetScrollPos(-1, m_mgrScrollBar.GetVScrollPos() + nY, bUpdate);
 }
-bool  ListCtrlBase::ScrollX(int nX, bool bUpdate)
-{
-    return this->SetScrollPos(m_mgrScrollBar.GetHScrollPos() + nX, -1, bUpdate);
+bool ListCtrlBase::ScrollX(int nX, bool bUpdate) {
+  return this->SetScrollPos(m_mgrScrollBar.GetHScrollPos() + nX, -1, bUpdate);
 }
-bool ListCtrlBase::SetScrollPos(int nX, int nY, bool bUpdate)
-{
-	bool bScrollChanged = false;
-	if (-1 != nX)
-	{
-		if (m_mgrScrollBar.SetHScrollPos(nX))
-			bScrollChanged = true;
-	}
-	if (-1 != nY)
-	{
-		if (m_mgrScrollBar.SetVScrollPos(nY))
-			bScrollChanged = true;
-	}
+bool ListCtrlBase::SetScrollPos(int nX, int nY, bool bUpdate) {
+  bool bScrollChanged = false;
+  if (-1 != nX) {
+    if (m_mgrScrollBar.SetHScrollPos(nX))
+      bScrollChanged = true;
+  }
+  if (-1 != nY) {
+    if (m_mgrScrollBar.SetVScrollPos(nY))
+      bScrollChanged = true;
+  }
 
-	if (bScrollChanged)
-	{
-		SetCalcFirstLastDrawItemFlag();
-		if (bUpdate)
-			m_pIListCtrlBase->Invalidate();
-	}
+  if (bScrollChanged) {
+    SetCalcFirstLastDrawItemFlag();
+    if (bUpdate)
+      m_pIListCtrlBase->Invalidate();
+  }
 
-	return bScrollChanged;
+  return bScrollChanged;
 }
 
-void  ListCtrlBase::GetScrollPos(int* pnX, int* pnY)
-{
-	m_mgrScrollBar.GetScrollPos(pnX, pnY);
+void ListCtrlBase::GetScrollPos(int *pnX, int *pnY) {
+  m_mgrScrollBar.GetScrollPos(pnX, pnY);
 }
 
-bool ListCtrlBase::InsertItem(ListItemBase* pItem, unsigned int nPos)
-{
-	ListItemBase* pInsertAfter = nullptr;
-	if (nPos >= m_nItemCount)
-		pInsertAfter = m_pLastItem;
-	else
-		pInsertAfter = this->GetItemByPos(nPos, true);
+bool ListCtrlBase::InsertItem(ListItemBase *pItem, unsigned int nPos) {
+  ListItemBase *pInsertAfter = nullptr;
+  if (nPos >= m_nItemCount)
+    pInsertAfter = m_pLastItem;
+  else
+    pInsertAfter = this->GetItemByPos(nPos, true);
 
-	return this->InsertItem(pItem, pInsertAfter);
+  return this->InsertItem(pItem, pInsertAfter);
 }
 //
-// ‘⁄pInsertAfter«∞√Ê≤Â»ÎpItem£¨»Áπ˚pInsertAfterŒ™nullptr±Ì æ≤Â»Î◊Ó«∞√Ê
+// Âú®pInsertAfterÂâçÈù¢ÊèíÂÖ•pItemÔºåÂ¶ÇÊûúpInsertAfter‰∏∫nullptrË°®Á§∫ÊèíÂÖ•ÊúÄÂâçÈù¢
 //
-bool ListCtrlBase::InsertItem(ListItemBase*  pItem, ListItemBase* pInsertAfter)
-{
-	if (nullptr == pItem)
-		return false;
-	
-	if (false == this->_InsertItem(pItem, pInsertAfter))
-		return false;
+bool ListCtrlBase::InsertItem(ListItemBase *pItem, ListItemBase *pInsertAfter) {
+  if (nullptr == pItem)
+    return false;
 
-    pItem->SetIListCtrlBase(m_pIListCtrlBase);
-    UISendMessage(pItem->GetIListItemBase(), UI_MSG_INITIALIZE);
+  if (false == this->_InsertItem(pItem, pInsertAfter))
+    return false;
 
+  pItem->SetIListCtrlBase(m_pIListCtrlBase);
+  UISendMessage(pItem->GetIListItemBase(), UI_MSG_INITIALIZE);
 
-	SetNeedLayoutItems();
-    Invalidate();
+  SetNeedLayoutItems();
+  Invalidate();
 
-    UIMSG  msg;
-    msg.pMsgTo = m_pIListCtrlBase;
-    msg.message = UI_MSG_NOTIFY;
-    msg.nCode = UI_LCN_ITEMADD;
-    msg.wParam = (WPARAM)pItem->GetIListItemBase();
-    UISendMessage(&msg);
+  UIMSG msg;
+  msg.pMsgTo = m_pIListCtrlBase;
+  msg.message = UI_MSG_NOTIFY;
+  msg.nCode = UI_LCN_ITEMADD;
+  msg.wParam = (WPARAM)pItem->GetIListItemBase();
+  UISendMessage(&msg);
 
-	return true;
+  return true;
 }
 
+// Áî±InsertItemË∞ÉÁî®„ÄÇ‰ªÖÂÅöÊï∞ÊçÆÊèíÂÖ•ÁöÑÂ∑•‰ΩúÔºå‰∏çÂ§ÑÁêÜSIZE
+bool ListCtrlBase::_InsertItem(ListItemBase *pItem,
+                               ListItemBase *pInsertAfter) {
+  if (nullptr == pItem)
+    return false;
 
-// ”…InsertItemµ˜”√°£Ωˆ◊ˆ ˝æ›≤Â»Îµƒπ§◊˜£¨≤ª¥¶¿ÌSIZE
-bool ListCtrlBase::_InsertItem(ListItemBase* pItem, ListItemBase* pInsertAfter)
-{
-	if (nullptr == pItem)
-		return false;
+  // TODO: ÂèÇÊï∞Â§ÑÁêÜ IListItemBase„ÄÇËøôÈáåÁöÑÂèÇÊï∞ÊòØListItemBaseÔºå‰∏çÁî®Â§ÑÁêÜ„ÄÇ
+  //     if (pInsertAfter == UITVI_FIRST || pInsertAfter == UITVI_ROOT)
+  //     {
+  //         pInsertAfter = nullptr;
+  //     }
+  //     else if (pInsertAfter == UITVI_LAST)
+  //     {
+  //         pInsertAfter = m_pLastItem;
+  //     }
 
-    // TODO: ≤Œ ˝¥¶¿Ì IListItemBase°£’‚¿Ôµƒ≤Œ ˝ «ListItemBase£¨≤ª”√¥¶¿Ì°£
-//     if (pInsertAfter == UITVI_FIRST || pInsertAfter == UITVI_ROOT)
-//     {
-//         pInsertAfter = nullptr;
-//     }
-//     else if (pInsertAfter == UITVI_LAST)
-//     {
-//         pInsertAfter = m_pLastItem;
-//     }
+  if (nullptr == pInsertAfter) // ÊèíÂú®È¶ñ‰Ωç
+  {
+    if (nullptr == m_pFirstItem) {
+      m_pFirstItem = m_pLastItem = pItem;
+    } else {
+      m_pFirstItem->SetPrevItem(pItem);
+      pItem->SetNextItem(m_pFirstItem);
+      m_pFirstItem = pItem;
+    }
+  } else {
+    if (nullptr == pInsertAfter->GetNextItem()) {
+      pInsertAfter->SetNextItem(pItem);
+      pItem->SetPrevItem(pInsertAfter);
+      m_pLastItem = pItem;
+    } else {
+      pInsertAfter->GetNextItem()->SetPrevItem(pItem);
+      pItem->SetNextItem(pInsertAfter->GetNextItem());
+      pInsertAfter->SetNextItem(pItem);
+      pItem->SetPrevItem(pInsertAfter);
+    }
+  }
 
-	if (nullptr == pInsertAfter)// ≤Â‘⁄ ◊Œª
-	{
-		if (nullptr == m_pFirstItem)
-		{
-			m_pFirstItem = m_pLastItem = pItem;
-		}
-		else
-		{
-			m_pFirstItem->SetPrevItem(pItem);
-			pItem->SetNextItem(m_pFirstItem);
-			m_pFirstItem = pItem;
-		}
-	}
-	else
-	{
-		if (nullptr == pInsertAfter->GetNextItem())
-		{
-			pInsertAfter->SetNextItem(pItem);
-			pItem->SetPrevItem(pInsertAfter);
-			m_pLastItem = pItem;
-		}
-		else
-		{
-			pInsertAfter->GetNextItem()->SetPrevItem(pItem);
-			pItem->SetNextItem(pInsertAfter->GetNextItem());
-			pInsertAfter->SetNextItem(pItem);
-			pItem->SetPrevItem(pInsertAfter);
-		}
-	}
-    
-    pItem->SetIListCtrlBase(m_pIListCtrlBase);
+  pItem->SetIListCtrlBase(m_pIListCtrlBase);
 
-	SetCalcFirstLastDrawItemFlag();
+  SetCalcFirstLastDrawItemFlag();
 
-    // »Áπ˚ «≈˙¡ø≤Â»Î£¨Ω´◊”Ω·µ„µƒid“≤ª∫¥Ê∆¿¥
-    ListItemBase* pEnd = pItem->GetNextItem();
-    ListItemBase* p = pItem;
-    do 
-    {
-        if (p->GetId() != 0)
-        {
-            m_mapItem[p->GetId()] = p->GetIListItemBase();
-        }
-        p = p->GetNextTreeItem();
+  // Â¶ÇÊûúÊòØÊâπÈáèÊèíÂÖ•ÔºåÂ∞ÜÂ≠êÁªìÁÇπÁöÑid‰πüÁºìÂ≠òËµ∑Êù•
+  ListItemBase *pEnd = pItem->GetNextItem();
+  ListItemBase *p = pItem;
+  do {
+    if (p->GetId() != 0) {
+      m_mapItem[p->GetId()] = p->GetIListItemBase();
+    }
+    p = p->GetNextTreeItem();
 
-        m_nItemCount++; 
-    } 
-    while (p != pEnd);
+    m_nItemCount++;
+  } while (p != pEnd);
 
-	return true;
+  return true;
 }
 
-void  ListCtrlBase::GetDesiredSize(SIZE* pSize) 
-{
-    m_MgrLayout.Measure(pSize);
-}
+void ListCtrlBase::GetDesiredSize(SIZE *pSize) { m_MgrLayout.Measure(pSize); }
 
-
-#if 0 // -- º‹ππ∏ƒ‘Ï  -- ∑œ∆˙
-// ªÒ»°À˘”–item÷–£¨◊Ó¥ÛµƒøÌ∂»÷µ(»Áπ˚pDesiredHeight≤ªŒ™ø’£¨‘ÚÕ¨ ±∑µªÿ◊‹π≤–Ë“™µƒ∏ﬂ∂»)
+#if 0 // -- Êû∂ÊûÑÊîπÈÄ†  -- Â∫üÂºÉ
+// Ëé∑ÂèñÊâÄÊúâitem‰∏≠ÔºåÊúÄÂ§ßÁöÑÂÆΩÂ∫¶ÂÄº(Â¶ÇÊûúpDesiredHeight‰∏ç‰∏∫Á©∫ÔºåÂàôÂêåÊó∂ËøîÂõûÊÄªÂÖ±ÈúÄË¶ÅÁöÑÈ´òÂ∫¶)
 int ListCtrlBase::GetMaxDesiredWidth(int* pDesiredHeight)
 {
 	if (pDesiredHeight)
@@ -1753,658 +1564,571 @@ int ListCtrlBase::GetMaxDesiredWidth(int* pDesiredHeight)
 }
 #endif
 
-void  ListCtrlBase::SetCalcFirstLastDrawItemFlag()
-{
-    m_bNeedCalcFirstLastDrawItem = true; 
-    m_pFirstDrawItem = m_pLastDrawItem = nullptr;
+void ListCtrlBase::SetCalcFirstLastDrawItemFlag() {
+  m_bNeedCalcFirstLastDrawItem = true;
+  m_pFirstDrawItem = m_pLastDrawItem = nullptr;
 
-    if (m_pMKMgr)
-        m_pMKMgr->SetMouseNotReady();
+  if (m_pMKMgr)
+    m_pMKMgr->SetMouseNotReady();
 }
 
-// º∆À„µ±«∞µƒµ⁄“ª∏ˆø… ”ITEM
-void  ListCtrlBase::CalcFirstLastDrawItem()
-{
-	m_pFirstDrawItem = nullptr;
-	m_pLastDrawItem = nullptr;
+// ËÆ°ÁÆóÂΩìÂâçÁöÑÁ¨¨‰∏Ä‰∏™ÂèØËßÜITEM
+void ListCtrlBase::CalcFirstLastDrawItem() {
+  m_pFirstDrawItem = nullptr;
+  m_pLastDrawItem = nullptr;
 
-	CRect  rcClient;
-	m_pIListCtrlBase->GetObjectClientRect(&rcClient);
+  CRect rcClient;
+  m_pIListCtrlBase->GetObjectClientRect(&rcClient);
 
-	int xOffset = 0, yOffset = 0;
-    m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
 
-    LISTITEMSTYLE sAnimatingTest = {0};
-    sAnimatingTest.bMoveAnimating = 1;
+  LISTITEMSTYLE sAnimatingTest = {0};
+  sAnimatingTest.bMoveAnimating = 1;
 
-    CRect  rcParent;
+  CRect rcParent;
 
-    ListItemBase* pItem = FindVisibleItemFrom(m_pFirstItem);
-    while (pItem)
-    {
-        bool bAnimating = pItem->TestStyle(sAnimatingTest);
+  ListItemBase *pItem = FindVisibleItemFrom(m_pFirstItem);
+  while (pItem) {
+    bool bAnimating = pItem->TestStyle(sAnimatingTest);
 
-        // ÷ª“™ «‘⁄◊ˆ∂Øª≠£¨æÕ»œŒ™’‚∏ˆitem «ø…º˚µƒ°£
-        if (bAnimating)
-        {
-            if (nullptr == m_pFirstDrawItem)
-                m_pFirstDrawItem = pItem;
-        }
-        else
-        {
-            pItem->GetParentRect(&rcParent);
-            if (rcParent.bottom - yOffset <= rcClient.top)  // top cover unvisible item
-            {
-                pItem = pItem->GetNextVisibleItem();
-                continue;
-            }
-            if (rcParent.right - xOffset <= rcClient.left)
-            {
-                pItem = pItem->GetNextVisibleItem();
-                continue;
-            }
-
-            if (nullptr == m_pFirstDrawItem)
-                m_pFirstDrawItem = pItem;
-
-            if (rcParent.top - yOffset >= rcClient.bottom)  // last visible item
-                break;
-            if (rcParent.left - xOffset >= rcClient.right)
-                break;
-        }
-
-        m_pLastDrawItem = pItem;
+    // Âè™Ë¶ÅÊòØÂú®ÂÅöÂä®ÁîªÔºåÂ∞±ËÆ§‰∏∫Ëøô‰∏™itemÊòØÂèØËßÅÁöÑ„ÄÇ
+    if (bAnimating) {
+      if (nullptr == m_pFirstDrawItem)
+        m_pFirstDrawItem = pItem;
+    } else {
+      pItem->GetParentRect(&rcParent);
+      if (rcParent.bottom - yOffset <= rcClient.top) // top cover unvisible item
+      {
         pItem = pItem->GetNextVisibleItem();
+        continue;
+      }
+      if (rcParent.right - xOffset <= rcClient.left) {
+        pItem = pItem->GetNextVisibleItem();
+        continue;
+      }
+
+      if (nullptr == m_pFirstDrawItem)
+        m_pFirstDrawItem = pItem;
+
+      if (rcParent.top - yOffset >= rcClient.bottom) // last visible item
+        break;
+      if (rcParent.left - xOffset >= rcClient.right)
+        break;
     }
 
-    if (m_listctrlStyle.float_group_head)
-        UISendMessage(m_pIListCtrlBase, UI_LCN_FIRSTLASTDRAWITEM_UPDATED);
+    m_pLastDrawItem = pItem;
+    pItem = pItem->GetNextVisibleItem();
+  }
+
+  if (m_listctrlStyle.float_group_head)
+    UISendMessage(m_pIListCtrlBase, UI_LCN_FIRSTLASTDRAWITEM_UPDATED);
 }
 
-ListItemBase*  ListCtrlBase::GetFirstDrawItem()
-{
-	return m_pFirstDrawItem;   // ”–ø…ƒ‹’‚∏ˆ ±∫Úm_nNeedCalcFirstLastVisibleItemŒ™true£¨µ´»‘»ª∑µªÿm_pFirstVisibleItem£¨“ÚŒ™ø…ƒ‹ªπ√ª”–µ˜”√UpdateRectItem
+ListItemBase *ListCtrlBase::GetFirstDrawItem() {
+  return m_pFirstDrawItem; // ÊúâÂèØËÉΩËøô‰∏™Êó∂ÂÄôm_nNeedCalcFirstLastVisibleItem‰∏∫trueÔºå‰ΩÜ‰ªçÁÑ∂ËøîÂõûm_pFirstVisibleItemÔºåÂõ†‰∏∫ÂèØËÉΩËøòÊ≤°ÊúâË∞ÉÁî®UpdateRectItem
 }
-ListItemBase*  ListCtrlBase::GetLastDrawItem()
-{
-	return m_pLastDrawItem;
-}
+ListItemBase *ListCtrlBase::GetLastDrawItem() { return m_pLastDrawItem; }
 
-ListItemBase*  ListCtrlBase::GetFirstItem()
-{ 
-    if (m_bNeedSortItems)
-    {
-        Sort();
-    }
-    return m_pFirstItem;
+ListItemBase *ListCtrlBase::GetFirstItem() {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
+  return m_pFirstItem;
 }
-ListItemBase*  ListCtrlBase::GetLastItem()
-{ 
-    if (m_bNeedSortItems)
-    {
-        Sort();
-    }
-    return m_pLastItem; 
+ListItemBase *ListCtrlBase::GetLastItem() {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
+  return m_pLastItem;
 }
 
+ListItemBase *ListCtrlBase::GetEditingItem() { return m_pEditingItem; }
+void ListCtrlBase::SetEditingItem(ListItemBase *p) { m_pEditingItem = p; }
 
-ListItemBase*  ListCtrlBase::GetEditingItem()
-{
-	return m_pEditingItem;
+ListItemBase *ListCtrlBase::FindVisibleItemFrom(ListItemBase *pFindFrom) {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
+
+  if (nullptr == pFindFrom)
+    pFindFrom = m_pFirstItem;
+
+  while (pFindFrom) {
+    if (pFindFrom->IsVisible())
+      return pFindFrom;
+
+    pFindFrom = pFindFrom->GetNextVisibleItem();
+  }
+
+  return nullptr;
 }
-void  ListCtrlBase::SetEditingItem(ListItemBase* p)
-{
-	m_pEditingItem = p;
-}
+ListItemBase *ListCtrlBase::FindSelectableItemFrom(ListItemBase *pFindFrom) {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
 
-ListItemBase*  ListCtrlBase::FindVisibleItemFrom(ListItemBase* pFindFrom)
-{
-    if (m_bNeedSortItems)
-    {
-        Sort();
-    }
+  if (nullptr == pFindFrom)
+    pFindFrom = m_pFirstItem;
 
-    if (nullptr == pFindFrom)
-        pFindFrom = m_pFirstItem;
+  while (pFindFrom) {
+    if (pFindFrom->IsSelectable())
+      return pFindFrom;
 
-    while (pFindFrom)
-    {
-        if (pFindFrom->IsVisible())
-            return pFindFrom;
+    pFindFrom = pFindFrom->GetNextSelectableItem();
+  }
 
-        pFindFrom = pFindFrom->GetNextVisibleItem();
-    }
-
-    return nullptr;
-}
-ListItemBase*  ListCtrlBase::FindSelectableItemFrom(ListItemBase* pFindFrom)
-{
-    if (m_bNeedSortItems)
-    {
-        Sort();
-    }
-
-    if (nullptr == pFindFrom)
-        pFindFrom = m_pFirstItem;
-
-    while (pFindFrom)
-    {
-        if (pFindFrom->IsSelectable())
-            return pFindFrom;
-
-        pFindFrom = pFindFrom->GetNextSelectableItem();
-    }
-
-    return nullptr;
+  return nullptr;
 }
 
-ListItemBase*  ListCtrlBase::FindFocusableItemFrom(ListItemBase* pFindFrom)
-{
-    if (m_bNeedSortItems)
-    {
-        Sort();
-    }
+ListItemBase *ListCtrlBase::FindFocusableItemFrom(ListItemBase *pFindFrom) {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
 
-    if (nullptr == pFindFrom)
-        pFindFrom = m_pFirstItem;
+  if (nullptr == pFindFrom)
+    pFindFrom = m_pFirstItem;
 
-    while (pFindFrom)
-    {
-        if (pFindFrom->CanFocus())
-            return pFindFrom;
+  while (pFindFrom) {
+    if (pFindFrom->CanFocus())
+      return pFindFrom;
 
-        pFindFrom = pFindFrom->GetNextFocusableItem();
-    }
+    pFindFrom = pFindFrom->GetNextFocusableItem();
+  }
 
-    return nullptr;
+  return nullptr;
 }
 
-bool  ListCtrlBase::IsItemRectVisibleInScreen(LPCRECT prc)
-{
-    CRect rcClient;
-    m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+bool ListCtrlBase::IsItemRectVisibleInScreen(LPCRECT prc) {
+  CRect rcClient;
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
 
-    int xOffset = 0, yOffset = 0;
-    m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
 
-    if (prc->bottom - yOffset <= 0) 
-        return false;
+  if (prc->bottom - yOffset <= 0)
+    return false;
 
-    if (prc->top - yOffset >= rcClient.Height())  
-        return false;
+  if (prc->top - yOffset >= rcClient.Height())
+    return false;
 
-    if (prc->left - xOffset >= rcClient.Width())
-        return false;
+  if (prc->left - xOffset >= rcClient.Width())
+    return false;
 
-    if (prc->right - xOffset <= 0)
-        return false;
+  if (prc->right - xOffset <= 0)
+    return false;
 
-    return true;
+  return true;
 }
 
-bool ListCtrlBase::IsItemVisibleInScreen(ListItemBase* pItem)
-{
-    if (nullptr == pItem)
-        return false;
+bool ListCtrlBase::IsItemVisibleInScreen(ListItemBase *pItem) {
+  if (nullptr == pItem)
+    return false;
 
-    if (false == pItem->IsVisible())
-        return false;
+  if (false == pItem->IsVisible())
+    return false;
 
-    UpdateListIfNeed();
+  UpdateListIfNeed();
 
-    CRect rcParent;
-    pItem->GetParentRect(&rcParent);
-    return IsItemRectVisibleInScreen(&rcParent);
+  CRect rcParent;
+  pItem->GetParentRect(&rcParent);
+  return IsItemRectVisibleInScreen(&rcParent);
 }
 
 bool ListCtrlBase::IsItemVisibleInScreenEx(
-    ListItemBase* pItem,
-    /*LISTITEM_VISIBLE_POS_TYPE*/long& ePos)
-{
-    ePos = LISTITEM_UNVISIBLE_ERROR;
+    ListItemBase *pItem,
+    /*LISTITEM_VISIBLE_POS_TYPE*/ long &ePos) {
+  ePos = LISTITEM_UNVISIBLE_ERROR;
 
-	if (nullptr == pItem)
-		return false;
+  if (nullptr == pItem)
+    return false;
 
-	if (false == pItem->IsVisible())
-		return false;
+  if (false == pItem->IsVisible())
+    return false;
 
-    ePos = LISTITEM_VISIBLE;
+  ePos = LISTITEM_VISIBLE;
 
-    UpdateListIfNeed();
+  UpdateListIfNeed();
 
-	CRect rcClient, rcItemParent;
-	m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-	pItem->GetParentRect(&rcItemParent);
+  CRect rcClient, rcItemParent;
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+  pItem->GetParentRect(&rcItemParent);
 
-	int xOffset = 0, yOffset = 0;
-	m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
 
-	int yTop = rcItemParent.top - yOffset;
-	int yBottom = rcItemParent.bottom - yOffset;
-    int xLeft = rcItemParent.left - xOffset;
-    int xRight = rcItemParent.right - xOffset;
+  int yTop = rcItemParent.top - yOffset;
+  int yBottom = rcItemParent.bottom - yOffset;
+  int xLeft = rcItemParent.left - xOffset;
+  int xRight = rcItemParent.right - xOffset;
 
-	if (yBottom <= 0) 
-	{
-		ePos = LISTITEM_UNVISIBLE_TOP;
-		return false;
-	}
-	else if (yTop >= rcClient.Height())
-	{
-		ePos = LISTITEM_UNVISIBLE_BOTTOM;
-		return false;
-	}
-    else if (xRight <= 0)
-    {
-        ePos = LISTITEM_UNVISIBLE_LEFT;
-        return false;
-    }
-    else if (xLeft >= rcClient.Width())
-    {
-        ePos = LISTITEM_UNVISIBLE_RIGHT;
-        return false;
-    }
+  if (yBottom <= 0) {
+    ePos = LISTITEM_UNVISIBLE_TOP;
+    return false;
+  } else if (yTop >= rcClient.Height()) {
+    ePos = LISTITEM_UNVISIBLE_BOTTOM;
+    return false;
+  } else if (xRight <= 0) {
+    ePos = LISTITEM_UNVISIBLE_LEFT;
+    return false;
+  } else if (xLeft >= rcClient.Width()) {
+    ePos = LISTITEM_UNVISIBLE_RIGHT;
+    return false;
+  }
 
-    if (yTop < 0)
-    {
-        ePos |= LISTITEM_VISIBLE_COVERTOP;
-    }
-    if (yBottom > rcClient.Height())
-    {
-        ePos |= LISTITEM_VISIBLE_COVERBOTTOM;
-    }
-    if (xLeft < 0)
-    {
-        ePos |= LISTITEM_VISIBLE_COVERLEFT;
-    }
-    if (xRight > rcClient.Width())
-    {
-        ePos |= LISTITEM_VISIBLE_COVERRIGHT;
-    }
+  if (yTop < 0) {
+    ePos |= LISTITEM_VISIBLE_COVERTOP;
+  }
+  if (yBottom > rcClient.Height()) {
+    ePos |= LISTITEM_VISIBLE_COVERBOTTOM;
+  }
+  if (xLeft < 0) {
+    ePos |= LISTITEM_VISIBLE_COVERLEFT;
+  }
+  if (xRight > rcClient.Width()) {
+    ePos |= LISTITEM_VISIBLE_COVERRIGHT;
+  }
 
-	return true;
+  return true;
 }
 
-// …Ë÷√πˆ∂ØÃıµƒŒª÷√£¨»∑±£pItemø…º˚
-// ∑µªÿøÿº˛ «∑Òπˆ∂Ø¡À£® «∑Ò–Ë“™À¢–¬£©
-void  ListCtrlBase::MakeItemVisible(ListItemBase* pItem, bool* pbNeedUpdate)
-{
-	bool  bNeedUpdateObject = false;
+// ËÆæÁΩÆÊªöÂä®Êù°ÁöÑ‰ΩçÁΩÆÔºåÁ°Æ‰øùpItemÂèØËßÅ
+// ËøîÂõûÊéß‰ª∂ÊòØÂê¶ÊªöÂä®‰∫ÜÔºàÊòØÂê¶ÈúÄË¶ÅÂà∑Êñ∞Ôºâ
+void ListCtrlBase::MakeItemVisible(ListItemBase *pItem, bool *pbNeedUpdate) {
+  bool bNeedUpdateObject = false;
 
-	if (nullptr == pItem)
-		return ;
+  if (nullptr == pItem)
+    return;
 
-    if (pItem->GetParentItem())
-    {
-        ExpandItem(pItem->GetParentItem(), false);
+  if (pItem->GetParentItem()) {
+    ExpandItem(pItem->GetParentItem(), false);
+  }
+
+  /*LISTITEM_VISIBLE_POS_TYPE*/ long ePosType = LISTITEM_VISIBLE;
+  this->IsItemVisibleInScreenEx(pItem, ePosType);
+  if (ePosType == LISTITEM_VISIBLE || ePosType == LISTITEM_UNVISIBLE_ERROR)
+    return;
+
+  CRect rc;
+  CRect rcClient;
+  pItem->GetParentRect(&rc);
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+
+  if (LISTITEM_UNVISIBLE_TOP & ePosType ||
+      LISTITEM_VISIBLE_COVERTOP & ePosType) {
+    bNeedUpdateObject = true;
+    m_mgrScrollBar.SetVScrollPos(rc.top);
+  } else if (LISTITEM_UNVISIBLE_BOTTOM & ePosType ||
+             LISTITEM_VISIBLE_COVERBOTTOM & ePosType) {
+    bNeedUpdateObject = true;
+    m_mgrScrollBar.SetVScrollPos(rc.bottom - rcClient.Height());
+  }
+
+  if (ePosType & LISTITEM_UNVISIBLE_LEFT ||
+      ePosType & LISTITEM_VISIBLE_COVERLEFT) {
+    // ËÄÉËôë‰∏ÄË°åÊòæÁ§∫‰∏ç‰∏ã‰∏ÄÂàóÁöÑÊÉÖÂÜµ
+    int nLimitScrollPos = rc.right - rcClient.Width();
+    int nDesiredScrollPos = rc.left;
+    if (nDesiredScrollPos > nLimitScrollPos) {
+      bNeedUpdateObject = true;
+      m_mgrScrollBar.SetHScrollPos(nDesiredScrollPos);
     }
-
-	/*LISTITEM_VISIBLE_POS_TYPE*/long ePosType = LISTITEM_VISIBLE;
-	this->IsItemVisibleInScreenEx(pItem, ePosType);
-    if (ePosType == LISTITEM_VISIBLE ||
-        ePosType == LISTITEM_UNVISIBLE_ERROR)
-        return;
-
-    CRect rc;
-    CRect rcClient;
-    pItem->GetParentRect(&rc);
-    m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-
-	if (LISTITEM_UNVISIBLE_TOP & ePosType || LISTITEM_VISIBLE_COVERTOP & ePosType)
-	{
-		bNeedUpdateObject = true;
-		m_mgrScrollBar.SetVScrollPos(rc.top);
-	}
-	else if (LISTITEM_UNVISIBLE_BOTTOM & ePosType || LISTITEM_VISIBLE_COVERBOTTOM & ePosType)
-	{
-		bNeedUpdateObject = true;
-		m_mgrScrollBar.SetVScrollPos(rc.bottom - rcClient.Height());
-	}
-
-    if (ePosType & LISTITEM_UNVISIBLE_LEFT || ePosType & LISTITEM_VISIBLE_COVERLEFT)
-    {
-        // øº¬«“ª––œ‘ æ≤ªœ¬“ª¡–µƒ«Èøˆ
-        int nLimitScrollPos = rc.right - rcClient.Width();
-        int nDesiredScrollPos = rc.left;
-        if (nDesiredScrollPos > nLimitScrollPos)
-        {
-            bNeedUpdateObject = true;
-            m_mgrScrollBar.SetHScrollPos(nDesiredScrollPos);
-        }
+  } else if (ePosType & LISTITEM_UNVISIBLE_RIGHT ||
+             ePosType & LISTITEM_VISIBLE_COVERRIGHT) {
+    // ËÄÉËôë‰∏ÄË°åÊòæÁ§∫‰∏ç‰∏ã‰∏ÄÂàóÁöÑÊÉÖÂÜµ
+    int nLimitScrollPos = rc.left;
+    int nDesiredScrollPos = rc.right - rcClient.Width();
+    if (nDesiredScrollPos < nLimitScrollPos) {
+      bNeedUpdateObject = true;
+      m_mgrScrollBar.SetHScrollPos(nDesiredScrollPos);
     }
-    else if (ePosType & LISTITEM_UNVISIBLE_RIGHT || ePosType & LISTITEM_VISIBLE_COVERRIGHT)
-    {
-        // øº¬«“ª––œ‘ æ≤ªœ¬“ª¡–µƒ«Èøˆ
-        int nLimitScrollPos = rc.left;
-        int nDesiredScrollPos = rc.right - rcClient.Width();
-        if (nDesiredScrollPos < nLimitScrollPos)
-        {
-            bNeedUpdateObject = true;
-            m_mgrScrollBar.SetHScrollPos(nDesiredScrollPos);
-        }
-    }
+  }
 
-    if (bNeedUpdateObject)
-        this->SetCalcFirstLastDrawItemFlag();
+  if (bNeedUpdateObject)
+    this->SetCalcFirstLastDrawItemFlag();
 
-    if (pbNeedUpdate)
-        *pbNeedUpdate = bNeedUpdateObject;
+  if (pbNeedUpdate)
+    *pbNeedUpdate = bNeedUpdateObject;
 }
 
+void ListCtrlBase::ObjectRect2WindowRect(RECT *prcObj, RECT *prcWindow) {
+  if (!prcObj || !prcWindow)
+    return;
 
-void  ListCtrlBase::ObjectRect2WindowRect(RECT* prcObj, RECT* prcWindow)
-{
-    if (!prcObj || !prcWindow)
-        return;
+  RECT rcWnd = *prcObj;
 
-    RECT  rcWnd = *prcObj;
+  RECT rcCtrl;
+  GetClientRectInWindow(&rcCtrl);
+  OffsetRect(&rcWnd, rcCtrl.left, rcCtrl.top);
 
-    RECT rcCtrl;
-    GetClientRectInWindow(&rcCtrl);
-    OffsetRect(&rcWnd, rcCtrl.left, rcCtrl.top);
-
-    CopyRect(prcWindow, &rcWnd);
+  CopyRect(prcWindow, &rcWnd);
 }
 
-void  ListCtrlBase::ObjectRect2ItemRect(RECT* prcObject, RECT* prcItem)
-{
-	if (!prcItem || !prcObject)
-		return;
+void ListCtrlBase::ObjectRect2ItemRect(RECT *prcObject, RECT *prcItem) {
+  if (!prcItem || !prcObject)
+    return;
 
-	RECT  rcItem = *prcObject;
+  RECT rcItem = *prcObject;
 
-	int xOffset = 0, yOffset = 0;
-	m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
-	OffsetRect(&rcItem, xOffset, yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  OffsetRect(&rcItem, xOffset, yOffset);
 
-	RECT rcClient;
-	m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-	OffsetRect(&rcItem, -rcClient.left, -rcClient.top);
+  RECT rcClient;
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+  OffsetRect(&rcItem, -rcClient.left, -rcClient.top);
 
-	CopyRect(prcItem, &rcItem);
+  CopyRect(prcItem, &rcItem);
 }
 
-void  ListCtrlBase::ItemRect2ObjectRect(RECT* prcItem, RECT* prcObject)
-{
-    if (!prcItem || !prcObject)
-        return;
+void ListCtrlBase::ItemRect2ObjectRect(RECT *prcItem, RECT *prcObject) {
+  if (!prcItem || !prcObject)
+    return;
 
-    RECT  rcObj = *prcItem;
+  RECT rcObj = *prcItem;
 
-    int xOffset = 0, yOffset = 0;
-    m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
-    OffsetRect(&rcObj, -xOffset, -yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  OffsetRect(&rcObj, -xOffset, -yOffset);
 
-    RECT rcClient;
-    m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-    OffsetRect(&rcObj, rcClient.left, rcClient.top);
+  RECT rcClient;
+  m_pIListCtrlBase->GetClientRectInObject(&rcClient);
+  OffsetRect(&rcObj, rcClient.left, rcClient.top);
 
-    CopyRect(prcObject, &rcObj);
+  CopyRect(prcObject, &rcObj);
 }
 
-void ListCtrlBase::ItemRect2WindowRect(LPCRECT prc, LPRECT prcRet)
-{
-	if (nullptr == prc || nullptr == prcRet)
-		return;
+void ListCtrlBase::ItemRect2WindowRect(LPCRECT prc, LPRECT prcRet) {
+  if (nullptr == prc || nullptr == prcRet)
+    return;
 
-	CRect rcItem(*prc);
+  CRect rcItem(*prc);
 
-	int xOffset = 0, yOffset = 0;
-	m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
-	rcItem.OffsetRect(-xOffset, -yOffset);
+  int xOffset = 0, yOffset = 0;
+  m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);
+  rcItem.OffsetRect(-xOffset, -yOffset);
 
-	CRect rcWindow;
-	GetClientRectInWindow(&rcWindow);
-	rcItem.OffsetRect(rcWindow.left, rcWindow.top);
-	CopyRect(prcRet, &rcItem);
+  CRect rcWindow;
+  GetClientRectInWindow(&rcWindow);
+  rcItem.OffsetRect(rcWindow.left, rcWindow.top);
+  CopyRect(prcRet, &rcItem);
 
-	// µ˜”√GetVisibleRectInWindowø…ªÒ»°µΩºÙ≤√«¯
-	// IntersectRect(prcRet, &rcItem, &rcWindow);
+  // Ë∞ÉÁî®GetVisibleRectInWindowÂèØËé∑ÂèñÂà∞Ââ™Ë£ÅÂå∫
+  // IntersectRect(prcRet, &rcItem, &rcWindow);
 }
 
-void ListCtrlBase::WindowPoint2ItemPoint(ListItemBase* pItem, const POINT* ptWnd, POINT* ptItem)
-{
-    if (nullptr == pItem || nullptr == ptWnd || nullptr == ptItem)
-        return;
+void ListCtrlBase::WindowPoint2ItemPoint(ListItemBase *pItem,
+                                         const POINT *ptWnd, POINT *ptItem) {
+  if (nullptr == pItem || nullptr == ptWnd || nullptr == ptItem)
+    return;
 
-    if (pItem->IsFloat())
-    {
-        this->WindowPoint2ObjectPoint(ptWnd, ptItem, true);
+  if (pItem->IsFloat()) {
+    this->WindowPoint2ObjectPoint(ptWnd, ptItem, true);
 
-        RECT  rc;
-        pItem->GetFloatRect(&rc);
-        ptItem->x -= rc.left;
-        ptItem->y -= rc.top;
-    }
-    else
-    {
-        CRect rcItem;
-        pItem->GetParentRect(&rcItem);
+    RECT rc;
+    pItem->GetFloatRect(&rc);
+    ptItem->x -= rc.left;
+    ptItem->y -= rc.top;
+  } else {
+    CRect rcItem;
+    pItem->GetParentRect(&rcItem);
 
-        WindowPoint2ObjectClientPoint(ptWnd, ptItem, true);
-        ptItem->x -= rcItem.left;
-        ptItem->y -= rcItem.top;
-    }
+    WindowPoint2ObjectClientPoint(ptWnd, ptItem, true);
+    ptItem->x -= rcItem.left;
+    ptItem->y -= rcItem.top;
+  }
 }
 
-void ListCtrlBase::OnKeyDown(unsigned int nChar, unsigned int nRepCnt, unsigned int nFlags)
-{
-    // œÚÕ‚≤ø∑¢≥ˆnotify£¨»Áπ˚Õ‚≤ø¥¶¿Ì£¨‘Ú≤ª‘ŸΩª”…mousekeymgr¥¶¿Ì
-// 	UIMSG  msg;
-// 	msg.message = UI_MSG_NOTIFY;
-// 	msg.nCode = UI_NM_KEYDOWN;
-// 	msg.wParam = nChar;
-// 	msg.pMsgFrom = m_pIListCtrlBase;
-// 
-//     long lRet = m_pIListCtrlBase->DoNotify(&msg);
-// 	if (0 == lRet)
+void ListCtrlBase::OnKeyDown(unsigned int nChar, unsigned int nRepCnt,
+                             unsigned int nFlags) {
+  // ÂêëÂ§ñÈÉ®ÂèëÂá∫notifyÔºåÂ¶ÇÊûúÂ§ñÈÉ®Â§ÑÁêÜÔºåÂàô‰∏çÂÜç‰∫§Áî±mousekeymgrÂ§ÑÁêÜ
+  // 	UIMSG  msg;
+  // 	msg.message = UI_MSG_NOTIFY;
+  // 	msg.nCode = UI_NM_KEYDOWN;
+  // 	msg.wParam = nChar;
+  // 	msg.pMsgFrom = m_pIListCtrlBase;
+  //
+  //     long lRet = m_pIListCtrlBase->DoNotify(&msg);
+  // 	if (0 == lRet)
 
-
-    bool bHandled = false;
-	keydown.emit(m_pIListCtrlBase, nChar, bHandled);
-    if (!bHandled)
-	{
-		SetMsgHandled(FALSE);
-	}
-}
-
-void  ListCtrlBase::OnLButtonDown(unsigned int nFlags, POINT point)
-{
-    if (m_listctrlStyle.dragwnd_if_clickblank &&
-        !GetHoverItem() && !GetPressItem())
-    {
-        // ’‚÷÷«Èøˆœ¬√Ê÷±Ω”Õœ∂Ø¥∞ø⁄
-        IWindowBase* pWindowBase = m_pIListCtrlBase->GetWindowObject();
-        if (pWindowBase)
-        {
-            pWindowBase->SetPressObject(nullptr);
-            ReleaseCapture();
-
-            ::SendMessage(pWindowBase->GetHWND(), WM_NCLBUTTONDOWN, HTCAPTION, GetMessagePos());
-            return;
-        }
-    }
-
+  bool bHandled = false;
+  keydown.emit(m_pIListCtrlBase, nChar, bHandled);
+  if (!bHandled) {
     SetMsgHandled(FALSE);
+  }
 }
 
-void ListCtrlBase::OnStateChanged(unsigned int nMask)
-{
-    SetMsgHandled(FALSE);
-	if (nMask & OSB_FOCUS)
-	{
-		m_pIListCtrlBase->Invalidate();
-	}
-}
+void ListCtrlBase::OnLButtonDown(unsigned int nFlags, POINT point) {
+  if (m_listctrlStyle.dragwnd_if_clickblank && !GetHoverItem() &&
+      !GetPressItem()) {
+    // ËøôÁßçÊÉÖÂÜµ‰∏ãÈù¢Áõ¥Êé•ÊãñÂä®Á™óÂè£
+    IWindowBase *pWindowBase = m_pIListCtrlBase->GetWindowObject();
+    if (pWindowBase) {
+      pWindowBase->SetPressObject(nullptr);
+      ReleaseCapture();
 
-void ListCtrlBase::OnVScroll(int nSBCode, int nPos, IMessage* pMsgFrom)
-{
-	SetMsgHandled(FALSE);
-	SetCalcFirstLastDrawItemFlag();
-}
-void ListCtrlBase::OnHScroll(int nSBCode, int nPos, IMessage* pMsgFrom)
-{
-    SetMsgHandled(FALSE);
-    SetCalcFirstLastDrawItemFlag();
-}
-BOOL  ListCtrlBase::OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt)
-{
-    BOOL bHandled = TRUE;
-    BOOL bNeedRefresh = FALSE;
-    m_mgrScrollBar.DoMouseWheel(nFlags, zDelta, pt, bHandled, bNeedRefresh);
-
-    if (bNeedRefresh)
-    {
-        SetCalcFirstLastDrawItemFlag();
-
-        Invalidate();
+      ::SendMessage(pWindowBase->GetHWND(), WM_NCLBUTTONDOWN, HTCAPTION,
+                    GetMessagePos());
+      return;
     }
+  }
 
-    return bHandled;
+  SetMsgHandled(FALSE);
 }
 
-long  ListCtrlBase::OnInertiaVScroll(unsigned int uMsg, WPARAM wParam, LPARAM lParam)
-{
-    SetCalcFirstLastDrawItemFlag();
-    this->Invalidate();
-    return 0;
-}
-
-// Õ‚≤øµ˜”√
-void  ListCtrlBase::SetNeedLayoutItems()
-{
-	m_bNeedLayoutItems = true;
-    Invalidate();
-
-	if (IsRectEmpty(&m_rcParent))
-	{
-		// »Áπ˚øÿº˛¥Û–°Œ™ø’£¨µ˜”√Invalidate“≤≤ªª·¥•∑¢onpaint£¨“≤æÕ≤ªª·
-		// ¥•∑¢layoutitem
-		// HACK:
-		SetRect(&m_rcParent, 0, 0, 1, 1);
-	}
-}
-
-void  ListCtrlBase::SetNeedSortItems()
-{
-    m_bNeedSortItems = true;
+void ListCtrlBase::OnStateChanged(unsigned int nMask) {
+  SetMsgHandled(FALSE);
+  if (nMask & OSB_FOCUS) {
     m_pIListCtrlBase->Invalidate();
+  }
 }
 
-void  ListCtrlBase::UpdateListIfNeed()
-{
-    if (m_bNeedSortItems)
-    {
-        Sort();
+void ListCtrlBase::OnVScroll(int nSBCode, int nPos, IMessage *pMsgFrom) {
+  SetMsgHandled(FALSE);
+  SetCalcFirstLastDrawItemFlag();
+}
+void ListCtrlBase::OnHScroll(int nSBCode, int nPos, IMessage *pMsgFrom) {
+  SetMsgHandled(FALSE);
+  SetCalcFirstLastDrawItemFlag();
+}
+BOOL ListCtrlBase::OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt) {
+  BOOL bHandled = TRUE;
+  BOOL bNeedRefresh = FALSE;
+  m_mgrScrollBar.DoMouseWheel(nFlags, zDelta, pt, bHandled, bNeedRefresh);
+
+  if (bNeedRefresh) {
+    SetCalcFirstLastDrawItemFlag();
+
+    Invalidate();
+  }
+
+  return bHandled;
+}
+
+long ListCtrlBase::OnInertiaVScroll(unsigned int uMsg, WPARAM wParam,
+                                    LPARAM lParam) {
+  SetCalcFirstLastDrawItemFlag();
+  this->Invalidate();
+  return 0;
+}
+
+// Â§ñÈÉ®Ë∞ÉÁî®
+void ListCtrlBase::SetNeedLayoutItems() {
+  m_bNeedLayoutItems = true;
+  Invalidate();
+
+  if (IsRectEmpty(&m_rcParent)) {
+    // Â¶ÇÊûúÊéß‰ª∂Â§ßÂ∞è‰∏∫Á©∫ÔºåË∞ÉÁî®Invalidate‰πü‰∏ç‰ºöËß¶ÂèëonpaintÔºå‰πüÂ∞±‰∏ç‰ºö
+    // Ëß¶Âèëlayoutitem
+    // HACK:
+    SetRect(&m_rcParent, 0, 0, 1, 1);
+  }
+}
+
+void ListCtrlBase::SetNeedSortItems() {
+  m_bNeedSortItems = true;
+  m_pIListCtrlBase->Invalidate();
+}
+
+void ListCtrlBase::UpdateListIfNeed() {
+  if (m_bNeedSortItems) {
+    Sort();
+  }
+  if (m_bNeedLayoutItems) {
+    LayoutItem(nullptr, false);
+  }
+  if (m_bNeedUpdateItemIndex) {
+    UpdateItemIndex(nullptr);
+  }
+  if (m_bNeedCalcFirstLastDrawItem) {
+    m_bNeedCalcFirstLastDrawItem = false;
+    this->CalcFirstLastDrawItem();
+  }
+}
+
+void ListCtrlBase::OnPaint(IRenderTarget *pRenderTarget) {
+  m_bPaintingCtrlRef++;
+  UpdateListIfNeed();
+
+  ListItemBase *pItem = m_pFirstDrawItem;
+  while (pItem) {
+    if (pItem->IsFloat() || pItem->GetSelfLayer()) {
+      pItem = pItem->GetNextVisibleItem();
+      continue;
     }
-    if (m_bNeedLayoutItems)
-    {
-        LayoutItem(nullptr, false);
+
+    RECT rcParent;
+    pItem->GetParentRect(&rcParent);
+    if (pRenderTarget->IsRelativeRectInClip(&rcParent)) {
+      if (HANDLED != this->OnDrawItem(pRenderTarget, pItem)) // ÁªòÂà∂ËÉåÊôØ
+      {
+        pItem->Draw(pRenderTarget);                 // Â≠êÂØπË±°ÁªòÂà∂
+        pItem->DrawItemInnerControl(pRenderTarget); // ÁªòÂà∂ÂÜÖÈÉ®Êéß‰ª∂
+      }
     }
-    if (m_bNeedUpdateItemIndex)
-    {
-        UpdateItemIndex(nullptr);
-    }
-    if (m_bNeedCalcFirstLastDrawItem)
-    {
-        m_bNeedCalcFirstLastDrawItem = false;
-        this->CalcFirstLastDrawItem();
-    }
+
+    if (pItem == m_pLastDrawItem)
+      break;
+
+    pItem = pItem->GetNextVisibleItem();
+  }
+
+  m_bPaintingCtrlRef--;
 }
 
-void ListCtrlBase::OnPaint(IRenderTarget* pRenderTarget)
-{ 
-    m_bPaintingCtrlRef ++;
-    UpdateListIfNeed();
-
-	
-	ListItemBase* pItem = m_pFirstDrawItem;
-	while (pItem)
-	{
-		if (pItem->IsFloat() || pItem->GetSelfLayer())
-		{
-			pItem = pItem->GetNextVisibleItem();
-			continue;
-		}
-		
-        RECT rcParent;
-        pItem->GetParentRect(&rcParent);
-        if (pRenderTarget->IsRelativeRectInClip(&rcParent))
-        {
-            if (HANDLED != this->OnDrawItem(pRenderTarget, pItem)) // ªÊ÷∆±≥æ∞
-            {
-                pItem->Draw(pRenderTarget);                        // ◊”∂‘œÛªÊ÷∆
-                pItem->DrawItemInnerControl(pRenderTarget);        // ªÊ÷∆ƒ⁄≤øøÿº˛
-            }
-        }
-
-		if (pItem == m_pLastDrawItem)
-			break;
-
-		pItem = pItem->GetNextVisibleItem();
-	}
-
-    m_bPaintingCtrlRef--;
+void ListCtrlBase::OnPostPaint(IRenderTarget *pRenderTarget) {
+  m_MgrFloatItem.DoPaint(pRenderTarget);
 }
 
-void  ListCtrlBase::OnPostPaint(IRenderTarget* pRenderTarget)
-{
-    m_MgrFloatItem.DoPaint(pRenderTarget);
+HANDLED_VALUE ListCtrlBase::OnDrawItem(IRenderTarget *pRenderTarget,
+                                       ListItemBase *p) {
+  // 	ControlStyle s = {0};
+  // 	s.ownerdraw = 1;
+  //     if (m_pIListCtrlBase->TestControlStyle(&s))
+  //     {
+  //         OWNERDRAWSTRUCT s;
+  //         s.pItemDraw = p->GetIListItemBase();
+  //         s.pObjDraw = m_pIListCtrlBase;
+  //         s.pRenderTarget = pRenderTarget;
+  //
+  //         UIMSG  msg;
+  //         msg.message = UI_MSG_NOTIFY;
+  //         msg.nCode = UI_WM_OWNERDRAW;
+  //         msg.wParam = (WPARAM)&s;
+  //         msg.pMsgFrom = m_pIListCtrlBase;
+  //
+  //         if (HANDLED == m_pIListCtrlBase->DoNotify(&msg))
+  //             return HANDLED;
+  //     }
+  //
+  //     LISTITEMSTYLE s2 = {0};
+  //     s2.bOwnerDraw = 1;
+  //     if (p->TestStyle(s2))
+  //     {
+  //         OWNERDRAWSTRUCT s;
+  //         s.pItemDraw = p->GetIListItemBase();
+  //         s.pObjDraw = m_pIListCtrlBase;
+  //         s.pRenderTarget = pRenderTarget;
+  //
+  //         UIMSG  msg;
+  //         msg.message = UI_WM_OWNERDRAW;
+  //         msg.wParam = (WPARAM)&s;
+  //         msg.pMsgFrom = msg.pMsgTo = m_pIListCtrlBase;
+  //         if (HANDLED == UISendMessage(&msg))
+  //             return HANDLED;
+  //     }
+
+  return NOT_HANDLED;
 }
 
-HANDLED_VALUE  ListCtrlBase::OnDrawItem(IRenderTarget* pRenderTarget, ListItemBase* p)
-{
-// 	ControlStyle s = {0};
-// 	s.ownerdraw = 1;
-//     if (m_pIListCtrlBase->TestControlStyle(&s))
-//     {
-//         OWNERDRAWSTRUCT s;
-//         s.pItemDraw = p->GetIListItemBase();
-//         s.pObjDraw = m_pIListCtrlBase;
-//         s.pRenderTarget = pRenderTarget;
-// 
-//         UIMSG  msg;
-//         msg.message = UI_MSG_NOTIFY;
-//         msg.nCode = UI_WM_OWNERDRAW;
-//         msg.wParam = (WPARAM)&s;
-//         msg.pMsgFrom = m_pIListCtrlBase;
-// 
-//         if (HANDLED == m_pIListCtrlBase->DoNotify(&msg))
-//             return HANDLED;
-//     }
-// 
-//     LISTITEMSTYLE s2 = {0};
-//     s2.bOwnerDraw = 1;
-//     if (p->TestStyle(s2))
-//     {
-//         OWNERDRAWSTRUCT s;
-//         s.pItemDraw = p->GetIListItemBase();
-//         s.pObjDraw = m_pIListCtrlBase;
-//         s.pRenderTarget = pRenderTarget;
-// 
-//         UIMSG  msg;
-//         msg.message = UI_WM_OWNERDRAW;
-//         msg.wParam = (WPARAM)&s;
-//         msg.pMsgFrom = msg.pMsgTo = m_pIListCtrlBase;
-//         if (HANDLED == UISendMessage(&msg))
-//             return HANDLED;
-//     }
-
-    return NOT_HANDLED;
+void ListCtrlBase::SetHoverItem(ListItemBase *pItem) {
+  if (m_pMKMgr)
+    m_pMKMgr->SetHoverItem(pItem);
 }
-
-void ListCtrlBase::SetHoverItem(ListItemBase* pItem)
-{
-	if (m_pMKMgr)
-        m_pMKMgr->SetHoverItem(pItem);
+void ListCtrlBase::SetPressItem(ListItemBase *pItem) {
+  if (m_pMKMgr)
+    m_pMKMgr->SetPressItem(pItem);
 }
-void ListCtrlBase::SetPressItem(ListItemBase* pItem)
-{
-	if (m_pMKMgr)
-        m_pMKMgr->SetPressItem(pItem);
-}
-
 
 // void ListCtrlBase::OnFontModifyed(IRenderFont* pFont)
 // {
@@ -2417,155 +2141,142 @@ void ListCtrlBase::SetPressItem(ListItemBase* pItem)
 // 			pItem = pItem->GetNextItem();
 // 		}
 // 	}
-// 
+//
 // 	this->LayoutItem();
 // }
 
-void  ListCtrlBase::InvalidateItem(ListItemBase* pItem)
-{
-	if (nullptr == pItem)
-		return;
+void ListCtrlBase::InvalidateItem(ListItemBase *pItem) {
+  if (nullptr == pItem)
+    return;
 
-    UIASSERT(pItem->GetListCtrlBase() == this);
+  UIASSERT(pItem->GetListCtrlBase() == this);
 
-    if (!pItem->IsVisible())
-        return;
+  if (!pItem->IsVisible())
+    return;
 
-	if (pItem->GetSelfLayer())
-	{
-		pItem->GetSelfLayer()->Invalidate(nullptr);
-		return;
-	}
+  if (pItem->GetSelfLayer()) {
+    pItem->GetSelfLayer()->Invalidate(nullptr);
+    return;
+  }
 
-    CRect rcItem;
-    if (pItem->IsFloat())
-    {
-        pItem->GetFloatRect(&rcItem);
-    }
-    else
-    {
-        pItem->GetParentRect(&rcItem);
-        ItemRect2ObjectRect(&rcItem, &rcItem);
-    }
-    if (rcItem.IsRectEmpty())
-        return;
-    
-    CRect rcListCtrl;
-    this->GetClientRectInObject(&rcListCtrl);
+  CRect rcItem;
+  if (pItem->IsFloat()) {
+    pItem->GetFloatRect(&rcItem);
+  } else {
+    pItem->GetParentRect(&rcItem);
+    ItemRect2ObjectRect(&rcItem, &rcItem);
+  }
+  if (rcItem.IsRectEmpty())
+    return;
 
-    if (IntersectRect(&rcItem, &rcItem, &rcListCtrl))
-    {
-    	this->Invalidate(&rcItem);
-    }
+  CRect rcListCtrl;
+  this->GetClientRectInObject(&rcListCtrl);
+
+  if (IntersectRect(&rcItem, &rcItem, &rcListCtrl)) {
+    this->Invalidate(&rcItem);
+  }
 }
 
-// ƒ⁄≤øøÿº˛‘⁄À¢–¬ ±£¨”ÎRedrawItem”––©≤ªÕ¨£∫
-// 1. ¥À ±“—”–ªÒ»°µΩpRenderTarget¡À£¨≤ª–Ë“™µ˜”√begindrawpart. <<-- µ´”…”⁄ªπµ√◊ˆ“ª–©ªÊ÷∆±≥æ∞µƒ≤Ÿ◊˜
-// 2. ≤ª–Ë“™commitµΩ¥∞ø⁄…œ√Ê
-// 3. ≤ª–Ë“™‘ŸªÊ÷∆innerctrl£¨÷ª–Ë“™listitemƒ⁄»›
-void ListCtrlBase::RedrawItemByInnerCtrl(IRenderTarget* pRenderTarget, ListItemBase* pItem)
-{
-	if (!IsItemVisibleInScreen(pItem))
-		return;
+// ÂÜÖÈÉ®Êéß‰ª∂Âú®Âà∑Êñ∞Êó∂Ôºå‰∏éRedrawItemÊúâ‰∫õ‰∏çÂêåÔºö
+// 1. Ê≠§Êó∂Â∑≤ÊúâËé∑ÂèñÂà∞pRenderTarget‰∫ÜÔºå‰∏çÈúÄË¶ÅË∞ÉÁî®begindrawpart. <<--
+// ‰ΩÜÁî±‰∫éËøòÂæóÂÅö‰∏Ä‰∫õÁªòÂà∂ËÉåÊôØÁöÑÊìç‰Ωú
+// 2. ‰∏çÈúÄË¶ÅcommitÂà∞Á™óÂè£‰∏äÈù¢
+// 3. ‰∏çÈúÄË¶ÅÂÜçÁªòÂà∂innerctrlÔºåÂè™ÈúÄË¶ÅlistitemÂÜÖÂÆπ
+void ListCtrlBase::RedrawItemByInnerCtrl(IRenderTarget *pRenderTarget,
+                                         ListItemBase *pItem) {
+  if (!IsItemVisibleInScreen(pItem))
+    return;
 
-    if (HANDLED == this->OnDrawItem(pRenderTarget, pItem))
-        return;
+  if (HANDLED == this->OnDrawItem(pRenderTarget, pItem))
+    return;
 
-    pItem->Draw(pRenderTarget); 
+  pItem->Draw(pRenderTarget);
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////
 
-const wchar_t*  ListCtrlBase::GetItemText(ListItemBase* pItem)
-{
-	if (nullptr == pItem)
-		return nullptr;
-	
-	return pItem->GetText();
+const wchar_t *ListCtrlBase::GetItemText(ListItemBase *pItem) {
+  if (nullptr == pItem)
+    return nullptr;
+
+  return pItem->GetText();
 }
 
-int  ListCtrlBase::GetVisibleItemCount()
-{
-    int nRet = 0;
-    ListItemBase*  pItem = FindVisibleItemFrom(nullptr);
-    while (pItem)
-    {
-        nRet ++;
-        pItem = pItem->GetNextVisibleItem();
-    }
-    return nRet;
+int ListCtrlBase::GetVisibleItemCount() {
+  int nRet = 0;
+  ListItemBase *pItem = FindVisibleItemFrom(nullptr);
+  while (pItem) {
+    nRet++;
+    pItem = pItem->GetNextVisibleItem();
+  }
+  return nRet;
 }
-int   ListCtrlBase::GetRootItemCount()
-{
-    int i = 0;
+int ListCtrlBase::GetRootItemCount() {
+  int i = 0;
 
-    ListItemBase* p = m_pFirstItem;
-    while (p)
-    {
-        i++;
-        p = p->GetNextItem();
-    }
+  ListItemBase *p = m_pFirstItem;
+  while (p) {
+    i++;
+    p = p->GetNextItem();
+  }
 
-    return i;
+  return i;
 }
 
 // item share data op
-IListItemShareData*  ListCtrlBase::GetItemTypeShareData(int lType)
-{
-    map<int, IListItemShareData*>::iterator iter = m_mapItemTypeShareData.find(lType);
-    if (iter != m_mapItemTypeShareData.end())
-        return iter->second;
+IListItemShareData *ListCtrlBase::GetItemTypeShareData(int lType) {
+  map<int, IListItemShareData *>::iterator iter =
+      m_mapItemTypeShareData.find(lType);
+  if (iter != m_mapItemTypeShareData.end())
+    return iter->second;
 
-    return nullptr;
+  return nullptr;
 }
-void  ListCtrlBase::SetItemTypeShareData(int lType, IListItemShareData* pData)
-{
-    m_mapItemTypeShareData[lType] = pData;
-    
-    // …Ë÷√ Ù–‘
-    if (pData)
-    {
-        pData->GetImpl()->SetListCtrlBase(this);
-        if (this->m_pIMapAttributeRemain)
-        {
-			SerializeParam data = {0};
-            data.pUIApplication = GetIUIApplication();
-			data.pMapAttrib = m_pIMapAttributeRemain;
-			data.nFlags = SERIALIZEFLAG_LOAD;
-			UISendMessage(pData, UI_MSG_SERIALIZE, (WPARAM)&data);
-        }
+void ListCtrlBase::SetItemTypeShareData(int lType, IListItemShareData *pData) {
+  m_mapItemTypeShareData[lType] = pData;
+
+  // ËÆæÁΩÆÂ±ûÊÄß
+  if (pData) {
+    pData->GetImpl()->SetListCtrlBase(this);
+    if (this->m_pIMapAttributeRemain) {
+      SerializeParam data = {0};
+      data.pUIApplication = GetIUIApplication();
+      data.pMapAttrib = m_pIMapAttributeRemain;
+      data.nFlags = SERIALIZEFLAG_LOAD;
+
+      SerializeMessage msg;
+      msg.param = &data;
+      static_cast<IMessage *>(pData)->RouteMessage(msg);
     }
+  }
 }
-void  ListCtrlBase::RemoveItemTypeShareData(int lType)
-{
-    map<int, IListItemShareData*>::iterator iter = m_mapItemTypeShareData.find(lType);
-    if (iter != m_mapItemTypeShareData.end())
-    {
-        m_mapItemTypeShareData.erase(iter);
-    }
+void ListCtrlBase::RemoveItemTypeShareData(int lType) {
+  map<int, IListItemShareData *>::iterator iter =
+      m_mapItemTypeShareData.find(lType);
+  if (iter != m_mapItemTypeShareData.end()) {
+    m_mapItemTypeShareData.erase(iter);
+  }
 }
 
-// ptŒ™¥∞ø⁄◊¯±Í
+// pt‰∏∫Á™óÂè£ÂùêÊ†á
 // ListItemBase* ListCtrlBase::HitTest(POINT ptWindow)
 // {
 //     return GetItemByWindowPoint(ptWindow);
-//     
+//
 //     CRect rcClient;
 //     m_pIListCtrlBase->GetClientRectInObject(&rcClient);
-// 
-//     // 1. ◊™ªªŒ™ƒ⁄≤ø◊¯±Í
-// 
+//
+//     // 1. ËΩ¨Êç¢‰∏∫ÂÜÖÈÉ®ÂùêÊ†á
+//
 //     POINT pt;
 //     m_pIListCtrlBase->WindowPoint2ObjectPoint(&ptWindow, &pt, true);
 //     if (FALSE == rcClient.PtInRect(pt))
 //         return nullptr;
-// 
+//
 //     m_pIListCtrlBase->ObjectPoint2ObjectClientPoint(&pt, &pt);
-// 
-//     // 2. ≈–∂œ
-// 
+//
+//     // 2. Âà§Êñ≠
+//
 //     ListItemBase* p = m_pFirstDrawItem;
 //     while (p)
 //     {
@@ -2580,662 +2291,574 @@ void  ListCtrlBase::RemoveItemTypeShareData(int lType)
 //             }
 //             return p;
 //         }
-// 
+//
 //         if (p == m_pLastDrawItem)
 //             break;
-// 
+//
 //         p = p->GetNextVisibleItem();
 //     }
-// 
+//
 //     return nullptr;
 // }
 
-// ptŒ™øÿº˛ƒ⁄≤ø◊¯±Í
-long  ListCtrlBase::OnHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam)
-{
-    POINT pt = {(int)wParam, (int)lParam};
+// pt‰∏∫Êéß‰ª∂ÂÜÖÈÉ®ÂùêÊ†á
+long ListCtrlBase::OnHitTest(unsigned int uMsg, WPARAM wParam, LPARAM lParam) {
+  POINT pt = {(int)wParam, (int)lParam};
 
-    // 1. ºÏ≤Èfloat item 
-    ListItemBase* pItem = m_MgrFloatItem.HitTest(pt);
-    if (pItem)
-        return (long)pItem->GetIListItemBase();
+  // 1. Ê£ÄÊü•float item
+  ListItemBase *pItem = m_MgrFloatItem.HitTest(pt);
+  if (pItem)
+    return (long)pItem->GetIListItemBase();
 
-    // 2. ºÏ≤Èø… ”item
-	UpdateListIfNeed();
-//     if (!m_pFirstDrawItem || m_bNeedCalcFirstLastDrawItem)
-//     {
-//         CalcFirstLastDrawItem();
-//         m_bNeedCalcFirstLastDrawItem= false;
-//     }
-    ListItemBase* p = m_pFirstDrawItem;
-    while (p)
-    {
-        // TODO:  «∑Ò”–±ÿ“™π˝¬Àfloat item 
+  // 2. Ê£ÄÊü•ÂèØËßÜitem
+  UpdateListIfNeed();
+  //     if (!m_pFirstDrawItem || m_bNeedCalcFirstLastDrawItem)
+  //     {
+  //         CalcFirstLastDrawItem();
+  //         m_bNeedCalcFirstLastDrawItem= false;
+  //     }
+  ListItemBase *p = m_pFirstDrawItem;
+  while (p) {
+    // TODO: ÊòØÂê¶ÊúâÂøÖË¶ÅËøáÊª§float item
 
-        CRect rcParent;
-        p->GetParentRect(&rcParent);
+    CRect rcParent;
+    p->GetParentRect(&rcParent);
 
-        if (PtInRect(&rcParent, pt))
-        {
-            return (long)p->GetIListItemBase();
-        }
-        if (p == m_pLastDrawItem)
-            break;
-
-        p = p->GetNextVisibleItem();
+    if (PtInRect(&rcParent, pt)) {
+      return (long)p->GetIListItemBase();
     }
+    if (p == m_pLastDrawItem)
+      break;
 
-    return 0;
+    p = p->GetNextVisibleItem();
+  }
+
+  return 0;
 }
-void  ListCtrlBase::SetFocusRender(IRenderBase* p)
-{
-    SAFE_RELEASE(m_pFocusRender);
-    m_pFocusRender = p;
+void ListCtrlBase::SetFocusRender(IRenderBase *p) {
+  SAFE_RELEASE(m_pFocusRender);
+  m_pFocusRender = p;
 
-    if (m_pFocusRender)
-        m_pFocusRender->AddRef();
+  if (m_pFocusRender)
+    m_pFocusRender->AddRef();
 }
 
+bool ListCtrlBase::InsertItem(ListItemBase *pNewItem, IListItemBase *pParent,
+                              IListItemBase *pAfter) {
+  if (false == _InsertItemToTree(pNewItem, pParent, pAfter))
+    return false;
 
-bool  ListCtrlBase::InsertItem(
-		ListItemBase* pNewItem, 
-        IListItemBase* pParent, 
-        IListItemBase* pAfter)
-{
-    if (false == _InsertItemToTree(pNewItem, pParent, pAfter))
-        return false;
+  pNewItem->SetIListCtrlBase(m_pIListCtrlBase);
+  UISendMessage(pNewItem->GetIListItemBase(), UI_MSG_INITIALIZE);
 
-    pNewItem->SetIListCtrlBase(m_pIListCtrlBase);
-    UISendMessage(pNewItem->GetIListItemBase(), UI_MSG_INITIALIZE);
+  SetNeedLayoutItems();
+  Invalidate();
 
-	SetNeedLayoutItems();
-    Invalidate();
+  UIMSG msg;
+  msg.pMsgTo = m_pIListCtrlBase;
+  msg.message = UI_MSG_NOTIFY;
+  msg.nCode = UI_LCN_ITEMADD;
+  msg.wParam = (WPARAM)pNewItem->GetIListItemBase();
+  msg.lParam = 0;
+  UISendMessage(&msg);
 
-    UIMSG  msg;
-    msg.pMsgTo = m_pIListCtrlBase;
-    msg.message = UI_MSG_NOTIFY;
-    msg.nCode = UI_LCN_ITEMADD;
-    msg.wParam = (WPARAM)pNewItem->GetIListItemBase();
-    msg.lParam = 0;
-    UISendMessage(&msg);
-
-    return true;
+  return true;
 }
 
-bool ListCtrlBase::_InsertRoot(ListItemBase* pNewItem)
-{
-    if (nullptr == m_pFirstItem)
-    {
-        m_pFirstItem = pNewItem;
-        m_pLastItem = pNewItem;
-    }
-    else
-    {
-        pNewItem->SetNextItem(m_pFirstItem);
-        m_pFirstItem->SetPrevItem(pNewItem);
-        m_pFirstItem = pNewItem;
-    }
-    return true;
+bool ListCtrlBase::_InsertRoot(ListItemBase *pNewItem) {
+  if (nullptr == m_pFirstItem) {
+    m_pFirstItem = pNewItem;
+    m_pLastItem = pNewItem;
+  } else {
+    pNewItem->SetNextItem(m_pFirstItem);
+    m_pFirstItem->SetPrevItem(pNewItem);
+    m_pFirstItem = pNewItem;
+  }
+  return true;
 }
 
-bool ListCtrlBase::_InsertAfter(
-		ListItemBase* pNewItem, ListItemBase* pInsertAfter)
-{
-    if (nullptr == pInsertAfter)
-        return false;
+bool ListCtrlBase::_InsertAfter(ListItemBase *pNewItem,
+                                ListItemBase *pInsertAfter) {
+  if (nullptr == pInsertAfter)
+    return false;
 
-    ListItemBase* pOldNext = pInsertAfter->GetNextItem();
-    pInsertAfter->SetNextItem(pNewItem);
-    pNewItem->SetPrevItem(pInsertAfter);
-    pNewItem->SetParentItem(pInsertAfter->GetParentItem());
+  ListItemBase *pOldNext = pInsertAfter->GetNextItem();
+  pInsertAfter->SetNextItem(pNewItem);
+  pNewItem->SetPrevItem(pInsertAfter);
+  pNewItem->SetParentItem(pInsertAfter->GetParentItem());
 
-    if (nullptr != pOldNext)
-    {
-        pOldNext->SetPrevItem(pNewItem);
-        pNewItem->SetNextItem(pOldNext);
-    }
-    if (m_pLastItem == pInsertAfter)
-    {
-        m_pLastItem = pNewItem;
-    }
+  if (nullptr != pOldNext) {
+    pOldNext->SetPrevItem(pNewItem);
+    pNewItem->SetNextItem(pOldNext);
+  }
+  if (m_pLastItem == pInsertAfter) {
+    m_pLastItem = pNewItem;
+  }
 
-    return true;
+  return true;
 }
 
-bool ListCtrlBase::_InsertBefore(
-		ListItemBase* pNewItem, ListItemBase* pInsertBefore)
-{
-    if (nullptr == pInsertBefore)
-        return false;
+bool ListCtrlBase::_InsertBefore(ListItemBase *pNewItem,
+                                 ListItemBase *pInsertBefore) {
+  if (nullptr == pInsertBefore)
+    return false;
 
-    ListItemBase* pOldPrev = pInsertBefore->GetPrevItem();
-    pInsertBefore->SetPrevItem(pNewItem);
-    pNewItem->SetNextItem(pInsertBefore);
-    pNewItem->SetParentItem(pInsertBefore->GetParentItem());
+  ListItemBase *pOldPrev = pInsertBefore->GetPrevItem();
+  pInsertBefore->SetPrevItem(pNewItem);
+  pNewItem->SetNextItem(pInsertBefore);
+  pNewItem->SetParentItem(pInsertBefore->GetParentItem());
 
-    if (nullptr != pOldPrev)
-    {
-        pOldPrev->SetNextItem(pNewItem);
-        pNewItem->SetPrevItem(pOldPrev);
-    }
-    if (m_pLastItem == pInsertBefore)
-    {
-        m_pLastItem = pNewItem;
-    }
-    if (m_pFirstItem == pInsertBefore)
-    {
-        m_pFirstItem = pNewItem;
-    }
+  if (nullptr != pOldPrev) {
+    pOldPrev->SetNextItem(pNewItem);
+    pNewItem->SetPrevItem(pOldPrev);
+  }
+  if (m_pLastItem == pInsertBefore) {
+    m_pLastItem = pNewItem;
+  }
+  if (m_pFirstItem == pInsertBefore) {
+    m_pFirstItem = pNewItem;
+  }
 
-    return true;
+  return true;
 }
 
-bool ListCtrlBase::_InsertFirstChild(ListItemBase* pNewItem, ListItemBase* pParent)
-{
-    if (nullptr == pParent)
-        return false;
+bool ListCtrlBase::_InsertFirstChild(ListItemBase *pNewItem,
+                                     ListItemBase *pParent) {
+  if (nullptr == pParent)
+    return false;
 
-	pParent->AddChildFront(pNewItem);
-    return true;
+  pParent->AddChildFront(pNewItem);
+  return true;
 }
 
-bool ListCtrlBase::_InsertLastChild(ListItemBase* pNewItem, ListItemBase* pParent)
-{
-    if (nullptr == pParent)
-        return false;
+bool ListCtrlBase::_InsertLastChild(ListItemBase *pNewItem,
+                                    ListItemBase *pParent) {
+  if (nullptr == pParent)
+    return false;
 
-    if (nullptr == pParent->GetChildItem())
-        return this->_InsertFirstChild(pNewItem, pParent);
+  if (nullptr == pParent->GetChildItem())
+    return this->_InsertFirstChild(pNewItem, pParent);
 
-    pParent->AddChild(pNewItem);
-    return true;
+  pParent->AddChild(pNewItem);
+  return true;
 }
 
+void ListCtrlBase::ToggleItemExpand(ListItemBase *pItem, bool bUpdate) {
+  if (nullptr == pItem)
+    return;
 
-void ListCtrlBase::ToggleItemExpand(ListItemBase* pItem, bool bUpdate)
-{
-    if (nullptr == pItem)
-        return;
-
-    if (pItem->IsExpand())
-        CollapseItem(pItem, bUpdate);
-    else
-        ExpandItem(pItem, bUpdate);
+  if (pItem->IsExpand())
+    CollapseItem(pItem, bUpdate);
+  else
+    ExpandItem(pItem, bUpdate);
 }
 
-void ListCtrlBase::CollapseItem(ListItemBase* pItem, bool bUpdate)
-{
-    if (nullptr == pItem)
-        return ;
+void ListCtrlBase::CollapseItem(ListItemBase *pItem, bool bUpdate) {
+  if (nullptr == pItem)
+    return;
 
-    if (pItem->IsCollapsed())
-        return;
+  if (pItem->IsCollapsed())
+    return;
 
-    pItem->SetExpand(false);
+  pItem->SetExpand(false);
 
-    if (nullptr == pItem->GetChildItem())
-        return;
+  if (nullptr == pItem->GetChildItem())
+    return;
 
-    // ≈–∂œµ±«∞—°‘ÒœÓ «∑Ò±ª“˛≤ÿ£¨£®»Áπ˚◊‘º∫≤ªø…—°°æ“ª–©Ãÿ ‚≥°æ∞£¨÷ª‘ –Ì◊”Ω·µ„±ª—°÷–°ø£¨±£≥÷≤ª±‰£©
-    if (pItem->IsSelectable() && m_pFirstSelectedItem)
-    {
-        if (pItem->IsMyChildItem(GetFirstSelectItem(), true))
-        {
-            SelectItem(pItem, false);  // Ω´—°‘ÒœÓ◊™“∆µΩ∏∏Ω·µ„
-        }
+  // Âà§Êñ≠ÂΩìÂâçÈÄâÊã©È°πÊòØÂê¶Ë¢´ÈöêËóèÔºåÔºàÂ¶ÇÊûúËá™Â∑±‰∏çÂèØÈÄâ„Äê‰∏Ä‰∫õÁâπÊÆäÂú∫ÊôØÔºåÂè™ÂÖÅËÆ∏Â≠êÁªìÁÇπË¢´ÈÄâ‰∏≠„ÄëÔºå‰øùÊåÅ‰∏çÂèòÔºâ
+  if (pItem->IsSelectable() && m_pFirstSelectedItem) {
+    if (pItem->IsMyChildItem(GetFirstSelectItem(), true)) {
+      SelectItem(pItem, false); // Â∞ÜÈÄâÊã©È°πËΩ¨ÁßªÂà∞Áà∂ÁªìÁÇπ
     }
-    ListItemBase* pFocusItem = GetFocusItem();
-    if (pFocusItem)
-    {
-        if (pItem->IsMyChildItem(pFocusItem, true))
-        {
-            SetFocusItem(pItem);
-        }
+  }
+  ListItemBase *pFocusItem = GetFocusItem();
+  if (pFocusItem) {
+    if (pItem->IsMyChildItem(pFocusItem, true)) {
+      SetFocusItem(pItem);
+    }
+  }
+
+  this->SetCalcFirstLastDrawItemFlag();
+  this->UpdateItemIndex(nullptr);
+  this->LayoutItem(m_pFirstItem, bUpdate);
+
+  this->Invalidate(); // PS:
+                      // Êúâ‰∫õÂØπË±°ÁªèÊäòÂè†ÂêéË¢´ÈöêËóè‰∫ÜÔºåÊòØ‰∏çËÉΩÂÜçË∞ÉÁî®RedrawItemÁöÑÔºåÂõ†Ê≠§‰πüÂøÖÈ°ªÂÖ®ÈÉ®Âà∑Êñ∞
+}
+
+void ListCtrlBase::ExpandItem(ListItemBase *pItem, bool bUpdate) {
+  if (nullptr == pItem)
+    return;
+
+  bool bDoExpandAction = false;
+  ListItemBase *pParent = pItem;
+  while (pParent) {
+    if (pParent->IsExpand()) {
+      pParent = pParent->GetParentItem();
+      continue;
     }
 
+    bDoExpandAction = true;
+    pParent->SetExpand(true);
+    pParent = pParent->GetParentItem();
+  }
+
+  if (bDoExpandAction) {
     this->SetCalcFirstLastDrawItemFlag();
     this->UpdateItemIndex(nullptr);
     this->LayoutItem(m_pFirstItem, bUpdate);
 
-    this->Invalidate();  // PS: ”––©∂‘œÛæ≠’€µ˛∫Û±ª“˛≤ÿ¡À£¨ «≤ªƒ‹‘Ÿµ˜”√RedrawItemµƒ£¨“Ú¥À“≤±ÿ–Î»´≤øÀ¢–¬
+    this->Invalidate();
+  }
 }
 
-void ListCtrlBase::ExpandItem(ListItemBase* pItem, bool bUpdate)
-{
-    if (nullptr == pItem)
-        return ;
+void ListCtrlBase::CollapseAll(bool bUpdate) {
+  ListItemBase *pItem = m_pFirstItem;
+  while (pItem) {
+    pItem->SetExpand(false, true);
+    pItem = pItem->GetNextTreeItem();
+  }
 
-    bool bDoExpandAction = false;
-    ListItemBase* pParent = pItem;
-    while (pParent)
-    {
-        if (pParent->IsExpand())
-        {
-            pParent = pParent->GetParentItem();    
-            continue;
-        }
-         
-        bDoExpandAction = true;
-        pParent->SetExpand(true);
-        pParent = pParent->GetParentItem();    
-    }
-    
-    if (bDoExpandAction)
-    {
-        this->SetCalcFirstLastDrawItemFlag();
-        this->UpdateItemIndex(nullptr);
-        this->LayoutItem(m_pFirstItem, bUpdate);
+  if (bUpdate) {
+    this->LayoutItem(nullptr, true);
+  }
+}
+void ListCtrlBase::ExpandAll(bool bUpdate) {
+  ListItemBase *pItem = m_pFirstItem;
+  while (pItem) {
+    pItem->SetExpand(true, true);
+    pItem = pItem->GetNextTreeItem();
+  }
 
-        this->Invalidate(); 
-    }
+  if (bUpdate) {
+    this->LayoutItem(nullptr, true);
+  }
 }
 
-void  ListCtrlBase::CollapseAll(bool bUpdate)
-{
-    ListItemBase*  pItem = m_pFirstItem;
-    while (pItem)
-    {
-        pItem->SetExpand(false, true);
-        pItem = pItem->GetNextTreeItem();
-    }
+IMKMgr *ListCtrlBase::virtualGetIMKMgr() {
+  if (nullptr == m_pMKMgr)
+    return nullptr;
 
-    if (bUpdate)
-    {
-        this->LayoutItem(nullptr, true);
-    }
-}
-void  ListCtrlBase::ExpandAll(bool bUpdate)
-{
-    ListItemBase*  pItem = m_pFirstItem;
-    while (pItem)
-    {
-        pItem->SetExpand(true, true);
-        pItem = pItem->GetNextTreeItem();
-    }
-
-    if (bUpdate)
-    {
-        this->LayoutItem(nullptr, true);
-    }
+  return static_cast<IMKMgr *>(m_pMKMgr);
 }
 
-IMKMgr* ListCtrlBase::virtualGetIMKMgr()
-{
-    if (nullptr == m_pMKMgr)
-        return nullptr;
+BOOL ListCtrlBase::ProcessItemMKMessage(UIMSG *pMsg, ListItemBase *pItem) {
+  if (nullptr == m_pMKMgr)
+    return FALSE;
 
-    return static_cast<IMKMgr*>(m_pMKMgr);
+  return m_pMKMgr->ProcessItemMessage(pMsg, pItem);
 }
 
-BOOL  ListCtrlBase::ProcessItemMKMessage(UIMSG* pMsg, ListItemBase* pItem)
-{
-    if (nullptr == m_pMKMgr)
-        return FALSE;
+// ËØ•ÂáΩÊï∞ÈÄöÂ∏∏ÊòØÁî®‰∫éÂ∞Ü‰∏Ä‰∏™item‰ªé‰∏Ä‰∏™ÂàóË°®ÁßªÂà∞Âè¶‰∏Ä‰∏™ÂàóË°®ÂΩì‰∏≠Âéª
+void ListCtrlBase::RemoveItemFromTree(ListItemBase *pItem) {
+  if (nullptr == pItem)
+    return;
 
-    return m_pMKMgr->ProcessItemMessage(pMsg, pItem);
+  ListItemBase *pNextItem = pItem->GetNextItem();
+  bool bRet = _RemoveItem(pItem, false);
+  if (false == bRet)
+    return;
+
+  this->UpdateItemIndex(pNextItem);
+
+  SetNeedLayoutItems();
+  Invalidate();
 }
 
+// Â∞Üp‰ªéÊú¨Ê†ë‰∏≠ËÑ±Á¶ªÔºå‰ΩÜ‰∏çË¥üË¥£ÂÖ∂ÂÆÉÈÄªËæëÔºåÂ¶Çfocus/selection/mapÂ§ÑÁêÜ„ÄÇ
+void ListCtrlBase::_RemoveItemFromTree(ListItemBase *pItem) {
+  if (!pItem)
+    return;
 
-// ∏√∫Ø ˝Õ®≥£ «”√”⁄Ω´“ª∏ˆitem¥”“ª∏ˆ¡–±Ì“∆µΩ¡Ì“ª∏ˆ¡–±Ìµ±÷–»•
-void  ListCtrlBase::RemoveItemFromTree(ListItemBase* pItem)
-{
-	if (nullptr == pItem)
-		return;
+  // ‰ªéÂàóË°®‰∏≠Âà†Èô§
+  // Ê≥®ÔºöÂøÖÈ°ªÂÖà‰ªéÂàóË°®‰∏≠Âà†Èô§ÔºåÂÜçÊ∏ÖÈô§selectionÔºå
+  //     Âê¶Âàôfire selection changedÂìçÂ∫î‰∏≠ËøòËÉΩÊãøÂà∞ËØ•ITEMÔºåÂØºËá¥Â¥©Ê∫É
+  if (pItem->GetPrevItem()) {
+    pItem->GetPrevItem()->SetNextItem(pItem->GetNextItem());
+  }
+  if (pItem->GetNextItem()) {
+    pItem->GetNextItem()->SetPrevItem(pItem->GetPrevItem());
+  }
 
-	ListItemBase* pNextItem = pItem->GetNextItem();
-	bool bRet = _RemoveItem(pItem, false);
-	if (false == bRet)
-		return;
+  // Ëá™Â∑±ÂÅö‰∏∫Áà∂ÁªìÁÇπÁöÑÁ¨¨‰∏Ä‰∏™Â≠êÁªìÁÇπ
+  ListItemBase *pParent = pItem->GetParentItem();
+  if (pParent) {
+    if (pParent->GetChildItem() == pItem)
+      pParent->SetChildItem(pItem->GetNextItem());
 
-	this->UpdateItemIndex(pNextItem);
+    if (pParent->GetLastChildItem() == pItem)
+      pParent->SetLastChildItem(pItem->GetPrevItem());
+  }
 
-	SetNeedLayoutItems();
-	Invalidate();
+  if (m_pFirstItem == pItem) {
+    m_pFirstItem = pItem->GetNextItem();
+  }
+  if (m_pLastItem == pItem) {
+    m_pLastItem = pItem->GetPrevItem();
+  }
+  if (m_pEditingItem == pItem) {
+    // TODO cancel edit.
+    m_pEditingItem = nullptr;
+  }
+  this->SetCalcFirstLastDrawItemFlag();
+  if (pItem == m_pFirstDrawItem || pItem == m_pLastDrawItem) {
+    m_pFirstDrawItem = nullptr;
+    m_pLastDrawItem = nullptr;
+  }
+
+  pItem->SetNextItem(nullptr);
+  pItem->SetPrevItem(nullptr);
+  pItem->SetParentItem(nullptr);
+
+  ListItemBase *p = pItem;
+  do {
+    m_nItemCount--;
+  } while (p = p->GetNextTreeItem());
 }
 
-// Ω´p¥”±æ ˜÷–Õ—¿Î£¨µ´≤ª∏∫‘∆‰À¸¬ﬂº≠£¨»Áfocus/selection/map¥¶¿Ì°£
-void  ListCtrlBase::_RemoveItemFromTree(ListItemBase*  pItem)
-{
-    if (!pItem)
-        return;
-
-    // ¥”¡–±Ì÷–…æ≥˝
-    // ◊¢£∫±ÿ–Îœ»¥”¡–±Ì÷–…æ≥˝£¨‘Ÿ«Â≥˝selection£¨
-    //     ∑Ò‘Úfire selection changedœÏ”¶÷–ªπƒ‹ƒ√µΩ∏√ITEM£¨µº÷¬±¿¿£
-    if (pItem->GetPrevItem())
-    {
-        pItem->GetPrevItem()->SetNextItem(pItem->GetNextItem());
-    }
-    if (pItem->GetNextItem())
-    {
-        pItem->GetNextItem()->SetPrevItem(pItem->GetPrevItem());
-    }
-
-    // ◊‘º∫◊ˆŒ™∏∏Ω·µ„µƒµ⁄“ª∏ˆ◊”Ω·µ„
-    ListItemBase* pParent = pItem->GetParentItem();
-    if (pParent)
-    {
-        if (pParent->GetChildItem() == pItem)
-            pParent->SetChildItem(pItem->GetNextItem());
-
-        if (pParent->GetLastChildItem() == pItem)
-            pParent->SetLastChildItem(pItem->GetPrevItem());
-    }
-
-    if (m_pFirstItem == pItem)
-    {
-        m_pFirstItem = pItem->GetNextItem();
-    }
-    if (m_pLastItem == pItem)
-    {
-        m_pLastItem = pItem->GetPrevItem();
-    }
-	if (m_pEditingItem == pItem)
-	{
-		// TODO cancel edit.
-		m_pEditingItem = nullptr;
-	}
-    this->SetCalcFirstLastDrawItemFlag();
-    if (pItem == m_pFirstDrawItem || pItem == m_pLastDrawItem)
-    {
-        m_pFirstDrawItem = nullptr;
-        m_pLastDrawItem = nullptr;
-    }
-
-    pItem->SetNextItem(nullptr);
-    pItem->SetPrevItem(nullptr);
-    pItem->SetParentItem(nullptr);
-
-    ListItemBase* p = pItem;
-    do 
-    {
-        m_nItemCount--;
-    }
-    while (p = p->GetNextTreeItem());
-}
-
-bool  ListCtrlBase::is_my_item(IListItemBase* pItem)
-{
-    ListItemBase* pValidItem = get_valid_list_item(pItem);
-    if (pValidItem == nullptr) 
-        return true;
-
-    if (pValidItem->GetListCtrlBase() != this)
-        return false;
-
+bool ListCtrlBase::is_my_item(IListItemBase *pItem) {
+  ListItemBase *pValidItem = get_valid_list_item(pItem);
+  if (pValidItem == nullptr)
     return true;
+
+  if (pValidItem->GetListCtrlBase() != this)
+    return false;
+
+  return true;
 }
 
-ListItemBase*  ListCtrlBase::get_valid_list_item(IListItemBase* pItem)
-{
-    if (pItem == nullptr || 
-        pItem == UITVI_ROOT ||
-        pItem == UITVI_LAST || 
-        pItem == UITVI_FIRST)
-        return nullptr;
+ListItemBase *ListCtrlBase::get_valid_list_item(IListItemBase *pItem) {
+  if (pItem == nullptr || pItem == UITVI_ROOT || pItem == UITVI_LAST ||
+      pItem == UITVI_FIRST)
+    return nullptr;
 
-    return pItem->GetImpl();
+  return pItem->GetImpl();
 }
 
-bool  ListCtrlBase::MoveItem(ListItemBase* pItem, IListItemBase* pNewParent, IListItemBase* pInsertAfter)
-{
-    if (!pItem)
-        return false;
+bool ListCtrlBase::MoveItem(ListItemBase *pItem, IListItemBase *pNewParent,
+                            IListItemBase *pInsertAfter) {
+  if (!pItem)
+    return false;
 
-    // “Ï≥£
-    // 1. item≤ª «listctrlµƒ¡–±ÌœÓ
-    if (pItem->GetListCtrlBase() != this)
-        return false;
+  // ÂºÇÂ∏∏
+  // 1. item‰∏çÊòØlistctrlÁöÑÂàóË°®È°π
+  if (pItem->GetListCtrlBase() != this)
+    return false;
 
-    if (!is_my_item(pNewParent) || !is_my_item(pInsertAfter))
-        return false;
+  if (!is_my_item(pNewParent) || !is_my_item(pInsertAfter))
+    return false;
 
-    // 2. parent  «◊‘º∫ªÚ’ﬂ◊‘º∫¡À◊”ÀÔΩ·µ„
-    if (pItem->GetIListItemBase() == pNewParent || pItem->GetIListItemBase() == pInsertAfter)
-        return false;
+  // 2. parent ÊòØËá™Â∑±ÊàñËÄÖËá™Â∑±‰∫ÜÂ≠êÂ≠ôÁªìÁÇπ
+  if (pItem->GetIListItemBase() == pNewParent ||
+      pItem->GetIListItemBase() == pInsertAfter)
+    return false;
 
-    ListItemBase* pValidNewParent = get_valid_list_item(pNewParent);
-    if (pValidNewParent && pItem->IsMyChildItem(pValidNewParent, true))
-        return false;
+  ListItemBase *pValidNewParent = get_valid_list_item(pNewParent);
+  if (pValidNewParent && pItem->IsMyChildItem(pValidNewParent, true))
+    return false;
 
-    ListItemBase* pValidInsertAfter = get_valid_list_item(pInsertAfter);
-    if (pValidInsertAfter && pItem->IsMyChildItem(pValidInsertAfter, true))
-        return false;
+  ListItemBase *pValidInsertAfter = get_valid_list_item(pInsertAfter);
+  if (pValidInsertAfter && pItem->IsMyChildItem(pValidInsertAfter, true))
+    return false;
 
-    // ”Îµ±«∞Œª÷√“ª÷¬£¨≤ª–Ë“™“∆∂Ø
-    IListItemBase* pOldParent = nullptr;
-    IListItemBase* pOldPrev = nullptr;
-    if (pItem->GetParentItem())
-        pOldParent = pItem->GetParentItem()->GetIListItemBase();
-    if (pItem->GetPrevItem())
-        pOldPrev = pItem->GetPrevItem()->GetIListItemBase();
+  // ‰∏éÂΩìÂâç‰ΩçÁΩÆ‰∏ÄËá¥Ôºå‰∏çÈúÄË¶ÅÁßªÂä®
+  IListItemBase *pOldParent = nullptr;
+  IListItemBase *pOldPrev = nullptr;
+  if (pItem->GetParentItem())
+    pOldParent = pItem->GetParentItem()->GetIListItemBase();
+  if (pItem->GetPrevItem())
+    pOldPrev = pItem->GetPrevItem()->GetIListItemBase();
 
-    if (pOldParent == pNewParent && pOldPrev == pInsertAfter)
-        return false;
+  if (pOldParent == pNewParent && pOldPrev == pInsertAfter)
+    return false;
 
-    // ∆‰À¸◊¥Ã¨”∞œÏ
-    if (pItem == m_pFirstDrawItem || pItem == m_pLastDrawItem)
-    {
-        SetCalcFirstLastDrawItemFlag();
-    }
+  // ÂÖ∂ÂÆÉÁä∂ÊÄÅÂΩ±Âìç
+  if (pItem == m_pFirstDrawItem || pItem == m_pLastDrawItem) {
+    SetCalcFirstLastDrawItemFlag();
+  }
 
-    _RemoveItemFromTree(pItem);
-    _InsertItemToTree(pItem, pNewParent, pInsertAfter);
+  _RemoveItemFromTree(pItem);
+  _InsertItemToTree(pItem, pNewParent, pInsertAfter);
 
-	SetNeedLayoutItems();
-    Invalidate();
+  SetNeedLayoutItems();
+  Invalidate();
 
-    return true;
+  return true;
 }
 
-bool  ListCtrlBase::_InsertItemToTree(ListItemBase*  pNewItem, IListItemBase* pParent, IListItemBase* pAfter)
-{
-    if (nullptr == pParent)
-        pParent = UITVI_ROOT;
-    if (nullptr == pAfter)
-        pAfter = UITVI_LAST;
-    if (UITVI_ROOT == pAfter)
-    {
-        pParent = UITVI_ROOT;
-        pAfter = UITVI_FIRST;
-    }
+bool ListCtrlBase::_InsertItemToTree(ListItemBase *pNewItem,
+                                     IListItemBase *pParent,
+                                     IListItemBase *pAfter) {
+  if (nullptr == pParent)
+    pParent = UITVI_ROOT;
+  if (nullptr == pAfter)
+    pAfter = UITVI_LAST;
+  if (UITVI_ROOT == pAfter) {
+    pParent = UITVI_ROOT;
+    pAfter = UITVI_FIRST;
+  }
 
-    // œ÷‘⁄pParentø…»°÷µ: ROOT | xxx
-    //      hAfterø…»°÷µ : FIRST | LAST | xxx
-    bool bRet = false;
-    do
-    {
-        if (UITVI_ROOT == pParent)
-        {
-            if (UITVI_FIRST == pAfter)
-            {
-                bRet = _InsertRoot(pNewItem);
-            }
-            else if (UITVI_LAST == pAfter)
-            {
-                ListItemBase* pLastRoot = GetLastItem();
-                if (nullptr == pLastRoot)
-                    bRet = _InsertRoot(pNewItem);
-                else
-                    bRet = _InsertAfter(pNewItem, pLastRoot);
-            }
-            else
-            {
-                if (pAfter->GetParentItem() != nullptr)  // ≤ª «∏˘Ω·µ„
-                    break;
-
-                bRet = _InsertAfter(pNewItem, pAfter?pAfter->GetImpl():nullptr);
-            }
-        }
+  // Áé∞Âú®pParentÂèØÂèñÂÄº: ROOT | xxx
+  //      hAfterÂèØÂèñÂÄº : FIRST | LAST | xxx
+  bool bRet = false;
+  do {
+    if (UITVI_ROOT == pParent) {
+      if (UITVI_FIRST == pAfter) {
+        bRet = _InsertRoot(pNewItem);
+      } else if (UITVI_LAST == pAfter) {
+        ListItemBase *pLastRoot = GetLastItem();
+        if (nullptr == pLastRoot)
+          bRet = _InsertRoot(pNewItem);
         else
-        {
-            if (UITVI_FIRST == pAfter)
-            {
-                bRet = _InsertFirstChild(pNewItem, pParent?pParent->GetImpl():nullptr);
-            }
-            else if (UITVI_LAST == pAfter)
-            {
-                bRet = _InsertLastChild(pNewItem, pParent?pParent->GetImpl():nullptr);
-            }
-            else
-            {
-                if (pAfter->GetParentItem() != pParent)  // ≤ª «∂‘”¶◊”Ω·µ„
-                    break;
+          bRet = _InsertAfter(pNewItem, pLastRoot);
+      } else {
+        if (pAfter->GetParentItem() != nullptr) // ‰∏çÊòØÊ†πÁªìÁÇπ
+          break;
 
-                bRet = _InsertAfter(pNewItem, pAfter?pAfter->GetImpl():nullptr);
-            }
-        }
-    }
-    while(0);
+        bRet = _InsertAfter(pNewItem, pAfter ? pAfter->GetImpl() : nullptr);
+      }
+    } else {
+      if (UITVI_FIRST == pAfter) {
+        bRet =
+            _InsertFirstChild(pNewItem, pParent ? pParent->GetImpl() : nullptr);
+      } else if (UITVI_LAST == pAfter) {
+        bRet =
+            _InsertLastChild(pNewItem, pParent ? pParent->GetImpl() : nullptr);
+      } else {
+        if (pAfter->GetParentItem() != pParent) // ‰∏çÊòØÂØπÂ∫îÂ≠êÁªìÁÇπ
+          break;
 
-    if (bRet)
-    {
-        m_nItemCount++;
-        if (pNewItem->GetId() != 0)
-        {
-            m_mapItem[pNewItem->GetId()] = pNewItem->GetIListItemBase();
-        }
-        SetCalcFirstLastDrawItemFlag();
+        bRet = _InsertAfter(pNewItem, pAfter ? pAfter->GetImpl() : nullptr);
+      }
     }
-    return bRet;
+  } while (0);
+
+  if (bRet) {
+    m_nItemCount++;
+    if (pNewItem->GetId() != 0) {
+      m_mapItem[pNewItem->GetId()] = pNewItem->GetIListItemBase();
+    }
+    SetCalcFirstLastDrawItemFlag();
+  }
+  return bRet;
 }
 
-void  ListCtrlBase::ModifyListCtrlStyle(LISTCTRLSTYLE* add, LISTCTRLSTYLE* remove)
-{
-    LISTCTRLSTYLE  oldStyle = m_listctrlStyle;
+void ListCtrlBase::ModifyListCtrlStyle(LISTCTRLSTYLE *add,
+                                       LISTCTRLSTYLE *remove) {
+  LISTCTRLSTYLE oldStyle = m_listctrlStyle;
 
-#define  MODIFY(x) \
-    if (add && add->x) \
-        m_listctrlStyle.x = 1; \
-    if (remove && remove->x) \
-        m_listctrlStyle.x = 0;
+#define MODIFY(x)                                                              \
+  if (add && add->x)                                                           \
+    m_listctrlStyle.x = 1;                                                     \
+  if (remove && remove->x)                                                     \
+    m_listctrlStyle.x = 0;
 
-    MODIFY(sort_ascend);
-    MODIFY(sort_descend);
-    MODIFY(sort_child);
-    MODIFY(multiple_sel);
-    MODIFY(popuplistbox);
-    MODIFY(menu);
-    MODIFY(destroying);
-    MODIFY(float_group_head);
-    MODIFY(dragwnd_if_clickblank);
-    MODIFY(changeselection_onlbuttonup);
+  MODIFY(sort_ascend);
+  MODIFY(sort_descend);
+  MODIFY(sort_child);
+  MODIFY(multiple_sel);
+  MODIFY(popuplistbox);
+  MODIFY(menu);
+  MODIFY(destroying);
+  MODIFY(float_group_head);
+  MODIFY(dragwnd_if_clickblank);
+  MODIFY(changeselection_onlbuttonup);
 
-    if (oldStyle.menu != m_listctrlStyle.menu ||
-        oldStyle.multiple_sel != m_listctrlStyle.multiple_sel ||
-        oldStyle.popuplistbox != m_listctrlStyle.popuplistbox)
-    {
-        update_mouse_mgr_type();
-    }
+  if (oldStyle.menu != m_listctrlStyle.menu ||
+      oldStyle.multiple_sel != m_listctrlStyle.multiple_sel ||
+      oldStyle.popuplistbox != m_listctrlStyle.popuplistbox) {
+    update_mouse_mgr_type();
+  }
 
-	if ((add && add->multiple_sel) || (remove && remove->multiple_sel))
-	{
-		update_mouse_mgr_type();
-	}
+  if ((add && add->multiple_sel) || (remove && remove->multiple_sel)) {
+    update_mouse_mgr_type();
+  }
 }
-bool  ListCtrlBase::TestListCtrlStyle(LISTCTRLSTYLE* test)
-{
-	if (!test)
-		return false;
+bool ListCtrlBase::TestListCtrlStyle(LISTCTRLSTYLE *test) {
+  if (!test)
+    return false;
 
-#define  TEST(x) \
-    if (test->x && !m_listctrlStyle.x) \
-        return false;
+#define TEST(x)                                                                \
+  if (test->x && !m_listctrlStyle.x)                                           \
+    return false;
 
-    TEST(sort_ascend);
-    TEST(sort_descend);
-    TEST(sort_child);
-    TEST(multiple_sel);
-    TEST(popuplistbox);
-    TEST(menu);
-    TEST(destroying);
-    TEST(float_group_head);
-    TEST(dragwnd_if_clickblank);
-    TEST(changeselection_onlbuttonup);
+  TEST(sort_ascend);
+  TEST(sort_descend);
+  TEST(sort_child);
+  TEST(multiple_sel);
+  TEST(popuplistbox);
+  TEST(menu);
+  TEST(destroying);
+  TEST(float_group_head);
+  TEST(dragwnd_if_clickblank);
+  TEST(changeselection_onlbuttonup);
 
-	return true;
+  return true;
 }
 
+long ListCtrlBase::OnGesturePan(unsigned int, WPARAM wParam, LPARAM lParam) {
+  long lRet = HANDLED;
 
-long  ListCtrlBase::OnGesturePan(unsigned int, WPARAM wParam, LPARAM lParam)
-{
-	long lRet = HANDLED;
-	
-	static int  bounce_edge_power = 0;
-	//UI::GESTUREINFO* pgi = (UI::GESTUREINFO*)lParam;
+  static int bounce_edge_power = 0;
+  // UI::GESTUREINFO* pgi = (UI::GESTUREINFO*)lParam;
 
-    //::OutputDebugStringA("ScrollBarManager::OnGesturePan");
-    int xOffset = GET_X_LPARAM(wParam);
-    int yOffset = GET_Y_LPARAM(wParam);
+  //::OutputDebugStringA("ScrollBarManager::OnGesturePan");
+  int xOffset = GET_X_LPARAM(wParam);
+  int yOffset = GET_Y_LPARAM(wParam);
 
-	bounce_edge_power += yOffset;
+  bounce_edge_power += yOffset;
 
-    bool bNeedUpdate = false;
-    if (xOffset)
-    {
-        if (m_mgrScrollBar.SetHScrollPos(
-				m_mgrScrollBar.GetHScrollPos()-xOffset))
-		{
-            bNeedUpdate = true;
-		}
+  bool bNeedUpdate = false;
+  if (xOffset) {
+    if (m_mgrScrollBar.SetHScrollPos(m_mgrScrollBar.GetHScrollPos() -
+                                     xOffset)) {
+      bNeedUpdate = true;
     }
-    if (yOffset)
-    {
-		int nMaxPos = m_mgrScrollBar.GetVScrollMaxPos();
-		int nCurPos = m_mgrScrollBar.GetVScrollPos();
-		int nTry = nCurPos - yOffset;
+  }
+  if (yOffset) {
+    int nMaxPos = m_mgrScrollBar.GetVScrollMaxPos();
+    int nCurPos = m_mgrScrollBar.GetVScrollPos();
+    int nTry = nCurPos - yOffset;
 
-		if (nTry < 0 || nTry > nMaxPos)
-		{
-			lRet = GESTURE_RETURN_NEED_BOUNCE_EDGE;
-		}
-
-		if (m_mgrScrollBar.SetVScrollPos(nTry))   
-		{
-            bNeedUpdate = true;
-		}
+    if (nTry < 0 || nTry > nMaxPos) {
+      lRet = GESTURE_RETURN_NEED_BOUNCE_EDGE;
     }
 
-    if (bNeedUpdate)
-    {
-		if (GetUIApplication())
-			GetUIApplication()->HideToolTip();
-
-		this->SetCalcFirstLastDrawItemFlag();
-        this->Invalidate();
+    if (m_mgrScrollBar.SetVScrollPos(nTry)) {
+      bNeedUpdate = true;
     }
-    return lRet;
+  }
+
+  if (bNeedUpdate) {
+    if (GetUIApplication())
+      GetUIApplication()->HideToolTip();
+
+    this->SetCalcFirstLastDrawItemFlag();
+    this->Invalidate();
+  }
+  return lRet;
 }
 
-void  ListCtrlBase::EnableInnerDrag(bool b)
-{
-	if (b)
-	{
-		if (!m_pInnerDragMgr)
-		{
-			m_pInnerDragMgr = new ListCtrlInnerDragMgr;
-			m_pInnerDragMgr->SetListCtrlBase(this);
-		}
-	}
-	else
-	{
-		SAFE_DELETE(m_pInnerDragMgr);
-	}
+void ListCtrlBase::EnableInnerDrag(bool b) {
+  if (b) {
+    if (!m_pInnerDragMgr) {
+      m_pInnerDragMgr = new ListCtrlInnerDragMgr;
+      m_pInnerDragMgr->SetListCtrlBase(this);
+    }
+  } else {
+    SAFE_DELETE(m_pInnerDragMgr);
+  }
 }
 
-void  ListCtrlBase::EnableReusable(IListCtrlReusableDelegate* p)
-{
-	if (p && !m_pReusable)
-	{
-		m_pReusable = new ListCtrlReusable;
-		m_pReusable->Init(p);
-	}
-	else if (!p && m_pReusable)
-	{
-		m_pReusable->Release();
-		SAFE_DELETE(m_pReusable);
-	}
-	return;
+void ListCtrlBase::EnableReusable(IListCtrlReusableDelegate *p) {
+  if (p && !m_pReusable) {
+    m_pReusable = new ListCtrlReusable;
+    m_pReusable->Init(p);
+  } else if (!p && m_pReusable) {
+    m_pReusable->Release();
+    SAFE_DELETE(m_pReusable);
+  }
+  return;
 }
 
-}
+} // namespace ui

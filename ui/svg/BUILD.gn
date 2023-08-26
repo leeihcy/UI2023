@@ -9,9 +9,13 @@ shared_library("uisvg") {
         "//",
         "//ui/",
         "//ui/svg/",
+        "//ui/3rd/skia/src/",
+        "//ui/3rd/skia/src/include/core/",
+        # "//ui/3rd/skia/src/modules/svg/include/"
     ]
   
     lib_dirs = ["$root_build_dir/"]
+    libs = ["skia"]
     deps = [
       "//ui/sdk:uisdk"
     ]
@@ -23,7 +27,13 @@ shared_library("uisvg") {
 
     sources = [
       "src/element/ielement.cpp",
+      "src/element/container.cpp",
+      "src/element/node.cpp",
       "src/element/rect/rect.cpp",
+      "src/element/circle/circle.cpp",
+      "src/element/ellipse/ellipse.cpp",
+      "src/element/line/line.cpp",
+      
       "src/svg/isvg.cpp",
       "src/svg/svg.cpp",
       "src/svg/svg_layout.cpp",

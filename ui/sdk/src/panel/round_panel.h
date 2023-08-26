@@ -27,12 +27,12 @@ public:
   RoundPanel(IRoundPanel *);
   ~RoundPanel();
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_PAINT(OnPaint)
-  UIMSG_POSTPAINT(OnPostPaint)
-  UIMSG_QUERYINTERFACE(RoundPanel)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(Panel)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_PAINT(OnPaint)
+  // UIMSG_POSTPAINT(OnPostPaint)
+  // UIMSG_QUERYINTERFACE(RoundPanel)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(Panel)
 
 public:
   void PrePaint(HDC hDC, int width, int height);

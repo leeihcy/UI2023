@@ -58,7 +58,9 @@ IRenderFont *ITextRenderBase::GetRenderFont() {
 }
 
 void ITextRenderBase::Serialize(SerializeParam *pData) {
-  static_cast<IMessage *>(this)->SendMessage(UI_MSG_SERIALIZE, (long)pData);
+  SerializeMessage msg;
+  msg.param = pData;
+  static_cast<IMessage*>(this)->RouteMessage(&msg);
 }
 
 void ITextRenderBase::_LoadFont(const char *szFontId,

@@ -24,18 +24,23 @@ void IMessage::connect(const char *event, slot<void(Event *)> &&s) {
 
 IMeta *IMessage::GetMeta() { return m_pImpl->GetMeta(); }
 
+void IMessage::RouteMessage(Msg* msg) {
+  m_pImpl->GetMeta()->RouteMessage(this, msg);
+}
+
 bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
-  ui::UIMSG *pOldMsg = nullptr;
-  if (m_pImpl)
-    pOldMsg = m_pImpl->GetCurMsg();
+  // ui::UIMSG *pOldMsg = nullptr;
+  // if (m_pImpl)
+  //   pOldMsg = m_pImpl->GetCurMsg();
 
-  bool bRet =  GetMeta()->virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
-  // bool bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+  // bool bRet =  GetMeta()->virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
+  // // bool bRet = virtualProcessMessage(pMsg, nMsgMapID, bDoHook);
 
-  if (m_pImpl)
-    m_pImpl->SetCurMsg(pOldMsg);
+  // if (m_pImpl)
+  //   m_pImpl->SetCurMsg(pOldMsg);
 
-  return bRet;
+  // return bRet;
+  return false;
 }
 
 //
@@ -210,7 +215,13 @@ void IMessage::ClearHook() { return m_pImpl->ClearHook(); }
 // }
 
 void *IMessage::QueryInterface(const Uuid &iid) {
-  return (void *)SendMessage(UI_MSG_QUERYINTERFACE, (llong)&iid);
+  void* result = nullptr;
+  QueryInterfaceMessage msg;
+  msg.uuid = iid;
+  msg.pp = &result;
+
+  RouteMessage(&msg);
+  return result;
 }
 
 MessageProxy::MessageProxy(IMessage *p) : m_pImpl(p->GetImpl()) {}

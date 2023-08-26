@@ -1,4 +1,5 @@
 #include "window.h"
+#include "window_meta.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/resource/layoutmanager.h"
@@ -25,14 +26,30 @@ Window::~Window() {
   UI_LOG_DEBUG("~Window");
 }
 
-void Window::RouteMessage(ui::Msg *msg) {
+void Window::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
-    Panel::RouteMessage(msg);
+    Panel::onRouteMessage(msg);
     FinalConstruct();
     return;
   }
-  
-  Panel::RouteMessage(msg);
+  if (msg->message == UI_MSG_ERASEBKGND) {
+    Panel::onRouteMessage(msg);
+    onEraseBkgnd(static_cast<EraseBkgndMessage*>(msg)->rt);
+    return;
+  }
+  if (msg->message == UI_MSG_QUERYINTERFACE) {
+    auto* m = static_cast<QueryInterfaceMessage*>(msg);
+    if (m->uuid == WindowMeta::Get().UUID()) {
+      *(m->pp) = m_pIWindow;
+      return;
+    }
+  }
+  if (msg->message == UI_MSG_SERIALIZE) {
+    auto* m = static_cast<SerializeMessage*>(msg);
+    onSerialize(m->param);
+    return;
+  }
+  Panel::onRouteMessage(msg);
 }
 
 long Window::FinalConstruct() {
@@ -46,10 +63,10 @@ long Window::FinalConstruct() {
   return 0;
 }
 
-void Window::OnSerialize(SerializeParam *pData) {
+void Window::onSerialize(SerializeParam *pData) {
   // 放在最前面，设置好Graphics Render Library
   m_window_render.OnSerialize(pData);
-  Panel::OnSerialize(pData);
+  Panel::onSerialize(pData);
 
   AttributeSerializer s(pData, "Window");
 #if 0
@@ -254,7 +271,7 @@ void Window::SetGpuComposite(bool b) {
   // UI_LOG_DEBUG(TEXT("hard composite enable, window=0x%08x"), this);
 }
 
-void Window::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
+void Window::onEraseBkgnd(IRenderTarget *pRenderTarget) {
   if (nullptr == pRenderTarget)
     return;
 
@@ -263,7 +280,7 @@ void Window::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
   event.rt = pRenderTarget;
   emit(WINDOW_PAINT_EVENT, &event);
 
-  SetMsgHandled(false);
+  // SetMsgHandled(false);
 }
 
 #if 0

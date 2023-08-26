@@ -30,8 +30,8 @@ void  SoftwareLayer::UpdateDirty()
         m_dirtyRectangles.GetArrayPtr(), 
         m_dirtyRectangles.GetCount());
 
-	// 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
-	// 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
+	// 绔嬪嵆閿�姣佹棤鏁堝尯鍩燂紝閬垮厤鍦―raw涓啀娆¤Е鍙慖nvalidate閫昏緫鍚庯紝dirtyrect鍙堣娓呯┖
+	// 渚嬪listitem.draw->listitem.delayop->listitem.onsize->invalidate
 	m_dirtyRectangles.Destroy();
 
     m_pLayerContent->Draw(pRenderTarget);

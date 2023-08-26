@@ -27,10 +27,9 @@ public:
   // UIMSG_ERASEBKGND(OnEraseBkgnd)
   // UIMSG_HITTEST(OnHitTest)
   // UIMSG_VISIBLE_CHANGED(OnVisibleChanged)
-    UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP()
   
-  void RouteMessage(ui::Msg *msg);
+  void onRouteMessage(ui::Msg *msg);
 
 public:
   IObject *GetIObject();
@@ -323,7 +322,7 @@ protected:
   void FinalRelease();
   unsigned int OnHitTest(Point *ptInParent, Point *ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
-  void OnSerialize(SerializeParam *pData);
+  void onSerialize(SerializeParam *pData);
   void OnEraseBkgnd(IRenderTarget *pRenderTarget);
 
   void position_in_tree_changed();

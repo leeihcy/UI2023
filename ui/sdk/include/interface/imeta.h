@@ -108,9 +108,9 @@ struct IMeta {
   virtual Uuid UUID() = 0; 
 
   // 直接给最终对象发消息，取代之前的 object creator 类
-  virtual void Route(IMessage*, Msg*) = 0;
+  virtual void RouteMessage(IMessage*, Msg*) = 0;
   // 兼容
-  virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) = 0;
+  // virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) = 0;
 
   // 对应xml中的名字
   virtual const char* Name() = 0;
@@ -131,7 +131,7 @@ struct MetaImpl : public IMeta {
     msg.resource = resource;
     msg.meta = static_cast<IMeta*>(this);
     
-    p->RouteMessage(&msg);
+    p->onRouteMessage(&msg);
     if (!msg.success) {
       delete p;
       return IxxPtr(nullptr, This::destroy);
@@ -141,7 +141,7 @@ struct MetaImpl : public IMeta {
 
   static void destroy(Ixx* p) {
     FinalReleaseMessage msg;
-    p->RouteMessage(&msg);
+    p->onRouteMessage(&msg);
 
     delete p;  
   }
@@ -153,13 +153,13 @@ struct MetaImpl : public IMeta {
     This::destroy((Ixx*)obj);
   }
 
-  void Route(IMessage* obj, Msg* msg) override {
-    static_cast<Ixx*>(obj)->RouteMessage(msg);
+  void RouteMessage(IMessage* obj, Msg* msg) override {
+    static_cast<Ixx*>(obj)->onRouteMessage(msg);
   }
   // 兼容老版本的消息映射
-  bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) override {
-    return static_cast<Ixx*>(pMsg->pMsgTo)->nvProcessMessage(pMsg, nMsgMapID, bDoHook);
-  }
+  // bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) override {
+  //   return static_cast<Ixx*>(pMsg->pMsgTo)->nvProcessMessage(pMsg, nMsgMapID, bDoHook);
+  // }
 };
 
 } // namespace ui

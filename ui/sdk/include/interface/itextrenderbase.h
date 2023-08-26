@@ -84,19 +84,16 @@ struct UIAPI ISimpleTextRender : public ITextRenderBase {
   void SetColor(Color *pColText);
   bool GetColor(COLORREF &color);
 
-  static Uuid UUID() { return Uuid("230E9C5F-7F13-4307-85E7-088AB6F44C9D"); }
   UI_DECLARE_INTERFACE(SimpleTextRender);
 };
 
 class ContrastColorTextRender;
 struct UIAPI IContrastColorTextRender : public ITextRenderBase {
-  static Uuid UUID() { return Uuid("43851BC4-E18A-457E-AFCC-C4D0C638F376"); }
   UI_DECLARE_INTERFACE(ContrastColorTextRender)
 };
 
 class ContrastColorListTextRender;
 struct UIAPI IContrastColorListTextRender : public ITextRenderBase {
-  static Uuid UUID() { return Uuid("69A57DAA-1E49-4FCD-A334-03FA3A5FF420"); }
   UI_DECLARE_INTERFACE(ContrastColorListTextRender);
 };
 
@@ -106,7 +103,6 @@ struct UIAPI IColorListTextRender : public ITextRenderBase {
   void SetCount(int nCount);
   void SetColor(int nIndex, COLORREF col);
 
-  static Uuid UUID() { return Uuid("9646EBCD-6F6C-4748-9603-847C57CF29D7"); }
   UI_DECLARE_INTERFACE(ColorListTextRender);
 };
 
@@ -118,7 +114,6 @@ struct UIAPI IFontColorListTextRender : public ITextRenderBase {
 
 
   UI_DECLARE_INTERFACE(FontColorListTextRender);
-  static Uuid UUID() { return {0xFE20349B, 0x8D97, 0x4C86, {0x82, 0xA4, 0x4A, 0x27, 0xC8, 0xF1, 0x52, 0xC1}}; }
 };
 
 

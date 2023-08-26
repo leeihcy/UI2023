@@ -10,8 +10,6 @@ struct IRenderBase;
 class Panel;
 
 struct UIAPI IPanel : public IObject {
-  static Uuid UUID() { static Uuid s("A591D454-65ED-40C3-8D84-612ABA3C8167"); return s;}
-
   ILayout *GetLayout();
   void SetLayout(ILayout* p);
   void SetLayoutType(const char* name);
@@ -24,8 +22,6 @@ struct UIAPI IPanel : public IObject {
 
 class RoundPanel;
 struct UIAPI IRoundPanel : public IPanel {
-  static Uuid UUID() { return Uuid("4B9262CE-3380-4742-8C37-5FEF9FFE8B07"); }
-
   UI_DECLARE_INTERFACE(RoundPanel);
 };
 

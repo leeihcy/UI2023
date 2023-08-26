@@ -3,26 +3,29 @@
 
 #include "sdk/include/interface/imessage.h"
 #include "include/interface/isvg.h"
+#include "src/element/container.h"
+
 
 namespace ui { namespace svg {
 
 class Svg : public ui::MessageProxy {
 public:
   Svg(ISvg*);
+  
+public:
+  void onRouteMessage(Msg* msg);
 
-  UI_BEGIN_MSG_MAP()
-    UIMSG_ERASEBKGND(OnEraseBkgnd)
-	UI_END_MSG_MAP_CHAIN_PARENT_Ixxx(Svg, IPanel)
+  Container* AsRoot() { return &m_root; }
 
-  void RouteMessage(Msg* msg) {
-    static_cast<IPanel*>(m_pISvg)->RouteMessage(msg);
-  }
+  bool Load(const char* stream);
   
 private:
-  void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget);
-  
+  void onEraseBkgnd(ui::IRenderTarget* pRenderTarget);
+  void onFinalConstruct();
+
 private:
   ISvg* m_pISvg;
+  Container  m_root;
 };
 
 }}

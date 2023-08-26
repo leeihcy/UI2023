@@ -45,8 +45,32 @@ Panel::~Panel() {
   }
 }
 
-void Panel::RouteMessage(ui::Msg *msg) {
-  Object::RouteMessage(msg);
+void Panel::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_ERASEBKGND) {
+    onEraseBkgnd(static_cast<EraseBkgndMessage*>(msg)->rt);
+    return;
+  }
+  else if (msg->message == UI_MSG_PAINT) {
+    onPaint(static_cast<EraseBkgndMessage*>(msg)->rt);
+    return;
+  }
+  else if (msg->message == UI_MSG_POSTPAINT) {
+    onPostPaint(static_cast<EraseBkgndMessage*>(msg)->rt);
+    return;
+  }
+  if (msg->message == UI_MSG_QUERYINTERFACE) {
+    auto* m = static_cast<QueryInterfaceMessage*>(msg);
+    if (m->uuid == PanelMeta::Get().UUID()) {
+      *(m->pp) = m_pIPanel;
+      return;
+    }
+  }
+  else if (msg->message == UI_MSG_SERIALIZE) {
+    auto* m = static_cast<SerializeMessage*>(msg);
+    onSerialize(m->param);
+    return;
+  }
+  Object::onRouteMessage(msg);
 }
 
 ILayout *Panel::GetLayout() { return this->m_pLayout; }
@@ -106,8 +130,8 @@ void Panel::OnGetDesiredSize(Size *pSize) {
   pSize->height += rcNonClient.top + rcNonClient.bottom;
 }
 
-void Panel::OnSerialize(SerializeParam *pData) {
-  Object::OnSerialize(pData);
+void Panel::onSerialize(SerializeParam *pData) {
+  Object::onSerialize(pData);
 
   if (pData->IsReload()) {
     SAFE_RELEASE(m_pLayout);
@@ -156,7 +180,7 @@ void Panel::OnSerialize(SerializeParam *pData) {
   }
 }
 
-void Panel::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
+void Panel::onEraseBkgnd(IRenderTarget *pRenderTarget) {
   if (m_pLayout && m_pLayout->IsDirty()) {
     m_pLayout->Arrange(nullptr);
   }
@@ -176,14 +200,14 @@ void Panel::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
   }
 }
 
-void Panel::OnPaint(IRenderTarget *pRenderTarget) {
+void Panel::onPaint(IRenderTarget *pRenderTarget) {
   if (m_pForegndRender) {
     Rect rcForegnd = {0, 0, this->GetWidth(), this->GetHeight()};
     rcForegnd.Deflate(m_rcForegndRenderRegion);
     m_pForegndRender->DrawState(pRenderTarget, &rcForegnd, 0);
   }
 }
-void Panel::OnPostPaint(IRenderTarget *pRenderTarget) {
+void Panel::onPostPaint(IRenderTarget *pRenderTarget) {
   if (m_pMaskRender) {
     Rect rcMask = {0, 0, this->GetWidth(), this->GetHeight()};
     rcMask.Deflate(m_rcMaskRenderRegion);

@@ -10,7 +10,6 @@ struct UIAPI IColorRender : public IRenderBase {
   void SetBorderColor(COLORREF col);
   void SetBorderRegion(const Rect *prc);
 
-  static Uuid UUID() { return Uuid("A3AE0787-D67E-40A2-8AFE-2B6783A55DAF"); }
   UI_DECLARE_INTERFACE(ColorRender);
 };
 
@@ -21,7 +20,6 @@ struct UIAPI ISysColorRender : public IRenderBase {
   void SetBkColor(int nColorIndex);
   void SetBorderColor(int nColorIndex);
 
-  static Uuid UUID() { return Uuid("D9619AFA-291B-41CC-83FE-43CA5079A962"); }
   UI_DECLARE_INTERFACE(SysColorRender);
 };
 
@@ -29,7 +27,6 @@ struct UIAPI ISysColorRender : public IRenderBase {
 
 class GradientRender;
 struct UIAPI IGradientRender : public IRenderBase {
-  static Uuid UUID() { return Uuid("B7B00FDE-964F-4F67-B859-58EA62D8946E"); }
   UI_DECLARE_INTERFACE(GradientRender);
 };
 
@@ -41,7 +38,6 @@ struct UIAPI IColorListRender : public IRenderBase {
                      COLORREF colBorder, bool bSetBorder);
   void SetCount(int n);
 
-  static Uuid UUID() { return Uuid("BB63B44B-831C-4BE0-9053-6FE62C88A5FF"); }
   UI_DECLARE_INTERFACE(ColorListRender);
 };
 } // namespace ui

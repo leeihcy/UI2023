@@ -97,8 +97,8 @@ struct UIAPI IObject : public IMessage {
   IObject *EnumNcChildObject(IObject *p);
   IObject *EnumAllChildObject(IObject *p);
 
-  void AddChild(IObject *p);
-  void AddNcChild(IObject *p);
+  IObject* AddChild(IObject *p);
+  IObject* AddNcChild(IObject *p);
   bool IsMyChild(IObject *pChild, bool bFindInGrand);
   bool RemoveChildInTree(IObject *pChild);
   void InsertChild(IObject *pObj, IObject *pInsertAfter);

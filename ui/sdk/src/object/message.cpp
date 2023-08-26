@@ -27,7 +27,7 @@ Message::~Message() {
 }
 
 
-void Message::RouteMessage(ui::Msg *msg) {
+void Message::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
     m_meta = static_cast<FinalConstructMessage*>(msg)->meta;
     return;

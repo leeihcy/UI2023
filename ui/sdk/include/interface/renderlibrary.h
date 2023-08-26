@@ -233,6 +233,9 @@ struct IRenderTarget {
   // virtual void ReleaseHDC(HDC hDC) = 0;
   // virtual void BindHWND(HWND hWnd) = 0; // 仅D2D有用
 
+  // 获取原生指针进行绘制。如HDC, SkCanvas
+  virtual void* GetHandle() = 0;
+
   virtual bool BeginDraw() = 0;
   virtual void EndDraw() = 0;
   virtual void Clear(Rect *prc) = 0;

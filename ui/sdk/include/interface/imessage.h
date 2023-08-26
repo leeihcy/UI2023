@@ -23,6 +23,7 @@ struct UIAPI IMessage {
   void connect(const char* event, slot<void(Event*)>&&);
 
   IMeta *GetMeta(); // 返回值不会为空
+  void RouteMessage(Msg* msg);
 
   // llong UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
   static llong SendMessage(UIMSG *pMsg, int nMsgMapID = 0,

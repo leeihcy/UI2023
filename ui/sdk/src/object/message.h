@@ -40,7 +40,7 @@ public:
   Message(IMessage *);
   virtual ~Message();
 
-  void RouteMessage(ui::Msg *msg);
+  void onRouteMessage(ui::Msg *msg);
 
   IMessage *GetIMessage();
 

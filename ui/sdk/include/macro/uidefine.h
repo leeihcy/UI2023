@@ -16,7 +16,6 @@ enum {
   WH_PERCENT = -4
 };
 
-
 #define EMPTYTEXT ""
 
 #define __pImpl static_cast<ImplName *>(m_pImpl)
@@ -27,14 +26,15 @@ public:                                                                        \
   friend struct T##Meta;                                                       \
   static std::unique_ptr<I##T, void (*)(I##T *)> create(ui::IResource *);      \
   I##T(ui::E_BOOL_CREATE_IMPL);                                                \
-  void RouteMessage(ui::Msg *msg);                                             \
-  bool nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook);         \
+  void onRouteMessage(ui::Msg *msg);                                           \
+  static Uuid UUID();                                                          \
   T *GetImpl();
 
 // 跨模块时，作为本模块的根对象，需要增加成员变量及销毁该变量
 #define UI_DECLARE_INTERFACE_ACROSSMODULE(T)                                   \
   UI_DECLARE_INTERFACE(T)                                                      \
   virtual ~I##T();                                                             \
+                                                                               \
 protected:                                                                     \
   T *m_pImpl;
 
@@ -55,10 +55,8 @@ protected:                                                                     \
   std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
     return T##Meta::Get().create(res);                                         \
   }                                                                            \
-  bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
-    return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
-  }                                                                            \
-  void I##T::RouteMessage(ui::Msg *msg) { __pImpl->RouteMessage(msg); }
+  Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
+  void I##T::onRouteMessage(ui::Msg *msg) { __pImpl->onRouteMessage(msg); }
 
 #define UI_IMPLEMENT_INTERFACE_ACROSSMODULE(T, SUPER)                          \
   I##T::~I##T() {                                                              \
@@ -79,10 +77,10 @@ protected:                                                                     \
   std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
     return T##Meta::Get().create(res);                                         \
   }                                                                            \
-  bool I##T::nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {  \
-    return __pImpl->nvProcessMessage(pMsg, nMsgMapID, bDoHook);                \
-  }                                                                            \
-  void I##T::RouteMessage(ui::Msg *msg) { static_cast<T *>(m_pImpl)->RouteMessage(msg); }
+  Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
+  void I##T::onRouteMessage(ui::Msg *msg) {                                    \
+    static_cast<T *>(m_pImpl)->onRouteMessage(msg);                            \
+  }
 
 // TODO: 优化调用形式。
 #define DO_PARENT_PROCESS(IMyInterface, IParentInterface)                      \
@@ -223,20 +221,20 @@ enum OBJECT_STATE_BIT {
   0x10000000 // 即使大小没有改变，也强制柠檬素，用于走通逻辑
 
 #define UI_DECLARE_RENDERBASE(className, xml, rendertype)                      \
-  static const char *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                              \
   static int GetType() { return rendertype; }
 
 // 本宏定义主要是用于theme类型的renderbase，要根据控件类型进行创建
 #define UI_DECLARE_RENDERBASE2(className, xml, rendertype)                     \
-  static const char *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                              \
   static int GetType() { return rendertype; }
 
 #define UI_DECLARE_TEXTRENDERBASE(className, xml, rendertype)                  \
-  static const char *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                              \
   static int GetType() { return rendertype; }
 
 #define UI_DECLARE_TEXTRENDERBASE2(className, xml, rendertype)                 \
-  static const char *GetXmlName() { return xml; }                           \
+  static const char *GetXmlName() { return xml; }                              \
   static int GetType() { return rendertype; }
 
 #define TESTWNDSTYLE(hWnd, flag) GetWindowLongPtr(hWnd, GWL_STYLE) & flag

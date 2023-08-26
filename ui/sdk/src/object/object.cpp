@@ -78,13 +78,18 @@ Object::~Object(void) {
 #endif
 }
 
-void Object::RouteMessage(ui::Msg *msg) {
+void Object::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
-    Message::RouteMessage(msg);
+    Message::onRouteMessage(msg);
     FinalConstruct(static_cast<FinalConstructMessage*>(msg)->resource);
     return;
-  } else if (msg->message == UI_MSG_FINALRELEASE) {
+  } 
+  if (msg->message == UI_MSG_FINALRELEASE) {
     FinalRelease();
+    return;
+  }
+  if (msg->message == UI_MSG_SERIALIZE) {
+    onSerialize(static_cast<SerializeMessage*>(msg)->param);
     return;
   }
 }
@@ -357,7 +362,9 @@ void Object::LoadAttributes(bool bReload) {
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
 
-  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
+  SerializeMessage msg;
+  msg.param = &data;
+  m_pIObject->RouteMessage(&msg);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
@@ -1139,7 +1146,9 @@ void Object::InitDefaultAttrib() {
   m_pIMapAttributeRemain = pMapAttrib;
   pMapAttrib = nullptr;
 
-  m_pIObject->SendMessage(UI_MSG_SERIALIZE, (llong)&data);
+  SerializeMessage msg;
+  msg.param = &data;
+  m_pIObject->RouteMessage(&msg);
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {

@@ -180,7 +180,10 @@ void Object::Invalidate(Rect *prcObjArray, int nCount) {
 
 void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   // 1. 非客户区，不受padding scroll影响
-  m_pIObject->SendMessage(WM_ERASEBKGND, (long)pRenderTarget);
+  EraseBkgndMessage message;
+  message.rt = pRenderTarget;
+  m_pIObject->RouteMessage(&message);
+  
   this->virtualOnPostDrawObjectErasebkgnd();
 
   // 2. 客户区，更新裁剪、偏移
@@ -202,7 +205,9 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   {
     pRenderTarget->OffsetOrigin(xOffset, yOffset);
     {
-      m_pIObject->SendMessage(WM_PAINT, (long)pRenderTarget);
+      PaintMessage msg;
+      msg.rt = pRenderTarget;
+      m_pIObject->RouteMessage(&msg);
 
       if (m_pChild) {
         this->DrawChildObject__(pRenderTarget, m_pChild);
@@ -219,7 +224,9 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   }
 
   if (m_objStyle.post_paint) {
-    m_pIObject->SendMessage(UI_MSG_POSTPAINT, (long)pRenderTarget);
+    PostPaintMessage msg;
+    msg.rt = pRenderTarget;
+    m_pIObject->RouteMessage(&msg);
   }
 
 #ifdef _DEBUG

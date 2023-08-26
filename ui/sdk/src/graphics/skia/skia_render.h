@@ -26,7 +26,7 @@ public:
     return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
   }
   virtual bool IsRenderAlphaChannel() override { return m_bNeedAlphaChannel; }
-
+  virtual void* GetHandle() override { return (void*)m_sksurface->getCanvas(); }
   // virtual HDC GetHDC();
   // virtual void ReleaseHDC(HDC hDC);
   // virtual void BindHDC(HDC hDC);

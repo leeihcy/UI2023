@@ -176,47 +176,11 @@ public:                                                                        \
       return true;                                                             \
   }
 
-// wParam: SerializeParam
-// lParam:
-// return:
-#define UI_MSG_SERIALIZE 139281928
-// void  OnSerialize(SerializeParam* pData);
-#define UIMSG_SERIALIZE(func)                                                  \
-  if (uMsg == UI_MSG_SERIALIZE) {                                              \
-    SetMsgHandled(true);                                                       \
-    func((SerializeParam *)wParam);                                             \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
-//
-//  接口查询
-//
-//  message : UI_WM_QUERYINTERFACE
-//  code : NA
-//  wparam : UUID*   pguid
-//  lparam : void**  ppOut
-//
-#define UI_MSG_QUERYINTERFACE 165312200
-
-#define UIMSG_QUERYINTERFACE(className)                                        \
-  if (uMsg == UI_MSG_QUERYINTERFACE) {                                         \
-    SetMsgHandled(true);                                                       \
-    if (I##className::UUID() == (*(const Uuid *)wParam)) {                     \
-      SetMsgHandled(true);                                                     \
-      lResult = (long)(void *)m_pI##className;                                 \
-      return true;                                                             \
-    }                                                                          \
-  }
-
-// void*  QueryInterface(const IID* pIID);
-#define UIMSG_QUERYINTERFACE2(className)                                       \
-  if (uMsg == UI_MSG_QUERYINTERFACE) {                                         \
-    SetMsgHandled(true);                                                       \
-    lResult = func(*(const IID *)wParam);                                      \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
+// Deprecated!
+#define UIMSG_QUERYINTERFACE(xxx) 
+#define UIMSG_QUERYINTERFACE2(xxx)
+#define UIMSG_SERIALIZE(xxx)
 
 //
 //	测试一个坐标在指定的对象上面的位置
@@ -275,26 +239,6 @@ public:                                                                        \
       return true;                                                             \
   }
 
-// void  OnPaint(IRenderTarget* pRenderTarget)
-#define UIMSG_PAINT(func)                                                      \
-  if (uMsg == WM_PAINT) {                                                      \
-    SetMsgHandled(true);                                                       \
-    func((ui::IRenderTarget *)wParam);                                         \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-// void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget)
-//	remark
-//		参数HDC，是已经做过了双缓冲处理了，可以直接使用。原始的WM_ERASEBKGND消息已被过滤了
-//		这里去掉了返回值，以防调用者自己也不知道到底该返回什么（其实这里的返回值没有意思）
-#define UIMSG_ERASEBKGND(func)                                                 \
-  if (uMsg == WM_ERASEBKGND) {                                                 \
-    SetMsgHandled(true);                                                       \
-    func((ui::IRenderTarget *)wParam);                                         \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 //
 //  如果这个对象支持布局，返回布局对象指针。如OBJ_WINDOW,OBJ_PANEL,OBJ_COMPOUND_CONTROL
@@ -362,36 +306,6 @@ public:                                                                        \
       return true;                                                             \
   }
 
-// void  OnPaint(IRenderTarget* pRenderTarget)
-#define UIMSG_PAINT(func)                                                      \
-  if (uMsg == WM_PAINT) {                                                      \
-    SetMsgHandled(true);                                                       \
-    func((ui::IRenderTarget *)wParam);                                         \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-// 控件在自己的子对象画完之后，再接受一个消息用于后处理
-// 需要控件有post_paint样式
-#define UI_MSG_POSTPAINT 147281159
-// void OnPostPaint(IRenderTarget* pRenderTarget)
-#define UIMSG_POSTPAINT(func)                                                  \
-  if (uMsg == UI_MSG_POSTPAINT) {                                              \
-    SetMsgHandled(true);                                                       \
-    func((ui::IRenderTarget *)wParam);                                         \
-    lResult = 0;                                                               \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-// void  OnEraseBkgnd(ui::IRenderTarget* pRenderTarget)
-#define UIMSG_ERASEBKGND(func)                                                 \
-  if (uMsg == WM_ERASEBKGND) {                                                 \
-    SetMsgHandled(true);                                                       \
-    func((ui::IRenderTarget *)wParam);                                         \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 //
 //	在ui中实现post message（稍后再响应）

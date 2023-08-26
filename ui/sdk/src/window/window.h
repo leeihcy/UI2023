@@ -32,16 +32,13 @@ public:
   ~Window();
 
   UI_BEGIN_MSG_MAP()
-  UIMSG_ERASEBKGND( OnEraseBkgnd )
   // UIMSG_DM_GETDEFID( OnGetDefId )
   // UIMSG_DM_SETDEFID( OnSetDefId )
   // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
-  UIMSG_QUERYINTERFACE(Window)
-  UIMSG_SERIALIZE(OnSerialize)
   // UIMSG_PRECREATEWINDOW( PreCreateWindow )
   UI_END_MSG_MAP_CHAIN_PARENT( Panel )
 
-  void RouteMessage(ui::Msg *msg);
+  void onRouteMessage(ui::Msg *msg);
 
   IWindow*   GetIWindow() { return m_pIWindow; }
   WindowRender&  GetWindowRender() { return m_window_render; }
@@ -80,10 +77,10 @@ private:
 protected:
   long FinalConstruct();
   // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
-  void OnSerialize(SerializeParam *pData);
+  void onSerialize(SerializeParam *pData);
   // void OnSetDefId(IObject *pButton);
   // IObject *OnGetDefId();
-  void OnEraseBkgnd(IRenderTarget *);
+  void onEraseBkgnd(IRenderTarget *);
 
 private:
   IWindow*  m_pIWindow;

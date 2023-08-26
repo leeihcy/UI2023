@@ -12,16 +12,11 @@ public:
   ~Panel();
 
   UI_BEGIN_MSG_MAP()
-  UIMSG_ERASEBKGND(OnEraseBkgnd)
-  UIMSG_PAINT(OnPaint)
-  UIMSG_POSTPAINT(OnPostPaint)
   UIMSG_GETDESIREDSIZE(OnGetDesiredSize)
   UIMSG_HANDLER_EX(UI_MSG_GETLAYOUT, OnGetLayoutPtr)
-  UIMSG_QUERYINTERFACE(Panel)
-  UIMSG_SERIALIZE(OnSerialize)
   UI_END_MSG_MAP_CHAIN_PARENT(Object)
 
-  void RouteMessage(ui::Msg *msg);
+  void onRouteMessage(ui::Msg *msg);
 
   IPanel *GetIPanel() { return m_pIPanel; }
 
@@ -40,11 +35,11 @@ protected:
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
                              unsigned int nHeight) override;
 
-  void OnEraseBkgnd(IRenderTarget *);
-  void OnPaint(IRenderTarget *pRenderTarget);
-  void OnPostPaint(IRenderTarget *pRenderTarget);
+  void onEraseBkgnd(IRenderTarget *);
+  void onPaint(IRenderTarget *pRenderTarget);
+  void onPostPaint(IRenderTarget *pRenderTarget);
   long OnGetLayoutPtr(unsigned int uMsg, long wParam, long lParam);
-  void OnSerialize(SerializeParam *pData);
+  void onSerialize(SerializeParam *pData);
   void OnGetDesiredSize(Size *pSize); 
 protected:
   IPanel *m_pIPanel;

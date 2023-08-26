@@ -24,23 +24,28 @@ public:
   }
 
   void create_ui() {
-    ui::svg::SvgPtr panel(m_window->GetResource());
-    panel->AddAttribute(XML_LAYOUT_ITEM_LEFT, "0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_TOP, "0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
-    panel->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
-    panel->InitDefaultAttrib();
+    ui::svg::SvgPtr svg(m_window->GetResource());
+    svg->AddAttribute(XML_LAYOUT_ITEM_LEFT, "0");
+    svg->AddAttribute(XML_LAYOUT_ITEM_TOP, "0");
+    svg->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
+    svg->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
+    svg->InitDefaultAttrib();
+    m_svg = static_cast<ui::svg::ISvg*>(m_window->AddChild(svg.release()));
+  }
 
-    // ui::svg::RectPtr rect(m_window->GetResource());
-    // rect->AddAttribute(L"x", L"100");
-    // rect->AddAttribute(L"y", L"100");
-    // rect->AddAttribute(L"width", L"100");
-    // rect->AddAttribute(L"height", L"100");
-    // rect->InitDefaultAttrib();
+  void test1() {
+    static const char* buffer = R"(
+      <svg version="1.1" 
+        baseProfile="full" 
+        width="300" height="200" 
+        xmlns="http://www.w3.org/2000/svg"> 
+      <rect width="100%" height="100%" fill="red" /> 
+      <circle cx="150" cy="100" r="80" fill="green" /> 
+      <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text> 
+    </svg>
+    )";
 
-    // panel->AddChild(rect.release());
-    m_window->AddChild(panel.release());
-    // m_window->AddChild(rect.release());
+    m_svg->Load(buffer);
   }
 
   void on_window_destroy(ui::IApplication *uiapp, ui::Event* event) {
@@ -50,6 +55,7 @@ public:
 
 private:
   ui::WindowPtr m_window;
+  ui::svg::ISvg* m_svg;
 };
 
 int main() {

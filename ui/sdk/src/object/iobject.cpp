@@ -973,15 +973,19 @@ bool  IObject::ReleaseMouseCapture()
 // 	return __pImpl->SaveTextRender();
 // }
 
-void  IObject::AddChild(IObject* p)
+IObject*  IObject::AddChild(IObject* p)
 {
-	if (p)
+	if (p) {
 		__pImpl->AddChild(p->GetImpl());
+  }
+  return p;
 }
-void  IObject::AddNcChild(IObject*p)
+IObject* IObject::AddNcChild(IObject*p)
 {
-	if (p)
+	if (p) {
 		__pImpl->AddNcChild(p->GetImpl());
+  }
+  return p;
 }
 void  IObject::RemoveMeInTheTree()
 {

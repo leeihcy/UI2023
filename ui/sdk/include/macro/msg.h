@@ -6,6 +6,7 @@
 namespace ui {
 struct IMeta;
 struct IResource;
+struct IRenderTarget;
 
 #define UI_MSG_FINALCONSTRUCT 168252120
 struct FinalConstructMessage : public Msg {
@@ -23,8 +24,43 @@ struct FinalReleaseMessage : public Msg {
   FinalReleaseMessage() { message = UI_MSG_FINALRELEASE; }
 };
 
+#define UI_MSG_ERASEBKGND 238261617
+struct EraseBkgndMessage : public Msg {
+  EraseBkgndMessage() { message = UI_MSG_ERASEBKGND; }
+  IRenderTarget* rt;
+};
+
+#define UI_MSG_PAINT 238261716
+struct PaintMessage : public Msg {
+  PaintMessage() { message = UI_MSG_PAINT; }
+  IRenderTarget* rt;
+};
+
+// 控件在自己的子对象画完之后，再接受一个消息用于后处理
+// 需要控件有post_paint样式
+#define UI_MSG_POSTPAINT 147281159
+struct PostPaintMessage : public Msg {
+  PostPaintMessage() { message = UI_MSG_POSTPAINT; }
+  IRenderTarget* rt;
+};
 
 
+//  接口查询
+#define UI_MSG_QUERYINTERFACE 165312200
+struct QueryInterfaceMessage : public Msg {
+  QueryInterfaceMessage() { message = UI_MSG_QUERYINTERFACE;}
+  Uuid uuid;
+  // out
+  void** pp = nullptr;
+};
+
+// 加载属性
+struct SerializeParam;
+#define UI_MSG_SERIALIZE 139281928
+struct SerializeMessage : public Msg {
+  SerializeMessage() { message = UI_MSG_SERIALIZE; }
+  SerializeParam* param = nullptr;
+};
 
 struct MSG {
 #if defined(OS_WIN)
