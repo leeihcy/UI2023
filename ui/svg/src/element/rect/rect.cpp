@@ -1,31 +1,36 @@
 #include "rect.h"
 #include "SkRRect.h"
+#include "sdk/include/interface/iattribute.h"
 
-void Rect::Render(RenderContext& context) {
-  SkRect rect = SkRect::MakeXYWH(m_x, m_y, m_width, m_height);
+void Rect::Render(RenderContext &context) {
+  int x = context.ResolveX(m_x);
+  int y = context.ResolveY(m_y);
+  int width = context.ResolveX(m_width);
+  int height = context.ResolveY(m_height);
+  int rx = context.ResolveX(m_rx);
+  int ry = context.ResolveY(m_ry);
 
-  SkPaint paint;
-  paint.setColor(SkColorSetARGB(255, 255, 0, 0));
+  SkRect rect = SkRect::MakeXYWH(x, y, width, height);
 
-  if (m_rx > 0 || m_ry > 0) {
-    context.canvas->drawRRect(SkRRect::MakeRectXY(rect, m_rx, m_ry), context.paint);
+  if (m_fill.value) {
+    context.paint.setColor(m_fill.value);
+  }
+  
+  if (rx > 0 || ry > 0) {
+    context.canvas->drawRRect(SkRRect::MakeRectXY(rect, rx, ry), context.paint);
   } else {
-    context.canvas->drawRect(rect, paint);
+    context.canvas->drawRect(rect, context.paint);
   }
 }
 
-void Rect::SetAttribute(const char *key, const char *value) {
-  if (strcmp(key, "x") == 0) {
-    m_x = atoi(value);
-  } else if (strcmp(key, "y") == 0) {
-    m_y = atoi(value);
-  } else if (strcmp(key, "width") == 0) {
-    m_width = atoi(value);
-  } else if (strcmp(key, "height") == 0) {
-    m_height = atoi(value);
-  } else if (strcmp(key, "rx") == 0) {
-    m_rx = atoi(value);
-  } else if (strcmp(key, "ry") == 0) {
-    m_ry = atoi(value);
-  }
+void Rect::SetAttribute(ui::SerializeParam &data) {
+  Element::SetAttribute(data);
+
+  ui::AttributeSerializerWrap s(&data, "Rect");
+  s.AddLength("x", m_x);
+  s.AddLength("y", m_y);
+  s.AddLength("width", m_width);
+  s.AddLength("height", m_height);
+  s.AddLength("rx", m_rx);
+  s.AddLength("ry", m_ry);
 }

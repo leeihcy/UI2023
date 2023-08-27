@@ -18,14 +18,14 @@ public:
 
   IColorResItem *GetIColorResItem();
   const char *GetColorString();
-  bool IsMyColor(Color *p);
+  // bool IsMyColor(Color *p);
 
 private:
   std::string m_strId;
   std::string m_strColor; // 颜色字符串
-  ColorPtr m_pColor;
 
-  COLORREF *m_pOriginColorValue; // 该COLOR未改变色调前的颜色值，用于还原
+  Color m_color;
+  bool  m_valid = false;
 
   // TODO:
   // 可以再进行扩展。例如文字的黑白颜色变换，是根据文字后面的背景色来决定的，而不是配死的
@@ -38,14 +38,14 @@ public:
   void SetUseSkinHLS(bool b);
   bool GetUseSkinHLS();
   const std::string &GetColorStringRef();
-  bool GetColor(ColorPtr *pColor, bool *bFirstTimeCreate = nullptr);
+  Color GetColor();
   void SetColor(const std::string &strColor);
 
   void SetAttribute(IMapAttribute *p);
   bool ModifyHLS(short h, short l, short s, int nFlag);
 
 private:
-  IColorResItem *m_pIColorResItem;
+  std::unique_ptr<IColorResItem> m_pIColorResItem;
 };
 
 //
@@ -58,18 +58,18 @@ public:
 
   IColorRes &GetIColorRes();
 
-  long GetColorCount();
-  IColorResItem *GetColorResItem(long lIndex);
-  void GetColor(const char *szColorId, Color **pp);
+  long GetCount();
+
+  Color GetColor(const char *id, bool* exist=nullptr);
   const char *GetColorId(Color *p);
 
 public:
   ColorResItem *GetColorItem(int nIndex);
-  ColorResItem *GetColorItem(const std::string &strID);
-  bool InsertColor(const std::string &strID, const char *szColor,
+  ColorResItem *GetColorItem(const std::string &id);
+  bool InsertColor(const std::string &id, const char *szColor,
                    ColorResItem **pItem);
-  bool ModifyColor(const std::string &strID, const std::string &strColor);
-  bool RemoveColor(const std::string &strID);
+  bool ModifyColor(const std::string &id, const std::string &strColor);
+  bool RemoveColor(const std::string &id);
   void Clear();
 
   bool LoadItem(IMapAttribute *pMapAttrib, const char *szData);
@@ -78,7 +78,7 @@ public:
 private:
   Resource *m_pSkinRes;
   IColorRes *m_pIColorRes;
-  std::vector<ColorResItem *> m_vColors;
+  std::vector<ColorResItem *> m_items;
 };
 
 } // namespace ui

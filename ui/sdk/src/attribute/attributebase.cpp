@@ -4,7 +4,6 @@
 namespace ui {
 AttributeBase::AttributeBase() {
   /*m_pSerializer = nullptr;*/
-  m_pUIApplication = nullptr;
   m_bData = false;
   m_bParentKeyIsNull = true;
   m_bReloadOnChanged = false;
@@ -64,9 +63,11 @@ void AttributeBase::SetGroupName(const char *szGroupName) {
   SETSTRING(m_strGroupName, szGroupName);
 }
 const char *AttributeBase::GetGroupName() { return m_strGroupName.c_str(); }
-void AttributeBase::SetUIApplication(Application *p) { m_pUIApplication = p; }
 void AttributeBase::SetSkinRes(Resource *p) { m_pSkinRes = p; }
-Application *AttributeBase::GetUIApplication() { return m_pUIApplication; }
+Application *AttributeBase::GetUIApplication() { 
+  if (!m_pSkinRes) { return nullptr; }
+  return m_pSkinRes->GetUIApplication();
+}
 
 void AttributeBase::Load(SerializeParam *pData) {
   bool bEraseAttr = pData->NeedErase();

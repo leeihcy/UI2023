@@ -80,9 +80,9 @@ class ThemeTextRenderBase;
 
 class SimpleTextRender;
 struct UIAPI ISimpleTextRender : public ITextRenderBase {
-  void SetRenderFont(IRenderFont *);
-  void SetColor(Color *pColText);
-  bool GetColor(COLORREF &color);
+  // void SetRenderFont(IRenderFont *);
+  // void SetColor(Color color);
+  // Color GetColor();
 
   UI_DECLARE_INTERFACE(SimpleTextRender);
 };
@@ -101,7 +101,7 @@ class ColorListTextRender;
 struct UIAPI IColorListTextRender : public ITextRenderBase {
   void SetRenderFont(IRenderFont *);
   void SetCount(int nCount);
-  void SetColor(int nIndex, COLORREF col);
+  void SetColor(int nIndex, Color col);
 
   UI_DECLARE_INTERFACE(ColorListTextRender);
 };

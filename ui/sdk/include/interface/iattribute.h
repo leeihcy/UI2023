@@ -10,6 +10,7 @@ struct SerializeParam;
 struct Rect;
 struct Size;
 struct Color;
+struct Length;
 struct IRenderBase;
 struct ITextRenderBase;
 struct IUIEditor;
@@ -23,7 +24,8 @@ enum DEFAULT_ATTRIBUTE_TYPE {
   ATTRIBUTE_TYPE_CHARARRAY,
   ATTRIBUTE_TYPE_BOOL,
   ATTRIBUTE_TYPE_RECT,
-  ATTRIBUTE_TYPE_LONG,
+  ATTRIBUTE_TYPE_INTEGER,
+  ATTRIBUTE_TYPE_LENGTH,
   ATTRIBUTE_TYPE_SIZE,
   ATTRIBUTE_TYPE_FLAGS,      // 多选，对应数值
   ATTRIBUTE_TYPE_STRINGENUM, // 从字符串列表中，选择一项，取其内容
@@ -93,6 +95,25 @@ struct UIAPI IIntAttribute {
 private:
   IntAttribute *m_pImpl;
 };
+
+class LengthAttribute;
+struct UIAPI ILengthAttribute {
+  ILengthAttribute(LengthAttribute *);
+  ILengthAttribute *SetDefault(Length l);
+  ILengthAttribute *AsData();
+  ILengthAttribute *SetDpiScaleType(LONGATTR_DPI_SCALE_TYPE e);
+
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
+  Length GetLength();
+
+private:
+  LengthAttribute *m_pImpl; // raw_ptr
+};
+
 
 class BoolAttribute;
 struct UIAPI IBoolAttribute {
@@ -298,47 +319,19 @@ struct UIAPI AttributeSerializerWrap {
   ~AttributeSerializerWrap();
   AttributeSerializer *GetImpl();
 
-  // IStringAttribute*  AddString(const char* szKey, void* _this,
-  // pfnStringSetter s, pfnStringGetter g);
   IStringAttribute *AddString(const char *szKey,
                               slot<void(const char *)> &&s,
                               slot<const char *()> &&g);
-  // IStringAttribute*  AddString(const char* szKey, const
-  // std::function<void(const char*)>& s, const std::function<const
-  // char*()>& g); IStringAttribute*  AddI18nString(const char* szKey,
-  // void* _this, pfnStringExSetter s, pfnStringGetter g); IStringAttribute*
-  // AddI18nString(const char* szKey, const std::function<void(const
-  // char*, int)>& s, const std::function<const char*()>& g);
-  // IStringEnumAttribute*  AddStringEnum(const char*, void* _this,
-  // pfnStringSetter s, pfnStringGetter g);
-
   IBoolAttribute *AddBool(const char *szKey, bool &bBindValue);
-  // IBoolAttribute*  AddBool(const char* szKey, void* _this, pfnBoolSetter
-  // s, pfnBoolGetter g);
-
   IIntAttribute *AddInt(const char *szKey, int &lBindValue);
-  // IIntAttribute*  AddInt(const char* szKey, void* _this, pfnLongSetter
-  // s, pfnLongGetter g);
-
+  ILengthAttribute *AddLength(const char *szKey, Length &bind_value);
   IFlagsAttribute *AddFlags(const char *, int &lBindValue);
   IEnumAttribute *AddEnum(const char *szKey, int &lBindValue);
-  // IEnumAttribute*  AddEnum(const char* szKey, void* _this, pfnLongSetter
-  // s, pfnLongGetter g);
-
   IRectAttribute *AddRect(const char *, Rect &rcBindValue);
-  // IRectAttribute*  AddRect(const char*, void* _this, pfnRectSetter s,
-  // pfnRectGetter g);
-
   ISizeAttribute *AddSize(const char *, Size &sBindValue);
-  // ISizeAttribute*  AddSize(const char*, void* _this, pfnSizeSetter s,
-  // pfnSizeGetter g);
-
-  IColorAttribute *AddColor(const char *, Color *&pBindValue);
+  // IColorAttribute *AddColor(const char *, Color *&pBindValue);
   IColorAttribute *AddColor(const char *, Color &pBindValue);
   IRegion9Attribute *Add9Region(const char *, C9Region &rBindValue);
-  // IRegion9Attribute*  Add9Region(const char*, void* _this, pfnRectSetter
-  // s, pfnRectGetter g);
-
   IRenderBaseAttribute *AddRenderBase(const char *szPrefix, IObject *pObj,
                                       IRenderBase *&pBindValue);
   ITextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix,

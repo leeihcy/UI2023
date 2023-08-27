@@ -786,7 +786,7 @@ bool CXmlColorParse::clear_save(ColorRes* pColorInfo )
 		if (false == xml.IntoElem() )                       break;
 
 		// 添加元素
-		int  nCount   = (int)pColorInfo->GetColorCount();
+		int  nCount   = (int)pColorInfo->GetCount();
 		bool bLoopRet = true;  
 
 		for ( int i = nCount-1; i >= 0; i-- )

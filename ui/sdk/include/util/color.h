@@ -1,21 +1,22 @@
 #ifndef _UI_COLOR_H_
 #define _UI_COLOR_H_
+#include "sdk/include/interface.h"
 
 namespace ui {
-// »»É«
+// æ¢è‰²
 #if 0
-#define MIN_HUE_VALUE 0 // É«µ÷  HLS·¶Î§¶¨Òå
+#define MIN_HUE_VALUE 0 // è‰²è°ƒ  HLSèŒƒå›´å®šä¹‰
 #define MAX_HUE_VALUE 240
-#define MIN_LUMINANCE_VALUE 0 // ÁÁ¶È
+#define MIN_LUMINANCE_VALUE 0 // äº®åº¦
 #define MAX_LUMINANCE_VALUE 240
-#define MIN_SATURATION_VALUE 0 // ±¥ºÍ¶È
+#define MIN_SATURATION_VALUE 0 // é¥±å’Œåº¦
 #define MAX_SATURATION_VALUE 240
 #else
-#define MIN_HUE_VALUE 0 // É«µ÷  HLS·¶Î§¶¨Òå
+#define MIN_HUE_VALUE 0 // è‰²è°ƒ  HLSèŒƒå›´å®šä¹‰
 #define MAX_HUE_VALUE 360
-#define MIN_LUMINANCE_VALUE 0 // ÁÁ¶È
+#define MIN_LUMINANCE_VALUE 0 // äº®åº¦
 #define MAX_LUMINANCE_VALUE 1
-#define MIN_SATURATION_VALUE 0 // ±¥ºÍ¶È
+#define MIN_SATURATION_VALUE 0 // é¥±å’Œåº¦
 #define MAX_SATURATION_VALUE 1
 #endif
 
@@ -24,7 +25,7 @@ namespace ui {
 #define CHANGE_SKIN_HLS_FLAG_S 4
 #define CHANGE_SKIN_HLS_FLAG_HLS                                               \
   (CHANGE_SKIN_HLS_FLAG_H | CHANGE_SKIN_HLS_FLAG_L | CHANGE_SKIN_HLS_FLAG_S)
-#define CHANGE_SKIN_HLS_FALG_REPLACE_MODE 8 // ×ÅÉ«Ä£Ê½??
+#define CHANGE_SKIN_HLS_FALG_REPLACE_MODE 8 // ç€è‰²æ¨¡å¼??
 
 typedef struct {
   double hue;        // [0 ~ 360^o)
@@ -38,44 +39,35 @@ typedef struct {
   double value;      // [0, 1]
 } HSV, HSB;
 
-#if !defined(OS_WIN)
-typedef unsigned int COLORREF;
-#endif
+struct UIAPI Color {
 
-class UIAPI Color {
-public:
-  Color();
-  Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a=0xFF);
-  Color(unsigned int rgba);
-  ~Color();
-  static Color *CreateInstance(COLORREF color);
+  static Color Make(uint);
+  static Color MakeRGBA(byte r1, byte g1, byte b1, byte a1);
+  static Color MakeARGB(byte a1, byte r1, byte g1, byte b1);
+  static Color MakeRGB(byte r1, byte g1, byte b1);
 
-  operator COLORREF();
-  union {
-    COLORREF m_col;
-    struct {
-      unsigned char r; // ×¢£ºÎ»Í¼ÄÚ´æÖĞÑÕÉ«µÄÅÅÁĞË³ĞòÎªb g r a
-      unsigned char g;
-      unsigned char b;
-      unsigned char a;
-    };
-  };
+  static Color transparent();
 
-  unsigned char GetR();
-  unsigned char GetG();
-  unsigned char GetB();
-  unsigned char GetA();
+  static Color black();
+  static Color silver();
+  static Color gray();
+  static Color white();
+  static Color maroon();
+  static Color red();
+  static Color purple();
+  static Color fuchsia();
+  static Color green();
+  static Color lime();
+  static Color olive();
+  static Color yellow();
+  static Color navy();
+  static Color blue();
+  static Color teal();
+  static Color aqua();
 
-  void SetR(unsigned char n);
-  void SetG(unsigned char n);
-  void SetB(unsigned char n);
-  void SetA(unsigned char n);
-
-  // ±£ÁôALPHAWÖµÑÕÉ«¿½±´
-  void ReplaceRGB(COLORREF c);
-  void ReplaceRGB(unsigned char r1, unsigned char g1, unsigned char b1);
-  void SetColor(COLORREF c);
-  COLORREF GetGDIValue();
+  // ä¿ç•™ALPHAWå€¼é¢œè‰²æ‹·è´
+  void ReplaceRGB(uint c);
+  uint GetGDIValue();
 
   void GetHSL(HSL &hsl);
   void GetHSV(HSV &hsv);
@@ -85,26 +77,16 @@ public:
   void ToHexString(char *szBuffer);
   void ToWebString(char *szBuffer);
 
-  // ÔÚÍâ²¿Ê¹ÓÃColor¶ÔÏóÊ±£¬¼ÈÓĞ¿ÉÄÜÊÇÍ¨¹ıGetColor»ñÈ¡µ½µÄColor*Ö¸Õë£¬Ò²ÓĞ¿ÉÄÜÍâ²¿×Ô¼ºÖ±½ÓÉèÖÃ
-  // Ò»¸öCOLORREFÖµ£¬Õâ¸öÊ±ºò¾ÍµÃnewÒ»¸öColor*£¬Ê¹µÃÂß¼­ÓëGetColor±£³ÖÒ»ÖÂ¡£ÎªÁË´ïµ½ÊÍ·ÅÂß¼­Ò»
-  // ÖÂµÄÄ¿µÄ£¬½«ÊÍ·Åº¯Êı¶¼Ğ´³ÉRelease()
-  long AddRef();
-  long Release();
-
-private:
-  long lRef;
-
-#ifdef EDITOR_MODE
-public:
-  // ÎªÁËÔÚ±à¼­Æ÷ÖĞÇø·Ö¿ªÊÇÊ¹ÓÃidÒıÓÃµÄÑÕÉ«£¬»¹ÊÇÖ±½ÓÊéĞ´µÄÑÕÉ«Öµ£¬Ôö¼Ó¸ÃÂß¼­
-  void SetResId(const char *);
-  const char *GetResId();
-
-private:
-  LPTSTR m_szResId;
-#endif
+  union {
+    uint value;
+    struct {
+      byte b; // æ³¨ï¼šä½å›¾å†…å­˜ä¸­é¢œè‰²çš„æ’åˆ—é¡ºåºä¸ºb g r a
+      byte g;
+      byte r;
+      byte a;
+    };
+  };
 };
-typedef Color *ColorPtr;
 
 } // namespace ui
 #endif // _UI_COLOR_H_

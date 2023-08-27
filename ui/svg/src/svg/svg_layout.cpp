@@ -11,7 +11,6 @@ void SvgLayoutParam::Load() {
 
   IMapAttribute *pMapAttr = m_obj->GetMapAttribute();
   SerializeParam data = {0};
-  data.pUIApplication = m_obj->GetUIApplication();
   data.pSkinRes = m_obj->GetResource();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   data.pMapAttrib = pMapAttr;

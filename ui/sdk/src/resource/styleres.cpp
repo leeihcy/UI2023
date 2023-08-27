@@ -14,7 +14,7 @@ StyleResItem::StyleResItem() {
 }
 StyleResItem::~StyleResItem() {
   if (m_pMapAttrib) {
-    m_pMapAttrib->Delete();
+    m_pMapAttrib->Destroy();
     m_pMapAttrib = nullptr;
   }
   SAFE_DELETE(m_pIStyleResItem);
@@ -87,7 +87,7 @@ bool StyleResItem::RemoveInheritItem(const char *sz) {
 
 void StyleResItem::SetAttributeMap(IMapAttribute *pMapAttrib) {
   if (m_pMapAttrib) {
-    m_pMapAttrib->Delete();
+    m_pMapAttrib->Destroy();
     m_pMapAttrib = nullptr;
   }
   m_pMapAttrib = pMapAttrib;
@@ -512,7 +512,7 @@ bool StyleRes::UnloadStyle(const char *szTagName,
   pStyleAttr->EndEnum();
 
   if (pStyleAttr) {
-    pStyleAttr->Delete();
+    pStyleAttr->Destroy();
     pStyleAttr = nullptr;
   }
   return true;

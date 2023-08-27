@@ -42,7 +42,7 @@ public:
   virtual bool
   ExtractMapAttrByPrefix(const char *szPrefix, bool bErase,
                          /*out*/ IMapAttribute **ppMapAttribute) override;
-  virtual void Delete() override;
+  virtual void Destroy() override;
   virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) override;
 
   virtual void BeginEnum() override;

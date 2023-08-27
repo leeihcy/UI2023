@@ -88,7 +88,6 @@ public:
     IMapAttribute *pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
     SerializeParam data = {0};
-    data.pUIApplication = pObj->GetUIApplication();
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
     data.pMapAttrib = pMapAttr;

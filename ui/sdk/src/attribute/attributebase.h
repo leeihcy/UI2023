@@ -79,7 +79,6 @@ private:
   bool m_bReloadOnChanged;
 
 protected:
-  Application *m_pUIApplication;
   Resource *m_pSkinRes;
 };
 } // namespace ui

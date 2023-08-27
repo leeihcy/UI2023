@@ -156,7 +156,7 @@ struct SerializeParam {
     IAttributeEditorProxy *pAttributeEditorProxy; // editor [in]
   };
 
-  IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
+  // IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
   IResource *pSkinRes;
   const char *szPrefix;    // 属性前缀
   const char *szParentKey; // 父属性（仅用于editor），如bkg.render.type

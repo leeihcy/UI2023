@@ -389,8 +389,8 @@ void GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect &rcText,
 
     HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMemDC, hMemBmp);
     HFONT hOldFont = (HFONT)::SelectObject(hMemDC, hFont);
-    COLORREF colorShadow = pParam->bkcolor.GetGDIValue();
-    COLORREF oldColor = ::SetTextColor(hMemDC, colorShadow);
+    Color colorShadow = pParam->bkcolor.GetGDIValue();
+    Color oldColor = ::SetTextColor(hMemDC, colorShadow);
 
     // 文字会将255->0，因此再inverse一次，即可拿到只有文字的内存图片
     FillAlpha255(hMemDC, &rcMemText);
@@ -419,7 +419,7 @@ void GdiRenderTarget::draw_string_halo(HFONT hFont, const CRect &rcText,
     ::DeleteDC(hMemDC);
 
     // 实际文字
-    COLORREF color = pParam->color.GetGDIValue();
+    Color color = pParam->color.GetGDIValue();
     oldColor = ::SetTextColor(hDC, color);
     hOldFont = (HFONT)::SelectObject(hDC, hFont);
 
@@ -464,14 +464,14 @@ void GdiRenderTarget::draw_string_endalphamask(HFONT hFont, LPRECT prcText,
 
     HDC hMemDC = CreateCompatibleDC(nullptr);
     SetBkMode(hMemDC, TRANSPARENT);
-    COLORREF color = pParam->color.GetGDIValue();
+    Color color = pParam->color.GetGDIValue();
 
     CRect rcMem(0, 0, nWidth, nHeight);
     HBITMAP hMemBmp = CacheBitmap::GetInstance()->Create(rcMem.Width(), rcMem.Height());
 
     HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMemDC, hMemBmp);
     HFONT hOldFont = (HFONT)::SelectObject(hMemDC, hFont);
-    COLORREF oldColor = ::SetTextColor(hMemDC, color);
+    Color oldColor = ::SetTextColor(hMemDC, color);
     
     // clear type字体需要背景进行混合，将原内容拷贝过来
     ::BitBlt(hMemDC, 0, 0, nWidth, nHeight, hDC, pParam->prc->left, pParam->prc->top, SRCCOPY);
@@ -540,8 +540,8 @@ void GdiRenderTarget::draw_string_normal(HFONT hFont, LPRECT prcText,
   HDC hDC = GetHDC();
   HFONT hOldFont = (HFONT)::SelectObject(hDC, hFont);
 
-  COLORREF col = pParam->color.GetGDIValue();
-  COLORREF oldCol = ::SetTextColor(hDC, col);
+  Color col = pParam->color.GetGDIValue();
+  Color oldCol = ::SetTextColor(hDC, col);
 
 #ifdef _DEBUGx
   ::OutputDebugString(pParam->szText);
@@ -577,7 +577,7 @@ void GdiRenderTarget::DrawRect(LPRECT lprc, UI::Color *pColor) {
   HDC hDC = GetHDC();
 
   // 预乘后的颜色
-  COLORREF gdicolor = pColor->GetGDIValue();
+  Color gdicolor = pColor->GetGDIValue();
 
   if (pColor->a == 255) {
     HBRUSH hBrush = ::CreateSolidBrush(gdicolor);
@@ -629,8 +629,8 @@ void GdiRenderTarget::TileRect(LPRECT lprc, IRenderBitmap *pRenderBitmap) {
 void GdiRenderTarget::Rectangle(LPRECT lprc, UI::Color *pColBorder,
                                 UI::Color *pColBack, int nBorder,
                                 bool bNullBack) {
-  COLORREF gdicolBorder = 0;
-  COLORREF gdicolBack = 0;
+  Color gdicolBorder = 0;
+  Color gdicolBack = 0;
 
   if (!pColBorder)
     return;
@@ -711,12 +711,12 @@ void GdiRenderTarget::DrawPolyline(POINT *lppt, int nCount, IRenderPen *pPen) {
   ::SelectObject(hDC, hOldPen);
 }
 
-void GdiRenderTarget::GradientFillH(LPRECT lprc, COLORREF colFrom,
-                                    COLORREF colTo) {
+void GdiRenderTarget::GradientFillH(LPRECT lprc, Color colFrom,
+                                    Color colTo) {
   //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
 }
-void GdiRenderTarget::GradientFillV(LPRECT lprc, COLORREF colFrom,
-                                    COLORREF colTo) {
+void GdiRenderTarget::GradientFillV(LPRECT lprc, Color colFrom,
+                                    Color colTo) {
   //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
 }
 

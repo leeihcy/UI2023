@@ -7,7 +7,7 @@
 
 namespace ui {
 class ColorManager;
-class Color;
+struct Color;
 struct IColorRes;
 struct IUIDocument;
 struct IRenderBitmap;
@@ -32,9 +32,9 @@ struct UIAPI IColorRes : public IRootInterface {
   IColorRes(ColorRes *p);
   ColorRes *GetImpl();
 
-  long GetColorCount();
-  IColorResItem *GetColorResItem(long lIndex);
-  void GetColor(const char *szColorId, Color **pp);
+  long GetCount();
+  IColorResItem *GetItem(long lIndex);
+  Color GetColor(const char *szColorId, bool* exist=nullptr);
   const char *GetColorId(Color *p);
 
 private:

@@ -6,8 +6,8 @@ namespace ui {
 
 class ColorRender;
 struct UIAPI IColorRender : public IRenderBase {
-  void SetBkColor(COLORREF col);
-  void SetBorderColor(COLORREF col);
+  void SetBkColor(Color col);
+  void SetBorderColor(Color col);
   void SetBorderRegion(const Rect *prc);
 
   UI_DECLARE_INTERFACE(ColorRender);
@@ -34,8 +34,8 @@ struct UIAPI IGradientRender : public IRenderBase {
 
 class ColorListRender;
 struct UIAPI IColorListRender : public IRenderBase {
-  void SetStateColor(int nState, COLORREF colorBk, bool bSetBk,
-                     COLORREF colBorder, bool bSetBorder);
+  void SetStateColor(int nState, Color colorBk, bool bSetBk,
+                     Color colBorder, bool bSetBorder);
   void SetCount(int n);
 
   UI_DECLARE_INTERFACE(ColorListRender);

@@ -1,8 +1,13 @@
-#include "include/util/util.h"
-#include "include/inc.h"
+#include "util.h"
 #include "include/util/struct.h"
+#include "include/util/util.h"
+#include "include/macro/helper.h"
+
+#include <vector>
+#include <string>
 #include <algorithm> // transform
 #include <filesystem>
+
 #if defined(OS_WIN)
 #include <shlwapi.h>
 #else
@@ -185,16 +190,16 @@ void UnicodeDecode(const wchar_t *szText, wchar_t *szDecode) {
   }
 }
 
-COLORREF TranslateRGB(const char *szCol, char szSep) {
+Color TranslateRGB(const char *szCol, char szSep) {
   if (nullptr == szCol)
-    return 0;
+    return Color::Make(0);
 
-  COLORREF col = 0;
+  uint col = 0;
 
   ISplitStringEnum *pEnum = nullptr;
   int nSize = SplitString(szCol, szSep, &pEnum);
   if (nullptr == pEnum)
-    return col;
+    return Color::Make(col);
 
   if (3 == nSize) {
     col = RGB(atoi(pEnum->GetText(0)), atoi(pEnum->GetText(1)),
@@ -212,7 +217,7 @@ COLORREF TranslateRGB(const char *szCol, char szSep) {
   }
 
   SAFE_RELEASE(pEnum);
-  return col;
+  return Color::Make(col);
 }
 
 byte Letter2Hex(char c) {
@@ -260,50 +265,50 @@ byte Letter2Hex(char c) {
 }
 byte Letter2Hex(wchar_t c) {
   switch (c) {
-  case _T('0'):
+  case L'0':
     return 0;
-  case _T('1'):
+  case L'1':
     return 1;
-  case _T('2'):
+  case L'2':
     return 2;
-  case _T('3'):
+  case L'3':
     return 3;
-  case _T('4'):
+  case L'4':
     return 4;
-  case _T('5'):
+  case L'5':
     return 5;
-  case _T('6'):
+  case L'6':
     return 6;
-  case _T('7'):
+  case L'7':
     return 7;
-  case _T('8'):
+  case L'8':
     return 8;
-  case _T('9'):
+  case L'9':
     return 9;
-  case _T('a'):
-  case _T('A'):
+  case L'a':
+  case L'A':
     return 0xa;
-  case _T('b'):
-  case _T('B'):
+  case L'b':
+  case L'B':
     return 0xb;
-  case _T('c'):
-  case _T('C'):
+  case L'c':
+  case L'C':
     return 0xc;
-  case _T('d'):
-  case _T('D'):
+  case L'd':
+  case L'D':
     return 0xd;
-  case _T('e'):
-  case _T('E'):
+  case L'e':
+  case L'E':
     return 0xe;
-  case _T('f'):
-  case _T('F'):
+  case L'f':
+  case L'F':
     return 0xf;
   }
   return 0;
 }
-COLORREF TranslateHexColor(const char *szColor) {
+Color TranslateHexColor(const char *szColor) {
   if (nullptr == szColor)
-    return 0;
+    return Color::Make(0);
 
   size_t nLength = strlen(szColor);
 
@@ -344,18 +349,18 @@ COLORREF TranslateHexColor(const char *szColor) {
     g = (Letter2Hex(szColor[4]) << 4) + Letter2Hex(szColor[5]);
     b = (Letter2Hex(szColor[6]) << 4) + Letter2Hex(szColor[7]);
   } else
-    return 0;
+    return Color::Make(0);
 
-  return (a << 24) | (b << 16) | (g << 8) | r;
+  return Color::Make((a << 24) | (b << 16) | (g << 8) | r);
 }
 
-COLORREF TranslateColor(const char *szColor) {
+Color TranslateColor(const char *szColor) {
   if (!szColor)
-    return 0;
+    return Color::Make(0);
 
-  if (szColor[0] == _T('#')) // 16进制
+  if (szColor[0] == '#') // 16进制
     return TranslateHexColor(szColor + 1);
-  else if (szColor[0] == _T('0') && szColor[1] == _T('x'))
+  else if (szColor[0] == '0' && szColor[1] == 'x')
     return TranslateHexColor(szColor + 2);
 
   // A,R,G,B形式
@@ -469,7 +474,7 @@ bool GetPathFileExt(const char *szPath, char *szOutExt) {
   if (nullptr == p)
     return false;
 
-  const char *p2 = strrchr(szPath, _T('\\'));
+  const char *p2 = strrchr(szPath, '\\');
   if (p2 && p < p2)
     return false;
 

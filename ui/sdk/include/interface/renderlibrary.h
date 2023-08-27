@@ -136,7 +136,7 @@ struct IRenderBitmap : public IRenderResource {
   virtual int GetWidth() = 0;
   virtual int GetHeight() = 0;
   virtual int GetBPP() = 0;
-  virtual COLORREF GetAverageColor() { return 0; }
+  virtual Color GetAverageColor() { return Color::Make(0); }
 
   // virtual void Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/){};
   // virtual HBITMAP Detach() { return 0; }
@@ -264,8 +264,8 @@ struct IRenderTarget {
   virtual void DrawFocusRect(Rect *lprc) = 0;
   virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) = 0;
   virtual void DrawPolyline(Point *lppt, int nCount, IRenderPen *) = 0;
-  virtual void GradientFillH(Rect *lprc, COLORREF colFrom, COLORREF colTo) = 0;
-  virtual void GradientFillV(Rect *lprc, COLORREF colFrom, COLORREF colTo) = 0;
+  virtual void GradientFillH(Rect *lprc, Color colFrom, Color colTo) = 0;
+  virtual void GradientFillV(Rect *lprc, Color colFrom, Color colTo) = 0;
   virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
                       IRenderTarget *pSrcHDC, int xSrc, int ySrc,
                       unsigned int dwRop) = 0;

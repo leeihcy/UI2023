@@ -356,7 +356,7 @@ void  StyleManager::OnNewChild(UIElement* pElem)
     }
     while (0);
 
-    pMapAttrib->Delete();
+    pMapAttrib->Destroy();
 }
 
 UIElement*  StyleManager::GetStyleXmlElem(const char* szId)

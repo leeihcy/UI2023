@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 namespace ui {
-void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pObj, COLORREF color, const Rect& rBorder)
+void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pObj, Color color, const Rect& rBorder)
 {
     IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
     if (nullptr == pRenderTarget)
@@ -79,19 +79,19 @@ ColorRender::ColorRender(IColorRender* p) : RenderBase(p)
 }
 ColorRender::~ColorRender()
 {
-	SAFE_RELEASE(m_pBkColor);
-    SAFE_RELEASE(m_pBorderColor);
+	// SAFE_RELEASE(m_pBkColor);
+    // SAFE_RELEASE(m_pBorderColor);
 }
 
-void ColorRender::SetBkColor( COLORREF col )
+void ColorRender::SetBkColor( Color col )
 {
-	SAFE_RELEASE(m_pBkColor);
-    m_pBkColor = Color::CreateInstance(col);
+	// SAFE_RELEASE(m_pBkColor);
+    // m_pBkColor = Color::CreateInstance(col);
 }
-void ColorRender::SetBorderColor(COLORREF col)
+void ColorRender::SetBorderColor(Color col)
 {
-    SAFE_RELEASE(m_pBorderColor);
-    m_pBorderColor = Color::CreateInstance(col);
+    // SAFE_RELEASE(m_pBorderColor);
+    // m_pBorderColor = Color::CreateInstance(col);
 }
 void  ColorRender::SetBorderRegion(const Rect* prc)
 {
@@ -107,27 +107,27 @@ void  ColorRender::SetBorderRegion(const Rect* prc)
 
 void ColorRender::OnSerialize(SerializeParam* pData)
 {
-	AttributeSerializer s(pData, "ColorRender");
-    s.AddColor(XML_RENDER_COLOR, m_pBkColor);
-    s.AddColor(XML_RENDER_BORDERCOLOR, m_pBorderColor);
-	s.AddRect(XML_RENDER_BORDER, m_rcBorder);
+	// AttributeSerializer s(pData, "ColorRender");
+  //   s.AddColor(XML_RENDER_COLOR, m_pBkColor);
+  //   s.AddColor(XML_RENDER_BORDERCOLOR, m_pBorderColor);
+	// s.AddRect(XML_RENDER_BORDER, m_rcBorder);
 } 
 
 void ColorRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 {
-    IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
-	if (nullptr == pRenderTarget)
-		return ;
+  //   IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
+	// if (nullptr == pRenderTarget)
+	// 	return ;
 
-	if (m_pBkColor)
-    {
- 		pRenderTarget->DrawRect(&pDrawStruct->rc, m_pBkColor);
-    }
+	// if (m_pBkColor)
+  //   {
+ 	// 	pRenderTarget->DrawRect(&pDrawStruct->rc, m_pBkColor);
+  //   }
 
-    if (m_pBorderColor)
-    {
-        ColorBorderRender_DrawState(pDrawStruct, m_pObject, m_pBorderColor->m_col, m_rcBorder);
-    }
+  //   if (m_pBorderColor)
+  //   {
+  //       ColorBorderRender_DrawState(pDrawStruct, m_pObject, m_pBorderColor->m_col, m_rcBorder);
+  //   }
 }
 
 
@@ -216,7 +216,7 @@ void SysColorRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 	if (-1 == m_nBorderColorIndex)
 		return;
 
-	COLORREF colorborder = GetSysColor(m_nBorderColorIndex)|0xff000000;
+	Color colorborder = GetSysColor(m_nBorderColorIndex)|0xff000000;
     ColorBorderRender_DrawState(pDrawStruct, m_pObject, colorborder, &m_rcBorder);
 
 // 	CRegion4 rBorder;
@@ -267,50 +267,50 @@ GradientRender::GradientRender(IGradientRender* p):RenderBase(p)
 }
 GradientRender::~GradientRender()
 {
-	SAFE_RELEASE(m_pColorFrom);
-	SAFE_RELEASE(m_pColorTo);
-    SAFE_RELEASE(m_pBorderColor);
+	// SAFE_RELEASE(m_pColorFrom);
+	// SAFE_RELEASE(m_pColorTo);
+  //   SAFE_RELEASE(m_pBorderColor);
 }
 
 void GradientRender::OnSerialize(SerializeParam* pData)
 {
-    AttributeSerializer s(pData, "GradientRender");
-    s.AddString(XML_RENDER_COLORFROM, 
-        Slot(&GradientRender::LoadFromColor, this),
-        Slot(&GradientRender::SaveFromColor, this));
-    s.AddString(XML_RENDER_COLORTO,
-        Slot(&GradientRender::LoadToColor, this),
-        Slot(&GradientRender::SaveToColor, this));
-    s.AddString(XML_RENDER_BORDERCOLOR,
-        Slot(&GradientRender::LoadBorderColor, this),
-        Slot(&GradientRender::SaveBorderColor, this));
-    s.AddRect(XML_RENDER_BORDER, m_rcBorder);
-    s.AddEnum(XML_RENDER_COLOR_GRADIENT_DIR, *(int*)&m_nGradientDir)
-        ->AddOption(RENDER_COLOR_GRADIENT_DIR_H, XML_RENDER_COLOR_GRADIENT_DIR_H)
-        ->AddOption(RENDER_COLOR_GRADIENT_DIR_V, XML_RENDER_COLOR_GRADIENT_DIR_V);
+    // AttributeSerializer s(pData, "GradientRender");
+    // s.AddString(XML_RENDER_COLORFROM, 
+    //     Slot(&GradientRender::LoadFromColor, this),
+    //     Slot(&GradientRender::SaveFromColor, this));
+    // s.AddString(XML_RENDER_COLORTO,
+    //     Slot(&GradientRender::LoadToColor, this),
+    //     Slot(&GradientRender::SaveToColor, this));
+    // s.AddString(XML_RENDER_BORDERCOLOR,
+    //     Slot(&GradientRender::LoadBorderColor, this),
+    //     Slot(&GradientRender::SaveBorderColor, this));
+    // s.AddRect(XML_RENDER_BORDER, m_rcBorder);
+    // s.AddEnum(XML_RENDER_COLOR_GRADIENT_DIR, *(int*)&m_nGradientDir)
+    //     ->AddOption(RENDER_COLOR_GRADIENT_DIR_H, XML_RENDER_COLOR_GRADIENT_DIR_H)
+    //     ->AddOption(RENDER_COLOR_GRADIENT_DIR_V, XML_RENDER_COLOR_GRADIENT_DIR_V);
 } 
 
 void GradientRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 {
-    IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
-	if(nullptr == pRenderTarget || nullptr == m_pColorFrom || nullptr == m_pColorTo)
-		return;
+  //   IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
+	// if(nullptr == pRenderTarget || nullptr == m_pColorFrom || nullptr == m_pColorTo)
+	// 	return;
 
-	Rect rc = {0,0, this->m_pObject->GetWidth(), this->m_pObject->GetHeight()};
+	// Rect rc = {0,0, this->m_pObject->GetWidth(), this->m_pObject->GetHeight()};
 
-	if (m_nGradientDir == RENDER_COLOR_GRADIENT_DIR_H)
-	{
-		pRenderTarget->GradientFillH(&pDrawStruct->rc, m_pColorFrom->m_col, m_pColorTo->m_col);
-	}
-	else if (m_nGradientDir == RENDER_COLOR_GRADIENT_DIR_V)
-	{
-		pRenderTarget->GradientFillV(&pDrawStruct->rc, m_pColorFrom->m_col, m_pColorTo->m_col);
-	}
+	// if (m_nGradientDir == RENDER_COLOR_GRADIENT_DIR_H)
+	// {
+	// 	pRenderTarget->GradientFillH(&pDrawStruct->rc, m_pColorFrom->m_col, m_pColorTo->m_col);
+	// }
+	// else if (m_nGradientDir == RENDER_COLOR_GRADIENT_DIR_V)
+	// {
+	// 	pRenderTarget->GradientFillV(&pDrawStruct->rc, m_pColorFrom->m_col, m_pColorTo->m_col);
+	// }
 
-    if (m_pBorderColor)
-    {
-        ColorBorderRender_DrawState(pDrawStruct, m_pObject, m_pBorderColor->m_col, m_rcBorder);
-    }
+  //   if (m_pBorderColor)
+  //   {
+  //       ColorBorderRender_DrawState(pDrawStruct, m_pObject, m_pBorderColor->m_col, m_rcBorder);
+  //   }
 }
 
 
@@ -333,48 +333,48 @@ ColorListRender::~ColorListRender()
 }
 void  ColorListRender::Clear()
 {
-	for (int i = 0; i < m_nCount; i++)
-	{
-		SAFE_RELEASE(m_vBkColor[i]);
-		SAFE_RELEASE(m_vBorderColor[i]);
-	}
-	m_vBkColor.clear();
-	m_vBorderColor.clear();
+	// for (int i = 0; i < m_nCount; i++)
+	// {
+	// 	SAFE_RELEASE(m_vBkColor[i]);
+	// 	SAFE_RELEASE(m_vBorderColor[i]);
+	// }
+	// m_vBkColor.clear();
+	// m_vBorderColor.clear();
 }
 
-void ColorListRender::SetStateColor(int nState, COLORREF colorBk, bool bSetBk, COLORREF colBorder, bool bSetBorder)
+void ColorListRender::SetStateColor(int nState, Color colorBk, bool bSetBk, Color colBorder, bool bSetBorder)
 {
-	nState = (nState) & 0xFFFF;
-	if (m_nCount <= nState)
-	{
-		return;
-	}
+	// nState = (nState) & 0xFFFF;
+	// if (m_nCount <= nState)
+	// {
+	// 	return;
+	// }
 
-	if (bSetBk)
-	{
-		SAFE_RELEASE(m_vBkColor[nState]);
-        m_vBkColor[nState] = Color::CreateInstance(colorBk);
-	}
-	if (bSetBorder)
-	{
-		SAFE_RELEASE(m_vBorderColor[nState]);
-        m_vBorderColor[nState] = Color::CreateInstance(colBorder);
-	}
+	// if (bSetBk)
+	// {
+	// 	SAFE_RELEASE(m_vBkColor[nState]);
+  //       m_vBkColor[nState] = Color::CreateInstance(colorBk);
+	// }
+	// if (bSetBorder)
+	// {
+	// 	SAFE_RELEASE(m_vBorderColor[nState]);
+  //       m_vBorderColor[nState] = Color::CreateInstance(colBorder);
+	// }
 }
 
 void  ColorListRender::SetCount(int n)
 {
-	if (n < 0)
-		return;
+	// if (n < 0)
+	// 	return;
 
-	this->Clear();
+	// this->Clear();
 
-	for(int i = 0; i < n; i++ )
-	{
-		m_vBkColor.push_back((Color*)nullptr);
-		m_vBorderColor.push_back((Color*)nullptr);
-	}
-	m_nCount = n;
+	// for(int i = 0; i < n; i++ )
+	// {
+	// 	m_vBkColor.push_back((Color*)nullptr);
+	// 	m_vBorderColor.push_back((Color*)nullptr);
+	// }
+	// m_nCount = n;
 }
 int  ColorListRender::GetCount()
 {
@@ -383,66 +383,67 @@ int  ColorListRender::GetCount()
 
 void  ColorListRender::LoadBkColor(const char* szText)
 {
-    if (!szText)
-        return;
+    // if (!szText)
+    //     return;
 
-    ColorRes* pColorRes = GetSkinColorRes();
-    if (nullptr == pColorRes)
-        return;
+    // ColorRes* pColorRes = GetSkinColorRes();
+    // if (nullptr == pColorRes)
+    //     return;
 
-    std::vector<std::string> vColors;
-    UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-    int nCount = (int)vColors.size();
+    // std::vector<std::string> vColors;
+    // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+    // int nCount = (int)vColors.size();
 
-    if (0 == m_nCount)
-        this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+    // if (0 == m_nCount)
+    //     this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
 
-    for (int i = 0; i < m_nCount && i < nCount; i++ )
-    {
-        if (!vColors[i].empty())
-        {
-            pColorRes->GetColor(vColors[i].c_str(), &m_vBkColor[i]);
-        }
-    }
+    // for (int i = 0; i < m_nCount && i < nCount; i++ )
+    // {
+    //     if (!vColors[i].empty())
+    //     {
+    //         pColorRes->GetColor(vColors[i].c_str(), &m_vBkColor[i]);
+    //     }
+    // }
 }
 const char*  ColorListRender::SaveBkColor()
 {
-    std::string&  strBuffer = GetTempBufferString();
-    for (int i = 0; i < m_nCount; i++)
-    {
-        if (i > 0)
-            strBuffer.push_back(XML_MULTI_SEPARATOR);
+    // std::string&  strBuffer = GetTempBufferString();
+    // for (int i = 0; i < m_nCount; i++)
+    // {
+    //     if (i > 0)
+    //         strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-        const char* szTemp = _GetColorId(m_vBkColor[i]);
-        if (szTemp)
-            strBuffer.append(szTemp);
-    }
+    //     const char* szTemp = _GetColorId(m_vBkColor[i]);
+    //     if (szTemp)
+    //         strBuffer.append(szTemp);
+    // }
 
-    return strBuffer.c_str();
+    // return strBuffer.c_str();
+    return nullptr;
 }
 void  ColorListRender::LoadBorderColor(const char* szText)
 {
-    ColorRes* pColorRes = GetSkinColorRes();
-    if (nullptr == pColorRes)
-        return;
+    // ColorRes* pColorRes = GetSkinColorRes();
+    // if (nullptr == pColorRes)
+    //     return;
 
-    if (!szText)
-        return;
+    // if (!szText)
+    //     return;
     
-    std::vector<std::string> vColors;
-    UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-    int nCount = (int)vColors.size();
+    // std::vector<std::string> vColors;
+    // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+    // int nCount = (int)vColors.size();
 
-    if (0 == m_nCount)
-        this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+    // if (0 == m_nCount)
+    //     this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
 
-    for (int i = 0; i < m_nCount && i < nCount; i++ )
-    {
-        if (!vColors[i].empty())
-        {
-            pColorRes->GetColor(vColors[i].c_str(), &m_vBorderColor[i]);
-        }
-    }
+    // for (int i = 0; i < m_nCount && i < nCount; i++ )
+    // {
+    //     if (!vColors[i].empty())
+    //     {
+    //         pColorRes->GetColor(vColors[i].c_str(), &m_vBorderColor[i]);
+    //     }
+    // }
 }
 
 const char*  ColorListRender::SaveBorderColor()
@@ -469,46 +470,46 @@ const char*  ColorListRender::SaveBorderColor()
 
 void ColorListRender::OnSerialize(SerializeParam* pData)
 {
-    AttributeSerializer s(pData, "ColorListRender");
+    // AttributeSerializer s(pData, "ColorListRender");
 
-    s.AddInt(XML_RENDER_COLORLIST_COUNT, 
-        Slot(&ColorListRender::SetCount, this),
-        Slot(&ColorListRender::GetCount, this));
-    s.AddString(XML_RENDER_COLOR, 
-        Slot(&ColorListRender::LoadBkColor, this),
-        Slot(&ColorListRender::SaveBkColor, this));
-    s.AddString(XML_RENDER_BORDERCOLOR, 
-        Slot(&ColorListRender::LoadBorderColor, this),
-        Slot(&ColorListRender::SaveBorderColor, this));
+    // s.AddInt(XML_RENDER_COLORLIST_COUNT, 
+    //     Slot(&ColorListRender::SetCount, this),
+    //     Slot(&ColorListRender::GetCount, this));
+    // s.AddString(XML_RENDER_COLOR, 
+    //     Slot(&ColorListRender::LoadBkColor, this),
+    //     Slot(&ColorListRender::SaveBkColor, this));
+    // s.AddString(XML_RENDER_BORDERCOLOR, 
+    //     Slot(&ColorListRender::LoadBorderColor, this),
+    //     Slot(&ColorListRender::SaveBorderColor, this));
 }
 
 void ColorListRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 {
-    IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
-	if (nullptr == pRenderTarget)
-		return;
+  //   IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
+	// if (nullptr == pRenderTarget)
+	// 	return;
     
-    if (0 == m_nCount)
-        return;
+  //   if (0 == m_nCount)
+  //       return;
 
-	int nRealState = (pDrawStruct->nState) & 0xFFFF;
-	if (nRealState >= m_nCount)
-		nRealState = 0;
+	// int nRealState = (pDrawStruct->nState) & 0xFFFF;
+	// if (nRealState >= m_nCount)
+	// 	nRealState = 0;
 
-	if (nullptr == m_vBorderColor[nRealState])   // 不绘制边框
-	{
-		if (m_vBkColor[nRealState])
-		{
-			pRenderTarget->DrawRect(&pDrawStruct->rc, m_vBkColor[nRealState]);
-		}
-	}
-	else                           // 绘制边框
-	{
-		if (m_vBkColor[nRealState])
-			pRenderTarget->Rectangle(&pDrawStruct->rc, m_vBorderColor[nRealState], m_vBkColor[nRealState], 1, false);
-		else
-			pRenderTarget->Rectangle(&pDrawStruct->rc, m_vBorderColor[nRealState], 0,1,true);
-	}
+	// if (nullptr == m_vBorderColor[nRealState])   // 不绘制边框
+	// {
+	// 	if (m_vBkColor[nRealState])
+	// 	{
+	// 		pRenderTarget->DrawRect(&pDrawStruct->rc, m_vBkColor[nRealState]);
+	// 	}
+	// }
+	// else                           // 绘制边框
+	// {
+	// 	if (m_vBkColor[nRealState])
+	// 		pRenderTarget->Rectangle(&pDrawStruct->rc, m_vBorderColor[nRealState], m_vBkColor[nRealState], 1, false);
+	// 	else
+	// 		pRenderTarget->Rectangle(&pDrawStruct->rc, m_vBorderColor[nRealState], 0,1,true);
+	// }
 }
 
 }

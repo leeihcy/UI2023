@@ -32,13 +32,13 @@ void TextRenderBaseAttribute::Set(const char *szType) {
   if (!m_ppBindValue)
     return;
 
-  if (!m_pUIApplication || !m_pObject) {
+  if (!m_pObject) {
     UIASSERT(0);
     return;
   }
 
   Reset();
-  m_pUIApplication->GetIUIApplication()->CreateTextRenderBaseByName(
+  GetUIApplication()->GetIUIApplication()->CreateTextRenderBaseByName(
       szType, m_pObject->GetIObject(), m_ppBindValue);
 }
 
@@ -59,7 +59,7 @@ const char *TextRenderBaseAttribute::Get() {
     return nullptr;
 
   TEXTRENDER_TYPE eType = (*m_ppBindValue)->GetType();
-  TextRenderFactory &factory = m_pUIApplication->GetTextRenderFactroy();
+  TextRenderFactory &factory = GetUIApplication()->GetTextRenderFactroy();
 
   const char *szType = factory.GetTextRenderBaseName(eType);
   return szType;

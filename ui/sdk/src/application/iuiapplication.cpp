@@ -290,7 +290,7 @@ bool IApplication::RegisterLayout(const char *name,
 // {
 //     return CacheBitmap::GetInstance()->Create(nWidth, nHeight);
 // }
-// void   IApplication::ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, Rect* prcBlur, int nRadius)
+// void   IApplication::ShadowBlur(HBITMAP hBitmap, Color colorShadow, Rect* prcBlur, int nRadius)
 // {
 //     ::ShadowBlur(hBitmap, colorShadow, prcBlur, nRadius);
 // }

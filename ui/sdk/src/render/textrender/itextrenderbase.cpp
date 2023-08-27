@@ -136,15 +136,15 @@ void ITextRenderBase::CheckSkinTextureChanged() {
 
 //////////////////////////////////////////////////////////////////////////
 
-void ISimpleTextRender::SetColor(Color *pColText) {
-  return __pImpl->SetColor(pColText);
-}
-void ISimpleTextRender::SetRenderFont(IRenderFont *p) {
-  __pImpl->SetRenderFont(p);
-}
-bool ISimpleTextRender::GetColor(COLORREF &color) {
-  return __pImpl->GetColor(color);
-}
+// void ISimpleTextRender::SetColor(Color *pColText) {
+//   return __pImpl->SetColor(pColText);
+// }
+// void ISimpleTextRender::SetRenderFont(IRenderFont *p) {
+//   __pImpl->SetRenderFont(p);
+// }
+// bool ISimpleTextRender::GetColor(Color &color) {
+//   return __pImpl->GetColor(color);
+// }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -152,7 +152,7 @@ void IColorListTextRender::SetRenderFont(IRenderFont *p) {
   __pImpl->SetRenderFont(p);
 }
 void IColorListTextRender::SetCount(int nCount) { __pImpl->SetCount(nCount); }
-void IColorListTextRender::SetColor(int nIndex, COLORREF col) {
+void IColorListTextRender::SetColor(int nIndex, Color col) {
   __pImpl->SetColor(nIndex, col);
 }
 

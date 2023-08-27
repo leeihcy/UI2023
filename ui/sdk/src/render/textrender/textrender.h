@@ -100,7 +100,7 @@ public:
 
   void SetRenderFont(IRenderFont *);
   void SetColor(Color *pColText);
-  bool GetColor(COLORREF &color);
+  bool GetColor(Color &color);
 
   void LoadFont(const char *szFontId);
   const char *GetFontId();
@@ -231,7 +231,7 @@ public:
   void LoadColor(const char *szText);
   const char *GetColor();
 
-  void SetColor(int nIndex, COLORREF col);
+  void SetColor(int nIndex, Color col);
 
 protected:
   void Clear();
@@ -239,7 +239,7 @@ protected:
 private:
   IColorListTextRender *m_pIColorListTextRender;
 
-  std::vector<ColorPtr> m_vTextColor;
+  std::vector<Color*> m_vTextColor;
   IRenderFont *m_pRenderFont;
   int m_nCount;
 

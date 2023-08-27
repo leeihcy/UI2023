@@ -228,7 +228,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
     
     if (bstrPath.empty())
     {
-        pMapAttrib->Delete();
+        pMapAttrib->Destroy();
         return;
     }
 
@@ -307,7 +307,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
         }
     }
 
-    pMapAttrib->Delete();
+    pMapAttrib->Destroy();
 }
 
 UIElement*  ImageManager::GetImageXmlElem(const char* szId)

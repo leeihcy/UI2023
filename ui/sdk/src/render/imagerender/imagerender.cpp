@@ -6,7 +6,7 @@
 #include "src/attribute/attribute.h"
 #include "src/attribute/bool_attribute.h"
 #include "src/attribute/enum_attribute.h"
-#include "src/attribute/long_attribute.h"
+#include "src/attribute/int_attribute.h"
 #include "src/attribute/rect_attribute.h"
 #include "src/attribute/string_attribute.h"
 #include "src/object/object.h"
@@ -25,7 +25,7 @@ ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
 }
 ImageRender::~ImageRender() {
   SAFE_RELEASE(m_pBitmap);
-  SAFE_RELEASE(m_pColorBk);
+  // SAFE_RELEASE(m_pColorBk);
 }
 
 void ImageRender::SetAlpha(int nAlpha) { m_nAlpha = nAlpha; }
@@ -33,7 +33,7 @@ int ImageRender::GetAlpha() { return m_nAlpha; }
 
 Color ImageRender::GetColor() {
   if (nullptr == m_pColorBk)
-    return Color(0);
+    return Color::Make(0);
   else
     return *m_pColorBk;
 }
@@ -91,19 +91,19 @@ void ImageRender::SetRenderBitmap(IRenderBitmap *pBitmap) {
 }
 
 void ImageRender::SetColor(Color c) {
-  SAFE_RELEASE(m_pColorBk);
-  m_pColorBk = Color::CreateInstance(c);
+  // SAFE_RELEASE(m_pColorBk);
+  // m_pColorBk = Color::CreateInstance(c);
 }
 
 void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
   Rect *prc = &pDrawStruct->rc;
 
-  if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_ALL) {
-    Color c = m_pColorBk->m_col;
-    c.a = (byte)m_nAlpha;
+  // if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_ALL) {
+  //   Color c = m_pColorBk->m_col;
+  //   c.a = (byte)m_nAlpha;
 
-    pDrawStruct->pRenderTarget->DrawRect(prc, &c);
-  }
+  //   pDrawStruct->pRenderTarget->DrawRect(prc, &c);
+  // }
 
   Rect rcRealDraw = {0, 0, 0, 0};
   if (m_pBitmap) {
@@ -138,40 +138,40 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     pDrawStruct->pRenderTarget->DrawBitmap(m_pBitmap, &param);
   }
 
-  if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
-    Color c = m_pColorBk->m_col;
-    c.a = (byte)m_nAlpha;
+  // if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
+  //   Color c = m_pColorBk->m_col;
+  //   c.a = (byte)m_nAlpha;
 
-    // Top
-    {
-      Rect rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
-      if (rc.Width() > 0 && rc.Height() > 0) {
-        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-      }
-    }
-    // Left
-    {
-      Rect rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
-      if (rc.Width() > 0 && rc.Height() > 0) {
-        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-      }
-    }
-    // Right
-    {
-      Rect rc = {rcRealDraw.right, rcRealDraw.top, prc->right,
-                 rcRealDraw.bottom};
-      if (rc.Width() > 0 && rc.Height() > 0) {
-        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-      }
-    }
-    // Bottom
-    {
-      Rect rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
-      if (rc.Width() > 0 && rc.Height() > 0) {
-        pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
-      }
-    }
-  }
+  //   // Top
+  //   {
+  //     Rect rc = {prc->left, prc->top, prc->right, rcRealDraw.top};
+  //     if (rc.Width() > 0 && rc.Height() > 0) {
+  //       pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+  //     }
+  //   }
+  //   // Left
+  //   {
+  //     Rect rc = {prc->left, rcRealDraw.top, rcRealDraw.left, rcRealDraw.bottom};
+  //     if (rc.Width() > 0 && rc.Height() > 0) {
+  //       pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+  //     }
+  //   }
+  //   // Right
+  //   {
+  //     Rect rc = {rcRealDraw.right, rcRealDraw.top, prc->right,
+  //                rcRealDraw.bottom};
+  //     if (rc.Width() > 0 && rc.Height() > 0) {
+  //       pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+  //     }
+  //   }
+  //   // Bottom
+  //   {
+  //     Rect rc = {prc->left, rcRealDraw.bottom, prc->right, prc->bottom};
+  //     if (rc.Width() > 0 && rc.Height() > 0) {
+  //       pDrawStruct->pRenderTarget->DrawRect(&rc, &c);
+  //     }
+  //   }
+  // }
 }
 void ImageRender::GetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;

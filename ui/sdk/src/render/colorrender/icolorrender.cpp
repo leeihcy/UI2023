@@ -10,11 +10,11 @@ UI_IMPLEMENT_INTERFACE(SysColorRender, RenderBase)
 UI_IMPLEMENT_INTERFACE(GradientRender, RenderBase)
 UI_IMPLEMENT_INTERFACE(ColorListRender, RenderBase)
 
-void  IColorRender::SetBkColor(COLORREF col)
+void  IColorRender::SetBkColor(Color col)
 {
     return __pImpl->SetBkColor(col);
 }
-void  IColorRender::SetBorderColor(COLORREF col)
+void  IColorRender::SetBorderColor(Color col)
 {
     return __pImpl->SetBorderColor(col);
 }
@@ -24,7 +24,7 @@ void  IColorRender::SetBorderRegion(const Rect* prc)
 }
 //////////////////////////////////////////////////////////////////////////
 
-void  IColorListRender::SetStateColor(int nState, COLORREF colorBk, bool bSetBk, COLORREF colBorder, bool bSetBorder)
+void  IColorListRender::SetStateColor(int nState, Color colorBk, bool bSetBk, Color colBorder, bool bSetBorder)
 {  
     return __pImpl->SetStateColor(nState, colorBk, bSetBk, colBorder, bSetBorder);
 }

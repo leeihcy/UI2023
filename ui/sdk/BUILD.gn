@@ -63,7 +63,8 @@ shared_library("uisdk") {
         "src/attribute/color_attribute.cpp",
         "src/attribute/enum_attribute.cpp",
         "src/attribute/flags_attribute.cpp",
-        "src/attribute/long_attribute.cpp",
+        "src/attribute/int_attribute.cpp",
+        "src/attribute/length_attribute.cpp",
         "src/attribute/rect_attribute.cpp",
         "src/attribute/renderbase_attribute.cpp",
         "src/attribute/stringselect_attribute.cpp",
@@ -191,6 +192,7 @@ shared_library("uisdk") {
         "src/message_loop/message_loop_unittest.cpp",
         "src/util/rectregion/rectregion_unittest.cpp",
         "include/common/uuid/uuid_unittest.cpp",
+        "src/util/color_test.cpp",
       ]
     }
 }

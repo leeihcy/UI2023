@@ -1014,7 +1014,7 @@ void GdiplusRenderTarget::DrawPolyline(POINT* lppt, int nCount, IRenderPen* pPen
 	SAFE_ARRAY_DELETE(p);
 }
 
-void GdiplusRenderTarget::GradientFillH(LPRECT lprc, COLORREF colFrom, COLORREF colTo)
+void GdiplusRenderTarget::GradientFillH(LPRECT lprc, Color colFrom, Color colTo)
 {
 	Gdiplus::Color colorFrom, colorTo;
 	colorFrom.SetValue(Gdiplus::Color::MakeARGB(254,GetRValue(colFrom),GetGValue(colFrom),GetBValue(colFrom))) ;
@@ -1028,7 +1028,7 @@ void GdiplusRenderTarget::GradientFillH(LPRECT lprc, COLORREF colFrom, COLORREF 
 	g.FillRectangle(&brush, lprc->left, lprc->top, RECTW(lprc), RECTH(lprc));
 }
 
-void GdiplusRenderTarget::GradientFillV(LPRECT lprc, COLORREF colFrom, COLORREF colTo)
+void GdiplusRenderTarget::GradientFillV(LPRECT lprc, Color colFrom, Color colTo)
 {
 	Gdiplus::Color colorFrom, colorTo;
 	colorFrom.SetValue(Gdiplus::Color::MakeARGB(254,GetRValue(colFrom),GetGValue(colFrom),GetBValue(colFrom))) ;

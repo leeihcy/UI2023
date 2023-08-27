@@ -59,8 +59,8 @@ public:
   virtual void DrawFocusRect(Rect* lprc) override;
   virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) override;
   virtual void DrawPolyline(Point *lppt, int nCount, IRenderPen *) override;
-  virtual void GradientFillH(Rect* lprc, COLORREF colFrom, COLORREF colTo) override;
-  virtual void GradientFillV(Rect* lprc, COLORREF colFrom, COLORREF colTo) override;
+  virtual void GradientFillH(Rect* lprc, Color colFrom, Color colTo) override;
+  virtual void GradientFillV(Rect* lprc, Color colFrom, Color colTo) override;
   virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
                       IRenderTarget *pSrcHDC, int xSrc, int ySrc, unsigned int dwRop) override;
   virtual void ImageList_Draw(IRenderBitmap *hBitmap, int x, int y, int col,

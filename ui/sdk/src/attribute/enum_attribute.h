@@ -1,5 +1,5 @@
 #pragma once
-#include "long_attribute.h"
+#include "int_attribute.h"
 
 //
 // layout="stack" <--> 2

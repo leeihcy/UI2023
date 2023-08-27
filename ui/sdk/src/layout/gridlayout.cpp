@@ -2,7 +2,7 @@
 #include "include/inc.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/flags_attribute.h"
-#include "src/attribute/long_attribute.h"
+#include "src/attribute/int_attribute.h"
 #include "src/object/object.h"
 
 using namespace ui;

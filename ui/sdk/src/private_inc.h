@@ -11,6 +11,7 @@
 #include "include/interface/imeta.h"
 #include "include/util/log.h"
 // #include "../common/define.h"
+#include "src/util/util.h"
 
 #include <map>
 #include <vector>

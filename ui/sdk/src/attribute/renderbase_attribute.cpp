@@ -30,13 +30,13 @@ void RenderBaseAttribute::Set(const char *szType) {
   if (!m_ppBindValue)
     return;
 
-  if (!m_pUIApplication || !m_pObject) {
+  if (!m_pObject) {
     UIASSERT(0);
     return;
   }
 
   Reset();
-  m_pUIApplication->CreateRenderBaseByName(szType, m_pObject->GetIObject(),
+  GetUIApplication()->CreateRenderBaseByName(szType, m_pObject->GetIObject(),
                                            m_ppBindValue);
 }
 
@@ -54,7 +54,7 @@ const char *RenderBaseAttribute::Get() {
     return nullptr;
 
   RENDER_TYPE eType = (*m_ppBindValue)->GetType();
-  RenderBaseFactory &factory = m_pUIApplication->GetRenderBaseFactory();
+  RenderBaseFactory &factory = GetUIApplication()->GetRenderBaseFactory();
   const char *szType = factory.GetRenderBaseName(eType);
   return szType;
 }

@@ -18,7 +18,7 @@ struct IMapAttribute {
   virtual bool
   ExtractMapAttrByPrefix(const char *szPrefix, bool bErase,
                          /*out*/ IMapAttribute **pMapAttribute) = 0;
-  virtual void Delete() = 0;
+  virtual void Destroy() = 0;
   virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverwrite) = 0;
   virtual int GetAttrCount() = 0;
 

@@ -447,7 +447,7 @@ bool CMapAttribute::ExtractMapAttrByPrefix(
   return true;
 }
 
-void CMapAttribute::Delete() {
+void CMapAttribute::Destroy() {
     delete this;
 }
 

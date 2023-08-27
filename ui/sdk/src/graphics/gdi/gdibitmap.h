@@ -184,7 +184,7 @@ public:
 		return m_image.GetBPP();
 	}
 
-	virtual COLORREF GetAverageColor() 
+	virtual Color GetAverageColor() 
 	{
 		return m_image.GetAverageColor();
 	}

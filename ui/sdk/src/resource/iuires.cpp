@@ -41,17 +41,17 @@ ColorRes*  IColorRes::GetImpl()
 	return m_pImpl;
 }
 
-long  IColorRes::GetColorCount() 
+long  IColorRes::GetCount() 
 {
-	return m_pImpl->GetColorCount();
+	return m_pImpl->GetCount();
 }
-IColorResItem*  IColorRes::GetColorResItem(long lIndex)
+// IColorResItem*  IColorRes::GetItem(long lIndex)
+// { 
+// 	return m_pImpl->GetItem(lIndex); 
+// }
+Color IColorRes::GetColor(const char *szColorId, bool* exist)
 { 
-	return m_pImpl->GetColorResItem(lIndex); 
-}
-void  IColorRes::GetColor(const char* szColorId, Color** pp) 
-{ 
-	return m_pImpl->GetColor(szColorId, pp); 
+	return m_pImpl->GetColor(szColorId, exist); 
 }
 const char*  IColorRes::GetColorId(Color* p)
 {

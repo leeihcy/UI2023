@@ -299,6 +299,6 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
             strID.c_str(), strFaceName.c_str());
     }
 
-    pMapAttrib->Delete();
+    pMapAttrib->Destroy();
 }
 }

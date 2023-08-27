@@ -12,8 +12,8 @@ void on_window_destroy(ui::IApplication *uiapp, ui::Event*) {
 void on_window_paint(ui::Event* e) {
   ui::IRenderTarget * pRT = static_cast<ui::WindowPaintEvent*>(e)->rt;
 
-  ui::Color colors[3] = {ui::Color(255, 0, 0, 255), ui::Color(0, 255, 0, 255),
-                         ui::Color(0, 0, 255, 255)};
+  ui::Color colors[3] = {ui::Color::MakeRGB(255, 0, 0), ui::Color::MakeRGB(0, 255, 0),
+                         ui::Color::MakeRGB(0, 0, 255)};
   static int i = 0;
   i++;
   if (i >= 3) {

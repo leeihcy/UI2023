@@ -105,7 +105,7 @@ void EnumRenderBaseNameCallback(const char *szText, llong wParam,
 StringEnumAttribute *StringEnumAttribute::FillRenderBaseTypeData() {
   m_list.clear();
   this->Add(EMPTYTEXT); // 增加一项默认值，取消当前的选项
-  m_pUIApplication->GetIUIApplication()->EnumRenderBaseName(
+  GetUIApplication()->GetIUIApplication()->EnumRenderBaseName(
       EnumRenderBaseNameCallback, (llong)this, 0);
   return this;
 }
@@ -117,7 +117,7 @@ void EnumTextRenderBaseNameCallback(const char *szText, llong wParam,
 }
 StringEnumAttribute *StringEnumAttribute::FillTextRenderBaseTypeData() {
   m_list.clear();
-  m_pUIApplication->GetIUIApplication()->EnumTextRenderBaseName(
+  GetUIApplication()->GetIUIApplication()->EnumTextRenderBaseName(
       EnumTextRenderBaseNameCallback, (llong)this, 0);
   return this;
 }

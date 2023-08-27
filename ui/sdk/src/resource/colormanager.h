@@ -28,7 +28,7 @@ public:
 
 public:
     void  Clear();
-    int   GetColorCount();
+    int   GetCount();
     IColorResItem*  GetColorItemInfo(int nIndex);
 
     bool  ChangeSkinHLS(short h, short l, short s, int nFlag);

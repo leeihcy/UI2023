@@ -1,4 +1,4 @@
-#include "long_attribute.h"
+#include "int_attribute.h"
 #include "attribute.h"
 #include "include/inc.h"
 #include "src/util/DPI/dpihelper.h"

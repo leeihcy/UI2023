@@ -62,8 +62,8 @@ public:
 	virtual void  DrawFocusRect(LPRECT lprc );
 	virtual void  DrawLine(int x1, int y1, int x2, int y2, IRenderPen*);
 	virtual void  DrawPolyline(POINT* lppt, int nCount, IRenderPen*);
-	virtual void  GradientFillH(LPRECT lprc, COLORREF colFrom, COLORREF colTo );
-	virtual void  GradientFillV(LPRECT lprc, COLORREF colFrom, COLORREF colTo );
+	virtual void  GradientFillH(LPRECT lprc, Color colFrom, Color colTo );
+	virtual void  GradientFillV(LPRECT lprc, Color colFrom, Color colTo );
 	virtual void  BitBlt( int xDest, int yDest, int wDest, int hDest, IRenderTarget* pSrcHDC, int xSrc, int ySrc, DWORD dwRop );
 	virtual void  ImageList_Draw( IRenderBitmap* hBitmap, int x, int y, int col, int row, int cx, int cy );
 	

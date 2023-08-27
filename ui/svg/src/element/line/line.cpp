@@ -1,18 +1,22 @@
 #include "line.h"
+#include "sdk/include/interface/iattribute.h"
 
 void Line::Render(RenderContext &context) {
-  context.canvas->drawLine(SkPoint::Make(m_x1, m_y1), SkPoint::Make(m_x2, m_y2),
+  int x1 = context.ResolveX(m_x1);
+  int y1 = context.ResolveY(m_y1);
+  int x2 = context.ResolveX(m_x2);
+  int y2 = context.ResolveY(m_y2);
+
+  context.canvas->drawLine(SkPoint::Make(x1, y1), SkPoint::Make(x2, y2),
                            context.paint);
 }
 
-void Line::SetAttribute(const char *key, const char *value) {
-  if (strcmp(key, "x1") == 0) {
-    m_x1 = atoi(value);
-  } else if (strcmp(key, "x2") == 0) {
-    m_x2 = atoi(value);
-  } else if (strcmp(key, "y1") == 0) {
-    m_y1 = atoi(value);
-  } else if (strcmp(key, "y2") == 0) {
-    m_y2 = atoi(value);
-  }
+void Line::SetAttribute(ui::SerializeParam &data) {
+  Element::SetAttribute(data);
+  
+  ui::AttributeSerializerWrap s(&data, "Line");
+  s.AddLength("x1", m_x1);
+  s.AddLength("x2", m_x2);
+  s.AddLength("y1", m_y1);
+  s.AddLength("y2", m_y2);
 }

@@ -20,7 +20,8 @@ AttributeClassFactory::AttributeClassFactory() {
   Register(ATTRIBUTE_TYPE_BOOL, CreateBoolAttribute);
   Register(ATTRIBUTE_TYPE_RECT, CreateRectAttribute);
   Register(ATTRIBUTE_TYPE_9REGION, CreateRegion9Attribute);
-  Register(ATTRIBUTE_TYPE_LONG, CreateIntAttribute);
+  Register(ATTRIBUTE_TYPE_INTEGER, CreateIntAttribute);
+  Register(ATTRIBUTE_TYPE_LENGTH, CreateLengthAttribute);
   Register(ATTRIBUTE_TYPE_FLAGS, CreateFlagsAttribute);
   Register(ATTRIBUTE_TYPE_STRINGENUM, CreateStringEnumAttribute);
   Register(ATTRIBUTE_TYPE_ENUM, CreateEnumAttribute);
@@ -87,8 +88,8 @@ void AttributeSerializer::DoAction() {
 
 SerializeParam *AttributeSerializer::GetSerializeData() { return m_pData; }
 IApplication *AttributeSerializer::GetUIApplication() {
-  if (m_pData)
-    return m_pData->pUIApplication;
+  if (m_pData && m_pData->pSkinRes)
+    return m_pData->pSkinRes->GetUIApplication();
 
   return nullptr;
 }
@@ -221,22 +222,31 @@ BoolAttribute *AttributeSerializer::AddBool(const char *szKey,
 }
 IntAttribute *AttributeSerializer::AddInt(const char *szKey, int &lBindValue) {
   return static_cast<IntAttribute *>(
-      Add(ATTRIBUTE_TYPE_LONG, szKey, &lBindValue));
+      Add(ATTRIBUTE_TYPE_INTEGER, szKey, &lBindValue));
 }
-// IntAttribute *AttributeSerializer::AddInt(const char *szKey, void
-// *_this,
-//                                             pfnLongSetter s, pfnLongGetter g)
-//                                             {
-//   return static_cast<IntAttribute *>(
-//       Add(ATTRIBUTE_TYPE_LONG, szKey, _this, s, g));
-// }
+
 IntAttribute *AttributeSerializer::AddInt(const char *szKey,
                                           slot<void(int)> &&s,
                                           slot<int()> &&g) {
   IntAttribute *p =
-      static_cast<IntAttribute *>(Add(ATTRIBUTE_TYPE_LONG, szKey, nullptr));
+      static_cast<IntAttribute *>(Add(ATTRIBUTE_TYPE_INTEGER, szKey, nullptr));
   if (p) {
     p->Bind(std::forward<slot<void(int)>>(s), std::forward<slot<int()>>(g));
+  }
+  return p;
+}
+
+LengthAttribute *AttributeSerializer::AddLength(const char *key, Length &bind_value) {
+  return static_cast<LengthAttribute *>(
+      Add(ATTRIBUTE_TYPE_LENGTH, key, &bind_value));
+}
+LengthAttribute *AttributeSerializer::AddLength(const char *key, slot<void(Length)> &&s,
+                           slot<Length()> &&g) {
+  LengthAttribute *p = static_cast<LengthAttribute *>(
+      Add(ATTRIBUTE_TYPE_LENGTH, key, nullptr));
+  if (p) {
+    p->Bind(std::forward<slot<void(Length)>>(s),
+            std::forward<slot<Length()>>(g));
   }
   return p;
 }
@@ -342,16 +352,16 @@ Region9Attribute *AttributeSerializer::Add9Region(const char *szKey,
   return p;
 }
 
-ColorAttribute *AttributeSerializer::AddColor(const char *szKey,
-                                              Color *&pBindValue) {
-  ColorAttribute *p = static_cast<ColorAttribute *>(
-      Add(ATTRIBUTE_TYPE_UICOLOR, szKey, nullptr));
+// ColorAttribute *AttributeSerializer::AddColor(const char *szKey,
+//                                               Color *&pBindValue) {
+//   ColorAttribute *p = static_cast<ColorAttribute *>(
+//       Add(ATTRIBUTE_TYPE_UICOLOR, szKey, nullptr));
 
-  if (p)
-    p->SetBindValue2((void **)&pBindValue);
+//   if (p)
+//     p->SetBindValue2((void **)&pBindValue);
 
-  return p;
-}
+//   return p;
+// }
 ColorAttribute *AttributeSerializer::AddColor(const char *szKey,
                                               Color &pBindValue) {
   ColorAttribute *p = static_cast<ColorAttribute *>(
@@ -383,7 +393,7 @@ AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
   // 在editor中，动态修改render type不要清除属性。
   // 1. 属性可能共用一个key，如render.image=，即使换了type，属性也可以共享
   // 2. 要实现undo/redo，不能丢掉属性
-  if (m_pData->pUIApplication->IsEditorMode())
+  if (m_pData->pSkinRes->GetUIApplication()->IsEditorMode())
     m_pData->SetErase(false);
 
   // p->FillRenderBaseTypeData()
@@ -418,8 +428,6 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey) {
     return nullptr;
   }
 
-  pAttribute->SetUIApplication(
-      m_pData->pUIApplication ? m_pData->pUIApplication->GetImpl() : nullptr);
   pAttribute->SetSkinRes(m_pData->pSkinRes ? m_pData->pSkinRes->GetImpl()
                                            : nullptr);
   if (m_pData->szPrefix) {
@@ -444,8 +452,6 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
     return nullptr;
   }
 
-  pAttribute->SetUIApplication(
-      m_pData->pUIApplication ? m_pData->pUIApplication->GetImpl() : nullptr);
   pAttribute->SetSkinRes(m_pData->pSkinRes ? m_pData->pSkinRes->GetImpl()
                                            : nullptr);
   if (m_pData->szPrefix) {
@@ -530,9 +536,6 @@ void AttributeSerializer::Save() {
 
 // 将AttributeBase*列表从AttributeSerializer类中脱离，交由UIEditor维护和管理/
 void AttributeSerializer::Editor() {
-  if (!m_pData->pUIApplication)
-    return;
-
   IAttributeEditorProxy *pIProxy = m_pData->pAttributeEditorProxy;
   if (!pIProxy)
     return;
@@ -626,7 +629,6 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
 
     SerializeParam data = {0};
     data.pAttributeEditorProxy = &m_oIProxy;
-    data.pUIApplication = pObj->GetUIApplication();
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 

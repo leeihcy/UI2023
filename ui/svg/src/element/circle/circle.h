@@ -1,19 +1,19 @@
 #ifndef _UI_SVG_SRC_ELEMENT_CIRCLE_CIRCLE_H_
 #define _UI_SVG_SRC_ELEMENT_CIRCLE_CIRCLE_H_
 
-#include "src/element/node.h"
+#include "src/element/element.h"
 
-class Circle : public Node {
+class Circle : public Element {
 public:
   void Render(RenderContext& context) override;
-  void SetAttribute(const char* key, const char* value) override;
+  void SetAttribute(ui::SerializeParam& data) override;
 
 private:
   // 圆中心位置
-  int m_cx = 0;
-  int m_cy = 0;
+  ui::Length m_cx;
+  ui::Length m_cy;
   // 半径
-  int m_r = 0;
+  ui::Length m_r;
 };
 
 #endif

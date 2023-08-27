@@ -1,12 +1,17 @@
 #include "container.h"
 
-void Container::AddChild(std::unique_ptr<Node> p) {
+void Container::AddChild(std::unique_ptr<Element> p) {
   m_children.push_back(std::move(p));
+}
+
+void Container::RemoveAll() {
+  m_children.clear();
 }
 
 void Container::Render(RenderContext& context) {
   for (auto &child : m_children) {
-    child->Render(context);
+    RenderContext c = context;
+    child->Render(c);
   }
 }
-void Container::SetAttribute(const char *key, const char *value) {}
+void Container::SetAttribute(ui::SerializeParam& data) {}

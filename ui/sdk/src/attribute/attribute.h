@@ -3,7 +3,8 @@
 #include "enum_attribute.h"
 #include "flags_attribute.h"
 #include "include/interface/iattribute.h"
-#include "long_attribute.h"
+#include "int_attribute.h"
+#include "length_attribute.h"
 #include "rect_attribute.h"
 #include "size_attribute.h"
 #include "string_attribute.h"
@@ -72,66 +73,50 @@ public:
 public:
   // 封装
 
-  StringAttribute *
-  AddString(const char *,
-            std::string
-                &sBindValue); // 仅内部使用
-                              // StringAttribute*  AddString(const char*, void*
-                              // _this, pfnStringSetter s, pfnStringGetter g);
+  // 仅内部使用
+  StringAttribute *AddString(const char *, std::string &sBindValue);
   StringAttribute *AddString(const char *, slot<void(const char *)> &&s,
                              slot<const char *()> &&g);
   StringAttribute *AddString(const char *szKey,
                              const std::function<void(const char *)> &s,
                              const std::function<const char *()> &g);
 
-  StringAttribute *AddI18nString(const char *,
-                                 std::string &sBindValue); // 仅内部使用
+  // 仅内部使用
+  StringAttribute *AddI18nString(const char *, std::string &sBindValue);
   StringAttribute *AddI18nString(const char *,
                                  slot<void(const char *, int)> &&s,
                                  slot<const char *()> &&g);
-  // StringAttribute*  AddI18nString(const char*, void* _this, pfnStringExSetter
-  // s, pfnStringGetter g); StringAttribute*  AddI18nString(const char*, const
-  // std::function<void(const char*, int)>& s, const std::function<const
-  // char*()>& g);
   StringEnumAttribute *AddStringEnum(const char *, slot<void(const char *)> &&s,
                                      slot<const char *()> &&g);
 
   BoolAttribute *AddBool(const char *, bool &bBindValue);
-  // BoolAttribute*  AddBool(const char*, void* _this, pfnBoolSetter s,
-  // pfnBoolGetter g);
   BoolAttribute *AddBool(const char *, slot<void(bool)> &&s, slot<bool()> &&g);
 
   IntAttribute *AddInt(const char *, int &lBindValue);
-  // IntAttribute*  AddInt(const char*, void* _this, pfnLongSetter s,
-  // pfnLongGetter g);
   IntAttribute *AddInt(const char *, slot<void(int)> &&s, slot<int()> &&g);
+
+  LengthAttribute *AddLength(const char *, Length &bind_value);
+  LengthAttribute *AddLength(const char *, slot<void(Length)> &&s,
+                             slot<Length()> &&g);
 
   FlagsAttribute *AddFlags(const char *, int &lBindValue);
 
   EnumAttribute *AddEnum(const char *, int &lBindValue);
-  // EnumAttribute*  AddEnum(const char*, void* _this, pfnLongSetter s,
-  // pfnLongGetter g);
   EnumAttribute *AddEnum(const char *, slot<void(int)> &&s, slot<int()> &&g);
 
   RectAttribute *AddRect(const char *, Rect &rcBindValue);
-  // RectAttribute*  AddRect(const char*, void* _this, pfnRectSetter s,
-  // pfnRectGetter g);
   RectAttribute *AddRect(const char *, slot<void(Rect *)> &&s,
                          slot<void(Rect *)> &&g);
 
   SizeAttribute *AddSize(const char *, Size &sBindValue);
-  // SizeAttribute*  AddSize(const char*, void* _this, pfnSizeSetter s,
-  // pfnSizeGetter g);
   SizeAttribute *AddSize(const char *, slot<void(Size *)> &&s,
                          slot<void(Size *)> &&g);
 
   Region9Attribute *Add9Region(const char *, C9Region &rBindValue);
-  // Region9Attribute*  Add9Region(const char*, void* _this, pfnRectSetter s,
-  // pfnRectGetter g);
   Region9Attribute *Add9Region(const char *, slot<void(C9Region *)> &&s,
                                slot<void(C9Region *)> &&g);
 
-  ColorAttribute *AddColor(const char *, Color *&pBindValue);
+  // ColorAttribute *AddColor(const char *, Color *&pBindValue);
   ColorAttribute *AddColor(const char *, Color &pBindValue);
   RenderBaseAttribute *AddRenderBase(const char *szPrefix, Object *pObj,
                                      IRenderBase *&pBindValue);

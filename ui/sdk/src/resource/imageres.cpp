@@ -50,7 +50,7 @@ ImageResItem::~ImageResItem() {
   //     }
   SAFE_DELETE(m_pOriginImageData);
   if (m_pMapAttrib) {
-    m_pMapAttrib->Delete();
+    m_pMapAttrib->Destroy();
     m_pMapAttrib = nullptr;
   }
   SAFE_DELETE(m_pIImageResItem);

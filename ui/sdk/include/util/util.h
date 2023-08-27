@@ -2,6 +2,7 @@
 #define _UI_UTIL_H_
 #include "sdk/include/interface.h"
 #include "sdk/include/util/windows.h"
+#include "sdk/include/util/color.h"
 
 namespace ui {
 class C9Region;
@@ -15,13 +16,6 @@ struct ITimeoutCallback {
 };
 
 namespace util {
-uint TranslateHexColor(const char *szColor);
-uint UIAPI TranslateColor(const char *szColor);
-uint TranslateRGB(const char *szCol, char szSep = ',');
-bool TranslateSIZE(const char *szText, Size *pSize, char szSep = ',');
-bool TranslateRECT(const char *szRect, Rect *pRect, char szSep = ',');
-bool TranslateImage9Region(const char *str, C9Region *p9Region,
-                           char szSep = ',');
 bool UIAPI IsKeyDown(unsigned int vk);
 
 void UIAPI DeflatRect(Rect *pfc, const Rect *pDeflatRc);

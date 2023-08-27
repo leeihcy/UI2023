@@ -110,5 +110,29 @@ struct Rect : public RectLTRB {
 
 typedef Rect REGION4;
 
+// 带单位的数值
+struct Length {
+  // 长度单位
+  enum class Unit {
+    // Unknown,
+    Number,
+    Percentage,
+    // EMS,
+    // EXS,
+    // PX,
+    // CM,
+    // MM,
+    // IN,
+    // PT,
+    // PC,
+  };
+  int value = 0;
+  Unit unit = Unit::Number;
+
+  bool operator == (const Length& o) {
+    return o.value == this->value && o.unit == this->unit;
+  }
+};
+
 } // namespace ui
 #endif

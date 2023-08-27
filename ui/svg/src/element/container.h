@@ -1,17 +1,19 @@
 #ifndef _UI_SVG_SRC_ELEMENT_CONTAINER_H_
 #define _UI_SVG_SRC_ELEMENT_CONTAINER_H_
 
-#include "node.h"
+#include "element.h"
 
-class Container : public Node {
+class Container : public Element {
 public:
-  void AddChild(std::unique_ptr<Node> p);
+  void AddChild(std::unique_ptr<Element>) override;
+  void RemoveAll();
 
 public:
   void Render(RenderContext& context) override;
-  void SetAttribute(const char* key, const char* value) override;
+  void SetAttribute(ui::SerializeParam& data) override;
+
 public:
-  std::vector<std::unique_ptr<Node>> m_children;
+  std::vector<std::unique_ptr<Element>> m_children;
 };
 
 #endif

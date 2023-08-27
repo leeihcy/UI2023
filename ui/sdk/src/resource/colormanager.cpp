@@ -34,7 +34,7 @@ IColorManager &ColorManager::GetIColorManager() {
 */
 void ColorManager::Clear() { m_resColor.Clear(); }
 
-int ColorManager::GetColorCount() { return m_resColor.GetColorCount(); }
+int ColorManager::GetCount() { return m_resColor.GetCount(); }
 
 IColorResItem *ColorManager::GetColorItemInfo(int nIndex) {
   ColorResItem *pItem = this->m_resColor.GetColorItem(nIndex);
@@ -86,6 +86,6 @@ void ColorManager::OnNewChild(UIElement *pElem) {
   if (false == m_resColor.LoadItem(pMapAttrib, pElem->GetData())) {
     UI_LOG_WARN(_T("insert color failed."));
   }
-  pMapAttrib->Delete();
+  pMapAttrib->Destroy();
 }
 } // namespace ui

@@ -35,7 +35,9 @@ TextRenderBase::TextRenderBase(ITextRenderBase *p) : Message(p) {
   m_pColorTextBkgnd = nullptr;
   m_wparamDrawText = m_lparamDrawText = 0;
 }
-TextRenderBase::~TextRenderBase() { SAFE_RELEASE(m_pColorTextBkgnd); }
+TextRenderBase::~TextRenderBase() { 
+  // SAFE_RELEASE(m_pColorTextBkgnd); 
+}
 
 void TextRenderBase::SetTextAlignment(int nDrawFlag) {
   m_nDrawTextFlag = nDrawFlag;
@@ -67,7 +69,7 @@ void TextRenderBase::Serialize(AttributeSerializer *ps) {
 }
 
 void TextRenderBase::LoadHaloColor(const char *szColorId) {
-  _LoadColor(szColorId, m_pColorTextBkgnd);
+  // _LoadColor(szColorId, m_pColorTextBkgnd);
   m_wparamDrawText = 3; // 默认模糊半径
 }
 const char *TextRenderBase::GetHaloColorId() {
@@ -150,30 +152,31 @@ void TextRenderBase::_LoadDefalutFont(IRenderFont **ppRenderFont) {
 }
 
 void TextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
-  SAFE_RELEASE(pColor);
-  if (!szColorId)
-    return;
+  // SAFE_RELEASE(pColor);
+  // if (!szColorId)
+  //   return;
 
-  IColorRes *pColorRes = GetSkinColorRes();
-  if (!pColorRes)
-    return;
+  // IColorRes *pColorRes = GetSkinColorRes();
+  // if (!pColorRes)
+  //   return;
 
-  pColorRes->GetColor(szColorId, &pColor);
+  // pColorRes->GetColor(szColorId, &pColor);
 }
 const char *TextRenderBase::_SaveColor(Color *&pColor) {
-  if (!pColor)
-    return nullptr;
+  // if (!pColor)
+  //   return nullptr;
 
-  IColorRes *pColorRes = GetSkinColorRes();
-  if (pColorRes) {
-    const char *szId = pColorRes->GetColorId(pColor);
-    if (szId)
-      return szId;
-  }
+  // IColorRes *pColorRes = GetSkinColorRes();
+  // if (pColorRes) {
+  //   const char *szId = pColorRes->GetColorId(pColor);
+  //   if (szId)
+  //     return szId;
+  // }
 
-  char *szBuffer = GetTempBuffer();
-  pColor->ToWebString(szBuffer);
-  return szBuffer;
+  // char *szBuffer = GetTempBuffer();
+  // pColor->ToWebString(szBuffer);
+  // return szBuffer;
+  return nullptr;
 }
 
 void TextRenderBase::OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo) {
@@ -229,11 +232,11 @@ void TextRenderBase::CheckSkinTextureChanged() {
 SimpleTextRender::SimpleTextRender(ISimpleTextRender *p) : TextRenderBase(p) {
   m_pISimpleTextRender = p;
 
-  m_pColorText = nullptr;
+  // m_pColorText = nullptr;
   m_pRenderFont = nullptr;
 }
 SimpleTextRender::~SimpleTextRender() {
-  SAFE_RELEASE(m_pColorText);
+  // SAFE_RELEASE(m_pColorText);
   SAFE_RELEASE(m_pRenderFont);
 }
 
@@ -245,7 +248,7 @@ void SimpleTextRender::OnSerialize(SerializeParam *pData) {
 
     s.AddString(XML_TEXTRENDER_FONT, Slot(&SimpleTextRender::LoadFont, this),
                 Slot(&SimpleTextRender::GetFontId, this));
-    s.AddColor(XML_TEXTRENDER_COLOR, m_pColorText);
+    // s.AddColor(XML_TEXTRENDER_COLOR, m_pColorText);
   }
 
   if (!m_pRenderFont && pData->IsLoad()) {
@@ -287,16 +290,16 @@ void SimpleTextRender::SetRenderFont(IRenderFont *pFont) {
 }
 
 void SimpleTextRender::SetColor(Color *pColText) {
-  SAFE_RELEASE(m_pColorText);
-  if (pColText)
-    m_pColorText = Color::CreateInstance(pColText->m_col);
+  // SAFE_RELEASE(m_pColorText);
+  // if (pColText)
+  //   m_pColorText = Color::CreateInstance(pColText->m_col);
 }
 
-bool SimpleTextRender::GetColor(COLORREF &color) {
-  if (!m_pColorText)
-    return false;
+bool SimpleTextRender::GetColor(Color &color) {
+  // if (!m_pColorText)
+  //   return false;
 
-  color = m_pColorText->GetGDIValue();
+  // color = m_pColorText->GetGDIValue();
   return true;
 }
 
@@ -308,8 +311,8 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
   if (m_pRenderFont && strlen(pDrawStruct->szText) > 0) {
     DRAWTEXTPARAM param;
 
-    if (m_pColorText)
-      param.color = m_pColorText->m_col;
+    // if (m_pColorText)
+    //   param.color = m_pColorText->m_col;
     param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
                             ? m_nDrawTextFlag
                             : pDrawStruct->nDrawTextFlag;
@@ -317,8 +320,8 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
     param.szText = pDrawStruct->szText;
 
     param.nEffectFlag = m_eDrawTextEffect;
-    if (m_pColorTextBkgnd)
-      param.bkcolor = *m_pColorTextBkgnd;
+    // if (m_pColorTextBkgnd)
+    //   param.bkcolor = *m_pColorTextBkgnd;
     param.wParam = m_wparamDrawText;
     param.lParam = m_lparamDrawText;
     pRenderTarget->DrawString(m_pRenderFont, &param);
@@ -337,7 +340,7 @@ ContrastColorTextRender::ContrastColorTextRender(IContrastColorTextRender *p)
 }
 ContrastColorTextRender::~ContrastColorTextRender() {
   SAFE_RELEASE(m_pRenderFont);
-  SAFE_RELEASE(m_pColorText);
+  // SAFE_RELEASE(m_pColorText);
 }
 
 // 如果字体指针为空，则取object对象的配置字体。
@@ -360,17 +363,17 @@ void ContrastColorTextRender::OnSerialize(SerializeParam *pData) {
     }
 
     // 如果没有配置背景色，则默认设置一个
-    if (m_eDrawTextEffect == TEXT_EFFECT_HALO) {
-      if (m_pColorText && !m_pColorTextBkgnd) {
-        SAFE_RELEASE(m_pColorTextBkgnd);
-        if (m_pColorText->m_col == 0xFFFFFFFF) {
-          m_pColorTextBkgnd = Color::CreateInstance(0xFF000000);
-        } else {
-          m_pColorTextBkgnd = Color::CreateInstance(0xFFFFFFFF);
-        }
-      }
-      m_wparamDrawText = 3; // 默认模糊半径
-    }
+    // if (m_eDrawTextEffect == TEXT_EFFECT_HALO) {
+    //   if (m_pColorText && !m_pColorTextBkgnd) {
+    //     SAFE_RELEASE(m_pColorTextBkgnd);
+    //     if (m_pColorText->m_col == 0xFFFFFFFF) {
+    //       m_pColorTextBkgnd = Color::CreateInstance(0xFF000000);
+    //     } else {
+    //       m_pColorTextBkgnd = Color::CreateInstance(0xFFFFFFFF);
+    //     }
+    //   }
+    //   m_wparamDrawText = 3; // 默认模糊半径
+    // }
   }
 }
 
@@ -431,7 +434,7 @@ void ContrastColorTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
 }
 
 int ContrastColorTextRender::OnSkinTextureChanged(unsigned int, int, int) {
-  SAFE_RELEASE(m_pColorText);
+  // SAFE_RELEASE(m_pColorText);
   return 0;
 }
 
@@ -449,19 +452,19 @@ ContrastColorListTextRender::~ContrastColorListTextRender() {
   SAFE_RELEASE(m_pRenderFont);
 }
 void ContrastColorListTextRender::Clear() {
-  for (int i = 0; i < m_nCount; i++) {
-    SAFE_RELEASE(m_vTextColor[i]);
-  }
+  // for (int i = 0; i < m_nCount; i++) {
+  //   SAFE_RELEASE(m_vTextColor[i]);
+  // }
 
   m_vTextColor.clear();
   m_nCount = 0;
 }
 
 int ContrastColorListTextRender::OnSkinTextureChanged(unsigned int, int, int) {
-  for (int i = 0; i < m_nCount; i++) {
-    SAFE_RELEASE(m_vTextColor[i]);
-    m_vTextColor[i] = nullptr;
-  }
+  // for (int i = 0; i < m_nCount; i++) {
+  //   SAFE_RELEASE(m_vTextColor[i]);
+  //   m_vTextColor[i] = nullptr;
+  // }
 
   return 0;
 }
@@ -545,11 +548,11 @@ ColorListTextRender::~ColorListTextRender() {
   SAFE_RELEASE(m_pRenderFont);
 }
 void ColorListTextRender::Clear() {
-  for (int i = 0; i < m_nCount; i++) {
-    SAFE_RELEASE(m_vTextColor[i]);
-  }
-  m_vTextColor.clear();
-  m_nCount = 0;
+  // for (int i = 0; i < m_nCount; i++) {
+  //   SAFE_RELEASE(m_vTextColor[i]);
+  // }
+  // m_vTextColor.clear();
+  // m_nCount = 0;
 }
 
 void ColorListTextRender::OnSerialize(SerializeParam *pData) {
@@ -598,57 +601,58 @@ const char *ColorListTextRender::GetFontId() {
 }
 
 void ColorListTextRender::LoadColor(const char *szText) {
-  if (!szText)
-    return;
+  // if (!szText)
+  //   return;
 
-  IColorRes *pColorRes = GetSkinColorRes();
+  // IColorRes *pColorRes = GetSkinColorRes();
 
-  std::vector<std::string> vColors;
-  UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-  int nCount = (int)vColors.size();
+  // std::vector<std::string> vColors;
+  // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+  // int nCount = (int)vColors.size();
 
-  if (0 == m_nCount) {
-    this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
-  }
+  // if (0 == m_nCount) {
+  //   this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+  // }
 
-  for (int i = 0; i < m_nCount && i < nCount; i++) {
-    if (!vColors[i].empty()) {
-      SAFE_RELEASE(m_vTextColor[i]);
-      pColorRes->GetColor(vColors[i].c_str(), &m_vTextColor[i]);
-    }
-  }
+  // for (int i = 0; i < m_nCount && i < nCount; i++) {
+  //   if (!vColors[i].empty()) {
+  //     SAFE_RELEASE(m_vTextColor[i]);
+  //     pColorRes->GetColor(vColors[i].c_str(), &m_vTextColor[i]);
+  //   }
+  // }
 }
 const char *ColorListTextRender::GetColor() {
-  std::string &strBuffer = GetTempBufferString();
-  for (int i = 0; i < m_nCount; i++) {
-    if (i > 0)
-      strBuffer.push_back(XML_MULTI_SEPARATOR);
+  // std::string &strBuffer = GetTempBufferString();
+  // for (int i = 0; i < m_nCount; i++) {
+  //   if (i > 0)
+  //     strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-    const char *szTemp = _SaveColor(m_vTextColor[i]);
-    if (szTemp)
-      strBuffer.append(szTemp);
-  }
+  //   const char *szTemp = _SaveColor(m_vTextColor[i]);
+  //   if (szTemp)
+  //     strBuffer.append(szTemp);
+  // }
 
-  return strBuffer.c_str();
+  // return strBuffer.c_str();
+  return nullptr;
 }
 
 void ColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
-  if (0 == m_nCount)
-    return;
+  // if (0 == m_nCount)
+  //   return;
 
-  int nRealState = (pDrawStruct->ds_renderbase.nState) & 0xFFFF;
-  if (nRealState >= m_nCount)
-    nRealState = 0;
+  // int nRealState = (pDrawStruct->ds_renderbase.nState) & 0xFFFF;
+  // if (nRealState >= m_nCount)
+  //   nRealState = 0;
 
-  DRAWTEXTPARAM param;
-  if (m_vTextColor[nRealState])
-    param.color = m_vTextColor[nRealState]->m_col;
-  param.prc = &pDrawStruct->ds_renderbase.rc;
-  param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
-                          ? m_nDrawTextFlag
-                          : pDrawStruct->nDrawTextFlag;
-  param.szText = pDrawStruct->szText;
-  pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_pRenderFont, &param);
+  // DRAWTEXTPARAM param;
+  // if (m_vTextColor[nRealState])
+  //   param.color = m_vTextColor[nRealState]->m_col;
+  // param.prc = &pDrawStruct->ds_renderbase.rc;
+  // param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
+  //                         ? m_nDrawTextFlag
+  //                         : pDrawStruct->nDrawTextFlag;
+  // param.szText = pDrawStruct->szText;
+  // pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_pRenderFont, &param);
 }
 IRenderFont *ColorListTextRender::GetRenderFont() { return m_pRenderFont; }
 
@@ -670,15 +674,15 @@ void ColorListTextRender::SetCount(int nCount) {
 }
 int ColorListTextRender::GetCount() { return (int)m_vTextColor.size(); }
 
-void ColorListTextRender::SetColor(int nIndex, COLORREF col) {
-  nIndex = nIndex & 0xFFFF;
-  if (nIndex >= m_nCount)
-    return;
+void ColorListTextRender::SetColor(int nIndex, Color col) {
+  // nIndex = nIndex & 0xFFFF;
+  // if (nIndex >= m_nCount)
+  //   return;
 
-  if (m_vTextColor[nIndex]) {
-    SAFE_RELEASE(m_vTextColor[nIndex]);
-  }
-  m_vTextColor[nIndex] = Color::CreateInstance(col);
+  // if (m_vTextColor[nIndex]) {
+  //   SAFE_RELEASE(m_vTextColor[nIndex]);
+  // }
+  // m_vTextColor[nIndex] = Color::CreateInstance(col);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -689,13 +693,13 @@ FontColorListTextRender::FontColorListTextRender(IFontColorListTextRender *p)
 }
 FontColorListTextRender::~FontColorListTextRender() { this->Clear(); }
 void FontColorListTextRender::Clear() {
-  for (int i = 0; i < m_nCount; i++) {
-    SAFE_RELEASE(m_vTextColor[i]);
-    SAFE_RELEASE(m_vTextFont[i]);
-  }
-  m_vTextFont.clear();
-  m_vTextColor.clear();
-  m_nCount = 0;
+  // for (int i = 0; i < m_nCount; i++) {
+  //   SAFE_RELEASE(m_vTextColor[i]);
+  //   SAFE_RELEASE(m_vTextFont[i]);
+  // }
+  // m_vTextFont.clear();
+  // m_vTextColor.clear();
+  // m_nCount = 0;
 }
 
 void FontColorListTextRender::OnSerialize(SerializeParam *pData) {
@@ -718,38 +722,39 @@ void FontColorListTextRender::OnSerialize(SerializeParam *pData) {
 }
 
 void FontColorListTextRender::LoadColor(const char *szText) {
-  if (!szText)
-    return;
+  // if (!szText)
+  //   return;
 
-  std::vector<std::string> vColors;
-  UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-  int nCount = (int)vColors.size();
+  // std::vector<std::string> vColors;
+  // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+  // int nCount = (int)vColors.size();
 
-  if (0 == m_nCount)
-    this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+  // if (0 == m_nCount)
+  //   this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
 
-  IColorRes *pColorRes = GetSkinColorRes();
-  if (!pColorRes)
-    return;
+  // IColorRes *pColorRes = GetSkinColorRes();
+  // if (!pColorRes)
+  //   return;
 
-  for (int i = 0; i < m_nCount && i < nCount; i++) {
-    if (!vColors[i].empty()) {
-      pColorRes->GetColor(vColors[i].c_str(), &m_vTextColor[i]);
-    }
-  }
+  // for (int i = 0; i < m_nCount && i < nCount; i++) {
+  //   if (!vColors[i].empty()) {
+  //     pColorRes->GetColor(vColors[i].c_str(), &m_vTextColor[i]);
+  //   }
+  // }
 }
 const char *FontColorListTextRender::GetColor() {
-  std::string &strBuffer = GetTempBufferString();
-  for (int i = 0; i < m_nCount; i++) {
-    if (i > 0)
-      strBuffer.push_back(XML_MULTI_SEPARATOR);
+  // std::string &strBuffer = GetTempBufferString();
+  // for (int i = 0; i < m_nCount; i++) {
+  //   if (i > 0)
+  //     strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-    const char *szTemp = _SaveColor(m_vTextColor[i]);
-    if (szTemp)
-      strBuffer.append(szTemp);
-  }
+  //   const char *szTemp = _SaveColor(m_vTextColor[i]);
+  //   if (szTemp)
+  //     strBuffer.append(szTemp);
+  // }
 
-  return strBuffer.c_str();
+  // return strBuffer.c_str();
+  return nullptr;
 }
 
 void FontColorListTextRender::LoadFont(const char *szText) {
@@ -853,26 +858,26 @@ void FontColorListTextRender::SetRenderFont(IRenderFont *pRenderFont) {
 }
 
 void FontColorListTextRender::SetCount(int nCount) {
-  this->Clear();
-  m_nCount = nCount;
+  // this->Clear();
+  // m_nCount = nCount;
 
-  for (int i = 0; i < m_nCount; i++) {
-    m_vTextColor.push_back(nullptr);
-    m_vTextFont.push_back(nullptr);
-  }
+  // for (int i = 0; i < m_nCount; i++) {
+  //   m_vTextColor.push_back(nullptr);
+  //   m_vTextFont.push_back(nullptr);
+  // }
 }
 
 int FontColorListTextRender::GetCount() { return m_nCount; }
 
 void FontColorListTextRender::SetColor(int nIndex, unsigned int col) {
-  nIndex = nIndex & 0xFFFF;
-  if (nIndex >= m_nCount)
-    return;
+  // nIndex = nIndex & 0xFFFF;
+  // if (nIndex >= m_nCount)
+  //   return;
 
-  if (m_vTextColor[nIndex]) {
-    SAFE_RELEASE(m_vTextColor[nIndex]);
-  }
-  m_vTextColor[nIndex] = Color::CreateInstance(col);
+  // if (m_vTextColor[nIndex]) {
+  //   SAFE_RELEASE(m_vTextColor[nIndex]);
+  // }
+  // m_vTextColor[nIndex] = Color::CreateInstance(col);
 }
 void FontColorListTextRender::SetFont(int nIndex, IRenderFont *pFont) {
   if (nIndex >= m_nCount)

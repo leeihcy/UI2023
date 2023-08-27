@@ -260,12 +260,12 @@ void SkiaRenderTarget::DrawPolyline(Point *lppt, int nCount, IRenderPen *pPen) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::GradientFillH(Rect *lprc, COLORREF colFrom,
-                                     COLORREF colTo) {
+void SkiaRenderTarget::GradientFillH(Rect *lprc, Color colFrom,
+                                     Color colTo) {
   //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
 }
-void SkiaRenderTarget::GradientFillV(Rect *lprc, COLORREF colFrom,
-                                     COLORREF colTo) {
+void SkiaRenderTarget::GradientFillV(Rect *lprc, Color colFrom,
+                                     Color colTo) {
   //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
 }
 

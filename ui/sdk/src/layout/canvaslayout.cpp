@@ -3,7 +3,7 @@
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/flags_attribute.h"
-#include "src/attribute/long_attribute.h"
+#include "src/attribute/int_attribute.h"
 #include "src/object/object.h"
 #include "src/util/DPI/dpihelper.h"
 

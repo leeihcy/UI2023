@@ -67,7 +67,7 @@ Object::~Object(void) {
     *m_ppOutRef = nullptr;
 
   if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain->Destroy();
     m_pIMapAttributeRemain = nullptr;
   }
 
@@ -355,7 +355,6 @@ void Object::LoadAttributes(bool bReload) {
                      strId.c_str(), m_pIMapAttributeRemain);
 
   SerializeParam data = {0};
-  data.pUIApplication = GetIUIApplication();
   data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = m_pIMapAttributeRemain;
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
@@ -368,7 +367,7 @@ void Object::LoadAttributes(bool bReload) {
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain->Destroy();
     m_pIMapAttributeRemain = nullptr;
   }
 }
@@ -379,7 +378,7 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
     return;
 
   if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain->Destroy();
     m_pIMapAttributeRemain = nullptr;
   }
   m_pIMapAttributeRemain = UICreateIMapAttribute();
@@ -414,7 +413,7 @@ IMapAttribute* Object::GetMapAttribute() {
 }
 void Object::ClearMapAttribute() {
   if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain->Destroy();
     m_pIMapAttributeRemain = nullptr;
   }
 }
@@ -1138,7 +1137,6 @@ void Object::InitDefaultAttrib() {
                      pMapAttrib);
 
   SerializeParam data = {0};
-  data.pUIApplication = GetIUIApplication();
   data.pSkinRes = m_pSkinRes->GetIResource();
   data.pMapAttrib = pMapAttrib;
   data.nFlags = SERIALIZEFLAG_LOAD;
@@ -1152,7 +1150,7 @@ void Object::InitDefaultAttrib() {
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain->Delete();
+    m_pIMapAttributeRemain->Destroy();
     m_pIMapAttributeRemain = nullptr;
   }
 }

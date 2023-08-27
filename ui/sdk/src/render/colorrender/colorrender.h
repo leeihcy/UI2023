@@ -8,7 +8,7 @@ namespace ui
 
 
 //
-// ±³¾°ÑÕÉ«+±ß¿òÑÕÉ«£¨Á½Õß¶¼ÊÇ¿ÉÑ¡µÄ£©
+// èƒŒæ™¯é¢œè‰²+è¾¹æ¡†é¢œè‰²ï¼ˆä¸¤è€…éƒ½æ˜¯å¯é€‰çš„ï¼‰
 //
 class ColorRender : public RenderBase
 {
@@ -29,8 +29,8 @@ public:
 	void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
 public:
-	void  SetBkColor(COLORREF col);
-    void  SetBorderColor(COLORREF col);
+	void  SetBkColor(Color col);
+    void  SetBorderColor(Color col);
     void  SetBorderRegion(const Rect* prc);
 
 public:
@@ -41,7 +41,7 @@ public:
     Rect  m_rcBorder;
 };
 
-// ÌØÓÃÓÚÄ³Ğ©¿Ø¼şĞèÒªÊ¹ÓÃÏµÍ³Ö÷ÌâÑÕÉ«±³¾°£¬µ±ÏµÍ³Ö÷Ìâ¸Ä±äÊ±£¬ÏàÓ¦µÄÑÕÉ«Ò²ĞèÒª¸Ä±ä 
+// ç‰¹ç”¨äºæŸäº›æ§ä»¶éœ€è¦ä½¿ç”¨ç³»ç»Ÿä¸»é¢˜é¢œè‰²èƒŒæ™¯ï¼Œå½“ç³»ç»Ÿä¸»é¢˜æ”¹å˜æ—¶ï¼Œç›¸åº”çš„é¢œè‰²ä¹Ÿéœ€è¦æ”¹å˜ 
 class SysColorRender : public /*Theme*/RenderBase
 {
 public:
@@ -63,7 +63,7 @@ public:
     void  SetBkColor(int nColorIndex);
     void  SetBorderColor(int nColorIndex);
 
-    // ÓÉÓÚ¸Ä³ÉÃ¿´ÎÖØĞÂ»ñÈ¡ÑÕÉ«Öµ£¬Òò´Ë²»ĞèÒªÏìÓ¦Ö÷Ìâ¸Ä±äµÄÏûÏ¢
+    // ç”±äºæ”¹æˆæ¯æ¬¡é‡æ–°è·å–é¢œè‰²å€¼ï¼Œå› æ­¤ä¸éœ€è¦å“åº”ä¸»é¢˜æ”¹å˜çš„æ¶ˆæ¯
 	// virtual const char* GetThemeName() { return nullptr; }
 	// virtual void  OnThemeChanged();
 
@@ -73,11 +73,11 @@ public:
 	int  m_nBorderColorIndex;
     REGION4  m_rcBorder;
 
-	// COLORREF    m_bkColor;     // ÓÉÓÚÔÚWM_THEMECHANGEDÏûÏ¢ÖĞ£¬Ö±½Óµ÷ÓÃGetSysColor»ñÈ¡µ½µÄÖµÈÔÈ»ÓĞ¿ÉÄÜÊÇ¾ÉµÄ
-	// COLORREF    m_borderColor; // Òò´ËÕâÀï·ÅÆú±£´æÑÕÉ«Öµ£¬¶øÊÇÃ¿´Î»æÖÆÊ±¶¼µ÷ÓÃGetSysColor
+	// Color    m_bkColor;     // ç”±äºåœ¨WM_THEMECHANGEDæ¶ˆæ¯ä¸­ï¼Œç›´æ¥è°ƒç”¨GetSysColorè·å–åˆ°çš„å€¼ä»ç„¶æœ‰å¯èƒ½æ˜¯æ—§çš„
+	// Color    m_borderColor; // å› æ­¤è¿™é‡Œæ”¾å¼ƒä¿å­˜é¢œè‰²å€¼ï¼Œè€Œæ˜¯æ¯æ¬¡ç»˜åˆ¶æ—¶éƒ½è°ƒç”¨GetSysColor
 };
 
-// ºáÏò½¥±äÑÕÉ«±³¾°
+// æ¨ªå‘æ¸å˜é¢œè‰²èƒŒæ™¯
 class GradientRender : public RenderBase
 {
 public:
@@ -127,7 +127,7 @@ public:
 
 
 //
-//	Ö±½ÓÊ¹ÓÃÑÕÉ«Öµ×÷Îª±³¾°
+//	ç›´æ¥ä½¿ç”¨é¢œè‰²å€¼ä½œä¸ºèƒŒæ™¯
 //
 class ColorListRender : public RenderBase
 {
@@ -148,7 +148,7 @@ public:
     void  OnSerialize(SerializeParam* pData);
     void  DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
 
-	void  SetStateColor(int nState, COLORREF colorBk, bool bSetBk, COLORREF colBorder, bool bSetBorder);
+	void  SetStateColor(int nState, Color colorBk, bool bSetBk, Color colBorder, bool bSetBorder);
 	
     void  SetCount(int n);
     int  GetCount();
