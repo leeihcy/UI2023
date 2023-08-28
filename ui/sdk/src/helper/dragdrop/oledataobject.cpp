@@ -106,8 +106,8 @@ IDragFeedback*  OleDataObject::GetDragFeedback()
     return m_pDragFeedback;
 }
 
-// ×¢£ºÈç¹ûÆäËü³ÌÐòÕ³ÌùµÄ»°£¬¸Ãº¯Êý¿ÉÄÜÔÚÆäËüÏß³ÌÖÐ±»µ÷ÓÃ
-//     µ«´ÓÄ¿Ç°À´¿´£¬SetData/GetDataºÃÏñ²»»áÍ¬Ê±·¢Éú£¬Òò´ËÃ»ÓÐÌí¼ÓÍ¬²½»úÖÆ
+// æ³¨ï¼šå¦‚æžœå…¶å®ƒç¨‹åºç²˜è´´çš„è¯ï¼Œè¯¥å‡½æ•°å¯èƒ½åœ¨å…¶å®ƒçº¿ç¨‹ä¸­è¢«è°ƒç”¨
+//     ä½†ä»Žç›®å‰æ¥çœ‹ï¼ŒSetData/GetDataå¥½åƒä¸ä¼šåŒæ—¶å‘ç”Ÿï¼Œå› æ­¤æ²¡æœ‰æ·»åŠ åŒæ­¥æœºåˆ¶
 HRESULT STDMETHODCALLTYPE OleDataObject::GetData(FORMATETC *pformatetcIn, STGMEDIUM *pmedium)
 {
 	if (nullptr == pformatetcIn || nullptr == pmedium)
@@ -126,7 +126,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::GetData(FORMATETC *pformatetcIn, STGMED
 			pItem->formatetc.dwAspect == pformatetcIn->dwAspect &&
 			0 != (pformatetcIn->tymed&pItem->formatetc.tymed) )
 		{
-            if (pItem->stgmedium.tymed == TYMED_NULL)  // ÅÐ¶ÏÊÇ·ñÊÇÑÓ³ÙÌá½»
+            if (pItem->stgmedium.tymed == TYMED_NULL)  // åˆ¤æ–­æ˜¯å¦æ˜¯å»¶è¿Ÿæäº¤
             {
                 if (!m_pDataObjectSource)
                     return DV_E_FORMATETC;
@@ -187,7 +187,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::SetData(FORMATETC *pformatetc, STGMEDIU
 		return E_INVALIDARG;
 
 	if (pformatetc->tymed != pmedium->tymed && 
-        pmedium->tymed != TYMED_NULL) // ²»ÊÇÑÓ³ÙÌá½»
+        pmedium->tymed != TYMED_NULL) // ä¸æ˜¯å»¶è¿Ÿæäº¤
 		return E_INVALIDARG;
 
 	HRESULT hr = this->QueryGetData(pformatetc);
@@ -216,7 +216,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::SetData(FORMATETC *pformatetc, STGMEDIU
 	return 0;
 }
 
-// ÔÚOleSetClipboard, SetClipboardFormatsÊ±½«»áµ÷ÓÃ
+// åœ¨OleSetClipboard, SetClipboardFormatsæ—¶å°†ä¼šè°ƒç”¨
 HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(unsigned int dwDirection, IEnumFORMATETC **ppenumFormatEtc)
 {
 	if (nullptr == ppenumFormatEtc)
@@ -229,7 +229,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::EnumFormatEtc(unsigned int dwDirection,
 	return 0;
 }
 
-// Êý¾Ý¸Ä±äµÄÍ¨Öª»úÖÆ£¬²»ÊµÏÖ
+// æ•°æ®æ”¹å˜çš„é€šçŸ¥æœºåˆ¶ï¼Œä¸å®žçŽ°
 HRESULT STDMETHODCALLTYPE OleDataObject::DAdvise(FORMATETC *pformatetc, unsigned int advf, IAdviseSink *pAdvSink, unsigned int *pdwConnection)
 {
 return E_NOTIMPL;
@@ -359,8 +359,8 @@ HGLOBAL _AfxCopyGlobalMemory(HGLOBAL hDest, HGLOBAL hSource)
 }
 BOOL _AfxCopyStgMedium(CLIPFORMAT cfFormat, LPSTGMEDIUM lpDest, LPSTGMEDIUM lpSource)
 {
-    // nnd! ÏµÍ³¸øÎÒÃÇ´«¹ýÀ´µÄÊý¾Ý¾ÓÈ»²»¸É¾»£¬µÃ×Ô¼ºÏÈÖØÖÃÏÂ¡£Òª²»È»µÈ×Å±ÀÀ£°É
-    // ÓôÃÆÁËÎÒÒ»Ìì²ÅÕÒµ½ÕâÀï¡£ÁíÍâÒ²Ö»ÄÜ¹ÖMFCµÄ_AfxCopyStgMediumÊµÏÖÓÐÎÊÌâ¡£
+    // nnd! ç³»ç»Ÿç»™æˆ‘ä»¬ä¼ è¿‡æ¥çš„æ•°æ®å±…ç„¶ä¸å¹²å‡€ï¼Œå¾—è‡ªå·±å…ˆé‡ç½®ä¸‹ã€‚è¦ä¸ç„¶ç­‰ç€å´©æºƒå§
+    // éƒé—·äº†æˆ‘ä¸€å¤©æ‰æ‰¾åˆ°è¿™é‡Œã€‚å¦å¤–ä¹Ÿåªèƒ½æ€ªMFCçš„_AfxCopyStgMediumå®žçŽ°æœ‰é—®é¢˜ã€‚
     lpDest->pUnkForRelease = nullptr;
     lpDest->hGlobal = nullptr;
 

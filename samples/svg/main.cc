@@ -24,13 +24,13 @@ public:
   }
 
   void create_ui() {
-    ui::svg::SvgPtr svg(m_window->GetResource());
+    ui::SvgPtr svg(m_window->GetResource());
     svg->AddAttribute(XML_LAYOUT_ITEM_LEFT, "0");
     svg->AddAttribute(XML_LAYOUT_ITEM_TOP, "0");
     svg->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
     svg->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
     svg->InitDefaultAttrib();
-    m_svg = static_cast<ui::svg::ISvg*>(m_window->AddChild(svg.release()));
+    m_svg = static_cast<ui::ISvg*>(m_window->AddChild(svg.release()));
   }
 
   void test1() {
@@ -47,7 +47,22 @@ public:
 
     m_svg->Load(buffer);
   }
-
+  void test_viewbox() {
+    static const char* buffer = R"(
+      <svg width="150" height="150" viewBox="0 0 3000 3000" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="100%" height="100%"/>
+        <circle cx="50%" cy="50%" r="40" fill="white"/>
+      </svg>
+      <svg width="150" height="150" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="100%" height="100%"/>
+        <circle cx="50%" cy="50%" r="40" fill="white"/>
+      </svg>	
+      <svg width="150" height="150" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="100%" height="100%"/>
+        <circle cx="50%" cy="50%" r="40" fill="white"/>
+      </svg>
+    )";
+  }
   void test2() {
     static const char* buffer = R"(
       <?xml version="1.0" standalone="no"?>
@@ -80,12 +95,12 @@ public:
 
 private:
   ui::WindowPtr m_window;
-  ui::svg::ISvg* m_svg;
+  ui::ISvg* m_svg;
 };
 
 int main() {
   ui::ApplicationPtr app;
-  ui::svg::RegisterObjects(app.get());
+  ui::SvgRegisterObjects(app.get());
 
   {
     MainWindow main_window(app->RootBundle());

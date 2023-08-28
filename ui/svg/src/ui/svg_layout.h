@@ -3,7 +3,7 @@
 
 #include "sdk/include/interface/ilayout.h"
 
-namespace ui { namespace svg {
+namespace ui {
 
 class SvgLayoutParam : public ui::ILayoutParam {
 public:
@@ -57,6 +57,6 @@ private:
   ui::IObject* m_bind_object = nullptr;
 };
 
-}}
+}
 
 #endif

@@ -4,6 +4,8 @@
 #include "src/element/element.h"
 #include "sdk/include/util/rect.h"
 
+namespace svg {
+  
 class Rect : public Element {
 public:
   void Render(RenderContext& context) override;
@@ -24,4 +26,5 @@ private:
   ui::Length m_ry;
 };
 
+}
 #endif

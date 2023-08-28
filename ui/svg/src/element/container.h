@@ -3,6 +3,8 @@
 
 #include "element.h"
 
+namespace svg {
+
 class Container : public Element {
 public:
   void AddChild(std::unique_ptr<Element>) override;
@@ -16,4 +18,5 @@ public:
   std::vector<std::unique_ptr<Element>> m_children;
 };
 
+}
 #endif

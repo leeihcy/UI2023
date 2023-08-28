@@ -2,6 +2,7 @@
 #define _UI_SVG_SRC_ELEMENT_CIRCLE_CIRCLE_H_
 
 #include "src/element/element.h"
+namespace svg {
 
 class Circle : public Element {
 public:
@@ -16,4 +17,5 @@ private:
   ui::Length m_r;
 };
 
+}
 #endif

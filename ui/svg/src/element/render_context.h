@@ -17,6 +17,8 @@ struct RenderContext {
 
   int ResolveX(ui::Length& x);
   int ResolveY(ui::Length& y);
+  int ResolveRX(ui::Length& rx);
+  int ResolveRY(ui::Length& ry);
 };
 
 #endif

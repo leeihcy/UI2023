@@ -3,7 +3,6 @@
 #include "sdk/include/interface/iobject.h"
 
 namespace ui {
-namespace svg {
 
 SvgLayoutParam::SvgLayoutParam(ui::IObject *p) { m_obj = p; }
 
@@ -104,5 +103,4 @@ ILayoutParam *SvgLayout::CreateLayoutParam(IObject *pObj) {
 bool SvgLayout::IsDirty() { return m_dirty; }
 void SvgLayout::SetDirty(bool b) { m_dirty = b; }
 
-} // namespace svg
 } // namespace ui

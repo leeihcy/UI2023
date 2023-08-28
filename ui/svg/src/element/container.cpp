@@ -1,5 +1,7 @@
 #include "container.h"
 
+namespace svg {
+
 void Container::AddChild(std::unique_ptr<Element> p) {
   m_children.push_back(std::move(p));
 }
@@ -14,4 +16,8 @@ void Container::Render(RenderContext& context) {
     child->Render(c);
   }
 }
-void Container::SetAttribute(ui::SerializeParam& data) {}
+void Container::SetAttribute(ui::SerializeParam& data) {
+  Element::SetAttribute(data);
+}
+
+}

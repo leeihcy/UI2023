@@ -6,7 +6,6 @@
 #include "src/private_inc.h"
 
 namespace ui {
-namespace svg {
 
 class SvgMeta : public MetaImpl<ISvg> {
 public:
@@ -30,6 +29,5 @@ public:
   }
 };
 
-} // namespace svg
 } // namespace ui
 #endif

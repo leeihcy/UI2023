@@ -1,12 +1,9 @@
 #include "svg.h"
 #include "svg_layout.h"
 #include "svg_meta.h"
-#include "svg_dom.h"
-
-bool Load(ui::svg::Svg* pthis, const char *stream);
+#include "src/element/dom.h"
 
 namespace ui {
-namespace svg {
 
 Svg::Svg(ISvg *p) : ui::MessageProxy(p) {
   m_pISvg = p;
@@ -47,8 +44,10 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
 
   // 默认黑色
   context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
-
-  m_root.Render(context);
+  
+  if (m_root) {
+    m_root->Render(context);
+  }
 }
 
 void Svg::onEraseBkgnd(ui::IRenderTarget *rt) {
@@ -63,11 +62,13 @@ void Svg::SetAttribute(ui::SerializeParam& data) {}
 
 
 bool Svg::Load(const char *stream) {
-  m_root.RemoveAll();
+  if (m_root) {
+    m_root.reset();
+  }
 
-  SvgDom dom(*this);
-  return dom.Parse(stream);
+  ::svg::Dom dom;
+  m_root = dom.Parse(stream);
+  return !!m_root;
 }
 
-} // namespace svg
 } // namespace ui

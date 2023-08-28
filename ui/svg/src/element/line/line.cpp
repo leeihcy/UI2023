@@ -1,6 +1,8 @@
 #include "line.h"
 #include "sdk/include/interface/iattribute.h"
 
+namespace svg {
+
 void Line::Render(RenderContext &context) {
   int x1 = context.ResolveX(m_x1);
   int y1 = context.ResolveY(m_y1);
@@ -19,4 +21,6 @@ void Line::SetAttribute(ui::SerializeParam &data) {
   s.AddLength("x2", m_x2);
   s.AddLength("y1", m_y1);
   s.AddLength("y2", m_y2);
+}
+
 }

@@ -30,6 +30,9 @@ Color ColorAttribute::parse_color(const char* text) {
   }
   // id()
   else if (text[0] == 'i' && text[1] == 'd' && text[2] == '(' && text[last_index] == ')') {
+    if (!m_pSkinRes) {
+      return Color::transparent();
+    }
     std::string str(text+2, length-3);
     ColorRes &colorRes = m_pSkinRes->GetColorRes();
     return colorRes.GetColor(str.c_str(), nullptr);
@@ -56,18 +59,14 @@ Color ColorAttribute::parse_color(const char* text) {
 }
 
 void ColorAttribute::Set(const char *szColorId) {
-  if (!m_pSkinRes) {
-    UIASSERT(0);
-    return;
-  }
-
+  
 //   if (m_ppBindValue) {
 //     if (!szColorId)
 //       return;
-
+      // if (m_pSkinRes) {
 //     ColorRes &colorRes = m_pSkinRes->GetColorRes();
 //     colorRes.GetColor(szColorId, m_ppBindValue);
-
+//     }
 // // #ifdef EDITOR_MODE
 // //     if (*m_ppBindValue) {
 // //       (*m_ppBindValue)->SetResId(szColorId);

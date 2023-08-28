@@ -2,6 +2,8 @@
 #include "SkRRect.h"
 #include "sdk/include/interface/iattribute.h"
 
+namespace svg {
+
 void Circle::Render(RenderContext &context) {
   int cx = context.ResolveX(m_cx);
   int cy = context.ResolveY(m_cy);
@@ -24,4 +26,6 @@ void Circle::SetAttribute(ui::SerializeParam &data) {
   s.AddLength("cx", m_cx);
   s.AddLength("cy", m_cy);
   s.AddLength("r", m_r);
+}
+
 }

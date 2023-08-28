@@ -5,12 +5,16 @@
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/util/color.h"
 
+namespace svg {
+  
 class Element {
 public:
   virtual ~Element() {}
   virtual void Render(RenderContext& context);
   virtual void SetAttribute(ui::SerializeParam& data);
+  virtual void SetDomData(const char* data) {};
   virtual void AddChild(std::unique_ptr<Element>) {};
+  
 
 protected:
  
@@ -30,4 +34,5 @@ protected:
   // 
 };
 
+}
 #endif

@@ -3,13 +3,11 @@
 
 #include "sdk/include/interface/imessage.h"
 #include "include/interface/isvg.h"
-#include "src/element/container.h"
+#include "src/element/svg/svg.h"
 
 
 namespace ui { 
 struct SerializeParam;
-
-namespace svg {
 
 class Svg : public ui::MessageProxy {
 public:
@@ -19,8 +17,6 @@ public:
 
 public:
   void onRouteMessage(Msg* msg);
-
-  Container* AsRoot() { return &m_root; }
 
   bool Load(const char* stream);
   void SetAttribute(ui::SerializeParam& data);
@@ -32,7 +28,7 @@ protected:
 
 private:
   ISvg* m_pISvg;
-  Container m_root;
+  std::unique_ptr<svg::Svg> m_root;
 
   int m_width = 0;
   int m_height = 0;
@@ -41,6 +37,6 @@ private:
   Rect m_view_box;
 };
 
-}}
+}
 
 #endif

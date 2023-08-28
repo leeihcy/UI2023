@@ -3,6 +3,8 @@
 
 #include "src/element/element.h"
 
+namespace svg {
+
 class Line : public Element {
 public:
   void Render(RenderContext& context) override;
@@ -17,4 +19,5 @@ private:
   ui::Length m_y2;
 };
 
+}
 #endif

@@ -5,11 +5,9 @@
 namespace ui { 
 struct IApplication;
 
-namespace svg {
-
 extern "C"
-void UISVGAPI RegisterObjects(ui::IApplication* app);
+void UISVGAPI SvgRegisterObjects(ui::IApplication* app);
 
-}}
+}
 
 #endif

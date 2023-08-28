@@ -4,28 +4,27 @@
 //
 // layout="stack" <--> 2
 //
-namespace ui
-{
+namespace ui {
 
-class EnumAttribute : public IntAttribute
-{
+class EnumAttribute : public IntAttribute {
 public:
-    EnumAttribute();
-    ~EnumAttribute();
-    IEnumAttribute*  GetIEnumAttribute();
+  EnumAttribute();
+  ~EnumAttribute();
+  IEnumAttribute *GetIEnumAttribute();
 
-    virtual const char*  Get() override; 
-    virtual void  Set(const char*) override;
-	virtual void  Editor(SerializeParam* pData, AttributeEditorProxy* p, EditorAttributeFlag e) override;
+  virtual const char *Get() override;
+  virtual void Set(const char *) override;
+  virtual void Editor(SerializeParam *pData, AttributeEditorProxy *p,
+                      EditorAttributeFlag e) override;
 
 public:
-    EnumAttribute*  AddOption(int, const char*);
-	EnumAttribute*  FillGraphicsRenderLibraryData();
+  EnumAttribute *AddOption(int, const char *);
+  EnumAttribute *FillGraphicsRenderLibraryData();
 
 private:
-    IEnumAttribute*  m_pIEnumAttribute;
+  IEnumAttribute *m_pIEnumAttribute;
 };
 
-AttributeBase*  CreateEnumAttribute();
+AttributeBase *CreateEnumAttribute();
 
-}
+} // namespace ui

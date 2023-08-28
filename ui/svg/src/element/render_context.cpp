@@ -12,3 +12,12 @@ int RenderContext::ResolveY(ui::Length& y) {
   }
   return y.value;
 }
+
+int RenderContext::ResolveRX(ui::Length& rx) {
+  int r = ResolveX(rx);
+  return std::min(r, svg_size.width / 2);
+}
+int RenderContext::ResolveRY(ui::Length& ry) {
+  int r = ResolveY(ry);
+  return std::min(r, svg_size.height / 2);
+}
