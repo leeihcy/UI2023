@@ -14,7 +14,7 @@ void Line::Render(RenderContext &context) {
 }
 
 void Line::SetAttribute(ui::SerializeParam &data) {
-  Element::SetAttribute(data);
+  Shape::SetAttribute(data);
   
   ui::AttributeSerializerWrap s(&data, "Line");
   s.AddLength("x1", m_x1);

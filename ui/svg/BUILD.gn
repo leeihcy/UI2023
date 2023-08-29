@@ -36,6 +36,7 @@ shared_library("uisvg") {
       "src/element/circle/circle.cpp",
       "src/element/ellipse/ellipse.cpp",
       "src/element/line/line.cpp",
+      "src/element/path/path.cpp",
       "src/element/text/text.cpp",
       "src/element/svg/svg.cpp",
       "src/element/dom.cpp",

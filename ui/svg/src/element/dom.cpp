@@ -3,12 +3,14 @@
 #include "src/element/ellipse/ellipse.h"
 #include "src/element/line/line.h"
 #include "src/element/rect/rect.h"
+#include "src/element/path/path.h"
 #include "src/element/svg/svg.h"
 #include "src/element/text/text.h"
 #include "src/element/polyline/polyline.h"
 
 #include "3rd/pugixml/pugixml.hpp"
 #include "sdk/include/interface/imapattr.h"
+#include "sdk/include/macro/helper.h"
 #include "sdk/include/uiapi.h"
 
 namespace svg {
@@ -66,6 +68,10 @@ Element *create_element(const char *name) {
     Polyline* p = new svg::Polyline();
     p->AsPolygon();
     element = p;
+  } else if (strcmp("path", name) == 0) {
+    element = new svg::Path();
+  } else {
+    UIASSERT(false);
   }
   return element;
 }
