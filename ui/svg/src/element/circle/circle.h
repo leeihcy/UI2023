@@ -1,10 +1,10 @@
 #ifndef _UI_SVG_SRC_ELEMENT_CIRCLE_CIRCLE_H_
 #define _UI_SVG_SRC_ELEMENT_CIRCLE_CIRCLE_H_
 
-#include "src/element/element.h"
+#include "src/element/shape.h"
 namespace svg {
 
-class Circle : public Element {
+class Circle : public Shape {
 public:
   void Render(RenderContext& context) override;
   void SetAttribute(ui::SerializeParam& data) override;

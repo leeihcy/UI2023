@@ -12,6 +12,8 @@ class ImageData;
 struct IRenderFont;
 struct IGpuRenderLayer;
 struct Rect;
+struct Point;
+struct Size;
 
 class C9Region;
 

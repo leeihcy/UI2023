@@ -47,6 +47,10 @@ IMessage *Message::GetIMessage() {
 
 IMeta *Message::GetMeta() { return m_meta; }
 
+void Message::RouteMessage(Msg* msg) {
+  m_meta->RouteMessage(m_pIMessage, msg);
+}
+
 void Message::connect(const char *event_name, slot<void(Event *)> &&s) {
   if (!event_name || !event_name[0]) {
     return;

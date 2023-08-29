@@ -106,6 +106,8 @@ struct UIAPI IObject : public IMessage {
   void Invalidate();
   void Invalidate(const Rect *prcObj);
   void Invalidate(Rect *prcObj, int nCount);
+  void UpdateLayout();
+  
   void SetObjectPos(int x, int y, int cx, int cy, int nFlag);
   void SetObjectPos(const Rect *prc, int nFlag);
 

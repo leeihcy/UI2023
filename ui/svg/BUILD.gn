@@ -39,6 +39,8 @@ shared_library("uisvg") {
       "src/element/text/text.cpp",
       "src/element/svg/svg.cpp",
       "src/element/dom.cpp",
+      "src/element/shape.cpp",
+      "src/element/polyline/polyline.cpp",
       
       "src/ui/isvg.cpp",
       "src/ui/svg.cpp",

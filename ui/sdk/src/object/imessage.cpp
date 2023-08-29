@@ -25,7 +25,7 @@ void IMessage::connect(const char *event, slot<void(Event *)> &&s) {
 IMeta *IMessage::GetMeta() { return m_pImpl->GetMeta(); }
 
 void IMessage::RouteMessage(Msg* msg) {
-  m_pImpl->GetMeta()->RouteMessage(this, msg);
+  m_pImpl->RouteMessage(msg);
 }
 
 bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {

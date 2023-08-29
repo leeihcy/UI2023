@@ -11,11 +11,6 @@ public:
   Panel(IPanel *p);
   ~Panel();
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_GETDESIREDSIZE(OnGetDesiredSize)
-  UIMSG_HANDLER_EX(UI_MSG_GETLAYOUT, OnGetLayoutPtr)
-  UI_END_MSG_MAP_CHAIN_PARENT(Object)
-
   void onRouteMessage(ui::Msg *msg);
 
   IPanel *GetIPanel() { return m_pIPanel; }
@@ -38,9 +33,8 @@ protected:
   void onEraseBkgnd(IRenderTarget *);
   void onPaint(IRenderTarget *pRenderTarget);
   void onPostPaint(IRenderTarget *pRenderTarget);
-  long OnGetLayoutPtr(unsigned int uMsg, long wParam, long lParam);
   void onSerialize(SerializeParam *pData);
-  void OnGetDesiredSize(Size *pSize); 
+  void onGetDesiredSize(Size *pSize); 
 protected:
   IPanel *m_pIPanel;
   ILayout *m_pLayout;

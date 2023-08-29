@@ -218,7 +218,9 @@ Size CanvasLayoutParam::CalcDesiredSize() {
     size.height = this->m_nConfigHeight;
   } else {
     // 获取子对象所需要的空间
-    m_pObj->SendMessage(UI_MSG_GETDESIREDSIZE, (llong)&size);
+    GetDesiredSizeMessage msg;
+    m_pObj->RouteMessage(&msg);
+    size = msg.size;
 
     // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
     if (this->m_nConfigWidth != AUTO)

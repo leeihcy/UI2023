@@ -5,6 +5,7 @@
 #include "src/element/rect/rect.h"
 #include "src/element/svg/svg.h"
 #include "src/element/text/text.h"
+#include "src/element/polyline/polyline.h"
 
 #include "3rd/pugixml/pugixml.hpp"
 #include "sdk/include/interface/imapattr.h"
@@ -38,7 +39,7 @@ void Dom::scan_node(Element *parent, pugi::xml_node &node) {
     }
 
     std::unique_ptr<Element> e = handle_element(child);
-    if (parent) {
+    if (e && parent) {
       parent->AddChild(std::move(e));
     }
     child = child.next_sibling();
@@ -59,6 +60,12 @@ Element *create_element(const char *name) {
     element = new svg::Circle();
   } else if (strcmp("text", name) == 0) {
     element = new svg::Text();
+  } else if (strcmp("polyline", name) == 0) {
+    element = new svg::Polyline();
+  } else if (strcmp("polygon", name) == 0) {
+    Polyline* p = new svg::Polyline();
+    p->AsPolygon();
+    element = p;
   }
   return element;
 }

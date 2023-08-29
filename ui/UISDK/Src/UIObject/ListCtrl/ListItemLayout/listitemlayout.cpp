@@ -191,7 +191,10 @@ void ListCtrlItemVariableHeightLayout::Arrange(IListItemBase* pStartToArrange, S
         IListItemBase* pItem = m_pIListCtrlBase->FindVisibleItemFrom(nullptr);
         while (pItem)
         {
-            UISendMessage(pItem, UI_MSG_GETDESIREDSIZE, (WPARAM)&sizeItem);
+            GetDesiredSizeMessage msg;
+            pItem->RouteMessage(&msg);
+            sizeItem = msg.size;
+
             if (sizeItem.cx > nMaxDisiredWidth)
                 nMaxDisiredWidth = sizeItem.cx;
 

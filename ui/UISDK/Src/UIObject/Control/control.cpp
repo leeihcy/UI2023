@@ -190,8 +190,9 @@ void Control::TryUpdateLayoutOnContentChanged()
 		if (!parent)
 			break;
 
-		UI::ILayout* pLayout = (UI::ILayout*)
-			UISendMessage(parent, UI_MSG_GETLAYOUT);
+    GetLayoutMessage msg;
+    parent->RouteMessage(&msg);
+		UI::ILayout* pLayout = msg.layout;
 		if (!pLayout)
 			break;
 

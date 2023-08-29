@@ -208,6 +208,9 @@ struct UIAPI IRectAttribute {
   IRectAttribute(RectAttribute *);
   IRectAttribute *AsData();
 
+  IRectAttribute *SetCompatibleKey(const char* key);
+  IRectAttribute *SetDefault(Rect);
+
   const char *GetKey();
   const char *GetDesc();
   const char *GetGroupName();

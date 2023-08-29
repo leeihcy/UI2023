@@ -24,7 +24,7 @@
 using namespace ui;
 
 #ifdef _DEBUG
-//  ±ÜÃâÓĞÎ´ÕıÈ·ÊÍ·ÅµÄ´°¿Ú¶ÔÏó£¬Ôì³ÉÄÚ´æĞ¹Â¶
+//  é¿å…æœ‰æœªæ­£ç¡®é‡Šæ”¾çš„çª—å£å¯¹è±¡ï¼Œé€ æˆå†…å­˜æ³„éœ²
 class WindowBaseDebug
 {
 public:
@@ -61,7 +61,7 @@ m_oMouseManager(*this)
 
 	memset(&m_windowStyle, 0, sizeof(m_windowStyle));
 
-	// È¡ÏûPanel»ù±¾ÖĞµÄÍ¸Ã÷ÊôĞÔ
+	// å–æ¶ˆPanelåŸºæœ¬ä¸­çš„é€æ˜å±æ€§
 	OBJSTYLE s = {0};
 	s.default_transparent = 1;
 	ModifyObjectStyle(0, &s);
@@ -75,8 +75,8 @@ WindowBase::~WindowBase()
 	WindowBaseDebug::Dec();
 #endif
 
-	UIASSERT( !IsWindow(m_hWnd) );          // È·±£´°¿ÚÒÑ±»Ïú»Ù
-	UIASSERT( nullptr == this->m_oldWndProc ); // È·±£ÒÑ¾­È¡Ïû×ÓÀà»¯
+	UIASSERT( !IsWindow(m_hWnd) );          // ç¡®ä¿çª—å£å·²è¢«é”€æ¯
+	UIASSERT( nullptr == this->m_oldWndProc ); // ç¡®ä¿å·²ç»å–æ¶ˆå­ç±»åŒ–
 	m_hWnd = nullptr;
 
 	SAFE_RELEASE(m_pDefaultFont);
@@ -86,29 +86,29 @@ WindowBase::~WindowBase()
 
 //	[public] bool Attach( HWND hWnd )
 //
-//	Ä¿µÄ£ººÍÒ»¸öÏÖÓĞµÄ´°¿Ú½øĞĞ¹ØÁª£¬¶Ô¸Ã´°¿Ú½øĞĞ×ÓÀà»¯²Ù×÷
+//	ç›®çš„ï¼šå’Œä¸€ä¸ªç°æœ‰çš„çª—å£è¿›è¡Œå…³è”ï¼Œå¯¹è¯¥çª—å£è¿›è¡Œå­ç±»åŒ–æ“ä½œ
 //
-//	²ÎÊı£º
+//	å‚æ•°ï¼š
 //		ID
-//			[in]	UI´°¿ÚÔÚxmlÖĞµÄID£¬ÓÃÓÚ¼ÓÔØ×Ó¿Ø¼ş
+//			[in]	UIçª—å£åœ¨xmlä¸­çš„IDï¼Œç”¨äºåŠ è½½å­æ§ä»¶
 //
 //		hWnd
-//			[in]	Òª½øĞĞ¹ØÁªµÄ´°¿Ú¾ä±ú
+//			[in]	è¦è¿›è¡Œå…³è”çš„çª—å£å¥æŸ„
 //	
-//	·µ»Ø£º³É¹¦·µ»Øtrue£¬Ê§°Ü·µ»Øfalse
+//	è¿”å›ï¼šæˆåŠŸè¿”å›trueï¼Œå¤±è´¥è¿”å›false
 //
-//	±¸×¢£ºµ÷ÓÃ¸Ãº¯ÊıµÄÇé¿öÊÇ£ºÓĞÒ»¸ö´°¿Ú£¨ÀıÈçÅÉÉú×ÔCDialog£¬¶ø²»ÊÇÒ»¸öUIµÄwindowÀà£©£¬
-//		  µ«ËüÈ´ÏëÊ¹ÓÃÎÒÃÇµÄUI¿Ø¼ş£¬Õâ¸öÊ±ºòĞèÒª²ÉÓÃÕâ¸ö
+//	å¤‡æ³¨ï¼šè°ƒç”¨è¯¥å‡½æ•°çš„æƒ…å†µæ˜¯ï¼šæœ‰ä¸€ä¸ªçª—å£ï¼ˆä¾‹å¦‚æ´¾ç”Ÿè‡ªCDialogï¼Œè€Œä¸æ˜¯ä¸€ä¸ªUIçš„windowç±»ï¼‰ï¼Œ
+//		  ä½†å®ƒå´æƒ³ä½¿ç”¨æˆ‘ä»¬çš„UIæ§ä»¶ï¼Œè¿™ä¸ªæ—¶å€™éœ€è¦é‡‡ç”¨è¿™ä¸ª
 //
 
 //
-//	Ôö¼ÓÒ»¸ö¿Ø¼şµÄÍ¨ÖªÕßÎª×Ô¼º£¬¼´µ±Õâ¸ö¿Ø¼şÓĞÊÂ¼ş·¢ÉúÊ±£¬½«ÊÂ¼şÍ¨ÖªÎÒ
+//	å¢åŠ ä¸€ä¸ªæ§ä»¶çš„é€šçŸ¥è€…ä¸ºè‡ªå·±ï¼Œå³å½“è¿™ä¸ªæ§ä»¶æœ‰äº‹ä»¶å‘ç”Ÿæ—¶ï¼Œå°†äº‹ä»¶é€šçŸ¥æˆ‘
 //
 //	Parameter
 //		idPath
-//			[in]	ÒªÉèÖÃµÄ¿Ø¼şID£¬Èçwindow/panel/loginbtn£¬ÄÇÃ´idPathÓ¦Îª panel/loginbtn
+//			[in]	è¦è®¾ç½®çš„æ§ä»¶IDï¼Œå¦‚window/panel/loginbtnï¼Œé‚£ä¹ˆidPathåº”ä¸º panel/loginbtn
 //		nNotifyMapID
-//			[in]	Í¨ÖªÊÂ¼şµÄ´¦ÀíID£¬¼´ProcessMessageµÄµÚ¶ş¸ö²ÎÊı
+//			[in]	é€šçŸ¥äº‹ä»¶çš„å¤„ç†IDï¼Œå³ProcessMessageçš„ç¬¬äºŒä¸ªå‚æ•°
 //
 // void WindowBase::Control_NotifyMe( const String&  idPath, int nNotifyMapID )
 // {
@@ -118,7 +118,7 @@ void WindowBase::Control_NotifyMe( Object*  pObj, int nNotifyMapID )
 {
 	if( nullptr == pObj )
 	{
-		UI_LOG_ERROR( _T("Window::Control_NotifyMe, ÎŞĞ§µÄ²ÎÊı pObj ") );
+		UI_LOG_ERROR( _T("Window::Control_NotifyMe, æ— æ•ˆçš„å‚æ•° pObj ") );
 		return ;
 	}
 
@@ -165,7 +165,7 @@ void  WindowBase::DestroyWindow()
 	if (m_hWnd)
 	{
 		BOOL bRet = ::DestroyWindow(m_hWnd);
-		UIASSERT(bRet); // ¼ì²é¸Ã´°¿ÚÊÇ·ñÊÇ¸ÃÏß³Ì´´½¨µÄ
+		UIASSERT(bRet); // æ£€æŸ¥è¯¥çª—å£æ˜¯å¦æ˜¯è¯¥çº¿ç¨‹åˆ›å»ºçš„
 
         set_hwnd(nullptr);
 	}
@@ -180,7 +180,7 @@ bool WindowBase::Create(const wchar_t* szId, HWND hWndParent, RECT* prc, long lS
 		return false;
 	}
 
-	//	´´½¨´°¿Ú¾ä±ú
+	//	åˆ›å»ºçª—å£å¥æŸ„
 	CREATESTRUCT cs;
 	::ZeroMemory(&cs, sizeof(CREATESTRUCT));
 
@@ -208,7 +208,7 @@ bool WindowBase::Create(const wchar_t* szId, HWND hWndParent, RECT* prc, long lS
     else
     {
 	    cs.x = cs.y  = 0;
-	    cs.cx = cs.cy = CW_USEDEFAULT;  //500; ÕâÀï²»ÄÜÖ±½ÓĞ´Ò»¸öÖµ¡£ÓĞ¿ÉÄÜ´°¿ÚÅäÖÃµÄÒ²ÊÇÕâ¸ö´óĞ¡£¬½«µ¼ÖÂÊÕ²»µ½WM_SIZEÏûÏ¢£¬²¼¾ÖÊ§°Ü
+	    cs.cx = cs.cy = CW_USEDEFAULT;  //500; è¿™é‡Œä¸èƒ½ç›´æ¥å†™ä¸€ä¸ªå€¼ã€‚æœ‰å¯èƒ½çª—å£é…ç½®çš„ä¹Ÿæ˜¯è¿™ä¸ªå¤§å°ï¼Œå°†å¯¼è‡´æ”¶ä¸åˆ°WM_SIZEæ¶ˆæ¯ï¼Œå¸ƒå±€å¤±è´¥
     }
 
     UISendMessage(this, UI_MSG_PRECREATEWINDOW, (WPARAM)&cs);
@@ -222,7 +222,7 @@ bool WindowBase::Create(const wchar_t* szId, HWND hWndParent, RECT* prc, long lS
 
 	if (nullptr == m_hWnd)
 	{
-		UI_LOG_FATAL( _T("CreateWindowExÊ§°Ü"));
+		UI_LOG_FATAL( _T("CreateWindowExå¤±è´¥"));
 		return false;
 	}
 	return true;
@@ -264,13 +264,13 @@ void  WindowBase::Detach()
     set_hwnd(nullptr);
 }
 
-// EndDialog²¢²»»áÁ¢¼´Ïú»ÙÄ£Ì¬´°¿Ú£¬¶øÊÇ¼ÓÒ»¸ö±êÖ¾Î»£¬ÏÈ½áÊøÏûÏ¢Ñ­»·£¬
-// È»ºóÔÙÏú»Ù´°¿Ú
+// EndDialogå¹¶ä¸ä¼šç«‹å³é”€æ¯æ¨¡æ€çª—å£ï¼Œè€Œæ˜¯åŠ ä¸€ä¸ªæ ‡å¿—ä½ï¼Œå…ˆç»“æŸæ¶ˆæ¯å¾ªç¯ï¼Œ
+// ç„¶åå†é”€æ¯çª—å£
 void WindowBase::EndDialog(INT_PTR nResult)
 {
 	UIASSERT( this->m_bDoModal );
 
-	// ÈÃModalWindow::DoModalÀïµÄÏûÏ¢Ñ­»·ÄÜ¹»ÍË³ö
+	// è®©ModalWindow::DoModalé‡Œçš„æ¶ˆæ¯å¾ªç¯èƒ½å¤Ÿé€€å‡º
 	this->m_lDoModalReturn = (long)nResult ;
 	this->m_bEndModal = true;
 	::PostMessage( this->m_hWnd, WM_NULL, 0,0 );
@@ -299,7 +299,7 @@ INT_PTR WindowBase::DoModal(HINSTANCE hResInst, unsigned int nResID, const wchar
 
 
 //
-// ´´½¨Ò»¸ö¿ÕµÄÄ£Ì¬¶Ô»°¿ò
+// åˆ›å»ºä¸€ä¸ªç©ºçš„æ¨¡æ€å¯¹è¯æ¡†
 //
 INT_PTR WindowBase::DoModal(const wchar_t* szID, HWND hWndParent, bool canResize)
 {
@@ -334,7 +334,7 @@ INT_PTR WindowBase::DoModal(const wchar_t* szID, HWND hWndParent, bool canResize
 	*lpw++ = 0;             // Predefined dialog box class (by default)
 
 	LPWSTR lpwsz = (LPWSTR)lpw;
-	int nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);  // ´°¿ÚµÄ±êÌâÃû³Æ
+	int nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);  // çª—å£çš„æ ‡é¢˜åç§°
 	lpw += nchar;
 	GlobalUnlock(hgbl); 
 
@@ -361,7 +361,7 @@ INT_PTR WindowBase::DoModal(const wchar_t* szID, HWND hWndParent, bool canResize
 
 INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 {
-    // ¸øÍâ²¿Ò»¸öÉèÖÃÄ£Ì¬´°¿ÚÏÔÊ¾µÄ»ú»á
+    // ç»™å¤–éƒ¨ä¸€ä¸ªè®¾ç½®æ¨¡æ€çª—å£æ˜¾ç¤ºçš„æœºä¼š
 //     UIMSG  msg;
 //     msg.message = UI_WM_SHOWMODALWINDOW;
 //     msg.pMsgFrom = msg.pMsgTo = m_pIWindowBase;
@@ -403,11 +403,11 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 	}
 #else
 	GetUIApplication()->MsgHandleLoop(&m_bEndModal);
-	m_bEndModal = false;  // »¹Ô­£¬ÓÃÓÚÏÂ´ÎDoModal
+	m_bEndModal = false;  // è¿˜åŸï¼Œç”¨äºä¸‹æ¬¡DoModal
 
 #endif
-	// ´°¿ÚµÄÏú»ÙÒª·ÅÔÚÕâÀï£¬²»ÄÜÌáÇ°Ïú»Ù¡£±ØĞëÔÚÏú»ÙÖ®Ç°ÉèÖÃ¸¸½çÃæÎªactive£¬·ñÔò
-	// »áÔì³É´°¿ÚÉÁË¸
+	// çª—å£çš„é”€æ¯è¦æ”¾åœ¨è¿™é‡Œï¼Œä¸èƒ½æå‰é”€æ¯ã€‚å¿…é¡»åœ¨é”€æ¯ä¹‹å‰è®¾ç½®çˆ¶ç•Œé¢ä¸ºactiveï¼Œå¦åˆ™
+	// ä¼šé€ æˆçª—å£é—ªçƒ
 	UIASSERT(IsWindow(m_hWnd));
 
 	// hide the window before enabling the parent, etc.
@@ -419,7 +419,7 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 	}
 	if (hWndParent && bActive)
 	{
-		// Èç¹û²»µ÷ÓÃ¸Ãº¯Êı£¬½«µ¼ÖÂ¸¸´°¿ÚÅÜµ½ÆÁÄ»Z´ÎĞòµÄºóÃæÈ¥ÁË
+		// å¦‚æœä¸è°ƒç”¨è¯¥å‡½æ•°ï¼Œå°†å¯¼è‡´çˆ¶çª—å£è·‘åˆ°å±å¹•Zæ¬¡åºçš„åé¢å»äº†
 		::SetActiveWindow(hWndParent); 
 	}
 	if (m_hWnd != nullptr)
@@ -428,7 +428,7 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 	}
 
 	this->m_bDoModal = false;
-	::DestroyWindow(this->m_hWnd);    // Ïú»Ù´°¿Ú
+	::DestroyWindow(this->m_hWnd);    // é”€æ¯çª—å£
 	
 	return this->m_lDoModalReturn;
 }
@@ -440,9 +440,9 @@ BOOL WindowBase::PreTranslateMessage(unsigned int uMsg, WPARAM wParam, LPARAM lP
 
 
 // 2014.4.15
-// ×¢£ºÔÚwin7 aeroÏÂÃæ£¬ÎŞWS_THICKFRAMEÑùÊ½µÄDialog»á±ä´ó10px,10px
-//     ÎªÁË½â¾ö¸ÃÎÊÌâ£¬ÎªÃ¿Ò»¸öDialog¼ÓÉÏWS_THICKFRAME£¬Í¬Ê±ĞŞ¸ÄWM_NCHITTESTÏûÏ¢¡¢É¾³ıSysMenuÖĞµÄSC_SIZE.
-///    Òò´ËÍâ²¿ÔÚµ÷ÓÃ¸Ãº¯ÊıÊ±£¬ĞèÒª´«µİÒ»¸öcanResize±êÖ¾
+// æ³¨ï¼šåœ¨win7 aeroä¸‹é¢ï¼Œæ— WS_THICKFRAMEæ ·å¼çš„Dialogä¼šå˜å¤§10px,10px
+//     ä¸ºäº†è§£å†³è¯¥é—®é¢˜ï¼Œä¸ºæ¯ä¸€ä¸ªDialogåŠ ä¸ŠWS_THICKFRAMEï¼ŒåŒæ—¶ä¿®æ”¹WM_NCHITTESTæ¶ˆæ¯ã€åˆ é™¤SysMenuä¸­çš„SC_SIZE.
+///    å› æ­¤å¤–éƒ¨åœ¨è°ƒç”¨è¯¥å‡½æ•°æ—¶ï¼Œéœ€è¦ä¼ é€’ä¸€ä¸ªcanResizeæ ‡å¿—
 //
 HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
 {
@@ -482,7 +482,7 @@ HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
 	*lpw++ = 0;             // Predefined dialog box class (by default)
 
 	LPWSTR lpwsz = (LPWSTR)lpw;
-	int nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);  // ´°¿ÚµÄ±êÌâÃû³Æ
+	int nchar = 1 + MultiByteToWideChar(CP_ACP, 0, "", -1, lpwsz, 50);  // çª—å£çš„æ ‡é¢˜åç§°
 	lpw += nchar;
 	GlobalUnlock(hgbl); 
 
@@ -496,11 +496,11 @@ HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
 	}
 	if (m_hWnd)
 	{
-		// fixÄ¬ÈÏµÄ#32770´°¿Ú¹ı³ÌÔÚ´óĞ¡¸Ä±äÊ±²»Ë¢ĞÂµÄÎÊÌâ
-		// TODO:?? ÎªÊ²Ã´´øTHICKFRAMEµÄ´°¿Ú¾ÍÄÜ×Ô¼ºË¢ĞÂ
+		// fixé»˜è®¤çš„#32770çª—å£è¿‡ç¨‹åœ¨å¤§å°æ”¹å˜æ—¶ä¸åˆ·æ–°çš„é—®é¢˜
+		// TODO:?? ä¸ºä»€ä¹ˆå¸¦THICKFRAMEçš„çª—å£å°±èƒ½è‡ªå·±åˆ·æ–°
 		SetClassLongPtr(m_hWnd, GCL_STYLE, CS_HREDRAW | CS_VREDRAW |CS_DBLCLKS);
 
-        // É¾³ı×î´ó»¯
+        // åˆ é™¤æœ€å¤§åŒ–
         if (!canResize)
         {
             HMENU hMenu = GetSystemMenu(m_hWnd, FALSE);
@@ -527,7 +527,7 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar
 
 	s_create_wnd_data.AddCreateWndData(&m_thunk.cd, (void*)this);
 
-    // ×¢£º hWndParent½öÊÇOwner£¬²¢²»ÊÇparent
+    // æ³¨ï¼š hWndParentä»…æ˜¯Ownerï¼Œå¹¶ä¸æ˜¯parent
 	m_hWnd = CreateDialog(hResInst, MAKEINTRESOURCE(nResID), hWndOnwer, (DLGPROC)WindowBase::StartDialogProc);
 
 	LONG_PTR lStyle = GetWindowLongPtr(m_hWnd, GWL_STYLE);
@@ -547,7 +547,7 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar
             }
 			m_windowStyle.dialog_noresize = 1;
 
-            // ÖØĞÂĞŞ¸Ä´°¿ÚÎªÕıÈ·µÄ´óĞ¡
+            // é‡æ–°ä¿®æ”¹çª—å£ä¸ºæ­£ç¡®çš„å¤§å°
             SetWindowPos(m_hWnd, 0, rcWindow.left, rcWindow.top, rcWindow.Width(), rcWindow.Height(), SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
         }
     }
@@ -556,13 +556,13 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar
 
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
-//                               ÏûÏ¢Ó³Éä                               //
+//                               æ¶ˆæ¯æ˜ å°„                               //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
 long CALLBACK WindowBase::StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
-	// »ñÈ¡thisÖ¸Õë
+	// è·å–thisæŒ‡é’ˆ
 	WindowBase* pThis = (WindowBase*)s_create_wnd_data.ExtractCreateWndData();
 	UIASSERT(nullptr != pThis);
 	
@@ -572,11 +572,11 @@ long CALLBACK WindowBase::StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM 
 	return pThis->StartProc(hwnd,uMsg,wParam,lParam, true);
 }
 //
-//	[static] DialogÀàĞÍ´°¿ÚµÄµÚÒ»¸ö´°¿ÚÏûÏ¢µ÷ÓÃµÄ´°¿Ú¹ı³Ì
+//	[static] Dialogç±»å‹çª—å£çš„ç¬¬ä¸€ä¸ªçª—å£æ¶ˆæ¯è°ƒç”¨çš„çª—å£è¿‡ç¨‹
 //
 long CALLBACK WindowBase::StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
-	// »ñÈ¡thisÖ¸Õë
+	// è·å–thisæŒ‡é’ˆ
 	WindowBase* pThis = (WindowBase*)s_create_wnd_data.ExtractCreateWndData();
 	UIASSERT(nullptr != pThis);
 
@@ -587,11 +587,11 @@ long CALLBACK WindowBase::StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM 
 //	return (UINT_PTR)FALSE;
 }
 //
-//	ÓÉStartWindowProc/StartDialogProcµ÷ÓÃ£¬½«´°¿Ú¹ı³Ì×ª»»ÎªÀà¶ÔÏóµÄÒ»¸ö·½·¨
+//	ç”±StartWindowProc/StartDialogProcè°ƒç”¨ï¼Œå°†çª—å£è¿‡ç¨‹è½¬æ¢ä¸ºç±»å¯¹è±¡çš„ä¸€ä¸ªæ–¹æ³•
 //
 long WindowBase::StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog )
 {
-	// ×ÓÀà»¯
+	// å­ç±»åŒ–
     set_hwnd(hwnd);
 
 	this->m_thunk.Init( &WindowBase::ThunkWndProc, this );
@@ -608,21 +608,21 @@ long WindowBase::StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM 
 		::SetWindowLongPtr( m_hWnd, DWLP_DLGPROC, (LONG_PTR)pProc);  
 	}
 
-	// µ÷ÓÃĞÂµÄ´°¿Ú¹ı³Ì ThunkWndProc
+	// è°ƒç”¨æ–°çš„çª—å£è¿‡ç¨‹ ThunkWndProc
 	return pProc(hwnd, uMsg, wParam, lParam);
 }
 
 //
 //	[static] long CALLBACK ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
 //
-//	±»ATLµÄthunkÌæ»»¹ıµÄ´°¿Ú¹ı³Ì
+//	è¢«ATLçš„thunkæ›¿æ¢è¿‡çš„çª—å£è¿‡ç¨‹
 //
-//	Parameter£º
+//	Parameterï¼š
 //		hwnd
-//			[in]	ÕâÀïÓÉÓÚ±»Ìæ»»¹ıÁË£¬ÕâÀïµÄhwndÊÇthisÖ¸Õë
+//			[in]	è¿™é‡Œç”±äºè¢«æ›¿æ¢è¿‡äº†ï¼Œè¿™é‡Œçš„hwndæ˜¯thisæŒ‡é’ˆ
 //
 //		uMsg,wParam,lParam
-//			[in]	ÏûÏ¢ĞÅÏ¢
+//			[in]	æ¶ˆæ¯ä¿¡æ¯
 //
 long  WindowBase::ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -647,7 +647,7 @@ long WindowBase::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam 
 //
 //	[private] long WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 //
-//	´°¿Ú±»×ÓÀà»¯¹ıÖ®ºóµÄ´°¿Ú¹ı³Ì
+//	çª—å£è¢«å­ç±»åŒ–è¿‡ä¹‹åçš„çª—å£è¿‡ç¨‹
 //
 long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -655,7 +655,7 @@ long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 	long lRes;
 	UIMSG*  pOldMsg = m_pCurMsg;
 
-	// Íâ²¿Ô¤´¦Àí
+	// å¤–éƒ¨é¢„å¤„ç†
 	if (m_pCallbackProxy)
 	{
 		long lRes = 0;
@@ -666,31 +666,31 @@ long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 		}
 	}
 
-	// ÄÚ²¿´¦Àí
-	BOOL bHandled = this->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, lRes, 0);  // µ÷ÓÃBEGIN_MSG_MAPÏûÏ¢Ó³ÉäÁĞ±í
+	// å†…éƒ¨å¤„ç†
+	BOOL bHandled = this->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, lRes, 0);  // è°ƒç”¨BEGIN_MSG_MAPæ¶ˆæ¯æ˜ å°„åˆ—è¡¨
 	if (bHandled)
 	{
 		return WndProc_GetRetValue(uMsg, wParam, lParam, bHandled, lRes);
 	}
     
-    // Ö±½Ó·¢¸øµ±Ç°´°¿Ú´¦Àí
+    // ç›´æ¥å‘ç»™å½“å‰çª—å£å¤„ç†
     UIMSG  msg;
 	msg.message = uMsg;
 	msg.pMsgTo = this->GetIMessage();
 	msg.wParam = wParam;
 	msg.lParam = lParam;
 
-	// Èç¹ûÕâ¸öÏûÏ¢±»´¦Àí¹ıÁË£¬Ö±½Ó·µ»Ø£¬²»ÓÃÔÙµ÷ÓÃ¾ÉµÄ´°¿Ú¹ı³ÌÁË
+	// å¦‚æœè¿™ä¸ªæ¶ˆæ¯è¢«å¤„ç†è¿‡äº†ï¼Œç›´æ¥è¿”å›ï¼Œä¸ç”¨å†è°ƒç”¨æ—§çš„çª—å£è¿‡ç¨‹äº†
 	//if (static_cast<IMessage*>(this)->ProcessMessage(&msg, 0))
     UISendMessage(&msg);
     lRes = WndProc_GetRetValue(uMsg, wParam, lParam,  msg.bHandled, msg.lRet);
 
 	if (uMsg == WM_NCDESTROY)
 	{
-		// ×¢£ºÎªÊ²Ã´²»ÔÚÕâÀïÖ±½Óµ÷ÓÃOnFinalMessage£¬È´»¹ÒªÔÙ¼ÓÒ»¸ö×´Ì¬Î»£¿
-		// ÒòÎªWM_NCDESTROYº¯ÊıÓÉDestroyWindow api´¥·¢£¬¶øDestroyWindow api
-		// ¿ÉÄÜÎ»ÓÚÈÎºÎÒ»¸öµ±Ç°´°¿ÚµÄÏûÏ¢ÏìÓ¦ÖĞ£¬Òò´Ëµ±pOldMsg==nullptrÊ±£¬¼´±íÊ¾
-		// Ã»ÓĞÏûÏ¢Ç¶Ì×ÁË£¬ÔÚ¼ì²éÒ»´ÎWINDOW_STYLE_DESTROYED±êÖ¾¼´¿É¡£
+		// æ³¨ï¼šä¸ºä»€ä¹ˆä¸åœ¨è¿™é‡Œç›´æ¥è°ƒç”¨OnFinalMessageï¼Œå´è¿˜è¦å†åŠ ä¸€ä¸ªçŠ¶æ€ä½ï¼Ÿ
+		// å› ä¸ºWM_NCDESTROYå‡½æ•°ç”±DestroyWindow apiè§¦å‘ï¼Œè€ŒDestroyWindow api
+		// å¯èƒ½ä½äºä»»ä½•ä¸€ä¸ªå½“å‰çª—å£çš„æ¶ˆæ¯å“åº”ä¸­ï¼Œå› æ­¤å½“pOldMsg==nullptræ—¶ï¼Œå³è¡¨ç¤º
+		// æ²¡æœ‰æ¶ˆæ¯åµŒå¥—äº†ï¼Œåœ¨æ£€æŸ¥ä¸€æ¬¡WINDOW_STYLE_DESTROYEDæ ‡å¿—å³å¯ã€‚
 		m_windowStyle.destroyed = 1;
         m_objStyle.initialized = 0;
 	}
@@ -702,18 +702,18 @@ long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 	return lRes;
 }
 
-// ÉèÖÃ¶Ô»°¿òµÄDialogProc·µ»ØÖµ£¬¼ûMSDNÖĞ¶ÔDialogProc·µ»ØÖµµÄËµÃ÷
+// è®¾ç½®å¯¹è¯æ¡†çš„DialogProcè¿”å›å€¼ï¼Œè§MSDNä¸­å¯¹DialogProcè¿”å›å€¼çš„è¯´æ˜
 long  WindowBase::WndProc_GetRetValue(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, long lRet)
 {
     long lResult = 0; 
 
-    if (nullptr == m_oldWndProc)  // Dialog´°¿Ú¹ı³Ì
+    if (nullptr == m_oldWndProc)  // Dialogçª—å£è¿‡ç¨‹
     {
         switch(uMsg)
         {
         case WM_INITDIALOG: 
             if (GetMouseMgr()->GetFocusObject())
-                lResult = FALSE;  // ²»Ê¹ÓÃÆä½¹µãÉèÖÃ
+                lResult = FALSE;  // ä¸ä½¿ç”¨å…¶ç„¦ç‚¹è®¾ç½®
             else
                 lResult = lRet;
             break;
@@ -729,7 +729,7 @@ long  WindowBase::WndProc_GetRetValue(unsigned int uMsg, WPARAM wParam, LPARAM l
         case WM_CTLCOLORMSGBOX:
         case WM_QUERYDRAGICON:
         case WM_VKEYTOITEM:
-            // return directly£¬Õâ¼¸¸öÏûÏ¢²»°´DialogProc·µ»ØÖµ¹æ¶¨×ß
+            // return directlyï¼Œè¿™å‡ ä¸ªæ¶ˆæ¯ä¸æŒ‰DialogProcè¿”å›å€¼è§„å®šèµ°
             lResult = lRet;
             break;
 
@@ -767,11 +767,11 @@ long WindowBase::_OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
 	HWND hWnd = (HWND)wParam;
 	if (0 != wParam && hWnd != m_hWnd)
 	{
-		return DefWindowProc(uMsg,wParam,lParam);  // Êó±êÎ»ÓÚ´°¿ÚÉÏµÄÆäËüwindows¿Ø¼şÉÏÃæ£¬²»´¦Àí
+		return DefWindowProc(uMsg,wParam,lParam);  // é¼ æ ‡ä½äºçª—å£ä¸Šçš„å…¶å®ƒwindowsæ§ä»¶ä¸Šé¢ï¼Œä¸å¤„ç†
 	}  
 	else if (hWnd == m_hWnd)  
 	{
-		// TODO: ÕâÀïĞèÒªÇø·Öwindow/dialogÂğ
+		// TODO: è¿™é‡Œéœ€è¦åŒºåˆ†window/dialogå—
         unsigned int nHitTest = LOWORD(lParam);
         if (m_oldWndProc)
         {
@@ -783,25 +783,25 @@ long WindowBase::_OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
         }
         else
         {
-            // ÓÃÓÚÊó±êÎ»ÓÚsystem windowµÄ±ßÔµÊ±£¬Ó¦¸Ãµ÷ÓÃÄ¬ÈÏµÄ´¦Àí¹ı³Ì¡£
-            // °üÀ¨µ±×Ô¼ºµ¯³öÒ»¸öÄ£Ì¬¿ò£¬·µ»ØHTERRORÊ±
+            // ç”¨äºé¼ æ ‡ä½äºsystem windowçš„è¾¹ç¼˜æ—¶ï¼Œåº”è¯¥è°ƒç”¨é»˜è®¤çš„å¤„ç†è¿‡ç¨‹ã€‚
+            // åŒ…æ‹¬å½“è‡ªå·±å¼¹å‡ºä¸€ä¸ªæ¨¡æ€æ¡†ï¼Œè¿”å›HTERRORæ—¶
 		    if (nHitTest != HTCLIENT)    
 		    {
-			    //return DefWindowProc(uMsg,wParam,lParam);  // 2014.4.10 dialogÖ±½Óreturn 0¾ÓÈ»Ã»·´Ó¦£¬²»»á¸ù¾İhittestÉèÖÃÊó±ê¡£Òò´ËÖ±½Óµ÷ÓÃdefwindowproc
+			    //return DefWindowProc(uMsg,wParam,lParam);  // 2014.4.10 dialogç›´æ¥return 0å±…ç„¶æ²¡ååº”ï¼Œä¸ä¼šæ ¹æ®hittestè®¾ç½®é¼ æ ‡ã€‚å› æ­¤ç›´æ¥è°ƒç”¨defwindowproc
                 return ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 		    }
         }
 
-//      Removed 20120824 -- ÔÚÊµÏÖwindowless richeditÊ±£¬²»ÄÜ²ÉÓÃÑÓÊ±·¢ËÍsetcursorµÄ°ì·¨£¬·ñÔòÔÚ
-//      Ñ¡ÔñÎÄ±¾Ê±Êó±êÑùÊ½Ò»Ö±ÉÁË¸¡£Òò´ËĞŞ¸Ä·½°¸Îª£ºÏÈ·¢ËÍ£¬È»ºóÔÚWM_MOUSEMOVEÖĞ¼ì²âÈç¹ûhover obj
-//      ·¢ÉúÁË±ä»¯µÄ»°£¬ÖØĞÂÔÙ·¢ËÍÒ»´ÎWM_SETCURSOR
+//      Removed 20120824 -- åœ¨å®ç°windowless richeditæ—¶ï¼Œä¸èƒ½é‡‡ç”¨å»¶æ—¶å‘é€setcursorçš„åŠæ³•ï¼Œå¦åˆ™åœ¨
+//      é€‰æ‹©æ–‡æœ¬æ—¶é¼ æ ‡æ ·å¼ä¸€ç›´é—ªçƒã€‚å› æ­¤ä¿®æ”¹æ–¹æ¡ˆä¸ºï¼šå…ˆå‘é€ï¼Œç„¶ååœ¨WM_MOUSEMOVEä¸­æ£€æµ‹å¦‚æœhover obj
+//      å‘ç”Ÿäº†å˜åŒ–çš„è¯ï¼Œé‡æ–°å†å‘é€ä¸€æ¬¡WM_SETCURSOR
 	}
-	if (TRUE == m_oMouseManager.HandleMessage(uMsg, wParam, lParam, &bHandled)) // ½ö·¢¸øµ±Ç°hover object
+	if (TRUE == m_oMouseManager.HandleMessage(uMsg, wParam, lParam, &bHandled)) // ä»…å‘ç»™å½“å‰hover object
 	{
 		return TRUE;
 	}
 
-	// ÈÃ´°¿ÚÈ¥´¦ÀíÕâ¸öÏûÏ¢
+	// è®©çª—å£å»å¤„ç†è¿™ä¸ªæ¶ˆæ¯
 	UIMSG msg;
 	msg.message = uMsg;
 	msg.pMsgTo = this->GetIMessage();
@@ -810,7 +810,7 @@ long WindowBase::_OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
 	if ((this->GetIMessage())->ProcessMessage(&msg, 0)) 
 		return msg.lRet;
 
-	// »¹ÊÇÃ»ÓĞÈË´¦Àí
+	// è¿˜æ˜¯æ²¡æœ‰äººå¤„ç†
 	::SetCursor(::LoadCursor(nullptr,IDC_ARROW));
 	return TRUE;
 }
@@ -871,7 +871,7 @@ long  WindowBase::_OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam,
         if (m_windowStyle.dialog_noresize)
         {
             long lr = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
-            if (lr >= HTLEFT && lr <= HTBORDER)  // ÓÃHTTOPRIGHT»¹ÓĞÊÇÎÊÌâ£¬·ÇµÃÓÃHTBORDER£¬ÎªÊ²Ã´
+            if (lr >= HTLEFT && lr <= HTBORDER)  // ç”¨HTTOPRIGHTè¿˜æœ‰æ˜¯é—®é¢˜ï¼Œéå¾—ç”¨HTBORDERï¼Œä¸ºä»€ä¹ˆ
             {
                 lr = HTBORDER;
                 bHandled = TRUE;
@@ -883,8 +883,8 @@ long  WindowBase::_OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 
-// win7ÏÂÃæ´øWS_THICKFRAMEÑùÊ½´°¿ÚÌù±ß×î´ó»¯/»¹Ô­µÄÏûÏ¢Ö»ÓĞWM_SIZE£¬Ã»ÓĞWM_SYSCOMMAND
-// Òò´Ë¾Í²»ÄÜÊ¹ÓÃWM_SYSCOMMANDÏûÏ¢À´´¦Àí
+// win7ä¸‹é¢å¸¦WS_THICKFRAMEæ ·å¼çª—å£è´´è¾¹æœ€å¤§åŒ–/è¿˜åŸçš„æ¶ˆæ¯åªæœ‰WM_SIZEï¼Œæ²¡æœ‰WM_SYSCOMMAND
+// å› æ­¤å°±ä¸èƒ½ä½¿ç”¨WM_SYSCOMMANDæ¶ˆæ¯æ¥å¤„ç†
 long WindowBase::_OnSize( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
 }
@@ -896,9 +896,9 @@ long WindowBase::_OnCreate(
 
     m_oWindowRender.BindHWND(m_hWnd);
 
-    // ÌØÊâ´¦Àí£º
-    // ÓÃÓÚ½«D2D RenderTarget°ó¶¨µ½´°¿ÚÉÏÃæ.D2DÓëGDI/GDIPlus
-    // ²»Ò»Ñù£¬Ëü²»ĞèÒªÔÙÅªÒ»¸öË«»º³å£¬Ö±½Óbegindraw/enddraw¼´¿É
+    // ç‰¹æ®Šå¤„ç†ï¼š
+    // ç”¨äºå°†D2D RenderTargetç»‘å®šåˆ°çª—å£ä¸Šé¢.D2Dä¸GDI/GDIPlus
+    // ä¸ä¸€æ ·ï¼Œå®ƒä¸éœ€è¦å†å¼„ä¸€ä¸ªåŒç¼“å†²ï¼Œç›´æ¥begindraw/enddrawå³å¯
 // 	if (m_pRenderLayer)
 // 	{
 // 		IRenderTarget*  pRT = m_pRenderLayer->GetRenderTarget();
@@ -909,10 +909,10 @@ long WindowBase::_OnCreate(
 // 	}
 
 	//
-	//  ÓĞ¿ÉÄÜm_strIDÎª¿Õ£¨²»¼ÓÔØ×ÊÔ´£¬ÀıÈçÁÙÊ±µÄpopupconotrolwindow£©
-	//	Òò´ËÃ»ÓĞ½«AddTopWindowObject¡¢OnInitWindow·ÅÔÚCreateUIÖĞÖ´ĞĞ
+	//  æœ‰å¯èƒ½m_strIDä¸ºç©ºï¼ˆä¸åŠ è½½èµ„æºï¼Œä¾‹å¦‚ä¸´æ—¶çš„popupconotrolwindowï¼‰
+	//	å› æ­¤æ²¡æœ‰å°†AddTopWindowObjectã€OnInitWindowæ”¾åœ¨CreateUIä¸­æ‰§è¡Œ
 	//
-	// if (!IsChildWindow())--×Ó´°¿ÚÒ²ÊÇÒ»¸öUI´°¿Ú£¬Ò²Î¬»¤ÆğÀ´
+	// if (!IsChildWindow())--å­çª—å£ä¹Ÿæ˜¯ä¸€ä¸ªUIçª—å£ï¼Œä¹Ÿç»´æŠ¤èµ·æ¥
 	{
 		TopWindowManager* pTopWndMgr = 
             GetUIApplication()->GetTopWindowMgr();
@@ -920,21 +920,21 @@ long WindowBase::_OnCreate(
 			pTopWndMgr->AddTopWindowObject(this);
 	}
 
-	// ²¼¾Ö
-	if (m_windowStyle.attach)  // attachµÄ´°¿ÚÖ±½ÓÊ¹ÓÃÍâ²¿µÄ´óĞ¡
+	// å¸ƒå±€
+	if (m_windowStyle.attach)  // attachçš„çª—å£ç›´æ¥ä½¿ç”¨å¤–éƒ¨çš„å¤§å°
 	{
 		::GetClientRect(m_hWnd, &m_rcParent);
 
-        // ±ÜÃâ´ËÊ±µ÷ÓÃGetDesiredSizeÓÖÈ¥²âÁ¿´°¿Ú´óĞ¡ÁË£¬
-        // µ¼ÖÂ´°¿Ú±»ĞŞ¸ÄÎª×ÔÊÊÓ¦´óĞ¡ 
+        // é¿å…æ­¤æ—¶è°ƒç”¨GetDesiredSizeåˆå»æµ‹é‡çª—å£å¤§å°äº†ï¼Œ
+        // å¯¼è‡´çª—å£è¢«ä¿®æ”¹ä¸ºè‡ªé€‚åº”å¤§å° 
 		CRect rcWindow;               
 		::GetWindowRect(m_hWnd, &rcWindow);
 		SetConfigWidth(rcWindow.Width());
 		SetConfigHeight(rcWindow.Height());
 
-        // ÒòÎªAttachµ½µÄ´°¿Ú³õÊ¼»¯Ê±ÒÑ¾­ÊÕ²»µ½WM_SIZEÁË£¬
-        // Òò´Ë×Ô¼ºÔÙ·¢Ò»´Î£¬
-        // Í¨Öª´´½¨RenderTarget£¬·ñÔòºóÃæµÄÒ»Ğ©Ë¢ĞÂ½«Ê§°Ü
+        // å› ä¸ºAttachåˆ°çš„çª—å£åˆå§‹åŒ–æ—¶å·²ç»æ”¶ä¸åˆ°WM_SIZEäº†ï¼Œ
+        // å› æ­¤è‡ªå·±å†å‘ä¸€æ¬¡ï¼Œ
+        // é€šçŸ¥åˆ›å»ºRenderTargetï¼Œå¦åˆ™åé¢çš„ä¸€äº›åˆ·æ–°å°†å¤±è´¥
 		notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
         this->UpdateLayout();
 	}
@@ -942,8 +942,8 @@ long WindowBase::_OnCreate(
     {
         if (m_windowStyle.setcreaterect)
         {
-            // ±ÜÃâ´ËÊ±µ÷ÓÃGetDesiredSizeÓÖÈ¥²âÁ¿´°¿Ú´óĞ¡ÁË£¬
-            // µ¼ÖÂ´°¿Ú±»ĞŞ¸ÄÎª×ÔÊÊÓ¦´óĞ¡ 
+            // é¿å…æ­¤æ—¶è°ƒç”¨GetDesiredSizeåˆå»æµ‹é‡çª—å£å¤§å°äº†ï¼Œ
+            // å¯¼è‡´çª—å£è¢«ä¿®æ”¹ä¸ºè‡ªé€‚åº”å¤§å° 
             CRect rcWindow;    
             ::GetWindowRect(m_hWnd, &rcWindow);
             SetConfigWidth(rcWindow.Width());
@@ -954,8 +954,8 @@ long WindowBase::_OnCreate(
         }
         else
         {
-            // ²»ÄÜ·ÅÔÚ OnInitialize ºóÃæ¡£
-            // ÒòÎªÓĞ¿ÉÄÜOnInitializeÖĞÒÑ¾­µ÷ÓÃ¹ı SetWindowPos
+            // ä¸èƒ½æ”¾åœ¨ OnInitialize åé¢ã€‚
+            // å› ä¸ºæœ‰å¯èƒ½OnInitializeä¸­å·²ç»è°ƒç”¨è¿‡ SetWindowPos
             DesktopLayout dl;  
             dl.Arrange(this);
         }
@@ -964,17 +964,17 @@ long WindowBase::_OnCreate(
     if (!m_strConfigWindowText.empty())
         ::SetWindowText(m_hWnd, m_strConfigWindowText.c_str());
 
-    // ´´½¨Ä¬ÈÏ×ÖÌå
+    // åˆ›å»ºé»˜è®¤å­—ä½“
     if (!m_pDefaultFont)
         SetDefaultRenderFont(L"");
 
 
-    // ·ÀÖ¹ÔÚÊµÏÖÏÔÊ¾¶¯»­Ê±£¬ÏÈÏÔÊ¾ÁËÒ»Ğ©³õÊ¼»¯ÖĞË¢ĞÂµÄÄÚÈİ¡£
-    // ×¢£º²»ÄÜÖ»ÏŞÖÆÒ»¸ölayer
+    // é˜²æ­¢åœ¨å®ç°æ˜¾ç¤ºåŠ¨ç”»æ—¶ï¼Œå…ˆæ˜¾ç¤ºäº†ä¸€äº›åˆå§‹åŒ–ä¸­åˆ·æ–°çš„å†…å®¹ã€‚
+    // æ³¨ï¼šä¸èƒ½åªé™åˆ¶ä¸€ä¸ªlayer
     m_oWindowRender.SetCanCommit(false); 
     {
-		// ¸ø×ÓÀàÒ»¸ö³õÊ¼»¯µÄ»ú»á (virtual)£¬
-		// ÀıÈçÉèÖÃ×î´ó»¯/»¹Ô­°´Å¥µÄ×´Ì¬
+		// ç»™å­ç±»ä¸€ä¸ªåˆå§‹åŒ–çš„æœºä¼š (virtual)ï¼Œ
+		// ä¾‹å¦‚è®¾ç½®æœ€å¤§åŒ–/è¿˜åŸæŒ‰é’®çš„çŠ¶æ€
 		this->virtualInnerInitWindow();
 
 		m_objStyle.initialized = 1;
@@ -994,12 +994,12 @@ long WindowBase::_OnCreate(
 
 	m_oWindowRender.SetCanCommit(true);
 
-	// ÉèÖÃÄ¬ÈÏ¶ÔÏó
+	// è®¾ç½®é»˜è®¤å¯¹è±¡
 	m_oMouseManager.SetDefaultObject(
             m_oMouseManager.GetOriginDefaultObject(),
             false);
 
-    if (m_windowStyle.attach) // Ö÷¶¯´¥·¢Ë¢ĞÂ
+    if (m_windowStyle.attach) // ä¸»åŠ¨è§¦å‘åˆ·æ–°
     {
         Invalidate();
     }
@@ -1020,14 +1020,14 @@ void  WindowBase::virtualInnerInitWindow()
 
 long  WindowBase::_OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    bHandled = FALSE;  // Ä¬ÈÏ´¦Àí»áµ÷ÓÃDestroyWindow
+    bHandled = FALSE;  // é»˜è®¤å¤„ç†ä¼šè°ƒç”¨DestroyWindow
 
-    // ÏÈ·¢ËÍ¸ø¶©ÔÄÕß£¬ÀıÈçcef¿Ø¼ş£¬ËüĞèÒªÒì²½¹Ø±Õ
+    // å…ˆå‘é€ç»™è®¢é˜…è€…ï¼Œä¾‹å¦‚cefæ§ä»¶ï¼Œå®ƒéœ€è¦å¼‚æ­¥å…³é—­
     bool bCanClose = true;
     on_close.emit_foreach(
         [&bCanClose]() -> bool
     {
-        // ÓĞÒ»¸ö¶©ÔÄÕßÖĞ¶Ï¹Ø±Õ
+        // æœ‰ä¸€ä¸ªè®¢é˜…è€…ä¸­æ–­å…³é—­
         if (!bCanClose)
             return false;
         return true;
@@ -1093,7 +1093,7 @@ long WindowBase::_OnNcDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
 	}
     set_hwnd(nullptr);
 	
-	this->DestroyChildObject();   // É¾³ı×Ó¶ÔÏó
+	this->DestroyChildObject();   // åˆ é™¤å­å¯¹è±¡
     
     if (m_pCallbackProxy)
     {
@@ -1104,7 +1104,7 @@ long WindowBase::_OnNcDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
 
 long WindowBase::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if (m_syncWindow.IsSizeMoveIng())  // ÍÏ×§¹ı³ÌÖĞ²»´¦Àí
+	if (m_syncWindow.IsSizeMoveIng())  // æ‹–æ‹½è¿‡ç¨‹ä¸­ä¸å¤„ç†
 	{
 		bHandled = FALSE;
 		return 0;
@@ -1149,8 +1149,8 @@ long WindowBase::_OnSetFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, B
 	msg.lParam  = lParam;
     UISendMessage(&msg);
 
-	return 1;    // ×¢£ºÓÉÓÚDialogÄ¬ÈÏµÄWM_SETFOCUS»á½«½¹µãÔÙÉèÖÃµ½×Ô¼ºµÄµÚÒ»¸ö¿Ø¼şÉÏÃæ£¬Òò´ËÈç¹ûÔÚÕâÀïreturn 0»òÕßbHandled = FALSE
-	             //     ½«µ¼ÖÂ::SetFocus(m_hWnd)µÄ½¹µãµ½´°¿ÚÉÏÃæºó£¬ÓÖ±»´°¿Ú×Ô¼ºÉèÖÃµ½¿Ø¼şÉÏÃæ£¬µ¼ÖÂSetFocus´ï²»µ½ÎÒÃÇµÄ±¾Òâ
+	return 1;    // æ³¨ï¼šç”±äºDialogé»˜è®¤çš„WM_SETFOCUSä¼šå°†ç„¦ç‚¹å†è®¾ç½®åˆ°è‡ªå·±çš„ç¬¬ä¸€ä¸ªæ§ä»¶ä¸Šé¢ï¼Œå› æ­¤å¦‚æœåœ¨è¿™é‡Œreturn 0æˆ–è€…bHandled = FALSE
+	             //     å°†å¯¼è‡´::SetFocus(m_hWnd)çš„ç„¦ç‚¹åˆ°çª—å£ä¸Šé¢åï¼Œåˆè¢«çª—å£è‡ªå·±è®¾ç½®åˆ°æ§ä»¶ä¸Šé¢ï¼Œå¯¼è‡´SetFocusè¾¾ä¸åˆ°æˆ‘ä»¬çš„æœ¬æ„
 }
 long WindowBase::_OnKillFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
@@ -1169,9 +1169,9 @@ long WindowBase::_OnKillFocus( unsigned int uMsg, WPARAM wParam, LPARAM lParam, 
 	return 1 ;
 }
 
-// ÓÃÓÚ½â¾öÈç¹ûWindowBaseÊÇÒ»¸ö×Ó´°¿Ú£¬·ÅÔÚÒ»¸öÆÕÍ¨¶¥²ã´°¿ÚÉÏ£¬ÄÇÃ´µã»÷WindowBase
-// ½«ÎŞ·¨µÃµ½½¹µã¡£Òò´ËÔÚÕâÀïÏìÓ¦MouseActiveÏûÏ¢£¬½«×Ô¼ºSetFocus
-// ÖÁÉÙÏñÏµÍ³°´Å¥¿Ø¼şÊÇÈçºÎ´¦ÀíµÄµã»÷µÃµ½½¹µã¾Í²»µÃ¶øÖªÁË£¬µ«WS_TABSTOP²»ÊÇÔ­Òò£¬ÊÔ¹ıÁË£¬Ã»ÓÃ¡£
+// ç”¨äºè§£å†³å¦‚æœWindowBaseæ˜¯ä¸€ä¸ªå­çª—å£ï¼Œæ”¾åœ¨ä¸€ä¸ªæ™®é€šé¡¶å±‚çª—å£ä¸Šï¼Œé‚£ä¹ˆç‚¹å‡»WindowBase
+// å°†æ— æ³•å¾—åˆ°ç„¦ç‚¹ã€‚å› æ­¤åœ¨è¿™é‡Œå“åº”MouseActiveæ¶ˆæ¯ï¼Œå°†è‡ªå·±SetFocus
+// è‡³å°‘åƒç³»ç»ŸæŒ‰é’®æ§ä»¶æ˜¯å¦‚ä½•å¤„ç†çš„ç‚¹å‡»å¾—åˆ°ç„¦ç‚¹å°±ä¸å¾—è€ŒçŸ¥äº†ï¼Œä½†WS_TABSTOPä¸æ˜¯åŸå› ï¼Œè¯•è¿‡äº†ï¼Œæ²¡ç”¨ã€‚
 long WindowBase::_OnMouseActive( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     bHandled = FALSE;
@@ -1204,37 +1204,37 @@ HMONITOR  WindowBase::GetPrimaryMonitor()
 
 // minmax.c xxxInitSendValidateMinMaxInfo
 //
-// 1. Èç¹û×î´ó»¯µ½¸±ÆÁÉÏÊ±£¬ptMaxSize, ptMaxPositionÖ¸µÄÊÇÖ÷ÆÁµÄ´óĞ¡¡£
+// 1. å¦‚æœæœ€å¤§åŒ–åˆ°å‰¯å±ä¸Šæ—¶ï¼ŒptMaxSize, ptMaxPositionæŒ‡çš„æ˜¯ä¸»å±çš„å¤§å°ã€‚
 //    For systems with multiple monitors, the ptMaxSize and ptMaxPosition members
 //    describe the maximized size and position of the window on the primary monitor, 
 //    even if the window ultimately maximizes onto a secondary monitor. 
 
-// 2. ÏµÍ³ÄÚ²¿»áÅĞ¶ÏÈç¹ûpinfoµÄmaxsize´óÓÚÖ÷ÆÁ¿í¸ßÊ±£¬½«ÏàÓ¦µÄµ÷ÕûÎª¸±ÆÁµÄ´óĞ¡¡£
+// 2. ç³»ç»Ÿå†…éƒ¨ä¼šåˆ¤æ–­å¦‚æœpinfoçš„maxsizeå¤§äºä¸»å±å®½é«˜æ—¶ï¼Œå°†ç›¸åº”çš„è°ƒæ•´ä¸ºå‰¯å±çš„å¤§å°ã€‚
 //    In that case, the window manager adjusts these values to compensate for differences
 //    between the primary monitor and the monitor that displays the window. Thus, if 
 //    the user leaves ptMaxSize untouched, a window on a monitor larger than the primary
 //    monitor maximizes to the size of the larger monitor.
 //
-// 3. µ«ÊÇ!!!¶ÔÓÚÒ»¸ö´°¿Ú -- ÓëÊÇ·ñÓĞ±ß¿òÎŞ¹Ø¡£
+// 3. ä½†æ˜¯!!!å¯¹äºä¸€ä¸ªçª—å£ -- ä¸æ˜¯å¦æœ‰è¾¹æ¡†æ— å…³ã€‚
 //
-//     . ÓĞ±ß¿òµÄ´°¿Ú»á¶à³öÈô¸ÉÏñËØborder£¬ËüµÄptMaxSize±¾Éí¾Í±ÈÖ÷ÆÁ·Ö±æÂÊ´ó6~8px,²»ÈİÒ×³öÏÖÕâ¸öÎÊÌâ¡£
-//     . ÎŞ±ß¿òµÄ´°¿Ú×î´ó»¯»á³öÏÖ¸²¸ÇÈÎÎñÀ¸±ä³ÉÈ«ÆÁµÄÎÊÌâ£¬Òò´ËĞèÒª¶ÔptMaxSize×÷Ëõ½ø£¬ºÜÈİÒ×³öÏÖÕâÖÖÎÊÌâ
-//       (²âÊÔ·¢ÏÖ£¬Ö»ÓĞÍ¬Ê±¾ß±¸ÁËWS_CAPTION|WS_MAXIMIZEBOXÊôĞÔµÄ´°¿Ú×î´ó»¯ºó£¬²Å²»»á¸²¸ÇÈÎÎñÀ¸£©
+//     . æœ‰è¾¹æ¡†çš„çª—å£ä¼šå¤šå‡ºè‹¥å¹²åƒç´ borderï¼Œå®ƒçš„ptMaxSizeæœ¬èº«å°±æ¯”ä¸»å±åˆ†è¾¨ç‡å¤§6~8px,ä¸å®¹æ˜“å‡ºç°è¿™ä¸ªé—®é¢˜ã€‚
+//     . æ— è¾¹æ¡†çš„çª—å£æœ€å¤§åŒ–ä¼šå‡ºç°è¦†ç›–ä»»åŠ¡æ å˜æˆå…¨å±çš„é—®é¢˜ï¼Œå› æ­¤éœ€è¦å¯¹ptMaxSizeä½œç¼©è¿›ï¼Œå¾ˆå®¹æ˜“å‡ºç°è¿™ç§é—®é¢˜
+//       (æµ‹è¯•å‘ç°ï¼Œåªæœ‰åŒæ—¶å…·å¤‡äº†WS_CAPTION|WS_MAXIMIZEBOXå±æ€§çš„çª—å£æœ€å¤§åŒ–åï¼Œæ‰ä¸ä¼šè¦†ç›–ä»»åŠ¡æ ï¼‰
 //  
-//    Èç¹ûÎÒÃÇ¸ø³öµÄptMaxSize£¨ÓëptMaxPositionÎŞ¹Ø£©
-//    Ğ¡ÓÚÖ÷ÆÁ·Ö±æÂÊ´óĞ¡Ê±£¬×î´ó»¯µ½¸±ÆÁµÄ´°¿Ú²»»á×ÔÊÊÓ¦,ÈÔÈ»ÊÇ²ÎÊıÖĞµÄptMaxSize¡£
-//    Èç¹û¸±ÆÁ¸ü´óµÄ»°£¬¾ÍÔì³É×î´ó»¯²»ÍêÈ«µÄÎÊÌâ¡£
+//    å¦‚æœæˆ‘ä»¬ç»™å‡ºçš„ptMaxSizeï¼ˆä¸ptMaxPositionæ— å…³ï¼‰
+//    å°äºä¸»å±åˆ†è¾¨ç‡å¤§å°æ—¶ï¼Œæœ€å¤§åŒ–åˆ°å‰¯å±çš„çª—å£ä¸ä¼šè‡ªé€‚åº”,ä»ç„¶æ˜¯å‚æ•°ä¸­çš„ptMaxSizeã€‚
+//    å¦‚æœå‰¯å±æ›´å¤§çš„è¯ï¼Œå°±é€ æˆæœ€å¤§åŒ–ä¸å®Œå…¨çš„é—®é¢˜ã€‚
 //
-// 4. ptMaxPosition£¬WindowsÄÚ²¿ÊÇ»ùÓÚÖ÷ÆÁµÄworkarea¡£µ±ÈÎÎñÀ¸Î»ÓÚ×ó²àÊ±,ptMaxPostion.x=1»á×Ô¶¯µ÷Õû»á
-//    ÈÎÎñÀ¸µÄÓÒ²à1px´¦
+// 4. ptMaxPositionï¼ŒWindowså†…éƒ¨æ˜¯åŸºäºä¸»å±çš„workareaã€‚å½“ä»»åŠ¡æ ä½äºå·¦ä¾§æ—¶,ptMaxPostion.x=1ä¼šè‡ªåŠ¨è°ƒæ•´ä¼š
+//    ä»»åŠ¡æ çš„å³ä¾§1pxå¤„
 //
-// 5. ptMaxSize£¬WindowsÄÚ²¿ÊÇÓëÖ÷ÆÁµÄmonitorarea±È½ÏµÄ¡£µ±ptMaxSize´óĞ¡Ö÷ÆÁ´óĞ¡Ê±£¬Windows»á×Ô¶¯
-//    ½«´°¿Úµ÷ÕûÎªworkarea´óĞ¡¡£µ«Èç¹ûptMaxSizeĞ¡ÓÚÖ÷ÆÁ´óĞ¡Ê±£¬Windows²»×öµ÷Õû
+// 5. ptMaxSizeï¼ŒWindowså†…éƒ¨æ˜¯ä¸ä¸»å±çš„monitorareaæ¯”è¾ƒçš„ã€‚å½“ptMaxSizeå¤§å°ä¸»å±å¤§å°æ—¶ï¼ŒWindowsä¼šè‡ªåŠ¨
+//    å°†çª—å£è°ƒæ•´ä¸ºworkareaå¤§å°ã€‚ä½†å¦‚æœptMaxSizeå°äºä¸»å±å¤§å°æ—¶ï¼ŒWindowsä¸åšè°ƒæ•´
 //
 long WindowBase::_OnGetMinMaxInfo( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
-    // ¶ÔÓÚWindowBase£¬Ö»¶Ô´°¿Ú×îĞ¡ÖµºÍ×î´óÖµ¶Ô´¦Àí¡£
-    // ÆäËüÂß¼­ÓÉCustomWindowÈ¥´¦Àí
+    // å¯¹äºWindowBaseï¼Œåªå¯¹çª—å£æœ€å°å€¼å’Œæœ€å¤§å€¼å¯¹å¤„ç†ã€‚
+    // å…¶å®ƒé€»è¾‘ç”±CustomWindowå»å¤„ç†
 
 	bHandled = TRUE;
 	MINMAXINFO* pInfo = (MINMAXINFO*)lParam;
@@ -1370,7 +1370,7 @@ IMKMgr* WindowBase::virtualGetIMKMgr()
 
 #if 0
 //
-//	½«Ë«»º´æÊı¾İÌá½»µ½´°¿ÚDCÉÏ
+//	å°†åŒç¼“å­˜æ•°æ®æäº¤åˆ°çª—å£DCä¸Š
 //
 void WindowBase::CommitDoubleBuffet2Window(HDC hDCWnd, RECT* prcCommit, int nRectCount)
 {
@@ -1382,7 +1382,7 @@ void WindowBase::CommitDoubleBuffet2Window(HDC hDCWnd, RECT* prcCommit, int nRec
 	HDC hDC = hDCWnd;
 	if (nullptr == hDC)
     {
-        if (!m_hWnd)  // ´°¿ÚÒÑÏú»ÙÁË¡£
+        if (!m_hWnd)  // çª—å£å·²é”€æ¯äº†ã€‚
             return;
 
 		hDC = GetDC(m_hWnd);
@@ -1402,7 +1402,7 @@ void WindowBase::CommitDoubleBuffet2Window(HDC hDCWnd, RECT* prcCommit, int nRec
         CopyRect(&rcCommit, prcCommit);
         OffsetRect(&rcCommit, ptSrc.x, ptSrc.y);
     }
-    // ¶à¸öÇøÓòÊ±£¬Í¬Ê±Ìá½»£¬±ÜÃâÉÁË¸
+    // å¤šä¸ªåŒºåŸŸæ—¶ï¼ŒåŒæ—¶æäº¤ï¼Œé¿å…é—ªçƒ
     else //if (nRectCount > 1)
     {
         RECT rc;
@@ -1472,18 +1472,18 @@ void WindowBase::OnGetDesiredSize(SIZE* pSize)
 
 	Panel::OnGetDesiredSize(pSize);
 
-    // ÕâÀï»ñÈ¡µ½µÄÊÇclient´óĞ¡£¬ĞèÒª×ª»»³Éwindow´óĞ¡
+    // è¿™é‡Œè·å–åˆ°çš„æ˜¯clientå¤§å°ï¼Œéœ€è¦è½¬æ¢æˆwindowå¤§å°
     this->CalcWindowSizeByClientSize(*pSize, pSize);
 }
 
 //
-//	Èç¹ûÒÑÖªÒ»¸ö´°¿ÚµÄclientÇøÓò´óĞ¡£¬ÇóÕâ¸ö´°¿ÚµÄwindowÇøÓò´óĞ¡
+//	å¦‚æœå·²çŸ¥ä¸€ä¸ªçª—å£çš„clientåŒºåŸŸå¤§å°ï¼Œæ±‚è¿™ä¸ªçª—å£çš„windowåŒºåŸŸå¤§å°
 //
-//	²ÎÊı
+//	å‚æ•°
 //		sizeClient
-//			[in]	¸Ã´°¿ÚµÄ¿Í»§Çø´óĞ¡
+//			[in]	è¯¥çª—å£çš„å®¢æˆ·åŒºå¤§å°
 //		pSizeWindow
-//			[out]	·µ»Ø´°¿ÚµÄwindow´óĞ¡
+//			[out]	è¿”å›çª—å£çš„windowå¤§å°
 //
 void WindowBase::CalcWindowSizeByClientSize( SIZE sizeClient, SIZE* pSizeWindow )
 {
@@ -1495,7 +1495,7 @@ void WindowBase::CalcWindowSizeByClientSize( SIZE sizeClient, SIZE* pSizeWindow 
 	NCCALCSIZE_PARAMS     np;
 	WINDOWPOS             wp;
 
-	// Í¨¹ı WM_NCCALCSIZE ÏûÏ¢£¬ÈÃÏµÍ³¸æËßÎÒÃÇÒ»¸öwindow rect ¶ÔÓ¦µÄclient rectÊÇ¶àÉÙ
+	// é€šè¿‡ WM_NCCALCSIZE æ¶ˆæ¯ï¼Œè®©ç³»ç»Ÿå‘Šè¯‰æˆ‘ä»¬ä¸€ä¸ªwindow rect å¯¹åº”çš„client rectæ˜¯å¤šå°‘
 	np.lppos = &wp;
 	::GetWindowRect( this->m_hWnd, &np.rgrc[0] );
 	tempRcWindow.CopyRect(&np.rgrc[0]);
@@ -1507,20 +1507,20 @@ void WindowBase::CalcWindowSizeByClientSize( SIZE sizeClient, SIZE* pSizeWindow 
 }
 
 //
-//	Èç¹ûÒÑÖªÒ»¸ö´°¿ÚµÄwindowÇøÓò´óĞ¡£¬ÇóÕâ¸ö´°¿ÚµÄclientÇøÓò´óĞ¡
+//	å¦‚æœå·²çŸ¥ä¸€ä¸ªçª—å£çš„windowåŒºåŸŸå¤§å°ï¼Œæ±‚è¿™ä¸ªçª—å£çš„clientåŒºåŸŸå¤§å°
 //
-//	²ÎÊı
+//	å‚æ•°
 //		rcWindow
-//			[in]	¸Ã´°¿ÚµÄ¿Í´óĞ¡
+//			[in]	è¯¥çª—å£çš„å®¢å¤§å°
 //		rcClient
-//			[out]	·µ»Ø´°¿ÚµÄclient´óĞ¡£¨Ä¬ÈÏleft=0,top=0£¬¼´Ö»·µ»Ø´°¿Ú´óĞ¡£©
+//			[out]	è¿”å›çª—å£çš„clientå¤§å°ï¼ˆé»˜è®¤left=0,top=0ï¼Œå³åªè¿”å›çª—å£å¤§å°ï¼‰
 //
 void WindowBase::CalcClientRectByWindowRect( RECT* rcWindow, RECT* rcClient )
 {
 	NCCALCSIZE_PARAMS     np;
 	WINDOWPOS             wp;
 
-	// Í¨¹ı WM_NCCALCSIZE ÏûÏ¢£¬ÈÃÏµÍ³¸æËßÎÒÃÇÒ»¸öwindow rect ¶ÔÓ¦µÄclient rectÊÇ¶àÉÙ
+	// é€šè¿‡ WM_NCCALCSIZE æ¶ˆæ¯ï¼Œè®©ç³»ç»Ÿå‘Šè¯‰æˆ‘ä»¬ä¸€ä¸ªwindow rect å¯¹åº”çš„client rectæ˜¯å¤šå°‘
 	np.lppos = &wp;
 	::CopyRect( &np.rgrc[0], rcWindow );
 	::SendMessage( this->m_hWnd, WM_NCCALCSIZE, (WPARAM)FALSE, (LPARAM)&np );
@@ -1619,8 +1619,8 @@ void  WindowBase::CenterWindow(HMONITOR hMonitor)
         SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-// Ê¹ÓÃ×ÀÃæ²¼¾ÖÖØĞÂ¸üĞÂ´°¿ÚÎ»ÖÃ´óĞ¡£¬Ö÷ÒªÓÃÓÚÔÚUIEditorÖĞĞŞ¸ÄÁË
-// ´°¿Ú¶ÔÏóµÄ´óĞ¡¡£¶øÊ¹ÓÃObject::UpdateLayout½öÄÜÖØĞÂ²¼¾Ö×Ó¶ÔÏóµÄÎÊÌâ
+// ä½¿ç”¨æ¡Œé¢å¸ƒå±€é‡æ–°æ›´æ–°çª—å£ä½ç½®å¤§å°ï¼Œä¸»è¦ç”¨äºåœ¨UIEditorä¸­ä¿®æ”¹äº†
+// çª—å£å¯¹è±¡çš„å¤§å°ã€‚è€Œä½¿ç”¨Object::UpdateLayoutä»…èƒ½é‡æ–°å¸ƒå±€å­å¯¹è±¡çš„é—®é¢˜
 void  WindowBase::UpdateDesktopLayout()
 {
     DesktopLayout dl;
@@ -1645,7 +1645,7 @@ void WindowBase::SaveMemBitmap(TCHAR* szFile)
 #endif
 }
 
-// ½«ÄÚ´æÎ»Í¼»æÍ¼µ½Ö¸¶¨ÇøÓò
+// å°†å†…å­˜ä½å›¾ç»˜å›¾åˆ°æŒ‡å®šåŒºåŸŸ
 void  WindowBase::AlphaBlendMemBitmap(HDC hDC, RECT* prc, int alpha)
 {
 	Layer* pLayer = GetLayer();
@@ -1802,7 +1802,7 @@ void  WindowBase::SetFocusObject(Object* pObj)
     m_oMouseManager.SetFocusObject(pObj);
 }
 
-// »ñÈ¡µ±Ç°Êó±êÏÂµÄ¶ÔÏó 
+// è·å–å½“å‰é¼ æ ‡ä¸‹çš„å¯¹è±¡ 
 Object*  WindowBase::GetObjectUnderCursor()
 {
     POINT  pt;
@@ -1824,7 +1824,7 @@ Object*  WindowBase::GetObjectByPos(Object* pObjParent, POINT* pt, bool bSkinBui
 }
 #endif
 
-// ²»¸ºÔğË¢ĞÂ
+// ä¸è´Ÿè´£åˆ·æ–°
 void WindowBase::OnSetDefId(IObject* pButton)
 {
     if (pButton)
@@ -1864,7 +1864,7 @@ void  WindowBase::SetDefaultRenderFont(const wchar_t* szFontId)
 	if (nullptr == pFontRes)
 		return;
 
-    // Ä¬ÈÏ£¬Èç¹û´«Èë¿Õ×Ö·û´®£¬ÔòÖ±½Ó´´½¨Ä¬ÈÏ×ÖÌå
+    // é»˜è®¤ï¼Œå¦‚æœä¼ å…¥ç©ºå­—ç¬¦ä¸²ï¼Œåˆ™ç›´æ¥åˆ›å»ºé»˜è®¤å­—ä½“
     if (szFontId[0] == TEXT('\0'))
     {
         pFontRes->GetDefaultFont(m_oWindowRender.GetGraphicsRenderType(), &m_pDefaultFont);
@@ -1874,10 +1874,10 @@ void  WindowBase::SetDefaultRenderFont(const wchar_t* szFontId)
 	    pFontRes->GetFont(szFontId, m_oWindowRender.GetGraphicsRenderType(), &m_pDefaultFont);
     }
 
-	// ´´½¨Ä¬ÈÏ×ÖÌå
+	// åˆ›å»ºé»˜è®¤å­—ä½“
 	if (nullptr == m_pDefaultFont)
 	{
-		// GDI ´°¿Ú×ÖÌå
+		// GDI çª—å£å­—ä½“
 		HFONT hFont = (HFONT)::SendMessage(m_hWnd, WM_GETFONT, 0,0);
 		if (hFont)
 		{
@@ -1922,7 +1922,7 @@ HRESULT  WindowBase::SetCanDrop(bool b)
 
 void  WindowBase::SetObjectPos( int x, int y, int cx, int cy, int nFlag)
 {
-	// ¶ÔÓÚ´°¿ÚÀ´Ëµ£¬ÕâÀïÉèÖÃµÄÊÇ·Ç¿Í»§ÇøµÄ´óĞ¡
+	// å¯¹äºçª—å£æ¥è¯´ï¼Œè¿™é‡Œè®¾ç½®çš„æ˜¯éå®¢æˆ·åŒºçš„å¤§å°
 	::SetWindowPos(m_hWnd, HWND_TOP, x, y, cx, cy, SWP_NOACTIVATE);
 	::GetClientRect(m_hWnd, &m_rcParent);
 }
@@ -1940,8 +1940,8 @@ void  WindowBase::virtualSetEnable(bool b)
 
 bool  WindowBase::IsVisible()
 {
-    // TBD: ÔÚ±à¼­Ä£Ê½ÏÂ£¬±»±à¼­µÄ´°¿ÚÊÇÒş²ØµÄ£¬µ¼ÖÂinvalidÊ±ÅĞ¶Ï´°¿Ú²»¿É¼ûÖ±½Ó·µ»ØÁË¡£
-    //      ËùÒÔÔÚÕâÀï×öÒ»¸öhack£¬ÔÊĞí±à¼­Ä£Ê½ÏÂµÄinvalid
+    // TBD: åœ¨ç¼–è¾‘æ¨¡å¼ä¸‹ï¼Œè¢«ç¼–è¾‘çš„çª—å£æ˜¯éšè—çš„ï¼Œå¯¼è‡´invalidæ—¶åˆ¤æ–­çª—å£ä¸å¯è§ç›´æ¥è¿”å›äº†ã€‚
+    //      æ‰€ä»¥åœ¨è¿™é‡Œåšä¸€ä¸ªhackï¼Œå…è®¸ç¼–è¾‘æ¨¡å¼ä¸‹çš„invalid
     if (GetUIApplication()->IsEditorMode())
         return true;
 
@@ -1982,30 +1982,30 @@ bool UI::WindowBase::IsSizeMoveIng()
 
 
 //
-//	½«Ò»¸ö¶ÔÏóµÄ×Ó¶ÔÏó´òÉ¢£¬È«·ÅÔÚÒ»¸ölistÖĞÓÃÓÚÖØĞÂ²¼¾Ö
+//	å°†ä¸€ä¸ªå¯¹è±¡çš„å­å¯¹è±¡æ‰“æ•£ï¼Œå…¨æ”¾åœ¨ä¸€ä¸ªlistä¸­ç”¨äºé‡æ–°å¸ƒå±€
 //
-//  ×¢£ºÎªÁË½â¾ö½«Á½ÔÚÁ½¸ö²¼¾ÖÃèÊöÎÄ¼şÖĞµÄ¿Ø¼ş¶ÔÓ¦ÆğÀ´£¬ÕâÀï²ÉÓÃµÄ·½·¨Îª£ºÊ¹ÓÃidÆ¥Åä
-//     1. Ã»ÓĞÉèÖÃidµÄ¿Ø¼ş½«±»ºöÂÔ¡£
-//     2. ¶ÔÓÚÍ¨ÓÃ¿Ø¼ş£¬ÀıÈçcombobox->edit/button£¬²ÉÓÃcomboboxid.editÀ´ÃüÃû,µ«²éÕÒÊÇÓÃguidÀ´²éÕÒµÄ
-//     3. ¶ÔÓÚ¹ö¶¯Ìõ£¬Æ¤·ôÖĞÉèÖÃid£¬ÔÚ²éÕÒÍêÁËÊÖ¶¯½«idÇåµô£¬±ÜÃâÖØÃû
-//     4. ¶ÔÓÚlistbox.edit£¬Ã»ÓĞÉèÖÃid£¬²ÉÓÃguidÀ´²éÕÒ
+//  æ³¨ï¼šä¸ºäº†è§£å†³å°†ä¸¤åœ¨ä¸¤ä¸ªå¸ƒå±€æè¿°æ–‡ä»¶ä¸­çš„æ§ä»¶å¯¹åº”èµ·æ¥ï¼Œè¿™é‡Œé‡‡ç”¨çš„æ–¹æ³•ä¸ºï¼šä½¿ç”¨idåŒ¹é…
+//     1. æ²¡æœ‰è®¾ç½®idçš„æ§ä»¶å°†è¢«å¿½ç•¥ã€‚
+//     2. å¯¹äºé€šç”¨æ§ä»¶ï¼Œä¾‹å¦‚combobox->edit/buttonï¼Œé‡‡ç”¨comboboxid.editæ¥å‘½å,ä½†æŸ¥æ‰¾æ˜¯ç”¨guidæ¥æŸ¥æ‰¾çš„
+//     3. å¯¹äºæ»šåŠ¨æ¡ï¼Œçš®è‚¤ä¸­è®¾ç½®idï¼Œåœ¨æŸ¥æ‰¾å®Œäº†æ‰‹åŠ¨å°†idæ¸…æ‰ï¼Œé¿å…é‡å
+//     4. å¯¹äºlistbox.editï¼Œæ²¡æœ‰è®¾ç½®idï¼Œé‡‡ç”¨guidæ¥æŸ¥æ‰¾
 void  GetNamedChildrenAndReleaseOthers(
 		Object* pParent, map<String, Object*>& mapObjects)
 {
 	if (nullptr == pParent)
 		return;
 
-	// ³Ã¶ÔÏó»¹ÔÚÊ÷½á¹¹ÉÏÃæ£¬È¡Ïû¸÷ÖÖ°ó¶¨¹ØÏµ, ±ÜÃâ±ÀÀ£
+	// è¶å¯¹è±¡è¿˜åœ¨æ ‘ç»“æ„ä¸Šé¢ï¼Œå–æ¶ˆå„ç§ç»‘å®šå…³ç³», é¿å…å´©æºƒ
 	UISendMessage(pParent->GetIObject(), UI_MSG_DOBINDPLZ, false);
 
 	Object*  pNext = nullptr;
 	Object*  pChild = pParent->EnumAllChildObject(nullptr);
 	while (pChild)
 	{
-		// ´Óµ×ÏòÉÏ½øĞĞÂß¼­´¦Àí
+		// ä»åº•å‘ä¸Šè¿›è¡Œé€»è¾‘å¤„ç†
 		GetNamedChildrenAndReleaseOthers(pChild, mapObjects);
 
-		// ¶ÀÁ¢³öÀ´£¬Ïú»Ù
+		// ç‹¬ç«‹å‡ºæ¥ï¼Œé”€æ¯
 		pNext = pParent->EnumAllChildObject(pChild);  // save
 		pChild->ClearMyTreeRelationOnly();
 
@@ -2013,19 +2013,19 @@ void  GetNamedChildrenAndReleaseOthers(
 		if (id && id[0])
 		{
 #ifdef _DEBUG
-			// ÖØÃû¼ì²â 
+			// é‡åæ£€æµ‹ 
 			auto iter = mapObjects.find(String(id));
 			if (iter != mapObjects.end())
 			{
 				DebugBreak();
 			}
 #endif
-			// ±£´æÆğÀ´
+			// ä¿å­˜èµ·æ¥
 			mapObjects[String(id)] = pChild;
 		}
 		else
 		{
-			// Ö±½ÓÏú»Ù
+			// ç›´æ¥é”€æ¯
 			pChild->GetIObject()->Release();
 		}
 
@@ -2033,27 +2033,27 @@ void  GetNamedChildrenAndReleaseOthers(
 	}
 }
 
-// ¸ü»»´°¿Ú²¼¾Ö£¬ÓÃÔÚÒ»Ğ©ĞèÒª¸Ä±ä²¼¾ÖµÄ³¡¾°¡£
-// ³¡¾°1£º»á»°´°¿Ú£¬¿ªÆô×ÀÃæ¹²Ïíºó£¬Õû¸ö½çÃæ²¼¾ÖĞèÒª½øĞĞµ÷Õû¡£ÕâÖÖÇé¿öÏÂÈç¹ûÊ¹ÓÃ´úÂë½øĞĞµ÷Õû»áºÜÂé·³£¬¶øÇÒÓĞĞ©¿Ø¼şÑùÊ½Ò²²»Ò»Ñù¡£
+// æ›´æ¢çª—å£å¸ƒå±€ï¼Œç”¨åœ¨ä¸€äº›éœ€è¦æ”¹å˜å¸ƒå±€çš„åœºæ™¯ã€‚
+// åœºæ™¯1ï¼šä¼šè¯çª—å£ï¼Œå¼€å¯æ¡Œé¢å…±äº«åï¼Œæ•´ä¸ªç•Œé¢å¸ƒå±€éœ€è¦è¿›è¡Œè°ƒæ•´ã€‚è¿™ç§æƒ…å†µä¸‹å¦‚æœä½¿ç”¨ä»£ç è¿›è¡Œè°ƒæ•´ä¼šå¾ˆéº»çƒ¦ï¼Œè€Œä¸”æœ‰äº›æ§ä»¶æ ·å¼ä¹Ÿä¸ä¸€æ ·ã€‚
 //
 void  WindowBase::ChangeSkinLayout(const wchar_t* szLayoutId)
 {
-	// 1. ÇåÀí´°¿Ú×´Ì¬
+	// 1. æ¸…ç†çª—å£çŠ¶æ€
 	if (m_pCallbackProxy)
 		m_pCallbackProxy->DoBindPlz(false);
 
 	this->m_oMouseManager.ClearStateDirect();
 
-	// 2. ±éÀúËùÓĞ¿Ø¼ş£¬±£Áô´øguidÊôĞÔµÄ¿Ø¼ş£¬ÆäËü¿Ø¼şÈ«²¿Ïú»Ù
+	// 2. éå†æ‰€æœ‰æ§ä»¶ï¼Œä¿ç•™å¸¦guidå±æ€§çš„æ§ä»¶ï¼Œå…¶å®ƒæ§ä»¶å…¨éƒ¨é”€æ¯
 	map<String, Object*> listObjectsWithName;
 	GetNamedChildrenAndReleaseOthers(this, listObjectsWithName);
 	this->ClearMyTreeRelationOnly();
 
-	// ÉèÖÃ´°¿ÚµÄĞÂId£¬ÓÃÓÚÖØĞÂ¼ÓÔØ
+	// è®¾ç½®çª—å£çš„æ–°Idï¼Œç”¨äºé‡æ–°åŠ è½½
 	m_pSkinRes->GetLayoutManager().ReLoadLayout(
 		this, szLayoutId, listObjectsWithName);
 
-	// ½«Ê£ÓàÃ»ÓĞÔÙ±»Ê¹ÓÃµÄobjectÊÍ·Åµô
+	// å°†å‰©ä½™æ²¡æœ‰å†è¢«ä½¿ç”¨çš„objecté‡Šæ”¾æ‰
 	auto iter3 = listObjectsWithName.begin();
 	for ( ; iter3 != listObjectsWithName.end(); ++iter3)
 	{
@@ -2076,7 +2076,7 @@ void  WindowBase::ChangeSkinLayout(const wchar_t* szLayoutId)
 			m_pCallbackProxy->DoBindPlz(true);
 		}
 
-		// µ÷Õû´°¿Ú´óĞ¡£¬ÒÔÂú×ã×îĞ¡³ß´ç
+		// è°ƒæ•´çª—å£å¤§å°ï¼Œä»¥æ»¡è¶³æœ€å°å°ºå¯¸
 		SIZE minSize = {GetMinWidth(), GetMinHeight()};
 
 		CRect rcWnd;

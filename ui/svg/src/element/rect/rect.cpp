@@ -14,10 +14,6 @@ void Rect::Render(RenderContext &context) {
 
   SkRect rect = SkRect::MakeXYWH(x, y, width, height);
 
-  if (m_fill.value) {
-    context.paint.setColor(m_fill.value);
-  }
-
   if (rx > 0 || ry > 0) {
     context.canvas->drawRRect(SkRRect::MakeRectXY(rect, rx, ry), context.paint);
   } else {

@@ -601,7 +601,11 @@ void Object::UpdateLayout() {
     }
   }
 #else
-  UIASSERT(false);
+  // TODO: 恢复上面的逻辑
+  ILayout* layout = GetLayout();
+  if (layout) {
+    layout->SetDirty(true);
+  }
 #endif
 }
 
@@ -809,13 +813,12 @@ void Object::GetParentRect(Rect *prc) {
 ILayoutParam *Object::GetLayoutParam() { return m_pLayoutParam; }
 
 ILayout *Object::GetLayout() {
-  ILayout *p = nullptr;
-
   Object *obj = m_pParent;
   while (obj) {
-    p = (ILayout *)(obj->SendMessage(UI_MSG_GETLAYOUT));
-    if (p)
-      return p;
+    GetLayoutMessage msg;
+    obj->RouteMessage(&msg);
+    if (msg.layout)
+      return msg.layout;
     obj = obj->m_pParent;
   }
   return nullptr;

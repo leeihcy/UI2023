@@ -26,7 +26,10 @@ void Svg::onRouteMessage(Msg *msg) {
     onFinalConstruct();
     return;
   }
-  
+  if (msg->message == UI_MSG_GETDESIREDSIZE) {
+    static_cast<GetDesiredSizeMessage*>(msg)->size = onGetDesiredSize();
+    return;
+  }
 
   static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
 }
@@ -38,10 +41,10 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   // elements:
   RenderContext context;
   context.canvas = (SkCanvas *)rt->GetHandle();
-  context.paint.setAntiAlias(true);
-  context.svg_size = { m_pISvg->GetWidth(), m_pISvg->GetHeight() };
-  context.view_port_size = { 0, 0 };
+  context.canvas_size = { m_pISvg->GetWidth(), m_pISvg->GetHeight() };
 
+  // 线条抗锯齿
+  context.paint.setAntiAlias(true);
   // 默认黑色
   context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
   
@@ -58,6 +61,15 @@ void Svg::onEraseBkgnd(ui::IRenderTarget *rt) {
   rt->DrawRect(&rc, &c);
 }
 
+ui::Size Svg::onGetDesiredSize() {
+  Size size = {0, 0};
+  if (!m_root) {
+    return size;
+  }
+
+  return m_root->GetDesiredSize();
+}
+
 void Svg::SetAttribute(ui::SerializeParam& data) {}
 
 
@@ -68,6 +80,8 @@ bool Svg::Load(const char *stream) {
 
   ::svg::Dom dom;
   m_root = dom.Parse(stream);
+
+  m_pISvg->UpdateLayout();
   return !!m_root;
 }
 

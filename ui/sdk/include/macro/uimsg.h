@@ -241,18 +241,6 @@ public:                                                                        \
 
 
 //
-//  如果这个对象支持布局，返回布局对象指针。如OBJ_WINDOW,OBJ_PANEL,OBJ_COMPOUND_CONTROL
-//
-//		message: UI_WM_GETLAYOUT
-//		code:
-//		wparam:
-//		lparam
-//
-//	Return:  ILayout*
-//
-#define UI_MSG_GETLAYOUT 168261637
-
-//
 //	获取当前绘制的偏移量，用于OnDraw
 //
 //		wparam:  [out] int* xOffset
@@ -326,23 +314,6 @@ struct GETDESIREDSIZEINFO {
   char *szText;
   int nLimitWidth;
 };
-
-//
-//  获取对象期望大小，不包含对象的Margin，但需要自己去计算padding/border等
-//
-//  wparam : [out] Size*
-//  lparam : GETDESIREDSIZEINFO* (目前仅在ITextRenderBase值不为nullptr)
-//
-#define UI_MSG_GETDESIREDSIZE 168261803
-
-// void  GetDesiredSize(Size* pSize);
-#define UIMSG_GETDESIREDSIZE(func)                                             \
-  if (uMsg == UI_MSG_GETDESIREDSIZE) {                                         \
-    SetMsgHandled(true);                                                       \
-    func((Size *)wParam);                                                      \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 // void GetDesiredSize(Size* pSize, GETDESIREDSIZEINFO* pInfo);
 #define UIMSG_GETDESIREDSIZE2(func)                                            \

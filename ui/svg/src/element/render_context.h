@@ -12,8 +12,13 @@ namespace ui {
 struct RenderContext {
   SkCanvas* canvas;
   SkPaint paint;
-  ui::Size svg_size;
-  ui::Size view_port_size;
+  
+  // 控件大小（画布大小）
+  ui::Size canvas_size;
+
+  // dom内容基于该区域进行作图
+  // 例如 x="50%",是按view_box.width 50%算的，不是svg_size 50%
+  ui::RectXYWH view_box;
 
   int ResolveX(ui::Length& x);
   int ResolveY(ui::Length& y);

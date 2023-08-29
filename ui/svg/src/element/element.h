@@ -10,10 +10,11 @@ namespace svg {
 class Element {
 public:
   virtual ~Element() {}
+  virtual void PrepareRender(RenderContext& context) {}
   virtual void Render(RenderContext& context);
   virtual void SetAttribute(ui::SerializeParam& data);
   virtual void SetDomData(const char* data) {};
-  virtual void AddChild(std::unique_ptr<Element>) {};
+  virtual void AddChild(std::unique_ptr<Element>) {}
   
 
 protected:
@@ -23,10 +24,10 @@ protected:
   // fill-opacity
   // fill-rule
   //
-  // stroke
+  ui::Color m_stroke;
+  ui::Length m_stroke_width;
   // stroke-opacity
   // stroke-linecap
-  // stroke-width
   // stroke-linejoin
   // stroke-dasharray
   // stroke-dashoffset

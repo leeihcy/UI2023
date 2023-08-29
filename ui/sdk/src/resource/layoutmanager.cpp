@@ -54,7 +54,9 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
   if (!pFirstChild)
     return nullptr;
 
-  ILayout *pLayout = (ILayout *)(pNewParent->SendMessage(UI_MSG_GETLAYOUT));
+  GetLayoutMessage msg;
+  pNewParent->RouteMessage(&msg);
+  ILayout *pLayout = msg.layout;
   if (pLayout) {
     pLayout->SetDirty(true);
 

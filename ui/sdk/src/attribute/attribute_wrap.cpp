@@ -189,6 +189,14 @@ IRectAttribute *IRectAttribute::AsData() {
   m_pImpl->AsData();
   return this;
 }
+IRectAttribute * IRectAttribute::SetCompatibleKey(const char* key) {
+  m_pImpl->SetCompatibleKey(key);
+  return this;
+}
+IRectAttribute *IRectAttribute::SetDefault(Rect rc) {
+  m_pImpl->SetDefault(rc);
+  return this;
+}
 
 const char *IRectAttribute::GetKey() { return m_pImpl->GetKey(); }
 const char *IRectAttribute::GetDesc() { return m_pImpl->GetDesc(); }

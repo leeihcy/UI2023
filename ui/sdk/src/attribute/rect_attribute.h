@@ -19,7 +19,7 @@ public:
   void Bind(slot<void(Rect *)> &&s, slot<void(Rect *)> &&g);
 
 public:
-  RectAttribute *SetDefault(Rect *);
+  RectAttribute *SetDefault(Rect);
   IRectAttribute *GetIRectAttribute();
 
 private:

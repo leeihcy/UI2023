@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _UI_SDK_SRC_UTIL_RECTREGION_RECTREGION_H_
+#define _UI_SDK_SRC_UTIL_RECTREGION_RECTREGION_H_
+#include "include/interface.h"
 #include "include/util/rect.h"
 #include <vector>
 
@@ -13,7 +15,7 @@ public:
   Rect *GetArrayPtr();
   const Rect *GetArrayPtr2() const;
   Rect *GetRectPtrAt(unsigned int nIndex);
-  unsigned int GetCount() const;
+  uint GetCount() const;
   void AddRect(const Rect&);
 
   void Destroy();
@@ -50,3 +52,5 @@ private:
   unsigned int m_nCapacity; // TODO
 };
 } // namespace ui
+
+#endif

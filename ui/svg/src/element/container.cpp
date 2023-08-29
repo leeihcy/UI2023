@@ -13,6 +13,7 @@ void Container::RemoveAll() {
 void Container::Render(RenderContext& context) {
   for (auto &child : m_children) {
     RenderContext c = context;
+    child->PrepareRender(c);
     child->Render(c);
   }
 }

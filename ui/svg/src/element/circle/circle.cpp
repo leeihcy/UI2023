@@ -9,10 +9,6 @@ void Circle::Render(RenderContext &context) {
   int cy = context.ResolveY(m_cy);
   int r = context.ResolveX(m_r);
 
-  if (m_fill.value) {
-    context.paint.setColor(m_fill.value);
-  }
-  
   SkPoint pos = SkPoint::Make(cx, cy);
   if (r > 0) {
     context.canvas->drawCircle(pos.x(), pos.y(), r, context.paint);

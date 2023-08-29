@@ -16,11 +16,17 @@ public:
   void Render(RenderContext &context) override;
   void SetAttribute(ui::SerializeParam &data) override;
 
+  ui::Size GetDesiredSize();
+
+private:
+  bool prepareToRender(RenderContext &context);
+
 private:
   ui::Length m_width;
   ui::Length m_height;
 
   // viewBox
+  ui::RectXYWH m_view_box = {-1,-1,-1,-1};
 };
 
 } // namespace svg

@@ -132,6 +132,12 @@ struct Length {
   bool operator == (const Length& o) {
     return o.value == this->value && o.unit == this->unit;
   }
+  static Length MakeNumber(int n) {
+    return {n, Unit::Number};
+  }
+  static Length MakePercent(int n) {
+    return {n, Unit::Percentage};
+  }
 };
 
 } // namespace ui

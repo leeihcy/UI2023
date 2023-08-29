@@ -1,12 +1,10 @@
-#include "include/inc.h"
 #include "skia_render.h"
+#include "include/inc.h"
 #include "include/util/log.h"
-
 
 namespace ui {
 
-void toSkRect(Rect& rc, SkRect *skrect)
-{
+void toSkRect(Rect &rc, SkRect *skrect) {
   skrect->fLeft = rc.left;
   skrect->fTop = rc.top;
   skrect->fRight = rc.right;
@@ -25,52 +23,34 @@ SkiaRenderTarget::~SkiaRenderTarget() {
 
 void SkiaRenderTarget::Release() { delete this; }
 
-
 void SkiaRenderTarget::update_clip_rgn() {
   SkCanvas *canvas = m_sksurface->getCanvas();
-  if (m_stackClipRect.empty()) {
-  //   HRGN hRgn = m_arrayMetaClipRegion.CreateRgn();
-  //   ::SelectClipRgn(GetHDC(), hRgn);
-  //   DeleteObject(hRgn);
-  
-    int count = m_arrayMetaClipRegion.GetCount();
-    for (int i = 0; i < count; i++) {
-      Rect* prc = m_arrayMetaClipRegion.GetRectPtrAt(i);
-      
-      SkRect skrc;
-      toSkRect(*prc, &skrc);
 
-      canvas->clipRect(skrc);
-    }
-    return;
+  int count = m_arrayMetaClipRegion.GetCount();
+  for (int i = 0; i < count; i++) {
+    Rect *prc = m_arrayMetaClipRegion.GetRectPtrAt(i);
+
+    SkRect skrc;
+    toSkRect(*prc, &skrc);
+
+    canvas->clipRect(skrc);
   }
 
-  // RECT rcIntersect = {0, 0, 1, 1};
+  if (!m_stackClipRect.empty()) {
+    auto iter = m_stackClipRect.begin();
 
-  // deque<RECT>::const_iterator iter = m_stackClipRect._Get_container().begin();
-  // CopyRect(&rcIntersect, &(*iter));
-  // iter++;
-  // for (; iter != m_stackClipRect._Get_container().end(); ++iter) {
-  //   ::IntersectRect(&rcIntersect, &rcIntersect, &(*iter));
-  // }
+    Rect rcIntersect = *iter;
+    iter++;
+    
+    for (; iter != m_stackClipRect.end(); ++iter) {
+      rcIntersect.Intersect(*iter, &rcIntersect);
+    }
 
-  // HRGN hRgn = nullptr;
-  // if (!m_arrayMetaClipRegion.GetCount()) {
-  //   hRgn = CreateRectRgnIndirect(&rcIntersect);
-  // } else {
-  //   RectArray array = m_arrayMetaClipRegion;
-  //   if (!array.IntersectRect(&rcIntersect)) {
-  //     RECT rcIntersect = {0, 0, 1, 1};
-  //     hRgn = CreateRectRgnIndirect(&rcIntersect);
-  //   } else {
-  //     hRgn = array.CreateRgn();
-  //   }
-  // }
-
-  // ::SelectClipRgn(GetHDC(), hRgn);
-  // DeleteObject(hRgn);
+    SkRect skrc;
+    toSkRect(rcIntersect, &skrc);
+    canvas->clipRect(skrc);
+  }
 }
-
 
 void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {
   // while (!m_stackClipRect.empty())
@@ -94,16 +74,15 @@ void SkiaRenderTarget::PushRelativeClipRect(const Rect *prc) {
   update_clip_rgn();
 }
 
-void SkiaRenderTarget::PopRelativeClipRect() { 
+void SkiaRenderTarget::PopRelativeClipRect() {
   assert(!m_stackClipRect.empty());
   m_stackClipRect.pop_back();
-
 
   update_clip_rgn();
 }
 
 bool SkiaRenderTarget::IsRelativeRectInClip(const Rect *prc) {
-assert(prc);
+  assert(prc);
   if (!prc)
     return false;
 
@@ -132,11 +111,10 @@ assert(prc);
     return false;
 
   return true;
-
 }
 
 void SkiaRenderTarget::SetOrigin(int x, int y) {
-   if (m_ptOffset.x == x && m_ptOffset.y == y)
+  if (m_ptOffset.x == x && m_ptOffset.y == y)
     return;
 
   int offsetx = x - m_ptOffset.x;
@@ -156,10 +134,10 @@ void SkiaRenderTarget::OffsetOrigin(int x, int y) {
 }
 void SkiaRenderTarget::GetOrigin(int *px, int *py) {
   if (px)
-      *px = m_ptOffset.x;
+    *px = m_ptOffset.x;
 
   if (py)
-      *py = m_ptOffset.y;
+    *py = m_ptOffset.y;
 }
 
 bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {
@@ -176,7 +154,6 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
   SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
 
   m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
-
 
   // test，还没刷新界面，就直接commit的话，会出现全黄色。
 #if defined(DEBUG)
@@ -260,12 +237,10 @@ void SkiaRenderTarget::DrawPolyline(Point *lppt, int nCount, IRenderPen *pPen) {
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::GradientFillH(Rect *lprc, Color colFrom,
-                                     Color colTo) {
+void SkiaRenderTarget::GradientFillH(Rect *lprc, Color colFrom, Color colTo) {
   //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
 }
-void SkiaRenderTarget::GradientFillV(Rect *lprc, Color colFrom,
-                                     Color colTo) {
+void SkiaRenderTarget::GradientFillV(Rect *lprc, Color colFrom, Color colTo) {
   //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
 }
 

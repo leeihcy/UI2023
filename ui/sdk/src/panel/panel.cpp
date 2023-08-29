@@ -58,6 +58,14 @@ void Panel::onRouteMessage(ui::Msg *msg) {
     onPostPaint(static_cast<EraseBkgndMessage*>(msg)->rt);
     return;
   }
+  else if (msg->message == UI_MSG_GETDESIREDSIZE) {
+    onGetDesiredSize(&static_cast<GetDesiredSizeMessage*>(msg)->size);
+    return;
+  }
+  else if (msg->message == UI_MSG_GETLAYOUT) {
+    static_cast<GetLayoutMessage*>(msg)->layout = m_pLayout;
+    return;
+  }
   if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto* m = static_cast<QueryInterfaceMessage*>(msg);
     if (m->uuid == PanelMeta::Get().UUID()) {
@@ -106,10 +114,6 @@ void Panel::SetLayout(ILayout *p) {
   }
 }
 
-long Panel::OnGetLayoutPtr(unsigned int uMsg, long wParam, long lParam) {
-  return (long)m_pLayout;
-}
-
 void Panel::virtualOnSize(unsigned int nType, unsigned int cx,
                           unsigned int cy) {
   Object::virtualOnSize(nType, cx, cy);
@@ -117,7 +121,7 @@ void Panel::virtualOnSize(unsigned int nType, unsigned int cx,
     m_pLayout->Arrange(nullptr);
 }
 
-void Panel::OnGetDesiredSize(Size *pSize) {
+void Panel::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
 
   if (this->m_pLayout)

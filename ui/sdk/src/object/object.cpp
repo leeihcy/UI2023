@@ -964,10 +964,12 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   Object::ForwardMessageToChildObject(this, &msg);
 
   if (m_pParent) {
-    ILayout *pLayout = (ILayout *)(m_pParent->SendMessage(UI_MSG_GETLAYOUT));
-    if (pLayout) {
+    GetLayoutMessage msg;
+    m_pParent->RouteMessage(&msg);
+
+    if (msg.layout) {
       ArrangeParam param = {m_pIObject, ArrangeReason::VisibleChanged};
-      pLayout->Arrange(&param);
+      msg.layout->Arrange(&param);
     }
   }
 

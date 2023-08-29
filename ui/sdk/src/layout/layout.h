@@ -95,7 +95,7 @@ public:
     p->Serialize(&data);
 
     // 节省内存
-    if (pMapAttr->GetAttrCount() == 0) {
+    if (pMapAttr && pMapAttr->GetAttrCount() == 0) {
       pObj->GetImpl()->ClearMapAttribute();
     }
 

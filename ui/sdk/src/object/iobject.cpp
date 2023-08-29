@@ -647,10 +647,10 @@ void  IObject::Invalidate(Rect* prcObj, int nCount)
 // {
 //     __pImpl->UpdateObjectBkgnd(bUpdateNow);
 // }
-// void  IObject::UpdateLayout() 
-// { 
-//     __pImpl->UpdateLayout();
-// }
+void  IObject::UpdateLayout() 
+{ 
+    __pImpl->UpdateLayout();
+}
 // void  IObject::UpdateMyLayout()
 // { 
 //     __pImpl->UpdateMyLayout();

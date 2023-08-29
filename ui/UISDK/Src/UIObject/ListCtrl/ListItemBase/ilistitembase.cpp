@@ -267,7 +267,9 @@ void  IListItemBase::SetCtrlData(long* p)
 }
 void  IListItemBase::GetDesiredSize(SIZE* pSize)                              
 {
-    UISendMessage(this, UI_MSG_GETDESIREDSIZE, (WPARAM)pSize); 
+    GetDesiredSizeMessage msg;
+    this->RouteMessage(&msg);
+    *pSize = msg.size;
 }
 int   IListItemBase::GetLineIndex()                                           
 {

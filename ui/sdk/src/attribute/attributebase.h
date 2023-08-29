@@ -58,8 +58,11 @@ protected:
 
 private:
   std::string m_strKey;
-  std::string m_strKeyCompatible; // 兼容key。例如：width="100"，也可以写成
-                             // layout.width="100"
+  
+  // 兼容key。例如：width="100"，也可以写成
+  // layout.width="100"
+  std::string m_strKeyCompatible; 
+                             
   std::string m_strDesc;
 
   // 例如back.render.image，它的groupname是ImageRender，它的

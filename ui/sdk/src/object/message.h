@@ -53,6 +53,7 @@ public:
   void emit(const char* event_name, Event* event);
 
   IMeta *GetMeta();
+  void RouteMessage(Msg* msg);
 
   void ClearNotify();
   void SetNotify(IMessage *pObj, int nMsgMapID = 0);

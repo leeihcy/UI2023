@@ -55,6 +55,8 @@ Color ColorAttribute::parse_color(const char* text) {
   else if (strcmp("teal", text) == 0) { return Color::MakeRGB(0,128,128); }
   else if (strcmp("aqua", text) == 0) { return Color::MakeRGB(0,255,255); }
 
+  // TODO: 
+  else if (strcmp("orange", text) == 0) { return Color::MakeRGB(255, 165, 0); }
   return Color::transparent();
 }
 

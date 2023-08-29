@@ -18,7 +18,7 @@ void Ellipse::Render(RenderContext &context) {
 }
 
 void Ellipse::SetAttribute(ui::SerializeParam &data) {
-  Element::SetAttribute(data);
+  Shape::SetAttribute(data);
 
   ui::AttributeSerializerWrap s(&data, "Ellipse");
   s.AddLength("cx", m_cx);

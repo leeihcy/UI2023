@@ -2,11 +2,13 @@
 #define _UI_SDK_INCLUDE_MACRO_MSG_H_
 
 #include "sdk/include/event.h"
+#include "sdk/include/util/rect.h"
 
 namespace ui {
 struct IMeta;
 struct IResource;
 struct IRenderTarget;
+struct ILayout;
 
 #define UI_MSG_FINALCONSTRUCT 168252120
 struct FinalConstructMessage : public Msg {
@@ -61,6 +63,37 @@ struct SerializeMessage : public Msg {
   SerializeMessage() { message = UI_MSG_SERIALIZE; }
   SerializeParam* param = nullptr;
 };
+
+//  如果这个对象支持布局，返回布局对象指针。如OBJ_WINDOW,OBJ_PANEL,OBJ_COMPOUND_CONTROL
+#define UI_MSG_GETLAYOUT 168261637
+struct GetLayoutMessage : public Msg {
+  GetLayoutMessage() { message = UI_MSG_GETLAYOUT; }
+  // out
+  ILayout* layout = nullptr;
+};
+
+//
+//  获取对象期望大小，不包含对象的Margin，但需要自己去计算padding/border等
+//
+//  wparam : [out] Size*
+//  lparam : GETDESIREDSIZEINFO* (目前仅在ITextRenderBase值不为nullptr)
+//
+#define UI_MSG_GETDESIREDSIZE 168261803
+struct GetDesiredSizeMessage : public Msg {
+  GetDesiredSizeMessage() { message = UI_MSG_GETDESIREDSIZE; };
+  // out
+  Size size = {0, 0};
+};
+
+// void  GetDesiredSize(Size* pSize);
+// #define UIMSG_GETDESIREDSIZE(func)                                             \
+//   if (uMsg == UI_MSG_GETDESIREDSIZE) {                                         \
+//     SetMsgHandled(true);                                                       \
+//     func((Size *)wParam);                                                      \
+//     if (IsMsgHandled())                                                        \
+//       return true;                                                             \
+//   }
+
 
 struct MSG {
 #if defined(OS_WIN)
