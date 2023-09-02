@@ -17,16 +17,22 @@ public:
   void SetAttribute(ui::SerializeParam &data) override;
 
   ui::Size GetDesiredSize();
-
 private:
   bool prepareToRender(RenderContext &context);
+  
+  void calcViewPort(RenderContext &context);
+  SkMatrix calcViewBoxMatrix(RenderContext &context);
+
+  ui::Size getViewPortWithDefault();
 
 private:
   ui::Length m_width;
   ui::Length m_height;
 
   // viewBox
-  ui::RectXYWH m_view_box = {-1,-1,-1,-1};
+  // 所有子元素都是基于这个坐标进行绘制的，而不是svg控件大小
+  ui::RectFXYWH m_view_box;
+  bool m_view_box_configed = false;
 };
 
 } // namespace svg

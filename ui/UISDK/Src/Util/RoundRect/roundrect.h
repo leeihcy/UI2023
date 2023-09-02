@@ -2,7 +2,7 @@
 
 /*
 
-// ¹¹ÔìÒ»¸öÔ²ĞÎµÄÍ·Ïñ
+// æ„é€ ä¸€ä¸ªåœ†å½¢çš„å¤´åƒ
 void  CreateCirclePortrait(__in Gdiplus::Bitmap* pBitmap, int nPortraitSize, __out CImage& image)
 {
     image.Destroy();
@@ -16,7 +16,7 @@ void  CreateCirclePortrait(__in Gdiplus::Bitmap* pBitmap, int nPortraitSize, __o
     {
         Graphics g(hDC);
         g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-        g.SetPixelOffsetMode(PixelOffsetModeHalf);   // <-- ±ØĞë¼ÓÉÏÕâ¸ö£¬·ñÔò»­³öÀ´µÄÍ¼Æ¬±ßÔµ²»ÕıÈ·
+        g.SetPixelOffsetMode(PixelOffsetModeHalf);   // <-- å¿…é¡»åŠ ä¸Šè¿™ä¸ªï¼Œå¦åˆ™ç”»å‡ºæ¥çš„å›¾ç‰‡è¾¹ç¼˜ä¸æ­£ç¡®
 
         RectF dst(0, 0, (REAL)nPortraitSize, (REAL)nPortraitSize);
         g.DrawImage(pBitmap, dst, 0, 0,
@@ -64,11 +64,11 @@ protected:
 		int xDst; int yDst;
 		int xSrc; int ySrc;
 		int width; int height;
-		bool bClipMode;  // ²Ã¼ôÄ£Ê½ÏÂÃæ£¬ÎŞ·¨½øĞĞ¶Ô½ÇÏßÓÅ»¯´¦Àí
+		bool bClipMode;  // è£å‰ªæ¨¡å¼ä¸‹é¢ï¼Œæ— æ³•è¿›è¡Œå¯¹è§’çº¿ä¼˜åŒ–å¤„ç†
 	};
 
-    // ×¢£º´¦ÀíËÄ¸öÔ²½ÇÊ±£¬ÆäÊµÖ»ĞèÒª´¦ÀíÒ»°ë¼´¿É£¨Õı·½ĞÎµÄÒ»°ë£¬Ò»¸öÈı½Ç¿ª£©
-    //     Òò´ËÔÚÑ­»·¹ı³ÌÖĞ£¬Í¨¹ıµ÷ÕûxLoopÀ´ÊµÏÖÖ»´¦ÀíÒ»°ëµÄÇøÓò
+    // æ³¨ï¼šå¤„ç†å››ä¸ªåœ†è§’æ—¶ï¼Œå…¶å®åªéœ€è¦å¤„ç†ä¸€åŠå³å¯ï¼ˆæ­£æ–¹å½¢çš„ä¸€åŠï¼Œä¸€ä¸ªä¸‰è§’å¼€ï¼‰
+    //     å› æ­¤åœ¨å¾ªç¯è¿‡ç¨‹ä¸­ï¼Œé€šè¿‡è°ƒæ•´xLoopæ¥å®ç°åªå¤„ç†ä¸€åŠçš„åŒºåŸŸ
     void  HandleLeftTopCorner(CORNER_DATA& data);
     void  HandleLeftBottomCorner(CORNER_DATA& data);
     void  HandleRightTopCorner(CORNER_DATA& data);
@@ -79,18 +79,18 @@ protected:
 //     void HandleYLine(byte* pDstBits, int nDstPitch, int yFrom, int yTo);
 
 private:
-    // ËÄ¸öÔ²½ÇµÄ°ë¾¶
+    // å››ä¸ªåœ†è§’çš„åŠå¾„
     int  lefttop;
     int  righttop;
     int  leftbottom;
     int  rightbottom;
 
-//    bool  m_bHandleBorder;  // ÊÇ·ñ´¦ÀíËÄÖÜÏßÌõ
+//    bool  m_bHandleBorder;  // æ˜¯å¦å¤„ç†å››å‘¨çº¿æ¡
 
     HBITMAP  m_hBitmap;
     unsigned int     m_nBitmapWidth;
     unsigned int     m_nBitmapHeigth;
-    unsigned int     m_nBitmapAvailableWidth;   // ÓÉÓÚÍ¼Æ¬¹²Ïí£¬¿ÉÄÜÖ»Ê¹ÓÃÁËm_hBitmapÖĞ×óÉÏ½ÇµÄÒ»²¿·Ö
+    unsigned int     m_nBitmapAvailableWidth;   // ç”±äºå›¾ç‰‡å…±äº«ï¼Œå¯èƒ½åªä½¿ç”¨äº†m_hBitmapä¸­å·¦ä¸Šè§’çš„ä¸€éƒ¨åˆ†
     unsigned int     m_nBitmapAvailableHeight;
     unsigned int     m_nPitch;
     byte*    m_pBits;
@@ -104,6 +104,6 @@ bool  CreateRoundRectPath3(Gdiplus::GraphicsPath* pPath, RECT* prc,
                            int nRadiusLT, int nRadiusRT, int nRadiusRB, int nRadiusLB);
 bool  CreateRoundRectPath4(Gdiplus::GraphicsPath* pPath, RECT* prc, REGION4* pRadius);
 
-extern RoundRectHandler  g_CommonRoundRectHandler;       // ÆÕÍ¨Ô²½Ç£¬ÀıÈçpanelÔ²½Ç
-extern RoundRectHandler  g_Circle24_24RoundRectHandler;  // Ô²ĞÎÍ·Ïñ
+extern RoundRectHandler  g_CommonRoundRectHandler;       // æ™®é€šåœ†è§’ï¼Œä¾‹å¦‚panelåœ†è§’
+extern RoundRectHandler  g_Circle24_24RoundRectHandler;  // åœ†å½¢å¤´åƒ
 }

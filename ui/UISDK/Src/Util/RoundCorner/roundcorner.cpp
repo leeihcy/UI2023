@@ -4,7 +4,7 @@
 namespace ui
 {
 
-// hBitmapƒø«∞÷ª◊ˆ¡À topdown ¿‡–Õ
+// hBitmapÁõÆÂâçÂè™ÂÅö‰∫Ü topdown Á±ªÂûã
 void  RoundCorner_WindowBitmap(HBITMAP hBitmap, RECT* prc, REGION4* pRadius)
 {
     if (!hBitmap || !pRadius)
@@ -40,7 +40,7 @@ void  RoundCorner_WindowBitmap(HBITMAP hBitmap, RECT* prc, REGION4* pRadius)
     *GETPIXEL(x, y) = 0
     
 
-    // ◊Û…œΩ«
+    // Â∑¶‰∏äËßí
     switch (pRadius->left) 
     {
     case 0:
@@ -91,7 +91,7 @@ void  RoundCorner_WindowBitmap(HBITMAP hBitmap, RECT* prc, REGION4* pRadius)
         break;
     }
     
-    // ”“…œΩ«
+    // Âè≥‰∏äËßí
     switch (pRadius->top)
     {
     case 0:
@@ -134,7 +134,7 @@ void  RoundCorner_WindowBitmap(HBITMAP hBitmap, RECT* prc, REGION4* pRadius)
         break;
     }
 
-    // ”“œ¬Ω«
+    // Âè≥‰∏ãËßí
     switch (pRadius->right)
     {
     case 0:
@@ -177,7 +177,7 @@ void  RoundCorner_WindowBitmap(HBITMAP hBitmap, RECT* prc, REGION4* pRadius)
         break;
     }
 
-    // ◊Ûœ¬Ω«
+    // Â∑¶‰∏ãËßí
     switch (pRadius->bottom)
     {
     case 0:
@@ -246,11 +246,11 @@ void  RoundCorner_Portrait(HBITMAP hBitmap, RECT* prc)
         ::SetRect(&rect, 0, 0, bm.bmWidth, bm.bmHeight);
     }
 
-    // ƒ¨»œª∫¥Ê‘⁄◊Û…œΩ«£¨»°(0,0)
+    // ÈªòËÆ§ÁºìÂ≠òÂú®Â∑¶‰∏äËßíÔºåÂèñ(0,0)
     int w = prc->right;
     int h = prc->left;
 
-    // 25%Õ∏
+    // 25%ÈÄè
     POINT ptAlpha0[4] = { {0, 0}, {w-1, 0}, {0, h-1}, {w-1, h-1} };
     for (int i = 0; i < 4; i++)
     {
@@ -265,7 +265,7 @@ void  RoundCorner_Portrait(HBITMAP hBitmap, RECT* prc)
         *pAlpha = a;                    // a
     }
 
-    // 50%Õ∏
+    // 50%ÈÄè
     POINT ptAlpha1[8] = { {1, 0}, {w-2, 0}, {0, 1}, {w-1,1},  {0, h-2}, {w-1, h-2}, {1, h-1}, {w-2, h-1} };
     for (int i = 0; i < 8; i++)
     {

@@ -56,6 +56,8 @@ void SoftwareCompositor::virtualCommit(const RectRegion &arrDirtyInWindow) {
     m_pRootLayer->GetRenderTarget(), 
     arrDirtyInWindow.GetArrayPtr2(), 
     nCount);
+
+  m_pRootLayer->GetRenderTarget()->Save("/Users/libo/Desktop/1.png");
 }
 
 void SoftwareCompositor::commit_recursion(Layer *p) {

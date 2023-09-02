@@ -34,15 +34,15 @@ private:
 public:
     HHOOK  m_hHook;
 private:
-    HWND   m_hImageWnd;   // ÍÏ×§µÄÍ¼Æ¬´°¿Ú
-    HWND   m_hTextWnd;    // ÍÏ×§µÄÎÄ×ÖÃèÊö´°¿Ú
+    HWND   m_hImageWnd;   // æ‹–æ‹½çš„å›¾ç‰‡çª—å£
+    HWND   m_hTextWnd;    // æ‹–æ‹½çš„æ–‡å­—æè¿°çª—å£
     HFONT  m_hFont;
 
     Point  m_ptOffset;
     std::string  m_strDescription;
-	HBITMAP  m_hIcon;     // ½öÒıÓÃ£¬²»¸ºÔğÏú»Ù
+	HBITMAP  m_hIcon;     // ä»…å¼•ç”¨ï¼Œä¸è´Ÿè´£é”€æ¯
 
-	// Èç¹û±¾´ÎµÄÎÄ±¾ÓëÉÏ´ÎÒ»Ñù£¬Ôò²»ÓÃ¸üĞÂ´°¿Ú
+	// å¦‚æœæœ¬æ¬¡çš„æ–‡æœ¬ä¸ä¸Šæ¬¡ä¸€æ ·ï¼Œåˆ™ä¸ç”¨æ›´æ–°çª—å£
     std::string  m_strPrevDescription;  
 
 	UI::Image  m_imageBkg;

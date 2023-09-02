@@ -16,8 +16,8 @@ public:
     ui::Rect rc = {100, 100, 500, 400};
     m_window->Create(rc);
     
-    // test_hello_svg();
-    test_shapes();
+    test_hello_svg();
+    // test_shapes();
     // test_viewbox();
     // test_iconfont();
     
@@ -41,9 +41,9 @@ public:
     static const char* buffer = R"(
       <svg version="1.1" 
         baseProfile="full" 
-        width="300" height="200"
+        width="400" height="400" viewBox_="0 0 300 200"
         xmlns="http://www.w3.org/2000/svg"> 
-        <rect width="100%" height="100%" fill="red" /> 
+        <rect width="100%" height="100%" fill="red" rx="50" ry="50"/> 
         <circle cx="150" cy="100" r="80" fill="green" /> 
         <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text> 
       </svg>
@@ -98,7 +98,16 @@ public:
   }
 
   void test_iconfont() {
-    static const char* buffer = R"(<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1693018373729" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1350" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M512.1 64.3c-247.3 0-447.9 200.6-447.9 447.9S264.8 960 512.1 960 960 759.4 960 512.1 759.4 64.3 512.1 64.3zM281.3 588.5c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z m229.7 0c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z m229.7 0c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z" p-id="1351"></path></svg>)";
+    static const char* buffer = R"(
+      <?xml version="1.0" standalone="no"?>
+      <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+        <svg t="1693018373729" class="icon" 
+          viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1350" xmlns:xlink="http://www.w3.org/1999/xlink" 
+          width="200" height="200">
+        <path d="M512.1 64.3c-247.3 0-447.9 200.6-447.9 447.9S264.8 960 512.1 960 960 759.4 960 512.1 759.4 64.3 512.1 64.3zM281.3 588.5c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z m229.7 0c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z m229.7 0c-42.2 0-76.4-34.2-76.4-76.4s34.2-76.4 76.4-76.4 76.4 34.2 76.4 76.4-34.2 76.4-76.4 76.4z" p-id="1351">
+        </path>
+        </svg>
+      )";
     m_svg->Load(buffer);
   }
 

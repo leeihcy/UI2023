@@ -1,8 +1,8 @@
 #pragma once
 
-// ²ÉÓÃwebkitµÄ·½Ê½Éú³ÉÒõÓ°
+// é‡‡ç”¨webkitçš„æ–¹å¼ç”Ÿæˆé˜´å½±
 
-// QT shadow blur×¢ÊÍ
+// QT shadow bluræ³¨é‡Š
 // https://gitorious.org/ofi-labs/x2/commit/2bb67f86d262ccf20fefccdb29056c092b2398cf?diffmode=sidebyside
 
 
@@ -10,16 +10,16 @@
 namespace ui
 {
 	//
-	// ²ÎÊı£º
+	// å‚æ•°ï¼š
 	//
 	//	hBitmap
-	//		[in,out] ±ØĞëÊÇ32Î»µÄtop-downÎ»Í¼
+	//		[in,out] å¿…é¡»æ˜¯32ä½çš„top-downä½å›¾
 	//  colorShadow
-	//		[in] ÒõÓ°ÑÕÉ«
+	//		[in] é˜´å½±é¢œè‰²
 	//	RECT
-	//		[in] HBITMAPÉÏÒª½øĞĞblurµÄÇøÓò¡£Èç¹ûÎªnullptr±íÊ¾Õû¸öÍ¼Æ¬·¶Î§
+	//		[in] HBITMAPä¸Šè¦è¿›è¡Œblurçš„åŒºåŸŸã€‚å¦‚æœä¸ºnullptrè¡¨ç¤ºæ•´ä¸ªå›¾ç‰‡èŒƒå›´
 	//	nRadius
-	//		[in] 2-128Ö®¼ä
+	//		[in] 2-128ä¹‹é—´
 	//
     void  ShadowBlur(HBITMAP hBitmap, COLORREF colorShadow, RECT* prcBlur, int nRadius);
 }

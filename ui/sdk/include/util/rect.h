@@ -8,10 +8,18 @@ struct Point {
   int x;
   int y;
 };
+struct PointF {
+  float x;
+  float y;
+};
 
 struct Size {
   int width;
   int height;
+};
+struct SizeF {
+  float width;
+  float height;
 };
 
 struct RectXYWH {
@@ -20,12 +28,24 @@ struct RectXYWH {
   int width;
   int height;
 };
+struct RectFXYWH {
+  float x;
+  float y;
+  float width;
+  float height;
+};
 
 struct RectLTRB {
   int left;
   int top;
   int right;
   int bottom;
+};
+struct RectFLTRB {
+  float left;
+  float top;
+  float right;
+  float bottom;
 };
 
 struct Rect : public RectLTRB {

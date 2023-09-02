@@ -2,6 +2,8 @@
 #include "include/inc.h"
 #include "include/util/log.h"
 
+#include "SkStream.h"
+
 namespace ui {
 
 void toSkRect(Rect &rc, SkRect *skrect) {
@@ -41,7 +43,7 @@ void SkiaRenderTarget::update_clip_rgn() {
 
     Rect rcIntersect = *iter;
     iter++;
-    
+
     for (; iter != m_stackClipRect.end(); ++iter) {
       rcIntersect.Intersect(*iter, &rcIntersect);
     }
@@ -304,11 +306,19 @@ IRenderBrush *SkiaRenderTarget::CreateSolidBrush(Color *pColor) {
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
                                      Render2TargetParam *pParam) {}
 
-void SkiaRenderTarget::Save(const char *szPath) {
+void SkiaRenderTarget::Save(const char *path) {
   // if (m_pRenderBuffer)
-  // {
   //     m_pRenderBuffer->Dump(szPath);
-  // }
+  sk_sp<SkImage> img(m_sksurface->makeImageSnapshot());
+  if (!img) {
+    return;
+  }
+  sk_sp<SkData> png(img->encodeToData());
+  if (!png) {
+    return;
+  }
+  SkFILEWStream out(path);
+  (void)out.write(png->data(), png->size());
 }
 
 void SkiaRenderTarget::Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray,

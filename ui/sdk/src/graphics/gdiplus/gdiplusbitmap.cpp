@@ -7,8 +7,8 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 //
 //	Remark
 //
-//		Q: ÎªÊ²Ã´ÓÃGdiplusÔÚÍ¸Ã÷´°¿ÚÉÏÃæ»æÖÆÎÄ×Ö²»ÄÜÓÃalpha 255?
-//		A: (´ÓÍøÉÏ³­µÄ£¬²»Ò»¶¨ÕıÈ·)  alphaÖµ»áÓÉÓÚRedÖµµÄ½øÎ»µ¼ÖÂ255±ä³É0
+//		Q: ä¸ºä»€ä¹ˆç”¨Gdiplusåœ¨é€æ˜çª—å£ä¸Šé¢ç»˜åˆ¶æ–‡å­—ä¸èƒ½ç”¨alpha 255?
+//		A: (ä»ç½‘ä¸ŠæŠ„çš„ï¼Œä¸ä¸€å®šæ­£ç¡®)  alphaå€¼ä¼šç”±äºRedå€¼çš„è¿›ä½å¯¼è‡´255å˜æˆ0
 //
 
 
@@ -135,7 +135,7 @@ void GdiplusIconRenderBitmap::CreateInstance(IRenderBitmap** ppOutRef)
 	*ppOutRef = p;
 }
 
-// Ç¿ÖÆ¼ÓÔØÎªÖ§³Ö32Î»alphaµÄ
+// å¼ºåˆ¶åŠ è½½ä¸ºæ”¯æŒ32ä½alphaçš„
 bool GdiplusIconRenderBitmap::LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LOAD_FLAG e)
 {
 	SAFE_DELETE_GDIOBJECT(m_hBitmapToFixIcon);
@@ -163,7 +163,7 @@ bool GdiplusIconRenderBitmap::LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LO
 		image.GetPitch(),
 		PixelFormat32bppARGB,
 		(BYTE*)image.GetBits() );
-	m_hBitmapToFixIcon = image.Detach();    // Bitmap²»¸ºÔğ±£´æbitsÊı¾İ£¬Òò´Ëimage.m_hBitmap²»ÄÜÌáÇ°ÊÍ·Å£¬ĞèÒªÔö¼ÓÒ»¸ö³ÉÔ±±äÁ¿±£´æ¸Ã¾ä±ú
+	m_hBitmapToFixIcon = image.Detach();    // Bitmapä¸è´Ÿè´£ä¿å­˜bitsæ•°æ®ï¼Œå› æ­¤image.m_hBitmapä¸èƒ½æå‰é‡Šæ”¾ï¼Œéœ€è¦å¢åŠ ä¸€ä¸ªæˆå‘˜å˜é‡ä¿å­˜è¯¥å¥æŸ„
 #endif
 	return true;
 }

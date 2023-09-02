@@ -44,7 +44,7 @@ shared_library("uisvg") {
       "src/element/polyline/polyline.cpp",
       
       "src/ui/isvg.cpp",
-      "src/ui/svg.cpp",
+      "src/ui/svg_control.cpp",
       "src/ui/svg_layout.cpp",
       "src/uisvgapi.cpp",
     ]

@@ -2,32 +2,32 @@
 //
 //	Gif Image 
 //
-//		½«gifµÄÃ¿Ò»Ö¡Í¼Æ¬½âÎö³öÀ´±£´æ
+//		å°†gifçš„æ¯ä¸€å¸§å›¾ç‰‡è§£æå‡ºæ¥ä¿å­˜
 //
 //	[version]
 //		1.0  libo 2012.3.17 beijing  
-//			Íê³É»ù±¾¹¦ÄÜ£¨Ê£ÏÂTODO£©
+//			å®ŒæˆåŸºæœ¬åŠŸèƒ½ï¼ˆå‰©ä¸‹TODOï¼‰
 //
 //	[TODO]
-//		1. ÓÅ»¯
-//		2. ËõÂÔÍ¼Ä£Ê½
-//		4. Ò»Ğ©Í¼Æ¬ÔÚWIN7ÉÏ¼ÓÔØ³öÀ´µÄÊı¾İÓĞÎÊÌâ£¬µ¼ÖÂÏÔÊ¾´íÎó£¬Èç£¨res\\ÍÖÔ²¹æ.gif£©
-//		5. ĞèÒªÖ§³Ö´Ó×ÊÔ´ÖĞ¼ÓÔØÍ¼Æ¬
-//		7. ÓĞÒ»ÕÅÍ¼Æ¬µÄµÚÈıÖ¡½âÂëÊ§°ÜÁË
+//		1. ä¼˜åŒ–
+//		2. ç¼©ç•¥å›¾æ¨¡å¼
+//		4. ä¸€äº›å›¾ç‰‡åœ¨WIN7ä¸ŠåŠ è½½å‡ºæ¥çš„æ•°æ®æœ‰é—®é¢˜ï¼Œå¯¼è‡´æ˜¾ç¤ºé”™è¯¯ï¼Œå¦‚ï¼ˆres\\æ¤­åœ†è§„.gifï¼‰
+//		5. éœ€è¦æ”¯æŒä»èµ„æºä¸­åŠ è½½å›¾ç‰‡
+//		7. æœ‰ä¸€å¼ å›¾ç‰‡çš„ç¬¬ä¸‰å¸§è§£ç å¤±è´¥äº†
 //
 //	[Remark]
-//		1. ÔÚxpÉÏÃæÊ¹ÓÃimage¼ÓÔØgif»áÌáÊ¾³öÒì³£
-//		2. TransparentBlt MSDN½â¾öÖ»Ö§³ÖDDB£¬Òò´ËÒª½«DIB×ª»»³ÉDDB½øĞĞÍ¸Ã÷´¦Àí
-//		3. Èç¹û´æÔÚlocal color table£¬ÒªÊ¹ÓÃlocal color table£¬²»ÄÜÊ¹ÓÃglobal color table
-//		4. ½á¹¹µÄÓòÖĞ£¬²»ÒªÊ¹ÓÃ char£¬ÒªÊ¹ÓÃunsigned char£¬·ñÔò»á³ö´í
-//		5. GIFµÄÍ¸Ã÷É«¿ÉÄÜºÍ±³¾°É«¶¼ÊÇ°×É«£¬µ«Á½ÕßµÄË÷ÒıÊÇ²»Ò»ÑùµÄ¡£Òò´ËÔÚ´¦ÀíGIFÍ¸Ã÷µÄÊ±ºò
-//		   ĞèÒªÖØĞÂÈ¥½âÎöË÷ÒıÖµ£¬½«Ë÷ÒıÖµ==Í¸Ã÷µÄÌØÊâ´¦Àí
-//		6. Óöµ½Ò»¸ögifÍ¼£¬¹²14Ö¡£¬Ç°ÃæËùÓĞÖ¡µÄdisposal¶¼ÊÇ2£¬×îºóÒ»Ö¡ÊÇ1£¬µ¼ÖÂÑ­»·½áÊøÊ±Ê±×îºóÒ»Ö¡µÄÍ¼ÏñºÍµÚÒ»Ö¡µÄ
-//		   Í¼ÏñÒ»ÆğÏÔÊ¾ÁË¡£ÕâÊÇ²»ÊÇÒâÎ¶×Åµ±»­ÍêËùÓĞÖ¡Ê±£¬ÒªÇå¿Õ±³¾°£¿
-//		7. Ê¹ÓÃGdiplus¼ÓÔØ·Ö²ğ³öÀ´µÄµ¥Ö¡GIFÍ¼Ê±£¬»á³öÏÖÍ¼Æ¬Êı¾İÖĞ£¬±¾À´ÊÇÍ¸Ã÷Î»ÖÃµÄÄÇ¸öµãµÄÖµµÄµ÷É«°åË÷ÒıÖµ£¬¾ÓÈ»
-//		   ºÍµ±Ç°GIFµÄtransparent index²»Ò»ÖÂ£¬µ¼ÖÂÍ¼Æ¬½âÎöÊ§°Ü£¬±³¾°É«ÏÔÊ¾´íÎó¡£
-//         Òò´ËÖğ½¥¾ö¶¨·ÅÆúGdiplus£¬¿ªÊ¼³¢ÊÔ×Ô¼º½âÂë
-//		8. Delay Time µ½µ×ÊÇÄÄÒ»Ö¡µÄÊ±¼ä<--Ó¦¸ÃÊÇÕâÒ»Ö¡ÏÔÊ¾Íêºó±£Áô¶à³¤Ê±¼äÔÙÏÔÊ¾ÏÂÒ»Ö¡
+//		1. åœ¨xpä¸Šé¢ä½¿ç”¨imageåŠ è½½gifä¼šæç¤ºå‡ºå¼‚å¸¸
+//		2. TransparentBlt MSDNè§£å†³åªæ”¯æŒDDBï¼Œå› æ­¤è¦å°†DIBè½¬æ¢æˆDDBè¿›è¡Œé€æ˜å¤„ç†
+//		3. å¦‚æœå­˜åœ¨local color tableï¼Œè¦ä½¿ç”¨local color tableï¼Œä¸èƒ½ä½¿ç”¨global color table
+//		4. ç»“æ„çš„åŸŸä¸­ï¼Œä¸è¦ä½¿ç”¨ charï¼Œè¦ä½¿ç”¨unsigned charï¼Œå¦åˆ™ä¼šå‡ºé”™
+//		5. GIFçš„é€æ˜è‰²å¯èƒ½å’ŒèƒŒæ™¯è‰²éƒ½æ˜¯ç™½è‰²ï¼Œä½†ä¸¤è€…çš„ç´¢å¼•æ˜¯ä¸ä¸€æ ·çš„ã€‚å› æ­¤åœ¨å¤„ç†GIFé€æ˜çš„æ—¶å€™
+//		   éœ€è¦é‡æ–°å»è§£æç´¢å¼•å€¼ï¼Œå°†ç´¢å¼•å€¼==é€æ˜çš„ç‰¹æ®Šå¤„ç†
+//		6. é‡åˆ°ä¸€ä¸ªgifå›¾ï¼Œå…±14å¸§ï¼Œå‰é¢æ‰€æœ‰å¸§çš„disposaléƒ½æ˜¯2ï¼Œæœ€åä¸€å¸§æ˜¯1ï¼Œå¯¼è‡´å¾ªç¯ç»“æŸæ—¶æ—¶æœ€åä¸€å¸§çš„å›¾åƒå’Œç¬¬ä¸€å¸§çš„
+//		   å›¾åƒä¸€èµ·æ˜¾ç¤ºäº†ã€‚è¿™æ˜¯ä¸æ˜¯æ„å‘³ç€å½“ç”»å®Œæ‰€æœ‰å¸§æ—¶ï¼Œè¦æ¸…ç©ºèƒŒæ™¯ï¼Ÿ
+//		7. ä½¿ç”¨GdiplusåŠ è½½åˆ†æ‹†å‡ºæ¥çš„å•å¸§GIFå›¾æ—¶ï¼Œä¼šå‡ºç°å›¾ç‰‡æ•°æ®ä¸­ï¼Œæœ¬æ¥æ˜¯é€æ˜ä½ç½®çš„é‚£ä¸ªç‚¹çš„å€¼çš„è°ƒè‰²æ¿ç´¢å¼•å€¼ï¼Œå±…ç„¶
+//		   å’Œå½“å‰GIFçš„transparent indexä¸ä¸€è‡´ï¼Œå¯¼è‡´å›¾ç‰‡è§£æå¤±è´¥ï¼ŒèƒŒæ™¯è‰²æ˜¾ç¤ºé”™è¯¯ã€‚
+//         å› æ­¤é€æ¸å†³å®šæ”¾å¼ƒGdiplusï¼Œå¼€å§‹å°è¯•è‡ªå·±è§£ç 
+//		8. Delay Time åˆ°åº•æ˜¯å“ªä¸€å¸§çš„æ—¶é—´<--åº”è¯¥æ˜¯è¿™ä¸€å¸§æ˜¾ç¤ºå®Œåä¿ç•™å¤šé•¿æ—¶é—´å†æ˜¾ç¤ºä¸‹ä¸€å¸§
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -70,30 +70,30 @@ class GifImageBase;
 interface IStreamBufferReader;
 class Application;
 
-struct Gif_TimerItem  // ¼ÆÊ±Æ÷Êı¾İ
+struct Gif_TimerItem  // è®¡æ—¶å™¨æ•°æ®
 {
 public:
-	int  nId;       // ÓÃÓÚkill_timer
-	int  nStart;    // ¿ªÊ¼Ê±´Á
-	int  nWait;     // µÈ´ıÊ±³¤
-	int  nRepeat;   // Ñ­»·´ÎÊı -1±íÊ¾ÎŞÏŞÑ­»·
+	int  nId;       // ç”¨äºkill_timer
+	int  nStart;    // å¼€å§‹æ—¶æˆ³
+	int  nWait;     // ç­‰å¾…æ—¶é•¿
+	int  nRepeat;   // å¾ªç¯æ¬¡æ•° -1è¡¨ç¤ºæ— é™å¾ªç¯
 
 	void* pData;    // GifImage*
 
 public:
-	// »ñÈ¡Ê£ÓàÊ±¼ä
+	// è·å–å‰©ä½™æ—¶é—´
 	inline int  get_remain(){ return nWait - (::GetTickCount() - nStart); }
 
-	// ¸üĞÂÏÂÒ»´ÎÏÔÊ¾Ê±¼ä
-//	inline void update_repeat() { nStart += nWait; };          // TODO: Ê¹ÓÃ¸Ã·½·¨¿É±£Ö¤×¼È·ĞÔ£¬µ«»áµ¼ÖÂÔÚÊÜµ½×èÈû»Ö¸´Ê±£¬gif»á¿ì½ø²¥·Å
-    inline void update_repeat() {     // TODO: Ê¹ÓÃ¸Ã·½·¨¿É±£Ö¤Æ½»¬¶È£¬µ«²»ÄÜ±£Ö¤ÏìÓ¦µÄ¾«¶È
+	// æ›´æ–°ä¸‹ä¸€æ¬¡æ˜¾ç¤ºæ—¶é—´
+//	inline void update_repeat() { nStart += nWait; };          // TODO: ä½¿ç”¨è¯¥æ–¹æ³•å¯ä¿è¯å‡†ç¡®æ€§ï¼Œä½†ä¼šå¯¼è‡´åœ¨å—åˆ°é˜»å¡æ¢å¤æ—¶ï¼Œgifä¼šå¿«è¿›æ’­æ”¾
+    inline void update_repeat() {     // TODO: ä½¿ç”¨è¯¥æ–¹æ³•å¯ä¿è¯å¹³æ»‘åº¦ï¼Œä½†ä¸èƒ½ä¿è¯å“åº”çš„ç²¾åº¦
 		nStart = ::GetTickCount(); } 
 };
 
-// [0]¹Ø±ÕÍ¸Ã÷±³¾°£¬Ã¿Ò»Ö¡ÍêÈ«¸²¸ÇÇ°Ò»Ö¡     No disposal specified. The decoder is not required to take any action.
-// [1]ÔöÁ¿£¬Ã¿Ò»Ö¡Ïà¶ÔÓÚÊÇÇ°Ò»Ö¡Ôö¼ÓµÄĞÂÄÚÈİ Do not dispose. The graphic is to be left in place.
-// [2]Ê¹ÓÃÍ¸Ã÷¶È£¬»æÖÆÃ¿Ö¡Ç°Ë¢ÉÏÍ¸Ã÷±³¾°É«   Restore to background color. The area used by the graphic must be restored to the background color.
-// [3]»¹Ô­µ½Ç°Ò»·ùÍ¼Ïñ                       Restore to previous. The decoder is required to restore the area overwritten by the graphic with what was there prior to rendering the graphic.
+// [0]å…³é—­é€æ˜èƒŒæ™¯ï¼Œæ¯ä¸€å¸§å®Œå…¨è¦†ç›–å‰ä¸€å¸§     No disposal specified. The decoder is not required to take any action.
+// [1]å¢é‡ï¼Œæ¯ä¸€å¸§ç›¸å¯¹äºæ˜¯å‰ä¸€å¸§å¢åŠ çš„æ–°å†…å®¹ Do not dispose. The graphic is to be left in place.
+// [2]ä½¿ç”¨é€æ˜åº¦ï¼Œç»˜åˆ¶æ¯å¸§å‰åˆ·ä¸Šé€æ˜èƒŒæ™¯è‰²   Restore to background color. The area used by the graphic must be restored to the background color.
+// [3]è¿˜åŸåˆ°å‰ä¸€å¹…å›¾åƒ                       Restore to previous. The decoder is required to restore the area overwritten by the graphic with what was there prior to rendering the graphic.
 #define GIF_DISPOSAL_NULL               0
 #define GIF_DISPOSAL_LEFT               1
 #define GIF_DISPOSAL_RESTORE_BACKGROUND 2
@@ -117,8 +117,8 @@ struct GIF_FileMark
 		strcpy(version, "");
 	}
 
-	char signature[3];                    //GIF±ê¼Ç "GIF"
-	char version[3];                      //GIF°æ±¾ºÅ 87a»ò89a
+	char signature[3];                    //GIFæ ‡è®° "GIF"
+	char version[3];                      //GIFç‰ˆæœ¬å· 87aæˆ–89a
 
 	bool Valid()
 	{
@@ -132,7 +132,7 @@ struct GIF_FileMark
 	}
 };
 
-struct GIF_LogicalScreenDescriptor        // Âß¼­ÆÁÄ»ÃèÊö¿é
+struct GIF_LogicalScreenDescriptor        // é€»è¾‘å±å¹•æè¿°å—
 {
 	GIF_LogicalScreenDescriptor()
 	{
@@ -145,21 +145,21 @@ struct GIF_LogicalScreenDescriptor        // Âß¼­ÆÁÄ»ÃèÊö¿é
 		pixel_aspect_ratio = 0;
 	}
 
-	unsigned short logical_screen_width;  // Âß¼­ÆÁÄ»¿í¶È£¬WARNING:Õâ¸ö²»ÊÇÕæÊµµÄ×îÖÕµÄ¿íºÍ¸ß¡£ÀıÈçÒ»ÕÅ34*33µÄgifÍ¼Æ¬£¬ÕâÁ½¸öÖµµÄ½á¹ûÊÇ36*36
-	unsigned short logical_screen_height; // Âß¼­ÆÁÄ»¸ß¶È
+	unsigned short logical_screen_width;  // é€»è¾‘å±å¹•å®½åº¦ï¼ŒWARNING:è¿™ä¸ªä¸æ˜¯çœŸå®çš„æœ€ç»ˆçš„å®½å’Œé«˜ã€‚ä¾‹å¦‚ä¸€å¼ 34*33çš„gifå›¾ç‰‡ï¼Œè¿™ä¸¤ä¸ªå€¼çš„ç»“æœæ˜¯36*36
+	unsigned short logical_screen_height; // é€»è¾‘å±å¹•é«˜åº¦
 
-	// °ü×°Óò
-	unsigned char  size_of_global_color_table : 3;  // È«¾Ö²ÊÉ«±í´óĞ¡£¨È«¾Ö²ÊÉ«±íµÄ³¤¶ÈÎª£º3*pow(2,this+1)£©
-	unsigned char  sort_flag : 1;                   // ²ÊÉ«ÅÅĞò±êÖ¾£¨0±íÊ¾Ã»ÓĞÖØÒªĞÔÅÅĞò£¬1±íÊ¾×îÖØÒªµÄÑÕÉ«ÔÚÇ°£©
-	unsigned char  color_resolution : 3;            // ²ÊÉ«·Ö±æÂÊ£¨??£©
-	unsigned char  global_color_table_flag : 1;     // È«¾Ö²ÊÉ«±êÖ¾£¨ÊÇ·ñ´æÔÚÈ«¾Ö²ÊÉ«±í£©
+	// åŒ…è£…åŸŸ
+	unsigned char  size_of_global_color_table : 3;  // å…¨å±€å½©è‰²è¡¨å¤§å°ï¼ˆå…¨å±€å½©è‰²è¡¨çš„é•¿åº¦ä¸ºï¼š3*pow(2,this+1)ï¼‰
+	unsigned char  sort_flag : 1;                   // å½©è‰²æ’åºæ ‡å¿—ï¼ˆ0è¡¨ç¤ºæ²¡æœ‰é‡è¦æ€§æ’åºï¼Œ1è¡¨ç¤ºæœ€é‡è¦çš„é¢œè‰²åœ¨å‰ï¼‰
+	unsigned char  color_resolution : 3;            // å½©è‰²åˆ†è¾¨ç‡ï¼ˆ??ï¼‰
+	unsigned char  global_color_table_flag : 1;     // å…¨å±€å½©è‰²æ ‡å¿—ï¼ˆæ˜¯å¦å­˜åœ¨å…¨å±€å½©è‰²è¡¨ï¼‰
 
-	unsigned char  background_color_index;          // ±³¾°ÑÕÉ«Ë÷Òı
-	unsigned char  pixel_aspect_ratio;              // ÏñËØ¿í¸ß±È
+	unsigned char  background_color_index;          // èƒŒæ™¯é¢œè‰²ç´¢å¼•
+	unsigned char  pixel_aspect_ratio;              // åƒç´ å®½é«˜æ¯”
 };
 
 
-struct GIF_GraphicControlExtension    // gifÍ¼Æ¬Ö¡°´Å¥Êı¾İ
+struct GIF_GraphicControlExtension    // gifå›¾ç‰‡å¸§æŒ‰é’®æ•°æ®
 {
 	GIF_GraphicControlExtension()
 	{
@@ -173,17 +173,17 @@ struct GIF_GraphicControlExtension    // gifÍ¼Æ¬Ö¡°´Å¥Êı¾İ
 		block_terminator = 0;
 	}
 
-	unsigned char  block_size;             // ¹Ì¶¨Îª4
+	unsigned char  block_size;             // å›ºå®šä¸º4
 	unsigned char  transparent_color_flag : 1;
 	unsigned char  user_input_flag : 1;
-	unsigned char  disposal_methold : 3;   // ÖØÒª£º¼ûGIF_DISPOSAL_NULLµÄ¶¨Òå¡£ÔÚ»æÖÆÍêµ±Ç°Ö¡Í¼ÏñÖ®ºó£¨²»ÊÇÖ®Ç°£©£¬ĞèÒªÈçºÎ´¦Àí£ºIndicates the way in which the graphic is to be treated after being displayed.
+	unsigned char  disposal_methold : 3;   // é‡è¦ï¼šè§GIF_DISPOSAL_NULLçš„å®šä¹‰ã€‚åœ¨ç»˜åˆ¶å®Œå½“å‰å¸§å›¾åƒä¹‹åï¼ˆä¸æ˜¯ä¹‹å‰ï¼‰ï¼Œéœ€è¦å¦‚ä½•å¤„ç†ï¼šIndicates the way in which the graphic is to be treated after being displayed.
 	unsigned char  reserved : 3;
-	unsigned short delay_time;             // ÖØÒª£ºÃ¿Ò»Ö¡µÄÏÔÊ¾Ê±¼ä
-	unsigned char  transparent_color_index;// ÖØÒª£ºÃ¿Ò»Ö¡µÄÍ¸Ã÷É«
+	unsigned short delay_time;             // é‡è¦ï¼šæ¯ä¸€å¸§çš„æ˜¾ç¤ºæ—¶é—´
+	unsigned char  transparent_color_index;// é‡è¦ï¼šæ¯ä¸€å¸§çš„é€æ˜è‰²
 	unsigned char  block_terminator;
 };
 
-struct GIF_ImageDescriptor                // Í¼ÏñÃèÊö¿é
+struct GIF_ImageDescriptor                // å›¾åƒæè¿°å—
 {
 	GIF_ImageDescriptor() 
 	{
@@ -196,21 +196,21 @@ struct GIF_ImageDescriptor                // Í¼ÏñÃèÊö¿é
 		local_color_table_flag = 0;
 	}
 
-	unsigned short image_left_position;    // Í¼Ïñ×ó±ßÎ»ÖÃ(px)
-	unsigned short image_top_position;     // Í¼Ïñ¶¥²¿Î»ÖÃ(px)
-	unsigned short image_width;            // Í¼Ïñ¿í¶È
-	unsigned short image_height;           // Í¼Ïñ¸ß¶È
+	unsigned short image_left_position;    // å›¾åƒå·¦è¾¹ä½ç½®(px)
+	unsigned short image_top_position;     // å›¾åƒé¡¶éƒ¨ä½ç½®(px)
+	unsigned short image_width;            // å›¾åƒå®½åº¦
+	unsigned short image_height;           // å›¾åƒé«˜åº¦
 
-	unsigned char size_of_local_color_table:3;      // ÓÃÓÚ¼ÆËã¾Ö²¿²ÊÉ«±íÖĞ°üº¬µÄ×Ö½ÚÊı
-	unsigned char reserved : 2;                     // ±£Áô
-	unsigned char sort_flag : 1;                    // ÓëÈ«¾Ö²ÊÉ«±íÖĞµÄsort flagÓòº¬ÒåÏàÍ¬
-	unsigned char interlace_flag : 1;               // ±íÊ¾¸ÃÍ¼±êÊÇ²»ÊÇ½»²åÍ¼Ïñ
-	unsigned char local_color_table_flag : 1;       // ¾Ö²¿²ÊÉ«±í±êÖ¾
+	unsigned char size_of_local_color_table:3;      // ç”¨äºè®¡ç®—å±€éƒ¨å½©è‰²è¡¨ä¸­åŒ…å«çš„å­—èŠ‚æ•°
+	unsigned char reserved : 2;                     // ä¿ç•™
+	unsigned char sort_flag : 1;                    // ä¸å…¨å±€å½©è‰²è¡¨ä¸­çš„sort flagåŸŸå«ä¹‰ç›¸åŒ
+	unsigned char interlace_flag : 1;               // è¡¨ç¤ºè¯¥å›¾æ ‡æ˜¯ä¸æ˜¯äº¤æ’å›¾åƒ
+	unsigned char local_color_table_flag : 1;       // å±€éƒ¨å½©è‰²è¡¨æ ‡å¿—
 };
 #pragma pack()
 
 //
-//	gifÖ¡Êı¾İ
+//	gifå¸§æ•°æ®
 //	
 struct GIF_Frame
 {
@@ -220,14 +220,14 @@ struct GIF_Frame
 	UI::ImageWrap*  GetIImage();
 
 public:
-	GIF_GraphicControlExtension  control;      // °üº¬ÁËÕâÒ»Ö¡Í¼ÏñµÄÑÓÊ±
-	GIF_ImageDescriptor          descriptor;   // °üº¬ÁËÕâÒ»Ö¡Í¼ÏñµÄÆ«ÒÆºÍ´óĞ¡
+	GIF_GraphicControlExtension  control;      // åŒ…å«äº†è¿™ä¸€å¸§å›¾åƒçš„å»¶æ—¶
+	GIF_ImageDescriptor          descriptor;   // åŒ…å«äº†è¿™ä¸€å¸§å›¾åƒçš„åç§»å’Œå¤§å°
 
-	int           nRealDelayTime;              // = control.delay_time*10£¬±ÜÃâÖØ¸´¼ÆËã
-	UI::Image     image;                       // ÖØÒª£ºÍ¼Æ¬½âÎöÆ÷
+	int           nRealDelayTime;              // = control.delay_time*10ï¼Œé¿å…é‡å¤è®¡ç®—
+	UI::Image     image;                       // é‡è¦ï¼šå›¾ç‰‡è§£æå™¨
 
 private:
-	UI::ImageWrap*   pImageWrap;                  // ·µ»Ø¸øÍâ²¿Ê¹ÓÃµÄÖ¸Õë£¬ÓÉÄÚ²¿¸ºÔğÎ¬»¤ÆäÉúÃüÖÜÆÚ
+	UI::ImageWrap*   pImageWrap;                  // è¿”å›ç»™å¤–éƒ¨ä½¿ç”¨çš„æŒ‡é’ˆï¼Œç”±å†…éƒ¨è´Ÿè´£ç»´æŠ¤å…¶ç”Ÿå‘½å‘¨æœŸ
 };
 
 
@@ -235,7 +235,7 @@ private:
 
 
 
-// Ò»¸öGIF¿ÉÄÜ»áÔÚ¶à´¦ÏÔÊ¾£¬Òò´ËGifImageÀàÖÁÉÙ»á°üº¬Ò»¸öGifImageDrawItem
+// ä¸€ä¸ªGIFå¯èƒ½ä¼šåœ¨å¤šå¤„æ˜¾ç¤ºï¼Œå› æ­¤GifImageç±»è‡³å°‘ä¼šåŒ…å«ä¸€ä¸ªGifImageDrawItem
 class GifImageRender : public IGifImageRender
 {
 public:
@@ -266,19 +266,19 @@ protected:
 	void   handle_disposal(GIF_Frame* pFrame);
 	void   commit(HDC hDC, int x, int y);
 
-public:  // Gif»æÖÆÏß³Ìµ÷ÓÃº¯Êı
+public:  // Gifç»˜åˆ¶çº¿ç¨‹è°ƒç”¨å‡½æ•°
 	void   on_tick(Gif_TimerItem* pTimerItem);   
 
 protected:
-	Gif_Timer_Notify  m_notify;       // µ½¹ı»æÖÆÏÂÒ»Ö¡Ê±¼äÊ±µÄÍ¨Öª·½Ê½
+	Gif_Timer_Notify  m_notify;       // åˆ°è¿‡ç»˜åˆ¶ä¸‹ä¸€å¸§æ—¶é—´æ—¶çš„é€šçŸ¥æ–¹å¼
 
-	HDC         m_hMemCanvasDC;       // m_hDCµÄ¼æÈİDC£¬Ë«»º³å
-	HBITMAP     m_hMemCanvasBitmap;   // Ë«»º³å
-	HDC         m_hMemPrevSaveDC;     // ±£´æÉÏÒ»Ö¡Í¼Æ¬µÄ¼æÈİDC, disposal=3µÄÇé¿ö
-	HBITMAP     m_hMemPrevSaveBitmap; // ±£´æÉÏÒ»Ö¡Í¼Æ¬, disposal=3µÄÇé¿ö
+	HDC         m_hMemCanvasDC;       // m_hDCçš„å…¼å®¹DCï¼ŒåŒç¼“å†²
+	HBITMAP     m_hMemCanvasBitmap;   // åŒç¼“å†²
+	HDC         m_hMemPrevSaveDC;     // ä¿å­˜ä¸Šä¸€å¸§å›¾ç‰‡çš„å…¼å®¹DC, disposal=3çš„æƒ…å†µ
+	HBITMAP     m_hMemPrevSaveBitmap; // ä¿å­˜ä¸Šä¸€å¸§å›¾ç‰‡, disposal=3çš„æƒ…å†µ
 
-	int         m_nCurFrameIndex;     // µ±Ç°»æÖÆÖ¡Ë÷Òı
-	GIF_DRAW_STATUS  m_nDrawStatus;   // µ±Ç°gif»æÖÆ×´Ì¬:¿ªÊ¼¡¢ÔİÍ£¡¢Í£Ö¹
+	int         m_nCurFrameIndex;     // å½“å‰ç»˜åˆ¶å¸§ç´¢å¼•
+	GIF_DRAW_STATUS  m_nDrawStatus;   // å½“å‰gifç»˜åˆ¶çŠ¶æ€:å¼€å§‹ã€æš‚åœã€åœæ­¢
 
 	GifImageBase*    m_pGifImage;
 	Application*   m_pUIApp;
@@ -288,7 +288,7 @@ protected:
 
 typedef map<int, GifImageRender*> GifImageRenderItemMap;
 
-// ÅÉÉú³ö GifImage/PngListGifImage
+// æ´¾ç”Ÿå‡º GifImage/PngListGifImage
 class GifImageBase
 {
 public:
@@ -298,7 +298,7 @@ public:
     void  SetIGifImage(IGifImage* p);
     IGifImage*  GetIGifImage();
 
-public:  // Íâ²¿½Ó¿Ú
+public:  // å¤–éƒ¨æ¥å£
     virtual bool  Load(const TCHAR* szPath, IMapAttribute* pMapAttrib=nullptr) = 0;
     virtual bool  Load(IStreamBufferReader*  pBuffer, IMapAttribute* pMapAttrib=nullptr) = 0;
     virtual bool  RealLoad(IStreamBufferReader*  pBuffer) = 0;
@@ -327,34 +327,34 @@ public:
 	ImageWrap*  GetFrameIImage( int nIndex );
 	
 
-protected:   // ÄÚ²¿½Ó¿Ú
+protected:   // å†…éƒ¨æ¥å£
 	GifImageRender*  GetDrawItemByIndex(int nIndex);
 	void    DeleteRender(GifImageRender*  pItem);
 
 protected:
-	vector<GIF_Frame*>  m_vFrame;             // gifÍ¼Æ¬Ö¡ÁĞ±í
+	vector<GIF_Frame*>  m_vFrame;             // gifå›¾ç‰‡å¸§åˆ—è¡¨
 
-	int                 m_nImageWidth;        // Í¼Æ¬¿í¶È
-	int                 m_nImageHeight;       // Í¼Æ¬¸ß¶È
+	int                 m_nImageWidth;        // å›¾ç‰‡å®½åº¦
+	int                 m_nImageHeight;       // å›¾ç‰‡é«˜åº¦
 
-	int                 m_nNextRenderItemIndex; // ÏÂÒ»¸öGifImageDrawItemµÄ±êÊ¶
-	GifImageRenderItemMap m_mapRenderItem;        // »æÍ¼Êı¾İÁĞ±í
+	int                 m_nNextRenderItemIndex; // ä¸‹ä¸€ä¸ªGifImageDrawItemçš„æ ‡è¯†
+	GifImageRenderItemMap m_mapRenderItem;        // ç»˜å›¾æ•°æ®åˆ—è¡¨
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	// 1. GifÖĞµÄ±³¾°»­Ë¢ÊÇ¿ÉÒÔ×Ô¼º¶¨ÒåµÄ¡£
-	//     a. ¿ÉÒÔ²ÉÓÃGIFÖĞµÄbackground_color_index×Ö¶ÎÀ´»ñÈ¡ÆäÄÚ²¿µÄ±³¾°É«
-	//     b. ¿ÉÒÔ²ÉÓÃwindowsµÄÏµÍ³´°¿ÚÑÕÉ«×÷Îª±³¾°É«
-	//	   c. ¿ÉÒÔ×Ô¼º¶¨ÒåÒ»¸öÑÕÉ«×÷Îª±³¾°É«
+	// 1. Gifä¸­çš„èƒŒæ™¯ç”»åˆ·æ˜¯å¯ä»¥è‡ªå·±å®šä¹‰çš„ã€‚
+	//     a. å¯ä»¥é‡‡ç”¨GIFä¸­çš„background_color_indexå­—æ®µæ¥è·å–å…¶å†…éƒ¨çš„èƒŒæ™¯è‰²
+	//     b. å¯ä»¥é‡‡ç”¨windowsçš„ç³»ç»Ÿçª—å£é¢œè‰²ä½œä¸ºèƒŒæ™¯è‰²
+	//	   c. å¯ä»¥è‡ªå·±å®šä¹‰ä¸€ä¸ªé¢œè‰²ä½œä¸ºèƒŒæ™¯è‰²
 	//
-	// 2. background_color_indexÒıÓÃµÄÊÇÈ«¾ÖÑÕÉ«±íÖĞµÄÖµ£¬Èç¹ûÃ»ÓĞÈ«¾ÖÑÕÉ«±í¾ÍÃ»ÓĞ¸Ã±³¾°»­Ë¢
+	// 2. background_color_indexå¼•ç”¨çš„æ˜¯å…¨å±€é¢œè‰²è¡¨ä¸­çš„å€¼ï¼Œå¦‚æœæ²¡æœ‰å…¨å±€é¢œè‰²è¡¨å°±æ²¡æœ‰è¯¥èƒŒæ™¯ç”»åˆ·
 	//
-	// 3. Ã¿Ò»Ö¡ÖĞµÄdisposal==2 restore to backgroundÊÇ±íÊ¾»¹Ô­¸ÃÖ¡RECT·¶Î§ÄÚµÄ±³¾°£¬¶ø²»ÊÇ»¹Ô­Õû·ùÍ¼Æ¬µÄ±³¾°
+	// 3. æ¯ä¸€å¸§ä¸­çš„disposal==2 restore to backgroundæ˜¯è¡¨ç¤ºè¿˜åŸè¯¥å¸§RECTèŒƒå›´å†…çš„èƒŒæ™¯ï¼Œè€Œä¸æ˜¯è¿˜åŸæ•´å¹…å›¾ç‰‡çš„èƒŒæ™¯
 	//
 	//////////////////////////////////////////////////////////////////////////
-	HBRUSH              m_hBrushTransparent;  // ÓÃÓÚÊµÏÖÍ¸Ã÷µÄ»­Ë¢
+	HBRUSH              m_hBrushTransparent;  // ç”¨äºå®ç°é€æ˜çš„ç”»åˆ·
 
-	HWND                m_hForwardMsgHWND;    // ÓÃÓÚGifImageRenderItemµÄÏß³Ì·¢ËÍÏûÏ¢
+	HWND                m_hForwardMsgHWND;    // ç”¨äºGifImageRenderItemçš„çº¿ç¨‹å‘é€æ¶ˆæ¯
 	friend class GifImageRender;
 
 private:
@@ -388,16 +388,16 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  LZW ½âÂë GIF Êı¾İ
+//  LZW è§£ç  GIF æ•°æ®
 //
-//  ²Î¿¼×ÊÁÏ:
+//  å‚è€ƒèµ„æ–™:
 //		http://www.w3.org/Graphics/GIF/spec-gif89a.txt
 //		http://blog.csdn.net/norsd/article/details/2823159
 //		http://blog.csdn.net/whycadi/article/details/760576
 //
 //	TODO:
-//		ÓĞÒ»ÕÅÍ¼Æ¬½âÂëÊ§°Ü¡£(wSuffix>m_nDictUpper)£¬¶ø²»ÊÇ¸ÕºÃÏàµÈ... ºóÀ´ÓÃ
-//      gdiplus½âÂë³É¹¦ÁË¡£µ½µ×ÊÇÄÄ´íÁËÄØ£¿
+//		æœ‰ä¸€å¼ å›¾ç‰‡è§£ç å¤±è´¥ã€‚(wSuffix>m_nDictUpper)ï¼Œè€Œä¸æ˜¯åˆšå¥½ç›¸ç­‰... åæ¥ç”¨
+//      gdiplusè§£ç æˆåŠŸäº†ã€‚åˆ°åº•æ˜¯å“ªé”™äº†å‘¢ï¼Ÿ
 //
 //////////////////////////////////////////////////////////////////////////
 struct DictItem
@@ -414,35 +414,35 @@ public:
 
 	bool  Decode(const byte* pSrcData, int nSrcDataSize);
 
-	// ¼ì²éprefix suffixÊÇ·ñÔÚ×ÖµäÖĞ´æÔÚ
+	// æ£€æŸ¥prefix suffixæ˜¯å¦åœ¨å­—å…¸ä¸­å­˜åœ¨
 	inline bool  CheckExist(WORD wValue1, WORD wValue2);
 
-	// Êä³öÒ»¸öÓĞĞ§½á¹û¡£Èç¹ûwÖµÈÔÈ»ÊÇÒ»¸ö×ÖµäÏî£¬¼ÌĞøËÑË÷¡£
+	// è¾“å‡ºä¸€ä¸ªæœ‰æ•ˆç»“æœã€‚å¦‚æœwå€¼ä»ç„¶æ˜¯ä¸€ä¸ªå­—å…¸é¡¹ï¼Œç»§ç»­æœç´¢ã€‚
 	inline void  Output(WORD w);
 
-	// Ïò×ÖµäÖĞÌí¼ÓÒ»Ïî
+	// å‘å­—å…¸ä¸­æ·»åŠ ä¸€é¡¹
 	inline void  PushDict(WORD wPrefix, byte wSuffix);
 			    
 private:
-	DictItem  m_dict[4097];      // ×ÖµäÊı×é. GIF¹æ·¶½¨ÒéµÄ 2^12 ´óĞ¡£¬ÆäÖĞÇ°2^8ÆäÊµÊÇ²»ĞèÒª¹ÜµÄ£¬ÎªÔ­Ê¼Êı¾İ£¨0-255£©µÄË÷Òı
-	int    m_nDictLower;         // µ±Ç°×ÖµäÖĞµÄµÚÒ»¸öÓĞĞ§Ë÷Òı£¬³õÊ¼Îª 255+2
-	int    m_nDictUpper;         // µ±Ç°×ÖµäÖĞµÄ×î´óË÷Òı£¬³õÊ¼Îª255+2
+	DictItem  m_dict[4097];      // å­—å…¸æ•°ç»„. GIFè§„èŒƒå»ºè®®çš„ 2^12 å¤§å°ï¼Œå…¶ä¸­å‰2^8å…¶å®æ˜¯ä¸éœ€è¦ç®¡çš„ï¼Œä¸ºåŸå§‹æ•°æ®ï¼ˆ0-255ï¼‰çš„ç´¢å¼•
+	int    m_nDictLower;         // å½“å‰å­—å…¸ä¸­çš„ç¬¬ä¸€ä¸ªæœ‰æ•ˆç´¢å¼•ï¼Œåˆå§‹ä¸º 255+2
+	int    m_nDictUpper;         // å½“å‰å­—å…¸ä¸­çš„æœ€å¤§ç´¢å¼•ï¼Œåˆå§‹ä¸º255+2
 
-	int    m_nInitBitLength;     // Í¼Æ¬Ö¡Êı¾İÁ÷µÄµÚÒ»¸öÊı¾İ£¬LZW code size£¬±íÊ¾m_nCurBitLengthµÄ³õÊ¼Öµ
-	int    m_nCurBitLength;      // µ±Ç°Òª´ÓÊı¾İÁ÷ÖĞ¶ÁÈ¡µÄÎ»Êı£¨²»ÊÇ×Ö½ÚÊı£©
-	int    m_nCurBitLengthEx;    // ÓÃÓÚ±È½Ï£¬±ÜÃâÖØ¸´¼ÆËã
+	int    m_nInitBitLength;     // å›¾ç‰‡å¸§æ•°æ®æµçš„ç¬¬ä¸€ä¸ªæ•°æ®ï¼ŒLZW code sizeï¼Œè¡¨ç¤ºm_nCurBitLengthçš„åˆå§‹å€¼
+	int    m_nCurBitLength;      // å½“å‰è¦ä»æ•°æ®æµä¸­è¯»å–çš„ä½æ•°ï¼ˆä¸æ˜¯å­—èŠ‚æ•°ï¼‰
+	int    m_nCurBitLengthEx;    // ç”¨äºæ¯”è¾ƒï¼Œé¿å…é‡å¤è®¡ç®—
 
-	byte*  m_pResultData;        // ½âÂëºóÊä³öµÄÊı¾İ
-	int    m_nResultDataSize;    // m_pResultDataµÄÊı¾İ´óĞ¡¡£½âÂëÍêºó£¬m_pResultDataÓ¦¸ÃµÈÓÚ0
-	int    m_nWidth;             // ³õÊ¼»¯Ê± m_nResultDataSize = m_nWidth*m_nHeight£¬Ö¸Í¼Æ¬µÄ¿íºÍ¸ß
+	byte*  m_pResultData;        // è§£ç åè¾“å‡ºçš„æ•°æ®
+	int    m_nResultDataSize;    // m_pResultDataçš„æ•°æ®å¤§å°ã€‚è§£ç å®Œåï¼Œm_pResultDataåº”è¯¥ç­‰äº0
+	int    m_nWidth;             // åˆå§‹åŒ–æ—¶ m_nResultDataSize = m_nWidth*m_nHeightï¼ŒæŒ‡å›¾ç‰‡çš„å®½å’Œé«˜
 	int    m_nHeight;
 
-	WORD   GIF_LZW_CLEAN_TAG;    // CLEAR±ê¼ÇµÄÖµ
-	WORD   GIF_LZW_END_TAG;      // END±ê¼ÇµÄÖµ
+	WORD   GIF_LZW_CLEAN_TAG;    // CLEARæ ‡è®°çš„å€¼
+	WORD   GIF_LZW_END_TAG;      // ENDæ ‡è®°çš„å€¼
 };
 
 //
-//	pngÁĞ±íĞÎÊ½µÄGIFÍ¼Æ¬
+//	pngåˆ—è¡¨å½¢å¼çš„GIFå›¾ç‰‡
 //
 class PngListGifImage : public GifImageBase
 {

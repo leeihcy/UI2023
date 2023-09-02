@@ -6,7 +6,7 @@
 
 using namespace ui;
 
-// TODO: ÈçºÎÓÅ»¯³ý·¨´¦Àí
+// TODO: å¦‚ä½•ä¼˜åŒ–é™¤æ³•å¤„ç†
 
 RoundRectHandler::RoundRectHandler()
 {
@@ -27,9 +27,9 @@ RoundRectHandler::~RoundRectHandler()
         DeleteDC(m_hDC);
 }
 //
-// ½«TOP ¡¢BOTTOM ÕâÁ½ÐÐÐé»¯£¬ÓëÔ²½Ç½øÐÐÏÎ½Ó
+// å°†TOP ã€BOTTOM è¿™ä¸¤è¡Œè™šåŒ–ï¼Œä¸Žåœ†è§’è¿›è¡Œè¡”æŽ¥
 //
-// pDstBits£º ÕâÒ»ÐÐ¿ªÊ¼µÄ×Ö½Ú£¨0,0£©»òÕß£¨0, bottom£©
+// pDstBitsï¼š è¿™ä¸€è¡Œå¼€å§‹çš„å­—èŠ‚ï¼ˆ0,0ï¼‰æˆ–è€…ï¼ˆ0, bottomï¼‰
 //
 // void RoundRectHandler::HandleXLine(byte* pDstBits, int xFrom, int xTo)
 // {
@@ -44,9 +44,9 @@ RoundRectHandler::~RoundRectHandler()
 //     }
 // }
 //
-// ½«LEFT¡¢RIGHT ÕâÁ½ÁÐ½øÐÐÐé»¯£¬ÓëÔ²½Ç½øÐÐÏÎ½Ó
+// å°†LEFTã€RIGHT è¿™ä¸¤åˆ—è¿›è¡Œè™šåŒ–ï¼Œä¸Žåœ†è§’è¿›è¡Œè¡”æŽ¥
 // 
-// pDstBits£ºÕâÒ»ÁÐ¿ªÊ¼µÄÎ»ÖÃ£¨0,0£©»òÕß£¨right, 0£©
+// pDstBitsï¼šè¿™ä¸€åˆ—å¼€å§‹çš„ä½ç½®ï¼ˆ0,0ï¼‰æˆ–è€…ï¼ˆright, 0ï¼‰
 // void RoundRectHandler::HandleYLine(byte* pDstBits, int nDstPitch, int yFrom, int yTo)
 // {
 //     pDstBits = pDstBits + (yFrom)*nDstPitch;
@@ -69,8 +69,8 @@ void  RoundRectHandler::HandleRightTopCorner(CORNER_DATA& data)
 	
 
     byte a = 0;  // alpha
-    byte aOrigin = 0; // Ô­Ê¼alpha
-    byte aLast = 0;   // ×îÖÕalpha
+    byte aOrigin = 0; // åŽŸå§‹alpha
+    byte aLast = 0;   // æœ€ç»ˆalpha
     int i = 0;  // x index
 
 	int yLoop = data.height;
@@ -115,8 +115,8 @@ void  RoundRectHandler::HandleRightBottomCorner(CORNER_DATA& data)
 	byte* pSrcBits = data.pSrcBits + (data.nSrcPitch)*data.ySrc;
 	
     byte a = 0;  // alpha
-    byte aOrigin = 0; // Ô­Ê¼alpha
-    byte aLast = 0;   // ×îÖÕalpha
+    byte aOrigin = 0; // åŽŸå§‹alpha
+    byte aLast = 0;   // æœ€ç»ˆalpha
     int i = 0;  // x index
 
 	int yLoop = data.height;
@@ -163,8 +163,8 @@ void  RoundRectHandler::HandleLeftBottomCorner(CORNER_DATA& data)
 	byte* pSrcBits = data.pSrcBits + (data.nSrcPitch)*data.ySrc;
 
     byte a = 0;  // alpha
-    byte aOrigin = 0; // Ô­Ê¼alpha
-    byte aLast = 0;   // ×îÖÕalpha
+    byte aOrigin = 0; // åŽŸå§‹alpha
+    byte aLast = 0;   // æœ€ç»ˆalpha
     int i = 0;  // x index
 
 	int yLoop = data.height;
@@ -208,8 +208,8 @@ void  RoundRectHandler::HandleLeftTopCorner(CORNER_DATA& data)
 	byte* pSrcBits = data.pSrcBits + (data.nSrcPitch)*data.ySrc;
 
     byte a = 0;  // alpha
-    byte aOrigin = 0; // Ô­Ê¼alpha 
-    byte aLast = 0;   // ×îÖÕalpha
+    byte aOrigin = 0; // åŽŸå§‹alpha 
+    byte aLast = 0;   // æœ€ç»ˆalpha
     int i = 0;  // x index
 
 	int yLoop = data.height;
@@ -247,7 +247,7 @@ void  RoundRectHandler::HandleLeftTopCorner(CORNER_DATA& data)
 }
 
 
-// ×¢£ºhBitmapÎª´øÔ¤³Ë½á¹ûµÄÎ»Í¼Êý¾Ý(GdiplusµÄ½á¹ûÊÇ´øÔ¤³ËµÄ)
+// æ³¨ï¼šhBitmapä¸ºå¸¦é¢„ä¹˜ç»“æžœçš„ä½å›¾æ•°æ®(Gdiplusçš„ç»“æžœæ˜¯å¸¦é¢„ä¹˜çš„)
 bool  RoundRectHandler::Apply2Bitmap(
         HBITMAP hBitmap, 
         bool bTopDown, 
@@ -311,11 +311,11 @@ bool  RoundRectHandler::Apply2Bitmap(
 			{
 				data.bClipMode = 1;
 
-				// Ô´ÑÚÍ¼Î»ÖÃÒ²½øÐÐµÈÁ¿Æ«ÒÆ
+				// æºæŽ©å›¾ä½ç½®ä¹Ÿè¿›è¡Œç­‰é‡åç§»
 				data.xSrc += rcRealDst.left - data.xDst;
 				data.ySrc += rcRealDst.top - data.yDst;
 
-				// ¸üÐÂ¼ô²ÃºóµÄ²ÎÊý
+				// æ›´æ–°å‰ªè£åŽçš„å‚æ•°
 				data.xDst = rcRealDst.left;
 				data.yDst = rcRealDst.top;
 				data.width = rcRealDst.right-rcRealDst.left;
@@ -352,11 +352,11 @@ bool  RoundRectHandler::Apply2Bitmap(
 			{
 				data.bClipMode = 1;
 			
-				// Ô´ÑÚÍ¼Î»ÖÃÒ²½øÐÐµÈÁ¿Æ«ÒÆ
+				// æºæŽ©å›¾ä½ç½®ä¹Ÿè¿›è¡Œç­‰é‡åç§»
 				data.xSrc += rcRealDst.left - data.xDst;
 				data.ySrc += rcRealDst.top - data.yDst;
 
-				// ¸üÐÂ¼ô²ÃºóµÄ²ÎÊý
+				// æ›´æ–°å‰ªè£åŽçš„å‚æ•°
 				data.xDst = rcRealDst.left;
 				data.yDst = rcRealDst.top;
 				data.width = rcRealDst.right-rcRealDst.left;
@@ -392,11 +392,11 @@ bool  RoundRectHandler::Apply2Bitmap(
 			{
 				data.bClipMode = 1;
 
-				// Ô´ÑÚÍ¼Î»ÖÃÒ²½øÐÐµÈÁ¿Æ«ÒÆ
+				// æºæŽ©å›¾ä½ç½®ä¹Ÿè¿›è¡Œç­‰é‡åç§»
 				data.xSrc += rcRealDst.left - data.xDst;
 				data.ySrc += rcRealDst.top - data.yDst;
 
-				// ¸üÐÂ¼ô²ÃºóµÄ²ÎÊý
+				// æ›´æ–°å‰ªè£åŽçš„å‚æ•°
 				data.xDst = rcRealDst.left;
 				data.yDst = rcRealDst.top;
 				data.width = rcRealDst.right-rcRealDst.left;
@@ -432,11 +432,11 @@ bool  RoundRectHandler::Apply2Bitmap(
 			{
 				data.bClipMode = 1;
 
-				// Ô´ÑÚÍ¼Î»ÖÃÒ²½øÐÐµÈÁ¿Æ«ÒÆ
+				// æºæŽ©å›¾ä½ç½®ä¹Ÿè¿›è¡Œç­‰é‡åç§»
 				data.xSrc += rcRealDst.left - data.xDst;
 				data.ySrc += rcRealDst.top - data.yDst;
 
-				// ¸üÐÂ¼ô²ÃºóµÄ²ÎÊý
+				// æ›´æ–°å‰ªè£åŽçš„å‚æ•°
 				data.xDst = rcRealDst.left;
 				data.yDst = rcRealDst.top;
 				data.width = rcRealDst.right-rcRealDst.left;
@@ -552,7 +552,7 @@ void  RoundRectHandler::CreateMaskBitmap()
 #endif
 }
 
-//  Ô²ÐÎ
+//  åœ†å½¢
 inline bool  IsCircle(int nRadiusLT, int nRadiusRT, int nRadiusLB, int nRadiusRB)
 {
     if (nRadiusLT == nRadiusLB && 
@@ -628,9 +628,9 @@ RoundRectHandler  g_CommonRoundRectHandler;
 RoundRectHandler  g_Circle24_24RoundRectHandler;
 
 
-// ¹¹ÔìÒ»¸ö ×ó°ëÔ² +¡¡ÓÒ°ëÔ² µÄÔ²½Ç¾ØÐÎÇøÓò
+// æž„é€ ä¸€ä¸ª å·¦åŠåœ† +ã€€å³åŠåœ† çš„åœ†è§’çŸ©å½¢åŒºåŸŸ
 //
-// ÐèÒªÅäºÏÊ¹ÓÃ£º
+// éœ€è¦é…åˆä½¿ç”¨ï¼š
 // g.SetSmoothingMode(SmoothingModeHighQuality);
 // g.SetPixelOffsetMode(PixelOffsetModeHighQuality);
 //
@@ -639,22 +639,22 @@ bool  CreateRoundRectPath2(Gdiplus::GraphicsPath* pPath, RECT* prc)
     if (!pPath || !prc)
         return false;
 
-    // 16pxµÄradius£¬»­³ö31pxµÄÔ²½ÇÇøÓò£¬ÔÙ¾­¹ý¿¹¾â³Ý±ä³É32
+    // 16pxçš„radiusï¼Œç”»å‡º31pxçš„åœ†è§’åŒºåŸŸï¼Œå†ç»è¿‡æŠ—é”¯é½¿å˜æˆ32
     int width = prc->right - prc->left;
     int height = prc->bottom - prc->top;
     int nRadius = height >> 1;
     int nRadius2 = nRadius*2;
 
-    // [×¢]Èç¹û²»¿ªÆô¿¹¾â³Ý£¬ÕâÀïÓ¦¸ÃÓÃ269(²»ÊÇ270)²ÅÄÜµÃµ½Ò»¸öÉÏÏÂ¶Ô³ÆµÄÐÎ×´
+    // [æ³¨]å¦‚æžœä¸å¼€å¯æŠ—é”¯é½¿ï¼Œè¿™é‡Œåº”è¯¥ç”¨269(ä¸æ˜¯270)æ‰èƒ½å¾—åˆ°ä¸€ä¸ªä¸Šä¸‹å¯¹ç§°çš„å½¢çŠ¶
     pPath->AddArc(prc->left + width - nRadius2, prc->top, nRadius2, nRadius2, 270/*-1*/, 180);   
     pPath->AddArc(prc->left, prc->top, nRadius2, nRadius2, 90, 180);       
 
-    // ½«Á½¸ö°ëÔ²Á¬ÆðÀ´
+    // å°†ä¸¤ä¸ªåŠåœ†è¿žèµ·æ¥
     pPath->CloseFigure();    
     return true;
 }
 
-// ¹¹ÔìÒ»¸öÔ²½Ç¾ØÐÎ£¬ËÄ¸öÔ²½ÇµÄ°ë¾¶ÎªnRadius
+// æž„é€ ä¸€ä¸ªåœ†è§’çŸ©å½¢ï¼Œå››ä¸ªåœ†è§’çš„åŠå¾„ä¸ºnRadius
 bool  CreateRoundRectPath(Gdiplus::GraphicsPath* pPath, RECT* prc, int nRadius)
 {
     if (!pPath || !prc)
@@ -662,13 +662,13 @@ bool  CreateRoundRectPath(Gdiplus::GraphicsPath* pPath, RECT* prc, int nRadius)
 
     int nRadius2 = nRadius*2;
 
-    // ÓÒÉÏ
+    // å³ä¸Š
     pPath->AddArc(prc->right - nRadius2, prc->top, nRadius2, nRadius2, 270, 90 );   
-    // ÓÒÏÂ
+    // å³ä¸‹
     pPath->AddArc(prc->right - nRadius2, prc->bottom - nRadius2, nRadius2, nRadius2, 0, 90 );  
-    // ×óÏÂ
+    // å·¦ä¸‹
     pPath->AddArc(prc->left, prc->bottom - nRadius2, nRadius2, nRadius2, 90, 90 );        
-    // ×óÉÏ
+    // å·¦ä¸Š
     pPath->AddArc(prc->left, prc->top, nRadius2, nRadius2, 180, 90);       
 
     pPath->CloseFigure();    
@@ -692,31 +692,31 @@ void  PathAddPoint(Gdiplus::GraphicsPath* pPath, int x, int y)
 bool  CreateRoundRectPath3(Gdiplus::GraphicsPath* pPath, RECT* prc, 
     int nRadiusLT, int nRadiusRT, int nRadiusRB, int nRadiusLB)
 {
-    // ×¢: arcÊ¹ÓÃÖ±¾¶
+    // æ³¨: arcä½¿ç”¨ç›´å¾„
     int lt = nRadiusLT*2;
     int rt = nRadiusRT*2;
     int lb = nRadiusLB*2;
     int rb = nRadiusRB*2;
 
-    // ÓÒÉÏ
+    // å³ä¸Š
     if (rt)
         pPath->AddArc(prc->right - rt, prc->top, rt, rt, 270, 90 );   
     else
         PathAddPoint(pPath, prc->right, prc->top);
 
-    // ÓÒÏÂ
+    // å³ä¸‹
     if (rb)
         pPath->AddArc(prc->right - rb, prc->bottom - rb, rb, rb, 0, 90 );   
     else
         PathAddPoint(pPath, prc->right, prc->bottom);
 
-    // ×óÏÂ
+    // å·¦ä¸‹
     if (lb)
         pPath->AddArc(prc->left, prc->bottom - lb, lb, lb, 90, 90 );    
     else
         PathAddPoint(pPath, prc->left, prc->bottom);
 
-    // ×óÉÏ
+    // å·¦ä¸Š
     if (lt)
         pPath->AddArc(prc->left, prc->top, lt, lt, 180, 90 );            
     else
@@ -742,7 +742,7 @@ void  CreateRoundRectPortraitByRadius(__in Gdiplus::Bitmap* pBitmap, int nPortra
 	{
 		Gdiplus::Graphics g(hDC);
 		g.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-		g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);   // <-- ±ØÐë¼ÓÉÏÕâ¸ö£¬·ñÔò»­³öÀ´µÄÍ¼Æ¬±ßÔµ²»ÕýÈ·
+		g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);   // <-- å¿…é¡»åŠ ä¸Šè¿™ä¸ªï¼Œå¦åˆ™ç”»å‡ºæ¥çš„å›¾ç‰‡è¾¹ç¼˜ä¸æ­£ç¡®
 
 		Gdiplus::RectF dst(0, 0, (Gdiplus::REAL)nPortraitSize, (Gdiplus::REAL)nPortraitSize);
 		g.DrawImage(pBitmap, dst, 0, 0,
