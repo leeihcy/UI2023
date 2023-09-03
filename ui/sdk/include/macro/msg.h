@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_INCLUDE_MACRO_MSG_H_
 #define _UI_SDK_INCLUDE_MACRO_MSG_H_
 
+// #include "windows.h"
 #include "sdk/include/event.h"
 #include "sdk/include/util/rect.h"
 
@@ -96,7 +97,7 @@ struct GetDesiredSizeMessage : public Msg {
 
 
 struct MSG {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HWND hWnd;
 #else
   long hWnd;

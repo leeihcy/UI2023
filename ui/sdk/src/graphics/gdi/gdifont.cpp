@@ -3,9 +3,9 @@
 #include "src/Atl\image.h"
 
 
-// ◊¢£∫
-// ∂‡––ªÊ÷∆ ±£¨DT_WORDBREAK≤ªº”dt_editcontrolµƒª∞£¨
-// ”ˆµΩ≥§µ•¥ ≤ªª·ªª––£¨÷±Ω”œ‘ æ‘⁄“ª––…œ√Ê
+// Ê≥®Ôºö
+// Â§öË°åÁªòÂà∂Êó∂ÔºåDT_WORDBREAK‰∏çÂä†dt_editcontrolÁöÑËØùÔºå
+// ÈÅáÂà∞ÈïøÂçïËØç‰∏ç‰ºöÊç¢Ë°åÔºåÁõ¥Êé•ÊòæÁ§∫Âú®‰∏ÄË°å‰∏äÈù¢
 
 GDIRenderFont::GDIRenderFont()
 {
@@ -14,11 +14,11 @@ GDIRenderFont::GDIRenderFont()
 }
 GDIRenderFont::~GDIRenderFont()
 {
-	UI_LOG_DEBUG(_T("GDIRenderFont Delete. ptr=0x%08X"), this);
+	UI_LOG_DEBUG("GDIRenderFont Delete. ptr=0x%08X", this);
 	this->DestroyFont();
 }
 //
-//	∏˘æ›FONTµƒ¥¥Ω®∑Ω Ω¿¥ Õ∑≈◊÷ÃÂ
+//	Ê†πÊçÆFONTÁöÑÂàõÂª∫ÊñπÂºèÊù•ÈáäÊîæÂ≠ó‰Ωì
 //
 void  GDIRenderFont::DestroyFont()
 {
@@ -44,7 +44,7 @@ bool GDIRenderFont::Load( LOGFONT* plogfont )
 {
 	if (nullptr == plogfont)
 	{
-		UI_LOG_WARN(_T("plogfont == nullptr"));
+		UI_LOG_WARN("plogfont == nullptr");
 		return false;
 	}
 
@@ -52,7 +52,7 @@ bool GDIRenderFont::Load( LOGFONT* plogfont )
 	m_hFont = ::CreateFontIndirect(plogfont);
 	if (nullptr == m_hFont)
 	{
-		UI_LOG_WARN(_T("CreateFontIndirect failed, facename=%s"), plogfont->lfFaceName );
+		UI_LOG_WARN("CreateFontIndirect failed, facename=%s", plogfont->lfFaceName );
 		return false;
 	}
 	m_eFontType = CREATE;
@@ -63,7 +63,7 @@ bool GDIRenderFont::ModifyFont(LOGFONT* plogfont)
 	bool bRet = this->Load(plogfont);
 	if (false == bRet)
 	{
-		UI_LOG_WARN(_T("Load failed."));
+		UI_LOG_WARN("Load failed.");
 	}
 	else
 	{
@@ -111,13 +111,13 @@ SIZE GDIRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 // 	}
 // 	else
 	{
-		RECT rcText = {0,0,0x7FFFFFFF,0};  // ∏¯{0,0}≤ª––
+		RECT rcText = {0,0,0x7FFFFFFF,0};  // Áªô{0,0}‰∏çË°å
 		if (-1 != nLimitWidth )
 		{
 			rcText.right = nLimitWidth;
 		}
 		::DrawText(hDC, szText, nLength, &rcText, 
-			DT_CALCRECT|DT_EDITCONTROL|DT_WORDBREAK|DT_NOPREFIX); // ƒ¨»œDT_NOPREFIX
+			DT_CALCRECT|DT_EDITCONTROL|DT_WORDBREAK|DT_NOPREFIX); // ÈªòËÆ§DT_NOPREFIX
 		sizeText.cx = rcText.right;
 		sizeText.cy = rcText.bottom;
 	}

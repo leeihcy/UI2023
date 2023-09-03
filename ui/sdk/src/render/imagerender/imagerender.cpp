@@ -236,8 +236,8 @@ void ImageListItemRender::GetDesiredSize(Size *pSize) {
 
 void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
   if (DRAW_BITMAP_TILE == m_nImageDrawType) {
-    UI_LOG_WARN(_T("image list item donot support tile draw"));
-    UIASSERT(0 && _T("TODO:"));
+    UI_LOG_WARN("image list item donot support tile draw");
+    UIASSERT(0 && "TODO:");
     return;
   }
 
@@ -314,7 +314,7 @@ void ImageListRender::LoadImageList(const char *szText) {
     return;
 
   if (pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST) {
-    UI_LOG_WARN(_T("ImageType != IMAGE_ITEM_TYPE_IMAGE_LIST. Bitmap: %s"),
+    UI_LOG_WARN("ImageType != IMAGE_ITEM_TYPE_IMAGE_LIST. Bitmap: %s",
                 szText);
     SAFE_RELEASE(pBitmap);
     return;
@@ -342,8 +342,8 @@ void ImageListRender::SetState2Index(const char *szText) {
     const char *szStateIndex = pEnum->GetText(i);
 
     util::ISplitStringEnum *pEnumInner = nullptr;
-    if (2 != util::SplitString(szStateIndex, _T(':'), &pEnumInner)) {
-      UI_LOG_WARN(_T("invalid state index: %s"), szStateIndex);
+    if (2 != util::SplitString(szStateIndex, L':', &pEnumInner)) {
+      UI_LOG_WARN("invalid state index: %s", szStateIndex);
       SAFE_RELEASE(pEnumInner);
       continue;
     }
@@ -499,7 +499,7 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   if (nullptr == m_pImageList)
     return;
 
-  //    UI_LOG_ERROR(_T("%s  nIndex=%d, nAlpha=%d"), FUNC_NAME, nIndex, bAlpha);
+  //    UI_LOG_ERROR("%s  nIndex=%d, nAlpha=%d", FUNC_NAME, nIndex, bAlpha);
   int nRealIndex = GetStateIndex(nIndex);
   if (nRealIndex < 0)
     return;

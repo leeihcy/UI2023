@@ -5,7 +5,7 @@
 
 namespace ui {
 struct IRenderBitmap;
-class C9Region;
+struct C9Region;
 
 enum BKCOLOR_FILL_TYPE {
   BKCOLOR_FILL_ALL, // 默认

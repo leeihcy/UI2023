@@ -32,7 +32,7 @@ public:
   IWindowRender *GetIWindowRender();
 
 public:
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   void BindHWND(HWND hWnd);
 #endif
   void OnSerialize(SerializeParam *pData);

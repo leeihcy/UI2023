@@ -28,7 +28,7 @@ public:
 	
 	void  ClearTopWindowObject( );
 	int   GetTopWindowCount() { return (int)m_lTopWindowObject.size(); }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 	IWindow* GetWindow(HWND hWnd); 
 #endif
 	// void  ChangeSkin(Resource* pNewSkinRes);

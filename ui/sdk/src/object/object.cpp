@@ -50,7 +50,7 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
 
   m_pIMapAttributeRemain = nullptr;
   m_pLayoutParam = nullptr;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   m_pAccessible = nullptr;
 #endif
   m_meta = &ObjectMeta::Get();
@@ -72,7 +72,7 @@ Object::~Object(void) {
   }
 
   SAFE_RELEASE(m_pLayoutParam);
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (m_pAccessible)
     SAFE_RELEASE(m_pAccessible);
 #endif
@@ -182,7 +182,7 @@ Window *Object::GetWindow() {
     return pWindow->GetImpl();
   return nullptr;
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 HWND Object::GetHWND() {
   WindowBase *pWindow = this->GetWindow();
   if (!pWindow)
@@ -230,7 +230,7 @@ Object *Object::FindObject(const char *szObjId) {
 
   Object *pRet = this->find_child_object(szObjId, true);
   if (!pRet) {
-    UI_LOG_WARN(_T("Find \"%s\" from \"%s\" failed."), szObjId,
+    UI_LOG_WARN("Find \"%s\" from \"%s\" failed.", szObjId,
                 this->m_strId.c_str());
     UIASSERT(0);
   }
@@ -513,7 +513,7 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
   // 		    return HTCLIENT;
   // 	}
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   Layer *layer = GetSelfLayer();
   if (layer) {
     Point ptObj = {ptInParent->x - m_rcParent.left,
@@ -671,7 +671,7 @@ void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
     __REMOVE(clip_client);
     __REMOVE(tabstop);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     if (remove->layer)
       m_objLayer.TryDestroyLayer();
 #else
@@ -1011,7 +1011,7 @@ void Object::SetEnable(bool b, bool bNoitfy) {
     //      并没有设置为dirty，直接刷新整个窗口也不会更新该控件
     this->Invalidate();
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     // 重新发送鼠标消息，例如鼠标正好位于该控件上面，则需要将该控件设置为hover，否则点击无效
     Point pt = {0, 0};
     ::GetCursorPos(&pt);
@@ -1214,7 +1214,7 @@ void Object::SetZorderDirect(int z) {
     }
   }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   //     update_layer_ptr();
   //
   //     bool bNowHasLayer = GetSelfLayer() ? true : false;
@@ -1296,7 +1296,7 @@ IRenderFont *Object::GetRenderFont() {
   if (pRenderFont)
     return pRenderFont;
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   // 向窗口获取默认
   Window *pWindow = GetWindow();
   if (pWindow)
@@ -1311,7 +1311,7 @@ void Object::load_renderbase(const char *szName, IRenderBase *&pRender) {
   UIASSERT(false);
 //   SAFE_RELEASE(pRender);
 //   if (szName) {
-// #if defined(OS_WIN)
+// #if 0 // defined(OS_WIN)
 //     GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
 //         m_pSkinRes->GetIResource(), szName, m_pIObject, &pRender);
 // #else
@@ -1325,7 +1325,7 @@ void Object::load_textrender(const char *szName,
                               UIASSERT(false);
 //   SAFE_RELEASE(pTextRender);
 //   if (szName) {
-// #if defined(OS_WIN)
+// #if 0 // defined(OS_WIN)
 //     GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
 //         m_pSkinRes->GetIResource(), szName, m_pIObject, &pTextRender);
 // #endif
@@ -1335,7 +1335,7 @@ void Object::load_textrender(const char *szName,
 const char *Object::get_renderbase_name(IRenderBase *&pRender) {
   if (!pRender)
     return nullptr;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   return GetUIApplication()->GetRenderBaseFactory().GetRenderBaseName(
       pRender->GetType());
 #else
@@ -1345,7 +1345,7 @@ const char *Object::get_renderbase_name(IRenderBase *&pRender) {
 const char *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
   if (!pTextRender)
     return nullptr;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   return GetUIApplication()->GetTextRenderFactroy().GetTextRenderBaseName(
       pTextRender->GetType());
 #else
@@ -1495,7 +1495,7 @@ unsigned int  Object::CalcContrastTextColor()
 #endif
 
 Object *Object::GetObjectByPos(Point *pt) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();
   if (nullptr == pWindow)
     return nullptr;
@@ -1508,7 +1508,7 @@ Object *Object::GetObjectByPos(Point *pt) {
 }
 
 bool Object::SetMouseCapture(int nNotifyMsgId) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
@@ -1521,7 +1521,7 @@ bool Object::SetMouseCapture(int nNotifyMsgId) {
 #endif
 }
 bool Object::ReleaseMouseCapture() {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
@@ -1534,7 +1534,7 @@ bool Object::ReleaseMouseCapture() {
 #endif
 }
 bool Object::SetKeyboardCapture(int nNotifyMsgId) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
@@ -1547,7 +1547,7 @@ bool Object::SetKeyboardCapture(int nNotifyMsgId) {
 #endif
 }
 bool Object::ReleaseKeyboardCapture() {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();
   if (!pWindow)
     return false;
@@ -1672,7 +1672,7 @@ unsigned int Object::GetChildObjectIndex(Object *pChild) {
   return 0;
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 // 外部添加IUIAccessible的接口实现类
 class UIAccessibleCreator : public IUIAccessibleCreator {
 public:

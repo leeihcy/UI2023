@@ -426,7 +426,7 @@ bool CXmlImageParse::Load(ImageRes*  pImageInfo, CursorRes* pCursorInfo, GifRes*
 	bool bRet = this->load_from_file(pXml, m_strDataSource, pImageInfo, pCursorInfo, pGifInfo);
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlImageParse::Load  failed!"));
+		UI_LOG_FATAL("CXmlImageParse::Load  failed!");
 	}
 	else
 	{
@@ -619,7 +619,7 @@ bool CXmlImageParse::clear_save( ImageRes*  pImageInfo )
 
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlImageParse::Save  failed!"));
+		UI_LOG_FATAL("CXmlImageParse::Save  failed!");
 	}
 	return bRet;
 }
@@ -690,17 +690,17 @@ bool CXmlImageParse::load_from_file( CMarkup* pXml, const std::string& strDataSo
 			if (strTagName == XML_IMAGE_ITEM_CURSOR)
 			{
 				if (false == pCursorInfo->LoadItem(mapAttrib, strFullPath))
-					UI_LOG_WARN(_T("%s insert cursor failed. path=%s"), FUNC_NAME, strFullPath.c_str());
+					UI_LOG_WARN("%s insert cursor failed. path=%s", FUNC_NAME, strFullPath.c_str());
 			}
 			else if (strTagName == XML_IMAGE_ITEM_GIF)
 			{
 				if (false == pGifInfo->LoadItem(mapAttrib, strFullPath))
-					UI_LOG_WARN(_T("%s insert gif failed. path=%s"), FUNC_NAME, strFullPath.c_str());
+					UI_LOG_WARN("%s insert gif failed. path=%s", FUNC_NAME, strFullPath.c_str());
 			}
 			else
 			{
 				if (false == pImageInfo->LoadItem(strTagName, mapAttrib, strFullPath))
-					UI_LOG_WARN(_T("%s insert image failed. path=%s"), FUNC_NAME, strFullPath.c_str());
+					UI_LOG_WARN("%s insert image failed. path=%s", FUNC_NAME, strFullPath.c_str());
 			}
 		}
 		bRet = true;
@@ -806,7 +806,7 @@ bool CXmlColorParse::clear_save(ColorRes* pColorInfo )
 
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlColorParse::Save  failed!"));
+		UI_LOG_FATAL("CXmlColorParse::Save  failed!");
 	}
 	return bRet;
 }
@@ -826,7 +826,7 @@ bool CXmlColorParse::Load( ColorRes*  pColorInfo )
 	bool bRet = this->load_from_file(pXml, m_strDataSource, pColorInfo);
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlColorParse::Load  failed!"));
+		UI_LOG_FATAL("CXmlColorParse::Load  failed!");
 	}
 	else
 	{
@@ -878,7 +878,7 @@ bool CXmlColorParse::load_from_file( CMarkup* pXml, const std::string& strDataSo
 
 			std::string strValue = pXml->GetData();
 			if (false == pColorInfo->LoadItem(mapAttrib, strValue))
-						UI_LOG_WARN(_T("%s insert color failed."), FUNC_NAME);
+						UI_LOG_WARN("%s insert color failed.", FUNC_NAME);
 		}
 		if (!bLoopRet )  break;
 
@@ -888,7 +888,7 @@ bool CXmlColorParse::load_from_file( CMarkup* pXml, const std::string& strDataSo
 
 	if (false == bRet )
 	{
-		UI_LOG_ERROR(_T("CXmlColorParse::load_from_file  failed!"));
+		UI_LOG_ERROR("CXmlColorParse::load_from_file  failed!");
 	}
     return bRet;
 #endif 
@@ -1116,7 +1116,7 @@ bool CXmlFontParse::clear_save( FontRes*  pFontInfo )
 
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlFontParse::Save  failed!"));
+		UI_LOG_FATAL("CXmlFontParse::Save  failed!");
 	}
 	return bRet;
 }
@@ -1143,7 +1143,7 @@ bool CXmlFontParse::Load( FontRes* pFontInfo )
 	bool bRet = this->load_from_file(pXml, m_strDataSource, pFontInfo);
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlFontParse::Load  failed!"));
+		UI_LOG_FATAL("CXmlFontParse::Load  failed!");
 	}
 	else
 	{
@@ -1253,7 +1253,7 @@ bool CXmlFontParse::load_from_file( CMarkup* pXml, const std::string& strDataSou
 
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlFontParse::load_from_file  failed!"));
+		UI_LOG_FATAL("CXmlFontParse::load_from_file  failed!");
 	}
 	return bRet;
 }
@@ -1447,7 +1447,7 @@ bool CXmlStyleParse::Load( StyleRes* pStyleInfo )
 	bool bRet = this->load_from_file(pXml, m_strDataSource, pStyleInfo);
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlStyleParse::Load  failed!"));
+		UI_LOG_FATAL("CXmlStyleParse::Load  failed!");
 	}
 	else
 	{
@@ -1689,7 +1689,7 @@ bool CXmlStyleParse::load_from_file( CMarkup* pXml, const std::string& strDataSo
 
 			if (false == this->parse_inherit(&t, pStyleInfo) )
 			{
-				UI_LOG_WARN(_T("CXmlStyleParse::load_from_file parse_inherit failed. style item=%s"), pItem->GetIDRef().c_str() );
+				UI_LOG_WARN("CXmlStyleParse::load_from_file parse_inherit failed. style item=%s", pItem->GetIDRef().c_str() );
 			}
 		}
 
@@ -1699,7 +1699,7 @@ bool CXmlStyleParse::load_from_file( CMarkup* pXml, const std::string& strDataSo
 
 	if (false == bRet )
 	{
-		UI_LOG_FATAL(_T("CXmlStyleParse::load_from_file  failed."));
+		UI_LOG_FATAL("CXmlStyleParse::load_from_file  failed.");
 	}
 	return bRet;
 }
@@ -1863,7 +1863,7 @@ bool CXmlStyleParse::RemoveStyle( STYLE_SELECTOR_TYPE type, const std::string& s
 
 	if (false == this->find_elem_in_xml( type, strID ) )
 	{
-		UI_LOG_WARN(_T("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s"), type, strID.c_str() );
+		UI_LOG_WARN("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s", type, strID.c_str() );
 		return false;
 	}
 
@@ -1879,7 +1879,7 @@ bool CXmlStyleParse::InsertStyleAttribute(STYLE_SELECTOR_TYPE type, const std::s
 
 	if (false == this->find_elem_in_xml(type, strID) )
 	{
-		UI_LOG_WARN(_T("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s"), type, strID.c_str() );
+		UI_LOG_WARN("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s", type, strID.c_str() );
 		return false;
 	}
 
@@ -1893,7 +1893,7 @@ bool CXmlStyleParse::ModifyStyleAttribute(STYLE_SELECTOR_TYPE type, const std::s
 
 	if (false == this->find_elem_in_xml(type, strID) )
 	{
-		UI_LOG_WARN(_T("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s"), type, strID.c_str() );
+		UI_LOG_WARN("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s", type, strID.c_str() );
 		return false;
 	}
 
@@ -1907,7 +1907,7 @@ bool CXmlStyleParse::RemoveStyleAttribute(STYLE_SELECTOR_TYPE type, const std::s
 
 	if (false == this->find_elem_in_xml(type, strID) )
 	{
-		UI_LOG_WARN(_T("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s"), type, strID.c_str() );
+		UI_LOG_WARN("CXmlStyleParse::InsertStyleAttribute Cannot find elem in xml. type=%d, m_strID=%s", type, strID.c_str() );
 		return false;
 	}
 
@@ -1965,7 +1965,7 @@ bool CXmlLayoutParse::Load(LayoutRes* pLayoutInfo)
 	bool bRet = this->load_from_file(pXml, m_strDataSource, pLayoutInfo);
 	if (false == bRet)
 	{
-		UI_LOG_FATAL(_T("CXmlLayoutParse::Load  failed!"));
+		UI_LOG_FATAL("CXmlLayoutParse::Load  failed!");
 	}
 	else
 	{
@@ -2032,7 +2032,7 @@ bool CXmlLayoutParse::LoadLayout(Object* pRootObj, LayoutRes* pResLayout)
 		}
 		if (!bRet)
 		{
-			UI_LOG_FATAL(_T("%s, 未找到要加载的对象：name=%s, id=%s"),
+			UI_LOG_FATAL("%s, 未找到要加载的对象：name=%s, id=%s",
 			                FUNC_NAME, pRootObj->GetObjectName(), pRootObj->GetID());
 			break;
 		}
@@ -2103,7 +2103,7 @@ bool  CXmlLayoutParse::ReLoadLayout(Object* pRootObj, list<Object*>& listAllChil
 		}
 		if (!bRet)
 		{
-			UI_LOG_FATAL( _T("%s, 未找到要加载的对象：name=%s, id=%s"),
+			UI_LOG_FATAL("%s, 未找到要加载的对象：name=%s, id=%s",
 				FUNC_NAME, pRootObj->GetObjectName(), pRootObj->GetID());
 			break;
 		}
@@ -2174,7 +2174,7 @@ IObject*  CXmlLayoutParse::LoadRootObject(const wchar_t* szTag, const wchar_t sz
         }
         if (!bRet)
         {
-            UI_LOG_FATAL( _T("%s, 未找到要加载的对象：name=%s, id=%s"),
+            UI_LOG_FATAL("%s, 未找到要加载的对象：name=%s, id=%s",
                 FUNC_NAME, XML_MENU, szId);
             break;
         }
@@ -2242,7 +2242,7 @@ Menu* CXmlLayoutParse::LoadMenu(const std::string& strMenuId)
 		}
 		if (!bRet)
 		{
-			UI_LOG_FATAL( _T("%s, 未找到要加载的对象：name=%s, id=%s"),
+			UI_LOG_FATAL("%s, 未找到要加载的对象：name=%s, id=%s",
 				       FUNC_NAME, XML_MENU, strMenuId.c_str());
 			break;
 		}

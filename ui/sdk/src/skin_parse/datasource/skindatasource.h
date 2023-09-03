@@ -22,7 +22,7 @@ struct SkinDataSource
 
 	virtual bool  Load_UIDocument(UIDocument* pDocument, const char* szPath) = 0;
 	virtual bool  Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 	virtual bool  Load_Image(const char* szPath, ImageWrap* pImage) = 0;
 	virtual bool  Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp) = 0;
 	virtual bool  Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage) = 0;

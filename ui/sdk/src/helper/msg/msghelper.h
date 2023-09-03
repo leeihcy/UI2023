@@ -5,7 +5,7 @@
 namespace ui
 {
 class Application;
-#if defined(OS_WIN)
+#if 0
 // 创建一个隐藏消息窗口，用于实现post ui message
 class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
 {

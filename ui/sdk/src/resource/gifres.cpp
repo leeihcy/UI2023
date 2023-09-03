@@ -29,7 +29,7 @@ std::string& GifResItem::GetIdRef()
 	return m_strId;
 }
 
-void GifResItem::SetId(const wchar_t* text)
+void GifResItem::SetId(const char* text)
 {
 	if (text)
 		m_strId = text;
@@ -37,7 +37,7 @@ void GifResItem::SetId(const wchar_t* text)
 		m_strId.clear();
 }
 
-void GifResItem::SetPath(const wchar_t* path)
+void GifResItem::SetPath(const char* path)
 {
 	if (path)
 		m_strPath = path;
@@ -174,7 +174,7 @@ IGifImage*  GifRes::GetGifImage(const wchar_t* szId)
 	GifResItem* pItem = this->GetGifItem(szId);
 	if (!pItem)
 	{
-		// »ñÈ¡Ê§°Ü£¬³¢ÊÔÏòÉÏÒ»¼¶×ÊÔ´»ñÈ¡
+		// ï¿½ï¿½È¡Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½È¡
 		if (m_pSkinRes->GetParentSkinRes())
 		{
 			return m_pSkinRes->GetParentSkinRes()->
@@ -195,7 +195,7 @@ bool GifRes::InsertGif(const std::string& strID, const std::string& strPath, Gif
 	GifResItem* pItem = this->GetGifItem(strID.c_str());
 	if (pItem)
 	{
-		UI_LOG_WARN(_T("failed, insert item=%s, path=%s"), strID.c_str(), strPath.c_str() );
+		UI_LOG_WARN("failed, insert item=%s, path=%s", strID.c_str(), strPath.c_str() );
 		return false;
 	}
 
@@ -216,7 +216,7 @@ bool GifRes::ModifyGif(const std::string& strID, const std::string& strPath)
 		return p->ModifyGif(strPath);
 	}
 
-	UI_LOG_WARN(_T("failed. modify gif id=%s, path=%s"), strID.c_str(), strPath.c_str() );
+	UI_LOG_WARN("failed. modify gif id=%s, path=%s", strID.c_str(), strPath.c_str() );
 	return false;
 }
 bool GifRes::RemoveGif(const std::string& strID)

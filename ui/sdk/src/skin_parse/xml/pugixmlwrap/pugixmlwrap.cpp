@@ -383,7 +383,7 @@ bool PugiXmlElement::SetAttribList2(IListAttribute *pListAttrib) {
 
   return true;
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 bool PugiXmlElement::GetAttrib(const char *szKey, BSTR *pbstrValue) {
   if (nullptr == szKey)
     return false;

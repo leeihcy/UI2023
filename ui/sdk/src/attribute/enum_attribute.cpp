@@ -43,7 +43,7 @@ void  EnumAttribute::Set(const char* szValue)
 		return;
     }
 
-	// Èç¹ûszValueÊÇÒ»¸öÊı×Ö£¬ÔòÈ¡³öÀ´¡£·ñÔòÓÃÄ¬ÈÏÖµ¸²¸Ç
+	// å¦‚æœszValueæ˜¯ä¸€ä¸ªæ•°å­—ï¼Œåˆ™å–å‡ºæ¥ã€‚å¦åˆ™ç”¨é»˜è®¤å€¼è¦†ç›–
 	bool isNumber = false;
 	const char* p = szValue;
 	char c = 0;
@@ -100,7 +100,7 @@ void EnumGraphicsRenderLibraryTypeCallback(int lType, const char* szName, llong 
 }
 
 //
-// Ìî³ä¿ÉÓÃµÄäÖÈ¾¿âÀàĞÍ£º
+// å¡«å……å¯ç”¨çš„æ¸²æŸ“åº“ç±»å‹ï¼š
 // "gdi"  GRAPHICS_RENDER_LIBRARY_GDI
 //  ...
 EnumAttribute*  EnumAttribute::FillGraphicsRenderLibraryData()

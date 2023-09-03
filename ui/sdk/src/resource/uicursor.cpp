@@ -28,7 +28,7 @@ void UICursor::CreateInstance2(const std::string strCurFilePath, UICursor** ppOu
     bool bRet = pCursor->Load(strCurFilePath.c_str());
     if (false == bRet)
     {
-        //	UI_LOG_WARN(_T("%s LoadCursor Failed. filepath=%s"), FUNC_NAME, strCurFilePath.c_str());
+        //	UI_LOG_WARN("%s LoadCursor Failed. filepath=%s", FUNC_NAME, strCurFilePath.c_str());
         SAFE_DELETE(pCursor);
         *ppOutRef = nullptr;
     }
@@ -47,7 +47,7 @@ void UICursor::CreateInstance2(LPTSTR nCursorID, HINSTANCE hInstance, UICursor**
     bool bRet = pCursor->Load(nCursorID, hInstance);
     if (false == bRet)
     {
-        //	UI_LOG_WARN(_T("%s LoadCursor Failed. cursor id=%s, hInstance=%x"), FUNC_NAME, nCursorID, hInstance);
+        //	UI_LOG_WARN("%s LoadCursor Failed. cursor id=%s, hInstance=%x", FUNC_NAME, nCursorID, hInstance);
         SAFE_DELETE(pCursor);
         *ppOutRef = nullptr;
     }

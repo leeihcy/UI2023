@@ -18,7 +18,7 @@
 namespace ui {
 ImageResItem::ImageResItem() {
   m_pMapAttrib = nullptr;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   m_pGdiBitmap = nullptr;
 #endif
   // m_pGdiplusBitmap = nullptr;
@@ -35,7 +35,7 @@ ImageResItem::ImageResItem() {
 }
 
 ImageResItem::~ImageResItem() {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   // 不直接删除，还有控件在引用这个图片（如在UIEditor中删除一张图片），由引用者负责释放其引用的图片指针
   if (m_pGdiBitmap) {
     m_pGdiBitmap->Destroy();
@@ -71,7 +71,7 @@ void ImageResItem::SetImageItemType(IMAGE_ITEM_TYPE e) {
 }
 
 bool ImageResItem::IsMyRenderBitmap(IRenderBitmap *pRenderBitmap) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (m_pGdiBitmap == pRenderBitmap) {
     return true;
   }
@@ -107,7 +107,7 @@ IRenderBitmap *ImageResItem::GetImage(Resource *pSkinRes,
 
 IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
                                           bool *pbFirstTimeCreate) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   SkinDataSource *pDataSource = pSkinRes->GetDataSource();
   if (nullptr == pDataSource)
     return nullptr;
@@ -147,7 +147,7 @@ IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
   if (false == pDataSource->Load_RenderBitmap(m_pGdiBitmap, m_strPath.c_str(),
                                               (RENDER_BITMAP_LOAD_FLAG)flags)) {
     SAFE_RELEASE(m_pGdiBitmap);
-    UI_LOG_ERROR(_T("Load gdi bitmap from file failed. path=%s"),
+    UI_LOG_ERROR("Load gdi bitmap from file failed. path=%s",
                  m_strPath.c_str());
     return nullptr;
   }
@@ -164,7 +164,7 @@ IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
 bool ImageResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   if (false == m_bUseSkinHLS)
     return true;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   ModifyHLS(m_pGdiBitmap, h, l, s, nFlag);
 
   // 	if (m_pGdiBitmap)
@@ -183,7 +183,7 @@ bool ImageResItem::ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s,
     if (nullptr == m_pOriginImageData) {
       m_pOriginImageData = new ImageData;
       if (false == pBitmap->SaveBits(m_pOriginImageData)) {
-        UI_LOG_WARN(_T("not support this image to change hue. id=%s"),
+        UI_LOG_WARN("not support this image to change hue. id=%s",
                     m_strId.c_str());
         m_bUseSkinHLS = false;
         SAFE_DELETE(m_pOriginImageData);
@@ -195,12 +195,12 @@ bool ImageResItem::ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s,
 }
 
 bool ImageResItem::ModifyAlpha(byte nAlphaPercent) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (m_pGdiBitmap) {
     if (nullptr == m_pOriginImageData) {
       m_pOriginImageData = new ImageData;
       if (false == m_pGdiBitmap->SaveBits(m_pOriginImageData)) {
-        UI_LOG_WARN(_T("not support this image to change alpha. id=%s"),
+        UI_LOG_WARN("not support this image to change alpha. id=%s",
                     m_strId.c_str());
         SAFE_DELETE(m_pOriginImageData);
       }
@@ -230,7 +230,7 @@ bool ImageResItem::ModifyImage(const char *szPath) {
   m_strPath = szPath;
 
   SAFE_DELETE(m_pOriginImageData);
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (m_pGdiBitmap) {
     long flags = 0;
     if (m_bMustHasAlphaChannel)
@@ -239,7 +239,7 @@ bool ImageResItem::ModifyImage(const char *szPath) {
       flags |= RENDER_BITMAP_LOAD_DPI_ADAPT;
     if (!m_pGdiBitmap->LoadFromFile(m_strPath.c_str(),
                                     (RENDER_BITMAP_LOAD_FLAG)flags)) {
-      UI_LOG_ERROR(_T("load from file failed 1:%s"), m_strPath.c_str());
+      UI_LOG_ERROR("load from file failed 1:%s", m_strPath.c_str());
     }
   }
 
@@ -251,7 +251,7 @@ bool ImageResItem::ModifyImage(const char *szPath) {
   // 		if (!m_pGdiplusBitmap->LoadFromFile(m_strPath.c_str(),
   // (RENDER_BITMAP_LOAD_FLAG)flags))
   // 		{
-  // 			UI_LOG_ERROR(_T("load from file failed 2:%s"),
+  // 			UI_LOG_ERROR("load from file failed 2:%s",
   // m_strPath.c_str());
   // 		}
   // 	}
@@ -437,7 +437,11 @@ ImageResItem *ImageRes::LoadItem(const char *szType, IMapAttribute *pMapAttrib,
     eType = IMAGE_ITEM_TYPE_IMAGE_LIST;
   } else {
     int lLength = (int)strlen(szFullPath);
+#if defined(OS_WIN)
+    if (lLength > 4 && 0 == stricmp((szFullPath + lLength - 4), ".ico")) {
+#else
     if (lLength > 4 && 0 == strcasecmp((szFullPath + lLength - 4), ".ico")) {
+#endif
       eType = IMAGE_ITEM_TYPE_ICON;
     } else {
       eType = IMAGE_ITEM_TYPE_IMAGE;
@@ -446,7 +450,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType, IMapAttribute *pMapAttrib,
 
   ImageResItem *pItem = this->InsertImage(eType, szId, szFullPath);
   if (!pItem) {
-    UI_LOG_WARN(_T("insert image m_strID=%s, path=%s failed."), szId,
+    UI_LOG_WARN("insert image m_strID=%s, path=%s failed.", szId,
                 szFullPath);
     return nullptr;
   }
@@ -505,7 +509,7 @@ ImageResItem *ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
 
   ImageResItem *pItem = this->GetImageItem2(szId);
   if (pItem) {
-    UI_LOG_WARN(_T("failed, insert item=%s, path=%s"), szId, szPath);
+    UI_LOG_WARN("failed, insert item=%s, path=%s", szId, szPath);
     return nullptr;
   }
 
@@ -545,14 +549,14 @@ ImageResItem *ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
     // 拆文件路径，用于重新组装
     const char *p = strrchr(szPath, '.');
     if (!p) {
-      UI_LOG_WARN(_T("invalid path: %s"), szPath);
+      UI_LOG_WARN("invalid path: %s", szPath);
       break;
     }
 
     std::string str(szPath);
     std::string::size_type pos = str.find_last_of('.');
     if (pos == std::string::npos) {
-      UI_LOG_WARN(_T("invalid path: %s"), szPath);
+      UI_LOG_WARN("invalid path: %s", szPath);
       break;
     }
 
@@ -594,7 +598,7 @@ bool ImageRes::ModifyImage(const char *szId, const char *szPath) {
     return bRet;
   }
 
-  UI_LOG_WARN(_T("failed. modify image id=%s, path=%s"), szId, szPath);
+  UI_LOG_WARN("failed. modify image id=%s, path=%s", szId, szPath);
   return false;
 }
 bool ImageRes::RemoveImage(const char *szId) {
@@ -661,13 +665,13 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
 }
 
 HBITMAP ImageRes::LoadBitmap(const char *szId) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (nullptr == szId)
     return nullptr;
 
   ImageResItem *pItem = this->GetImageItem2(szId);
   if (nullptr == pItem) {
-    UI_LOG_ERROR(_T("GetImageItem：%s failed .1"), szId);
+    UI_LOG_ERROR("GetImageItem：%s failed .1", szId);
     return nullptr;
   }
 
@@ -701,7 +705,7 @@ bool ImageRes::GetBitmap(const char *szImageID,
           szImageID, eRenderType, pRenderBitmap);
     }
 
-    UI_LOG_ERROR(_T("GetImageItem：%s failed .1"), szImageID);
+    UI_LOG_ERROR("GetImageItem：%s failed .1", szImageID);
     return false;
   }
 
@@ -709,7 +713,7 @@ bool ImageRes::GetBitmap(const char *szImageID,
   IRenderBitmap *pBitmap =
       pItem->GetImage(m_pSkinRes, eRenderType, &bFirstTimeCreate);
   if (!pBitmap) {
-    UI_LOG_ERROR(_T("GetImage：%s failed .2"), szImageID);
+    UI_LOG_ERROR("GetImage：%s failed .2", szImageID);
     return false;
   }
 

@@ -18,7 +18,7 @@ AnimateManager::AnimateManager()
 	m_bHandlingTimerCallback = false;
 	m_nFps = 60;
 
-#if defined(OS_WIN)    
+#if 0 // defined(OS_WIN)    
 	m_hTimer = nullptr;
 	::QueryPerformanceFrequency(&m_liPerFreq);
     m_hModuleWinmm = nullptr;
@@ -27,7 +27,7 @@ AnimateManager::AnimateManager()
 
 AnimateManager::~AnimateManager()
 {
-	// ×¢£ºclose timer handle²»ÄÜÔÚUnCoInitializeºóµ÷ÓÃ
+	// æ³¨ï¼šclose timer handleä¸èƒ½åœ¨UnCoInitializeåè°ƒç”¨
     Destroy();
 
     if (m_pIAnimateManager)
@@ -35,7 +35,7 @@ AnimateManager::~AnimateManager()
         delete m_pIAnimateManager;
         m_pIAnimateManager = nullptr;
     }
-#if defined(OS_WIN)   
+#if 0 // defined(OS_WIN)   
     if (m_hModuleWinmm)
     {
         FreeLibrary(m_hModuleWinmm);
@@ -74,7 +74,7 @@ int  AnimateManager::SetFps(int n)
 void AnimateManager::Destroy()
 {
 	KillTimer();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     if (m_hTimer)
     {
         CloseHandle(m_hTimer);
@@ -119,7 +119,7 @@ void  AnimateManager::RemoveStoryboard(Storyboard* p)
 	if (nullptr == p)
 		return;
 
-	// Èç¹ûÕıÔÚ¶Ôm_listObjTimeline½øĞĞ±éÀúÖĞ£¬Ôò²»ÄÜÔÚÕâÀï¶Ôlist×öerase²Ù×÷
+	// å¦‚æœæ­£åœ¨å¯¹m_listObjTimelineè¿›è¡Œéå†ä¸­ï¼Œåˆ™ä¸èƒ½åœ¨è¿™é‡Œå¯¹liståšeraseæ“ä½œ
 
     std::list<Storyboard*>::iterator iter = std::find(
         m_listStoryboard.begin(), m_listStoryboard.end(), p);
@@ -134,7 +134,7 @@ void  AnimateManager::RemoveStoryboard(Storyboard* p)
 
     if (m_bHandlingTimerCallback)  
     {
-        (*iter) = nullptr;  // ÆäËüµØ·½¶¼ĞèÒªÅĞ¶ÏÊÇ·ñÎª¿ÕÖ¸Õë£¡£¡
+        (*iter) = nullptr;  // å…¶å®ƒåœ°æ–¹éƒ½éœ€è¦åˆ¤æ–­æ˜¯å¦ä¸ºç©ºæŒ‡é’ˆï¼ï¼
         SAFE_DELETE(p);
     }
     else
@@ -160,7 +160,7 @@ void AnimateManager::ClearStoryboardOfNotify(IAnimateEventCallback* pNotify)
 		Storyboard* pStoryboard = *iter;
 		if (!pStoryboard)
 		{
-			// ¼û£ºAnimateManager::RemoveStoryboard
+			// è§ï¼šAnimateManager::RemoveStoryboard
 			iter = m_listStoryboard.erase(iter);
 			continue;
 		}
@@ -175,7 +175,7 @@ void AnimateManager::ClearStoryboardOfNotify(IAnimateEventCallback* pNotify)
 		{
 			pStoryboard->SetFinish();
 			pStoryboard->NotifyCancel();
-			// ·ÀÖ¹ontickÔÚÏÂÒ»¸ö±éÀúÖĞ¼ÌĞø»Øµ÷£¬µ«¶ÔÏó¿ÉÄÜÒÑ¾­Ïú»ÙÁË¡£ 
+			// é˜²æ­¢ontickåœ¨ä¸‹ä¸€ä¸ªéå†ä¸­ç»§ç»­å›è°ƒï¼Œä½†å¯¹è±¡å¯èƒ½å·²ç»é”€æ¯äº†ã€‚ 
 			pStoryboard->MarkToBeDestroyed();
 			++iter;
 		}
@@ -205,7 +205,7 @@ void  AnimateManager::RemoveStoryboardByNotityAndId(
         Storyboard* pStoryboard = *iter;
 		if (!pStoryboard)
 		{
-			// ¼û£ºAnimateManager::RemoveStoryboard
+			// è§ï¼šAnimateManager::RemoveStoryboard
 			iter = m_listStoryboard.erase(iter);
 			continue;
 		}
@@ -261,10 +261,10 @@ void AnimateManager::AddStoryboard(Storyboard* p)
         p->OnAnimateStart();
 }
 
-// ×èÈûĞÍ¶¯»­
+// é˜»å¡å‹åŠ¨ç”»
 void  AnimateManager::AddStoryboardBlock(Storyboard* pStoryboard)
 {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     if (!pStoryboard)
         return;
 
@@ -293,7 +293,7 @@ void  AnimateManager::AddStoryboardBlock(Storyboard* pStoryboard)
         }
         else
         {
-            // sleepĞ§ÂÊÌ«µÍ£¬»»³ÉÊ¹ÓÃWaitable Timer
+            // sleepæ•ˆç‡å¤ªä½ï¼Œæ¢æˆä½¿ç”¨Waitable Timer
             WaitForSingleObject(m_hTimer,INFINITE); 
             //UI::WaitForVerticalBlank();
         }
@@ -303,17 +303,17 @@ void  AnimateManager::AddStoryboardBlock(Storyboard* pStoryboard)
 #endif
 }
 
-// ¾¡Á¿Õ¼ÂúCPUÀ´ÔËĞĞÒ»¸ö¶¯»­£¬Èç¹ûÉæ¼°µ½Î»ÒÆµÄ¶¯»­ĞèºÜ¸ßµÄFPS²ÅÄÜ²»¿¨£¬Éæ¼°µ½Í¸Ã÷µÄ¶¯»­²»ĞèÒª¡£
+// å°½é‡å æ»¡CPUæ¥è¿è¡Œä¸€ä¸ªåŠ¨ç”»ï¼Œå¦‚æœæ¶‰åŠåˆ°ä½ç§»çš„åŠ¨ç”»éœ€å¾ˆé«˜çš„FPSæ‰èƒ½ä¸å¡ï¼Œæ¶‰åŠåˆ°é€æ˜çš„åŠ¨ç”»ä¸éœ€è¦ã€‚
 void AnimateManager::AddStoryboardFullCpu(Storyboard* pStoryboard)
 {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 	if (!pStoryboard)
 		return;
 
 	m_listStoryboard.push_back(pStoryboard);
 	pStoryboard->OnAnimateStart();
 
-	// ±ÜÃâÖĞÍ¾±»Íâ²¿ÇåÀíµô£¬×öÒ»¸öÒıÓÃ 
+	// é¿å…ä¸­é€”è¢«å¤–éƒ¨æ¸…ç†æ‰ï¼Œåšä¸€ä¸ªå¼•ç”¨ 
 	Storyboard* pShadow = pStoryboard;
 	pStoryboard->SetRef(&pShadow);
 
@@ -360,14 +360,14 @@ void  AnimateManager::OnTick()
 	{
 		Storyboard* pStoryboard = *iter;
 
-        // ÔÚ±éÀú¹ı³ÌÖĞ±»Ïú»ÙÁË¡£ÕâÀïÇåÀíµô
+        // åœ¨éå†è¿‡ç¨‹ä¸­è¢«é”€æ¯äº†ã€‚è¿™é‡Œæ¸…ç†æ‰
         if (!pStoryboard)
         {
             iter = m_listStoryboard.erase(iter);
             continue;
         }
 
-        // ÑÓÊ±¶¯»­
+        // å»¶æ—¶åŠ¨ç”»
 		if (pStoryboard->IsDelayWaiting())
 		{
 			pStoryboard->UpdateDelayWaiting();
@@ -387,7 +387,7 @@ void  AnimateManager::OnTick()
 		{
 			pStoryboard->OnTick();
 		}
-        pStoryboard = *iter;  // ÔÙ¸üĞÂ¡£ÓĞ¿ÉÄÜÖĞÍ¾±»removeÁË
+        pStoryboard = *iter;  // å†æ›´æ–°ã€‚æœ‰å¯èƒ½ä¸­é€”è¢«removeäº†
 
 		if (pStoryboard && pStoryboard->IsFinish())
 		{
@@ -409,7 +409,7 @@ void  AnimateManager::OnTick()
     }
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 VOID CALLBACK TimerAPCProc(
 			   LPVOID lpArgToCompletionRoutine,
 			   unsigned int dwTimerLowValue,
@@ -484,8 +484,8 @@ void AnimateManager::SetTimer()
 
     if (!m_hTimer)
     {
-        // ×Ô¶¯ÖØÖÃ£¬¼´µ÷ÓÃWaitForSingleObjectÊ±ÖØÖÃHANDLE
-        // Èç¹ûÊÇÊÖ¶¯µÄ£¬µÃÔÙ´Îµ÷ÓÃSetWaitableTimerÀ´ÖØÖÃ
+        // è‡ªåŠ¨é‡ç½®ï¼Œå³è°ƒç”¨WaitForSingleObjectæ—¶é‡ç½®HANDLE
+        // å¦‚æœæ˜¯æ‰‹åŠ¨çš„ï¼Œå¾—å†æ¬¡è°ƒç”¨SetWaitableTimeræ¥é‡ç½®
 	    m_hTimer = CreateWaitableTimer(nullptr, FALSE, nullptr);
     }
     
@@ -497,23 +497,23 @@ void AnimateManager::SetTimer()
     if (0 == m_nFps)
         m_nFps = 60;
 
-    // TODO: ²»¿¿Æ×£¬Ã»½â¾ö
+    // TODO: ä¸é è°±ï¼Œæ²¡è§£å†³
 //     if (m_nFps == 60)
 //     {
-//         //  ³¢ÊÔµÈ´ı´¹Ö±Í¬²½ºóÔÙ¿ªÊ¼¼ÆÊ±£¬ÒÔ´ïµ½Ã¿Ò»Ö¡¶¼ÔÚÆÁÄ»É¨ÃèÍê³ÉÖ®ºó
+//         //  å°è¯•ç­‰å¾…å‚ç›´åŒæ­¥åå†å¼€å§‹è®¡æ—¶ï¼Œä»¥è¾¾åˆ°æ¯ä¸€å¸§éƒ½åœ¨å±å¹•æ‰«æå®Œæˆä¹‹å
 //         WaitForVerticalBlank();
 //     }
 
-    int nPeriod = 1000/m_nFps;  // ¼ÆÊ±Æ÷ÖÜÆÚ
+    int nPeriod = 1000/m_nFps;  // è®¡æ—¶å™¨å‘¨æœŸ
 
     LARGE_INTEGER liDueTime;
-    liDueTime.QuadPart = -1000*10*nPeriod;   // µÚÒ»´ÎÏìÓ¦ÑÓ³ÙÊ±¼ä¡£¸ºÖµ±íÊ¾Ò»¸öÏà¶ÔµÄÊ±¼ä£¬´ú±íÒÔ100ÄÉÃëÎªµ¥Î»µÄÏà¶ÔÊ±¼ä£¬£¨Èç´ÓÏÖÔÚÆğµÄ5ms£¬ÔòÉèÖÃÎª-50000£©
+    liDueTime.QuadPart = -1000*10*nPeriod;   // ç¬¬ä¸€æ¬¡å“åº”å»¶è¿Ÿæ—¶é—´ã€‚è´Ÿå€¼è¡¨ç¤ºä¸€ä¸ªç›¸å¯¹çš„æ—¶é—´ï¼Œä»£è¡¨ä»¥100çº³ç§’ä¸ºå•ä½çš„ç›¸å¯¹æ—¶é—´ï¼Œï¼ˆå¦‚ä»ç°åœ¨èµ·çš„5msï¼Œåˆ™è®¾ç½®ä¸º-50000ï¼‰
 
-    // ×¢£º ²»ÒªÊ¹ÓÃTimerAPCProc,¸Ã·½Ê½ĞèÒªÈÃÏß³Ì´¦Àíalertable×´Ì¬£¬
-    //      ¼´µ÷ÓÃSleepEx(x, TRUE)ÈÃÏß³Ì½øÈëµÈ´ı×´Ì¬
-    // LONG lPeriod£ºÉèÖÃ¶¨Ê±Æ÷ÖÜÆÚĞÔµÄ×ÔÎÒ¼¤·¢£¬¸Ã²ÎÊıµÄµ¥Î»ÎªºÁÃë¡£
-    // Èç¹ûÎª0£¬Ôò±íÊ¾¶¨Ê±Æ÷Ö»·¢³öÒ»´ÎĞÅºÅ£¬´óÓÚ0Ê±£¬¶¨Ê±Æ÷Ã¿¸ôÒ»¶ÎÊ±
-    // ¼ä×Ô¶¯ÖØĞÂ¼¤»îÒ»¸ö¼ÆÊ±Æ÷£¬Ö±ÖÁÈ¡Ïû¼ÆÊ±Æ÷Ê¹ÓÃ
+    // æ³¨ï¼š ä¸è¦ä½¿ç”¨TimerAPCProc,è¯¥æ–¹å¼éœ€è¦è®©çº¿ç¨‹å¤„ç†alertableçŠ¶æ€ï¼Œ
+    //      å³è°ƒç”¨SleepEx(x, TRUE)è®©çº¿ç¨‹è¿›å…¥ç­‰å¾…çŠ¶æ€
+    // LONG lPeriodï¼šè®¾ç½®å®šæ—¶å™¨å‘¨æœŸæ€§çš„è‡ªæˆ‘æ¿€å‘ï¼Œè¯¥å‚æ•°çš„å•ä½ä¸ºæ¯«ç§’ã€‚
+    // å¦‚æœä¸º0ï¼Œåˆ™è¡¨ç¤ºå®šæ—¶å™¨åªå‘å‡ºä¸€æ¬¡ä¿¡å·ï¼Œå¤§äº0æ—¶ï¼Œå®šæ—¶å™¨æ¯éš”ä¸€æ®µæ—¶
+    // é—´è‡ªåŠ¨é‡æ–°æ¿€æ´»ä¸€ä¸ªè®¡æ—¶å™¨ï¼Œç›´è‡³å–æ¶ˆè®¡æ—¶å™¨ä½¿ç”¨
     if (!SetWaitableTimer(m_hTimer, &liDueTime, nPeriod, nullptr, nullptr, 0))  
     {
         UIASSERT(0);

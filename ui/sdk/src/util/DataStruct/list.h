@@ -1,7 +1,7 @@
 #pragma once
 
-// ps: stl�е�list����һ�����⣺�ڱ����Ĺ����У����ȥɾ��һ������������
-//     �������дһ��list���ڱ�����ɾ��Ҳû������
+// ps: stl中的list存在一个问题：在遍历的过程中，如果去删除一个对象会崩溃。
+//     因此重新写一个list，在遍历中删除也没有问题
 template <class T>
 struct UIListItem
 {

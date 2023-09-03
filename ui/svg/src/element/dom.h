@@ -2,6 +2,7 @@
 #define _UI_SVG_SRC_SVG_SVG_DOM_H_
 
 #include "3rd/pugixml/pugixml.hpp"
+#include<memory>
 
 namespace svg {
 class Element;

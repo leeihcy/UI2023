@@ -4,7 +4,7 @@
 #include "sdk/include/interface/imessage.h"
 #include "sdk/include/util/rect.h"
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #include <uxtheme.h>
 #endif
 

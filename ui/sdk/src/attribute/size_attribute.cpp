@@ -1,7 +1,6 @@
 #include "size_attribute.h"
 #include "attribute.h"
 #include "include/inc.h"
-// #include "attributex64.h"
 
 namespace ui {
 AttributeBase *CreateSizeAttribute() { return new SizeAttribute(); }

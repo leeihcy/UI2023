@@ -18,11 +18,11 @@ public:
 
     UI_DECLARE_RENDERBASE(ColorRender, XML_RENDER_TYPE_COLOR, RENDER_TYPE_COLOR)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_QUERYINTERFACE(ColorRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+	// UI_BEGIN_MSG_MAP()
+    //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+    //     UIMSG_QUERYINTERFACE(ColorRender)
+    //     UIMSG_SERIALIZE(OnSerialize)
+    // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
 	void  OnSerialize(SerializeParam* pData);
@@ -50,11 +50,11 @@ public:
 
     UI_DECLARE_RENDERBASE(SysColorRender, XML_RENDER_TYPE_SYSCOLOR, RENDER_TYPE_THEME_SYSCOLOR)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_QUERYINTERFACE(SysColorRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+	// UI_BEGIN_MSG_MAP()
+    //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+    //     UIMSG_QUERYINTERFACE(SysColorRender)
+    //     UIMSG_SERIALIZE(OnSerialize)
+    // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
 	void  OnSerialize(SerializeParam* pData);
@@ -86,11 +86,11 @@ public:
 
     UI_DECLARE_RENDERBASE(GradientRender, XML_RENDER_TYPE_GRADIENT, RENDER_TYPE_GRADIENT)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_QUERYINTERFACE(GradientRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+	// UI_BEGIN_MSG_MAP()
+    //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+    //     UIMSG_QUERYINTERFACE(GradientRender)
+    //     UIMSG_SERIALIZE(OnSerialize)
+    // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 
 	void  OnSerialize(SerializeParam* pData);
@@ -137,11 +137,11 @@ public:
 
     UI_DECLARE_RENDERBASE(ColorListRender, XML_RENDER_TYPE_COLORLIST, RENDER_TYPE_COLORLIST)
 
-	UI_BEGIN_MSG_MAP()
-        UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-        UIMSG_QUERYINTERFACE(ColorListRender)
-        UIMSG_SERIALIZE(OnSerialize)
-    UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+	// UI_BEGIN_MSG_MAP()
+    //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+    //     UIMSG_QUERYINTERFACE(ColorListRender)
+    //     UIMSG_SERIALIZE(OnSerialize)
+    // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 	
 	void  Clear();
 

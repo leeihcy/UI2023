@@ -1,6 +1,7 @@
 #pragma once
 #include "include/inc.h"
 #include "src/private_inc.h"
+#include "include/util/windows.h"
 
 namespace ui {
 struct IFontResItem;
@@ -25,11 +26,13 @@ public:
   const char *GetId() { return m_strId.c_str(); }
   void SetId(const char *szValue) { SETSTRING(m_strId, szValue); }
   LOGFONT *GetLogFont() { return &m_lf; }
+#if 0
   void GetFaceName(char *szOut) { strcpy(szOut, m_lf.lfFaceName); }
   void SetFaceName(const std::string &str) {
     strncpy(m_lf.lfFaceName, str.c_str(), 31);
     m_lf.lfFaceName[31] = 0;
   }
+#endif
   void SetFontHeight(int nHeight) { m_lf.lfHeight = nHeight; }
   int GetFontSize();
   void SetFontOrientation(int o) { m_lf.lfOrientation = o; }

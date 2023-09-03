@@ -26,7 +26,7 @@ void LayoutFactory::Init() {
 
 bool LayoutFactory::Register(const char *szName, pfnUICreateLayoutPtr pfun) {
   if (nullptr == pfun || nullptr == szName) {
-    UI_LOG_WARN(_T("invalid arg. name=%s, pfun=%x"), szName, pfun);
+    UI_LOG_WARN("invalid arg. name=%s, pfun=%x", szName, pfun);
     return false;
   }
 

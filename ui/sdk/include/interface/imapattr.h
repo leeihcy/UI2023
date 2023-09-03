@@ -11,7 +11,7 @@ namespace ui {
 struct IRenderBase;
 struct ITextRenderBase;
 struct Rect;
-class C9Region;
+struct C9Region;
 
 struct IMapAttribute {
   virtual bool HasAttrib(const char *szKey) = 0;

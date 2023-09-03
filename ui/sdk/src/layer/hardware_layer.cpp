@@ -115,7 +115,7 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (!m_pLayerContent)
     return;
 
-#if defined(OS_WIn)
+#if 0 // defined(OS_WIN)
   Rect rcWnd;
   m_pLayerContent->GetWindowRect(&rcWnd);
   if (rcWnd.IsEmpty())

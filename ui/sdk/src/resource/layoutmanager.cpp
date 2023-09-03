@@ -44,7 +44,7 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
 
   UIElementProxy objUIElement = this->FindWindowElement(XML_WINDOW_, szWndId);
   if (!objUIElement) {
-    UI_LOG_FATAL(_T("未找到要加载的对象：name=%s, id=%s"), XML_WINDOW_,
+    UI_LOG_FATAL("未找到要加载的对象：name=%s, id=%s", XML_WINDOW_,
                  szWndId);
     return nullptr;
   }
@@ -302,7 +302,7 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
         return nullptr;
       }
     } else {
-      UI_LOG_ERROR(_T("CreateObject Failed. name=%s"), bstrTagName.c_str());
+      UI_LOG_ERROR("CreateObject Failed. name=%s", bstrTagName.c_str());
       return nullptr;
     }
   }
@@ -374,7 +374,7 @@ bool LayoutManager::ReLoadLayout(Object *pRootObj, const char *szNewLayoutId,
   UIElementProxy objUIElem = this->FindWindowElement(szObjName, szNewLayoutId);
 
   if (!objUIElem) {
-    UI_LOG_FATAL(_T("未找到要加载的对象：name=%s, id=%s"), szObjName,
+    UI_LOG_FATAL("未找到要加载的对象：name=%s, id=%s", szObjName,
                  szNewLayoutId);
     return false;
   }
@@ -396,7 +396,7 @@ void LayoutManager::ReloadChildObjects(
 
     const char *szTagName = childElem->GetTagName();
     if (!szTagName || !szTagName[0]) {
-      UI_LOG_WARN(_T("xml invalid tag name."));
+      UI_LOG_WARN("xml invalid tag name.");
 
       childElem = childElem->NextElement();
       continue;

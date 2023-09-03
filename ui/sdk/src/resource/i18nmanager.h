@@ -31,7 +31,7 @@ private:
 	I18nRes  m_i18nRes;
 	Resource*  m_pSkinRes;
 
-    // xml½áµã¼ÇÂ¼£¬ÓÃÓÚ¶¯Ì¬ÇĞ»»ÓïÑÔ£¨Èç±à¼­Æ÷ÖĞ£©
+    // xmlç»“ç‚¹è®°å½•ï¼Œç”¨äºåŠ¨æ€åˆ‡æ¢è¯­è¨€ï¼ˆå¦‚ç¼–è¾‘å™¨ä¸­ï¼‰
     std::list<UIElement*>  m_listElement;
 };
 

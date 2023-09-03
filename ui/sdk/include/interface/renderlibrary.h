@@ -15,7 +15,7 @@ struct Rect;
 struct Point;
 struct Size;
 
-class C9Region;
+struct C9Region;
 
 // 绘制图片的统一参数，避免需要重写多个DrawBitmap函数
 enum DRAW_BITMAP_FLAG {

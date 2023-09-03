@@ -18,7 +18,7 @@ config("compiler_defaults") {
     defines += ["CPU_X64"]
   }
 
-  if (current_os == "linux") {
+  if (is_linux) {
     cflags += [
       "-fPIC",
       "-pthread",

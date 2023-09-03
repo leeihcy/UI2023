@@ -50,7 +50,7 @@ bool RenderBaseFactory::RegisterUIRenderBaseCreateData(
   pInfo->m_strName = strName;
   m_vecUIRenderBaseCreateData.push_back(pInfo);
 
-  // UI_LOG_DEBUG(_T("%s, type=%d, ctrl=%d @ 0x%08X"), bstrName, nType, pfunc);
+  // UI_LOG_DEBUG("%s, type=%d, ctrl=%d @ 0x%08X", bstrName, nType, pfunc);
   return true;
 }
 
@@ -95,7 +95,7 @@ bool RenderBaseFactory::CreateRenderBaseByName(IResource *pSkinRes,
     return false;
   }
 
-  UI_LOG_WARN(_T("Create Failed. Name=%s"), strName);
+  UI_LOG_WARN("Create Failed. Name=%s", strName);
   return false;
 }
 bool RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType,
@@ -124,7 +124,7 @@ bool RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType,
     return false;
   }
 
-  UI_LOG_WARN(_T("Create Failed. Type=%d"), nType);
+  UI_LOG_WARN("Create Failed. Type=%d", nType);
   return false;
 }
 
@@ -146,7 +146,7 @@ const char *RenderBaseFactory::GetRenderBaseName(int nType) {
 }
 
 void RenderBaseFactory::EnumRenderBaseName(
-    pfnEnumRenderBaseNameCallback callback, long wParam, long lParam) {
+    pfnEnumRenderBaseNameCallback callback, llong wParam, llong lParam) {
   UIRENDERBASE_CREATE_DATA::iterator iter = m_vecUIRenderBaseCreateData.begin();
   for (; iter != m_vecUIRenderBaseCreateData.end(); ++iter) {
     UIRENDERBASE_CREATE_INFO *pData = *iter;

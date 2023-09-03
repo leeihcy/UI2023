@@ -45,7 +45,7 @@ int FontHeight2Size(int nHeight)
 	return nSize;
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 int /*CALLBACK*/ IsFontExistEnumFontsProc(
 						   const LOGFONT *lplf,     // logical-font data
 						   const TEXTMETRIC *lptm,  // physical-font data
@@ -72,7 +72,7 @@ bool IsFontExist(const char* pszFaceName)
 {
 	if (nullptr == pszFaceName)
 		return false;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 	HDC hDC = GetDC(nullptr);
 	bool bFind = false;
 	int nRet = EnumFontsA(hDC, pszFaceName, IsFontExistEnumFontsProc, (int)&bFind);
@@ -163,7 +163,7 @@ int  FontManager::ParseNewElement(UIElement* pElem)
 
 	m_listUIElement.Add(info);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     HDC hDC = GetDC(nullptr);
 #else
     HDC hDC = 0;
@@ -175,13 +175,13 @@ int  FontManager::ParseNewElement(UIElement* pElem)
         this->OnNewChild(childElement.get(), hDC);
         childElement = childElement->NextElement();
     }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     ReleaseDC(nullptr, hDC);
 #endif
     return 0;
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 int CALLBACK _EnumFontsProc(
                    CONST LOGFONT *lplf,     // logical-font data
                    CONST TEXTMETRIC *lptm,  // physical-font data
@@ -218,6 +218,7 @@ int CALLBACK _EnumFontsProc(
 //
 void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
 {
+#if 0
     const char* szText = nullptr;
 
     //	先加载默认配置，再遍历检查当前语言的配置
@@ -281,13 +282,13 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
     lf.lfItalic = bItalic?1:0;
     lf.lfUnderline = bUnderline?1:0;
     lf.lfStrikeOut = bStrikeout?1:0;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     lf.lfQuality = bClearType ? CLEARTYPE_QUALITY : ANTIALIASED_QUALITY;
 #endif
 
     // 获取这个字体的chatset。
     // 场景 ♪ 在xp下面，gdi显示成口，将chatset修改为gb2312之后显示正常
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     EnumFonts(hDC, lf.lfFaceName, _EnumFontsProc, (int)&lf.lfCharSet);
 #else
     UIASSERT(false);
@@ -295,10 +296,11 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
 
     if (false == m_resFont.InsertFont(strID.c_str(), &lf))
     {
-        UI_LOG_WARN(_T("insert font failed. m_strID=%s, facename=%s"), 
+        UI_LOG_WARN("insert font failed. m_strID=%s, facename=%s", 
             strID.c_str(), strFaceName.c_str());
     }
 
     pMapAttrib->Destroy();
+#endif
 }
 }

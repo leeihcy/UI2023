@@ -9,7 +9,7 @@ namespace ui {
 Compositor::Compositor() {
   m_pRootLayer = nullptr;
   m_pUIApp = nullptr;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   m_hWnd = nullptr;
 #endif
   m_pWindowRender = nullptr;
@@ -44,7 +44,7 @@ void Compositor::SetRootLayer(Layer *pChanged) { m_pRootLayer = pChanged; }
 
 Layer *Compositor::GetRootLayer() { return m_pRootLayer; }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 void Compositor::BindHWND(HWND hWnd) {
   if (m_hWnd == hWnd)
     return;
@@ -57,7 +57,7 @@ HWND Compositor::GetHWND() { return m_hWnd; }
 #endif
 
 void Compositor::RequestInvalidate() {
-  // #if defined(OS_WIN)
+  // #if 0 // defined(OS_WIN)
   //   UIASSERT(m_hWnd);
   //   if (m_request_invalidate_ref == 0) {
   //     ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, MSG_INVALIDATE, 0);

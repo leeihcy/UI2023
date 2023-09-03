@@ -18,7 +18,7 @@ public:
 		SAFE_DELETE(m_pBitmapData);
 		SAFE_DELETE(m_pBitmap);
 
-		UI_LOG_DEBUG(_T("GdiplusRenderBitmap Delete. ptr=0x%08X"), this);
+		UI_LOG_DEBUG("GdiplusRenderBitmap Delete. ptr=0x%08X", this);
 	}
 
 	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
@@ -28,9 +28,9 @@ public:
 
 	//
 	//	Remark:
-	//		Ê¹ÓÃGdiplus¼ÓÔØ³öÀ´µÄICON»á¶ªÊ§Í¸Ã÷ÒõÓ°£¬ÔÚÕâÀï¶ÔICON½øĞĞÁËÌØÊâ´¦Àí
-	//		Òò´ËÔÚÕâÀïÏÈÊ¹ÓÃGDI DrawIcon»ñÈ¡Ò»´ÎÍêÕûµÄÊı¾İ
-	//		TODO: ÕâÀïÖ»Ä¬ÈÏÖ§³Ö16*16´óĞ¡µÄ£¬icoÖĞÆäËü´óĞ¡µÄÍ¼±êÔİÊ±Ã»ÓĞÔö¼Ó½Ó¿Ú·Ö±ğ¼ÓÔØ
+	//		ä½¿ç”¨GdiplusåŠ è½½å‡ºæ¥çš„ICONä¼šä¸¢å¤±é€æ˜é˜´å½±ï¼Œåœ¨è¿™é‡Œå¯¹ICONè¿›è¡Œäº†ç‰¹æ®Šå¤„ç†
+	//		å› æ­¤åœ¨è¿™é‡Œå…ˆä½¿ç”¨GDI DrawIconè·å–ä¸€æ¬¡å®Œæ•´çš„æ•°æ®
+	//		TODO: è¿™é‡Œåªé»˜è®¤æ”¯æŒ16*16å¤§å°çš„ï¼Œicoä¸­å…¶å®ƒå¤§å°çš„å›¾æ ‡æš‚æ—¶æ²¡æœ‰å¢åŠ æ¥å£åˆ†åˆ«åŠ è½½
 	//
 	virtual bool  LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LOAD_FLAG e)
 	{
@@ -105,7 +105,7 @@ public:
 	}
 
 	//
-	// WARNING: ²»Ö§³Ö¶àÏß³ÌÊ¹ÓÃ,²»Ö§³ÖÇ¶Ì×Ê¹ÓÃ
+	// WARNING: ä¸æ”¯æŒå¤šçº¿ç¨‹ä½¿ç”¨,ä¸æ”¯æŒåµŒå¥—ä½¿ç”¨
 	//
 	virtual BYTE* LockBits()
 	{
@@ -141,8 +141,8 @@ public:
 	}
 
 
-	// ½«Í¼Æ¬Êı¾İÇå0¡£ÓÃÓÚ´øÍ¸Ã÷µÄÍ¼Æ¬ÖØ»æÇ°ÏÈË¢ĞÂÉÏÒ»´ÎµÄÊı¾İ£¬±ÜÃâalphaµş¼Ó
-	// ·ÏÆú£¬ÓĞÖ±½ÓµÄGraphic->Clear·½·¨
+	// å°†å›¾ç‰‡æ•°æ®æ¸…0ã€‚ç”¨äºå¸¦é€æ˜çš„å›¾ç‰‡é‡ç»˜å‰å…ˆåˆ·æ–°ä¸Šä¸€æ¬¡çš„æ•°æ®ï¼Œé¿å…alphaå åŠ 
+	// åºŸå¼ƒï¼Œæœ‰ç›´æ¥çš„Graphic->Clearæ–¹æ³•
 	// 	void    Clear()
 	// 	{
 	// 		Gdiplus::BitmapData data;;
@@ -185,7 +185,7 @@ public:
 		pImageData->m_nbpp = 32;
 		pImageData->m_bNeedDeletePtr = true;
 
-		// ´´½¨ÄÚ´æ
+		// åˆ›å»ºå†…å­˜
 		int nSize = bytesperline*pBitmapData->Height;
 		pImageData->m_ptr = new BYTE[nSize];
 		pImageData->m_pScan0 = pImageData->m_ptr;
@@ -193,7 +193,7 @@ public:
 		if( pBitmapData->Stride < 0 )
 			pImageData->m_pScan0 += ((pBitmapData->Height-1)*bytesperline);
 
-		// ÄÚ´æ¿½±´
+		// å†…å­˜æ‹·è´
 		BYTE* pTemp = pImageData->m_pScan0;
 		for (int row = 0; row < (int)pBitmapData->Height; row ++ )
 		{
@@ -263,7 +263,7 @@ public:
 
 		float dL = 0, ds = 0;
 		if (bChangeL)
-			dL = (float)(l/100.0);   // ±ÜÃâÔÚÑ­»·ÖĞÖØ¸´¼ÆËã¸ÃÖµ
+			dL = (float)(l/100.0);   // é¿å…åœ¨å¾ªç¯ä¸­é‡å¤è®¡ç®—è¯¥å€¼
 		if (bChangeS)
 			ds = (float)(s/100.0);
 
@@ -343,7 +343,7 @@ public:
 
 protected:
 	Gdiplus::Bitmap*     m_pBitmap;
-	Gdiplus::BitmapData* m_pBitmapData;        // LockBits ¹ı³ÌÖĞÊ¹ÓÃµ½µÄÁÙÊ±±äÁ¿
+	Gdiplus::BitmapData* m_pBitmapData;        // LockBits è¿‡ç¨‹ä¸­ä½¿ç”¨åˆ°çš„ä¸´æ—¶å˜é‡
 };
 
 
@@ -372,7 +372,7 @@ protected:
 	int    m_nIconWidth;
 	int    m_nIconHeight;
 
-	HBITMAP  m_hBitmapToFixIcon;   // ½â¾öGdiplus¼ÓÔØICONÊ±¶ªÊ§alphaµÄÎÊÌâ
+	HBITMAP  m_hBitmapToFixIcon;   // è§£å†³GdiplusåŠ è½½ICONæ—¶ä¸¢å¤±alphaçš„é—®é¢˜
 };
 
 class GdiplusImageListRenderBitmap : public GdiplusRenderBitmapImpl<IRenderResourceImpl<IImageListRenderBitmap> >

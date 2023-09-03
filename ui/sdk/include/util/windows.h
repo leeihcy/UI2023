@@ -1,6 +1,17 @@
 #ifndef _UI_SDK_INCLUDE_UTIL_WINDOWS_H_
 #define _UI_SDK_INCLUDE_UTIL_WINDOWS_H_
 #include <string>
+#if defined(OS_WIN)
+#include <windows.h>
+#include <wingdi.h>
+#undef SendMessage
+#undef LoadBitmap
+#undef DrawState
+#undef GetObject
+#undef FindWindow
+#undef max
+#undef min
+#endif
 
 namespace ui {
 

@@ -4,7 +4,7 @@
 namespace ui
 {
 	
-// ²»°üº¬w·ÖÁ¿2DÏòÁ¿ºÍµã
+// ä¸åŒ…å«wåˆ†é‡2Då‘é‡å’Œç‚¹
 typedef struct tagPOINTF2
 {
 	union
@@ -15,7 +15,7 @@ typedef struct tagPOINTF2
 }
 POINTF2, VECTOR2, *LPVECTOR2, *LPPOINTF2;
 
-// ²»°üº¬w·ÖÁ¿µÄ3DÏòÁ¿ºÍµã
+// ä¸åŒ…å«wåˆ†é‡çš„3Då‘é‡å’Œç‚¹
 typedef struct tagPOINTF3
 {
 	union
@@ -26,7 +26,7 @@ typedef struct tagPOINTF3
 } 
 POINTF3, VECTOR3, *LPVECTOR3, *LPPOINTF3;
 
-// °üº¬w·ÖÁ¿µÄ4DÆë´ÎÏòÁ¿ºÍµã
+// åŒ…å«wåˆ†é‡çš„4Dé½æ¬¡å‘é‡å’Œç‚¹
 typedef struct tagPOINTF4
 {
 	union
@@ -37,7 +37,7 @@ typedef struct tagPOINTF4
 } 
 POINTF4, VECTORF4, *LPVECTOR4, *LPPOINTF4;
 
-// 2D ¶¥µã
+// 2D é¡¶ç‚¹
 // typedef struct tagVERTEX2DI
 // {
 // 	int x, y;

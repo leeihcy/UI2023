@@ -71,7 +71,7 @@ void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
 
   output.append(buffer);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   OutputDebugString(output.c_str());
 #else
   wprintf(output.c_str());
@@ -111,7 +111,7 @@ void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
   snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
   output.append(buffer);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   OutputDebugStringA(output.c_str());
 #else
   printf("%s", output.c_str());

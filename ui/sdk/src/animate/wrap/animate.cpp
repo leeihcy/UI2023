@@ -31,7 +31,7 @@ void  AnimateHelper::UnInit()
 
 void  AnimateHelper::OnSetTimer(long hHandle)
 {
-#if defined(OS_WIN)
+#if 0
     if (m_pWaitforHandle)
     {
         m_pWaitforHandle->AddHandle(
@@ -44,7 +44,7 @@ void  AnimateHelper::OnSetTimer(long hHandle)
 
 void  AnimateHelper::OnKillTimer(long hHandle)
 {
-#if defined(OS_WIN)
+#if 0
     if (m_pWaitforHandle)
     {
         m_pWaitforHandle->RemoveHandle(hHandle);

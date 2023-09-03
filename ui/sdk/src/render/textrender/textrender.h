@@ -1,5 +1,5 @@
 #pragma once
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #include "Vsstyle.h"
 #include "uxtheme.h"
 #pragma comment(lib, "uxtheme.lib")
@@ -22,9 +22,9 @@ public:
   TextRenderBase(ITextRenderBase *p);
   ~TextRenderBase();
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_GETDESIREDSIZE2(OnGetDesiredSize)
-  UI_END_MSG_MAP()
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_GETDESIREDSIZE2(OnGetDesiredSize)
+  // UI_END_MSG_MAP()
 
   void Serialize(AttributeSerializer *ps);
   void OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo);
@@ -87,12 +87,12 @@ public:
   UI_DECLARE_TEXTRENDERBASE(SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE,
                             TEXTRENDER_TYPE_SIMPLE)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_GETRENDERFONT(GetRenderFont)
-  UIMSG_QUERYINTERFACE(SimpleTextRender)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_QUERYINTERFACE(SimpleTextRender)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
@@ -125,13 +125,13 @@ public:
                             XML_TEXTRENDER_TYPE_CONTRAST_COLOR,
                             TEXTRENDER_TYPE_CONTRASTCOLOR)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_GETRENDERFONT(GetRenderFont)
-  UIMSG_QUERYINTERFACE(ContrastColorTextRender)
-  UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_QUERYINTERFACE(ContrastColorTextRender)
+  // UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
 public:
   void SetRenderFont(IRenderFont *);
@@ -167,13 +167,13 @@ public:
                             XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST,
                             TEXTRENDER_TYPE_CONTRASTCOLORLIST)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_GETRENDERFONT(GetRenderFont)
-  UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
-  UIMSG_QUERYINTERFACE(ContrastColorListTextRender)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_HANDLER_EX(UI_MSG_SKINTEXTURECHANGED, OnSkinTextureChanged)
+  // UIMSG_QUERYINTERFACE(ContrastColorListTextRender)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
@@ -209,12 +209,12 @@ public:
   UI_DECLARE_TEXTRENDERBASE(ColorListTextRender, XML_TEXTRENDER_TYPE_COLORLIST,
                             TEXTRENDER_TYPE_COLORLIST)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_GETRENDERFONT(GetRenderFont)
-  UIMSG_QUERYINTERFACE(ColorListTextRender)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_QUERYINTERFACE(ColorListTextRender)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
@@ -265,12 +265,12 @@ public:
                             XML_TEXTRENDER_TYPE_FONTCOLORLIST,
                             TEXTRENDER_TYPE_FONTCOLORLIST)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_GETRENDERFONT(GetRenderFont)
-  UIMSG_QUERYINTERFACE(FontColorListTextRender)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_QUERYINTERFACE(FontColorListTextRender)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
@@ -311,10 +311,10 @@ public:
 	ThemeTextRenderBase(IThemeTextRenderBase* p);
 	~ThemeTextRenderBase();
 
-	UI_BEGIN_MSG_MAP()
-		MSG_WM_THEMECHANGED(OnThemeChanged)
-        UIMSG_INITIALIZE(OnInit)
-    UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+	// UI_BEGIN_MSG_MAP()
+	// 	MSG_WM_THEMECHANGED(OnThemeChanged)
+  //       UIMSG_INITIALIZE(OnInit)
+  //   UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
     void  OnInit();
     void  OnThemeChanged();

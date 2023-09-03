@@ -68,7 +68,7 @@ UINT_PTR  TimerHelper::SetTimer(int nElapse, TimerItem* pItem)
         itemRef.pNotify->AddDelayRef((void**)&itemRef.pNotify);
 
 //    int nCount = m_mapTimerItem.size();
-//    UI_LOG_DEBUG(_T("%s  timer id:%d, nElapse=%d, id=%d, pNotify=0x%x"), FUNC_NAME, nTimerID, nElapse, pItem->nId, pItem->pNotify);
+//    UI_LOG_DEBUG("%s  timer id:%d, nElapse=%d, id=%d, pNotify=0x%x", FUNC_NAME, nTimerID, nElapse, pItem->nId, pItem->pNotify);
     return nTimerID;
 }
 void  TimerHelper::KillTimer(UINT_PTR& nTimerIdRef)
@@ -76,7 +76,7 @@ void  TimerHelper::KillTimer(UINT_PTR& nTimerIdRef)
     _MyIter iter = m_mapTimerItem.find(nTimerIdRef);
     if (iter != m_mapTimerItem.end())
     {
-//        UI_LOG_DEBUG(_T("%s timer id:%d"), FUNC_NAME, nTimerIdRef);
+//        UI_LOG_DEBUG("%s timer id:%d", FUNC_NAME, nTimerIdRef);
 
         if (iter->second.pNotify)
             iter->second.pNotify->RemoveDelayRef((void**)&iter->second.pNotify);
@@ -96,7 +96,7 @@ void  TimerHelper::KillTimerById(int nId, IMessage* pNotify)
     {
         if (iter->second.nId == nId && iter->second.pNotify == pNotify)
         {
-//            UI_LOG_DEBUG(_T("%s timer id:%d, id=%d"), FUNC_NAME, iter->first, nId);
+//            UI_LOG_DEBUG("%s timer id:%d, id=%d", FUNC_NAME, iter->first, nId);
             if (iter->second.pNotify)
                 iter->second.pNotify->RemoveDelayRef((void**)&iter->second.pNotify);
 
@@ -116,7 +116,7 @@ void  TimerHelper::KillTimerByNotify(IMessage* pNotify)
             if (iter->second.pNotify)
                 iter->second.pNotify->RemoveDelayRef((void**)&iter->second.pNotify);
 
-//            UI_LOG_DEBUG(_T("%s timer id:%d, id=%d"), FUNC_NAME, iter->first, nId);
+//            UI_LOG_DEBUG("%s timer id:%d, id=%d", FUNC_NAME, iter->first, nId);
             ::KillTimer(nullptr, iter->first);
             iter = m_mapTimerItem.erase(iter);
         }

@@ -21,15 +21,16 @@ public:
   void OnObjPosInTreeChanged();
 
 protected:
-  virtual Object &GetObject() override { return m_obj; }
-  virtual bool IsChildOf(ILayerContent *) override;
-  virtual bool IsVisible() override;
-  virtual void Draw(ui::IRenderTarget *) override;
-  virtual void GetWindowRect(Rect *prcOut) override;
-  virtual void GetParentWindowRect(Rect *prcOut) override;
-  virtual void OnLayerDestory() override;
-  virtual Layer *GetParentLayer() override;
-  virtual Layer *GetNextLayer() override;
+  Object &GetObj() override { return m_obj; }
+
+  virtual bool IsChildOf(ILayerContent *);
+  virtual bool IsVisible();
+  virtual void Draw(ui::IRenderTarget *);
+  virtual void GetWindowRect(Rect *prcOut);
+  virtual void GetParentWindowRect(Rect *prcOut);
+  virtual void OnLayerDestory();
+  virtual Layer *GetParentLayer();
+  virtual Layer *GetNextLayer();
 
 private:
   Object &m_obj;

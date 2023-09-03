@@ -59,7 +59,7 @@ bool  TextRenderFactory::RegisterUITextRenderBaseCreateData(
 	pInfo->m_strName = strName;
 	m_vecUITextRenderBaseCreateData.push_back(pInfo);
 
-	//UI_LOG_DEBUG(_T("%s   @ 0x%08X"), szName,  pfunc);
+	//UI_LOG_DEBUG("%s   @ 0x%08X", szName,  pfunc);
 	return true;
 }
 
@@ -95,7 +95,7 @@ bool  TextRenderFactory::CreateTextRenderBaseByName(
 		return false;
 	}
 
-	UI_LOG_WARN(_T("Create Failed. Name=%s"), bstrName);
+	UI_LOG_WARN("Create Failed. Name=%s", bstrName);
 	return false;
 }
 bool  TextRenderFactory::CreateTextRender(
@@ -130,7 +130,7 @@ bool  TextRenderFactory::CreateTextRender(
 		return false;
 	}
 
-	UI_LOG_WARN(_T("Create Failed. Type=%d"), nType);
+	UI_LOG_WARN("Create Failed. Type=%d", nType);
 	return false;
 }
 

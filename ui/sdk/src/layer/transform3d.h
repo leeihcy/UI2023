@@ -73,7 +73,7 @@ private:
 	bool   m_bInvalidate;
     bool   m_backface_visibility;
 
-	// 旋转中心相关数据
+	// 鏃嬭浆涓績鐩稿叧鏁版嵁
 	TRANSFORM_ROTATE_ORIGIN  m_eOriginTypeX;
 	TRANSFORM_ROTATE_ORIGIN  m_eOriginTypeY;
 	float  m_fOriginOffsetX;

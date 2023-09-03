@@ -235,7 +235,7 @@ bool StyleRes::Add(StyleResItem *pNewItem) {
   StyleResItem *p =
       this->GetItem(pNewItem->GetSelectorType(), pNewItem->GetId());
   if (p) {
-    UI_LOG_WARN(_T("StyleRes::Add failed, insert item=%s"), pNewItem->GetId());
+    UI_LOG_WARN("StyleRes::Add failed, insert item=%s", pNewItem->GetId());
     return false;
   }
 

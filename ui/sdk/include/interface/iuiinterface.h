@@ -2,7 +2,7 @@
 #define _IUIINTERFACE_H_
 #include "sdk/include/interface/imessage.h"
 
-// IApplication½Ó¿Ú
+// IApplicationæ¥å£
 namespace ui
 {
 	struct  IToolTipUI;
@@ -21,7 +21,7 @@ namespace ui
     struct  IMapAttribute;
     struct  IObject;
 
-	// ¾ä±ú¶¨Òå
+	// å¥æŸ„å®šä¹‰
 	struct IApplication;
 
     class TopWindowManager;
@@ -47,7 +47,7 @@ namespace ui
     //////////////////////////////////////////////////////////////////////////
 
 	//
-	// ¸÷ÖÖÌáÊ¾Ìõ»æÖÆµÄ³éÏóÀà	
+	// å„ç§æç¤ºæ¡ç»˜åˆ¶çš„æŠ½è±¡ç±»	
 	//
 	struct IToolTipUI
 	{
@@ -77,7 +77,7 @@ namespace ui
 	{
 		virtual void OnInvalidateRect(const Rect*, bool) = 0;
 	};
-	struct IPreTranslateMessage  // IMessageFilter ±»ÏµÍ³ÆäËüµØ·½ÒÑ¾­¶¨Òå¹ıÁË
+	struct IPreTranslateMessage  // IMessageFilter è¢«ç³»ç»Ÿå…¶å®ƒåœ°æ–¹å·²ç»å®šä¹‰è¿‡äº†
 	{
 	public:
 		virtual bool PreTranslateMessage(ui::MSG* pMsg) = 0;

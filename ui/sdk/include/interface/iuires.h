@@ -108,7 +108,7 @@ struct UIAPI IImageRes : public IRootInterface {
   bool GetBitmap(const char *szImageId,
                  GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                  /*out*/ IRenderBitmap **ppRenderBitmap);
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HBITMAP LoadBitmap(const char *szId);
 #endif
   const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
@@ -145,7 +145,7 @@ struct UIAPI IFontResItem : public IRootInterface {
   FontResItem *GetImpl();
 
   const char *GetId();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   LOGFONT *GetLogFont();
 #endif
 private:
@@ -260,7 +260,7 @@ struct UIAPI IImageManager : public IRootInterface {
   ImageManager *GetImpl();
 
   IImageRes &GetImageRes();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   ICursorRes *GetCursorRes();
   IGifRes *GetGifRes();
 #endif

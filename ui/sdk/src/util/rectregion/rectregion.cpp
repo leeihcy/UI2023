@@ -300,7 +300,7 @@ void RectRegion::add_rect_and_merge_vert(Rect& rc) {
   AddRect(rc);
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 HRGN RectRegion::CreateRgn() {
   if (0 == m_nCount || nullptr == GetArrayPtr()) {
     return nullptr;

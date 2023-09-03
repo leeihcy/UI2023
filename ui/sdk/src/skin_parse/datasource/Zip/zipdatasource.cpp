@@ -58,7 +58,7 @@ void  ZipDataSource::SetData(byte* data, int size)
 	m_hZip = OpenZip(data, size, nullptr);
 	if (nullptr == m_hZip)
 	{
-		UI_LOG_ERROR(_T("OpenZip Failed. file=%s"), m_strPath.c_str());
+		UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
 		return;
 	}
 
@@ -72,7 +72,7 @@ bool  ZipDataSource::Init()
         m_hZip = OpenZip(m_strPath.c_str(), nullptr);
         if (nullptr == m_hZip)
         {
-            UI_LOG_ERROR(_T("OpenZip Failed. file=%s"), m_strPath.c_str());
+            UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
 			return false;
         }
     }
@@ -95,12 +95,12 @@ bool  ZipDataSource::Load_UIDocument(UIDocument* pDocument, const wchar_t* szPat
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
     if (-1 == index)
     {
-        UI_LOG_ERROR(_T("FindZipItem Failed. path=%s"), szPath);
+        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
         return false;
     }
 
 	int nSize = ze.unc_size;
-    byte* szbuf = new byte[nSize];  // ×îºóÒ»¸öÓÃ0Ìî³ä£¬±êÃ÷×Ö·û´®½áÊø
+    byte* szbuf = new byte[nSize];  // æœ€åä¸€ä¸ªç”¨0å¡«å……ï¼Œæ ‡æ˜å­—ç¬¦ä¸²ç»“æŸ
     memset(szbuf, 0, nSize);
     UnzipItem(m_hZip, index, szbuf, ze.unc_size);
 
@@ -114,7 +114,7 @@ void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPa
     const wchar_t* p = szOrignPath;
     wchar_t* p2 = szLastPath;
 
-    // Ìø¹ı .\xxx ±íÊ¾µÄµ±Ç°Ä¿Â¼
+    // è·³è¿‡ .\xxx è¡¨ç¤ºçš„å½“å‰ç›®å½•
     if (strlen(szOrignPath) > 2 &&
         szOrignPath[0] == _T('.') && 
         (szOrignPath[1] == _T('/') || szOrignPath[1] == _T('\\')))
@@ -135,7 +135,7 @@ void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPa
     *p2 = _T('\0');
 }
 
-// ×¢£ºzipÄÚ²¿µÄÂ·¾¶·ûºÅÊÇ/£¬¶ø²»ÊÇ\ 
+// æ³¨ï¼šzipå†…éƒ¨çš„è·¯å¾„ç¬¦å·æ˜¯/ï¼Œè€Œä¸æ˜¯\ 
 bool  ZipDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e)
 {
     if (!m_hZip || !Init())
@@ -147,14 +147,14 @@ bool  ZipDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* sz
     ZIPENTRY ze;
     int index = 0; 
 
-    // Ìæ»»Â·¾¶·ûºÅ
+    // æ›¿æ¢è·¯å¾„ç¬¦å·
     wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 	
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
     if (-1 == index)
     {
-        UI_LOG_ERROR(_T("FindZipItem Failed. path=%s"), szPath);
+        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
         return false;
     }
 
@@ -179,14 +179,14 @@ bool  ZipDataSource::Load_Image(const wchar_t* szPath, ImageWrap* pImage)
     ZIPENTRY ze;
     int index = 0; 
 
-    // Ìæ»»Â·¾¶·ûºÅ
+    // æ›¿æ¢è·¯å¾„ç¬¦å·
     wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
     if (-1 == index)
     {
-        UI_LOG_ERROR(_T("FindZipItem Failed. path=%s"), szPath);
+        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
         return false;
     }
 
@@ -211,14 +211,14 @@ bool  ZipDataSource::Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadW
     ZIPENTRY ze;
     int index = 0; 
 
-    // Ìæ»»Â·¾¶·ûºÅ
+    // æ›¿æ¢è·¯å¾„ç¬¦å·
     wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
     if (-1 == index)
     {
-        UI_LOG_ERROR(_T("FindZipItem Failed. path=%s"), szPath);
+        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
         return false;
     }
 
@@ -243,14 +243,14 @@ bool  ZipDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReade
     ZIPENTRY ze;
     int index = 0; 
 
-    // Ìæ»»Â·¾¶·ûºÅ
+    // æ›¿æ¢è·¯å¾„ç¬¦å·
     wchar_t szPath2[MAX_PATH] = _T("");
     TranslatePath(szPath, szPath2);
 
     FindZipItem(m_hZip, szPath2, true, &index, &ze);
     if (-1 == index)
     {
-        UI_LOG_ERROR(_T("FindZipItem Failed. path=%s"), szPath);
+        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
         return false;
     }
 
@@ -270,7 +270,7 @@ bool ZipDataSource::FileExist(const wchar_t* szPath)
 	ZIPENTRY ze;
 	int index = 0;
 
-	// Ìæ»»Â·¾¶·ûºÅ
+	// æ›¿æ¢è·¯å¾„ç¬¦å·
 	wchar_t szPath2[MAX_PATH] = _T("");
 	TranslatePath(szPath, szPath2);
 

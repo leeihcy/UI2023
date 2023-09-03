@@ -34,7 +34,7 @@ void  ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE* pDrawStruct, Object* pOb
 #ifdef _DEBUG
     if (rBorder.left==0 && rBorder.right==0 && rBorder.top==0 && rBorder.bottom==0)
     {
-        UI_LOG_WARN(_T("%s 指定了border color，但没有配置border"), FUNC_NAME);
+        UI_LOG_WARN("%s 指定了border color，但没有配置border", FUNC_NAME);
     }
 #endif
 #endif
@@ -171,19 +171,19 @@ void SysColorRender::SetBorderColor(int nColorIndex)
 
 // void SysColorRender::OnThemeChanged()
 // {
-// 	UI_LOG_DEBUG(_T("%s,1. %d"), FUNC_NAME, m_bkColor);
+// 	UI_LOG_DEBUG("%s,1. %d", FUNC_NAME, m_bkColor);
 // 	if (m_nBkColorIndex != -1)
 // 	{
-// 		UI_LOG_DEBUG(_T("XXXX"));
+// 		UI_LOG_DEBUG("XXXX");
 // 		Sleep(100); // 1250, OK, 100, 50 10 BAD
 // 		m_bkColor = ::GetSysColor(m_nBkColorIndex);
 // 	}
 // 	if (m_nBorderColorIndex != -1)
 // 	{
-// 		UI_LOG_DEBUG(_T("DDDDD"));
+// 		UI_LOG_DEBUG("DDDDD");
 // 		m_borderColor = ::GetSysColor(m_nBorderColorIndex);
 // 	}
-// 	UI_LOG_DEBUG(_T("%s,2. %d"), FUNC_NAME, m_bkColor);
+// 	UI_LOG_DEBUG("%s,2. %d", FUNC_NAME, m_bkColor);
 // }
 
 void SysColorRender::OnSerialize(SerializeParam* pData)
@@ -196,7 +196,7 @@ void SysColorRender::OnSerialize(SerializeParam* pData)
 
 void SysColorRender::DrawState(RENDERBASE_DRAWSTATE* pDrawStruct)
 {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
 	if (nullptr == pRenderTarget)
 		return ;

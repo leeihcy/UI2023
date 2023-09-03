@@ -344,7 +344,7 @@ void GdiRenderTarget::DrawString(IRenderFont *pRenderFont,
       // GdiplusRenderTarget::DrawStringEx(GetHDC(), pRenderFont, pParam);
       return;
     } else {
-      UI_LOG_WARN(_T("GdiRenderTarget::DrawString pRenderFont render type != ")
+      UI_LOG_WARN("GdiRenderTarget::DrawString pRenderFont render type != "
                   _T("GRAPHICS_RENDER_LIBRARY_TYPE_GDI"));
       return;
     }
@@ -1203,7 +1203,7 @@ void GdiRenderTarget::Render2Target(IRenderTarget *pDst,
 
   if (pDst->GetGraphicsRenderLibraryType() !=
       GRAPHICS_RENDER_LIBRARY_TYPE_GDI) {
-    UI_LOG_WARN(_T("Graphcis Render library is wrong"));
+    UI_LOG_WARN("Graphcis Render library is wrong");
     return;
   }
 

@@ -2,6 +2,7 @@
 #include "include/util/struct.h"
 
 namespace ui {
+	
 void C9Region::Set( short w )
 {
 	topleft = top = topright = left = right = bottomleft = bottom = bottomright = w;

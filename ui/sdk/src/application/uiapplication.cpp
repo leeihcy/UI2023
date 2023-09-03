@@ -40,7 +40,7 @@ ResourceManager &Application::GetResourceManager() {
 void Application::x_Init() {
   UI_LOG_INFO("Application Init: 0x%x", this);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   //	::CoInitialize(0);
   HRESULT hr = OleInitialize(0); // 需要注册richedit的drag drop，因此用ole初始化
   (hr);
@@ -133,7 +133,7 @@ Application::~Application(void) {
       nCount) // <--
               // 该方法有可能还是不准，有可能窗口被销毁了，但窗口对象还没有析构
   {
-    UI_LOG_WARN(_T("UI_Exit TopWindowCount=%d"), nCount);
+    UI_LOG_WARN("UI_Exit TopWindowCount=%d", nCount);
   }
 #endif
 
@@ -171,7 +171,7 @@ uia::IAnimateManager *Application::GetAnimateManager() {
   return m_animate.GetAnimateManager();
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 //	一个空的窗口过程，因为UI这个窗口类的窗口过程最终要被修改成为一个类的成员函数，
 //  因此这里的窗口过程只是用来填充WNDCLASS参数。
 //
@@ -193,7 +193,7 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam,
 **
 **	See Also
 */
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 void Application::RegisterWndClass() {
   WNDCLASSEX wcex;
 
@@ -393,7 +393,7 @@ IObject *Application::CreateUIObjectByName(const char *szXmlName,
     }
   }
 
-  UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed. name=%s"), szXmlName);
+  UI_LOG_ERROR("GetUICreateInstanceFuncPtr Failed. name=%s", szXmlName);
   return nullptr;
 }
 
@@ -408,7 +408,7 @@ IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
     }
   }
 
-  UI_LOG_ERROR(_T("GetUICreateInstanceFuncPtr Failed."));
+  UI_LOG_ERROR("GetUICreateInstanceFuncPtr Failed.");
   return nullptr;
 }
 #if 0
@@ -672,7 +672,7 @@ bool Application::IsGpuCompositeEnable() { return m_bGpuEnable; }
 bool Application::EnableGpuComposite() {
   if (m_bGpuEnable)
     return true;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (!IsVistaOrWin7etc()) {
     UI_LOG_ERROR(TEXT("EnableGpuComposite Failed. OS Version mistake"));
     return false;
@@ -706,7 +706,7 @@ void Application::ShutdownGpuCompositor() {
   if (!m_bGpuEnable)
     return;
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
   if (!hModule)
     return;

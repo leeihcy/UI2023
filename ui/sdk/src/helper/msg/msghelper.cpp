@@ -3,13 +3,13 @@
 #include "src/application/uiapplication.h"
 
 namespace ui {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID)
 {
 	if (UI_MSG_POSTMESSAGE == uMsg)
 	{
 		UIMSG* pMsg = (UIMSG*)wParam;
-		if (!pMsg->pMsgTo)  // 有可能该对象已被删除
+		if (!pMsg->pMsgTo)  // 锟叫匡拷锟杰该讹拷锟斤拷锟窖憋拷删锟斤拷
 		{                                                 
 			delete pMsg;
 			return TRUE;
@@ -22,7 +22,7 @@ BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd, unsigned int uMsg
 
 		return TRUE;
 	}
-	else if (WM_DESTROY == uMsg)  // 将剩余未处理完的post消息释放，避免内存泄露
+	else if (WM_DESTROY == uMsg)  // 锟斤拷剩锟斤拷未锟斤拷锟斤拷锟斤拷锟絧ost锟斤拷息锟酵放ｏ拷锟斤拷锟斤拷锟节达拷泄露
 	{
         // Note that PeekMessage always retrieves WM_QUIT messages, 
         // no matter which values you specify for wMsgFilterMin and
@@ -163,7 +163,7 @@ void WaitForHandlesMgr::Do(HANDLE h)
 }
 
 
-// 不使用stl::list，这样至少能在自己的PreTranslateMessage响应中调用RemoveMessageFilter操作
+// 锟斤拷使锟斤拷stl::list锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟皆硷拷锟斤拷PreTranslateMessage锟斤拷应锟叫碉拷锟斤拷RemoveMessageFilter锟斤拷锟斤拷
 BOOL MessageFilterMgr::PreTranslateMessage(MSG* pMsg)
 {
     UIListItem<IPreTranslateMessage*>* p = m_list.GetFirst();

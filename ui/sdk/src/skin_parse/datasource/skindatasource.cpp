@@ -3,7 +3,7 @@
 #include "File/filedatasource.h"
 // #include "Zip/bytebufferreader.h"
 #include "File/filebufferreader.h"
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #include <gdiplus.h>
 #endif
 
@@ -80,7 +80,7 @@ SKIN_PACKET_TYPE  ISkinDataSource::GetType()
 {
 	return m_pImpl->GetType();
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 bool  ISkinDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {
 	return m_pImpl->Load_Image(szPath, pImage);

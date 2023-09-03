@@ -13,12 +13,12 @@ namespace ui
 //     return approximation + (remainder >> 8);
 // }
 
-	// ·Ç³£Ğ¡µÄÊı
+	// éå¸¸å°çš„æ•°
 #define EPSILON_E4  (float)(1E-4)
 #define EPSILON_E5  (float)(1E-5)
 #define EPSILON_E6  (float)(1E-6)
 
-// ¶¨µãÊıºê
+// å®šç‚¹æ•°å®
 // pi defines
 #define PI         ((float)3.141592654f)
 #define PI2        ((float)6.283185307f)
@@ -41,22 +41,22 @@ const float piFloat = static_cast<float>(M_PI);
 #define FIXP16_WP_MASK   0xffff0000
 #define FIXP16_ROUND_UP  0x00008000
 
-#define FIXP20_SHIFT     20  // 22Ôò´ú±íÁËÎÆÀíµÄ´óĞ¡²»ÄÜ³¬¹ı512£¬·ñÔò»áÒç³ö£¬Õâ²»ĞĞ°É¡£ÖÁÉÙµÃ2048¡£Òò´ËĞŞ¸ÄÎª20
+#define FIXP20_SHIFT     20  // 22åˆ™ä»£è¡¨äº†çº¹ç†çš„å¤§å°ä¸èƒ½è¶…è¿‡512ï¼Œå¦åˆ™ä¼šæº¢å‡ºï¼Œè¿™ä¸è¡Œå§ã€‚è‡³å°‘å¾—2048ã€‚å› æ­¤ä¿®æ”¹ä¸º20
 #define FIXP28_SHIFT     28
 #define FIXP8_SHIFT      8  // (28 - 20)
 
-// ´Ó16.16¸ñÊ½µÄ¶¨µãÊıÖĞÌáÈ¡ÕûÊı²¿·ÖºÍĞ¡Êı²¿·Ö
+// ä»16.16æ ¼å¼çš„å®šç‚¹æ•°ä¸­æå–æ•´æ•°éƒ¨åˆ†å’Œå°æ•°éƒ¨åˆ†
 #define FIXP16_WP(fp) ((fp) >> FIXP16_SHIFT)
 #define FIXP16_DP(fp) ((fp) && FIXP16_DP_MASK)
 
-// ½«ÕûÊıºÍ¸¡µãÊı×ª»»Îª16.16¸ñÊ½µÄÊı
+// å°†æ•´æ•°å’Œæµ®ç‚¹æ•°è½¬æ¢ä¸º16.16æ ¼å¼çš„æ•°
 #define INT_TO_FIXP16(i) ((i) <<  FIXP16_SHIFT)
 #define FLOAT_TO_FIXP16(fv) (((float)(fv) * (float)FIXP16_MAG))
 
-// ½«¶¨µãÊı×ª»»Îª¸¡µãÊı
+// å°†å®šç‚¹æ•°è½¬æ¢ä¸ºæµ®ç‚¹æ•°
 #define FIXP16_TO_FLOAT(fp) ( ((float)fp)/FIXP16_MAG)
 
-// Í¨ÓÃºê
+// é€šç”¨å®
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (b) : (a))
 

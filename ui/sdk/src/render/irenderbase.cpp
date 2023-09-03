@@ -60,7 +60,7 @@ void IRenderBase::DrawState(IRenderTarget *p, const Rect *prc, int nState) {
   drawstate.nState = nState;
 
   static_cast<IMessage *>(this)->SendMessage(UI_MSG_RENDERBASE_DRAWSTATE,
-                                             (long)&drawstate, 0);
+                                             (ui::llong)&drawstate, 0);
 };
 Size IRenderBase::GetDesiredSize() {
   GetDesiredSizeMessage msg;

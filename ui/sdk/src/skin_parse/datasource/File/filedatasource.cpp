@@ -78,7 +78,7 @@ bool  FileDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPa
     return pBitmap->LoadFromFile(strTemp.c_str(), e);
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 bool  FileDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {
     if (nullptr == pImage || nullptr == szPath)
@@ -138,7 +138,7 @@ bool FileDataSource::FileExist(const char* szPath)
 //     if (strlen(szPath) >= MAX_PATH)
 //         return false;
 // 
-//     // 1. Ö±½Ó¾ÍÊÇ¾ø¶ÔÂ·¾¶
+//     // 1. Ö±ï¿½Ó¾ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 //     if (util::IsFullPath(szPath))
 //     {
 //         if (!::PathFileExists(szPath))
@@ -150,7 +150,7 @@ bool FileDataSource::FileExist(const char* szPath)
 // 
 //     char  szFullPath[MAX_PATH] = _T("");
 // 
-//     // Ïà¶ÔÓÚÆ¤·ô°üÂ·¾¶
+//     // ï¿½ï¿½ï¿½ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 //     const char* szSkinDir = pSkinRes->GetPath();
 //     if (util::CalcFullPathByRelative(szSkinDir, szPath, szFullPath))
 //     {
@@ -161,7 +161,7 @@ bool FileDataSource::FileExist(const char* szPath)
 //         }
 //     }
 // 
-//     // Ïà¶ÔÓÚÅäÖÃÎÄ¼þÂ·¾¶
+//     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 //     IUIDocument*  pDoc = nullptr;
 //     pElement->GetDocument(&pDoc);
 // 

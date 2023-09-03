@@ -36,7 +36,7 @@ public:
   Resource& RootBundle() { return m_root_bundle; }
 
   Resource *LoadResource(const char *szPath);
-  Resource *LoadResource(long hInstance, int resId = -1);
+  Resource *LoadResource(llong hInstance, int resId = -1);
   Resource *GetDefaultSkinRes();
   Resource *GetResourceByName(const char *szName);
   unsigned int GetResourceCount();

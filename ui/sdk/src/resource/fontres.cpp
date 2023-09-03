@@ -34,7 +34,9 @@ void FontResItem::SetLogFont(LOGFONT *pLogFont) {
     return;
 
   memcpy(&m_lf, pLogFont, sizeof(LOGFONT));
+#if 0
   strcpy(m_lf.lfFaceName, pLogFont->lfFaceName);
+#endif
   m_lf.lfEscapement =
       m_lf.lfOrientation; // TODO: 实现字体角度的话，这两个值好像要相等
 }
@@ -65,7 +67,7 @@ IRenderFont *FontResItem::GetFont(Resource *pSkinRes,
 				{
 					m_pGdiFont->SetOutRef((IRenderResource**)&m_pGdiFont);
 					m_pGdiFont->Load(&m_lf);
-					UI_LOG_DEBUG(_T("gdi font create: %s, facename=%s, size=%d, Ptr=0x%08X"), m_strId.c_str(), m_lf.lfFaceName, m_lf.lfHeight, m_pGdiFont );
+					UI_LOG_DEBUG("gdi font create: %s, facename=%s, size=%d, Ptr=0x%08X", m_strId.c_str(), m_lf.lfFaceName, m_lf.lfHeight, m_pGdiFont );
 				}
                 return (IRenderFont*)m_pGdiFont;
 			}
@@ -223,7 +225,7 @@ bool FontRes::InsertFont(const char *szId, LOGFONT *pLogFont) {
 FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
                                  long wParam, long lParam) {
   if (nullptr == pLogFont) {
-    UI_LOG_ERROR(_T("FontRes::InsertFont failed."));
+    UI_LOG_ERROR("FontRes::InsertFont failed.");
     return nullptr;
   }
   // 	vector<FontResItem*>::iterator  iter = m_vFonts.begin();
@@ -236,7 +238,7 @@ FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
   // 		if (strID == p->GetId() /*&& p->GetWParam() == wParam &&
   // p->GetLParam() == lParam */)
   // 		{
-  // 			UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"),
+  // 			UI_LOG_WARN("FontRes::InsertFont failed, insert item=%s",
   // strID.c_str() ); 			return nullptr;
   // 		}
   // 	}
@@ -251,7 +253,7 @@ FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
 
 bool FontRes::ModifyFont(const std::string &strID, LOGFONT *pLogFont) {
   if (nullptr == pLogFont) {
-    UI_LOG_ERROR(_T("FontRes::ModifyFont failed."));
+    UI_LOG_ERROR("FontRes::ModifyFont failed.");
     return false;
   }
   std::vector<FontResItem *>::iterator iter = m_vFonts.begin();
@@ -265,7 +267,7 @@ bool FontRes::ModifyFont(const std::string &strID, LOGFONT *pLogFont) {
       return true;
     }
   }
-  UI_LOG_WARN(_T("FontRes::InsertFont failed, insert item=%s"), strID.c_str());
+  UI_LOG_WARN("FontRes::InsertFont failed, insert item=%s", strID.c_str());
   return false;
 }
 

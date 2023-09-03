@@ -4,8 +4,7 @@
 
 namespace ui {
 
-class PanelMeta : public MetaImpl<IPanel> {
-public:
+struct PanelMeta : public MetaImpl<IPanel> {
   static PanelMeta& Get() {
     static PanelMeta s;
     return s;
@@ -26,8 +25,7 @@ public:
   }
 };
 
-class RoundPanelMeta : public MetaImpl<IRoundPanel> {
-public:
+struct RoundPanelMeta : public MetaImpl<IRoundPanel> {
   static IMeta *Get() {
     static RoundPanelMeta s;
     return &s;

@@ -79,7 +79,7 @@ void Window::onSerialize(SerializeParam *pData) {
 }
 
 void Window::Create(const Rect &rect) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #elif defined(OS_MAC)
   m_platform.reset(new WindowPlatformMac(*this));
 #elif defined(OS_LINUX)
@@ -220,7 +220,7 @@ bool Window::CreateUI(const char *szId) {
       // 遍历子对象
       layoutmanager.ParseChildElement(pUIElement.get(), this);
     } else {
-      UI_LOG_FATAL(_T("获取窗口对应的xml结点失败：name=%s, id=%s"), szName,
+      UI_LOG_FATAL("获取窗口对应的xml结点失败：name=%s, id=%s", szName,
                    szId);
 
       return false;
@@ -253,7 +253,7 @@ bool Window::CreateUI(const char *szId) {
 }
 
 void Window::SetGpuComposite(bool b) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   UIASSERT(!m_hWnd && TEXT("该函数目前需要在窗口创建之前调用"));
 #endif
 

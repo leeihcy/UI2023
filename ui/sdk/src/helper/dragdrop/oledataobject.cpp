@@ -200,7 +200,7 @@ HRESULT STDMETHODCALLTYPE OleDataObject::SetData(FORMATETC *pformatetc, STGMEDIU
 	pItem->formatetc = *pformatetc;
 	if (fRelease)
 	{
-        UI_LOG_DEBUG(_T("format:%d, value:0x%x"), pItem->formatetc.cfFormat, pmedium->hGlobal);
+        UI_LOG_DEBUG("format:%d, value:0x%x", pItem->formatetc.cfFormat, pmedium->hGlobal);
 		pItem->stgmedium = *pmedium;
 	}
 	else

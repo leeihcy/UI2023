@@ -1,10 +1,6 @@
 #ifndef _UI_ISKINDATASOURCE_H_
 #define _UI_ISKINDATASOURCE_H_
-#if defined(OS_WIN)
-#include <xiosbase>
-#else
 #include <ios>
-#endif
 
 #include "sdk/include/inc.h"
 
@@ -58,11 +54,7 @@ enum STREAM_TYPE {
 struct IStreamBufferReader {
   virtual void Release() = 0;
   virtual int read(char *pread, int nread) = 0;
-#if defined(OS_WIN)
-  virtual void seek(int npos, std::ios_base::seek_dir dir) = 0;
-#else
   virtual void seek(int npos, std::ios::seekdir dir) = 0;
-#endif
   virtual int tell() = 0;
   virtual bool save(const char *szPath) = 0;
 };

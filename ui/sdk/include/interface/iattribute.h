@@ -14,7 +14,7 @@ struct Length;
 struct IRenderBase;
 struct ITextRenderBase;
 struct IUIEditor;
-class C9Region;
+struct C9Region;
 
 // 属性类型枚举，默认支持的一些属性类型。
 // 对于外部自定义的属性类型，可以用一个大数字来定义(int)
@@ -64,9 +64,9 @@ template <class To, class From> To memfun_cast(From memfunc) {
   return u.addr;
 }
 
-typedef void (*pfnEnumAliasCallback)(const char *szText, int lValue, int,
-                                     int);
-typedef void (*pfnEnumStringEnumCallback)(const char *szText, int, int);
+typedef void (*pfnEnumAliasCallback)(const char *szText, int lValue, llong,
+                                     llong);
+typedef void (*pfnEnumStringEnumCallback)(const char *szText, llong, llong);
 
 enum LONGATTR_DPI_SCALE_TYPE {
   LONGATTR_DPI_SCALE_DISABLE,     // 不是dpi属性

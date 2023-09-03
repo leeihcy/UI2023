@@ -28,8 +28,8 @@ public:
 
   const char *GetRenderBaseName(int nType);
 
-  void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, long wParam,
-                          long lParam);
+  void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
+                          llong lParam);
 
 private:
   Application &m_app;

@@ -2,8 +2,6 @@
 .vscode/
 *.user
 .DS_Store
-Bin/
-Build/
 out/
 ui/3rd/skia/lib
 ui/3rd/skia/bin

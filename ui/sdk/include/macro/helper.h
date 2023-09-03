@@ -11,7 +11,7 @@ namespace ui {
 #undef ASSERT // 避免使用ASSERT，请使用UIASSERT
 #endif
 
-#ifdef _DEBUG
+#if 0 // def _DEBUG
 #define UIASSERT(x)                                                            \
   if (!(x)) {                                                                  \
     char szInfo[2048] = "";                                                    \

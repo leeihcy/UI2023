@@ -39,7 +39,7 @@ long TopWindowManager::AddTopWindowObject(Window *pObj) {
 
   this->m_lTopWindowObject.push_back(pObj);
 
-  UI_LOG_DEBUG(_T("TopWindowManager::AddTopWindowObject, ID=%s"),
+  UI_LOG_DEBUG("TopWindowManager::AddTopWindowObject, ID=%s",
                pObj->GetId());
   return 0;
 }
@@ -54,7 +54,7 @@ long TopWindowManager::RemoveTopWindowObject(Window *pObj) {
     if (pObj == *iter) {
       m_lTopWindowObject.erase(iter);
 
-      UI_LOG_DEBUG(_T("TopWindowManager::RemoveTopWindowObject, ID=%s"),
+      UI_LOG_DEBUG("TopWindowManager::RemoveTopWindowObject, ID=%s",
                    pObj->GetId());
       return 0;
     }
@@ -65,10 +65,10 @@ long TopWindowManager::RemoveTopWindowObject(Window *pObj) {
 void TopWindowManager::ClearTopWindowObject() {
   this->m_lTopWindowObject.clear();
 
-  UI_LOG_DEBUG(_T("TopWindowManager::ClearTopWindowObject "));
+  UI_LOG_DEBUG("TopWindowManager::ClearTopWindowObject ");
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 IWindow *TopWindowManager::GetWindow(HWND hWnd) {
   _MyIter iter = m_lTopWindowObject.begin();
   _MyIter iterEnd = m_lTopWindowObject.end();

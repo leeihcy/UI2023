@@ -10,7 +10,7 @@
 // #include "src\UIObject\Window\windowbase.h"
 // #include "src/Layer\windowrender.h"
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #pragma comment(lib, "uxtheme.lib")
 #endif
 using namespace ui;
@@ -80,7 +80,7 @@ const char *RenderBase::_GetColorId(Color *&pColorRef) {
 
 void RenderBase::_LoadBitmap(const char *szBitmapId,
                              IRenderBitmap *&pBitmapRef) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   SAFE_RELEASE(pBitmapRef);
   if (!szBitmapId)
     return;

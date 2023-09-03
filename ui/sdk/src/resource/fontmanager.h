@@ -11,8 +11,8 @@ namespace ui
 class  FontTagElementInfo
 {
 public:
-	std::string  strId;  // Ä£¿éÃû
-	UIElement*  pXmlElement;  // xml½áµã
+	std::string  strId;  // æ¨¡å—å
+	UIElement*  pXmlElement;  // xmlç»“ç‚¹
 };
 
 class FontManager
@@ -35,14 +35,14 @@ private:
     void  OnNewChild(UIElement* pElem, HDC);
 
 private:
-	// Êı¾İ³Ö¾Ã²ã
+	// æ•°æ®æŒä¹…å±‚
     IFontManager*  m_pIFontManager;
    
 	typedef  UIList<FontTagElementInfo>  _MyList;
 	typedef  UIListItem<FontTagElementInfo>  _MyListItem;
 	_MyList  m_listUIElement;
 
-	// ¶ÔÏóÊôĞÔ
+	// å¯¹è±¡å±æ€§
 	FontRes   m_resFont;
 	Resource*  m_pSkinRes;
 };

@@ -29,15 +29,15 @@ bool SkinBuilderRes::Register(OutCtrlDllItem* pItem)
 	pItem->hModule = ::LoadLibrary(pItem->strDllPath.c_str());
 	if (NULL == pItem->hModule)
 	{
-		UI_LOG_ERROR(_T("LoadLibrary Failed. DllPath=%s"), pItem->strDllPath.c_str());
+		UI_LOG_ERROR("LoadLibrary Failed. DllPath=%s", pItem->strDllPath.c_str());
 		return false;
 	}
-	UI_LOG_DEBUG(_T("LoadLibrary To Register OutCtrl CreateInstanceFun: %s"), pItem->strDllPath.c_str());
+	UI_LOG_DEBUG("LoadLibrary To Register OutCtrl CreateInstanceFun: %s", pItem->strDllPath.c_str());
 
 	funRegisterUIObjectPtr pFunc = (funRegisterUIObjectPtr)::GetProcAddress(pItem->hModule, FUN_RegisterUIObject_NAME);
 	if (NULL == pFunc)
 	{
-		UI_LOG_ERROR(_T("GetProcAddress Failed. DllPath=%s"), pItem->strDllPath.c_str());
+		UI_LOG_ERROR("GetProcAddress Failed. DllPath=%s", pItem->strDllPath.c_str());
 		return false;
 	}
 

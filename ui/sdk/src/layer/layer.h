@@ -79,7 +79,7 @@ struct ILayerContent {
 
 struct IObjectLayerContent : public ILayerContent {
   virtual LayerContentType Type() { return LayerContentTypeObject; }
-  virtual Object &GetObject() = 0;
+  virtual Object &GetObj() = 0;
 };
 
 struct IListItemLayerContent : public ILayerContent {

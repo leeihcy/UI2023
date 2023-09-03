@@ -1,7 +1,7 @@
 #ifndef _INCLUDED_UIAUTOTEST_INC_H_
 #define _INCLUDED_UIAUTOTEST_INC_H_
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     #ifdef UIAUTOMATOR_EXPORTS
     #define UIAUTOMATOR_API __declspec(dllexport)
     #else

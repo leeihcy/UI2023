@@ -127,7 +127,7 @@ private:
 
   TopWindowManager m_TopWindowMgr;
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   GifTimerManager *m_pGifTimerMgr;
   ToolTipManager m_ToolTipMgr;
   WaitForHandlesMgr m_WaitForHandlesMgr;

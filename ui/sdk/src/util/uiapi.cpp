@@ -8,6 +8,10 @@
 #include "include/util/util.h"
 // #include "..\Layer\layer.h"
 
+#if defined(OS_WIN)
+#pragma comment(lib, "skia.dll.lib")
+#endif
+
 // 内部全局方法
 namespace ui {
 
@@ -54,7 +58,7 @@ GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
 }
 */
 void UI_ExtendPath(std::string &strPath) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (!util::IsFullPath(strPath.c_str())) {
     wchar_t szModulePath[MAX_PATH] = _T("");
 
@@ -75,7 +79,7 @@ void UI_ExtendPath(std::string &strPath) {
 
 void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
                    GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (nullptr == hFont || nullptr == pOut)
     return;
 
@@ -101,7 +105,7 @@ void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
 //		在向DLL之间使用stl作为参数进行传递，会导致内存释放时的崩溃，因此这里没有直接去调用UI_Split方法
 //		而是直接在ULDLL中重写这么一个函数
 //
-void UI_Split(const std::string &str, wchar_t szSep,
+void UI_Split(const std::string &str, char szSep,
               std::vector<std::string> &vRet) {
   if (str.empty())
     return;
@@ -163,7 +167,7 @@ std::wstring &GetTempBufferStringW() {
 }
 
 HBITMAP CreateMemBitmap(int nWidth, int nHeight, int *pnPitch, byte **ppBits) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   Image image;
   image.Create(nWidth, nHeight, 32, Image::createAlphaChannel);
 

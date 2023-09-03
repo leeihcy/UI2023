@@ -34,7 +34,7 @@ void Object::onSerialize(SerializeParam *pData) {
 
   if (pData->IsLoad()) {
     if (nullptr == pMapAttrib) {
-      UI_LOG_ERROR(_T("Invalid Argument."));
+      UI_LOG_ERROR("Invalid Argument.");
       return;
     }
   }

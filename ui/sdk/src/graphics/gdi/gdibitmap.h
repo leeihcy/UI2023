@@ -27,7 +27,7 @@ public:
         {
             m_image.Detach();
         }
-//		UI_LOG_DEBUG(_T("GDIRenderBitmap Delete. ptr=0x%08X"), this);
+//		UI_LOG_DEBUG("GDIRenderBitmap Delete. ptr=0x%08X", this);
 	}
 
 	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; }
@@ -64,10 +64,10 @@ public:
 		}
 		else
 		{
-            // ÀûÓÃGdiplusÀ´¿¹¾â³İËõ·Å
+            // åˆ©ç”¨Gdiplusæ¥æŠ—é”¯é½¿ç¼©æ”¾
             if (e & RENDER_BITMAP_LOAD_DPI_ADAPT)
             {
-				// Í¼Æ¬ÒÑ¾­·Å´óµÄ±¶Êı,Èç¼ÓÔØµÄÊÇ@2xÍ¼Æ¬
+				// å›¾ç‰‡å·²ç»æ”¾å¤§çš„å€æ•°,å¦‚åŠ è½½çš„æ˜¯@2xå›¾ç‰‡
 				int imageScaled = (e & 0xFF000000) >> 24;
 				if (imageScaled == 0)
 					imageScaled = 1;
@@ -118,7 +118,7 @@ public:
             ::memcpy(lpByte, pData, nSize);
             ::GlobalUnlock(hNew);
 
-            // ´ÓÖ¸¶¨ÄÚ´æ´´½¨Á÷¶ÔÏó
+            // ä»æŒ‡å®šå†…å­˜åˆ›å»ºæµå¯¹è±¡
             HRESULT ht = ::CreateStreamOnHGlobal(hNew, TRUE, &pStream);
             if (ht != S_OK)
             {
@@ -142,7 +142,7 @@ public:
         return m_image.IsNull() ? false: true;
     }
 	
-	// Í³Ò»Èë¿Ú£¬ĞèÒªgdiplus½éÈëµÄµØ·½×ßÕâ¸ö£¬Ò²±ãÓÚdpi´¦Àí¡£
+	// ç»Ÿä¸€å…¥å£ï¼Œéœ€è¦gdiplusä»‹å…¥çš„åœ°æ–¹èµ°è¿™ä¸ªï¼Œä¹Ÿä¾¿äºdpiå¤„ç†ã€‚
 	virtual bool  virtualLoadImageFromBitmap(
 		Gdiplus::Bitmap* pBmp, RENDER_BITMAP_LOAD_FLAG e)
 	{
@@ -157,7 +157,7 @@ public:
 
 	virtual bool  Create(int nWidth, int nHeight)
 	{
-		UIASSERT(nHeight > 0);   // Ê¹ÓÃ·´ÏòµÄ(bottom-up DIB)
+		UIASSERT(nHeight > 0);   // ä½¿ç”¨åå‘çš„(bottom-up DIB)
 		if (!m_image.IsNull())
 		{
 			m_image.Destroy();
@@ -235,7 +235,7 @@ public:
 // 		}
 // 		else
 // 		{
-// 			// ¿½±´Ò»ÕÅ
+// 			// æ‹·è´ä¸€å¼ 
 // 			Image temp;
 // 			temp.Attach(hBitmap);
 // 

@@ -57,7 +57,7 @@ public:
   }
 
   Return emit(UnboundArgs... args) {
-    return emitor<Return(UnboundArgs...)>::emit(&m_slots[0], m_slots.size(),
+    return emitor<Return(UnboundArgs...)>::emit(&m_slots[0], (int)m_slots.size(),
                                                 args...);
   }
 

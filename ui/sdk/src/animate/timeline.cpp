@@ -9,14 +9,14 @@ Timeline::Timeline()
     m_bCreateITimeline = false;
 
     m_nFrameElapse = 0;
-    m_eTimeType = TT_BY_MS;  // Ä¬ÈÏÒÔºÁÃëÎªµ¥Î»
+    m_eTimeType = TT_BY_MS;  // é»˜è®¤ä»¥æ¯«ç§’ä¸ºå•ä½
     m_duration = 300;
 
-    m_nRepeatTimes = 1;  // Ä¬ÈÏÖ»²¥·ÅÒ»´Î
+    m_nRepeatTimes = 1;  // é»˜è®¤åªæ’­æ”¾ä¸€æ¬¡
 
     m_nFlags = 0;
     m_nId = 0;
-    m_pParam = NULL;
+    m_pParam = 0;
 }
 
 Timeline::~Timeline()
@@ -53,7 +53,7 @@ void  Timeline::OnAnimateStart()
 #endif
 }
 
-// ·µ»ØÊÇ·ñ½áÊø
+// è¿”å›æ˜¯å¦ç»“æŸ
 bool  Timeline::OnTick()
 {
 #if 0
@@ -103,12 +103,12 @@ bool  Timeline::OnTick()
     {
         if (IsAutoReverse())
         {
-            m_nFlags |= TIMELINE_FLAG_NEED_RESET;  // ÏÂ´Î¿ªÊ¼Ç°ÏÈÖØÖÃ¶¯»­²ÎÊı
+            m_nFlags |= TIMELINE_FLAG_NEED_RESET;  // ä¸‹æ¬¡å¼€å§‹å‰å…ˆé‡ç½®åŠ¨ç”»å‚æ•°
 
-            // ½«Êı¾İ½øĞĞ·´Ïò
+            // å°†æ•°æ®è¿›è¡Œåå‘
             // OnReverse();
 
-            // ·´ÏòµÄ½áÊø£¬´ú±íÒ»´Î²¥·Å½áÊø
+            // åå‘çš„ç»“æŸï¼Œä»£è¡¨ä¸€æ¬¡æ’­æ”¾ç»“æŸ
             if (IsReversing())
             {
                 if (m_nRepeatTimes > 0 && 0 == --m_nRepeatTimes)
@@ -117,7 +117,7 @@ bool  Timeline::OnTick()
                 }
                 SetReversing(false);
             }
-            // ÕıÏòµÄ½áÊø£¬½øÈë·´Ïò
+            // æ­£å‘çš„ç»“æŸï¼Œè¿›å…¥åå‘
             else
             {
                 SetReversing(true);
@@ -125,14 +125,14 @@ bool  Timeline::OnTick()
         }
         else
         {
-            // Ò»´Î²¥·Å½áÊø
+            // ä¸€æ¬¡æ’­æ”¾ç»“æŸ
             if (m_nRepeatTimes > 0 && 0 == --m_nRepeatTimes)
             {
                 SetFinish();
             }
             else
             {
-                m_nFlags |= TIMELINE_FLAG_NEED_RESET;  // ÏÂ´Î¿ªÊ¼Ç°ÏÈÖØÖÃ¶¯»­²ÎÊı
+                m_nFlags |= TIMELINE_FLAG_NEED_RESET;  // ä¸‹æ¬¡å¼€å§‹å‰å…ˆé‡ç½®åŠ¨ç”»å‚æ•°
             }
         }
     }
@@ -194,7 +194,7 @@ virtual void  SetCustomBezierArgs(double d1, double d2, double d3, double d4)
     if (!m_pMoveAlgorithm)
         return;
 
-    // TODO: ÕâÀïÃ»ÓĞÈ·±£m_pMoveAlgorithm¾ÍÊÇEasingMoveÀàĞÍ¡£
+    // TODO: è¿™é‡Œæ²¡æœ‰ç¡®ä¿m_pMoveAlgorithmå°±æ˜¯EasingMoveç±»å‹ã€‚
     static_cast<EasingMove*>(m_pMoveAlgorithm)->SetCustomBezierArgs(d1, d2, d3,d4);
 }
 void  _SetEaseParam(float from, float to, float t, EaseType eType)
@@ -421,7 +421,7 @@ float  KeyFrameTimeline::OnTick(float fTimePercent)
 		if (fTimePercent > m_keyFrames[i]->percent)
 			continue;
 
-		// ¹Ø¼üÖ¡£¬ÓÉ×ÜÊ±¼äÇó³ö±¾Ö¡µÄÊ±ºò½ø¶È
+		// å…³é”®å¸§ï¼Œç”±æ€»æ—¶é—´æ±‚å‡ºæœ¬å¸§çš„æ—¶å€™è¿›åº¦
 		float  prevPercent = 0;
 		float  prevFrom = m_from;
 		if (i > 0)

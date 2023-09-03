@@ -106,7 +106,7 @@ void  Transform3D::set_size(int w, int h)
 const double EPSILON = 1.00e-07;
 #define FLOAT_EQ(x,v) (((v - EPSILON) < x) && (x <( v + EPSILON)))
 
-// ÈÆ×ÔÉíÖĞĞÄĞı×ªÊ±£¬ĞèÒªÖªµÀÕâ¸ö¶ÔÏóÔÚÆÁÄ»ÖĞµÄÎ»ÖÃ£¬È»ºó²ÅÄÜ¼ÆËã³öÕæÕıµÄĞı×ª¾ØÕó¡£
+// ç»•è‡ªèº«ä¸­å¿ƒæ—‹è½¬æ—¶ï¼Œéœ€è¦çŸ¥é“è¿™ä¸ªå¯¹è±¡åœ¨å±å¹•ä¸­çš„ä½ç½®ï¼Œç„¶åæ‰èƒ½è®¡ç®—å‡ºçœŸæ­£çš„æ—‹è½¬çŸ©é˜µã€‚
 void  Transform3D::set_pos(int x, int y)
 {	
 	float fx = (float)x;
@@ -175,29 +175,29 @@ void  Transform3D::update()
 	m_bInvalidate = false;
 	m_matrix.Identity();
 
-	// ÈÆÖĞĞÄµãĞı×ª
+	// ç»•ä¸­å¿ƒç‚¹æ—‹è½¬
 	float fx, fy, fz;
 	get_origin(&fx, &fy, &fz);
 	m_matrix.Translate(fx, fy, fz);
 
-	// Í¸ÊÓ£¬Òª·ÅÔÚrotate/scaleÇ°Ãæ
+	// é€è§†ï¼Œè¦æ”¾åœ¨rotate/scaleå‰é¢
 	if (m_perspective > 0)
 		m_matrix.Perspective(m_perspective);
 
-	// Ğı×ª
+	// æ—‹è½¬
 	if (m_xRotate != 0 || m_yRotate != 0 || m_zRotate != 0)
 		m_matrix.Rotate(m_xRotate, m_yRotate, m_zRotate);
 
-	// ÒÆ¶¯
+	// ç§»åŠ¨
 	m_matrix.Translate(m_xPos, m_yPos, m_zPos);
 
-	// Ëõ·Å
+	// ç¼©æ”¾
 	if (m_xScale != 1 || m_yScale != 1 || m_zScale != 1)
 		m_matrix.Scale(m_xScale, m_yScale, m_zScale);
 
 	m_matrix.Translate(-fx, -fy, -fz);
 
-	// Çó³ö·´×ªÖµ
+	// æ±‚å‡ºåè½¬å€¼
 	m_matrix.Inverse(&m_matrixInverse);
 
 #ifdef _DEBUGx
@@ -300,10 +300,10 @@ void  Transform3D::scaleZ(float z)
 	invalidate();
 }
 
-// Èç¹û²»¼ÓÍ¸ÊÓ£¬rotate-yÊÇÃ»ÓĞ3dĞ§¹ûµÄ£¬Ö»»áÏÔÊ¾ÎªÄÚÈİ±äÕ­ÁË¡£
+// å¦‚æœä¸åŠ é€è§†ï¼Œrotate-yæ˜¯æ²¡æœ‰3dæ•ˆæœçš„ï¼Œåªä¼šæ˜¾ç¤ºä¸ºå†…å®¹å˜çª„äº†ã€‚
 // http://www.w3.org/TR/css3-transforms/
 //
-// Ö¸¶¨¹Û²ìÕß¾àÀëz=0Æ½ÃæµÄ¾àÀë£¬ÎªÔªËØ¼°ÆäÄÚÈİÓ¦ÓÃÍ¸ÊÓ±ä»»¡£µ±ÖµÎª0»ò¸ºÖµÊ±£¬ÎŞÍ¸ÊÓ±ä»»¡£
+// æŒ‡å®šè§‚å¯Ÿè€…è·ç¦»z=0å¹³é¢çš„è·ç¦»ï¼Œä¸ºå…ƒç´ åŠå…¶å†…å®¹åº”ç”¨é€è§†å˜æ¢ã€‚å½“å€¼ä¸º0æˆ–è´Ÿå€¼æ—¶ï¼Œæ— é€è§†å˜æ¢ã€‚
 void  Transform3D::perspective(float n)
 {
 	if (n <= 0)

@@ -4,7 +4,7 @@
 #include "sdk/include/interface/ilayout.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uiapi.h"
-#include <functional>
+// #include <functional>
 
 namespace uia {
 struct IAnimateManager;
@@ -115,8 +115,6 @@ public:
   bool ShowToolTip(TOOLTIPITEM *pItem);
   void HideToolTip();
   unsigned int SetTimer(int nElapse, IMessage *pNotify);
-  unsigned int SetTimer(int nElapse,
-                        std::function<bool(unsigned int, TimerItem *)> func);
   unsigned int SetTimerById(int nElapse, unsigned int nId, IMessage *pNotify);
   unsigned int SetTimer(int nElapse, TimerItem *pTimerItem);
   void KillTimer(unsigned int &nTimerID);

@@ -220,7 +220,7 @@ bool  StyleManager::parse_inherit(
         StyleResItem* pInheritItem = pStyleRes->GetItem(type, szStyleName);
         if (nullptr == pInheritItem )
         {
-            UI_LOG_WARN(_T("get parent style item failed. type=%d, name=%s"), type, szStyleName);
+            UI_LOG_WARN("get parent style item failed. type=%d, name=%s", type, szStyleName);
             continue;
         }
 
@@ -285,7 +285,7 @@ int  StyleManager::ParseNewElement(UIElement* pElem)
 
         if (false == this->parse_inherit(&t, &m_StyleRes) )
         {
-            UI_LOG_WARN(_T("CXmlStyleParse::load_from_file parse_inherit failed. style item=%s"), pItem->GetId());
+            UI_LOG_WARN("CXmlStyleParse::load_from_file parse_inherit failed. style item=%s", pItem->GetId());
         }
     }
 

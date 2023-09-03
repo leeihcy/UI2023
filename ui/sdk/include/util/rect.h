@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_INCLUDE_UTIL_RECT_H_
 #define _UI_SDK_INCLUDE_UTIL_RECT_H_
 #include <algorithm>
+#include <string.h>
 
 namespace ui {
 

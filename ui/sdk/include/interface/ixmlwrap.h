@@ -50,7 +50,7 @@ public:
   void GetAttribList2(IListAttribute **ppListAttrib);
   bool SetAttribList2(IListAttribute *pListAttrib);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   bool GetAttrib(const char *szKey, BSTR *pbstrValue);
 #endif
   bool HasAttrib(const char *szKey);

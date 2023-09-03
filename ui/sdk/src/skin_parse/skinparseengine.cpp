@@ -43,7 +43,7 @@ bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
   do {
     UIElementProxy rootElem = pUIDocument->FindElem(XML_SKIN);
     if (!rootElem) {
-      UI_LOG_ERROR(_T("Cannot find root element: %s"), XML_SKIN);
+      UI_LOG_ERROR("Cannot find root element: %s", XML_SKIN);
       break;
     }
 

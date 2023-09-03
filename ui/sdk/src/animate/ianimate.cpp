@@ -277,19 +277,19 @@ void  IStoryboard::Cancel()
 {
     m_pStoryboardImpl->Cancel();
 }
-void  IStoryboard::SetWParam(long wParam)              
+void  IStoryboard::SetWParam(ui::llong wParam)              
 { 
     m_pStoryboardImpl->SetWParam(wParam);
 }
-long  IStoryboard::GetWParam()                         
+ui::llong  IStoryboard::GetWParam()                         
 { 
     return m_pStoryboardImpl->GetWParam();
 }
-void  IStoryboard::SetLParam(long lParam)              
+void  IStoryboard::SetLParam(ui::llong lParam)              
 {
     m_pStoryboardImpl->SetLParam(lParam); 
 }
-long  IStoryboard::GetLParam()                      
+ui::llong  IStoryboard::GetLParam()                      
 {
     return m_pStoryboardImpl->GetLParam(); 
 }

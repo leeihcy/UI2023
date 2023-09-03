@@ -12,7 +12,7 @@ GdiplusRenderFont::GdiplusRenderFont()
 }
 GdiplusRenderFont::~GdiplusRenderFont()
 {
-	UI_LOG_DEBUG(_T("GdiplusRenderFont Delete. ptr=0x%08X"), this);
+	UI_LOG_DEBUG("GdiplusRenderFont Delete. ptr=0x%08X", this);
 
 	SAFE_DELETE(m_pFont);
 	SAFE_DELETE_GDIOBJECT(m_hFontForGDI);
@@ -37,7 +37,7 @@ bool  GdiplusRenderFont::Load(LOGFONT* plogfont)
 	SAFE_DELETE(m_pFont);
 
 	INT  nSize = abs(util::FontHeight2Size(plogfont->lfHeight));
-	//Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;   // FontStyle²»Ö§³Ö|=£¬¸ÄÓÃint´úÌæ
+	//Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;   //  FontStyleä¸æ”¯æŒ|=ï¼Œæ”¹ç”¨intä»£æ›¿
 	int  nStyle = Gdiplus::FontStyleRegular;
 
 	if(plogfont->lfWeight >= FW_BOLD)
@@ -122,9 +122,9 @@ SIZE GdiplusRenderFont::MeasureString( const TCHAR* szText, int nLimitWidth)
 	HDC hDC = Image::GetCacheDC();
 	Gdiplus::Graphics  g(hDC);
 
-	const Gdiplus::StringFormat* pStringFormat = Gdiplus::StringFormat::GenericTypographic();  // ²»¼ÆËãGDIPLUSµÄ×óÓÒ¼ä¾à
+	const Gdiplus::StringFormat* pStringFormat = Gdiplus::StringFormat::GenericTypographic();  // ä¸è®¡ç®—GDIPLUSçš„å·¦å³é—´è·
     Gdiplus::StringFormat format(pStringFormat);
-    format.SetFormatFlags(Gdiplus::StringFormatFlagsMeasureTrailingSpaces);  // ¼ÆËã×îºóµÄ¿Õ¸ñ
+    format.SetFormatFlags(Gdiplus::StringFormatFlagsMeasureTrailingSpaces);  // è®¡ç®—æœ€åçš„ç©ºæ ¼
     pStringFormat = &format;
 
 	if (-1 != nLimitWidth)
@@ -172,11 +172,11 @@ HFONT GdiplusRenderFont::GetHFONT()
 	HFONT hFont = m_hFontAttach;
 	if (NULL == hFont)  
 	{
-		if (NULL == m_hFontForGDI)  // TODO: Èç¹ûm_pFontÊôĞÔ¸Ä±ä£¬ÄÇm_hFontForGDIÒ²»áÒ»Æğ¸Ä±äÂğ£¿ÊÇ·ñÊÇÃ¿´Î»ñÈ¡Ç°¶¼½«m_hFontForGDI¸Éµô£¿
+		if (NULL == m_hFontForGDI)  // TODO: å¦‚æœm_pFontå±æ€§æ”¹å˜ï¼Œé‚£m_hFontForGDIä¹Ÿä¼šä¸€èµ·æ”¹å˜å—ï¼Ÿæ˜¯å¦æ˜¯æ¯æ¬¡è·å–å‰éƒ½å°†m_hFontForGDIå¹²æ‰ï¼Ÿ
 		{
 			LOGFONT lf;
 			this->GetLogFont(&lf);
-			m_hFontForGDI = ::CreateFontIndirect(&lf);  // Îö¹¹Ê±£¬ÊÍ·Å
+			m_hFontForGDI = ::CreateFontIndirect(&lf);  // ææ„æ—¶ï¼Œé‡Šæ”¾
 		}
 		hFont = m_hFontForGDI;
 	}

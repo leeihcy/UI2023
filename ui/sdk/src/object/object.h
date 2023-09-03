@@ -37,7 +37,7 @@ public:
   const char *GetId();
   void SetId(const char *szText);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   bool CreateAccesible(IAccessible **pp);
 #endif
   Application *GetUIApplication();
@@ -45,7 +45,7 @@ public:
   Resource *GetResource();
   IResource *GetIResource();
   Window *GetWindow();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HWND GetHWND();
 #endif
   Layer *GetLayer();
@@ -402,7 +402,7 @@ protected:
   IRenderBase *m_pBkgndRender;           // 背景渲染
   IRenderBase *m_pForegndRender;         // 前景渲染
   ITextRenderBase *m_pTextRender; // 文字渲染，由control负责读取该属性
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   IAccessible *m_pAccessible;
 #endif
   

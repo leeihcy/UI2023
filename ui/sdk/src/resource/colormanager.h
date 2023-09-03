@@ -12,8 +12,8 @@ class Resource;
 class  ColorTagElementInfo
 {
 public:
-	std::string  strId;  // Ä£¿éÃû
-	UIElement*  pXmlElement;  // xml½áµã
+	std::string  strId;  // æ¨¡å—å
+	UIElement*  pXmlElement;  // xmlç»“ç‚¹
 };
 
 class ColorManager

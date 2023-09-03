@@ -5,7 +5,7 @@ namespace ui {
 
 int GetDpi() {
   static int dpi = 0;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (0 == dpi) {
     // 先检测用户是否禁用了DPI缩放
     bool bDisableScale = false;

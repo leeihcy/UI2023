@@ -2,7 +2,7 @@
 #include "string_attribute.h"
 
 //
-// Àı£º layout="stack"
+// ä¾‹ï¼š layout="stack"
 //
 namespace ui
 {
@@ -31,7 +31,7 @@ public:
 private:
     IStringEnumAttribute*  m_pIStringEnumAttribute;
 
-    bool  m_bEditable;  // ³ıÁË´ÓÁĞ±íÖĞÑ¡ÔñÒ»Ïî£¬»¹¿ÉÒÔ×Ô¼º±à¼­Ò»¸öÖµ
+    bool  m_bEditable;  // é™¤äº†ä»åˆ—è¡¨ä¸­é€‰æ‹©ä¸€é¡¹ï¼Œè¿˜å¯ä»¥è‡ªå·±ç¼–è¾‘ä¸€ä¸ªå€¼
     std::list<std::string>  m_list;
 };
 

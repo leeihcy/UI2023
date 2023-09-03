@@ -1,6 +1,3 @@
-
-use_linux_msgloop = false
-
 shared_library("uisdk") {
     cflags = []
     if (is_debug) {
@@ -8,10 +5,6 @@ shared_library("uisdk") {
     }
 
     defines = ["UI_EXPORTS"]
-    
-    if (use_linux_msgloop) {
-        defines += ["USE_LINUX_MSGLOOP"]
-    }
 
     include_dirs = [
         "//",
@@ -24,19 +17,25 @@ shared_library("uisdk") {
     lib_dirs = ["$root_build_dir/"]
 
     # 将依赖库拷贝到out/debug目录下
-    libs = ["skia"]
+    if (is_win) {
+      libs = []
+    }
+    else {
+      libs = ["skia"]
+    }
     copy("lib_deps") {
-      sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
-      outputs = ["$root_build_dir/"]
-      
+      if (is_mac) {
+        sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
+      } else if (is_win) {
+        sources = [
+          "//ui/3rd/skia/src/out/Shared/skia.dll",
+          "//ui/3rd/skia/src/out/Shared/skia.dll.lib"
+        ]
+      }
+      outputs = ["$root_build_dir/{{source_file_part}}"]
     }
 
-    # 直接在当前目录查找libskia.dylib
-    ldflags = [
-      "-rpath", ".",
-    ]
-
-    cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
+   
     sources = [
         # "//ui/3rd/zip/unzip.cpp",
         # "//ui/3rd/zip/zip.cpp",
@@ -149,7 +148,31 @@ shared_library("uisdk") {
         "src/window/window.cpp",
         "src/window/iwindow.cpp",
     ]
-    if (is_linux || use_linux_msgloop) {
+
+     # 直接在当前目录查找libskia.dylib
+    if (is_mac || is_linux) {
+      ldflags = [
+        "-rpath", ".",
+      ]
+    } else if (is_win) {
+       ldflags = [
+        # "-lskia"
+       ]
+    }
+
+    if (is_linux) {
+      cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
+    }
+
+    if (is_win) {
+      sources += [
+        "src/message_loop/message_loop_win.cpp",
+      ]
+      #libs += [
+      #  "skia.dll",
+      #]
+    }
+    if (is_linux) {
         sources += [
             "src/window/window_linux.cpp",
             "src/window/linux/display.cpp",
@@ -160,7 +183,7 @@ shared_library("uisdk") {
             "x11"
         ]
     }
-    if (is_mac && !use_linux_msgloop) {
+    if (is_mac) {
         sources += [
             "src/window/window_mac.mm",
             "src/message_loop/message_loop_mac.mm",

@@ -214,7 +214,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
   if (nullptr == pWindow)
     return;
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (pWindow->IsChildWindow()) {
     HWND hWndParent = GetParent(pWindow->m_hWnd);
     Rect rc;

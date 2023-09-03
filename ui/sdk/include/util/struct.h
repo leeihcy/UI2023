@@ -1,5 +1,5 @@
-#ifndef _UI_STRUCT_H_
-#define _UI_STRUCT_H_
+#ifndef _UI_SDK_INCLUDE_UTIL__STRUCT_H_
+#define _UI_SDK_INCLUDE_UTIL__STRUCT_H_
 #include "sdk/include/interface.h"
 #include "sdk/include/macro/uidefine.h"
 #include "rect.h"
@@ -10,8 +10,7 @@ namespace ui {
 //
 // 9宫拉伸区域定义
 //
-class UIAPI C9Region {
-public:
+struct UIAPI C9Region {
   C9Region() { Set(0); }
   C9Region(const C9Region &o) { this->Copy(o); }
   bool IsEqual(const C9Region &r);
@@ -82,7 +81,7 @@ public:
 
   IMessage *pNotify; // 响应WM_TIMER的对象
   UITimerProc pProc;
-  std::function<bool(unsigned int *, TimerItem *)> func;
+  // TODO: std::function<bool(unsigned int *, TimerItem *)> func;
 
   unsigned int *nId;
   long wParam;
@@ -107,7 +106,7 @@ enum DROPTARGETEVENT_TYPE {
 };
 struct IDragFeedback;
 
-#if !defined(OS_WIN)
+#if 1 // !defined(OS_WIN)
 typedef struct _POINTL {
   long x;
   long y;

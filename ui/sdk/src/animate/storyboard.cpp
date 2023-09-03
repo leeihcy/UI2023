@@ -160,10 +160,10 @@ void  Storyboard::BeginFullCpu()
 	m_pAnimateMgr->AddStoryboardFullCpu(this);
 }
 
-// ÑÓ³ÙÒ»¶ÎÊ±ºòºóÔÙ¿ªÊ¼¶¯»­¡£
+// ï¿½Ó³ï¿½Ò»ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ù¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void  Storyboard::BeginDelay(long lElapse)
 {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     m_lDelayBeginTick = GetTickCount() + lElapse;
     m_pAnimateMgr->AddStoryboard(this);
 #else
@@ -182,7 +182,7 @@ void  Storyboard::ClearDelayWaiting()
 
 void  Storyboard::UpdateDelayWaiting()
 {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     if (!m_lDelayBeginTick)
         return;
 
@@ -238,12 +238,12 @@ bool  Storyboard::IsFinish()
 void  Storyboard::Cancel()
 {
     m_pAnimateMgr->CancelStoryboard(this);
-    // this ÒÑ±»Ïú»Ù
+    // this ï¿½Ñ±ï¿½ï¿½ï¿½ï¿½ï¿½
     return;
 }
 
-// ÔÚontick±éÀú¹ý³Ìµ±ÖÐ£¬´¥·¢ÁË¶ÔÏóµÄÎö¹¹£¬²¢µ÷ÓÃÁËClearStoryboardByNotify·½·¨£¬ÆäËüÕýÔÚ½øÐÐ
-// ÖÐµÄstoryboardÔÚÇåÀí¹ý³ÌÖÐÎÞ·¨¼°Ê±´ÓvectorÖÐÒÆ³ý£¬¾ÍÏÈµ÷ÓÃÕâ¸ö·½·¨£¬ÒÔ·ÀÒ°Ö¸Õë±ÀÀ£
+// ï¿½ï¿½ontickï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ClearStoryboardByNotifyï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½
+// ï¿½Ðµï¿½storyboardï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½Ê±ï¿½ï¿½vectorï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô·ï¿½Ò°Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½
 void  Storyboard::MarkToBeDestroyed()
 {
 	SetEventListener(nullptr);
@@ -257,7 +257,7 @@ bool  Storyboard::OnTick()
         m_listTimeline[i]->OnTick();
     }
 
-    // ·ÀÖ¹Notify¹ý³ÌÖÐ¶ÔÏó±»Ïú»Ù£¬ÏÈ±£´æÒ»·ÝbFinish
+    // ï¿½ï¿½Ö¹Notifyï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù£ï¿½ï¿½È±ï¿½ï¿½ï¿½Ò»ï¿½ï¿½bFinish
     bool bFinish = IsFinish();
 
 	E_ANIMATE_TICK_RESULT eResult = NotifyTick();  

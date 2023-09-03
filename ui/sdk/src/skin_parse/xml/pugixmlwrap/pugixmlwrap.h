@@ -2,6 +2,7 @@
 #include "../3rd/pugixml/pugixml.hpp"
 #include "../xmlwrap.h"
 #include "include/interface/ixmlwrap.h"
+#include <functional>
 
 namespace ui {
 
@@ -49,7 +50,7 @@ public:
   virtual void GetAttribList(IMapAttribute *ppMapAttrib) override;
   virtual void GetAttribList2(IListAttribute **ppListAttrib) override;
   virtual bool SetAttribList2(IListAttribute *pListAttrib) override;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   virtual bool GetAttrib(const char *szKey, BSTR *pbstrValue) override;
 #endif
   virtual std::string GetAttrib(const char *szKey) override;

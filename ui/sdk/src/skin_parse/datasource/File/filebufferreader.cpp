@@ -44,6 +44,6 @@ bool  FileBufferReader::load(const char* szPath)
 
 bool  FileBufferReader::save(const char* szPath)
 {
-    UIASSERT(0 && _T("not implement"));
+    UIASSERT(0 && "not implement");
     return false;  // not implement;
 }

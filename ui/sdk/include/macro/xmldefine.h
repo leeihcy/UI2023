@@ -750,13 +750,8 @@ enum SCROLLBAR_VISIBLE_TYPE
 };
 enum SCROLLBAR_DIRECTION_TYPE
 {
-#if defined(OS_WIN)
-    HSCROLLBAR = WM_HSCROLL,
-    VSCROLLBAR = WM_VSCROLL
-#else
     HSCROLLBAR = 1,
     VSCROLLBAR = 2
-#endif
 };
 
 // #define  XML_SCROLLBAR_TYPE                       "type"        // 前接XML_xxSCROLLBAR_PRIFIX，滚动条的类型

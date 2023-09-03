@@ -3,45 +3,45 @@
 #define DEFAULT_SCREEN_DPI  96   // USER_DEFAULT_SCREEN_DPI
 
 //
-// DPI �ı�֪ͨ�� Windows 8.1����Ч
-// Windows 7 ���޸�DPI��ϵͳ��Ҫ��ע��������Ч��
+// DPI 改变通知： Windows 8.1才有效
+// Windows 7 中修改DPI后，系统会要求注销才能生效。
 //
 // wParam:
 //   HIWORD:  Y DPI
 //   LOWORD:  X DPI
 // lParam:
-//   ������������λ��
+//   窗口期望的新位置
 //   Rect* const prcNewWindow = (Rect*)lParam;
 //#define WM_DPICHANGED      0x02E0
 //
 
-// Ӧ��ʹ�� GetSystemMetrics(SM_CXSCREEN) �� GetSystemMetrics(SM_CXSCREEN) ����ȡ��Ļ��С�ߴ硣
-// Ӧ��ʹ�� GetSystemMetrics(SM_CXBORDER) �� GetSystemMetrics(SM_CYBORDER) ����ȡ�߿�ߴ硣
-// Ӧ��ʹ�� GetSystemMetrics(SM_CXICON) �� GetSystemMetrics(SM_CXSMICON) ����ȡ��ͼ��ߴ��Сͼ��ߴ硣
+// 应该使用 GetSystemMetrics(SM_CXSCREEN) 或 GetSystemMetrics(SM_CXSCREEN) 来获取屏幕大小尺寸。
+// 应该使用 GetSystemMetrics(SM_CXBORDER) 或 GetSystemMetrics(SM_CYBORDER) 来获取边框尺寸。
+// 应该使用 GetSystemMetrics(SM_CXICON) 或 GetSystemMetrics(SM_CXSMICON) 来获取大图标尺寸和小图标尺寸。
 
 
 //
-// ͼƬ��DPI����Ӧ����Ŀǰ�뵽���ַ�ʽ��
-// 1. �ڼ���ͼƬʱ���ͽ�ͼƬֱ�����ŵ���Ӧ�ߴ�
-//    �ŵ㣺
-//          1.�򵥣�ֻ��ҪԴͷ�������ɣ���Ӱ����ƴ���.
-//          2.��֧����Button��autosize by bkgimage w/h�ĳ�����
-//          3.ʹ��GdiPlus��֧������ʱ����ݹ���
-//    ȱ�㣺
-//          1.ռ�ø�����ڴ�
-//          2.����imagelist����֧�ֲ��ˡ�
-//            ����һ��154*14��imagelist�������itemΪ14*14
-//            �Ŵ�125%֮����ȱ���� 154*1.25 = 192.5�� 14*1.25 = 17.5
-//            ��ʱ�����ǽ�item width���17����18���ǲ��Եģ�û��ƽ��������.
-//            �����ڲ��ÿ����ʱ���ڶ���item��Ӱ���1��item�ı�Ե������1��
-//            item�ı�Ե�����Ǵ�͸��ʱ�ܵ���Ӱ��ǳ�����
-//            -->���������
-//             . ��item����������������ء�
-//             . ��ʹ��DPI���죬ֱ��9������
-//             . ��imagelist�ֶ�DPI���죬ÿ��itemֻ�ܼ����������ܼ�����������Ϊ�������������ϵ��֮���ֳ�С���ˡ�
+// 图片的DPI自适应缩放目前想到两种方式，
+// 1. 在加载图片时，就将图片直接缩放到相应尺寸
+//    优点：
+//          1.简单，只需要源头处理即可，不影响绘制代码.
+//          2.能支持像Button的autosize by bkgimage w/h的场景，
+//          3.使用GdiPlus来支持拉伸时抗锯齿功能
+//    缺点：
+//          1.占用更多的内存
+//          2.对于imagelist类型支持不了。
+//            比如一个154*14的imagelist，里面的item为14*14
+//            放大125%之后宽度变成了 154*1.25 = 192.5， 14*1.25 = 17.5
+//            此时无论是将item width设成17还是18都是不对的，没法平均分配了.
+//            而且在采用抗锯齿时，第二个item会影响第1个item的边缘，当第1个
+//            item的边缘本来是纯透明时受到的影响非常明显
+//            -->解决方案：
+//             . 将item分离出来，单独加载。
+//             . 不使用DPI拉伸，直接9宫拉伸
+//             . 把imagelist分段DPI拉伸，每个item只能记索引，不能记坐标区域，因为坐标区域乘缩放系数之后又成小数了。
 //
-// 2. �ڻ��Ƶ�ʱ���޸�Ŀ����Ⱥ͸߶ȣ��ﵽ���ŵ�Ч��
-//    ��Ҫȱ�㣺GDI AlphaBlend���첻֧�ֿ����
+// 2. 在绘制的时候，修改目标宽度和高度，达到缩放的效果
+//    重要缺点：GDI AlphaBlend拉伸不支持抗锯齿
 //
 namespace ui
 {

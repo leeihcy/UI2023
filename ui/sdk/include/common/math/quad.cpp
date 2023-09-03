@@ -35,7 +35,7 @@ void  Quad::GetBoundRect2(Rect* prc)
 {
 	GetBoundRect(prc);
 
-	// 返回的区域不需要是下标范围
+	// 杩斿洖鐨勫尯鍩熶笉闇�瑕佹槸涓嬫爣鑼冨洿
 	prc->right++;
 	prc->bottom++;
 }

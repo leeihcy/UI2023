@@ -330,7 +330,7 @@ bool ColorRes::LoadItem(IMapAttribute *pMapAttrib, const char *szValue) {
     pItem->SetAttribute(pMapAttrib);
     return true;
   } else {
-    UI_LOG_WARN(_T("insert image m_strId=%s, path=%s failed."), strID.c_str(),
+    UI_LOG_WARN("insert image m_strId=%s, path=%s failed.", strID.c_str(),
                 szValue);
     return false;
   }
@@ -342,7 +342,7 @@ bool ColorRes::InsertColor(const std::string &strID, const char *szColor,
 
   ColorResItem *p = this->GetColorItem(strID);
   if (p) {
-    UI_LOG_WARN(_T("ColorRes::InsertColor failed, insert item=%s, color=%s"),
+    UI_LOG_WARN("ColorRes::InsertColor failed, insert item=%s, color=%s",
                 strID.c_str(), szColor);
     return false;
   }

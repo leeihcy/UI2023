@@ -1,4 +1,4 @@
-import("//build/config/common.gni")
+# import("//build/config/common.gni")
 
 
 group("ui") {

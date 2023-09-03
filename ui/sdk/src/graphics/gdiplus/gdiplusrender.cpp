@@ -40,7 +40,7 @@ void  GdiplusRenderTarget::Release()
 //
 HDC GdiplusRenderTarget::GetHDC()
 {
-	UI_LOG_DEBUG(_T("%s advise: 该函数效率太低，最好不要调用"), FUNC_NAME);
+	UI_LOG_DEBUG("%s advise: 该函数效率太低，最好不要调用", FUNC_NAME);
 
 	if (NULL == m_pGraphics)
 		return NULL;
@@ -573,20 +573,20 @@ int GdiplusRenderTarget::DrawString(const TCHAR* szText, const CRect* lpRect, un
 
 	if (NULL == pRenderFont)
 	{
-		UI_LOG_WARN(_T("%s pRenderFont == NULL"), FUNC_NAME);
+		UI_LOG_WARN("%s pRenderFont == NULL", FUNC_NAME);
 		return -1;
 	}
 
 	if (((IRenderFont*)pRenderFont)->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS)
 	{
-		UI_LOG_WARN(_T("%s pRenderFont render type != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS"), FUNC_NAME);
+		UI_LOG_WARN("%s pRenderFont render type != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS", FUNC_NAME);
 		return -1;
 	}
 
 	Gdiplus::Font* pFont = ((GdiplusRenderFont*)pRenderFont)->GetFont();
 	if (NULL == pFont)
 	{
-		UI_LOG_WARN(_T("%s NULL == pFont"), FUNC_NAME);
+		UI_LOG_WARN("%s NULL == pFont", FUNC_NAME);
 		return -1;
 	}
 
@@ -658,14 +658,14 @@ void  GdiplusRenderTarget::DrawStringEx(HDC hBindDC, IRenderFont* pRenderFont, D
 
     if (((IRenderFont*)pRenderFont)->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS)
     {
-        UI_LOG_WARN(_T("pRenderFont render type != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS"));
+        UI_LOG_WARN("pRenderFont render type != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS");
         return;
     }
 
     Gdiplus::Font* pFont = ((GdiplusRenderFont*)pRenderFont)->GetFont();
     if (NULL == pFont)
     {
-        UI_LOG_WARN(_T("NULL == pFont"));
+        UI_LOG_WARN("NULL == pFont");
         return;
     }
 
@@ -1636,7 +1636,7 @@ void  GdiplusRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam
 
     if (pDst->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS)
     {
-        UI_LOG_WARN(_T("Graphcis Render library is wrong"));
+        UI_LOG_WARN("Graphcis Render library is wrong");
         return;
     }
 

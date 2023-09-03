@@ -17,16 +17,16 @@ public:
 	~GifResItem();
 
 	std::string&  GetIdRef();
-	void  SetId(const wchar_t* text);
-	const wchar_t*  GetId() { return m_strId.c_str(); }
+	void  SetId(const char* text);
+	const char*  GetId() { return m_strId.c_str(); }
 
-	void  SetPath(const wchar_t* path);
+	void  SetPath(const char* path);
 
 private:
-	std::string      m_strId;      // image id
+	std::string      m_strId;      // image id 
 	std::string      m_strPath;    // image path
-	bool        m_bUseSkinHLS;         // ¸ÃÍ¼Æ¬ÊÇ·ñ²ÎÓëÆ¤·ôÉ«µ÷¸Ä±ä 
-	ImageData*  m_pOriginImageData;    // ¸ÃÍ¼Æ¬µÄÔ­Ê¼Êı¾İ£¨¸Ä±äÍ¼Æ¬É«µ÷Ê±Ê¹ÓÃ£©
+	bool        m_bUseSkinHLS;         // è¯¥å›¾ç‰‡æ˜¯å¦å‚ä¸çš®è‚¤è‰²è°ƒæ”¹å˜ 
+	ImageData*  m_pOriginImageData;    // è¯¥å›¾ç‰‡çš„åŸå§‹æ•°æ®ï¼ˆæ”¹å˜å›¾ç‰‡è‰²è°ƒæ—¶ä½¿ç”¨ï¼‰
 
 public:
 	bool  ModifyGif(const std::string& strPath) { UIASSERT(0); return false; } // TODO:

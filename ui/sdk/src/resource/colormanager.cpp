@@ -84,7 +84,7 @@ void ColorManager::OnNewChild(UIElement *pElem) {
   IMapAttribute *pMapAttrib = UICreateIMapAttribute();
   pElem->GetAttribList(pMapAttrib);
   if (false == m_resColor.LoadItem(pMapAttrib, pElem->GetData())) {
-    UI_LOG_WARN(_T("insert color failed."));
+    UI_LOG_WARN("insert color failed.");
   }
   pMapAttrib->Destroy();
 }

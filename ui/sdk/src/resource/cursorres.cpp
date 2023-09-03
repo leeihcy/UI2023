@@ -39,7 +39,7 @@ namespace ui
 // 	bool bRet = pCursor->Load(strCurFilePath.c_str());
 // 	if (false == bRet)
 // 	{
-// 		UI_LOG_WARN(_T("%s LoadCursor Failed. filepath=%s"), FUNC_NAME, strCurFilePath.c_str());
+// 		UI_LOG_WARN("%s LoadCursor Failed. filepath=%s", FUNC_NAME, strCurFilePath.c_str());
 // 		SAFE_DELETE(pCursor);
 // 		*ppOutRef = nullptr;
 // 	}
@@ -57,7 +57,7 @@ namespace ui
 // 	bool bRet = pCursor->Load(nCursorID, hInstance);
 // 	if (false == bRet)
 // 	{
-// 		UI_LOG_WARN(_T("%s LoadCursor Failed. cursor id=%s, hInstance=%x"), FUNC_NAME, nCursorID, hInstance);
+// 		UI_LOG_WARN("%s LoadCursor Failed. cursor id=%s, hInstance=%x"), FUNC_NAME, nCursorID, hInstance);
 // 		SAFE_DELETE(pCursor);
 // 		*ppOutRef = nullptr;
 // 	}
@@ -206,7 +206,7 @@ IUICursor*  CursorResItem::GetCursor()
 }
 bool  CursorResItem::ModifyCursor( const std::string& strCurFilePath )
 {
-	UIASSERT( false && _T("TODO: CursorResItem::ModifyCursor not implement"));
+	UIASSERT( false && "TODO: CursorResItem::ModifyCursor not implement");
 	return false;
 }
 ICursorResItem*  CursorResItem::GetICursorResItem()
@@ -310,7 +310,7 @@ void CursorRes::GetCursor(const char* szCursorId, IUICursor** pp)
 	CursorResItem* p = this->GetCursorItem(szCursorId);
 	if (nullptr == p)
 	{
-		UI_LOG_ERROR( _T("failed, id=%s"), szCursorId);
+		UI_LOG_ERROR("failed, id=%s", szCursorId);
 		return;
 	}
 
@@ -344,7 +344,7 @@ CursorResItem*  CursorRes::LoadItem(IMapAttribute* pMapAttrib, const char* szFul
 	}
 	else
 	{
-		UI_LOG_WARN( _T("insert cursor m_strID=%s, path=%s failed."), szId, szFullPath);
+		UI_LOG_WARN("insert cursor m_strID=%s, path=%s failed.", szId, szFullPath);
 		return nullptr;
 	}
 }
@@ -354,7 +354,7 @@ bool  CursorRes::InsertCursor(const char* szId, const char* szCurFilePath, Curso
 	CursorResItem* p = this->GetCursorItem(szId);
 	if (p)
 	{
-		UI_LOG_WARN(_T("CursorRes::InsertCursor failed, insert item=%s, cursor=%s"), szId, szCurFilePath);
+		UI_LOG_WARN("CursorRes::InsertCursor failed, insert item=%s, cursor=%s", szId, szCurFilePath);
 		return false;
 	}
 

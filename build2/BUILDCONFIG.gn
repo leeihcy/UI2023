@@ -42,8 +42,12 @@ set_defaults("source_set") {
   configs = _shared_binary_target_configs
 }
 
-set_default_toolchain("//build/toolchain:gcc")
-
+if (is_win) {
+  set_default_toolchain("//build/toolchain/gcc:gcc")
+}
+else {
+  set_default_toolchain("//build/toolchain/msvc:msvc")
+}
 
 declare_args() {
   is_debug = false

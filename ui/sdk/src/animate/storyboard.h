@@ -15,7 +15,7 @@ class KeyFrameTimeline;
 typedef std::vector<Timeline*>  TimelineList;
 typedef std::vector<Timeline*>::iterator  TimelineIter;
 
-// ÓÃÓÚ¹ÜÀíÒ»¸ö¶¯»­ÖĞµÄ¼¸¸ötimeline 
+// ç”¨äºç®¡ç†ä¸€ä¸ªåŠ¨ç”»ä¸­çš„å‡ ä¸ªtimeline 
 class Storyboard
 {
 public:
@@ -83,9 +83,9 @@ protected:
     long             m_pWParam;
     long             m_pLParam;
 
-    unsigned long      m_lDelayBeginTick;  // ÑÓÊ±ÆôÓÃµÄ¶¯»­¡£µ±GetTickCount´óÓÚ¸ÃÖµÊ±£¬Æô¶¯¶¯»­
+    unsigned long      m_lDelayBeginTick;  // å»¶æ—¶å¯ç”¨çš„åŠ¨ç”»ã€‚å½“GetTickCountå¤§äºè¯¥å€¼æ—¶ï¼Œå¯åŠ¨åŠ¨ç”»
 
-    TimelineList       m_listTimeline;  // Ê¹ÓÃÊı×é£¬¼Ó¿ìÍâ²¿Ö±½Ó¶¨Î»£¬±ÜÃâ²éÕÒ
+    TimelineList       m_listTimeline;  // ä½¿ç”¨æ•°ç»„ï¼ŒåŠ å¿«å¤–éƒ¨ç›´æ¥å®šä½ï¼Œé¿å…æŸ¥æ‰¾
 };
 
 }

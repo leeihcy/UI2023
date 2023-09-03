@@ -279,7 +279,7 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((llong)pSaveParam);
 
     if (pParam->IsBlock()) {
       pStoryboard->BeginBlock();
@@ -333,7 +333,7 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((llong)pSaveParam);
 
     m_transfrom3d.perspective(2000);
 
@@ -385,7 +385,7 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((ui::llong)pSaveParam);
 
     m_transfrom3d.perspective(2000);
 
@@ -437,7 +437,7 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((ui::llong)pSaveParam);
 
     m_transfrom3d.perspective(2000);
 
@@ -490,7 +490,7 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((ui::llong)pSaveParam);
 
     if (pParam->IsBlock()) {
       pStoryboard->BeginBlock();
@@ -558,7 +558,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
 
     LayerAnimateParam *pSaveParam = new LayerAnimateParam;
     *pSaveParam = *pParam;
-    pStoryboard->SetWParam((long)pSaveParam);
+    pStoryboard->SetWParam((ui::llong)pSaveParam);
 
     if (pParam->IsBlock()) {
       pStoryboard->BeginBlock();
@@ -744,7 +744,7 @@ Object *Layer::GetLayerContentObject() {
   if (m_pLayerContent->Type() != LayerContentTypeObject)
     return nullptr;
 
-  return &static_cast<IObjectLayerContent *>(m_pLayerContent)->GetObject();
+  return &static_cast<IObjectLayerContent *>(m_pLayerContent)->GetObj();
 }
 
 // 本类中所有的创建动画都走这里，用于数量统计

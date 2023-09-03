@@ -85,7 +85,7 @@ bool  Resource::Load()
     if (m_eLoadState == SKIN_RES_LOAD_STATE_LOADED)
         return true;
 
-    // ¼ÓÔØËÙ¶È²âÊÔ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È²ï¿½ï¿½ï¿½
 #if 0
 	StopWatch watch;
 	watch.Start();
@@ -101,7 +101,7 @@ bool  Resource::Load()
 		wprintf(szText, _T("Load Skin File Cost: %d ms\r\n"), (int)lCost);
 		::OutputDebugString(szText);
 
-		UI_LOG_DEBUG(_T("Load Skin File Cost: %d ms"), lCost);
+		UI_LOG_DEBUG("Load Skin File Cost: %d ms", lCost);
 #endif
 		return true;
     }   
@@ -137,8 +137,8 @@ Resource*  Resource::GetParentSkinRes()
 	return m_pParentSkinRes;
 }
 
-// parse.ProcessFileÔÚ½âÎöÅäÖÃÎÄ¼þ¹ý³ÌÖÐ£¬Èç¹û·¢ÏÖÒ»¸öÐÂµÄÎÄµµ£¬
-// Ôò»á»Øµ÷¸Ãº¯Êý½øÐÐÍ¨Öª
+// parse.ProcessFileï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Âµï¿½ï¿½Äµï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½Øµï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Öª
 void  Resource::OnNewUIDocument(UIDocument* pDoc)
 {
 	if (!pDoc)
@@ -160,7 +160,7 @@ bool Resource::Save()
 
         if (!po->Save())
         {
-            UI_LOG_ERROR(_T("%s Save Xml Doc Failed. path=%s"), 
+            UI_LOG_ERROR("%s Save Xml Doc Failed. path=%s", 
 					po->GetSkinPath());
         }
     }
@@ -184,8 +184,8 @@ bool Resource::ChangeSkinHLS(short h, short l, short s, int nFlag)
 	if (false == m_mgrColor.ChangeSkinHLS(h,l,s,nFlag))
 		return false;
 
-#if 0 // -- ¼Ü¹¹¸ÄÔì	
-	// ±£´æ¸Ã HLS Êý¾Ý
+#if 0 // -- ï¿½Ü¹ï¿½ï¿½ï¿½ï¿½ï¿½	
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ HLS ï¿½ï¿½ï¿½ï¿½
 	SkinConfigRes* pSkinConfigRes = m_pSkinConfigMgr->GetSkinConfigRes();
 	if (nullptr == pSkinConfigRes)
 		return false;

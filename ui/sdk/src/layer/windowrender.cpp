@@ -98,7 +98,7 @@ Layer *WindowRender::CreateLayer(IObjectLayerContent *pContent) {
   if (!pContent)
     return nullptr;
 
-  Object &obj = pContent->GetObject();
+  Object &obj = pContent->GetObj();
   Layer *pNewLayer = get_create_compositor()->CreateLayer();
   pNewLayer->SetContent(pContent);
 
@@ -188,7 +188,7 @@ Compositor *WindowRender::get_create_compositor() {
     m_compositor->SetUIApplication(m_window.GetUIApplication());
     m_compositor->SetWindowRender(this);
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     m_compositor->BindHWND(m_window.GetHWND());
 #endif
   }
@@ -202,7 +202,7 @@ void WindowRender::UpdateAndCommit() {
 
   m_compositor->UpdateAndCommit();
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 void WindowRender::BindHWND(HWND hWnd) {
   if (m_compositor)
     m_compositor->BindHWND(hWnd);

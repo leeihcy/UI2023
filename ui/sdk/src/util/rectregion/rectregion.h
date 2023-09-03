@@ -31,7 +31,7 @@ public:
 
   // 运行完之后，m_prcArray的大小与m_nCount可能不匹配
   bool IntersectRect(const Rect *prc, bool OnlyTest = false);
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HRGN CreateRgn();
 #endif
   void GetUnionRect(Rect *prc);

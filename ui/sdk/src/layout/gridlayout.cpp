@@ -386,8 +386,8 @@ void GridLayout::DoArrange(ArrangeParam *param) {
 
     // 超出了范围
     if (nCol >= nGridCols || nRow >= nGridRows) {
-      UI_LOG_WARN(_T("GridLayout::ArrangeChildObject, Object[ m_strID=\"%s\", ")
-                  _T("col=%d, row=%d ] 超出grid范围 [col=%d,row=%d] )"),
+      UI_LOG_WARN("GridLayout::ArrangeChildObject, Object[ m_strID=\"%s\", "
+                  "col=%d, row=%d ] 超出grid范围 [col=%d,row=%d] )",
                   pChild->GetId(), nCol, nRow, nGridCols, nGridRows);
       continue;
     }

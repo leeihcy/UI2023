@@ -107,7 +107,7 @@ void ITextRenderBase::DrawState(IRenderTarget *pRenderTarget, const Rect *prc,
   drawstate.nDrawTextFlag = nDrawTextFlag;
 
   static_cast<IMessage *>(this)->SendMessage(UI_MSG_RENDERBASE_DRAWSTATE,
-                                             (long)&drawstate, 0);
+                                             (ui::llong)&drawstate, 0);
 }
 void ITextRenderBase::Init() {
   static_cast<IMessage *>(this)->SendMessage(UI_MSG_INITIALIZE);

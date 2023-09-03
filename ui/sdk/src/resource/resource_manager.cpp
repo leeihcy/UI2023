@@ -198,7 +198,7 @@ long ResourceManager::SetActiveSkin(IResource* pSkinRes)
 {
         if (nullptr == pSkinRes)
         {
-                UI_LOG_WARN(_T("ResourceManager::SetActiveSkin failed"));
+                UI_LOG_WARN("ResourceManager::SetActiveSkin failed");
                 return E_INVALIDARG;
         }
 
@@ -352,8 +352,8 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
   return pSkin;
 }
 
-Resource *ResourceManager::LoadResource(long hInstance, int resId) {
-#if defined(OS_WIN)
+Resource *ResourceManager::LoadResource(llong hInstance, int resId) {
+#if 0 // defined(OS_WIN)
   if (!hInstance)
     return nullptr;
 

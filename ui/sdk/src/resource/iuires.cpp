@@ -95,7 +95,7 @@ IImageRes&   IImageManager::GetImageRes()
 {
     return m_pImpl->GetImageRes().GetIImageRes();
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 ICursorRes*  IImageManager::GetCursorRes()
 {
     return m_pImpl->GetCursorRes().GetICursorRes();
@@ -275,7 +275,7 @@ bool  IImageRes::GetBitmap(const char* szImageID, GRAPHICS_RENDER_LIBRARY_TYPE e
 { 
     return m_pImpl->GetBitmap(szImageID, eRenderType, ppRenderBitmap);
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 HBITMAP  IImageRes::LoadBitmap(const char* szId)  
 { 
     return m_pImpl->LoadBitmap(szId);
@@ -376,7 +376,7 @@ ImageIconResItem*  IImageIconResItem::GetImpl() { return m_pImpl; }
 
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 ICursorRes::ICursorRes(CursorRes* p) { m_pImpl = p; }
 CursorRes*  ICursorRes::GetImpl() { return m_pImpl; }
 
@@ -398,12 +398,12 @@ IFontResItem::IFontResItem(FontResItem* p) { m_pImpl = p; }
 FontResItem*  IFontResItem::GetImpl(){ return m_pImpl; }
 
 const char*  IFontResItem::GetId()  { return m_pImpl->GetId(); }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 LOGFONT*  IFontResItem::GetLogFont() { return m_pImpl->GetLogFont(); }
 #endif
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 IGifRes::IGifRes(GifRes* p) { m_pImpl = p; }
 GifRes*  IGifRes::GetImpl()  { return m_pImpl; }
 

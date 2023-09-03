@@ -2,7 +2,6 @@
 #include "attribute.h"
 #include "include/inc.h"
 #include "src/util/DPI/dpihelper.h"
-// #include "attributex64.h"
 
 namespace ui {
 AttributeBase *CreateIntAttribute() { return new IntAttribute(); }

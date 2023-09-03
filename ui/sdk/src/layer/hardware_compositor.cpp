@@ -13,7 +13,7 @@ HardwareCompositor::~HardwareCompositor()
 {
     SAFE_RELEASE(m_pHardwareComposition);
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 void  HardwareCompositor::virtualBindHWND(HWND hWnd)
 {
 	UIASSERT(!m_pHardwareComposition);

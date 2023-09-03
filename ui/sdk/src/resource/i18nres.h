@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-
+#include <string>
 #include "include/interface/iuires.h"
 
 namespace ui {

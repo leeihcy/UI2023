@@ -34,7 +34,7 @@ void Message::onRouteMessage(ui::Msg *msg) {
   }
 }
 
-// µ±×Ô¼ºÃ»ÓÐ´ÓIMessage´´½¨Ê±£¬ÎªÁËÖ§³ÖIMessage£¬×Ô¼º´´½¨Ò»¸ö¡£
+// å½“è‡ªå·±æ²¡æœ‰ä»ŽIMessageåˆ›å»ºæ—¶ï¼Œä¸ºäº†æ”¯æŒIMessageï¼Œè‡ªå·±åˆ›å»ºä¸€ä¸ªã€‚
 IMessage *Message::GetIMessage() {
   //     if (nullptr == m_pIMessage)
   //     {
@@ -75,9 +75,9 @@ llong Message::SendMessage(uint message, llong wParam, llong lParam)
   return m_pIMessage->SendMessage(message, wParam, lParam);
 }
 
-// »ñÈ¡µ±Ç°ÏûÏ¢ÊÇ·ñÒÑ±»´¦Àí¹ýÁË
+// èŽ·å–å½“å‰æ¶ˆæ¯æ˜¯å¦å·²è¢«å¤„ç†è¿‡äº†
 // remark
-//	  ¸Ãº¯ÊýÖ»ÄÜÔÚProcessMessage·¶Î§ÄÚµ÷ÓÃ£¬ÒòÎªm_pCurMsgÖ»ÔÚÕâ¶Î·¶Î§ÄÚÓÐÐ§
+//	  è¯¥å‡½æ•°åªèƒ½åœ¨ProcessMessageèŒƒå›´å†…è°ƒç”¨ï¼Œå› ä¸ºm_pCurMsgåªåœ¨è¿™æ®µèŒƒå›´å†…æœ‰æ•ˆ
 bool Message::IsMsgHandled() const {
   UIASSERT(m_pCurMsg);
   if (!m_pCurMsg)
@@ -86,7 +86,7 @@ bool Message::IsMsgHandled() const {
   return this->m_pCurMsg->bHandled;
 }
 
-// ÉèÖÃµ±Ç°ÏûÏ¢ÒÑ±»±»´¦Àí¹ý
+// è®¾ç½®å½“å‰æ¶ˆæ¯å·²è¢«è¢«å¤„ç†è¿‡
 void Message::SetMsgHandled(bool bHandled) {
   UIASSERT(m_pCurMsg);
   if (!m_pCurMsg)
@@ -106,7 +106,7 @@ void Message::ClearNotify() {
 }
 
 //
-//  e.g. ²Ëµ¥×ÓÏîÔÚµ¯³öÊ±£¬ÐèÒª¿½±´Ò»´Î¸¸´°¿ÚµÄnotify¶ÔÏó
+//  e.g. èœå•å­é¡¹åœ¨å¼¹å‡ºæ—¶ï¼Œéœ€è¦æ‹·è´ä¸€æ¬¡çˆ¶çª—å£çš„notifyå¯¹è±¡
 //
 void Message::CopyNotifyTo(IMessage *pObjCopyTo) {
   if (nullptr == pObjCopyTo)
@@ -115,13 +115,13 @@ void Message::CopyNotifyTo(IMessage *pObjCopyTo) {
   pObjCopyTo->SetNotify(m_objNotify.pObj, m_objNotify.nMsgMapIDToNotify);
 }
 
-// ·¢ËÍNotifyÏûÏ¢µ½×¢²á¹ýNotifyµÄ¶ÔÏó.(ÐÞ¸ÄÎªÖ»Í¨Öª¸øÒ»¸öÈË.Í¨Öª¶à¸öÈËÌ«ÂÒÁË)
-// µ±bPostÎªtrueÊ±£¬²ÅÐèÒªpUIApp²ÎÊý
+// å‘é€Notifyæ¶ˆæ¯åˆ°æ³¨å†Œè¿‡Notifyçš„å¯¹è±¡.(ä¿®æ”¹ä¸ºåªé€šçŸ¥ç»™ä¸€ä¸ªäºº.é€šçŸ¥å¤šä¸ªäººå¤ªä¹±äº†)
+// å½“bPostä¸ºtrueæ—¶ï¼Œæ‰éœ€è¦pUIAppå‚æ•°
 llong Message::DoNotify(UIMSG *pMsg /*, bool bPost, IApplication* pUIApp*/) {
   //	IMessage* pNotifyObj = pMsg->pMsgTo;
   int nMsgMapID = 0;
   llong lRet =
-      0; // Èç¹ûÔÚUIMSGÖÐÖ¸¶¨ÁËpObjMsgTo£¬ÔòÓÅÏÈ·¢ËÍ¸ø¸Ã¶ÔÏó£¬²¢ÇÒnMsgMapID = 0;
+      0; // å¦‚æžœåœ¨UIMSGä¸­æŒ‡å®šäº†pObjMsgToï¼Œåˆ™ä¼˜å…ˆå‘é€ç»™è¯¥å¯¹è±¡ï¼Œå¹¶ä¸”nMsgMapID = 0;
 
   if (nullptr == pMsg->pMsgTo) {
     pMsg->pMsgTo = m_objNotify.pObj /*->GetIMessage()*/;
@@ -142,13 +142,13 @@ llong Message::DoNotify(UIMSG *pMsg /*, bool bPost, IApplication* pUIApp*/) {
 }
 
 //
-//	¶ÔÏûÏ¢½øÐÐHOOK´¦Àí
+//	å¯¹æ¶ˆæ¯è¿›è¡ŒHOOKå¤„ç†
 //
 //	return
-//		ÔÚËùÓÐµÄHOOKÁÐ±íÖÐ£¬Ö»ÒªÓÐÒ»¸öHOOK´¦Àí½áÊøºó·µ»ØTRUE£¬ÔòÕû¸ö
-//		HOOK¹ý³Ì½áÊø¡£
+//		åœ¨æ‰€æœ‰çš„HOOKåˆ—è¡¨ä¸­ï¼Œåªè¦æœ‰ä¸€ä¸ªHOOKå¤„ç†ç»“æŸåŽè¿”å›žTRUEï¼Œåˆ™æ•´ä¸ª
+//		HOOKè¿‡ç¨‹ç»“æŸã€‚
 //	remark
-//		ÔÚHOOK¹ý³ÌÖÐ£¬²»¶Ô pMsg->pObjMsgTo×÷ÐÞ¸Ä
+//		åœ¨HOOKè¿‡ç¨‹ä¸­ï¼Œä¸å¯¹ pMsg->pObjMsgToä½œä¿®æ”¹
 //
 bool Message::DoHook(UIMSG *pMsg, int nMsgMapID) {
   bool bRet = false;
@@ -159,7 +159,7 @@ bool Message::DoHook(UIMSG *pMsg, int nMsgMapID) {
   std::list<MsgHook *>::iterator iter = m_lHookMsgMap.begin();
   for (; iter != m_lHookMsgMap.end();) {
     MsgHook *pHook = *iter;
-    iter++; // ½«++·ÅÔÚÕâÀï£¬ÊÇÎªÁË½â¾öÔÚProccessMessageÖÐµ÷ÓÃRemoveHook->erase(iter)µÄ±ÀÀ£ÎÊÌâ
+    iter++; // å°†++æ”¾åœ¨è¿™é‡Œï¼Œæ˜¯ä¸ºäº†è§£å†³åœ¨ProccessMessageä¸­è°ƒç”¨RemoveHook->erase(iter)çš„å´©æºƒé—®é¢˜
 
     if (nMsgMapID == pHook->nMsgMapIDToHook) {
       if (true ==

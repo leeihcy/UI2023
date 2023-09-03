@@ -1,5 +1,6 @@
 #ifndef _UIDEFINE_H_
 #define _UIDEFINE_H_
+#include "sdk/include/interface.h"
 
 namespace ui {
 struct UIMSG;
@@ -119,7 +120,7 @@ enum HANDLED_VALUE {
   HANDLED = 1,
 };
 
-class IRootInterface {
+class UIAPI IRootInterface {
 public:
   virtual ~IRootInterface(){}; // 确保delete时能调用到派生类的析构函数
 };

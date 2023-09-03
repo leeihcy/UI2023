@@ -5,7 +5,7 @@
 #include "sdk/include/util/color.h"
 
 namespace ui {
-class C9Region;
+struct C9Region;
 struct Rect;
 struct Size;
 struct IRenderTarget;

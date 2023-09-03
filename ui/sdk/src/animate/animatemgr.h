@@ -179,7 +179,7 @@ protected:
     IAnimateTimerCallback*  m_pITimerCallback;
 	ui::Application*  m_pUIApplication;
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 	LARGE_INTEGER     m_liPerFreq;     // 用于帧数计算
 	HANDLE m_hTimer;
 #endif
@@ -188,7 +188,7 @@ protected:
 	bool   m_bHandlingTimerCallback;   // 避免在遍历stl过程中外部又删除一个对象，导致崩溃
 
 	std::list<Storyboard*>  m_listStoryboard;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     HMODULE  m_hModuleWinmm;
 #endif
 };

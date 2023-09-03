@@ -43,7 +43,7 @@ long  IUIElement::Release()
     return m_pImpl->Release();
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 bool  IUIElement::GetAttrib(const char* szKey, BSTR* pbstrValue)
 {   
     return m_pImpl->GetAttrib(szKey, pbstrValue);

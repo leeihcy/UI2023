@@ -21,7 +21,7 @@ public:
 
     virtual bool  Load_UIDocument(UIDocument* pDocument, const char* szPath) override;
     virtual bool  Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPath, RENDER_BITMAP_LOAD_FLAG e) override;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
     virtual bool  Load_Image(const char* szPath, ImageWrap* pImage) override;
     virtual bool  Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage) override;
     virtual bool  Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp) override;

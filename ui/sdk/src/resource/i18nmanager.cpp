@@ -24,7 +24,7 @@ int  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes)
 /*
   <i18n>
     <string key="ok">
-      <string id="ok" zh_cn="ȷ��" en_us="OK"/>
+      <string id="ok" zh_cn="È·¶¨" en_us="OK"/>
     </string>
   </i18n>
 */

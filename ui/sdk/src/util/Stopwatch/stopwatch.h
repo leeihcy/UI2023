@@ -1,7 +1,7 @@
 #pragma once
 
-#if defined(OS_WIN)
-// Ãë±í£¬¼ÆËãÖ´ÐÐÊ±¼ä
+#if 0 // defined(OS_WIN)
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½Ê±ï¿½ï¿½
 class StopWatch
 {
 public:

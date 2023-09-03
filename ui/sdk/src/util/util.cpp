@@ -442,11 +442,11 @@ void DeflatRect(Rect *pfc, const Rect *pDeflatRc) {
 // 			delete[] szBuffer;
 // 		}
 
-bool IsFullPath(const wchar_t *szPath) {
-#if defined(OS_WIN)
+bool IsFullPath(const char *szPath) {
+#if 0 // defined(OS_WIN)
   return !::PathIsRelative(szPath);
 #else
-  std::filesystem::path p1 = szPath;
+  const std::filesystem::path p1 = szPath;
   return p1.is_absolute();
 #endif
 }
@@ -503,7 +503,7 @@ bool PathIsDirectory(const char *path) {
   if (!path) {
     return false;
   }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   return PathIsDirectoryA(szPath);
 #else
   // std::string path2 = wstring2string(path);
@@ -511,7 +511,7 @@ bool PathIsDirectory(const char *path) {
   // struct stat sbuf;
   // stat(path2.c_str(), &sbuf);
   // return S_ISDIR(sbuf.st_mode);
-  std::filesystem::path p = path;
+  const std::filesystem::path p = path;
   return std::filesystem::is_directory(p);
 #endif
 }
@@ -520,18 +520,18 @@ bool PathFileExists(const char *path) {
   if (!path) {
     return false;
   }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   return PathFileExistsA(path);
 #else
   // std::string path2 = wstring2string(path);
   // return ::access(path, F_OK) == 0;
-  std::filesystem::path p = path;
+  const std::filesystem::path p = path;
   return std::filesystem::exists(p);
 #endif
 }
 
 bool FixBitmapAlpha(FixAlphaData *pData) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (!pData)
     return false;
 
@@ -677,7 +677,7 @@ bool FixBitmapAlpha(FixAlphaData *pData) {
 
 // 用于gdi控件绘制完成后，将控件中的区域alpha填充为255，如edit/richedit控件
 bool FixRenderTargetClipRegionAlpha(IRenderTarget *pRenderTarget) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   if (!pRenderTarget->IsRenderAlphaChannel())
     return true;
 
@@ -705,7 +705,7 @@ bool FixRenderTargetClipRegionAlpha(IRenderTarget *pRenderTarget) {
 
 // 检测一个按键是否按下，如CTRL,SHIFT,ALT
 bool IsKeyDown(unsigned int vk) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   return ((GetKeyState(vk) & 0x8000) !=
           0); // 或者 ( GetKeyState( VK_CONTROL ) < 0 ) ??
 #else
@@ -775,7 +775,7 @@ bool TranslateImage9Region(const char *szText, C9Region *p9Region, char szSep) {
 
 void UIAPI PathInBin(const wchar_t *szRelative,
                      wchar_t szAbsolution[MAX_PATH]) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   GetModuleFileName(GetModuleHandle(nullptr), szAbsolution, MAX_PATH);
   wchar_t *p = _tcsrchr(szAbsolution, '\\');
   if (p != nullptr)
@@ -787,7 +787,7 @@ void UIAPI PathInBin(const wchar_t *szRelative,
 #endif
 }
 
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 bool IsWin8OrLater() {
   static long s_bool = -1;
 

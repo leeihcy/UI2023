@@ -16,12 +16,12 @@ public:
 
   UI_DECLARE_RENDERBASE(ImageRender, XML_RENDER_TYPE_IMAGE, RENDER_TYPE_IMAGE)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
-  UIMSG_SERIALIZE(OnSerialize)
-  UIMSG_QUERYINTERFACE(ImageRender)
-  UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+  // // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UIMSG_QUERYINTERFACE(ImageRender)
+  // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
 public:
   void SetAlpha(int nAlpha);
@@ -75,12 +75,12 @@ public:
   UI_DECLARE_RENDERBASE(ImageListItemRender, XML_RENDER_TYPE_IMAGELISTITEM,
                         RENDER_TYPE_IMAGELISTITEM)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
-  UIMSG_SERIALIZE(OnSerialize)
-  UIMSG_QUERYINTERFACE(ImageListItemRender)
-  UI_END_MSG_MAP_CHAIN_PARENT(ImageRender)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+  // // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UIMSG_QUERYINTERFACE(ImageListItemRender)
+  // UI_END_MSG_MAP_CHAIN_PARENT(ImageRender)
 
   void OnSerialize(SerializeParam *pData);
   void GetDesiredSize(Size *pSize);
@@ -107,12 +107,12 @@ public:
   UI_DECLARE_RENDERBASE(ImageListRender, XML_RENDER_TYPE_IMAGELIST,
                         RENDER_TYPE_IMAGELIST)
 
-  UI_BEGIN_MSG_MAP()
-  UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  UIMSG_QUERYINTERFACE(ImageListRender)
-  // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
-  UIMSG_SERIALIZE(OnSerialize)
-  UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_QUERYINTERFACE(ImageListRender)
+  // // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
   void SetIImageListRenderBitmap(IImageListRenderBitmap *pBitmap);
   IRenderBitmap *GetRenderBitmap();

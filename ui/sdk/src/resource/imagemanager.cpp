@@ -14,13 +14,13 @@ namespace ui {
 
 
 ImageManager::ImageManager(Resource* pSkinRes) : m_resImage(pSkinRes)
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 , m_resGif(pSkinRes)
 #endif
 {
     m_pIImageManager = nullptr;
 	m_pSkinRes = pSkinRes;
-#if defined(OS_WIN)    
+#if 0 // defined(OS_WIN)    
 	m_resGif.SetUIApplication(pSkinRes->GetUIApplication());
 #endif
 }
@@ -80,7 +80,7 @@ bool ImageManager::ModifyImageItem(const char* szId, const char* szPath)
 
 	if (false == m_resImage.ModifyImage(szId, szPath))
 	{
-		UI_LOG_ERROR(_T("m_resImage.ModifyImage strID=%s, strPath=%s Failed."), szId, szPath);
+		UI_LOG_ERROR("m_resImage.ModifyImage strID=%s, strPath=%s Failed.", szId, szPath);
 		return false;
 	}
 
@@ -93,7 +93,7 @@ bool ImageManager::ModifyImageItemInRunTime(const char* szId, const char* szPath
 
 	if (false == m_resImage.ModifyImage(szId, szPath))
 	{
-		UI_LOG_ERROR(_T("m_resImage.ModifyImage strID=%s,strPath=%s Failed. "), szId, szPath);
+		UI_LOG_ERROR("m_resImage.ModifyImage strID=%s,strPath=%s Failed. ", szId, szPath);
 		return false;
 	}
 
@@ -110,12 +110,12 @@ bool ImageManager::ModifyImageItemAlpha(const char* szId, byte nAlphaPercent)
 
 	if (false == m_resImage.ModifyImageItemAlpha(szId, nAlphaPercent))
 	{
-		UI_LOG_ERROR(_T("m_resImage.ModifyImageItemAlpha strID=%s,nAlphaPercent=%d Failed. "), szId, nAlphaPercent);
+		UI_LOG_ERROR("m_resImage.ModifyImageItemAlpha strID=%s,nAlphaPercent=%d Failed. ", szId, nAlphaPercent);
 		return false;
 	}
 
 	// TODO: 保存到用户配置文件中
-	UI_LOG_DEBUG(_T("TODO: 保存到用户配置文件中"));
+	UI_LOG_DEBUG("TODO: 保存到用户配置文件中");
 
 	return true;
 }
@@ -130,7 +130,7 @@ bool ImageManager::RemoveImageItem(const char* szId)
     {
 	    if (false == m_resImage.RemoveImage(szId))
 	    {
-		    UI_LOG_ERROR(_T("m_resImage.RemoveImage strID=%s Failed. "), szId);
+		    UI_LOG_ERROR("m_resImage.RemoveImage strID=%s Failed. ", szId);
 		    return false;
 	    }
     }
@@ -155,7 +155,7 @@ ImageRes&  ImageManager::GetImageRes()
 {
 	return m_resImage;
 }
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 CursorRes&  ImageManager::GetCursorRes()
 {
 	return m_resCursor;
@@ -250,7 +250,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
 
     if (bstrTagName == XML_IMAGE_ITEM_CURSOR)
     {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
         CursorResItem* p = m_resCursor.LoadItem(pMapAttrib, strPath.c_str());
         if (p)
         {
@@ -264,13 +264,13 @@ void  ImageManager::OnNewChild(UIElement* pElem)
         }
         else
         {
-            UI_LOG_WARN(_T("insert cursor failed. path=%s"), strPath.c_str());
+            UI_LOG_WARN("insert cursor failed. path=%s", strPath.c_str());
         }
 #endif
     }
     else if (bstrTagName == XML_IMAGE_ITEM_GIF)
     {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
         GifResItem* p = m_resGif.LoadItem(pMapAttrib, strPath);
         if (p)
         {
@@ -284,7 +284,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
         }
         else
         {
-            UI_LOG_WARN(_T("insert gif failed. path=%s"), strPath.c_str());
+            UI_LOG_WARN("insert gif failed. path=%s", strPath.c_str());
         }
 #endif
     }
@@ -303,7 +303,7 @@ void  ImageManager::OnNewChild(UIElement* pElem)
         }
         else
         {
-            UI_LOG_WARN(_T("insert image failed. path=%s"), strPath.c_str());
+            UI_LOG_WARN("insert image failed. path=%s", strPath.c_str());
         }
     }
 

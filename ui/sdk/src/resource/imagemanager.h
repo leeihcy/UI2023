@@ -1,6 +1,6 @@
 #pragma once
 #include "imageres.h"
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
 #include "cursorres.h"
 #include "gifres.h"
 #endif
@@ -25,7 +25,7 @@ public:
   IImageManager &GetIImageManager();
 
   ImageRes &GetImageRes();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   CursorRes &GetCursorRes();
   GifRes &GetGifRes();
 #endif
@@ -59,7 +59,7 @@ private:
 
   // 对象属性
   ImageRes m_resImage; // 界面图片
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   CursorRes m_resCursor; // 鼠标样式图片
   GifRes m_resGif;       // 动画
 #endif

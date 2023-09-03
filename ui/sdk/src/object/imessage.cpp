@@ -90,8 +90,8 @@ llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode
 
   msg.message = message;
   msg.nCode = nCode;
-  msg.wParam = wParam;
-  msg.lParam = lParam;
+  msg.wParam = (long)wParam;
+  msg.lParam = (long)lParam;
 
   bool bRet = ProcessMessage(&msg, nMsgMapID, true);
   if (pbHandled) {
@@ -117,7 +117,7 @@ llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode
 //   pMsg->pMsgTo->AddDelayRef((void **)&pCloneMsg->pMsgTo);
 
 //   // -->ForwardPostMessageWindow::ProcessWindowMessage
-// #if defined(OS_WIN)
+// #if 0 // defined(OS_WIN)
 //   ::PostMessage(hForwardMsgWnd, UI_MSG_POSTMESSAGE, (llong)pCloneMsg,
 //                 (llong)nMsgMapID);
 // #else
@@ -131,7 +131,7 @@ llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode
 // llong UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID) {
 //   if (nullptr == pUIApp)
 //     return 0;
-// #if defined(OS_WIN)
+// #if 0 // defined(OS_WIN)
 //   HWND hDestWnd = pUIApp->GetForwardPostMessageWnd();
 //   if (nullptr == hDestWnd)
 //     return 0;

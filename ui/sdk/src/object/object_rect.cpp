@@ -191,7 +191,7 @@ bool Object::GetScrollOffset(int *pxOffset, int *pyOffset) {
   *pyOffset = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    this->SendMessage(UI_MSG_GETSCROLLOFFSET, (long)pxOffset, (long)pyOffset);
+    this->SendMessage(UI_MSG_GETSCROLLOFFSET, (llong)pxOffset, (llong)pyOffset);
     return true;
   }
 
@@ -206,7 +206,7 @@ bool Object::GetScrollRange(int *pxRange, int *pyRange) {
   *pyRange = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    SendMessage(UI_MSG_GETSCROLLRANGE, (long)pxRange, (long)pyRange);
+    SendMessage(UI_MSG_GETSCROLLRANGE, (llong)pxRange, (llong)pyRange);
     return true;
   }
 
@@ -544,7 +544,7 @@ void Object::UpdateLayout() {
 
     ILayout *pLayout = ((Panel *)pParent)->GetLayout();
     if (nullptr == pLayout) {
-      UI_LOG_WARN(_T("GetLayout failed. id=%s"), pParent->m_strId.c_str());
+      UI_LOG_WARN("GetLayout failed. id=%s", pParent->m_strId.c_str());
       break;
     }
 
@@ -665,7 +665,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
 
   nFlag |= SWP_NOZORDER; // 该函数不提供修改ZORDER的功能
   WINDOWPOS wndpos = {0, 0, x, y, cx, cy, nFlag};
-  m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (long)&wndpos);
+  m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (llong)&wndpos);
   x = wndpos.x;
   y = wndpos.y;
   cx = wndpos.cx;
@@ -727,7 +727,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
     }
 
     WINDOWPOS wndpos2 = {0, 0, x, y, cx, cy, nFlag};
-    m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (long)&wndpos2);
+    m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (ui::llong)&wndpos2);
   }
 
   if (bMove || bSize) {
@@ -791,7 +791,7 @@ void Object::UpdateObjectNonClientRegion() {
 
   UIMSG msg;
   msg.message = UI_MSG_CALC_PARENT_NONCLIENTRECT;
-  msg.wParam = (long)&rcNonClient;
+  msg.wParam = (ui::llong)&rcNonClient;
   msg.pMsgFrom = this->GetIMessage();
 
   Object *pNcChild = nullptr;

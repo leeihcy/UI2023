@@ -19,7 +19,7 @@ public:
   Layer *CreateLayer();
   void SetRootLayer(Layer *pChanged);
   Layer *GetRootLayer();
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   void BindHWND(HWND);
   HWND GetHWND();
 #endif
@@ -36,7 +36,7 @@ public:
   
 protected:
   virtual Layer *virtualCreateLayer() = 0;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   virtual void virtualBindHWND(HWND) = 0;
 #endif
   virtual void virtualCommit(const RectRegion &arrDirtyInWindow) = 0;
@@ -45,7 +45,7 @@ protected:
   Application *m_pUIApp;
 
   Layer *m_pRootLayer;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   HWND m_hWnd;
 #endif
   WindowRender *m_pWindowRender;

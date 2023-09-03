@@ -14,7 +14,7 @@ void RenderBitmapFactory::CreateInstance(
     return;
 
   switch (eGraphicsRenderType) {
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDI: {
     if (eType == IMAGE_ITEM_TYPE_ICON) {
       GDIIconRenderBitmap::CreateInstance(ppOut);
@@ -90,6 +90,11 @@ void RenderBitmapFactory::CreateInstance(
             func(eType, ppOut);
         }
         break;
+#else
+  case GRAPHICS_RENDER_LIBRARY_TYPE_GDI:
+  case GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS:
+  case GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT2D:
+  case GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT3D:
 #endif
   default:
     UIASSERT(0);
@@ -108,7 +113,7 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
     pRenderTarget = new SkiaRenderTarget(bNeedAlphaChannel);
   }
     break;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDI: {
     pRenderTarget = new GdiRenderTarget(bNeedAlphaChannel);
   } break;
@@ -124,13 +129,13 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
         {
             if (!pUIApp)
             {
-                UI_LOG_WARN(_T("%s CreateD2D RenderTarget Failed. pUIApp is nullptr"), FUNC_NAME);
+                UI_LOG_WARN("%s CreateD2D RenderTarget Failed. pUIApp is nullptr", FUNC_NAME);
                 return UICreateRenderTarget(pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS, bNeedAlphaChannel);
             }
             HMODULE  hModule = pUIApp->GetUID2DModule();
             if (!hModule)
             {
-                UI_LOG_WARN(_T("%s CreateD2D RenderTarget Failed. GetUI3DModule Failed."), FUNC_NAME);
+                UI_LOG_WARN("%s CreateD2D RenderTarget Failed. GetUI3DModule Failed.", FUNC_NAME);
                 return UICreateRenderTarget(pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS, bNeedAlphaChannel);
             }
          
@@ -147,13 +152,13 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
 		{
 			if (!pUIApp)
 			{
-				UI_LOG_WARN(_T("%s CreateD3D RenderTarget Failed. pUIApp is nullptr"), FUNC_NAME);
+				UI_LOG_WARN("%s CreateD3D RenderTarget Failed. pUIApp is nullptr", FUNC_NAME);
 				return UICreateRenderTarget(pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS, bNeedAlphaChannel);
 			}
 			HMODULE  hModule = pUIApp->GetUID3DModule();
 			if (!hModule)
 			{
-				UI_LOG_WARN(_T("%s CreateD3D RenderTarget Failed. GetUI3DModule Failed."), FUNC_NAME);
+				UI_LOG_WARN("%s CreateD3D RenderTarget Failed. GetUI3DModule Failed.", FUNC_NAME);
 				return UICreateRenderTarget(pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS, bNeedAlphaChannel);
 			}
 

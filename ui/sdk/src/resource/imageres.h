@@ -74,7 +74,7 @@ protected:
   IMAGE_ITEM_TYPE m_eType; // 图片类型
 
   ImageData *m_pOriginImageData; // 该图片的原始数据（改变图片色调时使用）
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   GDIRenderBitmap *m_pGdiBitmap; // 外部引用，该成员不增加引用计数
 #endif
   //  注：为了提高绘图效率，同时也避免一张图片加载多种形式，尽量使用GDI(AlphaBlend)来绘图。

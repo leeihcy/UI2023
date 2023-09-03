@@ -1,6 +1,6 @@
 #pragma once
 
-// 用于解析继承关系的数据结构，TODO: 抽象出来使用
+// 鐢ㄤ簬瑙ｆ瀽缁ф壙鍏崇郴鐨勬暟鎹粨鏋勶紝TODO: 鎶借薄鍑烘潵浣跨敤
 template<class T>
 class tree
 {

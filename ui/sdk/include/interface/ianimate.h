@@ -180,10 +180,10 @@ public:
 	void  SetEventListener(IAnimateEventCallback*);
 	void  SetId(int nID);
 	int   GetId();
-	void  SetWParam(long wParam);
-	long  GetWParam();
-	void  SetLParam(long lParam);
-	long  GetLParam();
+	void  SetWParam(ui::llong wParam);
+	ui::llong  GetWParam();
+	void  SetLParam(ui::llong lParam);
+	ui::llong  GetLParam();
 
 	ITimeline*  CreateIdleTimeline(int nTimelineId);
 	IFromToTimeline*  CreateTimeline(int nId);

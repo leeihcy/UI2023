@@ -11,7 +11,7 @@ executable("hello") {
     ]
     sources = [
         "main.cc",
-        "macos.mm"
+        # "macos.mm"
     ]
 
     cflags = []

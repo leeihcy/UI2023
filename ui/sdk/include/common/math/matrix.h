@@ -6,11 +6,11 @@
 
 #include "sdk/include/macro/uidefine.h"
 
-// Ò»¸ö3D±ä»»²âÊÔÍøÒ³
+// ä¸€ä¸ª3Då˜æ¢æµ‹è¯•ç½‘é¡µ
 // http://ie.microsoft.com/testdrive/Graphics/hands-on-css3/hands-on_3d-transforms.htm
-// ±ä»»¾ØÕóÊıÑ§¹«Ê½
+// å˜æ¢çŸ©é˜µæ•°å­¦å…¬å¼
 // http://www.w3.org/TR/css3-transforms/#mathematical-description
-// 3d±ä»»²ûÊö
+// 3då˜æ¢é˜è¿°
 // https://dev.opera.com/articles/understanding-3d-transforms/
 namespace ui
 {
@@ -93,7 +93,7 @@ public:
     bool  IsBackfaceVisible();
 
 	Matrix44&  Translate(float x, float y, float z);
-	Matrix44&  Perspective(float d);  // perspectiveÒª·ÅÔÚrotate/scale/translate-zÇ°Ãæ£¬·ñÔò³Ë³öÀ´µÄ½á¹û¾ØÕó²»ÕıÈ·¡£ÎªÊ²Ã´?
+	Matrix44&  Perspective(float d);  // perspectiveè¦æ”¾åœ¨rotate/scale/translate-zå‰é¢ï¼Œå¦åˆ™ä¹˜å‡ºæ¥çš„ç»“æœçŸ©é˜µä¸æ­£ç¡®ã€‚ä¸ºä»€ä¹ˆ?
 	Matrix44&  Scale(float x, float y, float z);
 	Matrix44&  Rotate(float x, float y, float z);
 	Matrix44&  Rotate(float x, float y, float z, float angle);

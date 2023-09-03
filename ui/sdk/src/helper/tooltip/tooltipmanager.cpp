@@ -18,7 +18,7 @@ public:
 	}
 	~CSystemTooltip()
 	{
-		m_pUIApp = nullptr;  // ²»Î¬»¤uiappµÄÒıÓÃ¼ÆÊı
+		m_pUIApp = nullptr;  // ä¸ç»´æŠ¤uiappçš„å¼•ç”¨è®¡æ•°
 	}
 
 	virtual bool  Create()
@@ -40,19 +40,19 @@ public:
 						);
 
 		/*
-			Èç¹û#define _WIN32_WINNT 0x0500£¬ÄÇÃ´tooltipÒ»ÇĞÕı³£
-			µ±ÓĞÒ»Ìì#define _WIN32_WINNT 0x0501ÁË£¬ÕâÊ±ÉèÖÃtooltip.cbSize = sizeof(TOOLINFO)µÄÊ±ºò¾Í²»ÏÔÊ¾ÁË¡£
-			±àÒëµ÷ÊÔ²»ÏÔÊ¾ÈÎºÎ´íÎó£¬µ«ÊÇtooltip¾ÍÊÇÏÔÊ¾²»³öÀ´ÁË
-			ÒòÎªÏµÍ³Ä¬ÈÏ¼ÓÔØcomctl 5.82£¬Õâ¸ö°æ±¾ÀïÃæµÄtooltipµÄsize¸ù±¾Ã»ÓĞsizeof(TOOLINFO),
-			ÀïÃæÃ»ÓĞvoid *lpReserved;ËùÒÔcbSizeÉè´óÁË£¬³ö´íÁË¡£
-			ÕâÊ±ĞèÒªĞ´³Étooltip.cbSize = TTTOOLINFOA_V2_SIZE;
-			»òÕßÔÚexe¹¤³ÌÖĞÇ¿ÖÆÖ¸¶¨comctl 6.0£¨ÔÚdllÖĞÖ¸¶¨ÎŞĞ§£©
+			å¦‚æœ#define _WIN32_WINNT 0x0500ï¼Œé‚£ä¹ˆtooltipä¸€åˆ‡æ­£å¸¸
+			å½“æœ‰ä¸€å¤©#define _WIN32_WINNT 0x0501äº†ï¼Œè¿™æ—¶è®¾ç½®tooltip.cbSize = sizeof(TOOLINFO)çš„æ—¶å€™å°±ä¸æ˜¾ç¤ºäº†ã€‚
+			ç¼–è¯‘è°ƒè¯•ä¸æ˜¾ç¤ºä»»ä½•é”™è¯¯ï¼Œä½†æ˜¯tooltipå°±æ˜¯æ˜¾ç¤ºä¸å‡ºæ¥äº†
+			å› ä¸ºç³»ç»Ÿé»˜è®¤åŠ è½½comctl 5.82ï¼Œè¿™ä¸ªç‰ˆæœ¬é‡Œé¢çš„tooltipçš„sizeæ ¹æœ¬æ²¡æœ‰sizeof(TOOLINFO),
+			é‡Œé¢æ²¡æœ‰void *lpReserved;æ‰€ä»¥cbSizeè®¾å¤§äº†ï¼Œå‡ºé”™äº†ã€‚
+			è¿™æ—¶éœ€è¦å†™æˆtooltip.cbSize = TTTOOLINFOA_V2_SIZE;
+			æˆ–è€…åœ¨exeå·¥ç¨‹ä¸­å¼ºåˆ¶æŒ‡å®šcomctl 6.0ï¼ˆåœ¨dllä¸­æŒ‡å®šæ— æ•ˆï¼‰
 			#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='X86' publicKeyToken='6595b64144ccf1df' language='*'\"")
 			
-			Ö¸¶¨#define _WIN32_WINNT 0x0501½«µ¼ÖÂ³ÌĞòÖ»ÄÜÔËĞĞÔÚxp¼°ÒÔÉÏÏµÍ³¡£
+			æŒ‡å®š#define _WIN32_WINNT 0x0501å°†å¯¼è‡´ç¨‹åºåªèƒ½è¿è¡Œåœ¨xpåŠä»¥ä¸Šç³»ç»Ÿã€‚
 		*/
 		m_toolinfo.cbSize = /*sizeof(TOOLINFO)*/ TTTOOLINFOA_V2_SIZE;
-		m_toolinfo.uFlags = 0/* | TTF_TRACK | TTF_ABSOLUTE*/; // ×¢£º¼ÓÉÏTTF_TRACK|TTF_ABSOLUTEÖ®ºó½«µ¼ÖÂÌáÊ¾ÌõÊ§È¥ÏÔÊ¾ÔÚÆÁÄ»·¶Î§Ö®ÄÚµÄ¹¦ÄÜ
+		m_toolinfo.uFlags = 0/* | TTF_TRACK | TTF_ABSOLUTE*/; // æ³¨ï¼šåŠ ä¸ŠTTF_TRACK|TTF_ABSOLUTEä¹‹åå°†å¯¼è‡´æç¤ºæ¡å¤±å»æ˜¾ç¤ºåœ¨å±å¹•èŒƒå›´ä¹‹å†…çš„åŠŸèƒ½
 		m_toolinfo.hwnd   = nullptr;
 		m_toolinfo.uId    = (unsigned int)0;
 		m_toolinfo.hinst  = nullptr;
@@ -60,14 +60,14 @@ public:
 		m_toolinfo.rect.left = m_toolinfo.rect.top = m_toolinfo.rect.bottom = m_toolinfo.rect.right = 0; 
 
 		::SendMessage(m_hToolTip, TTM_ADDTOOL, 0, (long)&m_toolinfo);
-		::SendMessage(m_hToolTip, TTM_SETMAXTIPWIDTH, 0, TOOLTIP_MAX_WIDTH);   // ±¸×¢£º¸ÃÊôĞÔÈç¹û²»ºÍ6.0¿Ø¼şÒ»ÆğÊ¹ÓÃµÄ»°£¬ÔÚÅöµ½Ò»¸öºÜ³¤µÄµ¥´ÊÊ±£¬½«ÎŞÊÓmax width£¬½öÏÔÊ¾Ò»ĞĞ(½öwin7ÏÂÓĞĞ§)¡£
+		::SendMessage(m_hToolTip, TTM_SETMAXTIPWIDTH, 0, TOOLTIP_MAX_WIDTH);   // å¤‡æ³¨ï¼šè¯¥å±æ€§å¦‚æœä¸å’Œ6.0æ§ä»¶ä¸€èµ·ä½¿ç”¨çš„è¯ï¼Œåœ¨ç¢°åˆ°ä¸€ä¸ªå¾ˆé•¿çš„å•è¯æ—¶ï¼Œå°†æ— è§†max widthï¼Œä»…æ˜¾ç¤ºä¸€è¡Œ(ä»…win7ä¸‹æœ‰æ•ˆ)ã€‚
 
-		// Deleted. ¸ÃÉèÖÃ½ö¶ÔÄ¬ÈÏÇé¿öÏÂµÄËÎÌå×ÖÌåÓĞĞ§£¬ÆäËü×ÖÌåÃ»ÓĞ×÷ÓÃ¡£
-		// Òò´Ë¾ö¶¨×Ô¼ºÖØĞÂÊµÏÖÒ»¸öÌáÊ¾Ìõ¡£°ÚÍÑÏµÍ³µÄÏŞÖÆ£¡
+		// Deleted. è¯¥è®¾ç½®ä»…å¯¹é»˜è®¤æƒ…å†µä¸‹çš„å®‹ä½“å­—ä½“æœ‰æ•ˆï¼Œå…¶å®ƒå­—ä½“æ²¡æœ‰ä½œç”¨ã€‚
+		// å› æ­¤å†³å®šè‡ªå·±é‡æ–°å®ç°ä¸€ä¸ªæç¤ºæ¡ã€‚æ‘†è„±ç³»ç»Ÿçš„é™åˆ¶ï¼
 
-		// ½â¾ö·Ç6.0¿Ø¼şÊ±£¬ÌáÊ¾ÌõÄÚÈİ²»¾ÓÖĞµÄÎÊÌâ¡££¨²âÊÔ·¢ÏÖÔÚ6.0¿Ø¼şÏÂÎŞÊÓmarginµÄÖµ£¬µ«ÕıºÃ6.0¾ÍÊÇ¾ÓÖĞµÄ£¬¿ÉÒÔ²»¹Ü£©
-		// Ó¢ÎÄ²Ù×÷ÏµÍ³ÏÂÃæÊÇOKµÄ£¬²»ÓÃĞŞ¸Ä¡£
-		// win7ºÍxpÏÂÃæĞèÒªµ÷ÕûµÄ²ÎÊı²»Ò»ÖÂ¡£
+		// è§£å†³é6.0æ§ä»¶æ—¶ï¼Œæç¤ºæ¡å†…å®¹ä¸å±…ä¸­çš„é—®é¢˜ã€‚ï¼ˆæµ‹è¯•å‘ç°åœ¨6.0æ§ä»¶ä¸‹æ— è§†marginçš„å€¼ï¼Œä½†æ­£å¥½6.0å°±æ˜¯å±…ä¸­çš„ï¼Œå¯ä»¥ä¸ç®¡ï¼‰
+		// è‹±æ–‡æ“ä½œç³»ç»Ÿä¸‹é¢æ˜¯OKçš„ï¼Œä¸ç”¨ä¿®æ”¹ã€‚
+		// win7å’Œxpä¸‹é¢éœ€è¦è°ƒæ•´çš„å‚æ•°ä¸ä¸€è‡´ã€‚
 // 		if (936 == GetACP())
 // 		{
 // 			if (m_bUnderXpOs)
@@ -83,8 +83,8 @@ public:
 // 		}
 
 #if 0
-		const wchar_t* szFontFace =  /*_T("ËÎÌå");*/_T("Î¢ÈíÑÅºÚ");
-		// ÉèÖÃ×ÖÌåÎª Î¢ÈíÑÅºÚ
+		const wchar_t* szFontFace =  /*_T("å®‹ä½“");*/_T("å¾®è½¯é›…é»‘");
+		// è®¾ç½®å­—ä½“ä¸º å¾®è½¯é›…é»‘
 		if ( util::IsFontExist(szFontFace) )
 		{
 			m_hFont = ::CreateFont(
@@ -167,7 +167,7 @@ public:
 		    ::SendMessage(this->m_hToolTip, TTM_TRACKACTIVATE, (long)FALSE, (long)&this->m_toolinfo );
         }
 
-		// TODO: ÇåÀíÆäËüĞÅÏ¢£¬Èç±êÌâ¡¢Í¼±êµÈ£¬±ÜÃâÏÂ´Îµ¯³öÀ´Ê±£¬»¹ÏÔÊ¾±¾´ÎµÄÊı¾İ
+		// TODO: æ¸…ç†å…¶å®ƒä¿¡æ¯ï¼Œå¦‚æ ‡é¢˜ã€å›¾æ ‡ç­‰ï¼Œé¿å…ä¸‹æ¬¡å¼¹å‡ºæ¥æ—¶ï¼Œè¿˜æ˜¾ç¤ºæœ¬æ¬¡çš„æ•°æ®
 		return true;
 	}
 
@@ -178,17 +178,17 @@ public:
 	
 	virtual bool  SetUIApplication(IApplication* p)
 	{
-        // ¾¡Á¿ÉÙÎ¬»¤UIAppµÄÒıÓÃ¼ÆÊı
+        // å°½é‡å°‘ç»´æŠ¤UIAppçš„å¼•ç”¨è®¡æ•°
 		m_pUIApp = p;
 		return true;
 	}
 protected:
 	//
-	// ½â¾ö tooltipÒ»¸ö³¤µ¥´ÊÔÚxpÏÂÃæ²»»á°´ÕÕmax width×Ô¶¯·ÖĞĞµÄbug
+	// è§£å†³ tooltipä¸€ä¸ªé•¿å•è¯åœ¨xpä¸‹é¢ä¸ä¼šæŒ‰ç…§max widthè‡ªåŠ¨åˆ†è¡Œçš„bug
 	//
 	void    FixStringWordBreakUnderXP(const std::string& src, std::string& strOut)
 	{
-		// Ö»ÔÚXPÏÂ´¦Àí¸Ã×Ö·û´®
+		// åªåœ¨XPä¸‹å¤„ç†è¯¥å­—ç¬¦ä¸²
 		if (m_pUIApp && false == m_pUIApp->IsUnderXpOS())
 		{
 			strOut = src;
@@ -202,7 +202,7 @@ protected:
 
 		int   nStart  = 0;
 		int   nLength = (int)src.length(); 
-		Rect  rcLimit = {0,0, TOOLTIP_MAX_WIDTH, 1};  // ½«¸ß¶ÈÉèÖÃÎª1£¬±£Ö¤DrawTextExÖ»¼ÆËãµÚÒ»ĞĞÎÄ±¾µÄ×Ö·ûÊı
+		Rect  rcLimit = {0,0, TOOLTIP_MAX_WIDTH, 1};  // å°†é«˜åº¦è®¾ç½®ä¸º1ï¼Œä¿è¯DrawTextExåªè®¡ç®—ç¬¬ä¸€è¡Œæ–‡æœ¬çš„å­—ç¬¦æ•°
 		unsigned int  nDrawTextFlag = DT_EDITCONTROL|DT_WORDBREAK/*|DT_NOFULLWIDTHCHARBREAK*/;
 
 		DRAWTEXTPARAMS  param;
@@ -211,14 +211,14 @@ protected:
 
 		while (nStart < nLength)
 		{
-			// ¼ÆËãÒ»ĞĞÎÄ±¾ÖĞµÄ×Ö·ûÊı
+			// è®¡ç®—ä¸€è¡Œæ–‡æœ¬ä¸­çš„å­—ç¬¦æ•°
 			param.uiLengthDrawn = 0;
 			DrawTextEx(hDC, (wchar_t*)(szText+nStart), nLength-nStart, &rcLimit, nDrawTextFlag, &param);
 
 			strOut.append(szText+nStart, param.uiLengthDrawn);
 			nStart += param.uiLengthDrawn;
 
-			// ÊÖ¶¯Ìí¼Ó»»ĞĞ·û
+			// æ‰‹åŠ¨æ·»åŠ æ¢è¡Œç¬¦
 			wchar_t cLast = szText[nStart-1];
 			if (cLast != _T('\r') && cLast != _T('\n') && nStart < nLength)
 			{
@@ -233,7 +233,7 @@ protected:
 protected:
 	HWND       m_hToolTip;
 	TOOLINFO   m_toolinfo;
-	bool       m_bUnderXpOs;  // ÊÇ·ñÊÇXPÏµÍ³¡£Çø±ğÓÚWIN7£¬Á½Õß¶ÔÓÚtooltipµÄÏÔÊ¾ÓĞĞ©Çø±ğ
+	bool       m_bUnderXpOs;  // æ˜¯å¦æ˜¯XPç³»ç»Ÿã€‚åŒºåˆ«äºWIN7ï¼Œä¸¤è€…å¯¹äºtooltipçš„æ˜¾ç¤ºæœ‰äº›åŒºåˆ«
 	IApplication*  m_pUIApp;
 };
 #pragma endregion
@@ -328,7 +328,7 @@ void ToolTipManager::OnTimeout(long lId, long wParam, long lParam)
 		return;
 	}
 
-    // Ö±½ÓÄ£Ê½
+    // ç›´æ¥æ¨¡å¼
     if (!m_tooltipItem.strContent.empty())
     {
         UIASSERT(nullptr == m_tooltipItem.pNotifyObj);
@@ -342,7 +342,7 @@ void ToolTipManager::OnTimeout(long lId, long wParam, long lParam)
         return;
     }
 
-    // ÓĞ¿ÉÄÜ¶ÔÏó±»É¾³ıÁË
+    // æœ‰å¯èƒ½å¯¹è±¡è¢«åˆ é™¤äº†
     if (!m_tooltipItem.pNotifyObj)
         return;
 

@@ -17,8 +17,8 @@ Color ColorAttribute::parse_color(const char* text) {
     return Color::transparent();
   }
 
-  int length = strlen(text);
-  int last_index = length - 1;
+  size_t length = strlen(text);
+  size_t last_index = length - 1;
 
   // #
   if (text[0] == '#') {
@@ -82,11 +82,11 @@ void ColorAttribute::Set(const char *szColorId) {
 
       *m_bind_value = parse_color(szColorId);
 
-#ifdef EDITOR_MODE
-    if (m_ppBindValue) {
-      m_bind_value->SetResId(szColorId);
-    }
-#endif
+// #ifdef EDITOR_MODE
+//     if (m_ppBindValue) {
+//       m_bind_value->SetResId(szColorId);
+//     }
+// #endif
   }
 }
 
@@ -110,11 +110,11 @@ const char *ColorAttribute::Get() {
 //     return szBuffer;
 //   } else 
 if (m_bind_value) {
-#ifdef EDITOR_MODE
-    const char *szText = m_bind_value->GetResId();
-    if (szText)
-      return szText;
-#endif
+// #ifdef EDITOR_MODE
+//     const char *szText = m_bind_value->GetResId();
+//     if (szText)
+//       return szText;
+// #endif
 
     char *szBuffer = GetTempBuffer();
     m_bind_value->ToWebString(szBuffer);

@@ -12,7 +12,7 @@ namespace ui {
 class SoftwareCompositor : public Compositor {
 public:
   virtual Layer *virtualCreateLayer() override;
-#if defined(OS_WIN)
+#if 0 // defined(OS_WIN)
   virtual void virtualBindHWND(HWND) override {};
 #endif
   virtual void virtualCommit(const RectRegion &arrDirtyInWindow) override;
