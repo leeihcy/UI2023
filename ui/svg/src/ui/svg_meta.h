@@ -7,7 +7,7 @@
 
 namespace ui {
 
-class SvgMeta : public MetaImpl<ISvg> {
+struct SvgMeta : public MetaImpl<ISvg> {
 public:
   static SvgMeta& Get() {
     static SvgMeta s;

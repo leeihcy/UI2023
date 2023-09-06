@@ -77,7 +77,7 @@ void  Matrix33::CopyTo(LPMATRIX33 p)
 	memcpy(p, m, sizeof(MATRIX33));
 }
 
-// ĞĞÁĞÊ½
+// è¡Œåˆ—å¼
 //      | a1,  b1,  c1 |
 //      | a2,  b2,  c2 |
 //      | a3,  b3,  c3 |
@@ -177,8 +177,8 @@ Matrix33& Matrix33::Rotate(float fDeg)
 {
 	// angle is in degree. Switch to radian
 	float fRad = deg2rad(fDeg);
-	float cosAngle = cos(fRad);
-	float sinAngle = sin(fRad);
+	float cosAngle = (float)cos(fRad);
+	float sinAngle = (float)sin(fRad);
 	Matrix33 rot(cosAngle, sinAngle, -sinAngle, cosAngle, 0, 0);
 
 	Multiply(rot);
@@ -206,21 +206,21 @@ void  Matrix33::MapPoint(Point* pt, Point* ptTransform)
 	ptTransform->y = _round(fy);
 }
 
-// [×¢]unmap²ÉÓÃµÄÁíÒ»ÖÖ·½·¨£¬ÏÈ½«matrixÄæ×ª£¬ÓÃÄæ¾ØÕó½øĞĞÓ³Éä
+// [æ³¨]unmapé‡‡ç”¨çš„å¦ä¸€ç§æ–¹æ³•ï¼Œå…ˆå°†matrixé€†è½¬ï¼Œç”¨é€†çŸ©é˜µè¿›è¡Œæ˜ å°„
 //
 // m11*x + m21*y = x' - m31;
 // m12*x + m22*y = y' - m32
 //
 // --> 
-//  Éè b1 = x' - m31, b2 = y' - m32;
-//  ½âµÃ
+//  è®¾ b1 = x' - m31, b2 = y' - m32;
+//  è§£å¾—
 //          b1*m22 - b2*m21
 //     x = -----------------
 //         m11*m22 - m12*m21
 //  
 void  Matrix33::UnMapPoint(Point* ptTransform, Point* pt)
 {
-	// Ê¹ÓÃĞĞÁĞÊ½½â¶şÔªÒ»´Î·½³Ì
+	// ä½¿ç”¨è¡Œåˆ—å¼è§£äºŒå…ƒä¸€æ¬¡æ–¹ç¨‹
 	float b1 = (float)ptTransform->x - m31;
 	float b2 = (float)ptTransform->y - m32;
 
@@ -436,13 +436,13 @@ Matrix44&  Matrix44::Perspective(float d)
 		return *this;
 
 	Matrix44  mat;
-	mat.m[2][3] = 1/d;  // ÕâÀïÃ»ÓĞÓÃ-1/d¡£ÔÚÕâÀïÓëcss3²»Í¬£¬ÈÏÎªÎªzÖµÔ½´ó£¬¶ÔÏóÔ½ÍùÆÁÄ»ÄÚ²¿£¬¿´ÆğÀ´Ó¦¸ÃÔ½Ğ¡
+	mat.m[2][3] = 1/d;  // è¿™é‡Œæ²¡æœ‰ç”¨-1/dã€‚åœ¨è¿™é‡Œä¸css3ä¸åŒï¼Œè®¤ä¸ºä¸ºzå€¼è¶Šå¤§ï¼Œå¯¹è±¡è¶Šå¾€å±å¹•å†…éƒ¨ï¼Œçœ‹èµ·æ¥åº”è¯¥è¶Šå°
 	Multiply(mat);
 
 	return *this;
 }
 
-// ×¢£º¾ØÕó³Ë·¨²»Âú×ã½»»»ÂÉ
+// æ³¨ï¼šçŸ©é˜µä¹˜æ³•ä¸æ»¡è¶³äº¤æ¢å¾‹
 Matrix44&  Matrix44::Multiply(MATRIX44& matrix)
 {
 	Matrix44 tmp;
@@ -513,11 +513,11 @@ Matrix44&  Matrix44::Scale(float sx, float sy, float sz)
 	return *this;
 }
 
-// ÈÆÏòÁ¿[x,y,z]Ğı×ªangle¶È
+// ç»•å‘é‡[x,y,z]æ—‹è½¬angleåº¦
 Matrix44&  Matrix44::Rotate(float x, float y, float z, float angle)
 {
 	// Normalize the axis of rotation
-	float length = sqrt(x * x + y * y + z * z);
+	float length = (float)sqrt(x * x + y * y + z * z);
 	if (length == 0) 
 	{
 		// A direction vector that cannot be normalized, such as [0, 0, 0], will cause the rotation to not be applied.
@@ -533,8 +533,8 @@ Matrix44&  Matrix44::Rotate(float x, float y, float z, float angle)
 	// Angles are in degrees. Switch to radians.
 	angle = deg2rad(angle);
 
-	float sinTheta = sin(angle);
-	float cosTheta = cos(angle);
+	float sinTheta = (float)sin(angle);
+	float cosTheta = (float)cos(angle);
 
 	Matrix44 mat;
 
@@ -639,8 +639,8 @@ Matrix44&  Matrix44::Rotate(float x, float y, float z)
 
 	Matrix44 mat;
 
-	float sinTheta = sin(rz);
-	float cosTheta = cos(rz);
+	float sinTheta = (float)sin(rz);
+	float cosTheta = (float)cos(rz);
 
 	mat.m[0][0] = cosTheta;
 	mat.m[0][1] = sinTheta;
@@ -657,8 +657,8 @@ Matrix44&  Matrix44::Rotate(float x, float y, float z)
 
 	Matrix44 rmat(mat);
 
-	sinTheta = sin(ry);
-	cosTheta = cos(ry);
+	sinTheta = (float)sin(ry);
+	cosTheta = (float)cos(ry);
 
 	mat.m[0][0] = cosTheta;
 	mat.m[0][1] = 0.0;
@@ -675,8 +675,8 @@ Matrix44&  Matrix44::Rotate(float x, float y, float z)
 
 	rmat.Multiply(mat);
 
-	sinTheta = sin(rx);
-	cosTheta = cos(rx);
+	sinTheta = (float)sin(rx);
+	cosTheta = (float)cos(rx);
 
 	mat.m[0][0] = 1.0;
 	mat.m[0][1] = 0.0;
@@ -724,11 +724,11 @@ void  Matrix44::MapPoint(Point* pt, Point* ptTransform)
 // d = -dot (Pn', R0) / dot (Pn', Rd)
 //
 //
-// ½«ÆÁÄ»ÉÏµÄµã(z=0)Ó³Éäµ½¸Ã¾ØÕó±ä»»ºóµÄÒ»¸öÆ½ÃæÉÏ£¬ÓÃÓÚÊó±êhittest
+// å°†å±å¹•ä¸Šçš„ç‚¹(z=0)æ˜ å°„åˆ°è¯¥çŸ©é˜µå˜æ¢åçš„ä¸€ä¸ªå¹³é¢ä¸Šï¼Œç”¨äºé¼ æ ‡hittest
 //
 bool  Matrix44::ProjectPoint(Point* pt, Point* pOut)
 {
-	if (m33 == 0) // 90¶ÈµÄÆ½Ãæ£¬²»¿É¼û¡£
+	if (m33 == 0) // 90åº¦çš„å¹³é¢ï¼Œä¸å¯è§ã€‚
 	{
 		return false;
 	}
@@ -848,7 +848,7 @@ void  Matrix44::MapRect2Quad(Rect* prc, QUAD* pQuad)
 }
 
 //
-// ¼ÆËãÓ¦ÓÃÁË¸ÃmatrixÖ®ºó£¬¶ÔÏóµÄ±³ÃæÊÇ·ñ³¯×ÅÏà»ú£¨¿É¼ûÁË£©¡£
+// è®¡ç®—åº”ç”¨äº†è¯¥matrixä¹‹åï¼Œå¯¹è±¡çš„èƒŒé¢æ˜¯å¦æœç€ç›¸æœºï¼ˆå¯è§äº†ï¼‰ã€‚
 // https://code.google.com/p/chromium/codesearch#chromium/src/ui/gfx/transform.cc&q=gfx::Transform::IsBackFaceVisible&sq=package:chromium&type=cs&l=219
 // 
 bool  Matrix44::IsBackfaceVisible()

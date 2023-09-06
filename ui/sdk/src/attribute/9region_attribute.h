@@ -1,5 +1,6 @@
 #pragma once
 #include "attributebase.h"
+#include "sdk/include/util/struct.h"
 
 namespace ui {
 

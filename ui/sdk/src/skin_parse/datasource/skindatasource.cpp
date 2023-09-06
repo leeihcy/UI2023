@@ -3,6 +3,7 @@
 #include "File/filedatasource.h"
 // #include "Zip/bytebufferreader.h"
 #include "File/filebufferreader.h"
+#include "sdk/include/macro/helper.h"
 #if 0 // defined(OS_WIN)
 #include <gdiplus.h>
 #endif

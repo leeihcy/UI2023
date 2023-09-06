@@ -1,22 +1,22 @@
 #pragma once
 
 //
-// Èý´Î·½±´Èü¶ûÇúÏß£¬ÓÃÓÚÊµÏÖÆ½»¬¶¯»­Ð§¹û £¨»º¶¯£©
+// ä¸‰æ¬¡æ–¹è´èµ›å°”æ›²çº¿ï¼Œç”¨äºŽå®žçŽ°å¹³æ»‘åŠ¨ç”»æ•ˆæžœ ï¼ˆç¼“åŠ¨ï¼‰
 // http://www.w3.org/TR/css3-transitions/#transition-timing-function-property
 // http://easings.net/zh-cn
 // http://yiminghe.iteye.com/blog/1762706
 //
 //
-//  B(t) = P0*(1-t)^3 + 3*P1*t(1-t)^2 + 3*P2*t^2*(1-t) + P3*t^3 tÊôÓÚ[0,1]Çø¼ä
-// css3 ËùÓÃµÄ cubic bezier ÒÑ¾­ÏÞ¶¨ËÀ p0 = (0,0) , p3= (1,1)
+//  B(t) = P0*(1-t)^3 + 3*P1*t(1-t)^2 + 3*P2*t^2*(1-t) + P3*t^3 tå±žäºŽ[0,1]åŒºé—´
+// css3 æ‰€ç”¨çš„ cubic bezier å·²ç»é™å®šæ­» p0 = (0,0) , p3= (1,1)
 //
-// TODO: ÒÉÎÊ
+// TODO: ç–‘é—®
 //
-//  1. webkitµÄÕâ¸öÊµÏÖÈÔÈ»Ã»ÓÐ¿´Ã÷°×ÊÇÔõÃ´»ØÊÂ
-//     ÊäÈëÒ»¸öt£¬ÄÇ¼ÆËãµ±ÖÐËùÊ¹ÓÃµÄx,y·Ö±ð´ú±íÊ²Ã´ÒâË¼£¿²»Ó¦¸Ã¾ÍÖ»ÊÇ from-to Ëæ×Å t ¶ø±ä»¯Âð¡£Õâ¸ö¶þÎ¬×ø±êµ½µ×ÊÇÊ²Ã´ÒâË¼£¿
+//  1. webkitçš„è¿™ä¸ªå®žçŽ°ä»ç„¶æ²¡æœ‰çœ‹æ˜Žç™½æ˜¯æ€Žä¹ˆå›žäº‹
+//     è¾“å…¥ä¸€ä¸ªtï¼Œé‚£è®¡ç®—å½“ä¸­æ‰€ä½¿ç”¨çš„x,yåˆ†åˆ«ä»£è¡¨ä»€ä¹ˆæ„æ€ï¼Ÿä¸åº”è¯¥å°±åªæ˜¯ from-to éšç€ t è€Œå˜åŒ–å—ã€‚è¿™ä¸ªäºŒç»´åæ ‡åˆ°åº•æ˜¯ä»€ä¹ˆæ„æ€ï¼Ÿ
 //
-//  2. Çóµ¼ + µü´ú·¨ + ¶þ·Ö·¨ µÄÓ¦ÓÃ
-//     Çóµ¼µÄÒâË¼ÊÇÃ÷°×ÁË£¬µ«×÷ÓÃÊÇÊ²Ã´£¿ÆäËüÁ½¸öËã·¨Ò²Ã»¿´Ã÷°×
+//  2. æ±‚å¯¼ + è¿­ä»£æ³• + äºŒåˆ†æ³• çš„åº”ç”¨
+//     æ±‚å¯¼çš„æ„æ€æ˜¯æ˜Žç™½äº†ï¼Œä½†ä½œç”¨æ˜¯ä»€ä¹ˆï¼Ÿå…¶å®ƒä¸¤ä¸ªç®—æ³•ä¹Ÿæ²¡çœ‹æ˜Žç™½
 //
 
 
@@ -217,7 +217,7 @@ namespace WebCore
 #endif
 
 
-// ²âÊÔ´úÂë
+// æµ‹è¯•ä»£ç 
 #if 0
 double dFrom = 0.0;
 double dTo = 100.0;

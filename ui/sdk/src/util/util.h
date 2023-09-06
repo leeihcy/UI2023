@@ -16,7 +16,13 @@ bool TranslateRECT(const char *szRect, Rect *pRect, char szSep = ',');
 bool TranslateImage9Region(const char *str, C9Region *p9Region,
                            char szSep = ',');
 
+// TODO add Path class
+bool Path_IsDirectory(const char *path);
+bool Path_FileExists(const char *path);
+
+int wtoi(const wchar_t *text);
 }
+
 
 }
 

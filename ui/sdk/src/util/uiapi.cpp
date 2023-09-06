@@ -8,9 +8,9 @@
 #include "include/util/util.h"
 // #include "..\Layer\layer.h"
 
-#if defined(OS_WIN)
-#pragma comment(lib, "skia.dll.lib")
-#endif
+// #if defined(OS_WIN)
+// #pragma comment(lib, "skia.dll.lib")
+// #endif
 
 // 内部全局方法
 namespace ui {

@@ -1,5 +1,4 @@
 #include "textrender.h"
-#include "include/inc.h"
 
 #include "src/render/renderbase.h"
 
@@ -16,6 +15,7 @@
 // #include "src/Layer\windowrender.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/colorres.h"
+#include "sdk/include/util/struct.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                      //

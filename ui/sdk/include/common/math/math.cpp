@@ -34,8 +34,8 @@ namespace ui
 			float theta = (float)ang*PI / (float)180;
 
 			// insert next entry into table
-			cos_look[ang] = cos(theta);
-			sin_look[ang] = sin(theta);
+			cos_look[ang] = (float)cos(theta);
+			sin_look[ang] = (float)sin(theta);
 
 		} // end for ang
 
@@ -161,7 +161,7 @@ namespace ui
 		if (fequ(f, 720))
 			return true;
 
-		float m = f - floor(f / 360.0f) * 360.f;
+		float m = f - (float)floor(f / 360.0f) * 360.f;
 		if (m < EPSILON_E4)
 			return true;
 

@@ -1,6 +1,7 @@
 #include "include/interface/irenderbase.h"
 #include "include/inc.h"
 #include "include/interface/iuiapplication.h"
+#include "sdk/include/util/struct.h"
 #include "src/object/object.h"
 #include "src/render/render_meta.h"
 #include "src/render/renderbase.h"

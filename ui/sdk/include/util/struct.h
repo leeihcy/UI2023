@@ -1,5 +1,5 @@
-#ifndef _UI_SDK_INCLUDE_UTIL__STRUCT_H_
-#define _UI_SDK_INCLUDE_UTIL__STRUCT_H_
+#ifndef _UI_SDK_INCLUDE_UTIL_STRUCT_H_
+#define _UI_SDK_INCLUDE_UTIL_STRUCT_H_
 #include "sdk/include/interface.h"
 #include "sdk/include/macro/uidefine.h"
 #include "rect.h"
@@ -12,9 +12,9 @@ namespace ui {
 //
 struct UIAPI C9Region {
   C9Region() { Set(0); }
-  C9Region(const C9Region &o) { this->Copy(o); }
-  bool IsEqual(const C9Region &r);
-  void Copy(const C9Region &r);
+  C9Region(const struct C9Region &o) { this->Copy(o); }
+  bool IsEqual(const struct C9Region &r);
+  void Copy(const struct C9Region &r);
 
   void Set(short w);
   void Set(short wLeftRight, short wTopBottom);

@@ -1,6 +1,5 @@
 #include "uiapplication.h"
 
-#include "include/inc.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
 #include "src/private_inc.h"

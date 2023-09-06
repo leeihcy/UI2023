@@ -7,11 +7,11 @@ namespace uia
 {
 typedef float valueType;
 
-// ¶¯»­Ê±£¬¶¯»­Ëã·¨
+// åŠ¨ç”»æ—¶ï¼ŒåŠ¨ç”»ç®—æ³•
 
 // ??
-// 1. ÈçºÎÅÐ¶ÏÔË¶¯½áÊø
-//    Èç¹ûÖ¸¶¨ÁËÊ±¼ä£¬¾Í°´Ê±¼ä£¬·ñÔò°´Â·³Ì
+// 1. å¦‚ä½•åˆ¤æ–­è¿åŠ¨ç»“æŸ
+//    å¦‚æžœæŒ‡å®šäº†æ—¶é—´ï¼Œå°±æŒ‰æ—¶é—´ï¼Œå¦åˆ™æŒ‰è·¯ç¨‹
 
 
 
@@ -183,7 +183,7 @@ public:
 // Vt^2 - Vo^2 = 2as
 // s = Vot + 1/2at^2
 // a = (2s - 2Vot)/t^2
-// ÔÈ¼ÓËÙ»òÔÈ¼õËÙÔË¶¯
+// åŒ€åŠ é€Ÿæˆ–åŒ€å‡é€Ÿè¿åŠ¨
 class AccelerateMove : public IMoveAlgorithm
 {
 public:
@@ -282,7 +282,7 @@ public:
     EasingMove(EaseType type)
     {
         m_from = m_to = m_s = 0;
-        m_t = 300; // Ä¬ÈÏ¶¯»­Ê±³¤
+        m_t = 300; // é»˜è®¤åŠ¨ç”»æ—¶é•¿
         memset(&m_customBezierArgs, 0, sizeof(m_customBezierArgs));
 
         if (type >= ease_end)
@@ -300,7 +300,7 @@ public:
         m_to = to;
         m_t = t;
 
-        if (m_t == 0) // ±ÜÃâ³ý0
+        if (m_t == 0) // é¿å…é™¤0
         {
             m_t = 1;
         }
@@ -326,7 +326,7 @@ public:
     {
         double dsPercent = 0;
 
-        // ¼ÆËãÒÑ×ßµÄÂ·³Ì±ÈÀý
+        // è®¡ç®—å·²èµ°çš„è·¯ç¨‹æ¯”ä¾‹
         if (m_easetype == linear)
         {
             return fTimePercent;
@@ -366,11 +366,11 @@ public:
             return true;
         }
 
-        double dtPercent = (double)t/(double)m_t;  // Ê±¼ä±ÈÀý
+        double dtPercent = (double)t/(double)m_t;  // æ—¶é—´æ¯”ä¾‹
         double dsPercent = 0;
 
 
-        // ¼ÆËãÒÑ×ßµÄÂ·³Ì±ÈÀý
+        // è®¡ç®—å·²èµ°çš„è·¯ç¨‹æ¯”ä¾‹
         if (m_easetype > ease_bezier_support)
         {
             dsPercent = Easing(m_easetype, dtPercent);

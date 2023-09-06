@@ -97,7 +97,7 @@ void LengthAttribute::Set(const char *szValue) {
   if (!szValue) {
     return;
   }
-  int length = strlen(szValue);
+  int length = (int)strlen(szValue);
   if (length < 1) {
     return;
   }

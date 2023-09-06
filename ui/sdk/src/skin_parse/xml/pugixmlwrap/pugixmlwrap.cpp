@@ -1,7 +1,7 @@
 #include "pugixmlwrap.h"
 #include "include/inc.h"
 #include "include/interface/imapattr.h"
-#include "include/util/util.h"
+#include "src/util/util.h"
 
 namespace ui {
 PugiXmlElement::PugiXmlElement(pugi::xml_node &node, UIDocument *pDoc)
@@ -501,7 +501,7 @@ bool PugiXmlDocument::LoadFile(const char *szFile) {
   if (!szFile)
     return false;
 
-  if (!util::PathFileExists(szFile))
+  if (!util::Path_FileExists(szFile))
     return false;
 
   m_strPath.clear();

@@ -1,6 +1,6 @@
 shared_library("uisdk") {
     cflags = []
-    if (is_debug) {
+    if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g"]
     }
 
@@ -16,15 +16,11 @@ shared_library("uisdk") {
   
     lib_dirs = ["$root_build_dir/"]
 
+    # skia
     # 将依赖库拷贝到out/debug目录下
-    if (is_win) {
-      libs = []
-    }
-    else {
-      libs = ["skia"]
-    }
-    copy("lib_deps") {
-      if (is_mac) {
+    copy("skia") {
+      print("deps skia")
+      if (is_mac) { 
         sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
       } else if (is_win) {
         sources = [
@@ -34,7 +30,21 @@ shared_library("uisdk") {
       }
       outputs = ["$root_build_dir/{{source_file_part}}"]
     }
-
+    if (is_win) {
+      libs = []
+      ldflags = [
+        "skia.dll.lib",
+        "-libpath:$root_build_dir/",
+       ]
+    }
+    else if (is_mac || is_linux) {
+       # 直接在当前目录查找libskia.dylib
+      ldflags = [
+        "-rpath", ".",
+      ]
+      libs = ["skia"]
+    }
+    
    
     sources = [
         # "//ui/3rd/zip/unzip.cpp",
@@ -142,23 +152,13 @@ shared_library("uisdk") {
         "src/util/log/log.cpp",
         "src/util/DPI/dpihelper.cpp",
         "src/util/struct.cpp",
+        "src/util/struct.h",
         "src/util/util.cpp",
         "src/util/uiapi.cpp",
         "src/util/rectregion/rectregion.cpp",
         "src/window/window.cpp",
         "src/window/iwindow.cpp",
     ]
-
-     # 直接在当前目录查找libskia.dylib
-    if (is_mac || is_linux) {
-      ldflags = [
-        "-rpath", ".",
-      ]
-    } else if (is_win) {
-       ldflags = [
-        # "-lskia"
-       ]
-    }
 
     if (is_linux) {
       cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
@@ -228,7 +228,7 @@ executable("uisdk_unittest") {
   ]
 
   cflags = []
-  if (is_debug) {
+  if (is_debug || (is_mac||is_linux)) {
     cflags = ["-g"]
   }
   include_dirs = [

@@ -1,7 +1,7 @@
 #ifndef _UI_COMPOSITOR_H_
 #define _UI_COMPOSITOR_H_
 
-// UISDK Ö»ÒÀÀµÓÚ½Ó¿Ú£¬UICompsitor¹¤³ÌÒÀÀµÓÚUISDK¹¤³Ì
+// UISDK åªä¾èµ–äºæ¥å£ï¼ŒUICompsitorå·¥ç¨‹ä¾èµ–äºUISDKå·¥ç¨‹
 #if defined(OS_WIN)
 #ifdef UICOMPOSITOR_EXPORTS
 #define UICOMPOSITOR_API __declspec(dllexport)
@@ -158,12 +158,12 @@ struct IGpuRenderLayer
 }
 
 // return:
-//     0  ´ú±í³É¹¦
-//     -1 ´ú±íÊ§°Ü
+//     0  ä»£è¡¨æˆåŠŸ
+//     -1 ä»£è¡¨å¤±è´¥
 extern "C" UICOMPOSITOR_API long  UIStartupGpuCompositor();
 
 // return:
-//     ÎŞÒâÒå
+//     æ— æ„ä¹‰
 extern "C" UICOMPOSITOR_API long  UIShutdownGpuCompositor();
 
 extern "C" UICOMPOSITOR_API 

@@ -80,7 +80,7 @@ void C9Region::DpiRestore()
 
 }
 
-void C9Region::Copy( const C9Region& r )
+void C9Region::Copy( const struct C9Region& r )
 {
 	topleft = r.topleft;
 	top = r.top;
@@ -92,7 +92,7 @@ void C9Region::Copy( const C9Region& r )
 	bottomright = r.bottomright;
 }
 
-bool C9Region::IsEqual( const C9Region& r )
+bool C9Region::IsEqual( const struct C9Region& r )
 {
 	if (0 == memcmp(this, &r, sizeof(r)))
 		return true;

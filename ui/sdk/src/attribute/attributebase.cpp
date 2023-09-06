@@ -1,5 +1,4 @@
 #include "attributebase.h"
-#include "include/inc.h"
 
 namespace ui {
 AttributeBase::AttributeBase() {

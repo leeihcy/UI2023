@@ -3,7 +3,8 @@
 // #include "src/Atl\image.h"
 #include "src/skin_parse/datasource/File/filebufferreader.h"
 #include "src/skin_parse/xml/xmlwrap.h"
-#include "src/private_inc.h"
+#include "src/util/util.h"
+#include "sdk/include/macro/helper.h"
 
 namespace ui
 {
@@ -126,7 +127,7 @@ bool FileDataSource::FileExist(const char* szPath)
 	std::string strTemp = m_strPath;
 	strTemp.append(szPath);
 
-	return ui::util::PathFileExists(strTemp.c_str()) ? true : false;
+	return ui::util::Path_FileExists(strTemp.c_str()) ? true : false;
 }
 
 // 
@@ -138,7 +139,7 @@ bool FileDataSource::FileExist(const char* szPath)
 //     if (strlen(szPath) >= MAX_PATH)
 //         return false;
 // 
-//     // 1. ֱ�Ӿ��Ǿ���·��
+//     // 1. 直接就是绝对路径
 //     if (util::IsFullPath(szPath))
 //     {
 //         if (!::PathFileExists(szPath))
@@ -150,7 +151,7 @@ bool FileDataSource::FileExist(const char* szPath)
 // 
 //     char  szFullPath[MAX_PATH] = _T("");
 // 
-//     // �����Ƥ����·��
+//     // 相对于皮肤包路径
 //     const char* szSkinDir = pSkinRes->GetPath();
 //     if (util::CalcFullPathByRelative(szSkinDir, szPath, szFullPath))
 //     {
@@ -161,7 +162,7 @@ bool FileDataSource::FileExist(const char* szPath)
 //         }
 //     }
 // 
-//     // ����������ļ�·��
+//     // 相对于配置文件路径
 //     IUIDocument*  pDoc = nullptr;
 //     pElement->GetDocument(&pDoc);
 // 

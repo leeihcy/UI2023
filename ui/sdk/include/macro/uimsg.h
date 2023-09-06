@@ -25,12 +25,12 @@
   }                                                                                   \
   bool nvProcessMessage(ui::UIMSG *pMsg, int nMsgMapID, bool bDoHook) {               \
     /*取出wParam,lParam，以便兼容Window消息处理中的wParam,lParam参数*/ \
-    long wParam = pMsg->wParam;                                                       \
-    long lParam = pMsg->lParam;                                                       \
+    llong wParam = pMsg->wParam;                                                       \
+    llong lParam = pMsg->lParam;                                                       \
     unsigned int uMsg = pMsg->message;                                                \
     unsigned int code = pMsg->nCode;                                                  \
     ui::IMessage *pMsgFrom = pMsg->pMsgFrom;                                          \
-    long &lResult = pMsg->lRet; /* 兼容wtl */                                       \
+    llong &lResult = pMsg->lRet; /* 兼容wtl */                                       \
                                                                                       \
     (code); /*未引用变量 C4189*/                                                 \
     (pMsgFrom);                                                                       \

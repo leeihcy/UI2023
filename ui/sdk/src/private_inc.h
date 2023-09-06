@@ -1,8 +1,8 @@
-#pragma once
+#ifndef _UI_SDK_SRC_PRIVATE_INC_H_
+#define _UI_SDK_SRC_PRIVATE_INC_H_
 
 // 模块内部公共头文件
 
-#include "include/util/struct.h"
 #include "include/util/color.h"
 #include "include/util/util.h"
 #include "include/macro/xmldefine.h"
@@ -47,8 +47,7 @@ typedef std::map<std::string, std::string>  ATTRMAP;
 // 内部api
 class Message;
 void UI_SplitW(const std::wstring& str, wchar_t szSep, std::vector<std::wstring>& vRet);
-void UI_Split(const std::string &str, wchar_t szSep,
-              std::vector<std::string> &vRet);
+void UI_Split(const std::string &str, char szSep, std::vector<std::string> &vRet);
 struct IRenderFont;
 void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
 char*  GetTempBuffer(int nMaxSize = 255);
@@ -65,3 +64,5 @@ struct IMKMgr : public IRootInterface
 };
 
 }
+
+#endif

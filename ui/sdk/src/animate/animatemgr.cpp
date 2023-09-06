@@ -1,4 +1,3 @@
-#include "include/inc.h"
 #include "animatemgr.h"
 #include "storyboard.h"
 #include "src/application/uiapplication.h"

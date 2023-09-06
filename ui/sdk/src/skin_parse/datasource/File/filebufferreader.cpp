@@ -1,4 +1,5 @@
 #include "filebufferreader.h"
+#include "sdk/include/macro/helper.h"
 
 FileBufferReader::FileBufferReader()
 {

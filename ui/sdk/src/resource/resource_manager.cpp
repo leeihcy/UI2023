@@ -1,6 +1,6 @@
 #include "resource_manager.h"
 #include "include/interface/iresbundle.h"
-
+#include "src/util/util.h"
 // #include "interface\iuires.h"
 #include "res_bundle.h"
 // #include "include/interface/iuiinterface.h"
@@ -9,6 +9,7 @@
 // #include "..\SkinParse\datasource\skindatasource.h"
 
 namespace ui {
+
 
 ResourceManager::ResourceManager(Application &a)
     : m_root_bundle(*this), m_pUIApplication(&a) {
@@ -285,7 +286,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
   SKIN_PACKET_TYPE eSkinPackageType = SKIN_PACKET_TYPE_DIR;
 
   std::string strPath(szPath);
-  if (ui::util::PathIsDirectory(szPath)) {
+  if (util::Path_IsDirectory(szPath)) { 
     // 从路径中获取皮肤名。
     char szDir[MAX_PATH] = {0};
     strcpy(szDir, szPath);
@@ -315,7 +316,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
     // 如果没有带后缀名，尝试一下补个后缀
     if (!szExt[0]) {
       strPath.append("." XML_SKIN_PACKET_EXT);
-      if (!ui::util::PathFileExists(strPath.c_str())) {
+      if (!util::Path_FileExists(strPath.c_str())) {
         UI_LOG_ERROR(TEXT("Skin File not exist: %s"), strPath.c_str());
         return nullptr;
       }

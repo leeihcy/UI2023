@@ -43,19 +43,19 @@ void Object::onSerialize(SerializeParam *pData) {
     AttributeSerializer s(pData, "Object");
     s.AddString(XML_ID, m_strId)->AsData();
 
-#ifdef EDITOR_MODE
-    s.AddString(
-         XML_STYLECLASS,
-         [this](const char *t) {
-           if (t) {
-             m_strStyle = t;
-           } else {
-             m_strStyle.clear();
-           }
-         },
-         [this]() -> const char * { return m_strStyle.c_str(); })
-        ->ReloadOnChanged();
-#endif
+// #ifdef EDITOR_MODE
+//     s.AddString(
+//          XML_STYLECLASS,
+//          [this](const char *t) {
+//            if (t) {
+//              m_strStyle = t;
+//            } else {
+//              m_strStyle.clear();
+//            }
+//          },
+//          [this]() -> const char * { return m_strStyle.c_str(); })
+//         ->ReloadOnChanged();
+// #endif
 
     // styelclass被修改时，应该重新解析所有属性
     // s.AddString(XML_STYLECLASS, m_strStyleClass)->ReloadOnChanged();

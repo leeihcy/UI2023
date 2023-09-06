@@ -100,11 +100,11 @@ struct MSG {
 #if 0 // defined(OS_WIN)
   HWND hWnd;
 #else
-  long hWnd;
+  llong hWnd;
 #endif
   unsigned int message;
-  long wParam;
-  long lParam;
+  llong wParam;
+  llong lParam;
 };
 
 
@@ -115,7 +115,7 @@ struct UIMSG : public MSG {
   IMessage *pMsgFrom; // 消息发送者
   IMessage *pMsgTo;   // 消息接受者
   unsigned int nCode;         // 针对 WM_COMMAND,WM_NOTIFY
-  long lRet;          // 消息处理结束后的返回值
+  llong lRet;          // 消息处理结束后的返回值
   bool bHandled;      // 该消息是否已被处理过
 };
 

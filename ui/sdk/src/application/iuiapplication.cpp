@@ -61,7 +61,7 @@ IResource*  IApplication::LoadResource(const char* szSkinResPath)
 	return nullptr;
 }
 
-IResource*  IApplication::LoadResource(llong hInstance, llong resId)
+IResource*  IApplication::LoadResource(llong hInstance, int resId)
 {
 	Resource* p = m_pImpl->GetResourceManager().LoadResource(hInstance, resId); 
 	if (p)

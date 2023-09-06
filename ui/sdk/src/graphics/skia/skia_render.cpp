@@ -7,10 +7,10 @@
 namespace ui {
 
 void toSkRect(Rect &rc, SkRect *skrect) {
-  skrect->fLeft = rc.left;
-  skrect->fTop = rc.top;
-  skrect->fRight = rc.right;
-  skrect->fBottom = rc.bottom;
+  skrect->fLeft = (SkScalar)rc.left;
+  skrect->fTop = (SkScalar)rc.top;
+  skrect->fRight = (SkScalar)rc.right;
+  skrect->fBottom = (SkScalar)rc.bottom;
 }
 
 SkiaRenderTarget::SkiaRenderTarget(bool bNeedAlphaChannel) {
@@ -125,14 +125,14 @@ void SkiaRenderTarget::SetOrigin(int x, int y) {
   m_ptOffset.y = y;
 
   SkCanvas *canvas = m_sksurface->getCanvas();
-  canvas->translate(offsetx, offsety);
+  canvas->translate((SkScalar)offsetx, (SkScalar)offsety);
 }
 void SkiaRenderTarget::OffsetOrigin(int x, int y) {
   m_ptOffset.x += x;
   m_ptOffset.y += y;
 
   SkCanvas *canvas = m_sksurface->getCanvas();
-  canvas->translate(x, y);
+  canvas->translate((SkScalar)x, (SkScalar)y);
 }
 void SkiaRenderTarget::GetOrigin(int *px, int *py) {
   if (px)
@@ -210,10 +210,10 @@ void SkiaRenderTarget::DrawRect(Rect *lprc, ui::Color *pColor) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   SkRect skrect;
-  skrect.fLeft = lprc->left;
-  skrect.fTop = lprc->top;
-  skrect.fRight = lprc->right;
-  skrect.fBottom = lprc->bottom;
+  skrect.fLeft = (SkScalar)lprc->left;
+  skrect.fTop = (SkScalar)lprc->top;
+  skrect.fRight = (SkScalar)lprc->right;
+  skrect.fBottom = (SkScalar)lprc->bottom;
 
   SkPaint paint;
   paint.setColor(SkColorSetARGB(pColor->a, pColor->r, pColor->g, pColor->b));

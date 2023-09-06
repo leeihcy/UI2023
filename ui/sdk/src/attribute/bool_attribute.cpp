@@ -1,6 +1,5 @@
 #include "bool_attribute.h"
 #include "attribute.h"
-#include "include/inc.h"
 
 namespace ui {
 AttributeBase *CreateBoolAttribute() { return new BoolAttribute(); }

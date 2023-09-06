@@ -1,8 +1,7 @@
 #ifndef _UI_ISKINDATASOURCE_H_
 #define _UI_ISKINDATASOURCE_H_
 #include <ios>
-
-#include "sdk/include/inc.h"
+#include "sdk/include/interface.h"
 
 namespace Gdiplus {
 class Bitmap;

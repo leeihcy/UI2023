@@ -1,4 +1,4 @@
-#include "util.h"
+// #include "util.h"
 #include "include/util/struct.h"
 #include "include/util/util.h"
 #include "include/macro/helper.h"
@@ -190,7 +190,7 @@ void UnicodeDecode(const wchar_t *szText, wchar_t *szDecode) {
   }
 }
 
-Color TranslateRGB(const char *szCol, char szSep) {
+Color TranslateRGB(const char *szCol, char szSep=',') {
   if (nullptr == szCol)
     return Color::Make(0);
 
@@ -499,36 +499,6 @@ std::string wstring2string(const wchar_t *ctext) {
   return temp;
 }
 
-bool PathIsDirectory(const char *path) {
-  if (!path) {
-    return false;
-  }
-#if 0 // defined(OS_WIN)
-  return PathIsDirectoryA(szPath);
-#else
-  // std::string path2 = wstring2string(path);
-
-  // struct stat sbuf;
-  // stat(path2.c_str(), &sbuf);
-  // return S_ISDIR(sbuf.st_mode);
-  const std::filesystem::path p = path;
-  return std::filesystem::is_directory(p);
-#endif
-}
-
-bool PathFileExists(const char *path) {
-  if (!path) {
-    return false;
-  }
-#if 0 // defined(OS_WIN)
-  return PathFileExistsA(path);
-#else
-  // std::string path2 = wstring2string(path);
-  // return ::access(path, F_OK) == 0;
-  const std::filesystem::path p = path;
-  return std::filesystem::exists(p);
-#endif
-}
 
 bool FixBitmapAlpha(FixAlphaData *pData) {
 #if 0 // defined(OS_WIN)
@@ -832,5 +802,36 @@ bool IsWin7OrLater() {
                            dwlConditionMask);
 }
 #endif
+
+
+
+
+
+bool Path_IsDirectory(const char *path) {
+  if (!path) {
+    return false;
+  }
+// #if 0 // defined(OS_WIN)
+//   return PathIsDirectoryA(szPath);
+// #else
+  const std::filesystem::path p = path;
+  return std::filesystem::is_directory(p);
+}
+
+bool Path_FileExists(const char *path) {
+  if (!path) {
+    return false;
+  }
+#if 0 // defined(OS_WIN)
+  return PathFileExistsA(path);
+#else
+  // std::string path2 = wstring2string(path);
+  // return ::access(path, F_OK) == 0;
+  const std::filesystem::path p = path;
+  return std::filesystem::exists(p);
+#endif
+}
+
 } // namespace util
+
 } // namespace ui

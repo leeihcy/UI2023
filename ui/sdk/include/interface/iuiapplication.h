@@ -60,7 +60,7 @@ public:
 
   IResource *RootBundle();
   IResource *LoadResource(const char *szSkinPath);
-  IResource *LoadResource(llong hInstance, llong resId = -1);
+  IResource *LoadResource(llong hInstance, int resId = -1);
 
   void SetEditorMode(bool b);
   bool IsEditorMode();

@@ -1,5 +1,6 @@
 #pragma once
 #include "include/interface/ianimate.h"
+#include <vector>
 
 namespace uia
 {
@@ -36,9 +37,9 @@ public:
 
     void  SetId(int nID) { m_nID = nID; }
     int   GetId() { return m_nID; }
-    void    SetWParam(long wParam) { m_pWParam = wParam; }
+    void    SetWParam(ui::llong wParam) { m_pWParam = wParam; }
     long  GetWParam() { return m_pWParam; }
-    void    SetLParam(long lParam) { m_pLParam = lParam; }
+    void    SetLParam(ui::llong lParam) { m_pLParam = lParam; }
     long  GetLParam() { return m_pLParam; }
 
     void  Begin();
@@ -80,8 +81,8 @@ protected:
 
     IAnimateEventCallback*     m_pNotify;
     int                m_nID;
-    long             m_pWParam;
-    long             m_pLParam;
+    ui::llong             m_pWParam;
+    ui::llong             m_pLParam;
 
     unsigned long      m_lDelayBeginTick;  // 延时启用的动画。当GetTickCount大于该值时，启动动画
 

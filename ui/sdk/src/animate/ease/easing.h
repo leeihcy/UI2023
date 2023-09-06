@@ -89,7 +89,7 @@ AHFloat BounceEaseOut(AHFloat p);
 AHFloat BounceEaseInOut(AHFloat p);
 
 
-// ×ÛºÏº¯Êı
+// ç»¼åˆå‡½æ•°
 AHFloat Easing(long/*EaseType */eType, AHFloat p);
 
 #endif

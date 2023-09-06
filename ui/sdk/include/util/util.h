@@ -99,9 +99,7 @@ bool UIAPI FixRenderTargetClipRegionAlpha(IRenderTarget *);
 
 void UIAPI PathInBin(const char *szRelative, char szAbsolution[MAX_PATH]);
 
-bool PathIsDirectory(const char *path);
-bool PathFileExists(const char *path);
-int wtoi(const wchar_t *text);
+
 } // namespace util
 } // namespace ui
 

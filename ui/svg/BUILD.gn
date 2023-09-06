@@ -1,6 +1,6 @@
 shared_library("uisvg") {
     cflags = []
-    if (is_debug) {
+    if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g"]
     }
 
@@ -15,15 +15,25 @@ shared_library("uisvg") {
     ]
   
     lib_dirs = ["$root_build_dir/"]
-    libs = ["skia"]
+    
     deps = [
       "//ui/sdk:uisdk"
     ]
 
     # 直接在当前目录查找libuisdk
-    ldflags = [
-      "-rpath", ".",
-    ]
+    if (is_win) {
+      libs = []
+      ldflags = [
+        "skia.dll.lib",
+        "-libpath:$root_build_dir/",
+       ]
+    }
+    else if (is_mac || is_linux) {
+      libs = ["skia"]
+      ldflags = [
+        "-rpath", ".",
+      ]
+    }
 
     sources = [
       "//ui/3rd/pugixml/pugixml.cpp",
