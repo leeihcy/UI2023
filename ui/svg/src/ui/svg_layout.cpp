@@ -73,7 +73,7 @@ void SvgLayout::Arrange(ArrangeParam *param) {
     rect.right = rect.left + pParam->m_width;
     rect.bottom = rect.top + pParam->m_height;
 
-    child->SetObjectPos(&rect, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+    child->SetObjectPos(&rect, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
                                     SWP_FORCESENDSIZEMSG);
   }
 
@@ -90,7 +90,7 @@ void SvgLayout::Arrange(ArrangeParam *param) {
   // rcChildObj.Set(0, 0, nChildW, nChildH);
 
   // rcChildObj.Offset(x, y);
-  // pChild->SetObjectPos(&rcChildObj, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+  // pChild->SetObjectPos(&rcChildObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
   //                                       SWP_FORCESENDSIZEMSG);
 }
 

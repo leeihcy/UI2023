@@ -649,7 +649,7 @@ void Layer::OnAnimateEnd(uia::IStoryboard *pStoryboard,
 
       obj->SetObjectPos(rcParent.left + (int)m_xTranslate,
                         rcParent.top + (int)m_yTranslate, 0, 0,
-                        SWP_NOSIZE | SWP_NOREDRAW);
+                        SWP_NOSIZE | SWP_NO_REDRAW);
     }
 
     m_xTranslate = 0;

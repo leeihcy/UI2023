@@ -41,7 +41,7 @@ public:
     static const char* buffer = R"(
       <svg version="1.1" 
         baseProfile="full" 
-        width="400" height="400" viewBox_="0 0 300 200"
+        width="400" height="400" viewBox="0 0 300 200"
         xmlns="http://www.w3.org/2000/svg"> 
         <rect width="100%" height="100%" fill="red" rx="50" ry="50"/> 
         <circle cx="150" cy="100" r="80" fill="green" /> 

@@ -1,38 +1,74 @@
-#include "message_loop.h"
 #include "message_loop_win.h"
+#include "message_loop.h"
+#include "src/util/windows.h"
 
-namespace ui
+namespace ui {
+
+MessageLoopPlatformWin::MessageLoopPlatformWin() {}
+
+void MessageLoopPlatformWin::Initialize(MessageLoop *p) { m_message_loop = p; }
+
+void MessageLoopPlatformWin::Release() {}
+
+void MessageLoopPlatformWin::Run() {
+  Run(nullptr);
+}
+void MessageLoopPlatformWin::Quit() {
+    ::PostQuitMessage(0);
+}
+
+void MessageLoopPlatformWin::PostTask(PostTaskType &&task) {}
+int MessageLoopPlatformWin::ScheduleTask(ScheduleTaskType &&task,
+                                         int delay_ms) {
+  return 0;
+}
+
+bool MessageLoopPlatformWin::IsDialogMessage(::MSG* pMsg)
 {
+	if (nullptr == pMsg)
+		return false;
 
-    MessageLoopPlatformWin::MessageLoopPlatformWin()
-    {
-    }
+	if((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
+		(pMsg->message < (WM_MOUSEFIRST+1) || pMsg->message > WM_MOUSELAST))
+		return false;
 
-    void MessageLoopPlatformWin::Initialize(MessageLoop *p)
-    {
-        m_message_loop = p;
-    }
+//	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_TAB )
+	{
+		// 获取这个消息的窗口所在的顶层窗口，因为导航是针对是整个顶层窗口进行的
+        // 2013.6.20 屏蔽掉这些代码。存在子窗口是UI窗口，但顶层窗口是普通窗口的情况
+ 		HWND hWndTop = pMsg->hwnd;
+// 		while (1)
+// 		{
+// 			if (nullptr == hWndTop)
+// 				return false;
+// 
+// 			LONG lStyle = ::GetWindowLongPtr(hWndTop, GWL_STYLE);
+// 			if (lStyle & WS_CHILD)
+// 			{
+// 				hWndTop = ::GetParent(hWndTop);
+// 			}
+// 			else
+// 			{
+// 				break;
+// 			}
+// 		}
 
-    void MessageLoopPlatformWin::Release()
-    {
-        delete this;
-    }
-
-    void MessageLoopPlatformWin::Run()
-    {
-    }
-    void MessageLoopPlatformWin::Quit()
-    {
-    }
-
-    void MessageLoopPlatformWin::PostTask(PostTaskType &&task)
-    {
-    }
-    int MessageLoopPlatformWin::ScheduleTask(ScheduleTaskType &&task, int delay_ms)
-    {
-        return 0;
-    }
 #if 0
+		// 判断这个窗口是否属性UI管理的一个顶层窗口
+		IWindowBase* pIWindow = m_TopWindowMgr.GetWindowBase(hWndTop);
+        if (nullptr == pIWindow)
+            return false;
+
+        WindowBase* pWindow = pIWindow->GetImpl();
+        if (!pWindow)
+            return false;
+
+        return pWindow->GetMouseMgr()->IsDialogMessage(pMsg);
+#endif
+	}
+
+	return false;
+}
     //////////////////////////////////////////////////////////////////////////
     //
     // http://dsdm.bokee.com/6033955.html  如何正确使用PeekMessage
@@ -64,12 +100,12 @@ namespace ui
     //  WaitMessage();  这里并不会立即返回，xxx消息已被标识为旧消息。除非有一个新的
     //  消息到来才能使WaitMessage返回。
     //
-    void Run(bool *quit_ref)
+    void MessageLoopPlatformWin::Run(bool *quit_ref)
     {
         unsigned int dwRet = 0;
         unsigned int &nCount = m_WaitForHandlesMgr.m_nHandleCount;
         HANDLE *&pHandles = m_WaitForHandlesMgr.m_pHandles;
-        MSG msg;
+        ::MSG msg;
 
         // 会传递pbQuitLoopRef参数的，有可能是Modal类型的菜单，这种情况下需要更多的条件判断
         // 因此单独用一个分支来优化
@@ -144,6 +180,5 @@ namespace ui
         }
         return;
     }
-#endif
 
-}
+} // namespace ui

@@ -66,8 +66,11 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   float y = 200;
  
   SkTextUtils::Draw(canvas, m_data.c_str(), m_data.length(),
-                    SkTextEncoding::kUTF8, (SkScalar)x, (SkScalar)y, font,
+                    SkTextEncoding::kUTF8, (SkScalar)x, (SkScalar)y, font, 
                     paint, SkTextUtils::Align::kCenter_Align);
+
+
+
 #endif
   // const char* file_path = "/Users/libo/2030/github/UI2023/ui/svg/test/test.svg";
   // SkBitmap image2;
@@ -87,8 +90,10 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   context.paint.setAntiAlias(true);
 
   // 默认黑色
-  context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
-  
+  // context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
+    context.paint.setColor(0xFF0000FF);
+
+
   if (m_root) {
     m_root->Render(context);
   }

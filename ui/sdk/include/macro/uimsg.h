@@ -128,10 +128,10 @@
 
 #define VIRTUAL_BEGIN_MSG_MAP(theClass)                                        \
 public:                                                                        \
-  virtual bool ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, \
-                                    long lParam, long &lResult,                \
+  virtual BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, \
+                                    long lParam, LRESULT &lResult,                \
                                     unsigned int dwMsgMapID = 0) {             \
-    bool bHandled = true;                                                      \
+    BOOL bHandled = true;                                                      \
     (hWnd);                                                                    \
     (uMsg);                                                                    \
     (wParam);                                                                  \

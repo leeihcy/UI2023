@@ -386,9 +386,10 @@ protected:
   ILayoutParam* m_pLayoutParam = nullptr;
 #pragma endregion
 
+public: // TODO:
   OBJSTYLE m_objStyle;
   OBJSTATE m_objState;
-
+protected:
   ObjectLayer m_objLayer;
   int m_lzOrder; // 控件z序，用于实现控件重叠时的刷新判断依据
 

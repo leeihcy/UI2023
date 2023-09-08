@@ -19,7 +19,6 @@ shared_library("uisdk") {
     # skia
     # 将依赖库拷贝到out/debug目录下
     copy("skia") {
-      print("deps skia")
       if (is_mac) { 
         sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
       } else if (is_win) {
@@ -31,10 +30,12 @@ shared_library("uisdk") {
       outputs = ["$root_build_dir/{{source_file_part}}"]
     }
     if (is_win) {
-      libs = []
-      ldflags = [
+      libs = [
+        "atls.lib",  # ATL
         "skia.dll.lib",
-        "-libpath:$root_build_dir/",
+      ]
+      ldflags = [
+        
        ]
     }
     else if (is_mac || is_linux) {
@@ -152,7 +153,6 @@ shared_library("uisdk") {
         "src/util/log/log.cpp",
         "src/util/DPI/dpihelper.cpp",
         "src/util/struct.cpp",
-        "src/util/struct.h",
         "src/util/util.cpp",
         "src/util/uiapi.cpp",
         "src/util/rectregion/rectregion.cpp",
@@ -167,6 +167,8 @@ shared_library("uisdk") {
     if (is_win) {
       sources += [
         "src/message_loop/message_loop_win.cpp",
+        "src/message_loop/win/msghelper.cpp",
+        "src/window/window_win.cpp",
       ]
       #libs += [
       #  "skia.dll",

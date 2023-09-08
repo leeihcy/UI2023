@@ -48,10 +48,12 @@ public:
   virtual void EndDraw() override;
   virtual void Clear(Rect *prc) override;
   virtual void Save(const char *szPath) override;
-  virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) override {};
+#if defined(OS_WIN)  
+  virtual void Render2DC(/*HDC*/llong hDC, Render2TargetParam *pParam) override;
+#endif
   virtual void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
 
-  virtual void FillRgn(HRGN, ui::Color *pColor) override;
+  virtual void FillRgn(/*HRGN*/llong, ui::Color *pColor) override;
   virtual void DrawRect(Rect* lprc, ui::Color *pColor) override;
   virtual void TileRect(Rect* lprc, IRenderBitmap *hBitmap) override;
   virtual void Rectangle(Rect* lprc, ui::Color *pColBorder,
@@ -69,7 +71,7 @@ public:
   //	virtual void  DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree,
   //DRAWBITMAPPARAM* pParam);
   virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) override;
-  static void DrawBitmapEx(HDC hDC, IRenderBitmap *hBitmap,
+  static void DrawBitmapEx(/*HDC*/llong hDC, IRenderBitmap *hBitmap,
                            DRAWBITMAPPARAM *pParam);
 
   virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) override;

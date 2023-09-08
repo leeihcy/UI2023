@@ -1,6 +1,5 @@
 #include "include/inc.h"
 #include "animate.h"
-#include "src/helper/msg/msghelper.h"
 #include "../animatemgr.h"
 
 namespace ui {
@@ -52,11 +51,11 @@ void  AnimateHelper::OnKillTimer(long hHandle)
 #endif
 }
 
-void AnimateHelper::OnWaitForHandleObjectCallback(long, long)
-{
-    if (m_pAnimateMgr)
-        m_pAnimateMgr->OnTick();
-}
+// void AnimateHelper::OnWaitForHandleObjectCallback(long, long)
+// {
+//     if (m_pAnimateMgr)
+//         m_pAnimateMgr->OnTick();
+// }
 
 uia::IAnimateManager*  AnimateHelper::GetAnimateManager()
 {

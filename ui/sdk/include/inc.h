@@ -12,7 +12,6 @@
 #include "sdk/include/macro/helper.h"
 
 #include "sdk/include/util/rect.h"
-#include "sdk/include/util/windows.h"
 
 #include "sdk/include/interface/imessage.h"
 // #include "sdk/include/interface/iobject.h"

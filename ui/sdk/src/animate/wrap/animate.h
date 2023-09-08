@@ -8,8 +8,10 @@ namespace ui
     class Application;
 
 	class AnimateHelper :
-		public uia::IAnimateTimerCallback,
-		public IWaitForHandleCallback
+		public uia::IAnimateTimerCallback
+		#if 0
+		, public IWaitForHandleCallback
+		#endif
 	{
 	public:
 		AnimateHelper(Application& app);
@@ -24,10 +26,10 @@ namespace ui
 		// uia::IAnimateTimerCallback
 		virtual void  OnSetTimer(long) override;
 		virtual void  OnKillTimer(long) override;
-
+#if 0
 		// IWaitForHandleCallback
 		virtual void  OnWaitForHandleObjectCallback(long, long) override;
-
+#endif
 	private:
 		WaitForHandlesMgr*  m_pWaitforHandle;
 		uia::IAnimateManager*  m_pAnimateMgr;

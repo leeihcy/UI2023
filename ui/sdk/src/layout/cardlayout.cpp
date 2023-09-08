@@ -43,7 +43,7 @@ void CardLayout::DoArrange(ArrangeParam *param) {
     int nChildH = nHeight; // - pChild->GetMarginH();
     rcChildObj.Set(0, 0, nChildW, nChildH);
 
-    pChild->SetObjectPos(&rcChildObj, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+    pChild->SetObjectPos(&rcChildObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
                                           SWP_FORCESENDSIZEMSG);
 
     if (pObjToArrage && pObjToArrage == pChild)

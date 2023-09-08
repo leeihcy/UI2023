@@ -5,7 +5,6 @@
 #include "src/message_loop/message_loop.h"
 #include "src/resource/resource_manager.h"
 #include "src/animate/wrap/animate.h"
-#include "src/helper/msg/msghelper.h"
 #include "src/helper/topwindow/topwindowmanager.h"
 #include "src/layout/layout_factory.h"
 #include "src/render/renderbase_factory.h"
@@ -58,8 +57,6 @@ public:
   uia::IAnimateManager *GetAnimateManager();
 #if 0    
   GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
-  IWaitForHandlesMgr*  GetWaitForHandlesMgr() { return &m_WaitForHandlesMgr; }
-	IMessageFilterMgr*  GetMessageFilterMgr() { return &m_MsgFilterMgr; }
 	HMODULE  GetUID2DModule();
 	HMODULE  GetUID3DModule();
 #endif
@@ -93,16 +90,12 @@ public:
   void ShutdownGpuCompositor();
 
 #if 0
-	bool  IsDialogMessage(MSG* pMsg);
 	void  MsgHandleLoop(bool* pbQuitLoopRef);
 	void  MsgHandleOnce();
 	void  RedrawTopWindows() { m_TopWindowMgr.UpdateAllWindow(); }
 	bool  IsUnderXpOS();
 	bool  IsVistaOrWin7etc();
 	HWND  GetForwardPostMessageWnd();
-
-private:
-    void  RegisterWndClass();
 #endif
   void RegisterDefaultUIObject();
   void ClearRegisterUIObject();
@@ -130,8 +123,6 @@ private:
 #if 0 // defined(OS_WIN)
   GifTimerManager *m_pGifTimerMgr;
   ToolTipManager m_ToolTipMgr;
-  WaitForHandlesMgr m_WaitForHandlesMgr;
-  MessageFilterMgr m_MsgFilterMgr;
   ForwardPostMessageWindow m_WndForwardPostMsg;
 #endif
   AnimateHelper m_animate;

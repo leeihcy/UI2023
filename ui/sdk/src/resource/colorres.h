@@ -2,6 +2,7 @@
 #include "include/inc.h"
 #include "include/util/color.h"
 #include <vector>
+#include <string>
 
 namespace ui {
 struct IColorResItem;

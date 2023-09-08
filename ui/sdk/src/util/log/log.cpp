@@ -1,6 +1,7 @@
 #include "include/util/log.h"
 #include "include/inc.h"
 #include <string>
+#include "src/util/windows.h"
 
 namespace ui {
 

@@ -145,7 +145,7 @@ void  ListItemBase::AddChild(ListItemBase* p)
     this->SetLastChildItem(p);
 }
 
-// ½«×Ô¼º£¨°üÀ¨×Ô¼ºµÄ×Ó½áµã£©ÔÚÊ÷½á¹¹ÖÐÒÆ³ý
+// ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ã£©ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½Æ³ï¿½
 // void ListItemBase::RemoveMeInTheTree()
 // {
 //     if (m_pPrev)
@@ -596,7 +596,7 @@ void  ListItemBase::SetEditing(bool b, bool bNotify)
 
 
 
-// µ±×Ó½áµãÍù¶àÊ±£¬²ÉÓÃ±éÀúµÄ·½Ê½Ð§ÂÊºÜµÍ
+// ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Ê½Ð§ï¿½ÊºÜµï¿½
 ListItemBase*  ListItemBase::GetLastChildItem()
 {
     return m_pLastChild;
@@ -625,7 +625,7 @@ ListItemBase*  ListItemBase::GetAncestorItem()
     return p;
 }
 
-// ÅÐ¶ÏpChildÊÇ·ñÊÇ×Ô¼ºµÄ×Ó½áµã»òÕß×ÓËï½áµã
+// ï¿½Ð¶ï¿½pChildï¿½Ç·ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool  ListItemBase::IsMyChildItem(ListItemBase* pChild, bool bTestdescendant)
 {
     if (nullptr == pChild)
@@ -678,7 +678,7 @@ unsigned int  ListItemBase::GetDescendantCount()
     return n;
 }
 
-// »ñÈ¡×ÓËï½áµãÖÐµÄÎ´¸¸½áµã
+// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½
 unsigned int  ListItemBase::GetDescendantLeafCount()
 {
     unsigned int n = 0;
@@ -695,24 +695,24 @@ unsigned int  ListItemBase::GetDescendantLeafCount()
     return n;
 }
 
-// °´Å¥¸¸->×ó->ÓÒµÄË³Ðò»ñÈ¡±éÀúÏÂÒ»¸ö½áµã
+// ï¿½ï¿½Å¥ï¿½ï¿½->ï¿½ï¿½->ï¿½Òµï¿½Ë³ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
 ListItemBase*  ListItemBase::GetNextTreeItem()
 {
     ListItemBase* p = this;
 
-    // ÓÐ×Ó½áµã
+    // ï¿½ï¿½ï¿½Ó½ï¿½ï¿½
     if (p->GetChildItem()) 
     {
         return p->GetChildItem();
     }
 
-    // Ã»ÓÐ×Ó½áµã£¬»ñÈ¡ÏÂÒ»¸ö½áµã
+    // Ã»ï¿½ï¿½ï¿½Ó½ï¿½ã£¬ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
     if (p->GetNextItem())
     {
         return p->GetNextItem();
     }
 
-    // Ò²Ã»ÓÐÏÂÒ»¸ö×Ó½áµã£¬»ñÈ¡¸¸¶ÔÏóµÄÏÂÒ»¸ö½áµã
+    // Ò²Ã»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ó½ï¿½ã£¬ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
     ListItemBase* pParent = p->GetParentItem();
     while (pParent)
     {
@@ -725,12 +725,12 @@ ListItemBase*  ListItemBase::GetNextTreeItem()
 
     return nullptr;
 }
-// °´Å¥ÓÒ->×ó->¸¸µÄË³Ðò»ñÈ¡±éÀúÏÂÒ»¸ö½áµã
+// ï¿½ï¿½Å¥ï¿½ï¿½->ï¿½ï¿½->ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
 ListItemBase*  ListItemBase::GetPrevTreeItem()
 {
     ListItemBase* p = (ListItemBase*)this;
 
-    // »ñÈ¡×ó²à½áµãµÄ×îºóÒ»¸ö×Ó½áµã
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ó½ï¿½ï¿½
     if (p->GetPrevItem())
     {
         ListItemBase* pLeft = p->GetPrevItem();
@@ -742,7 +742,7 @@ ListItemBase*  ListItemBase::GetPrevTreeItem()
         return pLeft;
     }
 
-    // ÓÐ¸¸½áµã
+    // ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½
     if (p->GetParentItem()) 
     {
         return p->GetParentItem();
@@ -853,7 +853,7 @@ Panel*  ListItemBase::GetRootPanel()
 
 	return m_pPanelRoot->GetImpl();
 }
-// ´´½¨RootPanel£¬Îª²åÈëÄÚ²¿¿Ø¼þ×ö×¼±¸
+// ï¿½ï¿½ï¿½ï¿½RootPanelï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Ø¼ï¿½ï¿½ï¿½×¼ï¿½ï¿½
 bool ListItemBase::CreateRootPanel()
 {
     if (m_pPanelRoot)
@@ -874,7 +874,7 @@ bool ListItemBase::CreateRootPanel()
     m_pPanelRoot = static_cast<IPanel*>(p);
 
     pImpl->SetListCtrlItem(m_pListCtrlBase, this);
-    pImpl->SetParentObjectDirect(m_pListCtrlBase);   // ±³¾°µÄ»æÖÆÒÑÓÉroot panelÍê³É£¬²»ÔÙÐèÒª¸ü¶àµÄ¸¸¹ØÏµ
+    pImpl->SetParentObjectDirect(m_pListCtrlBase);   // ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½root panelï¿½ï¿½É£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½Ïµ
     m_pPanelRoot->SetLayoutType(LAYOUT_TYPE_CANVAS);
     
     OnSize();
@@ -936,7 +936,7 @@ void  ListItemBase::DrawItemInnerControl(IRenderTarget* pRenderTarget)
 	{ 
 		bool bOld = proc->m_bUpdateClip;
 		proc->m_bUpdateClip = true;
-		proc->Update(pRenderTarget);  // »¹Ô­¼ô²ÃÇøÓò
+		proc->Update(pRenderTarget);  // ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		proc->m_bUpdateClip = bOld;
 	}
 #endif
@@ -982,13 +982,13 @@ void  ListItemBase::DrawFloat(IRenderTarget* pRenderTarget)
     { 
         bool bOld = proc->m_bUpdateClip;
         proc->m_bUpdateClip = true;
-        proc->Update(pRenderTarget);  // »¹Ô­¼ô²ÃÇøÓò
+        proc->Update(pRenderTarget);  // ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         proc->m_bUpdateClip = bOld;
     }
 #endif
 }
 
-// ½«item»­µ½×Ô¼ºµÄlayerÉÏÃæ¡£
+// ï¿½ï¿½itemï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½layerï¿½ï¿½ï¿½æ¡£
 void  ListItemBase::Draw2Layer(IRenderTarget* pRenderTarget)
 {
 	RECT rc = { 0 };
@@ -1022,7 +1022,7 @@ void ListItemBase::SetParentRect(LPCRECT prc)
         if (!m_rcParent.EqualRect(prc))
         {
             m_rcParent.CopyRect(prc); 
-            m_nFlagsDelayOp |= DELAY_OP_SIZE_CHANGED;  // ÑÓ³Ù´¦Àí£¬Ìá¸ßÐ§ÂÊ
+            m_nFlagsDelayOp |= DELAY_OP_SIZE_CHANGED;  // ï¿½Ó³Ù´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
         }
     }
 }
@@ -1031,7 +1031,7 @@ void  ListItemBase::SetParentRectLightly(LPCRECT prc)
 {
     UIASSERT(prc);
     m_rcParent = *prc;
-    m_nFlagsDelayOp |= DELAY_OP_SIZE_CHANGED;  // ÑÓ³Ù´¦Àí£¬Ìá¸ßÐ§ÂÊ
+    m_nFlagsDelayOp |= DELAY_OP_SIZE_CHANGED;  // ï¿½Ó³Ù´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
 }
 
 void  ListItemBase::OnSize()
@@ -1047,7 +1047,7 @@ void  ListItemBase::OnSize()
 
     if (m_pPanelRoot)
     {
-        m_pPanelRoot->SetObjectPos(&m_rcParent, SWP_NOREDRAW);
+        m_pPanelRoot->SetObjectPos(&m_rcParent, SWP_NO_REDRAW);
     }
 }
 
@@ -1071,7 +1071,7 @@ void ListItemBase::SetIconRenderType(RENDER_TYPE eType)
 {
     SAFE_RELEASE(m_pIconRender);
 
-    // ÎªÁË±£Ö¤×Ô¼ºÔÚÎö¹¹ÖÐÊÍ·ÅµÄm_pIconRenderÊÇÔÚ×Ô¼ºµÄÄ£¿éÖÐ´´½¨µÄ
+    // Îªï¿½Ë±ï¿½Ö¤ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·Åµï¿½m_pIconRenderï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½
     GetIListCtrlBase()->GetUIApplication()->CreateRenderBase(
         eType, GetIListCtrlBase(), &m_pIconRender);
 }
@@ -1112,7 +1112,7 @@ void  ListItemBase::GetDesiredSize(SIZE* pSize)
 }
 
 
-// »ñÈ¡Ò»¸öITEMµÄäÖÈ¾Öµ
+// ï¿½ï¿½È¡Ò»ï¿½ï¿½ITEMï¿½ï¿½ï¿½ï¿½È¾Öµ
 long  ListItemBase::OnGetRenderState(unsigned int, WPARAM, LPARAM)
 {
 	bool bSelected = IsSelected();
@@ -1123,10 +1123,10 @@ long  ListItemBase::OnGetRenderState(unsigned int, WPARAM, LPARAM)
 
 	int nRenderState = 0;
 
-    // TODO: ÓÉ×ÓÀàÈ¥ÖØÔØÕâ¸öÏûÏ¢
+    // TODO: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 	LISTCTRLSTYLE s = {0};
 	s.popuplistbox = 1;
-    if (m_pListCtrlBase->GetIListCtrlBase()->TestListCtrlStyle(&s))    // ÒÔ×îºóÊó±êµ¯³öÀ´µÄÄÇÏî×÷Îª±»Ñ¡ÖÐµÄÏî
+    if (m_pListCtrlBase->GetIListCtrlBase()->TestListCtrlStyle(&s))    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½êµ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ñ¡ï¿½Ðµï¿½ï¿½ï¿½
     {
         if (bHover)
         {
@@ -1359,7 +1359,7 @@ Layer*  ListItemBase::GetSelfLayer()
 {
 	return m_itemLayer.GetLayer();
 }
-// Îª¶¯»­×¼±¸Ò»¸ölayer£¬Èç¹ûÃ»ÓÐÔò´´½¨layer
+// Îªï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½Ò»ï¿½ï¿½layerï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ò´´½ï¿½layer
 Layer*  ListItemBase::GetLayerForAnimate()
 {
 	Layer* layer = GetSelfLayer();

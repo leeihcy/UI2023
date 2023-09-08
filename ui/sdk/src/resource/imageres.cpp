@@ -664,32 +664,32 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
   return false;
 }
 
-HBITMAP ImageRes::LoadBitmap(const char *szId) {
-#if 0 // defined(OS_WIN)
-  if (nullptr == szId)
-    return nullptr;
+// HBITMAP ImageRes::LoadBitmap(const char *szId) {
+// #if 0 // defined(OS_WIN)
+//   if (nullptr == szId)
+//     return nullptr;
 
-  ImageResItem *pItem = this->GetImageItem2(szId);
-  if (nullptr == pItem) {
-    UI_LOG_ERROR("GetImageItem：%s failed .1", szId);
-    return nullptr;
-  }
+//   ImageResItem *pItem = this->GetImageItem2(szId);
+//   if (nullptr == pItem) {
+//     UI_LOG_ERROR("GetImageItem：%s failed .1", szId);
+//     return nullptr;
+//   }
 
-  SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
-  if (nullptr == pDataSource)
-    return nullptr;
+//   SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
+//   if (nullptr == pDataSource)
+//     return nullptr;
 
-  ImageWrap image;
-  pDataSource->Load_Image(pItem->GetPath(), &image);
+//   ImageWrap image;
+//   pDataSource->Load_Image(pItem->GetPath(), &image);
 
-  if (image.IsNull())
-    return nullptr;
+//   if (image.IsNull())
+//     return nullptr;
 
-  return image.Detach();
-#else
-  return 0;
-#endif
-}
+//   return image.Detach();
+// #else
+//   return 0;
+// #endif
+// }
 
 bool ImageRes::GetBitmap(const char *szImageID,
                          GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,

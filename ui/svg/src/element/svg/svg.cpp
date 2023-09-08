@@ -17,6 +17,8 @@ void Svg::calcViewPort(RenderContext &ctx) {
   float tan_canvas =
       (float)ctx.canvas_size.width / (float)ctx.canvas_size.height;
 
+  ctx.view_port.x = 0;
+  ctx.view_port.y = 0;
   if (tan_view_port > tan_canvas) {
     ctx.view_port.width = ctx.canvas_size.width;
     ctx.view_port.height = ctx.canvas_size.width / tan_view_port;

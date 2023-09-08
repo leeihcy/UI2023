@@ -1,7 +1,6 @@
 #ifndef _UI_UTIL_H_
 #define _UI_UTIL_H_
 #include "sdk/include/interface.h"
-#include "sdk/include/util/windows.h"
 #include "sdk/include/util/color.h"
 
 namespace ui {
@@ -86,8 +85,8 @@ enum FixAlphaMode {
 };
 struct FixAlphaData {
   // 当仅指定了hDC，没有指定hBitmap时，从hDC中获取CurrentBitap
-  HDC hDC;
-  HBITMAP hBitmap;
+  /*HDC*/int hDC;
+  /*HBITMAP*/int hBitmap;
   bool bTopDownDib;
   Rect *lprc;
   FixAlphaMode eMode;
@@ -97,7 +96,7 @@ struct FixAlphaData {
 bool UIAPI FixBitmapAlpha(FixAlphaData *pData);
 bool UIAPI FixRenderTargetClipRegionAlpha(IRenderTarget *);
 
-void UIAPI PathInBin(const char *szRelative, char szAbsolution[MAX_PATH]);
+void UIAPI PathInBin(const char *szRelative, char szAbsolution[256]);
 
 
 } // namespace util

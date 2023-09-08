@@ -2,6 +2,7 @@
 #include "object.h"
 #include "src/layout/canvaslayout.h"
 #include "src/window/window.h"
+#include "src/util/windows.h"
 // #include "src/UIObject\HwndHost\HwndHost.h"
 #include "include/interface/imapattr.h"
 #include "object_layer.h"
@@ -703,7 +704,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   // Rect rcOldVisibleRect = {0};
   if (bMove || bSize) {
     // 刷新移动前的区域位置
-    if (!(nFlag & SWP_NOREDRAW)) {
+    if (!(nFlag & SWP_NO_REDRAW)) {
       // this->GetRectInWindow(&rcOldVisibleRect, true);  //
       // 获取下当前会刷新的区域范围，放在后面进行提交
       this->Invalidate();
@@ -732,7 +733,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
 
   if (bMove || bSize) {
     // 刷新移动后的区域位置
-    if (!(nFlag & SWP_NOREDRAW)) {
+    if (!(nFlag & SWP_NO_REDRAW)) {
       // 2015.9.22
       // 如果是硬件合成模式，则最终窗口上的缓存并不包含其它
       // 层的内容，直接CommitDoubleBuffer会导致内容丢失。

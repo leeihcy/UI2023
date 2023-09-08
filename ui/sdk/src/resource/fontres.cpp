@@ -29,11 +29,11 @@ IFontResItem *FontResItem::GetIFontResItem() {
 //
 // 通过结构体来快速赋值
 //
-void FontResItem::SetLogFont(LOGFONT *pLogFont) {
+void FontResItem::SetLogFont(FontDesc *pLogFont) {
   if (!pLogFont)
     return;
 
-  memcpy(&m_lf, pLogFont, sizeof(LOGFONT));
+  memcpy(&m_lf, pLogFont, sizeof(FontDesc));
 #if 0
   strcpy(m_lf.lfFaceName, pLogFont->lfFaceName);
 #endif
@@ -41,7 +41,7 @@ void FontResItem::SetLogFont(LOGFONT *pLogFont) {
       m_lf.lfOrientation; // TODO: 实现字体角度的话，这两个值好像要相等
 }
 
-void FontResItem::ModifyFont(LOGFONT *pLogFont) {
+void FontResItem::ModifyFont(FontDesc *pLogFont) {
   this->SetLogFont(pLogFont);
 #if 0
 	if (m_pGdiFont)
@@ -214,7 +214,7 @@ const char *FontRes::GetRenderFontId(IRenderFont *pFont) {
   return nullptr;
 }
 
-bool FontRes::InsertFont(const char *szId, LOGFONT *pLogFont) {
+bool FontRes::InsertFont(const char *szId, FontDesc *pLogFont) {
   FontResItem *pItem = this->InsertFont(szId, pLogFont, 0, 0);
   if (!pItem)
     return false;
@@ -222,7 +222,7 @@ bool FontRes::InsertFont(const char *szId, LOGFONT *pLogFont) {
   return true;
 }
 
-FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
+FontResItem *FontRes::InsertFont(const char *szId, FontDesc *pLogFont,
                                  long wParam, long lParam) {
   if (nullptr == pLogFont) {
     UI_LOG_ERROR("FontRes::InsertFont failed.");
@@ -251,7 +251,7 @@ FontResItem *FontRes::InsertFont(const char *szId, LOGFONT *pLogFont,
   return pFontItem;
 }
 
-bool FontRes::ModifyFont(const std::string &strID, LOGFONT *pLogFont) {
+bool FontRes::ModifyFont(const std::string &strID, FontDesc *pLogFont) {
   if (nullptr == pLogFont) {
     UI_LOG_ERROR("FontRes::ModifyFont failed.");
     return false;

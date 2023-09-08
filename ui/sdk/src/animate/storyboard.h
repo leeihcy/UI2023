@@ -38,9 +38,9 @@ public:
     void  SetId(int nID) { m_nID = nID; }
     int   GetId() { return m_nID; }
     void    SetWParam(ui::llong wParam) { m_pWParam = wParam; }
-    long  GetWParam() { return m_pWParam; }
+    ui::llong  GetWParam() { return m_pWParam; }
     void    SetLParam(ui::llong lParam) { m_pLParam = lParam; }
-    long  GetLParam() { return m_pLParam; }
+    ui::llong  GetLParam() { return m_pLParam; }
 
     void  Begin();
     void  BeginBlock();

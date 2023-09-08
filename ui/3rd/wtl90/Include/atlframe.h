@@ -1566,7 +1566,7 @@ public:
 			dwStyle |= (GetStyle() & (WS_HSCROLL | WS_VSCROLL));
 
 			// fast way to turn off the scrollbar bits (without a resize)
-			ModifyStyle(WS_HSCROLL | WS_VSCROLL, 0, SWP_NOREDRAW | SWP_FRAMECHANGED);
+			ModifyStyle(WS_HSCROLL | WS_VSCROLL, 0, SWP_NO_REDRAW | SWP_FRAMECHANGED);
 		}
 
 		// Create MDICLIENT window

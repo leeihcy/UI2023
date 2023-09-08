@@ -433,10 +433,6 @@ INT_PTR WindowBase::ModalLoop(HWND hWndParent)
 	return this->m_lDoModalReturn;
 }
 
-BOOL WindowBase::PreTranslateMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, long* pRet)
-{
-	return FALSE;
-}
 
 
 // 2014.4.15
@@ -560,17 +556,6 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-long CALLBACK WindowBase::StartWindowProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
-{
-	// 获取this指针
-	WindowBase* pThis = (WindowBase*)s_create_wnd_data.ExtractCreateWndData();
-	UIASSERT(nullptr != pThis);
-	
-	if (nullptr == pThis)
-		return 0;
-
-	return pThis->StartProc(hwnd,uMsg,wParam,lParam, true);
-}
 //
 //	[static] Dialog类型窗口的第一个窗口消息调用的窗口过程
 //
@@ -586,54 +571,6 @@ long CALLBACK WindowBase::StartDialogProc( HWND hwnd, unsigned int uMsg, WPARAM 
 	return pThis->StartProc(hwnd,uMsg,wParam,lParam, false);
 //	return (UINT_PTR)FALSE;
 }
-//
-//	由StartWindowProc/StartDialogProc调用，将窗口过程转换为类对象的一个方法
-//
-long WindowBase::StartProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam, bool bWindowOrDialog )
-{
-	// 子类化
-    set_hwnd(hwnd);
-
-	this->m_thunk.Init( &WindowBase::ThunkWndProc, this );
-	WNDPROC pProc = this->m_thunk.GetWNDPROC();
-
-	if (bWindowOrDialog)
-	{
-		this->m_oldWndProc = ::DefWindowProc;
-		::SetWindowLongPtr( m_hWnd, GWLP_WNDPROC, (LONG_PTR)pProc);
-	}
-	else
-	{
-		this->m_oldWndProc = nullptr;
-		::SetWindowLongPtr( m_hWnd, DWLP_DLGPROC, (LONG_PTR)pProc);  
-	}
-
-	// 调用新的窗口过程 ThunkWndProc
-	return pProc(hwnd, uMsg, wParam, lParam);
-}
-
-//
-//	[static] long CALLBACK ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam );
-//
-//	被ATL的thunk替换过的窗口过程
-//
-//	Parameter：
-//		hwnd
-//			[in]	这里由于被替换过了，这里的hwnd是this指针
-//
-//		uMsg,wParam,lParam
-//			[in]	消息信息
-//
-long  WindowBase::ThunkWndProc( HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam )
-{
-	WindowBase* pThis = (WindowBase*)hwnd;
-	long lRet = 0;
-
-	if (FALSE == pThis->PreTranslateMessage(uMsg, wParam, lParam, &lRet))
-		lRet = pThis->WndProc( uMsg, wParam, lParam );
-
-	return lRet;
-}
 
 long WindowBase::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -642,116 +579,6 @@ long WindowBase::DefWindowProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam 
 		return ::CallWindowProc( m_oldWndProc, m_hWnd, uMsg, wParam, lParam );
 	}
 	return 0;
-}
-
-//
-//	[private] long WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
-//
-//	窗口被子类化过之后的窗口过程
-//
-long	WindowBase::WndProc( unsigned int uMsg, WPARAM wParam, LPARAM lParam )
-{
-
-	long lRes;
-	UIMSG*  pOldMsg = m_pCurMsg;
-
-	// 外部预处理
-	if (m_pCallbackProxy)
-	{
-		long lRes = 0;
-		BOOL bHandled = m_pCallbackProxy->OnWindowMessage(uMsg, wParam, lParam, lRes);
-		if (bHandled)
-		{
-			return WndProc_GetRetValue(uMsg, wParam, lParam, bHandled, lRes);
-		}
-	}
-
-	// 内部处理
-	BOOL bHandled = this->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, lRes, 0);  // 调用BEGIN_MSG_MAP消息映射列表
-	if (bHandled)
-	{
-		return WndProc_GetRetValue(uMsg, wParam, lParam, bHandled, lRes);
-	}
-    
-    // 直接发给当前窗口处理
-    UIMSG  msg;
-	msg.message = uMsg;
-	msg.pMsgTo = this->GetIMessage();
-	msg.wParam = wParam;
-	msg.lParam = lParam;
-
-	// 如果这个消息被处理过了，直接返回，不用再调用旧的窗口过程了
-	//if (static_cast<IMessage*>(this)->ProcessMessage(&msg, 0))
-    UISendMessage(&msg);
-    lRes = WndProc_GetRetValue(uMsg, wParam, lParam,  msg.bHandled, msg.lRet);
-
-	if (uMsg == WM_NCDESTROY)
-	{
-		// 注：为什么不在这里直接调用OnFinalMessage，却还要再加一个状态位？
-		// 因为WM_NCDESTROY函数由DestroyWindow api触发，而DestroyWindow api
-		// 可能位于任何一个当前窗口的消息响应中，因此当pOldMsg==nullptr时，即表示
-		// 没有消息嵌套了，在检查一次WINDOW_STYLE_DESTROYED标志即可。
-		m_windowStyle.destroyed = 1;
-        m_objStyle.initialized = 0;
-	}
-	if (m_windowStyle.destroyed && pOldMsg == nullptr)
-	{
-		m_windowStyle.destroyed = 0;
-	}
-
-	return lRes;
-}
-
-// 设置对话框的DialogProc返回值，见MSDN中对DialogProc返回值的说明
-long  WindowBase::WndProc_GetRetValue(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL bHandled, long lRet)
-{
-    long lResult = 0; 
-
-    if (nullptr == m_oldWndProc)  // Dialog窗口过程
-    {
-        switch(uMsg)
-        {
-        case WM_INITDIALOG: 
-            if (GetMouseMgr()->GetFocusObject())
-                lResult = FALSE;  // 不使用其焦点设置
-            else
-                lResult = lRet;
-            break;
-
-        case WM_CHARTOITEM:
-        case WM_COMPAREITEM:
-        case WM_CTLCOLORBTN:
-        case WM_CTLCOLORDLG:
-        case WM_CTLCOLOREDIT:
-        case WM_CTLCOLORLISTBOX:
-        case WM_CTLCOLORSCROLLBAR:
-        case WM_CTLCOLORSTATIC:
-        case WM_CTLCOLORMSGBOX:
-        case WM_QUERYDRAGICON:
-        case WM_VKEYTOITEM:
-            // return directly，这几个消息不按DialogProc返回值规定走
-            lResult = lRet;
-            break;
-
-        default:
-            SetWindowLongPtr(m_hWnd, DWLP_MSGRESULT, lRet) ;
-            lResult = bHandled ? 1:0;
-            break;
-        }
-    }
-    else
-    {
-        if (bHandled)
-        {
-            lResult = lRet;
-        }
-        else
-        {
-            //lResult = DefWindowProc(uMsg, wParam, lParam);
-            lResult = m_oldWndProc(m_hWnd, uMsg, wParam, lParam);
-        }
-    }
-    return lResult;
 }
 
 long WindowBase::_OnSetCursor( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
@@ -882,12 +709,6 @@ long  WindowBase::_OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam,
     return 0;
 }
 
-
-// win7下面带WS_THICKFRAME样式窗口贴边最大化/还原的消息只有WM_SIZE，没有WM_SYSCOMMAND
-// 因此就不能使用WM_SYSCOMMAND消息来处理
-long WindowBase::_OnSize( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
-{
-}
 
 long WindowBase::_OnCreate(
         unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -1056,49 +877,6 @@ long  WindowBase::_OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL
 		bHandled = TRUE;
 		return 0;
 	}
-	return 0;
-}
-
-long  WindowBase::_OnDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
-{
-	bHandled = FALSE;
-	return 0;
-}
-
-long WindowBase::_OnNcDestroy( unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	bHandled = FALSE;
-
-	if (m_bDoModal)
-	{ 
-		EndDialog(IDCANCEL); 
-	}
-
-	m_syncWindow._OnNcDestroy();
-
-//	if (!IsChildWindow())
-	{
-		TopWindowManager* pTopWndMgr = GetUIApplication()->GetTopWindowMgr();
-		if (pTopWndMgr)
-			pTopWndMgr->RemoveTopWindowObject(this);
-	}
-
-    this->m_oDragDropManager.OnWindowDestroy();
-	m_oMouseManager.HandleMessage( uMsg, wParam, lParam, &bHandled);
-
-	if (m_oldWndProc)
-	{
-		::SetWindowLongPtr( m_hWnd, GWLP_WNDPROC, (LONG_PTR)m_oldWndProc);
-		m_oldWndProc = nullptr;
-	}
-    set_hwnd(nullptr);
-	
-	this->DestroyChildObject();   // 删除子对象
-    
-    if (m_pCallbackProxy)
-    {
-        m_pCallbackProxy->OnWindowDestroy();
-    }
 	return 0;
 }
 
@@ -1742,61 +1520,6 @@ bool WindowBase::IsActive()
 
 #if 1   // CreateData
 
-CREATE_WND_DATA WindowBase::s_create_wnd_data;
-CREATE_WND_DATA::CREATE_WND_DATA()
-{
-	m_pCreateWndList = nullptr;
-	::InitializeCriticalSection(&m_cs);
-}
-CREATE_WND_DATA::~CREATE_WND_DATA()
-{
-	::DeleteCriticalSection(&m_cs);
-}
-
-void  CREATE_WND_DATA::AddCreateWndData(_AtlCreateWndData* pData, void* pThis)
-{
-	UIASSERT(pData != nullptr && pThis != nullptr);
-
-	pData->m_pThis = pThis;
-	pData->m_dwThreadID = ::GetCurrentThreadId();
-
-	EnterCriticalSection(&m_cs);
-
-	pData->m_pNext = this->m_pCreateWndList;
-	this->m_pCreateWndList = pData;
-
-	LeaveCriticalSection(&m_cs);
-}
-void*  CREATE_WND_DATA::ExtractCreateWndData()
-{
-	void* pv = nullptr;
-	EnterCriticalSection(&m_cs);
-
-	_AtlCreateWndData* pEntry = this->m_pCreateWndList;
-	if(pEntry != nullptr)
-	{
-		DWORD dwThreadID = ::GetCurrentThreadId();
-		_AtlCreateWndData* pPrev = nullptr;
-		while(pEntry != nullptr)
-		{
-			if(pEntry->m_dwThreadID == dwThreadID)
-			{
-				if(pPrev == nullptr)
-					this->m_pCreateWndList = pEntry->m_pNext;
-				else
-					pPrev->m_pNext = pEntry->m_pNext;
-				pv = pEntry->m_pThis;
-				break;
-			}
-			pPrev = pEntry;
-			pEntry = pEntry->m_pNext;
-		}
-	}
-
-	LeaveCriticalSection(&m_cs);
-	return pv;
-}
-
 void  WindowBase::SetFocusObject(Object* pObj)
 {
     m_oMouseManager.SetFocusObject(pObj);
@@ -1968,11 +1691,6 @@ void WindowBase::SetWindowMessageCallback(IWindowDelegate* p)
 	this->AddHook(m_pCallbackProxy, 0, 0);
 }
 
-void  WindowBase::set_hwnd(HWND hWnd)
-{
-    m_hWnd = hWnd;
-    m_syncWindow.SetHwnd(hWnd);
-}
 
 bool UI::WindowBase::IsSizeMoveIng()
 {

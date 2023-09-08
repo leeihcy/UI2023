@@ -1,21 +1,46 @@
 #pragma once
 #include "src/util/DataStruct/list.h"
 #include "include/interface/iuiinterface.h"
+#include "src/util/windows.h"
+#include <list>
+
 
 namespace ui
 {
 class Application;
-#if 0
 // 创建一个隐藏消息窗口，用于实现post ui message
-class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
+// class ForwardPostMessageWindow : public CWindowImpl<ForwardPostMessageWindow>
+// {
+// public:
+// 	ForwardPostMessageWindow(Application* pUIApp) { m_pUIApplication = pUIApp; }
+// 	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID = 0);
+
+// protected:
+// 	Application*  m_pUIApplication;
+// };
+
+class MessageFilterMgr : public IMessageFilterMgr
 {
 public:
-	ForwardPostMessageWindow(Application* pUIApp) { m_pUIApplication = pUIApp; }
-	BOOL ProcessWindowMessage(HWND hWnd, unsigned int uMsg, long wParam, long lParam, long& lResult, unsigned int dwMsgMapID = 0);
+    ~MessageFilterMgr() {};
 
+	virtual void  AddMessageFilter(IPreTranslateMessage* p);
+	virtual void  RemoveMessageFilter(IPreTranslateMessage* p);
+
+public:
+	BOOL  PreTranslateMessage(::MSG* pMsg);
+	
 protected:
-	Application*  m_pUIApplication;
+    UIList<IPreTranslateMessage*> m_list;
 };
+
+
+	struct IWaitForHandlesMgr
+	{
+		virtual bool  AddHandle(HANDLE h, IWaitForHandleCallback* pCB, long l) = 0;
+		virtual bool  RemoveHandle(HANDLE h) = 0;
+	};
+
 
 // 实现消息循环中等待HANDLE的功能
 class WaitForHandle
@@ -38,8 +63,8 @@ public:
 	WaitForHandlesMgr();
 	~WaitForHandlesMgr();
 
-	typedef list<WaitForHandle*> _MyList;
-	typedef list<WaitForHandle*>::iterator _MyIter;
+	typedef std::list<WaitForHandle*> _MyList;
+	typedef std::list<WaitForHandle*>::iterator _MyIter;
 
 	WaitForHandle* FindHandle(HANDLE h);
 	_MyIter FindHandleIter(HANDLE h);
@@ -51,27 +76,11 @@ public:
 	HANDLE*  GetHandles() { return m_pHandles; }
 
 protected:
-	list<WaitForHandle*>  m_list;
+	std::list<WaitForHandle*>  m_list;
 public:
 	HANDLE*  m_pHandles;
 	unsigned int    m_nHandleCount;  // 因为要在while循环中调用，因此作为public变量直接调用
 };
-
-class MessageFilterMgr : public IMessageFilterMgr
-{
-public:
-    ~MessageFilterMgr() {};
-
-	virtual void  AddMessageFilter(IPreTranslateMessage* p);
-	virtual void  RemoveMessageFilter(IPreTranslateMessage* p);
-
-public:
-	BOOL  PreTranslateMessage(MSG* pMsg);
-	
-protected:
-    UIList<IPreTranslateMessage*> m_list;
-};
-#endif
 
 }
 

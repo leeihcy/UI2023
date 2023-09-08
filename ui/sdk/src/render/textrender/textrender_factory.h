@@ -1,4 +1,5 @@
 #pragma once
+#include "src/util/windows.h"
 
 namespace ui {
 class Application;

@@ -3,6 +3,9 @@
 #include "include/util/log.h"
 
 #include "SkStream.h"
+#if defined(OS_WIN)
+#include "src/util/windows.h"
+#endif
 
 namespace ui {
 
@@ -202,7 +205,7 @@ void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::FillRgn(HRGN hRgn, ui::Color *pColor) {
+void SkiaRenderTarget::FillRgn(/*HRGN*/ llong hRgn, ui::Color *pColor) {
   UIASSERT(false);
 }
 
@@ -257,7 +260,7 @@ void SkiaRenderTarget::ImageList_Draw(IRenderBitmap *hBitmap, int x, int y,
   UIASSERT(false);
 }
 
-void SkiaRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap *pBitmap,
+void SkiaRenderTarget::DrawBitmapEx(/*HDC*/ llong hDC, IRenderBitmap *pBitmap,
                                     DRAWBITMAPPARAM *pParam) {
   UIASSERT(false);
 }
@@ -303,10 +306,73 @@ IRenderBrush *SkiaRenderTarget::CreateSolidBrush(Color *pColor) {
   return nullptr;
 }
 
+#if defined(OS_WIN)
+void SkiaRenderTarget::Render2DC(/*HDC*/ llong _hDC,
+                                 Render2TargetParam *pParam) {
+  if (!m_sksurface) {
+    return;
+  }
+  HDC hDC = (HDC)_hDC;
+
+  int &xDst = pParam->xDst;
+  int &yDst = pParam->yDst;
+  int &wDst = pParam->wDst;
+  int &hDst = pParam->hDst;
+  int &xSrc = pParam->xSrc;
+  int &ySrc = pParam->ySrc;
+  int &wSrc = pParam->wSrc;
+  int &hSrc = pParam->hSrc;
+  bool &bAlphaBlend = pParam->bAlphaBlend;
+  byte &opacity = pParam->opacity;
+
+  //  HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
+  //  RECT rc = {xDst, yDst, xDst + wDst, yDst + hDst};
+  // ::FillRect(hDC, &rc, hBrush);
+
+  SkPixmap pm;
+  if (!m_sksurface->peekPixels(&pm)) {
+    return;
+  }
+
+  BITMAPINFO bmi;
+  memset(&bmi, 0, sizeof(bmi));
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = pm.width();
+  bmi.bmiHeader.biHeight = -pm.height(); // top-down image
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 32;
+  bmi.bmiHeader.biCompression = BI_RGB;
+  bmi.bmiHeader.biSizeImage = 0;
+
+  // if (wDst == wSrc && hDst == hSrc) {
+  //   SetDIBitsToDevice
+  // }
+  ::StretchDIBits(hDC, xDst, ySrc, wDst, hDst, xSrc, ySrc, wSrc, hSrc,
+                  pm.addr(), &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+  // if (bAlphaBlend) {
+  //   BLENDFUNCTION bf = {AC_SRC_OVER, 0, opacity, AC_SRC_ALPHA};
+  //   ::AlphaBlend(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, wSrc, hSrc,
+  //                bf);
+  // } else {
+  //   if (wDst == wSrc && hDst == hSrc) {
+  //     ::BitBlt(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, SRCCOPY);
+  //   } else {
+  //     ::StretchBlt(hDstDC, xDst, ySrc, wDst, hDst, hDC, xSrc, ySrc, wSrc,
+  //     hSrc,
+  //                  SRCCOPY);
+  //   }
+  // }
+}
+#endif
+
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
                                      Render2TargetParam *pParam) {}
 
 void SkiaRenderTarget::Save(const char *path) {
+  if (!m_sksurface) {
+    return;
+  }
   // if (m_pRenderBuffer)
   //     m_pRenderBuffer->Dump(szPath);
   sk_sp<SkImage> img(m_sksurface->makeImageSnapshot());

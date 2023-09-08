@@ -1,5 +1,6 @@
 #pragma once
 #include "include/inc.h"
+#include <string>
 
 namespace ui {
 class Resource;

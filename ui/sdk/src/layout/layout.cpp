@@ -130,7 +130,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 				nComsumeTop              +  pChild->GetMarginT(), 
 				nComsumeLeft + s.width      -  pChild->GetMarginR(), 
 				nHeight - nComsumeBottom -  pChild->GetMarginB());
-			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
+			pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW);
 
 			nComsumeLeft += s.width;
 		}
@@ -148,7 +148,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 				nComsumeTop                    +  pChild->GetMarginT(), 
 				nWidth - nComsumeRight         -  pChild->GetMarginR(), 
 				nHeight - nComsumeBottom       -  pChild->GetMarginB());
-			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
+			pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW);
 
 			nComsumeRight += s.width;
 		}
@@ -166,7 +166,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 				nComsumeTop             +  pChild->GetMarginT() , 
 				nWidth - nComsumeRight  -  pChild->GetMarginR() , 
 				nComsumeTop + s.height      -  pChild->GetMarginB() );
-			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
+			pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW);
 
 			nComsumeTop += s.height;
 		}
@@ -184,7 +184,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 				nHeight - nComsumeBottom - s.height +  pChild->GetMarginT() , 
 				nWidth - nComsumeRight          -  pChild->GetMarginR() , 
 				nHeight - nComsumeBottom        -  pChild->GetMarginB() );
-			pChild->SetObjectPos(&rcObj, SWP_NOREDRAW);
+			pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW);
 
 			nComsumeBottom += s.height;	 
 		}
@@ -205,7 +205,7 @@ void  DockLayout::ArrangeChildObject(Object* pObjToArrage)
 			nComsumeTop                             +  pCenterObj->GetMarginT() , 
 			nWidth  - nComsumeRight  - nComsumeLeft -  pCenterObj->GetMarginR() , 
 			nHeight - nComsumeBottom - nComsumeTop  -  pCenterObj->GetMarginB() ,
-			SWP_NOREDRAW);
+			SWP_NO_REDRAW);
 	}
 }
 
@@ -358,7 +358,7 @@ void DesktopLayout::Arrange(Window *pWindow) {
   Rect rcClientOld, rcClientNew;
   GetClientRect(pWindow->m_hWnd, &rcClientOld);
 
-  pWindow->SetObjectPos(x, y, s.width, s.height, SWP_NOREDRAW);
+  pWindow->SetObjectPos(x, y, s.width, s.height, SWP_NO_REDRAW);
 
   // 解决如果窗口大小没有发生改变，改变窗口没有收到WM_SIZE时，手动布局一次
   GetClientRect(pWindow->m_hWnd, &rcClientNew);

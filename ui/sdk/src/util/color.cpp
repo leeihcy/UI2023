@@ -90,25 +90,25 @@ void Color::ReplaceRGB(uint c) {
   a = a_old;
 }
 
-uint Color::GetGDIValue() {
-  uint gdiColor = 0;
-  // gdiColor = RGB(r, g, b);
+// uint Color::GetGDIValue() {
+//   uint gdiColor = 0;
+//   // gdiColor = RGB(r, g, b);
 
-  if (255 == a) {
-    gdiColor = RGB(r, g, b);
-  } else if (0 == a) {
-  } else {
-    // 这种算法其实不对，例如a=0时，画出来的是黑色，但其它是全透明的
-    // 只有在需要alpha通道的时候才能这么获取，用于预乘
-    byte br = r * a >> 8;
-    byte bg = g * a >> 8;
-    byte bb = b * a >> 8;
+//   if (255 == a) {
+//     gdiColor = RGB(r, g, b);
+//   } else if (0 == a) {
+//   } else {
+//     // 这种算法其实不对，例如a=0时，画出来的是黑色，但其它是全透明的
+//     // 只有在需要alpha通道的时候才能这么获取，用于预乘
+//     byte br = r * a >> 8;
+//     byte bg = g * a >> 8;
+//     byte bb = b * a >> 8;
 
-    gdiColor = RGB(br, bg, bb);
-  }
+//     gdiColor = RGB(br, bg, bb);
+//   }
 
-  return gdiColor;
-}
+//   return gdiColor;
+// }
 
 void Color::ToHexString(char *szBuffer) {
   sprintf(szBuffer, "0x%02X%02X%02X%02X", a, r, g, b);

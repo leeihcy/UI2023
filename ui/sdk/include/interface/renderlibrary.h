@@ -1,7 +1,6 @@
 #ifndef _UI_RENDERLIBRARY_H_
 #define _UI_RENDERLIBRARY_H_
 #include "sdk/include/util/color.h"
-#include "sdk/include/util/windows.h"
 #include "sdk/include/macro/xmldefine.h"
 
 namespace ui {
@@ -14,6 +13,7 @@ struct IGpuRenderLayer;
 struct Rect;
 struct Point;
 struct Size;
+struct LOGFONT;
 
 struct C9Region;
 
@@ -186,15 +186,15 @@ public:
   virtual bool Load(LOGFONT *plogfont) = 0;
   virtual bool ModifyFont(LOGFONT *plogfont) = 0;
 
-  virtual void Attach(HFONT hFont) = 0;
-  virtual HFONT Detach() = 0;
-  virtual bool IsAttach() = 0;
+  // virtual void Attach(HFONT hFont) = 0;
+  // virtual HFONT Detach() = 0;
+  // virtual bool IsAttach() = 0;
 
   virtual unsigned int GetCaretHeight() = 0;
   virtual Size MeasureString(const char *szText, int nLimitWidth = -1) = 0;
 
-  virtual HFONT GetHFONT() = 0;
-  virtual bool GetLogFont(LOGFONT *plf) = 0;
+  // virtual HFONT GetHFONT() = 0;
+  // virtual bool GetLogFont(LOGFONT *plf) = 0;
 
   enum FontType {
     CREATE,
@@ -242,7 +242,9 @@ struct IRenderTarget {
   virtual void EndDraw() = 0;
   virtual void Clear(Rect *prc) = 0;
   virtual void Save(const char *szPath) = 0;
-  virtual void Render2DC(HDC hDC, Render2TargetParam *pParam) = 0;
+#if defined(OS_WIN)  
+  virtual void Render2DC(llong hDC, Render2TargetParam *pParam) = 0;
+#endif
   virtual void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) = 0;
 
@@ -258,7 +260,7 @@ struct IRenderTarget {
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) = 0;
   virtual IRenderBrush *CreateSolidBrush(Color *pColor) = 0;
 
-  virtual void FillRgn(HRGN hRgn, ui::Color *pColor) = 0;
+  virtual void FillRgn(llong/*HRGN*/ hRgn, ui::Color *pColor) = 0;
   virtual void DrawRect(Rect *lprc, ui::Color *pColor) = 0;
   virtual void TileRect(Rect *lprc, IRenderBitmap *) = 0;
   virtual void Rectangle(Rect *lprc, ui::Color *pColBorder, ui::Color *pColBack,
@@ -283,7 +285,7 @@ struct IUICursor {
   virtual long AddRef() = 0;
   virtual long Release() = 0;
 
-  virtual HCURSOR GetCursor() = 0;
+  // virtual HCURSOR GetCursor() = 0;
 };
 
 } // namespace ui

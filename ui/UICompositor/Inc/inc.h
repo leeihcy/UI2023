@@ -23,7 +23,7 @@ namespace ui
     
 	struct UploadGpuBitmapInfo
 	{
-		HBITMAP hBitmap;
+		/*HBITMAP*/llong hBitmap;
 		int width;
 		int height;
 		int bpp;
@@ -167,6 +167,6 @@ extern "C" UICOMPOSITOR_API long  UIStartupGpuCompositor();
 extern "C" UICOMPOSITOR_API long  UIShutdownGpuCompositor();
 
 extern "C" UICOMPOSITOR_API 
-	ui::IHardwareComposition*  UICreateHardwareComposition(HWND hWnd);
+	ui::IHardwareComposition*  UICreateHardwareComposition(/*HWND*/int hWnd);
 
 #endif

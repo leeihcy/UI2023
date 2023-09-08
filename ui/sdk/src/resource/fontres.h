@@ -1,7 +1,7 @@
 #pragma once
 #include "include/inc.h"
 #include "src/private_inc.h"
-#include "include/util/windows.h"
+#include "src/util/windows.h"
 
 namespace ui {
 struct IFontResItem;
@@ -25,7 +25,7 @@ public:
 public:
   const char *GetId() { return m_strId.c_str(); }
   void SetId(const char *szValue) { SETSTRING(m_strId, szValue); }
-  LOGFONT *GetLogFont() { return &m_lf; }
+  FontDesc *GetLogFont() { return &m_lf; }
 #if 0
   void GetFaceName(char *szOut) { strcpy(szOut, m_lf.lfFaceName); }
   void SetFaceName(const std::string &str) {
@@ -70,8 +70,8 @@ public:
     }
   }
 
-  void SetLogFont(LOGFONT *pLogFont);
-  void ModifyFont(LOGFONT *pLogFont);
+  void SetLogFont(FontDesc *pLogFont);
+  void ModifyFont(FontDesc *pLogFont);
   IRenderFont *GetFont(Resource *pSkinRes,
                        GRAPHICS_RENDER_LIBRARY_TYPE eRenderType =
                            GRAPHICS_RENDER_LIBRARY_TYPE_GDI);
@@ -82,7 +82,7 @@ private:
   IFontResItem *m_pIFontResItem;
 
   std::string m_strId;
-  LOGFONT m_lf;
+  ui::FontDesc m_lf;
 #if 0
 	GDIRenderFont*  m_pGdiFont;
 #endif
@@ -109,10 +109,10 @@ public:
 public:
   FontResItem *GetFontItem(int nIndex);
   FontResItem *GetFontItem(const std::string &strID);
-  bool InsertFont(const char *szId, LOGFONT *pLogFont);
-  FontResItem *InsertFont(const char *szId, LOGFONT *pLogFont, long wParam,
+  bool InsertFont(const char *szId, FontDesc *pLogFont);
+  FontResItem *InsertFont(const char *szId, FontDesc *pLogFont, long wParam,
                           long lParam);
-  bool ModifyFont(const std::string &strID, LOGFONT *pLogFont);
+  bool ModifyFont(const std::string &strID, FontDesc *pLogFont);
   bool RemoveFont(const std::string &strID);
   void Clear();
 

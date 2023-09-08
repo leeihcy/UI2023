@@ -70,7 +70,7 @@ struct UIAPI IObject : public IMessage {
 	IWindow*  GetWindow();
   const char *GetId();
   void SetId(const char *szText);
-  HWND GetHWND();
+  // HWND GetHWND();
   void InitDefaultAttrib();
   IMapAttribute* GetMapAttribute();
   void ClearMapAttribute();

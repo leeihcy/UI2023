@@ -27,7 +27,7 @@
 #include <malloc.h>
 
 
-// ÔÚ°æ±¾Ğ¡ÓÚ0x0500Ê±£¬ÏÔÊ¾PNGÍ¼Æ¬²»»áÍ¸Ã÷
+// åœ¨ç‰ˆæœ¬å°äº0x0500æ—¶ï¼Œæ˜¾ç¤ºPNGå›¾ç‰‡ä¸ä¼šé€æ˜
 #ifndef WINVER				 
 	#define WINVER 0x0500	 
 #elif WINVER < 0x0500
@@ -59,7 +59,7 @@ namespace ui
 	class Image;
 
 	// // 
-	// //	Í¼Æ¬ÄÚ´æÊı¾İ¿½±´£¬ÓÃÓÚÆ¤·ô¸Ä±äÉ«µ÷Ê±±£´æÆäÔ­Ê¼Êı¾İ£¬²¢¼æÈİgdi/gdi+Í¼Æ¬
+	// //	å›¾ç‰‡å†…å­˜æ•°æ®æ‹·è´ï¼Œç”¨äºçš®è‚¤æ”¹å˜è‰²è°ƒæ—¶ä¿å­˜å…¶åŸå§‹æ•°æ®ï¼Œå¹¶å…¼å®¹gdi/gdi+å›¾ç‰‡
 	// //
 	// class ImageData
 	// {
@@ -78,13 +78,13 @@ namespace ui
 	// 		m_nbpp = m_nStride = m_nWidth = m_nHeight = 0;
 	// 	}
 
-	// 	BYTE*  m_ptr;         // Êı¾İÊ×µØÖ·£¬ÓÃÓÚnew/delete
-	// 	BYTE*  m_pScan0;      // Í¼Æ¬µÚÒ»ĞĞµÄÊı¾İµØÖ·
+	// 	BYTE*  m_ptr;         // æ•°æ®é¦–åœ°å€ï¼Œç”¨äºnew/delete
+	// 	BYTE*  m_pScan0;      // å›¾ç‰‡ç¬¬ä¸€è¡Œçš„æ•°æ®åœ°å€
 	// 	int    m_nbpp;        // bit per pixel
 	// 	int    m_nStride;     // Offset, in bytes, between consecutive scan lines of the bitmap. If the stride is positive, the bitmap is top-down. If the stride is negative, the bitmap is bottom-up.
-	// 	int    m_nWidth;      // Í¼Æ¬¿í¶È
-	// 	int    m_nHeight;     // Í¼Æ¬¸ß¶È
-	// 	bool  m_bNeedDeletePtr;  // ÊÇ·ñĞèÒªÊÍ·Åm_ptr
+	// 	int    m_nWidth;      // å›¾ç‰‡å®½åº¦
+	// 	int    m_nHeight;     // å›¾ç‰‡é«˜åº¦
+	// 	bool  m_bNeedDeletePtr;  // æ˜¯å¦éœ€è¦é‡Šæ”¾m_ptr
 	// };
 
 	class CImageDC
@@ -186,7 +186,7 @@ namespace ui
 		void  Destroy() throw();
 		HBITMAP Detach() throw();
 		BOOL  Draw( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, byte bAlpha=0xFF ) const throw();
-		/* bo.li ADD 20101202 Ôö¼Ó9¹¬»æÖÆ */
+		/* bo.li ADD 20101202 å¢åŠ 9å®«ç»˜åˆ¶ */
 		BOOL  Draw( HDC hDestDC, int xDest, int yDest, int nDestWidth, int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, C9Region* pImage9Region, bool bDrawCenter=true, byte bAlpha=0xFF ) const throw();
 		BOOL  Draw( HDC hDestDC, const RECT& rectDest, const RECT& rectSrc, byte bAlpha=0xFF ) const throw();
 		BOOL  Draw( HDC hDestDC, int xDest, int yDest, byte bAlpha=0xFF ) const throw();
@@ -229,7 +229,7 @@ namespace ui
 		BOOL MaskBlt( HDC hDestDC, const POINT& pointDest, HBITMAP hbmMask, DWORD dwROP = SRCCOPY ) const throw();
 		BOOL PlgBlt( HDC hDestDC, const POINT* pPoints, HBITMAP hbmMask = nullptr ) const throw();
 		BOOL PlgBlt( HDC hDestDC, const POINT* pPoints, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight, HBITMAP hbmMask = nullptr, int xMask = 0, int yMask = 0 ) const throw();
-		/* ¡ı ĞŞ¸Ä£º½«CPoint->Point,²¢È¥µôÄ¬ÈÏ²ÎÊıCPoint(0,0) */
+		/* â†“ ä¿®æ”¹ï¼šå°†CPoint->Point,å¹¶å»æ‰é»˜è®¤å‚æ•°CPoint(0,0) */
 		BOOL PlgBlt( HDC hDestDC, const POINT* pPoints, const RECT& rectSrc, const POINT& pointMask, HBITMAP hbmMask = nullptr ) const throw();
 		void ReleaseDC() const throw();
 		HRESULT Save( IStream* pStream, REFGUID guidFileType ) const throw();
@@ -253,17 +253,17 @@ namespace ui
 #endif  // WINVER >= 0x0500
 
 		static BOOL IsTransparencySupported() throw();
-		void   ForceUseAlpha(){m_bHasAlphaChannel = true ;}   // libo add 20110710 ÔÚµ÷ÓÃCreateÊ±£¬ÎÒĞèÒª´´½¨Ò»¸ö´øÍ¨µÀµÄÎ»Í¼£¬µ«Ã»ÓĞÌá¹©¸øÎÒ½Ó¿Ú£¬Òò´ËÔö¼ÓÒ»¸ö
+		void   ForceUseAlpha(){m_bHasAlphaChannel = true ;}   // libo add 20110710 åœ¨è°ƒç”¨Createæ—¶ï¼Œæˆ‘éœ€è¦åˆ›å»ºä¸€ä¸ªå¸¦é€šé“çš„ä½å›¾ï¼Œä½†æ²¡æœ‰æä¾›ç»™æˆ‘æ¥å£ï¼Œå› æ­¤å¢åŠ ä¸€ä¸ª
 		bool   HasAlphaChannel() const { return m_bHasAlphaChannel; }
-		HBITMAP   CreateDDB();                     // libo add 20120318 TransparentBltÖ»ÄÜÊÊÓ¦ÓÚDDB£¬Òò´ËÌá¹©Ò»¸ö½Ó¿Ú½«DIB×ª»»³ÉDDB
-		bool   CopyGrayImageFrom( const Image* pImage );         // libo add 20120321 È¥É«
+		HBITMAP   CreateDDB();                     // libo add 20120318 TransparentBltåªèƒ½é€‚åº”äºDDBï¼Œå› æ­¤æä¾›ä¸€ä¸ªæ¥å£å°†DIBè½¬æ¢æˆDDB
+		bool   CopyGrayImageFrom( const Image* pImage );         // libo add 20120321 å»è‰²
 		bool   DrawGray(HDC hDC, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc);  // libo add 20120927
 		bool   ChangeHSL( const ImageData* pOriginImageData, short h, short s, short l, int nFlag );
 		bool   SaveBits( ImageData* pImageData, int* pNeedSize );
 		void   RestoreBits( ImageData* pImageData );
-		bool   ImageList_Draw(HDC hDestDC, int x, int y, int col, int row, int cx, int cy );  // libo add 20120401 Ôö¼ÓÍ¼ÏñÁĞ±í»æÖÆ·½·¨
-		HBITMAP  CopyImageByRect(RECT* prc);    // libo add 20121019 Ôö¼Ó¿½±´Í¼Æ¬µÄÒ»²¿·ÖµÄ·½·¨
-		DWORD  GetAverageColor();      // libo add 20121128 Ôö¼Ó»ñÈ¡Í¼Æ¬Æ½¾ùÉ«µÄ·½·¨
+		bool   ImageList_Draw(HDC hDestDC, int x, int y, int col, int row, int cx, int cy );  // libo add 20120401 å¢åŠ å›¾åƒåˆ—è¡¨ç»˜åˆ¶æ–¹æ³•
+		HBITMAP  CopyImageByRect(RECT* prc);    // libo add 20121019 å¢åŠ æ‹·è´å›¾ç‰‡çš„ä¸€éƒ¨åˆ†çš„æ–¹æ³•
+		DWORD  GetAverageColor();      // libo add 20121128 å¢åŠ è·å–å›¾ç‰‡å¹³å‡è‰²çš„æ–¹æ³•
         DWORD  GetAverageColor(LPCRECT prc);
 		bool   ModifyAlpha(ImageData* pOriginImageData, byte nAlphaPercent);
 		bool   SetAlpha(byte nAlpha);
@@ -283,13 +283,13 @@ namespace ui
 		int   m_nBPP;               // bit per pixel
 		bool  m_bIsDIBSection;
 		bool  m_bHasAlphaChannel;
-		LONG  m_iTransparentColor;    // -1 ±íÊ¾Î´²ÉÓÃ, -2 ±íÊ¾Ö±½ÓÊ¹ÓÃm_colorTransparent
-		COLORREF m_colorTransparent; // µ±m_iTransparentColorÎª-2Ê±ÓĞĞ§
+		LONG  m_iTransparentColor;    // -1 è¡¨ç¤ºæœªé‡‡ç”¨, -2 è¡¨ç¤ºç›´æ¥ä½¿ç”¨m_colorTransparent
+		COLORREF m_colorTransparent; // å½“m_iTransparentColorä¸º-2æ—¶æœ‰æ•ˆ
 
 
 		static CInitGDIPlus s_initGDIPlus;
 
-	public:  // modified by libo 2012-2-17 ÎªÁËÊ¹ÆäËüÍâ²¿ÀàÒ²ÄÜÒıÓÃ¸Ã¶ÔÏóÀ´¼Ó¼õÒıÓÃ¼ÆÊı
+	public:  // modified by libo 2012-2-17 ä¸ºäº†ä½¿å…¶å®ƒå¤–éƒ¨ç±»ä¹Ÿèƒ½å¼•ç”¨è¯¥å¯¹è±¡æ¥åŠ å‡å¼•ç”¨è®¡æ•°
 		inline static void ReleaseGDIPlus()      { DecreaseCImageCount(); s_initGDIPlus.ReleaseGDIPlus(); }
 		inline static bool InitGDIPlus() throw() { IncreaseCImageCount(); return  s_initGDIPlus.Init(); }
 		inline static void IncreaseCImageCount() { s_initGDIPlus.IncreaseCImageCount(); }
@@ -360,7 +360,7 @@ namespace ui
 		DeleteCriticalSection(&m_sect);
 	}
 
-    // Gdiplus::GdiplusStartup»á´´½¨Ò»¸öÏß³Ì£º
+    // Gdiplus::GdiplusStartupä¼šåˆ›å»ºä¸€ä¸ªçº¿ç¨‹ï¼š
     // 00 0106f3cc 739578a9 00000000 00000000 73957832 kernel32!CreateThreadStub (FPO: [Non-Fpo])
     // 01 0106f3fc 73957a6f 00000000 00000000 739578ca gdiplus!CreateThreadAndAddRefDll+0x4e (FPO: [Non-Fpo])
     // 02 0106f424 7396a4f6 fc6cc4e1 73a8375c 0106f570 gdiplus!BackgroundThreadStartup+0x4d (FPO: [0,0,4])
@@ -602,7 +602,7 @@ namespace ui
 	}
 
 	// Remarks:
-	//	Èç¹ûnHeightÎª¸ºÖµ£¬±íÊ¾Òª´´½¨Ò»¸öbottom-upÀàĞÍµÄDIB£¬·ñÔòÎªÒ»¸ötop-downÀàĞÍµÄ
+	//	å¦‚æœnHeightä¸ºè´Ÿå€¼ï¼Œè¡¨ç¤ºè¦åˆ›å»ºä¸€ä¸ªbottom-upç±»å‹çš„DIBï¼Œå¦åˆ™ä¸ºä¸€ä¸ªtop-downç±»å‹çš„
 	// 
 	inline BOOL Image::Create( int nWidth, int nHeight, int nBPP, DWORD dwFlags ) throw()
 	{
@@ -650,7 +650,7 @@ namespace ui
 			if( eCompression == BI_BITFIELDS )
 			{
 				assert( pdwBitfields != nullptr );
-				/* < BEGIN 20100623 libo MODIFY£¬¡¡ÔÚVS2005ÒÔÏÂ£¬Ã»ÓĞmemcpy_sº¯Êı */
+				/* < BEGIN 20100623 libo MODIFYï¼Œã€€åœ¨VS2005ä»¥ä¸‹ï¼Œæ²¡æœ‰memcpy_så‡½æ•° */
 				/*Checked::*///memcpy_s(pbmi->bmiColors, 3*sizeof( DWORD ), pdwBitfields, 3*sizeof( DWORD ));
 				memcpy( pbmi->bmiColors,  pdwBitfields, 3*sizeof( DWORD ) );
 				/* 20100623 libo MODIFY END > */
@@ -817,7 +817,7 @@ namespace ui
 		String& strFilter, vector< GUID >& aguidFileTypes, const wchar_t* pszAllFilesDescription, 
 		DWORD dwExclude, TCHAR chSeparator )
 	{
-#ifdef _UNICODE // libo 20101117 remove Ê¹ÓÃÓÚ¶à×Ö½Ú±àÂë
+#ifdef _UNICODE // libo 20101117 remove ä½¿ç”¨äºå¤šå­—èŠ‚ç¼–ç 
 		if( pszAllFilesDescription != nullptr )
 		{
 			aguidFileTypes.push_back( GUID_NULL );
@@ -1037,7 +1037,7 @@ namespace ui
 
 	inline HRESULT Image::Load( const wchar_t* pszFileName ) throw()
 	{
-#ifdef _UNICODE // libo 20101117 remove Ö»ÊÊÓÃÓÃÓÚ¶à×Ö½Ú±àÂë
+#ifdef _UNICODE // libo 20101117 remove åªé€‚ç”¨ç”¨äºå¤šå­—èŠ‚ç¼–ç 
 		if( !InitGDIPlus() )
 		{
 			return( E_FAIL );
@@ -1055,7 +1055,7 @@ namespace ui
 #endif
 	}
 
-	// 2012.11.28 Ôö¼ÓÇ¿ÖÆ´´½¨Ò»¸ö32Î»´øalphaÍ¨µÀµÄ¹¦ÄÜ£¬Ê¹µÃ24Î»¸ñÊ½Í¼Æ¬Ò²ÄÜÔÚ·Ö²ã´°¿ÚÉÏÏÔÊ¾
+	// 2012.11.28 å¢åŠ å¼ºåˆ¶åˆ›å»ºä¸€ä¸ª32ä½å¸¦alphaé€šé“çš„åŠŸèƒ½ï¼Œä½¿å¾—24ä½æ ¼å¼å›¾ç‰‡ä¹Ÿèƒ½åœ¨åˆ†å±‚çª—å£ä¸Šæ˜¾ç¤º
 	inline HRESULT Image::CreateFromGdiplusBitmap(Gdiplus::Bitmap& bmSrc, bool bForceAlpha) throw()
 	{
 		m_bHasAlphaChannel = bForceAlpha;
@@ -1070,11 +1070,11 @@ namespace ui
 			nBPP = Gdiplus::GetPixelFormatSize( eSrcPixelFormat );
 			eDestPixelFormat = eSrcPixelFormat;
 		}
-		if( m_bHasAlphaChannel || Gdiplus::IsAlphaPixelFormat( eSrcPixelFormat ) )  // Add by libo Èç¹ûĞèÒªÇ¿ÖÆ´´½¨Ò»¸ö´øalpha channelµÄÎ»Í¼
+		if( m_bHasAlphaChannel || Gdiplus::IsAlphaPixelFormat( eSrcPixelFormat ) )  // Add by libo å¦‚æœéœ€è¦å¼ºåˆ¶åˆ›å»ºä¸€ä¸ªå¸¦alpha channelçš„ä½å›¾
 		{
 			nBPP = 32;
 			dwFlags |= createAlphaChannel;
-			//eDestPixelFormat = PixelFormat32bppARGB;  // 2015/3/16 AlphaBlendĞèÒªÔ¤³ËÊı¾İ
+			//eDestPixelFormat = PixelFormat32bppARGB;  // 2015/3/16 AlphaBlendéœ€è¦é¢„ä¹˜æ•°æ®
 			eDestPixelFormat = PixelFormat32bppPARGB;
 		}
 
@@ -1085,7 +1085,7 @@ namespace ui
 		}
 		//USES_ATL_SAFE_ALLOCA;
 		Gdiplus::ColorPalette* pPalette = nullptr;
-		if (false == m_bHasAlphaChannel && Gdiplus::IsIndexedPixelFormat(eSrcPixelFormat))  // ÓĞ¿ÉÄÜÍâ²¿Ç¿ÖÆÖ¸¶¨ÁË´´½¨alphaÍ¨µÀµÄ32Î»Í¼Æ¬£¬ÕâÊ±ºòÃ»ÓĞcolor table
+		if (false == m_bHasAlphaChannel && Gdiplus::IsIndexedPixelFormat(eSrcPixelFormat))  // æœ‰å¯èƒ½å¤–éƒ¨å¼ºåˆ¶æŒ‡å®šäº†åˆ›å»ºalphaé€šé“çš„32ä½å›¾ç‰‡ï¼Œè¿™æ—¶å€™æ²¡æœ‰color table
 		{
 			unsigned int nPaletteSize = bmSrc.GetPaletteSize();
 			pPalette = static_cast< Gdiplus::ColorPalette* >( _alloca(nPaletteSize) );
@@ -1128,7 +1128,7 @@ namespace ui
 			{
 				//////////////////////////////////////////////////////////////////////////
 				//
-				//                         ÊµÏÖÔ¤³Ë¡££¨2015/3/16 Ö¸¶¨PixelFormat32bppPARGB¸ñÊ½¼´´ú±í´´½¨Ô¤³ËµÄ¸ñÊ½£©
+				//                         å®ç°é¢„ä¹˜ã€‚ï¼ˆ2015/3/16 æŒ‡å®šPixelFormat32bppPARGBæ ¼å¼å³ä»£è¡¨åˆ›å»ºé¢„ä¹˜çš„æ ¼å¼ï¼‰
 				//
 				// First you need to create a pre-multiplied 32-bits-per-pixel (bpp) bitmap using a
 				// blue-green-red-alpha (BGRA) color channel byte order. Pre-multiplied just means
@@ -1151,7 +1151,7 @@ namespace ui
 // 				}
 // 				else 
 				{
-					/* < BEGIN 20100623 libo MODIFY£¬¡¡ÔÚVS2005ÒÔÏÂ£¬Ã»ÓĞmemcpy_sº¯Êı */
+					/* < BEGIN 20100623 libo MODIFYï¼Œã€€åœ¨VS2005ä»¥ä¸‹ï¼Œæ²¡æœ‰memcpy_så‡½æ•° */
 					//memcpy_s(pbDestRow, nBytesPerRow, pbSrcRow, nBytesPerRow);
 					memcpy( pbDestRow,  pbSrcRow, nBytesPerRow );
 					/* 20100623 libo MODIFY END > */
@@ -1167,7 +1167,7 @@ namespace ui
 			// Let GDI+ work its magic
 			Gdiplus::Bitmap bmDest( GetWidth(), GetHeight(), GetPitch(), eDestPixelFormat, static_cast< BYTE* >( GetBits() ) );
 			Gdiplus::Graphics gDest( &bmDest );
-            //gDest.DrawImage( &bmSrc, 0,0); //-- libo 2014.3.19 Ö±½ÓÕâÃ´»æÖÆµ÷ÓÃ»áµ¼ÖÂÍ¼Æ¬±»À­Éì£¨Èç24Î»µÄbmpÍ¼Æ¬£©,DPI²»Ò»ÖÂ
+            //gDest.DrawImage( &bmSrc, 0,0); //-- libo 2014.3.19 ç›´æ¥è¿™ä¹ˆç»˜åˆ¶è°ƒç”¨ä¼šå¯¼è‡´å›¾ç‰‡è¢«æ‹‰ä¼¸ï¼ˆå¦‚24ä½çš„bmpå›¾ç‰‡ï¼‰,DPIä¸ä¸€è‡´
 
             //bmSrc.SetResolution(96,96);
 			gDest.DrawImage( &bmSrc, 0,0,GetWidth(), GetHeight()); 
@@ -1176,9 +1176,9 @@ namespace ui
 		return( S_OK );
 	}
 
-	// ·´Ô¤³Ë
-	// ³¡¾°£ºµ÷ÓÃSaveÊ±£¬ĞèÒª·´Ô¤³ËÖ®ºó£¬ÔÙ±£´æ¡£·ñÔòÔÙÓÃgdiplus¼ÓÔØ³öÀ´µÄÍ¼Æ¬ÏÔÊ¾²»ÕıÈ·
-	//       »òÕßÊ¹ÓÃPixelFormat32bppPArgbÀ´´´½¨Gdiplus::Bitmap
+	// åé¢„ä¹˜
+	// åœºæ™¯ï¼šè°ƒç”¨Saveæ—¶ï¼Œéœ€è¦åé¢„ä¹˜ä¹‹åï¼Œå†ä¿å­˜ã€‚å¦åˆ™å†ç”¨gdiplusåŠ è½½å‡ºæ¥çš„å›¾ç‰‡æ˜¾ç¤ºä¸æ­£ç¡®
+	//       æˆ–è€…ä½¿ç”¨PixelFormat32bppPArgbæ¥åˆ›å»ºGdiplus::Bitmap
 	inline void  Image::UnPreMulti()
 	{
 		if (m_nBPP != 32)
@@ -1203,7 +1203,7 @@ namespace ui
 	}
 
 #if 0
-	// Ö¸¶¨´´½¨32Î»¸ñÊ½µÄImage¡£ÎªÁË±ÜÃâ24Î»µÄÍ¼Æ¬ÓĞÃ»ÓĞalphaÖµ£¬µ¼ÖÂÔÚ·Ö²ã´°¿ÚÉÏÏÔÊ¾²»³öÀ´£¬ÔÚÕâÀï½«alphaÌî³äÎª255
+	// æŒ‡å®šåˆ›å»º32ä½æ ¼å¼çš„Imageã€‚ä¸ºäº†é¿å…24ä½çš„å›¾ç‰‡æœ‰æ²¡æœ‰alphaå€¼ï¼Œå¯¼è‡´åœ¨åˆ†å±‚çª—å£ä¸Šæ˜¾ç¤ºä¸å‡ºæ¥ï¼Œåœ¨è¿™é‡Œå°†alphaå¡«å……ä¸º255
 	inline HRESULT Image::Create32BPPFromGdiplusBitmap( Gdiplus::Bitmap& bmSrc ) throw()
 	{
 		Gdiplus::PixelFormat eSrcPixelFormat = bmSrc.GetPixelFormat();
@@ -1272,7 +1272,7 @@ namespace ui
 			{
 				//////////////////////////////////////////////////////////////////////////
 				//
-				//                         ÊµÏÖÔ¤³Ë¡£
+				//                         å®ç°é¢„ä¹˜ã€‚
 				//
 				// First you need to create a pre-multiplied 32-bits-per-pixel (bpp) bitmap using a
 				// blue-green-red-alpha (BGRA) color channel byte order. Pre-multiplied just means
@@ -1295,7 +1295,7 @@ namespace ui
 				}
 				else 
 				{
-					/* < BEGIN 20100623 libo MODIFY£¬¡¡ÔÚVS2005ÒÔÏÂ£¬Ã»ÓĞmemcpy_sº¯Êı */
+					/* < BEGIN 20100623 libo MODIFYï¼Œã€€åœ¨VS2005ä»¥ä¸‹ï¼Œæ²¡æœ‰memcpy_så‡½æ•° */
 					//memcpy_s(pbDestRow, nBytesPerRow, pbSrcRow, nBytesPerRow);
 					memcpy( pbDestRow,  pbSrcRow, nBytesPerRow );
 					/* 20100623 libo MODIFY END > */
@@ -1319,42 +1319,42 @@ namespace ui
 	}
 #endif
 
-	/* <BEGIN  ADD libo 20101116 Ìí¼Ó´Ó×ÊÔ´ÖĞ¼ÓÔØpngÍ¼Æ¬µÄ·½·¨ */
+	/* <BEGIN  ADD libo 20101116 æ·»åŠ ä»èµ„æºä¸­åŠ è½½pngå›¾ç‰‡çš„æ–¹æ³• */
 	inline void Image::LoadFromResource( HINSTANCE hInstance, unsigned int nIDResource, TCHAR* szResourceType ) throw()
 	{
-		// Èç¹ûÃ»ÓĞÖ¸¶¨×ÊÔ´ÀàĞÍ£¬ÄÇÃ´¿ÉÄÜ¾ÍÊÇÄ¬ÈÏµÄbmpÍ¼Æ¬
+		// å¦‚æœæ²¡æœ‰æŒ‡å®šèµ„æºç±»å‹ï¼Œé‚£ä¹ˆå¯èƒ½å°±æ˜¯é»˜è®¤çš„bmpå›¾ç‰‡
 		if( nullptr == szResourceType )
 		{
 			this->LoadFromResource( hInstance, MAKEINTRESOURCE(nIDResource) );
 			return;
 		}
 
-		// ²éÕÒ×ÊÔ´
+		// æŸ¥æ‰¾èµ„æº
 		HRSRC hRsrc = ::FindResource( hInstance, MAKEINTRESOURCE(nIDResource), szResourceType);
 		if (hRsrc == nullptr) 
 			return;
 
-		// ¼ÓÔØ×ÊÔ´
+		// åŠ è½½èµ„æº
 		HGLOBAL hImgData = ::LoadResource( hInstance, hRsrc);
 		if (hImgData == nullptr)
 			return;
 
-		// Ëø¶¨ÄÚ´æÖĞµÄÖ¸¶¨×ÊÔ´
+		// é”å®šå†…å­˜ä¸­çš„æŒ‡å®šèµ„æº
 		LPVOID   lpVoid  = ::LockResource(hImgData);
 		DWORD    dwSize  = ::SizeofResource(hInstance, hRsrc);
 
 		this->LoadFromData(lpVoid,dwSize);
 
-		// ÊÍ·Å×ÊÔ´
+		// é‡Šæ”¾èµ„æº
 		::FreeResource(hImgData);
 	}
 
 	//
-	//	´ÓÎÄ¼şÊı¾İÖĞ¼ÓÔØÍ¼Æ¬
+	//	ä»æ–‡ä»¶æ•°æ®ä¸­åŠ è½½å›¾ç‰‡
 	//		pImageData
-	//			[in]	ÎÄ¼şÁ÷Êı¾İ
+	//			[in]	æ–‡ä»¶æµæ•°æ®
 	//		nSize
-	//			[in]	pImageData´óĞ¡
+	//			[in]	pImageDataå¤§å°
 	//
 	inline bool Image::LoadFromData( void* pImageData, int nSize  )
 	{
@@ -1365,7 +1365,7 @@ namespace ui
 		::memcpy(lpByte, pImageData, nSize);
 		::GlobalUnlock(hNew);
 
-		// ´ÓÖ¸¶¨ÄÚ´æ´´½¨Á÷¶ÔÏó
+		// ä»æŒ‡å®šå†…å­˜åˆ›å»ºæµå¯¹è±¡
 		HRESULT ht = ::CreateStreamOnHGlobal(hNew, TRUE, &pStream);
 		if ( ht != S_OK )
 		{
@@ -1373,7 +1373,7 @@ namespace ui
 			return false;
 		}
 
-        // ¼ÓÔØÍ¼Æ¬
+        // åŠ è½½å›¾ç‰‡
         HRESULT hr = this->Load(pStream);
         pStream->Release();
 
@@ -1492,7 +1492,7 @@ namespace ui
 
 	inline CLSID Image::FindCodecForExtension( const wchar_t* pszExtension, const Gdiplus::ImageCodecInfo* pCodecs, unsigned int nCodecs )
 	{
-#ifdef _UNICODE // libo 20101117 remove Ö»ÊÊÓÃÓÃÓÚ¶à×Ö½Ú±àÂë
+#ifdef _UNICODE // libo 20101117 remove åªé€‚ç”¨ç”¨äºå¤šå­—èŠ‚ç¼–ç 
 		LPCWSTR pszExtensionW( pszExtension );
 
 		for( unsigned int iCodec = 0; iCodec < nCodecs; iCodec++ )
@@ -1612,7 +1612,7 @@ namespace ui
 
 	inline HRESULT Image::Save( const wchar_t* pszFileName, REFGUID guidFileType ) const throw()
 	{
-#ifdef _UNICODE // libo 20101117 remove Ö»ÊÊÓÃÓÃÓÚ¶à×Ö½Ú±àÂë
+#ifdef _UNICODE // libo 20101117 remove åªé€‚ç”¨ç”¨äºå¤šå­—èŠ‚ç¼–ç 
 		if( !InitGDIPlus() )
 		{
 			return( E_FAIL );
@@ -1664,8 +1664,8 @@ namespace ui
 		if (m_bHasAlphaChannel && m_pBits)
 		{
 			assert(m_nBPP == 32);
-			// libo modified 20130121 PixelFormat32bppARGB->PixelFormat32bppPARGB£¨loadÊ±Ô¤³Ë¹ıÁË£¬ËùÒÔÕâÀïµÃ¼ÓÉÏP±êÊ¶£©
-			// Ê¹ÓÃPixelFormat32bppARGB±£´æÊ±£¬alphaÖµ²»ÖªµÀÎªÊ²Ã´×ÜÊÇºÍÔ­Ê¼Öµ²»Ò»Ñù¡£
+			// libo modified 20130121 PixelFormat32bppARGB->PixelFormat32bppPARGBï¼ˆloadæ—¶é¢„ä¹˜è¿‡äº†ï¼Œæ‰€ä»¥è¿™é‡Œå¾—åŠ ä¸ŠPæ ‡è¯†ï¼‰
+			// ä½¿ç”¨PixelFormat32bppARGBä¿å­˜æ—¶ï¼Œalphaå€¼ä¸çŸ¥é“ä¸ºä»€ä¹ˆæ€»æ˜¯å’ŒåŸå§‹å€¼ä¸ä¸€æ ·ã€‚
 			Gdiplus::Bitmap bm( m_nWidth, m_nHeight, m_nPitch, PixelFormat32bppPARGB, static_cast< BYTE* >( m_pBits ) );
 			status = bm.Save( pwszFileName, &clsidEncoder, nullptr );
 			if (status != Gdiplus::Ok)
@@ -1866,9 +1866,9 @@ namespace ui
         // value, regardless of the sign of the height it was created with. 
         // If you need to track the sign of the height in an application, you will need to
         // do this programmatically. 
-        // µ±Ê¹ÓÃ GetObject() ÒÔ»ñµÃÓĞ¹Ø DIB ²¿·ÖĞÅÏ¢Ê±£¬GetObject() ½«Ê¼ÖÕ·µ»Ø°üº¬Õı¸ß¶ÈÖµ£¬
-        // ¶ø²»¿¼ÂÇÓë´´½¨ËüµÄ¸ß¶ÈµÄ·ûºÅ BITMAPINFOHEADER DIBSECTION¡£Èç¹ûÄúĞèÒª¸ú×ÙÓ¦ÓÃ³ÌĞò
-        // ÖĞµÄ¸ß¶ÈµÄ·ûºÅ£¬ÄúĞèÒªÒÔ±à³Ì·½Ê½Ö´ĞĞ´Ë²Ù×÷¡£
+        // å½“ä½¿ç”¨ GetObject() ä»¥è·å¾—æœ‰å…³ DIB éƒ¨åˆ†ä¿¡æ¯æ—¶ï¼ŒGetObject() å°†å§‹ç»ˆè¿”å›åŒ…å«æ­£é«˜åº¦å€¼ï¼Œ
+        // è€Œä¸è€ƒè™‘ä¸åˆ›å»ºå®ƒçš„é«˜åº¦çš„ç¬¦å· BITMAPINFOHEADER DIBSECTIONã€‚å¦‚æœæ‚¨éœ€è¦è·Ÿè¸ªåº”ç”¨ç¨‹åº
+        // ä¸­çš„é«˜åº¦çš„ç¬¦å·ï¼Œæ‚¨éœ€è¦ä»¥ç¼–ç¨‹æ–¹å¼æ‰§è¡Œæ­¤æ“ä½œã€‚
 
 		nBytes = ::GetObject( m_hBitmap, sizeof( DIBSECTION ), &dibsection );
 		if( nBytes == sizeof( DIBSECTION ) )
@@ -1892,7 +1892,7 @@ namespace ui
 		else
 		{
 			// Non-DIBSection 
-			// TODO: ´ÓDDB Attachµ½µÄÍ¼Æ¬»æÖÆÓĞÎÊÌâ£¬ÏÈ²»¹ÜÁË£¬Ö±½Ó×ª³ÉDIB
+			// TODO: ä»DDB Attachåˆ°çš„å›¾ç‰‡ç»˜åˆ¶æœ‰é—®é¢˜ï¼Œå…ˆä¸ç®¡äº†ï¼Œç›´æ¥è½¬æˆDIB
 #if 0
 			assert( nBytes == sizeof( BITMAP ) );
 			m_bIsDIBSection = false;
@@ -1969,7 +1969,7 @@ namespace ui
 
 		RGBQUAD rgb;
 
-		bool bHaveDC = (m_hDC != nullptr);   // libo add ÓÃÓÚÍâ²¿µ÷ÓÃ»ñÈ¡ÑÕÉ«Öµ
+		bool bHaveDC = (m_hDC != nullptr);   // libo add ç”¨äºå¤–éƒ¨è°ƒç”¨è·å–é¢œè‰²å€¼
 		if( !bHaveDC )
 			GetDC();
 
@@ -1985,15 +1985,15 @@ namespace ui
 	}
 
 	// libo 20120321 add
-	//	´´½¨pImageµÄÒ»ÕÅÈ¥É«Í¼Æ¬
+	//	åˆ›å»ºpImageçš„ä¸€å¼ å»è‰²å›¾ç‰‡
 	//
-	// modify 20120927 ½«¸¡µãÔËËãĞŞ¸ÄÎªÕûÊıÔËËã 
-	//	²Î¿¼:http://blog.csdn.net/housisong/article/details/3884368 Í¼ĞÎÍ¼Ïñ´¦Àí£­Ö®£­²ÊÉ«×ª»¯µ½»Ò¶ÈµÄËÙ¶ÈÓÅ»¯. 
+	// modify 20120927 å°†æµ®ç‚¹è¿ç®—ä¿®æ”¹ä¸ºæ•´æ•°è¿ç®— 
+	//	å‚è€ƒ:http://blog.csdn.net/housisong/article/details/3884368 å›¾å½¢å›¾åƒå¤„ç†ï¼ä¹‹ï¼å½©è‰²è½¬åŒ–åˆ°ç°åº¦çš„é€Ÿåº¦ä¼˜åŒ–. 
 	//	HouSisong@GMail.com  2009.02.08
 	// 
 	inline bool Image::CopyGrayImageFrom( const Image* pImage )
 	{
-		if( nullptr == pImage || (pImage->GetBPP()!= 32 && pImage->GetBPP()!= 24))  // ÔİÊ±²»Ö§³ÖÆäËü¸ñÊ½µÄÍ¼Æ¬£¬²»ÁË½âÆä¸ñÊ½
+		if( nullptr == pImage || (pImage->GetBPP()!= 32 && pImage->GetBPP()!= 24))  // æš‚æ—¶ä¸æ”¯æŒå…¶å®ƒæ ¼å¼çš„å›¾ç‰‡ï¼Œä¸äº†è§£å…¶æ ¼å¼
 			return false;
 	
 		this->Destroy();
@@ -2002,7 +2002,7 @@ namespace ui
 			return false;
 
 		// Gray = R*0.299 + G*0.587  + B*0.114;
-		//»Ò¶È×ª»»ÏµÊı   
+		//ç°åº¦è½¬æ¢ç³»æ•°   
 		const double gray_r_coeff = 0.299;  
 		const double gray_g_coeff = 0.587;  
 //		const double gray_b_coeff = 0.114;
@@ -2015,13 +2015,13 @@ namespace ui
 		const BYTE* pImageBits = (const BYTE*)pImage->GetBits();
 		BYTE* pNewImageBits = (BYTE*)m_pBits;
 		int   bytesperpx    = m_nBPP>>3;
-		int   bytesperrow   = bytesperpx*m_nWidth;  /*abs(m_nPitch);*/;   // ×¢£ºÓÉÓÚÎ»ÓÚÒ»ĞĞÒªÇóÊÇ4µÄÎ»ÖÃ£¬¿ÉÄÜµ¼ÖÂµ±¿í¶ÈÎªÆæÊıÊı£¬ºóÃæ»á²¹³äÎŞÓÃµÄÎ»¡£Òò´ËÕâÀï²»ÄÜÖ±½ÓÓÃm_nPitch
+		int   bytesperrow   = bytesperpx*m_nWidth;  /*abs(m_nPitch);*/;   // æ³¨ï¼šç”±äºä½äºä¸€è¡Œè¦æ±‚æ˜¯4çš„ä½ç½®ï¼Œå¯èƒ½å¯¼è‡´å½“å®½åº¦ä¸ºå¥‡æ•°æ•°ï¼Œåé¢ä¼šè¡¥å……æ— ç”¨çš„ä½ã€‚å› æ­¤è¿™é‡Œä¸èƒ½ç›´æ¥ç”¨m_nPitch
 
 		for (int row = 0; row < m_nHeight; row ++ )
 		{
 			for (int i = 0; i < bytesperrow; i += bytesperpx)
 			{
-				//int rgb = (int)(pImageBits[i]*0.11 + pImageBits[i+1]*0.59 + pImageBits[i+2]*0.3);  // È¥É«Ëã·¨£¬¿ÉÓÅ»¯·Ç¸¡µãÔËËã
+				//int rgb = (int)(pImageBits[i]*0.11 + pImageBits[i+1]*0.59 + pImageBits[i+2]*0.3);  // å»è‰²ç®—æ³•ï¼Œå¯ä¼˜åŒ–éæµ®ç‚¹è¿ç®—
 				int rgb = (pImageBits[i]*gray_b_coeff_int   + 
 					       pImageBits[i+1]*gray_g_coeff_int + 
 						   pImageBits[i+2]*gray_r_coeff_int) >> bit;  

@@ -11,12 +11,12 @@
 // Modify History:
 // 2016.9.19
 // __AllocStdCallThunk/__FreeStdCallThunk
-// �����ڴ�й¶���ᱻ��⹤�߱�����������ｫԴ��ק����������������
+// 存在内存泄露，会被检测工具报告出来。这里将源码拽出来，屏蔽这块代码
 
 #ifdef __ATLSTDTHUNK_H__ 
-#error "��ʹ��atl�Դ���thunk"
+#error "不使用atl自带的thunk"
 #endif
-#define __ATLSTDTHUNK_H__ // ����ԭ�ļ�
+#define __ATLSTDTHUNK_H__ // 屏蔽原文件
 
 #ifndef _UI_ATLSTDTHUNK_H__
 #define _UI_ATLSTDTHUNK_H__

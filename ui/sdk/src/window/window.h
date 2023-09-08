@@ -82,6 +82,9 @@ protected:
   // IObject *OnGetDefId();
   void onEraseBkgnd(IRenderTarget *);
 
+public:
+  WindowStyle& GetWindowStyle() { return m_windowStyle; }
+
 private:
   IWindow*  m_pIWindow;
 

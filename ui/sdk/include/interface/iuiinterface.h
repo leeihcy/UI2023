@@ -57,22 +57,11 @@ namespace ui
 		virtual bool  Destroy() = 0;
 		virtual bool  SetText(const wchar_t* szText) = 0;
 		virtual bool  SetTitle(const wchar_t* szText) = 0;
-		virtual bool  Show(HWND hWndParent) = 0;
+		virtual bool  Show(/*HWND*/int hWndParent) = 0;
 		virtual bool  Hide() = 0;
 		virtual bool  SetUIApplication(IApplication* p) = 0;
 		virtual void  OnSerialize(SerializeParam* pData) = 0;
 	};
-
-	struct IWaitForHandleCallback
-	{
-		virtual void OnWaitForHandleObjectCallback(/*HANDLE*/long, long) = 0;
-	};
-	struct IWaitForHandlesMgr : public IRootInterface
-	{
-		virtual bool  AddHandle(/*HANDLE*/long h, IWaitForHandleCallback* pCB, long l) = 0;
-		virtual bool  RemoveHandle(/*HANDLE*/long h) = 0;
-	};
-
 	struct IFlashInvalidateListener
 	{
 		virtual void OnInvalidateRect(const Rect*, bool) = 0;
@@ -80,7 +69,12 @@ namespace ui
 	struct IPreTranslateMessage  // IMessageFilter 被系统其它地方已经定义过了
 	{
 	public:
-		virtual bool PreTranslateMessage(ui::MSG* pMsg) = 0;
+		virtual bool PreTranslateMessage(/*MSG*/void* pMsg) = 0;
+	};
+	
+	struct IWaitForHandleCallback
+	{
+		virtual void OnWaitForHandleObjectCallback(long* handle, long) = 0;
 	};
 
 	struct IMessageFilterMgr : public IRootInterface

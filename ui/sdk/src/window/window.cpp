@@ -8,7 +8,9 @@
 #include <SkColorSpace.h>
 #include <assert.h>
 
-#if defined(OS_MAC)
+#if defined(OS_WIN)
+#include "window_win.h"
+#elif defined(OS_MAC)
 #include "window_mac.h"
 #elif defined(OS_LINUX)
 #include "window_linux.h"
@@ -66,8 +68,8 @@ long Window::FinalConstruct() {
 void Window::onSerialize(SerializeParam *pData) {
   // 放在最前面，设置好Graphics Render Library
   m_window_render.OnSerialize(pData);
-  Panel::onSerialize(pData);
 
+  Panel::onSerialize(pData);
   AttributeSerializer s(pData, "Window");
 #if 0
   s.AddString(XML_FONT, this,
@@ -79,7 +81,8 @@ void Window::onSerialize(SerializeParam *pData) {
 }
 
 void Window::Create(const Rect &rect) {
-#if 0 // defined(OS_WIN)
+#if defined(OS_WIN)
+  m_platform.reset(new WindowPlatformWin(*this));
 #elif defined(OS_MAC)
   m_platform.reset(new WindowPlatformMac(*this));
 #elif defined(OS_LINUX)
@@ -94,7 +97,7 @@ void Window::Create(const Rect &rect) {
   m_platform->Create(rect);
 }
 
-void Window::SetTitle(const char *title) { m_platform->SetTitle(title); }
+void Window::SetTitle(const char * title_utf8) { m_platform->SetTitle(title_utf8); }
 
 void Window::Show() {
   if (m_platform) {

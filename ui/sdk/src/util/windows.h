@@ -2,8 +2,35 @@
 #define _UI_SDK_INCLUDE_UTIL_WINDOWS_H_
 #include <string>
 #if defined(OS_WIN)
+
+// #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+
+#pragma warning(disable:4996)
+#pragma warning(disable:4302)
+#pragma warning(disable:4838)
+#define _CSTDDEF_
+
 #include <windows.h>
 #include <wingdi.h>
+
+
+#include <atlbase.h>
+#include <atlcore.h>
+// #include <Src\Atl\atlstdthunk.h> <-- 会崩溃，先不用了
+#include "ui/3rd/wtl90/Include/atlapp.h"
+#include "ui/3rd/wtl90/Include/atlcrack.h"
+
+// #define _WTL_NO_CSTRING
+// #include <../3rd/wtl90/Include/atlmisc.h>
+// using namespace WTL;
+
+// #include "Inc/inc.h"
+// #include "Inc/private_inc.h"
+// using namespace ui;
+
+// extern HINSTANCE g_hInstance;
+
+
 #undef SendMessage
 #undef LoadBitmap
 #undef DrawState
@@ -56,22 +83,6 @@ namespace ui {
 #define HTCLOSE 20
 
 #define LF_FACESIZE 32
-typedef struct tagLOGFONT {
-  long lfHeight;
-  long lfWidth;
-  long lfEscapement;
-  long lfOrientation;
-  long lfWeight;
-  unsigned char lfItalic;
-  unsigned char lfUnderline;
-  unsigned char lfStrikeOut;
-  unsigned char lfCharSet;
-  unsigned char lfOutPrecision;
-  unsigned char lfClipPrecision;
-  unsigned char lfQuality;
-  unsigned char lfPitchAndFamily;
-  char lfFaceName[LF_FACESIZE];
-} LOGFONT;
 #define FW_NORMAL 400
 #define FW_BOLD 700
 
@@ -97,7 +108,7 @@ typedef struct tagWINDOWPOS {
 #define SWP_NOMOVE 1
 #define SWP_NOSIZE 2
 #define SWP_NOZORDER 4
-#define SWP_NOREDRAW 8
+#define SWP_NO_REDRAW 8
 #define SWP_NOSENDCHANGING 0x10
 
 #define DT_SINGLELINE 1
@@ -131,6 +142,25 @@ typedef struct tagWINDOWPOS {
 #define wcsicmp wcscasecmp
 
 #endif
+
+
+
+struct FontDesc {
+  long lfHeight;
+  long lfWidth;
+  long lfEscapement;
+  long lfOrientation;
+  long lfWeight;
+  unsigned char lfItalic;
+  unsigned char lfUnderline;
+  unsigned char lfStrikeOut;
+  unsigned char lfCharSet;
+  unsigned char lfOutPrecision;
+  unsigned char lfClipPrecision;
+  unsigned char lfQuality;
+  unsigned char lfPitchAndFamily;
+  char lfFaceName[LF_FACESIZE];
+};
 }
 
 #endif

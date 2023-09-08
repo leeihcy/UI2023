@@ -13,7 +13,7 @@ public:
 	~OutCtrlDllItem();
 
 public:
-	HMODULE hModule;
+	/*HMODULE*/llong hModule;
 	std::wstring  strDllPath;
 };
 class SkinBuilderRes
@@ -25,7 +25,7 @@ public:
 	void  SetUIApplication(IApplication* pUIApp){ m_pUIApp = pUIApp; }
 	void  AddOuterCtrlsDllPath(const std::string&  strDll);
 	OutCtrlDllItem*  FindOuterCtrlsDll(const std::string& strDll);
-	OutCtrlDllItem*  FindOuterCtrlsDll(HMODULE hModule);
+	OutCtrlDllItem*  FindOuterCtrlsDll(/*HMODULE*/llong hModule);
 	void  Clear();
 
 	bool  Register(OutCtrlDllItem*);

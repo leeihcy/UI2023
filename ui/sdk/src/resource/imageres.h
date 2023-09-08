@@ -128,7 +128,7 @@ public:
   IImageResItem *GetImageResItem(const char *szID);
   bool ModifyImage(const char *szId, const char *szPath);
 
-  HBITMAP LoadBitmap(const char *szId);
+  // HBITMAP LoadBitmap(const char *szId);
   bool GetBitmap(const char *szImageID,
                  GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                  /*__out*/ IRenderBitmap **pRenderBitmap);

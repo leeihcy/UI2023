@@ -238,7 +238,7 @@ void HorzLayout::DoArrange(ArrangeParam* param) {
       rcObj.bottom = rcObj.top + info.height;
     }
 
-    pChild->SetObjectPos(&rcObj, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+    pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
                                      SWP_FORCESENDSIZEMSG);
   }
 }
