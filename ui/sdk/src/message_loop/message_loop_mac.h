@@ -4,7 +4,6 @@
 #include <X11/Xutil.h>
 
 #include "../window/linux/display.h"
-#include "glib.h"
 #include "message_loop.h"
 
 #include <CoreFoundation/CoreFoundation.h>

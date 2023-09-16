@@ -411,7 +411,7 @@ void WindowPlatformWin::SetMinMaxSize(int wMin, int hMin, int wMax, int hMax) {
  * 1. 只有在被Map后，才能进行窗口Move操作，否则窗口管理器将无视这些设置。
  */
 void WindowPlatformWin::SetWindowRect(int x, int y, int width, int height) {
-  ::SetWindowPos(m_hWnd, 0, x, y, width, height, SWP_NOZORDER);
+  ::SetWindowPos(m_hWnd, 0, x, y, width, height, SWP_NO_ZORDER);
 }
 
 void WindowPlatformWin::GetClientRect(Rect *prect) {

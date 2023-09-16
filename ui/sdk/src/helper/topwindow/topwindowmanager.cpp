@@ -171,7 +171,7 @@ void TopWindowManager::ChangeSkin(Resource* pNewSkinRes)
                                                           // <-- 放在Update前面，是为了能够在重绘之前重新获取控件指针，避免崩溃
 
 //		::SetWindowPos( pWindow->m_hWnd, nullptr, pWindow->GetParentRectL(), pWindow->GetParentRectT(), 
-//			pWindow->GetWidth(), pWindow->GetHeight(), SWP_NOZORDER|SWP_NOACTIVATE );  // 在这里由于资源都已经销毁了，应该防止窗口再刷新
+//			pWindow->GetWidth(), pWindow->GetHeight(), SWP_NO_ZORDER|SWP_NOACTIVATE );  // 在这里由于资源都已经销毁了，应该防止窗口再刷新
 
 // 		if (nOldWidth == pWindow->GetWidth() && nOldHeight == pWindow->GetHeight())
  		{

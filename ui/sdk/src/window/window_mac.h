@@ -34,7 +34,8 @@ public:
 public:
   NSWindow* window() { return m_window; }
   void notifySize();
-  
+  void onPaint(const Rect& dirty);
+
 private:
   NSWindow *m_window = nullptr;
 public:

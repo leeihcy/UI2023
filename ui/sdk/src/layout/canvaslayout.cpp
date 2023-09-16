@@ -166,7 +166,7 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   }
 
   rcChildObj.Offset(x, y);
-  pChild->SetObjectPos(&rcChildObj, SWP_NOREDRAW | SWP_NOUPDATELAYOUTPOS |
+  pChild->SetObjectPos(&rcChildObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
                                         SWP_FORCESENDSIZEMSG);
 }
 

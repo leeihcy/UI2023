@@ -409,7 +409,7 @@ const char *SaveConfigWH(int wh, int whtype) {
     return nullptr;
 
   case WH_SET: {
-    sprintf(szBuffer, "%d", RestoreByDpi(wh));
+    snprintf(szBuffer, 64, "%d", RestoreByDpi(wh));
     return szBuffer;
   }
 
@@ -419,7 +419,7 @@ const char *SaveConfigWH(int wh, int whtype) {
   }
 
   case WH_PERCENT: {
-    sprintf(szBuffer, "%d%%", wh);
+    snprintf(szBuffer, 64, "%d%%", wh);
     return szBuffer;
   }
   }

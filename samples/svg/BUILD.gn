@@ -19,3 +19,16 @@ executable("svg") {
       cflags += ["-g"]
     }
 }
+copy("copy_svg_files") {
+  sources = [
+    "test/hello_svg.svg", 
+    "test/viewbox_1.svg", 
+    "test/viewbox_2.svg",
+    "test/viewbox_3.svg", 
+    "test/shapes.svg",   
+    "test/icon_font.svg",
+  ]
+  outputs = [
+    "$root_build_dir/sample/svg/{{source_file_part}}"
+  ]
+}

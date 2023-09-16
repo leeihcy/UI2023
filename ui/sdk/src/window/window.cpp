@@ -1,9 +1,9 @@
 #include "window.h"
-#include "window_meta.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
+#include "window_meta.h"
 
 #include <SkColorSpace.h>
 #include <assert.h>
@@ -18,7 +18,8 @@
 
 namespace ui {
 
-Window::Window(IWindow *p) : Panel(p), m_window_render(*this), m_pIWindow(p) {
+Window::Window(IWindow *p)
+    : Panel(p), m_window_render(*this), m_mouse_key(*this), m_pIWindow(p) {
   UI_LOG_DEBUG("Window");
 }
 Window::~Window() {
@@ -36,18 +37,18 @@ void Window::onRouteMessage(ui::Msg *msg) {
   }
   if (msg->message == UI_MSG_ERASEBKGND) {
     Panel::onRouteMessage(msg);
-    onEraseBkgnd(static_cast<EraseBkgndMessage*>(msg)->rt);
+    onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
     return;
   }
   if (msg->message == UI_MSG_QUERYINTERFACE) {
-    auto* m = static_cast<QueryInterfaceMessage*>(msg);
+    auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == WindowMeta::Get().UUID()) {
       *(m->pp) = m_pIWindow;
       return;
     }
   }
   if (msg->message == UI_MSG_SERIALIZE) {
-    auto* m = static_cast<SerializeMessage*>(msg);
+    auto *m = static_cast<SerializeMessage *>(msg);
     onSerialize(m->param);
     return;
   }
@@ -59,7 +60,7 @@ long Window::FinalConstruct() {
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
 #endif
-  m_windowStyle.hard_composite =
+  m_window_style.hard_composite =
       false; // p->GetUIApplication()->IsGpuCompositeEnable();
 
   return 0;
@@ -97,13 +98,17 @@ void Window::Create(const Rect &rect) {
   m_platform->Create(rect);
 }
 
-void Window::SetTitle(const char * title_utf8) { m_platform->SetTitle(title_utf8); }
+void Window::SetTitle(const char *title_utf8) {
+  m_platform->SetTitle(title_utf8);
+}
 
 void Window::Show() {
   if (m_platform) {
     m_platform->Show();
   }
 }
+
+void Window::enterResize(bool b) { m_window_style.enter_resize = b; }
 
 void Window::onSize(int width, int height) {
   if (m_width == width && m_height == height) {
@@ -131,12 +136,6 @@ void Window::onSize(int width, int height) {
   // if (GetConfigHeight() > 0)
   //   SetConfigHeight(rcWindow.height());
 
-  notify_WM_SIZE(0, rcParent.width(), rcParent.height());
-#if 0
-  size_changed.emit((long)wParam);
-#endif
-
-  m_window_render.OnWindowSize(width, height);
   // 注：这里不要调用InvalidateRect。对于CustomWindow窗口拉大时，当前窗口的RGN还是老的设置，
   //     导致接收到WM_PAINT时的ps.rcPaint也被该老RGN剪裁，因此刷新区域不完整。这
   //     也导致接下来的CustomWindow::UpdateWindowRgn拿到的窗口背景不完整，计算剪裁
@@ -144,31 +143,39 @@ void Window::onSize(int width, int height) {
   // 因此这里还是直接调用了窗口的UpdateObject
   //::InvalidateRect(m_hWnd, nullptr, FALSE);
 
+  // if (m_window_style.enter_resize) {
+  //   printf("m_window_style.enter_resize\n");
+  // } else
+  {
+    notify_WM_SIZE(0, rcParent.width(), rcParent.height());
+    // size_changed.emit((long)wParam);
+    m_window_render.OnWindowSize(width, height);
 
-  if (m_window_render.CanCommit()) {
-    // 如果!cancommit，有可能是窗口刚创建时的初始化，直接走WM_PAINT消息
-    // 然后由windowrender解除cancommit限制
+    if (m_window_render.CanCommit()) {
+      // 如果!cancommit，有可能是窗口刚创建时的初始化，直接走WM_PAINT消息
+      // 然后由windowrender解除cancommit限制
 
-    // this->Invalidate();
-    // 需要立即刷新.  场景：
-    // 窗口作为一个ws_child嵌入在其它窗口下面。当改变父窗口大小时，本窗口也响应
-    // size改变，如果只延迟刷新，会导致自己的缓存被清空，但父窗口刷新时子窗口也要刷新，
-    // 最后导致将自己的空缓存提交上去了，然后再延时刷新，界面又正常。
-    // 因此这里不能延时刷新
-    //TODO:if (m_objStyle.initialized && IsWindowVisible()) {
+      // this->Invalidate();
+      // 需要立即刷新.  场景：
+      // 窗口作为一个ws_child嵌入在其它窗口下面。当改变父窗口大小时，本窗口也响应
+      // size改变，如果只延迟刷新，会导致自己的缓存被清空，但父窗口刷新时子窗口也要刷新，
+      // 最后导致将自己的空缓存提交上去了，然后再延时刷新，界面又正常。
+      // 因此这里不能延时刷新
+      // TODO:if (m_objStyle.initialized && IsWindowVisible()) {
       // m_window_render.InvalidateNow();
-    //TODO:}
-    // m_platform->ValidateRect(nullptr);
-  } else {
-    m_platform->Invalidate(nullptr);
+      // TODO:}
+      //  m_platform->ValidateRect(nullptr);
+    } else {
+      m_platform->Invalidate(nullptr);
+    }
   }
 }
 
 void Window::onClose() {}
-void Window::onDestroy() { 
+void Window::onDestroy() {
   WindowDestroyEvent event;
   event.window = m_pIWindow;
-  emit(WINDOW_DESTROY_EVENT, &event); 
+  emit(WINDOW_DESTROY_EVENT, &event);
 }
 
 void Window::onPaint(Rect *dirty) {
@@ -192,7 +199,7 @@ void Window::onPaint(Rect *dirty) {
     Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
     m_window_render.OnWindowPaint(rc);
   }
-  
+
   // m_window_render.InvalidateNow();
 }
 
@@ -223,15 +230,13 @@ bool Window::CreateUI(const char *szId) {
       // 遍历子对象
       layoutmanager.ParseChildElement(pUIElement.get(), this);
     } else {
-      UI_LOG_FATAL("获取窗口对应的xml结点失败：name=%s, id=%s", szName,
-                   szId);
+      UI_LOG_FATAL("获取窗口对应的xml结点失败：name=%s, id=%s", szName, szId);
 
       return false;
     }
 
     m_strId = szId; // 提前给id赋值，便于日志输出
-  }
-  else {
+  } else {
     InitDefaultAttrib();
   }
   //
@@ -265,10 +270,10 @@ void Window::SetGpuComposite(bool b) {
       b = false;
   }
 
-  if (b == m_windowStyle.hard_composite)
+  if (b == m_window_style.hard_composite)
     return;
 
-  m_windowStyle.hard_composite = b;
+  m_window_style.hard_composite = b;
   // m_oWindowRender.OnHardCompositeChanged(b);
 
   // UI_LOG_DEBUG(TEXT("hard composite enable, window=0x%08x"), this);
@@ -314,7 +319,7 @@ void Window::onEraseBkgnd(IRenderTarget *pRenderTarget) {
 // }
 #endif
 
-bool Window::IsGpuComposite() { return m_windowStyle.hard_composite; }
+bool Window::IsGpuComposite() { return m_window_style.hard_composite; }
 void Window::DirectComposite() { assert(0 && "这个函数是否还需要继续存在?"); }
 
 bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }

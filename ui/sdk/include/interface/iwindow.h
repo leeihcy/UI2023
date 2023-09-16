@@ -178,13 +178,18 @@ struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
 
 // window style
 typedef struct tagWindowStyle {
-  bool
-      destroyed : 1; // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
-  bool attach : 1; // 表示该窗口是attach的，创建、销毁由外部来控制
-  bool setcreaterect : 1; // 创建窗口时指定了窗口大小，不用再进行窗口布局了
-  bool
-      dialog_noresize : 1; // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
-  bool hard_composite : 1; // 本窗口使用硬件合成
+  // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
+  bool destroyed : 1; 
+  // 表示该窗口是attach的，创建、销毁由外部来控制
+  bool attach : 1; 
+  // 创建窗口时指定了窗口大小，不用再进行窗口布局了
+  bool setcreaterect : 1; 
+  // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
+  bool dialog_noresize : 1;
+  // 本窗口使用硬件合成 
+  bool hard_composite : 1;
+  // 开始拖拽窗口大小 
+  bool enter_resize: 1;
 } WindowStyle;
 
 class Window;
@@ -214,6 +219,13 @@ struct WindowDestroyEvent : public Event {
 struct WindowPaintEvent : public Event {
   IWindow *window;
   IRenderTarget *rt;
+};
+
+#define LBUTTON_DOWN_EVENT "lbutton_down"
+struct LButtonDownEvent : public Event {
+  IObject *obj;
+  int x;
+  int y;
 };
 
 // #if 0

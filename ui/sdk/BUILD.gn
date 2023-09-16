@@ -156,8 +156,10 @@ shared_library("uisdk") {
         "src/util/util.cpp",
         "src/util/uiapi.cpp",
         "src/util/rectregion/rectregion.cpp",
-        "src/window/window.cpp",
+        "src/util/path.cpp",
         "src/window/iwindow.cpp",
+        "src/window/window.cpp",
+        "src/window/window_mouse_key.cpp",
     ]
 
     if (is_linux) {
@@ -203,6 +205,7 @@ shared_library("uisdk") {
             "-framework", "CoreText",
             "-framework", "CoreServices",
             "-framework", "Cocoa",
+            "-framework", "QuartzCore",  # Core Animation
         ]
     }
 

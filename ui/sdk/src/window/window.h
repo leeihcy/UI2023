@@ -8,6 +8,8 @@
 #include "src/panel/panel.h"
 #include "src/layer/windowrender.h"
 
+#include "window_mouse_key.h"
+
 namespace ui {
 class Window;
 
@@ -68,6 +70,7 @@ public:
   void onDestroy();
   void onPaint(Rect *dirty);
   void onSize(int width, int height);
+  void enterResize(bool);
 
 private:
   // void on_paint(SkCanvas &canvas);
@@ -83,23 +86,30 @@ protected:
   void onEraseBkgnd(IRenderTarget *);
 
 public:
-  WindowStyle& GetWindowStyle() { return m_windowStyle; }
+  WindowStyle& GetWindowStyle() { return m_window_style; }
+
+public:
+  // 鼠标键盘处理类
+  WindowMouseKey m_mouse_key;
+  
+  // 平台相关函数。
+  std::unique_ptr<WindowPlatform> m_platform;
 
 private:
   IWindow*  m_pIWindow;
 
-  // 平台相关函数。
-  std::unique_ptr<WindowPlatform> m_platform;
-
-  int m_width = 0;
-  int m_height = 0;
-
   // 窗口的渲染放在这个对象里面，windowbase不负责渲染
   WindowRender m_window_render;
 
-	WindowStyle  m_windowStyle;
-	
-  std::string  m_strConfigWindowText;   // 皮肤中配置的窗口标题
+	WindowStyle  m_window_style;
+    
+  int m_width = 0;
+  int m_height = 0;
+
+private:
+  // 属性 ------------------------
+  // 皮肤中配置的窗口标题
+  std::string  m_strConfigWindowText;   
 };
 
 } // namespace ui

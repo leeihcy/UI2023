@@ -59,7 +59,7 @@ m_oMouseManager(*this)
 	this->m_bEndModal = false;
 	this->m_lDoModalReturn = 0;
 
-	memset(&m_windowStyle, 0, sizeof(m_windowStyle));
+	memset(&m_window_style, 0, sizeof(m_window_style));
 
 	// 取消Panel基本中的透明属性
 	OBJSTYLE s = {0};
@@ -203,7 +203,7 @@ bool WindowBase::Create(const wchar_t* szId, HWND hWndParent, RECT* prc, long lS
         cs.y = prc->top;
         cs.cx = prc->right - prc->left;
         cs.cy = prc->bottom - prc->top;
-        m_windowStyle.setcreaterect = 1;
+        m_window_style.setcreaterect = 1;
     }
     else
     {
@@ -242,7 +242,7 @@ bool WindowBase::Attach(HWND hWnd, const wchar_t* szID)
 		return false;
 	}
 
-	m_windowStyle.attach = 1;
+	m_window_style.attach = 1;
 	this->m_thunk.Init( &WindowBase::ThunkWndProc, this );
 	WNDPROC pProc = this->m_thunk.GetWNDPROC();
 
@@ -504,7 +504,7 @@ HWND WindowBase::DoModeless(const wchar_t* szId, HWND hWndOnwer, bool canResize)
             {
                 DeleteMenu(hMenu, SC_SIZE, 0);
             }
-			m_windowStyle.dialog_noresize = 1;
+			m_window_style.dialog_noresize = 1;
         }
 	}
 	GlobalFree(hgbl); 
@@ -541,7 +541,7 @@ HWND WindowBase::DoModeless(HINSTANCE hResInst, unsigned int nResID, const wchar
             {
                DeleteMenu(hMenu, SC_SIZE, 0);
             }
-			m_windowStyle.dialog_noresize = 1;
+			m_window_style.dialog_noresize = 1;
 
             // 重新修改窗口为正确的大小
             SetWindowPos(m_hWnd, 0, rcWindow.left, rcWindow.top, rcWindow.Width(), rcWindow.Height(), SWP_NOZORDER|SWP_NOACTIVATE|SWP_FRAMECHANGED);
@@ -695,7 +695,7 @@ long  WindowBase::_OnNcHitTest( unsigned int uMsg, WPARAM wParam, LPARAM lParam,
     bHandled = FALSE;
     if (!m_oldWndProc)
     {
-        if (m_windowStyle.dialog_noresize)
+        if (m_window_style.dialog_noresize)
         {
             long lr = ::DefWindowProc(m_hWnd, uMsg, wParam, lParam);
             if (lr >= HTLEFT && lr <= HTBORDER)  // 用HTTOPRIGHT还有是问题，非得用HTBORDER，为什么
@@ -742,7 +742,7 @@ long WindowBase::_OnCreate(
 	}
 
 	// 布局
-	if (m_windowStyle.attach)  // attach的窗口直接使用外部的大小
+	if (m_window_style.attach)  // attach的窗口直接使用外部的大小
 	{
 		::GetClientRect(m_hWnd, &m_rcParent);
 
@@ -761,7 +761,7 @@ long WindowBase::_OnCreate(
 	}
     else
     {
-        if (m_windowStyle.setcreaterect)
+        if (m_window_style.setcreaterect)
         {
             // 避免此时调用GetDesiredSize又去测量窗口大小了，
             // 导致窗口被修改为自适应大小 
@@ -820,7 +820,7 @@ long WindowBase::_OnCreate(
             m_oMouseManager.GetOriginDefaultObject(),
             false);
 
-    if (m_windowStyle.attach) // 主动触发刷新
+    if (m_window_style.attach) // 主动触发刷新
     {
         Invalidate();
     }

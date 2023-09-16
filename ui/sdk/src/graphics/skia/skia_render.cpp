@@ -149,22 +149,39 @@ bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {
   return true;
 }
 
+// 为了加快鼠标拖拽窗口的Resize效率
 bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
                                           unsigned int height) {
-  // if (m_sksurface) {
-  //   return true;
-  // }
-  SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+  // 256的倍数，并且不减
+  int fix_width = width;
+  if ((fix_width & 0xFF) != 0) {
+    fix_width = (fix_width & 0xFFFFFF00) + 0x100;
+  }
+  int fix_height = height;
+  if ((fix_height & 0xFF) != 0) {
+    fix_height = (fix_height & 0xFFFFFF00) + 0x100;
+  }
+
+  if (m_sksurface) {
+    if (m_sksurface->width() >= fix_width && m_sksurface->height() >= fix_height) {
+      return true;
+    }
+  }
+
+  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(%x, %x)", 
+    width, height, fix_width, fix_height, fix_width, fix_height);
+
+  SkImageInfo info = SkImageInfo::Make(fix_width, fix_height, kBGRA_8888_SkColorType,
                                        kPremul_SkAlphaType);
   SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
 
   m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
 
   // test，还没刷新界面，就直接commit的话，会出现全黄色。
-#if defined(DEBUG)
-  SkCanvas *canvas = m_sksurface->getCanvas();
-  canvas->clear(SK_ColorYELLOW);
-#endif
+// #if defined(DEBUG)
+//   SkCanvas *canvas = m_sksurface->getCanvas();
+//   canvas->clear(SK_ColorYELLOW);
+// #endif
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
   return true;
@@ -176,13 +193,30 @@ void SkiaRenderTarget::GetRenderBufferData(ImageData *pData) {
   // m_pRenderBuffer->GetImageData(pData);
 }
 
-bool SkiaRenderTarget::BeginDraw() { return true; }
+bool SkiaRenderTarget::BeginDraw() { 
+  if (!m_sksurface) {
+    return false;
+  }
+
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  if (!canvas) {
+    return false;
+  }
+  canvas->save();
+  return true; 
+}
 
 void SkiaRenderTarget::EndDraw() {
-  // if (!m_sksurface) {
-  //   return;
-  // }
+if (!m_sksurface) {
+    return;
+  }
 
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  if (!canvas) {
+    return;
+  }
+  canvas->restore();
+  
   // SkCanvas *canvas = m_sksurface->getCanvas();
   // on_erase_bkgnd(*canvas);
   // on_paint(*canvas);

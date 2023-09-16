@@ -9,7 +9,9 @@
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 
 - (WindowDelegate *)initWithWindow:(ui::WindowPlatformMac *)initWindow;
-
+- (void)windowDidResize:(NSNotification *)notification;
+- (void)windowWillStartLiveResize:(NSNotification *)notification;
+- (void)windowDidEndLiveResize:(NSNotification *)notification;
 @end
 
 @interface MainView : NSView
@@ -22,8 +24,7 @@ namespace ui {
 
 WindowPlatformMac::WindowPlatformMac(ui::Window &w) : m_ui_window(w) {}
 void WindowPlatformMac::Initialize() {}
-WindowPlatformMac::~WindowPlatformMac() {
-}
+WindowPlatformMac::~WindowPlatformMac() {}
 
 bool WindowPlatformMac::Create(const Rect &rect) {
   NSUInteger windowStyle =
@@ -79,14 +80,18 @@ void WindowPlatformMac::SetTitle(const char *title) {
 void WindowPlatformMac::GetClientRect(Rect *prect) {
   prect->left = m_window.contentLayoutRect.origin.x;
   prect->right = m_window.contentLayoutRect.origin.y;
-  prect->right = prect->left + m_window.contentLayoutRect.size.width;
-  prect->bottom = prect->top + m_window.contentLayoutRect.size.height;
+  prect->right = prect->left + m_window.contentLayoutRect.size.width *
+                                   m_window.backingScaleFactor;
+  prect->bottom = prect->top + m_window.contentLayoutRect.size.height *
+                                   m_window.backingScaleFactor;
 }
 void WindowPlatformMac::GetWindowRect(Rect *prect) {
   prect->left = m_window.frame.origin.x;
   prect->right = m_window.frame.origin.y;
-  prect->right = prect->left + m_window.frame.size.width;
-  prect->bottom = prect->top + m_window.frame.size.height;
+  prect->right =
+      prect->left + m_window.frame.size.width * m_window.backingScaleFactor;
+  prect->bottom =
+      prect->top + m_window.frame.size.height * m_window.backingScaleFactor;
 }
 void SetWindowRect(Rect *prect) {
   // // Given CG and NS's coordinate system, the "Y" position of a window is the
@@ -129,6 +134,14 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
                                int count) {
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
   if (!context) {
+    for (int i = 0; i < count; i++) {
+      NSRect rect = NSMakeRect(
+        prect->left / m_window.backingScaleFactor, 
+        prect->top / m_window.backingScaleFactor, 
+        prect->width() / m_window.backingScaleFactor, 
+        prect->height() / m_window.backingScaleFactor);
+      [m_window.contentView displayRect:rect];
+    }
     return;
   }
 
@@ -139,28 +152,6 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
     if (!surface) {
       return;
     }
-
-    // printf("2\n");
-    // SkBitmap bm;
-    // surface->readPixels(bm, 0, 0);
-    // printf("3\n");
-    // // SkCGDrawBitmap(context, bm, 0, 0);
-    // SkUniqueCFRef<CGImageRef> img(SkCreateCGImageRef(bm));
-
-    // int x = 0;
-    // int y = 0;
-    // auto* cg = context;
-    // if (img) {
-    //     CGRect r = CGRectMake(0, 0, bm.width(), bm.height());
-
-    //     CGContextSaveGState(cg);
-    //     CGContextTranslateCTM(cg, x, r.size.height + y);
-    //     CGContextScaleCTM(cg, 1, -1);
-
-    //     CGContextDrawImage(cg, r, img.get());
-
-    //     CGContextRestoreGState(cg);
-    // }
 
     SkPixmap pm;
     if (!surface->peekPixels(&pm)) {
@@ -181,20 +172,14 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
 
     for (int i = 0; i < count; i++) {
       const Rect &rc = prect[i];
-      NSRect nsrect;
-      nsrect.origin.x = rc.left;
-      nsrect.origin.y = rc.top;
-      nsrect.size.width = rc.right - rc.left;
-      nsrect.size.height = rc.bottom - rc.top;
+      NSRect nsrect = CGRectMake(rc.left, rc.top, rc.width(), rc.height());
       CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
-      static int count = 0;
-      // count ++;
-      if (count < 100) {
-        CGContextDrawImage(context,
-                           nsrect, // CGRectMake(0, 0, pm.width(), pm.height()),
-                           part_image);
-      }
+      NSRect dirty = CGRectMake(rc.left / m_window.backingScaleFactor,
+                                rc.top / m_window.backingScaleFactor,
+                                rc.width() / m_window.backingScaleFactor,
+                                rc.height() / m_window.backingScaleFactor);
+      CGContextDrawImage(context, dirty, part_image);
       CGImageRelease(part_image);
     }
     CGImageRelease(image);
@@ -202,16 +187,17 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
 }
 
 void WindowPlatformMac::notifySize() {
-  m_ui_window.onSize(m_window.frame.size.width, m_window.frame.size.height);
+  m_ui_window.onSize(m_window.frame.size.width * m_window.backingScaleFactor,
+                     m_window.frame.size.height * m_window.backingScaleFactor);
 }
 
-// NS's and CG's coordinate systems start at the bottom left, while OSWindow's
-// coordinate system starts at the top left. This function converts the Y
-// coordinate accordingly. static float YCoordToFromCG(float y)
-// {
-//     float screenHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
-//     return screenHeight - y;
-// }
+void WindowPlatformMac::onPaint(const Rect &dirty) {
+  Rect rect = {(int)(dirty.left * m_window.backingScaleFactor),
+               (int)(dirty.top * m_window.backingScaleFactor),
+               (int)(dirty.right * m_window.backingScaleFactor),
+               (int)(dirty.bottom * m_window.backingScaleFactor)};
+  m_ui_window.onPaint(&rect);
+}
 
 } // namespace ui
 
@@ -229,6 +215,13 @@ void WindowPlatformMac::notifySize() {
   // m_window->m_ui_window.onSize(view.bounds.size.width /* * scale*/,
   //                              view.bounds.size.height /* * scale*/);
   m_window->notifySize();
+}
+
+- (void)windowWillStartLiveResize:(NSNotification *)notification {
+  m_window->m_ui_window.enterResize(true);
+}
+- (void)windowDidEndLiveResize:(NSNotification *)notification {
+  m_window->m_ui_window.enterResize(false);
 }
 
 - (BOOL)windowShouldClose:(NSWindow *)sender {
@@ -269,7 +262,49 @@ void WindowPlatformMac::notifySize() {
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
   ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
                 (int)rect.size.height};
-  m_window->m_ui_window.onPaint(&r);
+  m_window->onPaint(r);
 }
 
+- (void)keyDown:(NSEvent *)event {
+  printf("keyDown\n");
+}
+- (void)keyUp:(NSEvent *)event {
+  printf("keyUp\n");
+}
+- (void)mouseDown:(NSEvent *)event {
+  CGFloat backingScaleFactor = self.window.backingScaleFactor;
+
+  const NSPoint pos = [event locationInWindow];
+  const NSRect rect = [self frame];
+
+  int x = pos.x * backingScaleFactor;
+  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  m_window->m_ui_window.m_mouse_key.OnLButtonDown(x, y);
+}
+
+- (void)mouseUp:(NSEvent *)event {
+  CGFloat backingScaleFactor = self.window.backingScaleFactor;
+
+  const NSPoint pos = [event locationInWindow];
+  const NSRect rect = [self frame];
+
+  int x = pos.x * backingScaleFactor;
+  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  m_window->m_ui_window.m_mouse_key.OnLButtonUp(x, y);
+}
+
+- (void)mouseMoved:(NSEvent *)event {
+  CGFloat backingScaleFactor = self.window.backingScaleFactor;
+
+  const NSPoint pos = [event locationInWindow];
+  const NSRect rect = [self frame];
+
+  int x = pos.x * backingScaleFactor;
+  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  m_window->m_ui_window.m_mouse_key.OnMouseMove(x, y);
+}
+
+- (void)scrollWheel:(NSEvent *)event {
+  printf("scrollWheel\n");
+}
 @end

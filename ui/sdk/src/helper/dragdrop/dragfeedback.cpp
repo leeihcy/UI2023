@@ -359,7 +359,7 @@ void  CDragFeedback::OnMouseMove(Point pt)
         pt.x - m_ptOffset.x,
         pt.y - m_ptOffset.y,
         0, 0, 
-        SWP_NOZORDER|SWP_NOSIZE|SWP_NOACTIVATE);
+        SWP_NO_ZORDER|SWP_NO_SIZE|SWP_NOACTIVATE);
 
     if (m_hTextWnd && IsWindowVisible(m_hTextWnd))
     {
@@ -368,7 +368,7 @@ void  CDragFeedback::OnMouseMove(Point pt)
             pt.x+14,
             pt.y+16,
             0, 0, 
-            SWP_NOZORDER|SWP_NOSIZE|SWP_NOACTIVATE);
+            SWP_NO_ZORDER|SWP_NO_SIZE|SWP_NOACTIVATE);
     }
 }
 

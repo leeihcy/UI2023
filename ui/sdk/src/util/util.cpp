@@ -1,12 +1,12 @@
 // #include "util.h"
-#include "include/util/struct.h"
 #include "include/util/util.h"
 #include "include/macro/helper.h"
+#include "include/util/struct.h"
 
-#include <vector>
-#include <string>
 #include <algorithm> // transform
 #include <filesystem>
+#include <string>
+#include <vector>
 
 #if defined(OS_WIN)
 #include <shlwapi.h>
@@ -190,7 +190,7 @@ void UnicodeDecode(const wchar_t *szText, wchar_t *szDecode) {
   }
 }
 
-Color TranslateRGB(const char *szCol, char szSep=',') {
+Color TranslateRGB(const char *szCol, char szSep = ',') {
   if (nullptr == szCol)
     return Color::Make(0);
 
@@ -201,19 +201,16 @@ Color TranslateRGB(const char *szCol, char szSep=',') {
   if (nullptr == pEnum)
     return Color::Make(col);
 
+  Color c;
   if (3 == nSize) {
-    col = RGB(atoi(pEnum->GetText(0)), atoi(pEnum->GetText(1)),
-              atoi(pEnum->GetText(2)));
-
-    col |= 0xFF000000; // a 默认为255;
+    c = Color::MakeRGB(atoi(pEnum->GetText(0)), atoi(pEnum->GetText(1)),
+                       atoi(pEnum->GetText(2)));
   }
 
   // r g b a
   else if (4 == nSize) {
-    col = RGB(atoi(pEnum->GetText(0)), atoi(pEnum->GetText(1)),
-              atoi(pEnum->GetText(2)));
-
-    col |= atoi(pEnum->GetText(3)) << 24;
+    c = Color::MakeARGB(atoi(pEnum->GetText(3)), atoi(pEnum->GetText(0)),
+                        atoi(pEnum->GetText(1)), atoi(pEnum->GetText(2)));
   }
 
   SAFE_RELEASE(pEnum);
@@ -499,7 +496,6 @@ std::string wstring2string(const wchar_t *ctext) {
   return temp;
 }
 
-
 bool FixBitmapAlpha(FixAlphaData *pData) {
 #if 0 // defined(OS_WIN)
   if (!pData)
@@ -744,9 +740,9 @@ bool TranslateImage9Region(const char *szText, C9Region *p9Region, char szSep) {
 }
 
 void UIAPI PathInBin(const wchar_t *szRelative,
-                     wchar_t szAbsolution[MAX_PATH]) {
+                     wchar_t szAbsolution[256]) {
 #if 0 // defined(OS_WIN)
-  GetModuleFileName(GetModuleHandle(nullptr), szAbsolution, MAX_PATH);
+  GetModuleFileName(GetModuleHandle(nullptr), szAbsolution, 256);
   wchar_t *p = _tcsrchr(szAbsolution, '\\');
   if (p != nullptr)
     *(p + 1) = 0;
@@ -803,17 +799,13 @@ bool IsWin7OrLater() {
 }
 #endif
 
-
-
-
-
 bool Path_IsDirectory(const char *path) {
   if (!path) {
     return false;
   }
-// #if 0 // defined(OS_WIN)
-//   return PathIsDirectoryA(szPath);
-// #else
+  // #if 0 // defined(OS_WIN)
+  //   return PathIsDirectoryA(szPath);
+  // #else
   const std::filesystem::path p = path;
   return std::filesystem::is_directory(p);
 }

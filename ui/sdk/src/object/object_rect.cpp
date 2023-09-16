@@ -586,7 +586,7 @@ void Object::UpdateLayout() {
         pParent->Invalidate();
       } else {
 
-        unsigned int nFlag = SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE;
+        unsigned int nFlag = SWP_NO_ZORDER | SWP_NO_MOVE | SWP_NOACTIVATE;
         //                 if (!bUpdate)
         //                 {
         //                     WindowRender*  pRender =
@@ -649,8 +649,8 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   if (cy < 0)
     cy = 0;
 
-  bool bMove = (nFlag & SWP_NOMOVE) ? false : true;
-  bool bSize = (nFlag & SWP_NOSIZE) ? false : true;
+  bool bMove = (nFlag & SWP_NO_MOVE) ? false : true;
+  bool bSize = (nFlag & SWP_NO_SIZE) ? false : true;
 
   //  TODO: 加上这一段代码会导致SetVisible中的布局出现问题，如果pp -> p ->
   //  o，o发生变化
@@ -664,7 +664,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   //         cy == m_rcParent.Height())
   //         return;
 
-  nFlag |= SWP_NOZORDER; // 该函数不提供修改ZORDER的功能
+  nFlag |= SWP_NO_ZORDER; // 该函数不提供修改ZORDER的功能
   WINDOWPOS wndpos = {0, 0, x, y, cx, cy, nFlag};
   m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (llong)&wndpos);
   x = wndpos.x;
@@ -719,7 +719,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   // MSDN: MoveWindow sends the WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED,
   // WM_MOVE, WM_SIZE, and WM_NCCALCSIZE messages to the window.
   // 在这里我们暂时只先发送WM_MOVE/WM_SIZE消息
-  if (!(nFlag & SWP_NOSENDCHANGING)) {
+  if (!(nFlag & SWP_NO_SENDCHANGING)) {
     if (bMove) {
       notify_WM_MOVE(m_rcParent.left, m_rcParent.top);
     }

@@ -23,14 +23,14 @@ public:
 protected:
   Object &GetObj() override { return m_obj; }
 
-  virtual bool IsChildOf(ILayerContent *);
-  virtual bool IsVisible();
-  virtual void Draw(ui::IRenderTarget *);
-  virtual void GetWindowRect(Rect *prcOut);
-  virtual void GetParentWindowRect(Rect *prcOut);
-  virtual void OnLayerDestory();
-  virtual Layer *GetParentLayer();
-  virtual Layer *GetNextLayer();
+  bool IsChildOf(ILayerContent *) override;
+  bool IsVisible() override;
+  void Draw(ui::IRenderTarget *) override;
+  void GetWindowRect(Rect *prcOut) override;
+  void GetParentWindowRect(Rect *prcOut) override;
+  void OnLayerDestory() override;
+  Layer *GetParentLayer() override;
+  Layer *GetNextLayer() override;
 
 private:
   Object &m_obj;

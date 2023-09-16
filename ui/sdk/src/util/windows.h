@@ -105,12 +105,6 @@ typedef struct tagWINDOWPOS {
   unsigned int flags;
 } WINDOWPOS, *LPWINDOWPOS, *PWINDOWPOS;
 
-#define SWP_NOMOVE 1
-#define SWP_NOSIZE 2
-#define SWP_NOZORDER 4
-#define SWP_NO_REDRAW 8
-#define SWP_NOSENDCHANGING 0x10
-
 #define DT_SINGLELINE 1
 #define DT_END_ELLIPSIS 2
 #define DT_VCENTER 4

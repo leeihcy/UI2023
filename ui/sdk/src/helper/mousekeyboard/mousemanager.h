@@ -19,7 +19,7 @@ struct GetObjectByPosExData
 	bool  bTestDisable;
 };
 
-class WindowMouseMgr : public IMKMgr   // ÓÉÓÚÄ¿Ç°Ã»ÓĞ½«mouse/keyboardºÏ²¢ÆğÀ´£¬ÔİÊ±ÓÉwindowÀ´ÊµÏÖÕâ¸ö½Ó¿Ú
+class WindowMouseMgr : public IMKMgr   // ç”±äºç›®å‰æ²¡æœ‰å°†mouse/keyboardåˆå¹¶èµ·æ¥ï¼Œæš‚æ—¶ç”±windowæ¥å®ç°è¿™ä¸ªæ¥å£
 {
 public:
     WindowMouseMgr(WindowBase& o);
@@ -115,30 +115,30 @@ private:
 
 protected:
     Application*   m_pUIApplication;
-    WindowBase&       m_oWindow;                  // Òª´¦ÀíµÄ´°¿Ú¶ÔÏó
+    WindowBase&       m_oWindow;                  // è¦å¤„ç†çš„çª—å£å¯¹è±¡
 
-    Object*  m_pObjHover;                // ÊÇ·ñÓĞ¶ÔÏó´¦ÓÚÊó±êÏÂÃæ
-    Object*  m_pObjPress;                // ÊÇ·ñÓĞ¶ÔÏóÒÑ±»°´ÏÂ
-    Object*  m_pObjRPress;               // ÓÒ¼üµã»÷¶ÔÏó£¬ÓÃÓÚÅĞ¶ÏÊÇ·ñĞèÒª¸øË­·¢ËÍRButtonUpÏûÏ¢£¨½öÔÚRDown¡¢RUpÖĞ´¦Àí£¬ÆäËüÂß¼­ÖĞ²»¹Ü£¬Ô½¼òµ¥Ô½ºÃ£© 
+    Object*  m_pObjHover;                // æ˜¯å¦æœ‰å¯¹è±¡å¤„äºé¼ æ ‡ä¸‹é¢
+    Object*  m_pObjPress;                // æ˜¯å¦æœ‰å¯¹è±¡å·²è¢«æŒ‰ä¸‹
+    Object*  m_pObjRPress;               // å³é”®ç‚¹å‡»å¯¹è±¡ï¼Œç”¨äºåˆ¤æ–­æ˜¯å¦éœ€è¦ç»™è°å‘é€RButtonUpæ¶ˆæ¯ï¼ˆä»…åœ¨RDownã€RUpä¸­å¤„ç†ï¼Œå…¶å®ƒé€»è¾‘ä¸­ä¸ç®¡ï¼Œè¶Šç®€å•è¶Šå¥½ï¼‰ 
     Object*  m_pObjMPress;
-    Object*  m_pObjGesture;              // ÊÖÊÆ×÷ÓÃµÄ¶ÔÏó
+    Object*  m_pObjGesture;              // æ‰‹åŠ¿ä½œç”¨çš„å¯¹è±¡
     
-    Object*  m_pOldFocusObject;          // ÁÙÊ±¶ÔÏó£¬ÓÃÓÚ¼ÇÂ¼½¹µã·¢Éú±ä»¯¹ı³ÌÖĞµÄ¾ÉµÄ½¹µã¶ÔÏó
-    Object*  m_pFocusObject;             // µ±Ç°ÓĞÓÃ½¹µãµÄ¶ÔÏó
+    Object*  m_pOldFocusObject;          // ä¸´æ—¶å¯¹è±¡ï¼Œç”¨äºè®°å½•ç„¦ç‚¹å‘ç”Ÿå˜åŒ–è¿‡ç¨‹ä¸­çš„æ—§çš„ç„¦ç‚¹å¯¹è±¡
+    Object*  m_pFocusObject;             // å½“å‰æœ‰ç”¨ç„¦ç‚¹çš„å¯¹è±¡
 
-    Object*  m_pObjDefault;              // µ±Ç°default button
-    Object*  m_pObjOriginDefault;        // Ô­Ê¼µÄdefault button£¬Ã»ÓĞdefbtnÊ±£¬ÏµÍ³½«°ÑdefaultÊôĞÔÉèÖÃµ½¸Ã¶ÔÏóÉÏÃæ¡£
+    Object*  m_pObjDefault;              // å½“å‰default button
+    Object*  m_pObjOriginDefault;        // åŸå§‹çš„default buttonï¼Œæ²¡æœ‰defbtnæ—¶ï¼Œç³»ç»Ÿå°†æŠŠdefaultå±æ€§è®¾ç½®åˆ°è¯¥å¯¹è±¡ä¸Šé¢ã€‚
 
-    IMessage*  m_pObjKeyboardCapture;      // ÁÙÊ±ĞèÒªÀ¹½Ø¼üÅÌÏûÏ¢µÄ¶ÔÏó
-    IMessage*  m_pObjMouseCapture;         // ÁÙÊ±ĞèÒªÀ¹½ØÊó±êÏûÏ¢µÄ¶ÔÏó
+    IMessage*  m_pObjKeyboardCapture;      // ä¸´æ—¶éœ€è¦æ‹¦æˆªé”®ç›˜æ¶ˆæ¯çš„å¯¹è±¡
+    IMessage*  m_pObjMouseCapture;         // ä¸´æ—¶éœ€è¦æ‹¦æˆªé¼ æ ‡æ¶ˆæ¯çš„å¯¹è±¡
     int   m_nKeyboardCaptureNotifyMsgId;
     int   m_nMouseCaptureNotifyMsgId;
 
-    long  m_posPrevClick;           // Èç¹ûË«»÷µÄÎ»ÖÃÓëÉÏÒ»´Îµ¥»÷µÄÎ»ÖÃ²»Ò»Ñù£¬ÔòÈÏÎªÕâ´ÎÊÇÒ»¸öµ¥»÷ÊÂ¼ş£¬¶ø²»ÊÇË«»÷ÊÂ¼ş
+    long  m_posPrevClick;           // å¦‚æœåŒå‡»çš„ä½ç½®ä¸ä¸Šä¸€æ¬¡å•å‡»çš„ä½ç½®ä¸ä¸€æ ·ï¼Œåˆ™è®¤ä¸ºè¿™æ¬¡æ˜¯ä¸€ä¸ªå•å‡»äº‹ä»¶ï¼Œè€Œä¸æ˜¯åŒå‡»äº‹ä»¶
 
-    BOOL  m_bMouseTrack;              // ÊÇ·ñĞèÒª¼à²âÊó±êÀë¿ªm_pWndÁË
-    BOOL  m_bMouseMoveReady;          // ÓÃÓÚ½â¾ö¾­³£»á³öÏÖµÄ³¡¾°£º»¹Ã»Ê¹ÓÃMOUSEMOVE»ñÈ¡hover obj£¬¾ÍÊÕµ½ÁËÒ»¸öBUTTONDOWNµÄÏûÏ¢£¬
-                                      // µ¼ÖÂÏûÏ¢ÏìÓ¦Ê§°Ü¡£ÀıÈçÊÖ¶¯·¢ËÍÒ»¸öMOUSEMOVE»òÕß°´ÏÂALT¼üµ¼ÖÂµÄMouseLeave
+    BOOL  m_bMouseTrack;              // æ˜¯å¦éœ€è¦ç›‘æµ‹é¼ æ ‡ç¦»å¼€m_pWndäº†
+    BOOL  m_bMouseMoveReady;          // ç”¨äºè§£å†³ç»å¸¸ä¼šå‡ºç°çš„åœºæ™¯ï¼šè¿˜æ²¡ä½¿ç”¨MOUSEMOVEè·å–hover objï¼Œå°±æ”¶åˆ°äº†ä¸€ä¸ªBUTTONDOWNçš„æ¶ˆæ¯ï¼Œ
+                                      // å¯¼è‡´æ¶ˆæ¯å“åº”å¤±è´¥ã€‚ä¾‹å¦‚æ‰‹åŠ¨å‘é€ä¸€ä¸ªMOUSEMOVEæˆ–è€…æŒ‰ä¸‹ALTé”®å¯¼è‡´çš„MouseLeave
 };
 
 }

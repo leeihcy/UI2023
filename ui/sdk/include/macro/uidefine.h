@@ -220,7 +220,11 @@ enum OBJECT_STATE_BIT {
   0x20000000 // 即使大小没有改变，也强制发送一个WM_SIZE消息，用于走通逻辑
 #define SWP_FORCEUPDATEOBJECT                                                  \
   0x10000000 // 即使大小没有改变，也强制柠檬素，用于走通逻辑
-#define SWP_NO_REDRAW 0x08000000
+#define SWP_NO_MOVE 1
+#define SWP_NO_SIZE 2
+#define SWP_NO_ZORDER 4
+#define SWP_NO_REDRAW 8
+#define SWP_NO_SENDCHANGING 0x10
 
 #define UI_DECLARE_RENDERBASE(className, xml, rendertype)                      \
   static const char *GetXmlName() { return xml; }                              \
