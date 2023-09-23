@@ -76,7 +76,7 @@ const char *GridLayout::SaveGridWidth() {
       if (widths[i].xml <= 1) {
         strBuffer.append(XML_ASTERISK);
       } else {
-        sprintf(szBuffer, "%d%s", widths[i].xml, XML_ASTERISK);
+        snprintf(szBuffer, 64, "%d%s", widths[i].xml, XML_ASTERISK);
         strBuffer.append(szBuffer);
       }
     } break;
@@ -87,7 +87,7 @@ const char *GridLayout::SaveGridWidth() {
 
     default: //  GWHT_VALUE:
     {
-      sprintf(szBuffer, "%d", widths[i].last);
+      snprintf(szBuffer, 64, "%d", widths[i].last);
       strBuffer.append(szBuffer);
     } break;
     }
@@ -151,7 +151,7 @@ const char *GridLayout::SaveGridHeight() {
       if (heights[i].xml <= 1) {
         strBuffer.append(XML_ASTERISK);
       } else {
-        sprintf(szBuffer, "%d%s", heights[i].xml, XML_ASTERISK);
+        snprintf(szBuffer, 64, "%d%s", heights[i].xml, XML_ASTERISK);
         strBuffer.append(szBuffer);
       }
     } break;
@@ -162,7 +162,7 @@ const char *GridLayout::SaveGridHeight() {
 
     default: //  GWHT_VALUE:
     {
-      sprintf(szBuffer, "%d", heights[i].last);
+      snprintf(szBuffer, 64, "%d", heights[i].last);
       strBuffer.append(szBuffer);
     } break;
     }

@@ -348,7 +348,7 @@ Color TranslateHexColor(const char *szColor) {
   } else
     return Color::Make(0);
 
-  return Color::Make((a << 24) | (b << 16) | (g << 8) | r);
+  return Color::MakeARGB(a,r,g,b);
 }
 
 Color TranslateColor(const char *szColor) {

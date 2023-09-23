@@ -4,14 +4,14 @@
 
 namespace svg {
 
-void Circle::Render(RenderContext &context) {
+void Circle::ShapeRender(RenderContext &context, SkPaint& paint) {
   int cx = context.ResolveX(m_cx);
   int cy = context.ResolveY(m_cy);
   int r = context.ResolveX(m_r);
 
   SkPoint pos = SkPoint::Make(cx, cy);
   if (r > 0) {
-    context.canvas->drawCircle(pos.x(), pos.y(), r, context.paint);
+    context.canvas->drawCircle(pos.x(), pos.y(), r, paint);
   }
 }
 

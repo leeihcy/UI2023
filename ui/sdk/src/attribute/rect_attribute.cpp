@@ -53,7 +53,7 @@ const char *RectAttribute::Get() {
   get(&rc);
 
   char *szText = GetTempBuffer(64);
-  sprintf(szText, "%d,%d,%d,%d", rc.left, rc.top, rc.right, rc.bottom);
+  snprintf(szText, 64, "%d,%d,%d,%d", rc.left, rc.top, rc.right, rc.bottom);
 
   return szText;
 }

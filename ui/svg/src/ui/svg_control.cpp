@@ -52,14 +52,20 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   context.canvas = (SkCanvas *)rt->GetHandle();
   context.canvas_size = { m_pISvg->GetWidth(), m_pISvg->GetHeight() };
   
+  context.fill_paint.setStroke(false);
+  context.stroke_paint.setStroke(true);
+
   // 线条抗锯齿
-  context.paint.setAntiAlias(true);
+  context.fill_paint.setAntiAlias(true);
+  context.stroke_paint.setAntiAlias(true);
 
   // 默认黑色
-  context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
+  // context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
 
   if (m_root) {
+    context.canvas->save();
     m_root->Render(context);
+    context.canvas->restore();
   }
 }
 

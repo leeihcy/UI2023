@@ -67,7 +67,7 @@ const char *FlagsAttribute::Get() {
       strBuffer.push_back(XML_FLAG_SEPARATOR);
 
     char szText[16] = {0};
-    sprintf(szText, "%x", lValue);
+    snprintf(szText, 16, "%x", lValue);
     strBuffer.append(szText);
   }
 

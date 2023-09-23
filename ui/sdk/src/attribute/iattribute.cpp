@@ -1,3 +1,4 @@
+#include "include/interface/iattribute.h"
 #include "9region_attribute.h"
 #include "attribute.h"
 #include "bool_attribute.h"
@@ -5,7 +6,6 @@
 #include "enum_attribute.h"
 #include "flags_attribute.h"
 #include "include/inc.h"
-#include "include/interface/iattribute.h"
 #include "include/interface/iobject.h"
 #include "int_attribute.h"
 #include "rect_attribute.h"
@@ -189,7 +189,7 @@ IRectAttribute *IRectAttribute::AsData() {
   m_pImpl->AsData();
   return this;
 }
-IRectAttribute * IRectAttribute::SetCompatibleKey(const char* key) {
+IRectAttribute *IRectAttribute::SetCompatibleKey(const char *key) {
   m_pImpl->SetCompatibleKey(key);
   return this;
 }
@@ -279,7 +279,16 @@ const char *IStringEnumAttribute::GetParentKey() {
 //////////////////////////////////////////////////////////////////////////
 
 IColorAttribute::IColorAttribute(ColorAttribute *p) { m_pImpl = p; }
-
+IColorAttribute *IColorAttribute::SetDefault(Color c) {
+  m_pImpl->SetDefault(c);
+  return this;
+}
+IColorAttribute *IColorAttribute::Bind(slot<void(Color)> &&setter,
+                                       slot<Color()> &&getter) {
+  m_pImpl->Bind(std::forward<slot<void(Color)>>(setter),
+                std::forward<slot<Color()>>(getter));
+  return this;
+}
 const char *IColorAttribute::GetKey() { return m_pImpl->GetKey(); }
 const char *IColorAttribute::GetDesc() { return m_pImpl->GetDesc(); }
 const char *IColorAttribute::GetGroupName() { return m_pImpl->GetGroupName(); }
@@ -336,15 +345,16 @@ AttributeSerializerWrap::AttributeSerializerWrap(SerializeParam *p,
 AttributeSerializerWrap::~AttributeSerializerWrap() { SAFE_DELETE(m_pImpl); }
 AttributeSerializer *AttributeSerializerWrap::GetImpl() { return m_pImpl; }
 
-// IStringAttribute*  AttributeSerializerWrap::AddString(const char* szKey,
-// void* _this, pfnStringSetter s, pfnStringGetter g)
-// {
-//     StringAttribute* p = m_pImpl->AddString(szKey, _this, s, g);
-//     if (!p)
-//         return nullptr;
-
-//     return p->GetIStringAttribute();
-// }
+IStringAttribute *AttributeSerializerWrap::AddString(
+    const char *szKey, slot<void(const char *)> &&s, slot<const char *()> &&g) {
+  StringAttribute *p =
+      m_pImpl->AddString(szKey, std::forward<slot<void(const char *)>>(s),
+                         std::forward<slot<const char *()>>(g));
+  if (!p) {
+    return nullptr;
+  }
+  return p->GetIStringAttribute();
+}
 
 // IStringAttribute*  AttributeSerializerWrap::AddString(
 //     const char* szKey,
@@ -409,7 +419,7 @@ IIntAttribute *AttributeSerializerWrap::AddInt(const char *szKey,
 }
 
 ILengthAttribute *AttributeSerializerWrap::AddLength(const char *szKey,
-                                               Length &bind_value) {
+                                                     Length &bind_value) {
   LengthAttribute *p = m_pImpl->AddLength(szKey, bind_value);
   if (!p)
     return nullptr;
@@ -505,7 +515,17 @@ IColorAttribute *AttributeSerializerWrap::AddColor(const char *szKey,
 
   return p->GetIColorAttribute();
 }
+IColorAttribute *AttributeSerializerWrap::AddColor(const char *szKey,
+                                                   slot<void(Color)> &&setter,
+                                                   slot<Color()> &&getter) {
+  ColorAttribute *p =
+      m_pImpl->AddColor(szKey, std::forward<slot<void(Color)>>(setter),
+                        std::forward<slot<Color()>>(getter));
+  if (!p)
+    return nullptr;
 
+  return p->GetIColorAttribute();
+}
 // IRegion9Attribute*  AttributeSerializerWrap::Add9Region(const char* szKey,
 // void* _this, pfnRectSetter s, pfnRectGetter g)
 // {

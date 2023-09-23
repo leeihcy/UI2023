@@ -7,8 +7,11 @@ namespace svg {
   
 class Shape : public Element {
 public:
-  void PrepareRender(RenderContext& context) override;
-  void SetAttribute(ui::SerializeParam& data) override;
+  void Render(RenderContext& context) override;
+
+public:
+  // shape子类要实现这个Render方法。
+  virtual void ShapeRender(RenderContext &context, SkPaint& paint) = 0;
 };
 
 }

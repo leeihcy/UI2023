@@ -10,7 +10,7 @@ class Text : public Element {
 public:
   void Render(RenderContext &context) override;
   void SetAttribute(ui::SerializeParam &data) override;
-  void SetDomData(const char *data) override;
+  void SetXmlNodeData(const char *data) override;
 
 private:
   ui::Length m_x;

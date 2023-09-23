@@ -90,6 +90,10 @@ void Color::ReplaceRGB(uint c) {
   a = a_old;
 }
 
+bool Color::operator==(const Color& c) const {
+  return this->value == c.value;
+}
+
 // uint Color::GetGDIValue() {
 //   uint gdiColor = 0;
 //   // gdiColor = RGB(r, g, b);

@@ -4,9 +4,9 @@
 
 namespace svg {
 
-void Polyline::Render(RenderContext &context) {
+void Polyline::ShapeRender(RenderContext &context, SkPaint& paint) {
     //fPath.setFillType(fillType);
-    context.canvas->drawPath(m_path, context.paint);
+    context.canvas->drawPath(m_path, paint);
 }
 
 void Polyline::SetAttribute(ui::SerializeParam &data) {

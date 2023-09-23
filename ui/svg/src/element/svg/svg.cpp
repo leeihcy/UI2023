@@ -87,11 +87,15 @@ void Svg::Render(RenderContext &ctx) {
   if (!prepareToRender(ctx)) {
     return;
   }
-  Container::Render(ctx);
+  // prepare中设置了viewbox的matrix
+  // 在这里保存一下。
+  ctx.matrix = ctx.canvas->getTotalMatrix();
+
+  Group::Render(ctx);
 }
 
 void Svg::SetAttribute(ui::SerializeParam &data) {
-  Container::SetAttribute(data);
+  Group::SetAttribute(data);
 
   ui::AttributeSerializerWrap s(&data, "Svg");
   s.AddLength("width", m_width)

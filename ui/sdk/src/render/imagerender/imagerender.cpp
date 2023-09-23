@@ -363,7 +363,7 @@ const char *ImageListRender::GetState2Index() {
   char szItem[16] = {0};
   std::map<int, int>::iterator iter = m_mapState2Index.begin();
   for (; iter != m_mapState2Index.end(); ++iter) {
-    sprintf(szItem, "%d%c%d", iter->first, XML_KEYVALUE_SEPARATOR,
+    snprintf(szItem, 16, "%d%c%d", iter->first, XML_KEYVALUE_SEPARATOR,
             iter->second);
 
     if (!strTempBuffer.empty())

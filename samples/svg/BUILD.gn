@@ -27,6 +27,10 @@ copy("copy_svg_files") {
     "test/viewbox_3.svg", 
     "test/shapes.svg",   
     "test/icon_font.svg",
+    "test/tiger.svg",
+    "test/group.svg",
+    "test/use.svg",
+    "test/transform_1.svg",
   ]
   outputs = [
     "$root_build_dir/sample/svg/{{source_file_part}}"

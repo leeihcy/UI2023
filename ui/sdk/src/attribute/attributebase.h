@@ -43,7 +43,7 @@ public:
   bool IsData();
   AttributeBase *ReloadOnChanged();
   bool IsReloadOnChanged();
-
+  
   AttributeBase *SetParentKey(const char *szParent);
   const char *GetParentKey();
 
@@ -55,7 +55,7 @@ public:
 
 protected:
   const char *ConstructTempLPCTSTR(long lValue);
-
+  
 private:
   std::string m_strKey;
   

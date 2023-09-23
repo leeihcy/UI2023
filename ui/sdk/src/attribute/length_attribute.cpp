@@ -83,10 +83,10 @@ const char *LengthAttribute::Get() {
   char *szText = GetTempBuffer(64);
   switch (lValue.unit) {
   case Length::Unit::Percentage:
-    sprintf(szText, "%d%%", lValue.value);
+    snprintf(szText, 64, "%d%%", lValue.value);
     break;
   default:
-    sprintf(szText, "%d", lValue.value);
+    snprintf(szText, 64, "%d", lValue.value);
     break;
   }
 

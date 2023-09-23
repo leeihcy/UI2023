@@ -77,6 +77,8 @@ struct UIAPI Color {
   void ToHexString(char *szBuffer);
   void ToWebString(char *szBuffer);
 
+  bool operator==(const Color& c) const;
+
   union {
     uint value;
     struct {
@@ -86,6 +88,7 @@ struct UIAPI Color {
       byte a;
     };
   };
+
 };
 
 } // namespace ui

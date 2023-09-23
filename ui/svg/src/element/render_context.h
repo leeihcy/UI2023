@@ -11,8 +11,16 @@ namespace ui {
 
 struct RenderContext {
   SkCanvas* canvas;
-  SkPaint paint;
-  
+
+  // skia不支持同时fill+stroke，只能拆开分两次调用。
+  bool fill = false;
+  SkPaint fill_paint;
+
+  bool stroke = false;
+  SkPaint stroke_paint;
+
+  SkMatrix matrix;
+
   // 控件大小（画布大小）
   ui::Size canvas_size;
   ui::RectFXYWH view_port;
@@ -26,6 +34,11 @@ struct RenderContext {
   float scale = 1.0;  
   float translate_x = 0;
   float translate_y = 0;
+
+#if defined(_DEBUG)
+  int depth = 0;
+  int index = 0;
+#endif
 
   float ResolveX(ui::Length& x);
   float ResolveY(ui::Length& y);

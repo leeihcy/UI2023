@@ -1,13 +1,13 @@
 #ifndef _UI_SVG_SRC_ELEMENT_LINE_LILNE_H_
 #define _UI_SVG_SRC_ELEMENT_LINE_LILNE_H_
 
-#include "src/element/shape.h"
+#include "src/element/shape/shape.h"
 
 namespace svg {
 
 class Line : public Shape {
 public:
-  void Render(RenderContext& context) override;
+  void ShapeRender(RenderContext& context, SkPaint& paint) override;
   void SetAttribute(ui::SerializeParam& data) override;
 
 private:

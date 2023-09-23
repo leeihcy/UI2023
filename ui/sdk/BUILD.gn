@@ -68,7 +68,7 @@ shared_library("uisdk") {
         "src/attribute/attribute.cpp",
         "src/attribute/attributebase.cpp",
         "src/attribute/attribute_alias.cpp",
-        "src/attribute/attribute_wrap.cpp",
+        "src/attribute/iattribute.cpp",
         "src/attribute/bool_attribute.cpp",
         "src/attribute/color_attribute.cpp",
         "src/attribute/enum_attribute.cpp",

@@ -10,16 +10,38 @@ namespace svg {
 class Element {
 public:
   virtual ~Element() {}
-  virtual void PrepareRender(RenderContext& context) {}
+  virtual void PrepareRender(RenderContext& context);
   virtual void Render(RenderContext& context);
   virtual void SetAttribute(ui::SerializeParam& data);
-  virtual void SetDomData(const char* data) {};
+  virtual void SetXmlNodeData(const char* data) {};
   virtual void AddChild(std::unique_ptr<Element>) {}
-  
+  virtual Element* FindElementById(const char* id) { return nullptr; }
+
+public:
+  void SetParent(Element* p);
+  Element* GetRootElement();
+
+  const std::string& GetId();
+
+private:
+  void SetFillColor(ui::Color c);
+  ui::Color GetFillColor();
+  void SetTransform(const char*);
+  const char* GetTransform();
+
+  void setId(const char*);
+  const char* getId();
 
 protected:
- 
-  ui::Color m_fill;
+  Element* m_parent = nullptr; // raw ptr
+
+  std::string m_id;
+
+  std::unique_ptr<SkMatrix>  m_matrix;
+
+  // 如何表示没有配置该属性的场景
+  std::unique_ptr<ui::Color> m_fill;
+
   // fill
   // fill-opacity
   // fill-rule

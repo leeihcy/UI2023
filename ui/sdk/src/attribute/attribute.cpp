@@ -236,14 +236,16 @@ IntAttribute *AttributeSerializer::AddInt(const char *szKey,
   return p;
 }
 
-LengthAttribute *AttributeSerializer::AddLength(const char *key, Length &bind_value) {
+LengthAttribute *AttributeSerializer::AddLength(const char *key,
+                                                Length &bind_value) {
   return static_cast<LengthAttribute *>(
       Add(ATTRIBUTE_TYPE_LENGTH, key, &bind_value));
 }
-LengthAttribute *AttributeSerializer::AddLength(const char *key, slot<void(Length)> &&s,
-                           slot<Length()> &&g) {
-  LengthAttribute *p = static_cast<LengthAttribute *>(
-      Add(ATTRIBUTE_TYPE_LENGTH, key, nullptr));
+LengthAttribute *AttributeSerializer::AddLength(const char *key,
+                                                slot<void(Length)> &&s,
+                                                slot<Length()> &&g) {
+  LengthAttribute *p =
+      static_cast<LengthAttribute *>(Add(ATTRIBUTE_TYPE_LENGTH, key, nullptr));
   if (p) {
     p->Bind(std::forward<slot<void(Length)>>(s),
             std::forward<slot<Length()>>(g));
@@ -369,6 +371,20 @@ ColorAttribute *AttributeSerializer::AddColor(const char *szKey,
 
   if (p)
     p->SetBindValue((void *)&pBindValue);
+
+  return p;
+}
+
+ColorAttribute *AttributeSerializer::AddColor(const char * key,
+                                              slot<void(Color)> &&setter,
+                                              slot<Color()> &&getter) {
+  ColorAttribute *p = static_cast<ColorAttribute *>(
+      Add(ATTRIBUTE_TYPE_UICOLOR, key, nullptr));
+
+  if (p) {
+    p->Bind(std::forward<slot<void(Color)>>(setter),
+            std::forward<slot<Color()>>(getter));
+  }
 
   return p;
 }

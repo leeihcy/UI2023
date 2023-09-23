@@ -10,26 +10,17 @@ void Text::Render(RenderContext &context) {
   int x = context.ResolveX(m_x);
   int y = context.ResolveY(m_y);
 
-  if (m_fill.value) {
-    context.paint.setColor(m_fill.value);
-  }
-
-/*
-if (fill) {
-            ctx.canvas()->drawTextBlob(blob, 0, 0, *fill);
-        }
-        if (stroke) {
-            ctx.canvas()->drawTextBlob(blob, 0, 0, *stroke);
-        }
-*/
+  // if (m_fill.value) {
+  //   context.paint.setColor(m_fill.value);
+  // }
   SkFont font(nullptr, m_font_size);
 
   SkTextUtils::Draw(context.canvas, m_data.c_str(), m_data.length(),
                     SkTextEncoding::kUTF8, (SkScalar)x, (SkScalar)y, font,
-                    context.paint, (SkTextUtils::Align)m_text_anchor);
+                    context.fill_paint, (SkTextUtils::Align)m_text_anchor);
 }
 
-void Text::SetDomData(const char* data) {
+void Text::SetXmlNodeData(const char* data) {
   if (!data) {
     return;
   }

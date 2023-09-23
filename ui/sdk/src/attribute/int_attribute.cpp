@@ -141,7 +141,7 @@ const char *IntAttribute::Get() {
     return szAlias;
   } else {
     char *szText = GetTempBuffer(64);
-    sprintf(szText, "%d", lValue);
+    snprintf(szText, 64, "%d", lValue);
     return szText;
   }
 }

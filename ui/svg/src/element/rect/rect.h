@@ -1,14 +1,14 @@
 #ifndef _UI_SVG_SRC_ELEMENT_RECT_RECT_H_
 #define _UI_SVG_SRC_ELEMENT_RECT_RECT_H_
 
-#include "src/element/shape.h"
+#include "src/element/shape/shape.h"
 #include "sdk/include/util/rect.h"
 
 namespace svg {
   
 class Rect : public Shape {
 public:
-  void Render(RenderContext& context) override;
+  void ShapeRender(RenderContext& context, SkPaint& paint) override;
   void SetAttribute(ui::SerializeParam& data) override;
 
 private:

@@ -112,11 +112,11 @@ const char *Region9Attribute::Get() {
 
   char *szText = GetTempBuffer(64);
   if (r.IsSimpleValue()) {
-    sprintf(szText, "%d", r.left);
+    snprintf(szText, 64, "%d", r.left);
   } else if (r.IsSimpleRect()) {
-    sprintf(szText, "%d,%d,%d,%d", r.left, r.top, r.right, r.bottom);
+    snprintf(szText, 64, "%d,%d,%d,%d", r.left, r.top, r.right, r.bottom);
   } else {
-    sprintf(szText, "%d,%d,%d,%d,%d,%d,%d,%d", r.topleft, r.top, r.topright,
+    snprintf(szText, 64, "%d,%d,%d,%d,%d,%d,%d,%d", r.topleft, r.top, r.topright,
             r.left, r.right, r.bottomleft, r.bottom, r.bottomright);
   }
   return szText;

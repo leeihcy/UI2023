@@ -10,8 +10,9 @@ using namespace std;
 #include "svg/include/interface/isvg.h"
 
 const char *samples[] = {
-    "hello_svg.svg", "viewbox_1.svg", "viewbox_2.svg",
-    "viewbox_3.svg", "shapes.svg",    "icon_font.svg",
+    "use.svg",       "transform_1.svg", "group.svg",     "tiger.svg",
+    "shapes.svg",    "hello_svg.svg",   "viewbox_1.svg", "viewbox_2.svg",
+    "viewbox_3.svg", "icon_font.svg",
 };
 const constexpr int samples_count = std::size(samples);
 static int samples_index = 0;
@@ -61,6 +62,7 @@ public:
     file.read(data, length);
 
     m_svg->Load(data);
+    m_window->SetTitle(path);
 
     delete[] data;
     data = nullptr;
@@ -78,9 +80,7 @@ public:
     printf("on_window_destroy\n");
     uiapp->Quit();
   }
-  void on_lbutton_down(ui::Event *event) {
-    load_next();
-  }
+  void on_lbutton_down(ui::Event *event) { load_next(); }
 
 private:
   ui::WindowPtr m_window;

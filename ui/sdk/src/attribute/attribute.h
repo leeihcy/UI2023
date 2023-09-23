@@ -116,8 +116,9 @@ public:
   Region9Attribute *Add9Region(const char *, slot<void(C9Region *)> &&s,
                                slot<void(C9Region *)> &&g);
 
-  // ColorAttribute *AddColor(const char *, Color *&pBindValue);
   ColorAttribute *AddColor(const char *, Color &pBindValue);
+  ColorAttribute *AddColor(const char *, slot<void(Color)>&& setter, slot<Color()>&& getter);
+  
   RenderBaseAttribute *AddRenderBase(const char *szPrefix, Object *pObj,
                                      IRenderBase *&pBindValue);
   TextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix, Object *pObj,

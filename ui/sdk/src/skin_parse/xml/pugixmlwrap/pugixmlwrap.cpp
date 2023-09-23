@@ -475,7 +475,7 @@ bool PugiXmlElement::GetAttribInt(const char *szKey, int *pInt) {
 }
 bool PugiXmlElement::AddAttribInt(const char *szKey, int nInt) {
   char szValue[16] = {0};
-  sprintf(szValue, "%d", nInt);
+  snprintf(szValue, 16, "%d", nInt);
 
   return AddAttrib(szKey, szValue);
 }

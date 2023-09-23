@@ -5,8 +5,8 @@
 
 namespace svg {
 
-void Path::Render(RenderContext &context) {
-  context.canvas->drawPath(m_path, context.paint);
+void Path::ShapeRender(RenderContext &context, SkPaint& paint) {
+  context.canvas->drawPath(m_path, paint);
 }
 
 void Path::SetAttribute(ui::SerializeParam &data) {

@@ -7,7 +7,7 @@ int SDKVersion::GetMinor() { return UISDK_VERSION_MINOR; }
 int SDKVersion::GetPatch() { return UISDK_VERSION_PATCH; }
 int SDKVersion::GetVersionText(char *szText, int nTextSize) {
   char szTemp[32] = {0};
-  sprintf(szTemp, "%d.%d.%d", GetMajor(), GetMinor(), GetPatch());
+  snprintf(szTemp, 32, "%d.%d.%d", GetMajor(), GetMinor(), GetPatch());
 
   int nDesiredLen = (int)strlen(szTemp) + 1;
   if (nTextSize < nDesiredLen)

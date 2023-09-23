@@ -109,7 +109,7 @@ const char *SizeAttribute::Get() {
   get(&s);
 
   char *szText = GetTempBuffer(64);
-  sprintf(szText, "%d,%d", s.width, s.height);
+  snprintf(szText, 64, "%d,%d", s.width, s.height);
 
   return szText;
 }

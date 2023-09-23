@@ -1,12 +1,14 @@
 #include "dom.h"
 #include "src/element/circle/circle.h"
 #include "src/element/ellipse/ellipse.h"
+#include "src/element/group/group.h"
 #include "src/element/line/line.h"
-#include "src/element/rect/rect.h"
 #include "src/element/path/path.h"
-#include "src/element/svg/svg.h"
-#include "src/element/text/text.h"
 #include "src/element/polyline/polyline.h"
+#include "src/element/rect/rect.h"
+#include "src/element/svg/svg.h"
+#include "src/element/use/use.h"
+#include "src/element/text/text.h"
 
 #include "3rd/pugixml/pugixml.hpp"
 #include "sdk/include/interface/imapattr.h"
@@ -17,13 +19,11 @@ namespace svg {
 
 Dom::Dom() {} // ui::Svg &svg) : m_svg(svg) {}
 
-ui::IMapAttribute *create_attribute_map(pugi::xml_node &node) {
-  ui::IMapAttribute *pMapAttrib = ui::UICreateIMapAttribute();
+void create_attribute_map(pugi::xml_node &node, ui::IMapAttribute *pMapAttrib) {
   for (pugi::xml_attribute attr = node.first_attribute(); !attr.empty();
        attr = attr.next_attribute()) {
     pMapAttrib->AddAttr(attr.name(), attr.as_string());
   }
-  return pMapAttrib;
 }
 
 void Dom::scan_node(Element *parent, pugi::xml_node &node) {
@@ -36,7 +36,7 @@ void Dom::scan_node(Element *parent, pugi::xml_node &node) {
 
     // 如 <text>SVG</text> 通过data设置text内容
     if (child.type() == pugi::node_pcdata) {
-      parent->SetDomData(child.value());
+      parent->SetXmlNodeData(child.value());
       break;
     }
 
@@ -65,12 +65,17 @@ Element *create_element(const char *name) {
   } else if (strcmp("polyline", name) == 0) {
     element = new svg::Polyline();
   } else if (strcmp("polygon", name) == 0) {
-    Polyline* p = new svg::Polyline();
+    Polyline *p = new svg::Polyline();
     p->AsPolygon();
     element = p;
   } else if (strcmp("path", name) == 0) {
     element = new svg::Path();
-  } else {
+  } else if (strcmp("g", name) == 0) {
+    element = new svg::Group();
+  } else if (strcmp("use", name) == 0) {
+    element = new svg::Use();
+  }
+  else {
     UIASSERT(false);
   }
   return element;
@@ -82,21 +87,16 @@ std::unique_ptr<Element> Dom::handle_element(pugi::xml_node &node) {
     return nullptr;
   }
 
-  ui::IMapAttribute *pMapAttrib = create_attribute_map(node);
+  ui::IMapAttribute *pMapAttrib = ui::UICreateIMapAttribute();
+  create_attribute_map(node, pMapAttrib);
 
   ui::SerializeParam data = {0};
   data.nFlags = ui::SERIALIZEFLAG_LOAD;
   data.pMapAttrib = pMapAttrib;
   element->SetAttribute(data);
 
-  pMapAttrib->Destroy();
-
-  // for (pugi::xml_attribute attr = node.first_attribute(); !attr.empty();
-  //      attr = attr.next_attribute()) {
-  //   element->SetAttribute(attr.name(), attr.as_string());
-  // }
-
   scan_node(element.get(), node);
+  pMapAttrib->Destroy();
 
   return element;
 }

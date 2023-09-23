@@ -1,8 +1,8 @@
 #ifndef _UI_IATTRIBUTE_H_
 #define _UI_IATTRIBUTE_H_
-#include <functional>
-#include "sdk/include/interface.h"
 #include "sdk/include/common/signalslot/slot.h"
+#include "sdk/include/interface.h"
+#include <functional>
 
 namespace ui {
 struct IObject;
@@ -114,7 +114,6 @@ private:
   LengthAttribute *m_pImpl; // raw_ptr
 };
 
-
 class BoolAttribute;
 struct UIAPI IBoolAttribute {
   IBoolAttribute(BoolAttribute *);
@@ -208,7 +207,7 @@ struct UIAPI IRectAttribute {
   IRectAttribute(RectAttribute *);
   IRectAttribute *AsData();
 
-  IRectAttribute *SetCompatibleKey(const char* key);
+  IRectAttribute *SetCompatibleKey(const char *key);
   IRectAttribute *SetDefault(Rect);
 
   const char *GetKey();
@@ -274,6 +273,8 @@ private:
 class ColorAttribute;
 struct UIAPI IColorAttribute {
   IColorAttribute(ColorAttribute *);
+  IColorAttribute *SetDefault(Color c);
+  IColorAttribute *Bind(slot<void(Color)> &&setter, slot<Color()> &&getter);
 
   const char *GetKey();
   const char *GetDesc();
@@ -322,8 +323,7 @@ struct UIAPI AttributeSerializerWrap {
   ~AttributeSerializerWrap();
   AttributeSerializer *GetImpl();
 
-  IStringAttribute *AddString(const char *szKey,
-                              slot<void(const char *)> &&s,
+  IStringAttribute *AddString(const char *szKey, slot<void(const char *)> &&s,
                               slot<const char *()> &&g);
   IBoolAttribute *AddBool(const char *szKey, bool &bBindValue);
   IIntAttribute *AddInt(const char *szKey, int &lBindValue);
@@ -332,8 +332,9 @@ struct UIAPI AttributeSerializerWrap {
   IEnumAttribute *AddEnum(const char *szKey, int &lBindValue);
   IRectAttribute *AddRect(const char *, Rect &rcBindValue);
   ISizeAttribute *AddSize(const char *, Size &sBindValue);
-  // IColorAttribute *AddColor(const char *, Color *&pBindValue);
   IColorAttribute *AddColor(const char *, Color &pBindValue);
+  IColorAttribute *AddColor(const char *szKey, slot<void(Color)> &&setter,
+                            slot<Color()> &&getter);
   IRegion9Attribute *Add9Region(const char *, C9Region &rBindValue);
   IRenderBaseAttribute *AddRenderBase(const char *szPrefix, IObject *pObj,
                                       IRenderBase *&pBindValue);

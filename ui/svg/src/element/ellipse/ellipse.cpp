@@ -4,7 +4,7 @@
 
 namespace svg {
 
-void Ellipse::Render(RenderContext &context) {
+void Ellipse::ShapeRender(RenderContext &context, SkPaint& paint) {
   int cx = context.ResolveX(m_cx);
   int cy = context.ResolveY(m_cy);
   int rx = context.ResolveRX(m_rx);
@@ -14,7 +14,7 @@ void Ellipse::Render(RenderContext &context) {
                     ? SkRect::MakeXYWH(cx - rx, cy - ry, rx * 2, ry * 2)
                     : SkRect::MakeEmpty();
 
-  context.canvas->drawOval(rect, context.paint);
+  context.canvas->drawOval(rect, paint);
 }
 
 void Ellipse::SetAttribute(ui::SerializeParam &data) {

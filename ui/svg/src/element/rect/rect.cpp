@@ -4,7 +4,7 @@
 
 namespace svg {
 
-void Rect::Render(RenderContext &context) {
+void Rect::ShapeRender(RenderContext &context, SkPaint& paint) {
   int x = context.ResolveX(m_x);
   int y = context.ResolveY(m_y);
   int width = context.ResolveX(m_width);
@@ -15,9 +15,9 @@ void Rect::Render(RenderContext &context) {
   SkRect rect = SkRect::MakeXYWH(x, y, width, height);
 
   if (rx > 0 || ry > 0) {
-    context.canvas->drawRRect(SkRRect::MakeRectXY(rect, rx, ry), context.paint);
+    context.canvas->drawRRect(SkRRect::MakeRectXY(rect, rx, ry), paint);
   } else {
-    context.canvas->drawRect(rect, context.paint);
+    context.canvas->drawRect(rect, paint);
   }
 }
 

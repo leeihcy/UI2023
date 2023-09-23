@@ -1,7 +1,7 @@
 #ifndef _UI_SVG_SRC_ELEMENT_SVG_ROOT_H_
 #define _UI_SVG_SRC_ELEMENT_SVG_ROOT_H_
 
-#include "src/element/container.h"
+#include "src/element/group/group.h"
 
 // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
 //
@@ -11,7 +11,7 @@
 
 namespace svg {
 
-class Svg : public Container {
+class Svg : public Group {
 public:
   void Render(RenderContext &context) override;
   void SetAttribute(ui::SerializeParam &data) override;

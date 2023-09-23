@@ -52,11 +52,11 @@ struct RectFLTRB {
 struct Rect : public RectLTRB {
 
   static Rect MakeLTRB(int l, int t, int r, int b) {
-    Rect rect = {l,t,r,b};
+    Rect rect = {l, t, r, b};
     return rect;
   }
   static Rect MakeXYWH(int x, int y, int w, int h) {
-    Rect rect = {x,y,x+w,y+h};
+    Rect rect = {x, y, x + w, y + h};
     return rect;
   }
 
@@ -92,8 +92,8 @@ struct Rect : public RectLTRB {
       return false;
     }
 
-    out->Set(std::max(rc.left, left), std::min(rc.right, right),
-             std::max(rc.top, top), std::min(rc.bottom, bottom));
+    out->Set(std::max(rc.left, left), std::max(rc.top, top),
+             std::min(rc.right, right), std::min(rc.bottom, bottom));
     return true;
   }
 
@@ -103,8 +103,8 @@ struct Rect : public RectLTRB {
       return;
     }
 
-    out->Set(std::min(rc.left, left), std::max(rc.right, right),
-             std::min(rc.top, top), std::max(rc.bottom, bottom));
+    out->Set(std::min(rc.left, left), std::min(rc.top, top),
+             std::max(rc.right, right), std::max(rc.bottom, bottom));
   }
 
   void Offset(int x, int y) {
@@ -113,7 +113,7 @@ struct Rect : public RectLTRB {
     top += y;
     bottom += y;
   }
-  void Deflate(Rect& rc) {
+  void Deflate(Rect &rc) {
     left += rc.left;
     top += rc.top;
     right -= rc.right;
@@ -150,15 +150,11 @@ struct Length {
   int value = 0;
   Unit unit = Unit::Number;
 
-  bool operator == (const Length& o) {
+  bool operator==(const Length &o) {
     return o.value == this->value && o.unit == this->unit;
   }
-  static Length MakeNumber(int n) {
-    return {n, Unit::Number};
-  }
-  static Length MakePercent(int n) {
-    return {n, Unit::Percentage};
-  }
+  static Length MakeNumber(int n) { return {n, Unit::Number}; }
+  static Length MakePercent(int n) { return {n, Unit::Percentage}; }
 };
 
 } // namespace ui
