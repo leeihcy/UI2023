@@ -57,7 +57,7 @@ public:
 
 public:
   // WndProc的原始消息处理   // 经过virtual扩展了
-  //VIRTUAL_BEGIN_MSG_MAP(WindowPlatformWin)
+  // VIRTUAL_BEGIN_MSG_MAP(WindowPlatformWin)
   BEGIN_MSG_MAP_EX(WindowPlatformWin)
   MESSAGE_HANDLER(WM_ERASEBKGND, _OnEraseBkgnd)
   MESSAGE_HANDLER(WM_PAINT, _OnPaint)
@@ -65,15 +65,17 @@ public:
   MESSAGE_HANDLER(WM_SETCURSOR, _OnSetCursor)
   MESSAGE_HANDLER(WM_NCHITTEST, _OnNcHitTest)
   MESSAGE_HANDLER(UI_MSG_POSTMESSAGE, _OnPostMessage)
+#endif
 
-  MESSAGE_HANDLER(WM_MOUSEMOVE, _OnHandleMouseMessage)
-  MESSAGE_HANDLER(WM_MOUSELEAVE, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_MOUSEMOVE, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_MOUSELEAVE, _OnHandleMouseMessage)
   MESSAGE_HANDLER(WM_LBUTTONDOWN, _OnHandleMouseMessage)
   MESSAGE_HANDLER(WM_LBUTTONUP, _OnHandleMouseMessage)
-  MESSAGE_HANDLER(WM_RBUTTONDOWN, _OnHandleMouseMessage)
-  MESSAGE_HANDLER(WM_RBUTTONUP, _OnHandleMouseMessage)
-  MESSAGE_HANDLER(WM_LBUTTONDBLCLK, _OnHandleMouseMessage)
-  MESSAGE_HANDLER(WM_MOUSEWHEEL, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_RBUTTONDOWN, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_RBUTTONUP, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_LBUTTONDBLCLK, _OnHandleMouseMessage)
+  // MESSAGE_HANDLER(WM_MOUSEWHEEL, _OnHandleMouseMessage)
+#if 0
   MESSAGE_HANDLER(WM_CANCELMODE, _OnHandleMouseMessage)
 
   MESSAGE_HANDLER(WM_CHAR, _OnHandleKeyBoardMessage)
@@ -143,16 +145,19 @@ public:
                               BOOL bHandled, LRESULT lRet);
 
 private:
-  LRESULT _OnSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled);
+  LRESULT _OnSize(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
+                  BOOL &bHandled);
 
   LRESULT _OnEraseBkgnd(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
-                     BOOL &bHandled);
+                        BOOL &bHandled);
   LRESULT _OnPaint(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
-                BOOL &bHandled);
+                   BOOL &bHandled);
   LRESULT _OnNcDestroy(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
-                    BOOL &bHandled);
+                       BOOL &bHandled);
   LRESULT _OnDestroy(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
-                  BOOL &bHandled);
+                     BOOL &bHandled);
+  LRESULT _OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
+                                BOOL &bHandled);
 
 public:
   // 创建窗口时，拦截第一个窗口消息，将HWND->this

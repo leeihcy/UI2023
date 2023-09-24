@@ -3,42 +3,42 @@
 #include <string>
 #if defined(OS_MAC)
 #include <mach-o/dyld.h>
+#elif defined(OS_WIN)
+#include "sdk/src/util/windows.h"
 #endif
+#include "sdk/include/macro/helper.h"
 
-namespace ui
-{
+namespace ui {
 
 class PathImpl {
 public:
-  PathImpl(const char* path_utf8) : m_path(path_utf8) {
-  }
+  PathImpl(const char *path_utf8) : m_path(path_utf8) {}
+
 public:
   std::string m_path;
-}; 
+};
 
 // ---------------------------------------------------------
 
-Path::Path() {
-
-}
+Path::Path() {}
 Path::~Path() {
-
+  if (m_impl) {
+    delete m_impl;
+    m_impl = nullptr;
+  }
 }
 
-Path::Path(const Path& o) : m_impl(new PathImpl(o.m_impl->m_path.c_str())) {
+Path::Path(const Path &o) : m_impl(new PathImpl(o.m_impl->m_path.c_str())) {}
 
-}
-
-Path::Path(const char* path_utf8) : m_impl(new PathImpl(path_utf8)) {
-}
+Path::Path(const char *path_utf8) : m_impl(new PathImpl(path_utf8)) {}
 
 /*static */
 Path Path::ExecutePath() {
 
 #if defined(OS_WIN)
-  wchar_t szPath[256] = {0}; 
+  wchar_t szPath[256] = {0};
   ::GetModuleFileNameW(nullptr, szPath, 255);
-  return Path(CW2A(szPath, CF_UTF8));
+  return Path(CW2A(szPath, CP_UTF8));
 
 #elif defined(OS_MAC)
   // Executable path can have relative references ("..") depending on
@@ -46,7 +46,7 @@ Path Path::ExecutePath() {
   uint32_t executable_length = 0;
   _NSGetExecutablePath(NULL, &executable_length);
 
-  char* buffer = new char[executable_length+1];
+  char *buffer = new char[executable_length + 1];
   _NSGetExecutablePath(buffer, &executable_length);
 
   char real_path[PATH_MAX] = {0};
@@ -55,55 +55,61 @@ Path Path::ExecutePath() {
 
   return Path(real_path);
 
-// #elif defined(OS_LINUX)
+  // #elif defined(OS_LINUX)
 
 #else
   UIASSERT(false);
   return Path();
 #endif
+}
+
+static inline bool is_separator(const char *p) {
+  return *p == '/' || *p == '\\';
 }
 
 Path Path::Dir() {
+  size_t length = m_impl->m_path.length();
+  if (length == 0) {
+    return Path();
+  }
 
-#if defined(OS_MAC)
-  int length = m_impl->m_path.length();
-  if (length > 0 && m_impl->m_path[length-1] == '/') {
-    length--;
+  const char *pstart = m_impl->m_path.c_str();
+  const char *pend = m_impl->m_path.c_str() + length - 1;
+
+  if (is_separator(pend)) {
+    pend--;
   }
-  size_t pos = m_impl->m_path.find_last_of("/", length);
-  if (pos >= 0) {
-    return Path(m_impl->m_path.substr(0, pos).c_str());
-  } else {
-    return Path("/");
+  while (pstart < pend) {
+    if (is_separator(pend)) {
+      break;
+    }
+    pend--;
   }
-#else
-  UIASSERT(false);
-  return Path();
-#endif
+  return Path(m_impl->m_path.substr(0, pend - pstart).c_str());
 }
 
-Path Path::Join(const char* sub_path) {
+Path Path::Join(const char *sub_path) {
   if (!sub_path || !sub_path[0]) {
     return *this;
   }
-
-#if defined(OS_MAC)
- // TODO:
   std::string path_text = m_impl->m_path;
-  int length = path_text.length();
-  if (sub_path[0] != '/') {
+  if (path_text.empty()) {
+    return Path(sub_path);
+  }
+
+  size_t length = path_text.length();
+  if (!is_separator(sub_path) &&
+      !is_separator(path_text.c_str() + length - 1)) {
     path_text.append("/");
   }
+  if (is_separator(sub_path) && is_separator(path_text.c_str() + length - 1)) {
+    sub_path++;
+  }
+
   path_text.append(sub_path);
   return Path(path_text.c_str());
-#else
-  UIASSERT(false);
-  return Path();
-#endif
 }
 
-const char* Path::ToString() {
-  return m_impl->m_path.c_str();
-}
+const char *Path::ToString() { return m_impl->m_path.c_str(); }
 
 } // namespace ui

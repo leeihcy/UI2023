@@ -21,7 +21,7 @@ public:
   const char* ToString();
 
 private:
-  std::unique_ptr<PathImpl> m_impl;
+  PathImpl* m_impl = nullptr;
 };
 
 }

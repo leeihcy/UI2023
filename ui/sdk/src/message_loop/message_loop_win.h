@@ -28,6 +28,7 @@ private:
   
   WaitForHandlesMgr m_WaitForHandlesMgr;
   MessageFilterMgr m_MsgFilterMgr;
+  ForwardPostMessageWindow m_WndForwardPostMsg;
 
   bool quit_flag = false;
 };

@@ -295,12 +295,6 @@ public:                                                                        \
   }
 
 
-//
-//	在ui中实现post message（稍后再响应）
-//	见CForwardPostMessageWindow
-//
-#define UI_MSG_POSTMESSAGE (WM_USER + 829)
-
 // long OnMessageHandlerEX(unsigned int uMsg, long wParam, long lParam)
 #define UIMSG_HANDLER_EX(msg, func)                                            \
   if (uMsg == msg) {                                                           \

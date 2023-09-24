@@ -164,9 +164,6 @@ protected:
                  BOOL &bHandled);
   long _OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
                 BOOL &bHandled);
-
-  long _OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
-                             BOOL &bHandled);
   long _OnHandleKeyBoardMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
                                 BOOL &bHandled);
   long _OnHandleTouchMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam,

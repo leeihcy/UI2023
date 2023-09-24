@@ -123,7 +123,6 @@ private:
 #if 0 // defined(OS_WIN)
   GifTimerManager *m_pGifTimerMgr;
   ToolTipManager m_ToolTipMgr;
-  ForwardPostMessageWindow m_WndForwardPostMsg;
 #endif
   AnimateHelper m_animate;
 

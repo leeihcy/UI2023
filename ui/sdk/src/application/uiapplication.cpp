@@ -22,7 +22,6 @@ namespace ui {
 
 Application::Application(IApplication *p)
     : m_pUIApplication(p),
-      // m_WndForwardPostMsg(this),
       m_TopWindowMgr(this), m_renderBaseFactory(*this),
       m_textRenderFactroy(*this), m_animate(*this), m_resource_manager(*this) {
 #if defined(OS_MAC)
@@ -75,9 +74,6 @@ void Application::x_Init() {
     iccex.dwICC = ICC_WIN95_CLASSES;
     iccex.dwSize = sizeof(INITCOMMONCONTROLSEX);
     InitCommonControlsEx(&iccex);
-
-    // 创建一个用于转发消息的窗口，实现post ui message
-    m_WndForwardPostMsg.Create(HWND_MESSAGE);
 
     // 针对layer window防止无响应时窗口变黑
     //DisableProcessWindowsGhosting();

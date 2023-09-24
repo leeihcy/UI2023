@@ -675,4 +675,36 @@ LRESULT WindowPlatformWin::_OnSize(unsigned int uMsg, WPARAM wParam,
   return 0;
 }
 
+LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+  int x = GET_X_LPARAM(lParam);
+  int y = GET_Y_LPARAM(lParam);
+
+  if (uMsg == WM_LBUTTONDOWN) {
+    m_ui_window.m_mouse_key.OnLButtonDown(x, y);
+  } else if (uMsg == WM_LBUTTONUP) {
+    m_ui_window.m_mouse_key.OnLButtonUp(x, y);
+  }
+  bHandled = TRUE;
+#if 0
+	if (m_syncWindow.IsSizeMoveIng())  // 拖拽过程中不处理
+	{
+		bHandled = FALSE;
+		return 0;
+	}
+
+	bHandled = FALSE;
+	long lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
+
+    if (bHandled)
+        return lRet;
+
+// 	if (m_oMouseManager.GetHoverObject() || m_oMouseManager.GetPressObject())
+// 	{
+// 		bHandled = TRUE;
+// 	}
+#endif
+	return 0;
+}
+
 } // namespace ui

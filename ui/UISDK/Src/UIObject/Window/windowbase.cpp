@@ -880,26 +880,6 @@ long  WindowBase::_OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
-long WindowBase::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	if (m_syncWindow.IsSizeMoveIng())  // 拖拽过程中不处理
-	{
-		bHandled = FALSE;
-		return 0;
-	}
-
-	bHandled = FALSE;
-	long lRet = m_oMouseManager.HandleMouseMessage(uMsg, wParam, lParam, &bHandled);
-
-    if (bHandled)
-        return lRet;
-
-// 	if (m_oMouseManager.GetHoverObject() || m_oMouseManager.GetPressObject())
-// 	{
-// 		bHandled = TRUE;
-// 	}
-	return 0;
-}
 long  WindowBase::_OnHandleKeyBoardMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     bHandled = FALSE;

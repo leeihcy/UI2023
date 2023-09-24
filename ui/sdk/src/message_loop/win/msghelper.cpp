@@ -1,48 +1,65 @@
 #include "msghelper.h"
+#include "sdk/include/macro/helper.h"
 #include "src/object/message.h"
 
 namespace ui {
-// BOOL ForwardPostMessageWindow::ProcessWindowMessage(HWND hWnd,
-//                                                     unsigned int uMsg,
-//                                                     long wParam, long lParam,
-//                                                     long &lResult,
-//                                                     unsigned int dwMsgMapID) {
-//   if (UI_MSG_POSTMESSAGE == uMsg) {
-//     UIMSG *pMsg = (UIMSG *)wParam;
-//     if (!pMsg->pMsgTo) // 有可能该对象已被删除
-//     {
-//       delete pMsg;
-//       return TRUE;
-//     }
 
-//     int msgMapId = (int)lParam;
-//     UISendMessage(pMsg, msgMapId);
-//     pMsg->pMsgTo->RemoveDelayRef((void **)&(pMsg->pMsgTo));
-//     delete pMsg;
+//
+//	在ui中实现post message（稍后再响应）
+//	见CForwardPostMessageWindow
+//
+#define UI_MSG_POSTMESSAGE (WM_USER + 1)
+struct PostData {
+  PostData(slot<void()> &&c) : callback(std::forward<slot<void()>>(c)) {}
+  slot<void()> callback;
+};
 
-//     return TRUE;
-//   } else if (WM_DESTROY == uMsg) // 将剩余未处理完的post消息释放，避免内存泄露
-//   {
-//     // Note that PeekMessage always retrieves WM_QUIT messages,
-//     // no matter which values you specify for wMsgFilterMin and
-//     // wMsgFilterMax.
+LRESULT ForwardPostMessageWindowProc(HWND hWnd, UINT message, WPARAM wParam,
+                                     LPARAM lParam) {
+  if (UI_MSG_POSTMESSAGE == message) {
+    PostData *data = (PostData *)wParam;
+    UIASSERT(data);
+    data->callback.emit();
+    delete data;
+    return TRUE;
+  } else if (WM_DESTROY == message) {
+    // 将剩余未处理完的post消息释放，避免内存泄露
+    // Note that PeekMessage always retrieves WM_QUIT messages,
+    // no matter which values you specify for wMsgFilterMin and
+    // wMsgFilterMax.
 
-//     MSG msg;
-//     while (::PeekMessage(&msg, m_hWnd, UI_MSG_POSTMESSAGE, UI_MSG_POSTMESSAGE,
-//                          PM_REMOVE)) {
-//       if (msg.message == UI_MSG_POSTMESSAGE) {
-//         UIMSG *pMsg = (UIMSG *)msg.wParam;
-//         if (pMsg->pMsgTo)
-//           pMsg->pMsgTo->RemoveDelayRef((void **)&(pMsg->pMsgTo));
-//         delete pMsg;
-//       } else {
-//         break;
-//       }
-//     }
-//   }
+    ::MSG msg;
+    while (::PeekMessage(&msg, hWnd, UI_MSG_POSTMESSAGE, UI_MSG_POSTMESSAGE,
+                         PM_REMOVE)) {
+      if (msg.message == UI_MSG_POSTMESSAGE) {
+        PostData *data = (PostData *)wParam;
+        UIASSERT(data);
+        data->callback.emit();
+        delete data;
+      }
+    }
+  }
 
-//   return FALSE;
-// }
+  return ::DefWindowProc(hWnd, message, wParam, lParam);
+}
+void ForwardPostMessageWindow::Create(MessageLoopPlatformWin *p) {
+  m_bind = p;
+
+  const char *class_name = "ForwardMessageWindows";
+  WNDCLASSEXA wx = {};
+  wx.cbSize = sizeof(WNDCLASSEX);
+  wx.lpfnWndProc = ForwardPostMessageWindowProc;
+  wx.hInstance = 0;
+  wx.lpszClassName = class_name;
+  if (RegisterClassExA(&wx)) {
+    m_hWnd = CreateWindowExA(0, class_name, "", 0, 0, 0, 0, 0, HWND_MESSAGE,
+                             NULL, NULL, NULL);
+  }
+}
+void ForwardPostMessageWindow::Post(slot<void()> &&callback) {
+  PostData *data = new PostData(std::forward<slot<void()>>(callback));
+  ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, (WPARAM)data, 0);
+}
 
 WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l) {
   m_hHandle = h;
@@ -64,7 +81,7 @@ WaitForHandlesMgr::~WaitForHandlesMgr() {
   m_nHandleCount = 0;
 
   if (m_pHandles) {
-    delete []m_pHandles;
+    delete[] m_pHandles;
     m_pHandles = nullptr;
   }
   m_nHandleCount = 0;
@@ -84,7 +101,8 @@ WaitForHandle *WaitForHandlesMgr::FindHandle(HANDLE h) {
   return nullptr;
 }
 
-std::list<WaitForHandle *>::iterator WaitForHandlesMgr::FindHandleIter(HANDLE h) {
+std::list<WaitForHandle *>::iterator
+WaitForHandlesMgr::FindHandleIter(HANDLE h) {
   if (nullptr == h)
     return m_list.end();
 
@@ -156,7 +174,7 @@ void WaitForHandlesMgr::Do(HANDLE h) {
     return;
 
   pWaitForHandle->GetCB()->OnWaitForHandleObjectCallback(
-      (long*)h, pWaitForHandle->GetLParam());
+      (long *)h, pWaitForHandle->GetLParam());
 }
 
 // 不使用stl::list，这样至少能在自己的PreTranslateMessage响应中调用RemoveMessageFilter操作

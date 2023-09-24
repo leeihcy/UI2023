@@ -2,11 +2,23 @@
 #include "message_loop.h"
 #include "src/util/windows.h"
 
+#include <atlbase.h>
+CAppModule _Module;
+
 namespace ui {
 
 MessageLoopPlatformWin::MessageLoopPlatformWin() {}
 
-void MessageLoopPlatformWin::Initialize(MessageLoop *p) { m_message_loop = p; }
+void MessageLoopPlatformWin::Initialize(MessageLoop *p) { 
+    m_message_loop = p;
+
+    //OleInitialize(0);
+    //CoInitializeEx(0, 0);
+    //_Module.Init(nullptr, GetModuleHandleA(nullptr));
+
+    // 创建一个用于转发消息的窗口，实现post ui message
+    m_WndForwardPostMsg.Create(this);    
+}
 
 void MessageLoopPlatformWin::Release() {}
 
@@ -17,7 +29,9 @@ void MessageLoopPlatformWin::Quit() {
     ::PostQuitMessage(0);
 }
 
-void MessageLoopPlatformWin::PostTask(PostTaskType &&task) {}
+void MessageLoopPlatformWin::PostTask(PostTaskType &&task) {
+    m_WndForwardPostMsg.Post(std::forward<PostTaskType>(task));
+}
 int MessageLoopPlatformWin::ScheduleTask(ScheduleTaskType &&task,
                                          int delay_ms) {
   return 0;
