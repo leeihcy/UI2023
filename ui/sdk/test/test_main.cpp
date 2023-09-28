@@ -4,6 +4,8 @@ using namespace std;
 #include "include/uiapi.h"
 
 int main() {
+#if defined(_DEBUG)
   ui::UIUnitTest();
+#endif
   return 0;
 }

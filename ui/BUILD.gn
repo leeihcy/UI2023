@@ -3,6 +3,7 @@
 group("ui") {
     deps = [
         "sdk:sdk",
+        "gpu:gpu",
         "svg:uisvg",
     ]
 }
@@ -11,6 +12,7 @@ group("ui") {
 
 group("unittest") {
     deps = [
-        "sdk:sdk_test"
+        "sdk:sdk_test",
+        "gpu:gpu_test"
     ]
 }

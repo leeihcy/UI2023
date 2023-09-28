@@ -389,7 +389,7 @@ bool CMapAttribute::AddAttr_REGION4(const char *szKey, REGION4 *pr) {
     return false;
 
   char szText[32] = {0};
-  sprintf(szText, "%d,%d,%d,%d", pr->left, pr->top, pr->right,
+  snprintf(szText, 32, "%d,%d,%d,%d", pr->left, pr->top, pr->right,
           pr->bottom);
 
   m_mapAttr[szKey] = szText;
@@ -401,7 +401,7 @@ bool CMapAttribute::AddAttr_int(const char *szKey, int nValue) {
     return false;
 
   char szText[8] = {0};
-  sprintf(szText, "%d", nValue);
+  snprintf(szText, 8, "%d", nValue);
 
   m_mapAttr[szKey] = szText;
   return true;

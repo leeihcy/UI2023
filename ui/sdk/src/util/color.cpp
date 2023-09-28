@@ -115,11 +115,11 @@ bool Color::operator==(const Color& c) const {
 // }
 
 void Color::ToHexString(char *szBuffer) {
-  sprintf(szBuffer, "0x%02X%02X%02X%02X", a, r, g, b);
+  snprintf(szBuffer, 16, "0x%02X%02X%02X%02X", a, r, g, b);
 }
 void Color::ToWebString(char *szBuffer) {
   if (a == 255) {
-    sprintf(szBuffer, "#%02X%02X%02X", r, g, b);
+    snprintf(szBuffer, 16, "#%02X%02X%02X", r, g, b);
     if (szBuffer[1] == szBuffer[2] && szBuffer[3] == szBuffer[4] &&
         szBuffer[5] == szBuffer[6]) {
       szBuffer[2] = szBuffer[3];
@@ -127,7 +127,7 @@ void Color::ToWebString(char *szBuffer) {
       szBuffer[4] = 0;
     }
   } else {
-    sprintf(szBuffer, "#%02X%02X%02X%02X", a, r, g, b);
+    snprintf(szBuffer, 16, "#%02X%02X%02X%02X", a, r, g, b);
     if (szBuffer[1] == szBuffer[2] && szBuffer[3] == szBuffer[4] &&
         szBuffer[5] == szBuffer[6] && szBuffer[7] == szBuffer[8]) {
       szBuffer[2] = szBuffer[3];
