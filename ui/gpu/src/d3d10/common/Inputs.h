@@ -1,10 +1,13 @@
-#pragma once
+#ifndef _UI_GPU_SRC_D3D10_COMMON_INPUTS_H_
+#define _UI_GPU_SRC_D3D10_COMMON_INPUTS_H_
+#include "src/d3d10/inc.h"
+#include <d3d10.h>
 
-// 对应fx文件中的VS()参数
+// 瀵瑰簲fx鏂囦欢涓殑VS()鍙傛暟
 struct DXUT_SCREEN_VERTEX_10
 {
     float x, y, z;
-    UI::D3DCOLORVALUE color;
+    ui::D3DCOLORVALUE color;
     float tu, tv;
 };
 
@@ -20,3 +23,4 @@ public:
     // static ID3D10Buffer*  m_pVertexBuffer;
 
 };
+#endif

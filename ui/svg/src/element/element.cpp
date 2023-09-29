@@ -211,7 +211,7 @@ void Element::PrepareRender(RenderContext &context) {
     context.stroke = true;
     context.stroke_paint.setColor(m_stroke.value);
 
-    int stroke_width = context.ResolveX(m_stroke_width);
+    float stroke_width = context.ResolveX(m_stroke_width);
     context.stroke_paint.setStrokeWidth((SkScalar)stroke_width);
   } else {
   }

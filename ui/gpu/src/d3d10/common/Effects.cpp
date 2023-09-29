@@ -1,6 +1,12 @@
 #include "Effects.h"
-#include "resource.h"
-#include "stdafx.h"
+#include "src/resource.h"
+#include "src/stdafx.h"
+#include <assert.h>
+
+#if defined(OS_WIN)
+#include <d3d10.h>
+#include <d3dx10.h>
+#endif
 
 ID3D10Effect *Effects::m_pEffect = nullptr;
 
@@ -27,15 +33,16 @@ bool Effects::Init(ID3D10Device *pDevice) {
   HRESULT hCompileResult = 0;
   ID3D10Blob *pCompileBlob = nullptr;
 
+  HINSTANCE hInstance = GetModuleHandle(L"uigpu.dll");
 #ifdef _DEBUG
   TCHAR szPath[MAX_PATH] = {0};
-  GetModuleFileName(g_hInstance, szPath, MAX_PATH);
+  GetModuleFileName(hInstance, szPath, MAX_PATH);
   TCHAR *p = _tcsrchr(szPath, TEXT('\\'));
   if (p) {
     *(p + 1) = 0;
   }
 
-  _tcscat(szPath, TEXT("..\\..\\ui\\UICompositor\\Src\\d3d10\\d3d10.fx"));
+  _tcscat(szPath, TEXT("..\\..\\ui\\gpu\\src\\d3d10\\d3d10.fx"));
 
   HRESULT hr = D3DX10CreateEffectFromFile(
       szPath, nullptr, nullptr, "fx_4_0", dwShaderFlags, 0, pDevice, nullptr,
@@ -43,15 +50,18 @@ bool Effects::Init(ID3D10Device *pDevice) {
 #else
   // 必须放在 RCDATA 资源当中
   HRESULT hr = D3DX10CreateEffectFromResource(
-      g_hInstance, MAKEINTRESOURCE(fx_4_0), 0, nullptr, nullptr, "fx_4_0",
+      hInstance, MAKEINTRESOURCE(fx_4_0), 0, nullptr, nullptr, "fx_4_0",
       dwShaderFlags, 0, pDevice, nullptr, nullptr, &m_pEffect, &pCompileBlob,
       &hCompileResult);
 #endif
-  UIASSERT(SUCCEEDED(hr));
+  assert(SUCCEEDED(hr));
   if (pCompileBlob) {
     char *pErrorDesc = (char *)pCompileBlob->GetBufferPointer();
     MessageBoxA(nullptr, pErrorDesc, "load fx failed.", MB_OK | MB_ICONWARNING);
-    SAFE_RELEASE(pCompileBlob);
+    if (pCompileBlob) {
+      pCompileBlob->Release();
+      pCompileBlob = nullptr;
+    }
   }
 
   if (FAILED(hr)) {
@@ -84,5 +94,8 @@ void Effects::Release() {
   m_pFxMatrix = nullptr;
   m_pFxVsDestPos = nullptr;
 
-  SAFE_RELEASE(m_pEffect);
+  if (m_pEffect) {
+    m_pEffect->Release();
+    m_pEffect = nullptr;
+  }
 }

@@ -19,16 +19,14 @@ WindowRender::WindowRender(Window &w) : m_window(w) {
 }
 
 WindowRender::~WindowRender() {
-  SAFE_DELETE(m_compositor);
-  SAFE_DELETE(m_pIWindowRender);
   //	SAFE_RELEASE(m_pHardwareComposition);
 }
 
 IWindowRender *WindowRender::GetIWindowRender() {
   if (!m_pIWindowRender)
-    m_pIWindowRender = new IWindowRender(this);
+    m_pIWindowRender.reset(new IWindowRender(this));
 
-  return m_pIWindowRender;
+  return m_pIWindowRender.get();
 }
 
 void WindowRender::OnSerialize(SerializeParam *pData) {
@@ -181,19 +179,19 @@ Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
 Compositor *WindowRender::get_create_compositor() {
   if (!m_compositor) {
     if (m_window.IsGpuComposite()) {
-      m_compositor = new HardwareCompositor();
+      m_compositor.reset(new HardwareCompositor());
     } else {
-      m_compositor = new SoftwareCompositor;
+      m_compositor.reset(new SoftwareCompositor());
     }
     m_compositor->SetUIApplication(m_window.GetUIApplication());
     m_compositor->SetWindowRender(this);
 
-#if 0 // defined(OS_WIN)
-    m_compositor->BindHWND(m_window.GetHWND());
+#if defined(OS_WIN)
+    m_compositor->BindHWND(m_window.GetWindowHandle());
 #endif
   }
 
-  return m_compositor;
+  return m_compositor.get();
 }
 
 void WindowRender::UpdateAndCommit() {

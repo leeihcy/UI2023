@@ -7,19 +7,19 @@ public:
     static bool Init(ID3D10Device* device);
     static void Release();
 
-    // Ä¬ÈÏ×´Ì¬£¬¿ªÆôÍ¸Ã÷ 
+    // é»˜è®¤çŠ¶æ€ï¼Œå¼€å¯é€æ˜ 
     static ID3D10BlendState*  pBlendStateTransparent;
 
-    // ²»ĞŞ¸ÄºóÌ¨»º´æ¡£³¡¾°£ºÖ»Ìî³äÄ£°å»º´æ¡£
+    // ä¸ä¿®æ”¹åå°ç¼“å­˜ã€‚åœºæ™¯ï¼šåªå¡«å……æ¨¡æ¿ç¼“å­˜ã€‚
     static ID3D10BlendState*  pBlendStateDisableWriteRenderTarget;
     
-    // ½ûÓÃÄ£°å»º´æ
+    // ç¦ç”¨æ¨¡æ¿ç¼“å­˜
     static ID3D10DepthStencilState*  pStencilStateDisable;
 
-    // ĞŞ¸ÄÄ£°å»º´æ¡£³¡¾°£ºÉèÖÃ/Ìî³ä¼ô²ÃÇøÓò
+    // ä¿®æ”¹æ¨¡æ¿ç¼“å­˜ã€‚åœºæ™¯ï¼šè®¾ç½®/å¡«å……å‰ªè£åŒºåŸŸ
     static ID3D10DepthStencilState*  pStencilStateCreateClip;			
 
-    // ÔÚÄ£°å»º´æµÄ»ù´¡ÉÏ£¬»æÖÆÆäËü¶ÔÏó¡£³¡¾°£º¼ô²Ã
+    // åœ¨æ¨¡æ¿ç¼“å­˜çš„åŸºç¡€ä¸Šï¼Œç»˜åˆ¶å…¶å®ƒå¯¹è±¡ã€‚åœºæ™¯ï¼šå‰ªè£
     static ID3D10DepthStencilState*  pStencilStateClip;	
 
     static ID3D10RasterizerState*  pRasterizerState;

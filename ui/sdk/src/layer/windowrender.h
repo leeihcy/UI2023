@@ -1,4 +1,7 @@
-#pragma once
+#ifndef _UI_SDK_SRC_LAYER_WINDOWRENDER_H_
+#define _UI_SDK_SRC_LAYER_WINDOWRENDER_H_
+
+#include <memory>
 #include "include/macro/xmldefine.h"
 //#pragma comment(lib, "UICompositor.lib")
 
@@ -59,10 +62,10 @@ public:
   Window& m_window;
 
 private:
-  IWindowRender *m_pIWindowRender = nullptr;
+  std::unique_ptr<IWindowRender> m_pIWindowRender;
 
   GRAPHICS_RENDER_LIBRARY_TYPE m_grl_type = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
-  Compositor *m_compositor = nullptr;
+  std::unique_ptr<Compositor> m_compositor;
 
   // 阻塞刷新窗口
   long m_can_commit = 0;
@@ -73,3 +76,5 @@ private:
 };
 
 } // namespace ui
+
+#endif

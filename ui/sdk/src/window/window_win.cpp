@@ -1,5 +1,6 @@
 #include "window_win.h"
 #include "src/util/windows.h"
+#include "include/util/math.h"
 #include <string.h>
 #include <atlconv.h>
 
@@ -338,16 +339,15 @@ bool WindowPlatformWin::Create(const Rect &rect) {
   cs.lpszClass = WND_CLASS_NAME;
   cs.lpszName = _T("");
   if (prc) {
-    cs.x = prc->left;
-    cs.y = prc->top;
-    cs.cx = prc->right - prc->left;
-    cs.cy = prc->bottom - prc->top;
+    cs.x = ScaleByDpi(prc->left);
+    cs.y = ScaleByDpi(prc->top);
+    cs.cx = ScaleByDpi(prc->right - prc->left);
+    cs.cy = ScaleByDpi(prc->bottom - prc->top);
     m_ui_window.GetWindowStyle().setcreaterect = 1;
   } else {
     cs.x = cs.y = 0;
-    cs.cx = cs.cy =
-        CW_USEDEFAULT; // 500;
-                       // 这里不能直接写一个值。有可能窗口配置的也是这个大小，将导致收不到WM_SIZE消息，布局失败
+    // 这里不能直接写一个值。有可能窗口配置的也是这个大小，将导致收不到WM_SIZE消息，布局失败
+    cs.cx = cs.cy = CW_USEDEFAULT; // 500;
   }
 
   // UISendMessage(this, UI_MSG_PRECREATEWINDOW, (WPARAM)&cs);
@@ -382,6 +382,10 @@ HWND WindowPlatformWin::Detach() {
   HWND hWnd = m_hWnd;
   m_hWnd = nullptr;
   return hWnd;
+}
+
+WINDOW_HANDLE WindowPlatformWin::GetWindowHandle() {
+  return (WINDOW_HANDLE)m_hWnd;
 }
 
 void WindowPlatformWin::Show() { ::ShowWindow(m_hWnd, SW_SHOW); }
@@ -705,6 +709,92 @@ LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wPara
 // 	}
 #endif
 	return 0;
+}
+
+#define DEFAULT_SCREEN_DPI  96   // USER_DEFAULT_SCREEN_DPI
+
+int WindowPlatformWin::GetDpi() {
+  if (0 == m_dpi) {
+    // 先检测用户是否禁用了DPI缩放
+    bool bDisableScale = false;
+
+    ATL::CRegKey reg;
+    if (ERROR_SUCCESS ==
+        reg.Open(HKEY_CURRENT_USER,
+                 TEXT("Software\\Microsoft\\Windows "
+                      "NT\\CurrentVersion\\AppCompatFlags\\Layers"),
+                 KEY_READ)) {
+      // REG_SZ
+      wchar_t szExePath[MAX_PATH] = {0};
+      GetModuleFileName(nullptr, szExePath, MAX_PATH - 1);
+
+      wchar_t szValue[256] = {0};
+      unsigned long count = 256;
+      if (ERROR_SUCCESS == reg.QueryStringValue(szExePath, szValue, &count)) {
+        if (_tcsstr(szValue, TEXT("HIGHDPIAWARE"))) {
+          bDisableScale = true;
+        }
+      }
+    }
+
+    if (bDisableScale) {
+      m_dpi = DEFAULT_SCREEN_DPI;
+    } else {
+      // 由程序自己实现DPI缩放，不用系统帮忙。
+      HMODULE hModule = GetModuleHandle(L"User32.dll");
+      if (hModule) {
+        // SetProcessDPIAware();
+        FARPROC f = GetProcAddress(hModule, "SetProcessDPIAware");
+        if (f)
+          f();
+      }
+
+      HDC hDC = GetDC(nullptr);
+      m_dpi = GetDeviceCaps(hDC, LOGPIXELSY);
+      ReleaseDC(nullptr, hDC);
+    }
+  }
+  return m_dpi;
+}
+
+
+float WindowPlatformWin::GetDpiScale() {
+  float fScale = (float)GetDpi() / DEFAULT_SCREEN_DPI;
+  return fScale;
+}
+
+int WindowPlatformWin::ScaleByDpi(int x) {
+  if (0 == x)
+    return 0;
+
+  if (GetDpi() == DEFAULT_SCREEN_DPI)
+    return x;
+
+  return _round(x * GetDpiScale());
+}
+int WindowPlatformWin::RestoreByDpi(int x) {
+  if (0 == x)
+    return 0;
+
+  if (GetDpi() == DEFAULT_SCREEN_DPI)
+    return x;
+
+  return _round(x / GetDpiScale());
+}
+
+// 宽度、高度小于0时，如AUTO/NDEF不适应于dpi
+int WindowPlatformWin::ScaleByDpi_if_gt0(int x) {
+  if (x <= 0)
+    return x;
+
+  return ScaleByDpi(x);
+}
+
+int WindowPlatformWin::RestoreByDpi_if_gt0(int x) {
+  if (x <= 0)
+    return x;
+
+  return RestoreByDpi(x);
 }
 
 } // namespace ui

@@ -1,8 +1,19 @@
-#include "stdafx.h"
+#pragma warning(disable:4005)  // ÂÆèÈáçÂÆö‰πâ
+
+#if defined(OS_WIN)
+#include <windows.h>
+#include <d3d10_1.h>
+#include <d3d10.h>
+#endif
+
+#include "src/stdafx.h"
 #include "D3DApp.h"
 #include "common\Effects.h"
 #include "common\RenderStates.h"
 #include "common\Font.h"
+#include <assert.h>
+
+
 
 D3D10App* D3D10App::s_pApp = nullptr;
 
@@ -65,14 +76,17 @@ void  D3D10App::Destroy()
 	if (m_pDevice)
 		m_pDevice->ClearState();
 
-    //  Õ∑≈À˘”–‘™Àÿµƒstatic±‰¡ø
+    // ÈáäÊîæÊâÄÊúâÂÖÉÁ¥†ÁöÑstaticÂèòÈáè
 
     RenderStates::Release();
     Effects::Release();
     Inputs::Rlease();
 	Font::Release();
 
-	SAFE_RELEASE(m_pDXGIFactory);
+	if (m_pDXGIFactory) {
+		m_pDXGIFactory->Release();
+		m_pDXGIFactory = nullptr;
+	}
 
 // 	ID3D11Debug* pD3dDebug;
 // 	HRESULT hr = m_pDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pD3dDebug));
@@ -84,7 +98,7 @@ void  D3D10App::Destroy()
 	if (m_pDevice)
 	{
 		ULONG lRet = m_pDevice->Release();
-		UIASSERT(0 == lRet);
+		assert(0 == lRet);
 		m_pDevice = nullptr;
 	}
 }
@@ -120,7 +134,7 @@ HRESULT CreateD3DDevice(
 			&pDevice
 			);
 
-		/* ”¶”√≥Ã–Ú«Î«Ûµƒ≤Ÿ◊˜“¿¿µ”⁄“—»± ßªÚ≤ª∆•≈‰µƒ SDK ◊Èº˛°£
+		/* Â∫îÁî®Á®ãÂ∫èËØ∑Ê±ÇÁöÑÊìç‰Ωú‰æùËµñ‰∫éÂ∑≤Áº∫Â§±Êàñ‰∏çÂåπÈÖçÁöÑ SDK ÁªÑ‰ª∂„ÄÇ
 
 		 Windows 8 users: If you upgrade to Windows 8.1, remember that all 
 		 attempts to use D3Dxx_CREATE_DEVICE_DEBUG will fail until you 
@@ -156,8 +170,8 @@ HRESULT CreateD3DDevice(
 }
 bool D3D10App::Init()
 {
-	// »Ù“™ π”√ Direct2D£¨±ÿ–Î π”√ D3D10_CREATE_DEVICE_BGRA_SUPPORT 
-	// ±Í÷æ¥¥Ω®Ã·π© IDXGISurface µƒ Direct3D …Ë±∏°£
+	// Ëã•Ë¶Å‰ΩøÁî® Direct2DÔºåÂøÖÈ°ª‰ΩøÁî® D3D10_CREATE_DEVICE_BGRA_SUPPORT 
+	// Ê†áÂøóÂàõÂª∫Êèê‰æõ IDXGISurface ÁöÑ Direct3D ËÆæÂ§á„ÄÇ
     UINT  nCreateDeviceFlags = D3D10_CREATE_DEVICE_BGRA_SUPPORT; 
 #ifdef _DEBUG
     nCreateDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
@@ -201,9 +215,18 @@ bool D3D10App::Init()
 	hr = pDXGIDevice->GetAdapter(&pAdapter);
 	hr = pAdapter->GetParent(IID_PPV_ARGS(&m_pDXGIFactory));
 
-	SAFE_RELEASE(pDevice);
-	SAFE_RELEASE(pDXGIDevice);
-	SAFE_RELEASE(pAdapter);
+	if (pDevice) {
+		pDevice->Release();
+		pDevice = nullptr;
+	}
+	if (pDXGIDevice) {
+		pDXGIDevice->Release();
+		pDXGIDevice = nullptr;
+	}
+	if (pAdapter) {
+		pAdapter->Release();
+		pAdapter = nullptr;
+	}
 
 	hr = m_pDevice->CheckMultisampleQualityLevels(
 			DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_nMultisampleQuality);
@@ -232,7 +255,7 @@ void  _ApplyTechnique(ID3D10EffectTechnique* pTech, DXUT_SCREEN_VERTEX_10 vertic
     }
 }
 
-void  D3D10App::ApplyTechnique(ID3D10EffectTechnique* pTech, UI::RECTF*  prcDraw, UI::D3DCOLORVALUE color)
+void  D3D10App::ApplyTechnique(ID3D10EffectTechnique* pTech, ui::RECTF*  prcDraw, ui::D3DCOLORVALUE color)
 {
 	DXUT_SCREEN_VERTEX_10 vertices[4] =
 	{
@@ -243,10 +266,10 @@ void  D3D10App::ApplyTechnique(ID3D10EffectTechnique* pTech, UI::RECTF*  prcDraw
 	};
 	_ApplyTechnique(pTech, vertices);
 }
-void  D3D10App::ApplyTechnique(ID3D10EffectTechnique* pTech, UI::RECTF* prcDraw, UI::RECTF* prcTexture, float fAlpha)
+void  D3D10App::ApplyTechnique(ID3D10EffectTechnique* pTech, ui::RECTF* prcDraw, ui::RECTF* prcTexture, float fAlpha)
 {
-	// {1,1,1, fAlpha},»ª∫Û‘§≥À∫ÛµƒΩ·π˚
-    UI::D3DCOLORVALUE color = {fAlpha, fAlpha, fAlpha, fAlpha};
+	// {1,1,1, fAlpha},ÁÑ∂ÂêéÈ¢Ñ‰πòÂêéÁöÑÁªìÊûú
+    ui::D3DCOLORVALUE color = {fAlpha, fAlpha, fAlpha, fAlpha};
 
 	DXUT_SCREEN_VERTEX_10 vertices[4] =
 	{

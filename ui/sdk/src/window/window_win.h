@@ -35,6 +35,7 @@ public:
   bool CreateTransparent(const Rect &rect);
   void Destroy();
 
+  WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;
   std::string GetTitle();
   void SetBorderless(bool no_border = true);
@@ -54,6 +55,14 @@ public:
 
   void Invalidate(const Rect *prect) override;
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+
+  // dpi...
+  int GetDpi();
+  int ScaleByDpi(int x);
+  int ScaleByDpi_if_gt0(int x);
+  int RestoreByDpi(int x);
+  int RestoreByDpi_if_gt0(int x);
+  float GetDpiScale();
 
 public:
   // WndProc的原始消息处理   // 经过virtual扩展了
@@ -169,6 +178,9 @@ private:
 
   ui::Window &m_ui_window;
   HWND m_hWnd;
+
+  // float m_dpi_scale = 1.0;
+  int m_dpi = 0;
 };
 
 } // namespace ui

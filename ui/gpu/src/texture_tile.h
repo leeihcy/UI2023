@@ -1,4 +1,6 @@
 #pragma once
+#include "gpu/include/api.h"
+#include <d3d10.h>
 struct SOURCE_BITMAP_DATA;
 
 namespace ui
@@ -13,12 +15,12 @@ public:
     TextureTile();
     ~TextureTile();
 
-    void  Upload(RECT& rcSrc, UploadGpuBitmapInfo& source);
+    void  Upload(RECT& rcSrc, ui::UploadGpuBitmapInfo& source);
     void  Compositor(
             long xOffset,
             long yOffset,
             long vertexStartIndex,
-            UI::GpuLayerCommitContext* pContext);
+            ui::GpuLayerCommitContext* pContext);
 
     void  SetIndex(int xIndex, int yIndex);
 

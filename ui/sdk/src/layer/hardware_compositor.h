@@ -11,8 +11,8 @@ class HardwareCompositor : public Compositor
 public:
     HardwareCompositor();
     ~HardwareCompositor();
-#if 0 // defined(OS_WIN)
-    virtual void  virtualBindHWND(HWND) override;
+#if defined(OS_WIN)
+    virtual void  virtualBindHWND(WINDOW_HANDLE) override;
 #endif
     virtual void  UpdateDirty(RectRegion* outArrDirtyInWindow) override;
     virtual void  virtualCommit(const RectRegion& arrDirtyInWindow) override;

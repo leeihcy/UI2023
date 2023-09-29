@@ -1,4 +1,4 @@
-#if defined(UI_UNITTEST)
+#if defined(UI_UNITTEST) && defined(OS_MAC)
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>

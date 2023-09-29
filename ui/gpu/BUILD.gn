@@ -9,19 +9,44 @@ shared_library("uigpu") {
     include_dirs = [
         "//",
         "//ui/",
+        "//ui/gpu/",
         "//ui/sdk/",
         "//ui/3rd/skia/src/",
         "//ui/3rd/skia/src/include/core/"
     ]
-    if (is_mac) {
+    
+    lib_dirs = ["$root_build_dir/"]
+
+    if (is_win) {
+      include_dirs += [
+        "C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include"
+      ]
+      lib_dirs += [
+        "C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64"
+      ]
+    }
+    else if (is_mac) {
       include_dirs += [
         "/Users/libo/application/VulkanSDK/1.3.261.1/macOS/include"
       ]
     }
   
-    lib_dirs = ["$root_build_dir/"]
    
     sources = [
+      "src/stdafx.cpp",
+      "src/gpu_compositor.cpp",
+      "src/d3d10/d3dapp.cpp",
+      "src/d3d10/common/Effects.cpp",
+      "src/d3d10/common/Font.cpp",
+      "src/d3d10/common/Inputs.cpp",
+      "src/d3d10/common/RenderStates.cpp",
+      "src/UICompositor.rc",
+      "src/texture_tile.cpp",
+      "src/texture_tile_array.cpp",
+      "src/gpu_layer.cpp",
+      "src/ihardwarecompositor.cpp",
+      "src/hard3dtransform.cpp",
+
       "tutorial/tutorial_01.cpp",
       "tutorial/tutorial_02.cpp"
     ]
@@ -46,14 +71,22 @@ shared_library("uigpu") {
             "-framework", "IOKit",
         ]
     }
+    else if (is_win) {
+      libs = [
+        "d3d10.lib",
+        "d3dx10.lib",
+        "D3D10_1.lib",
+      ]
+    }
 }
-
-copy("glfw") {
-  sources = [
-    "/Users/libo/application/glfw-3.3.8.bin.MACOS/lib-x86_64/libglfw3.a",
-    "/Users/libo/application/VulkanSDK/1.3.261.1/macOS/lib/libvulkan.1.3.261.dylib"
-  ]
-  outputs = ["$root_build_dir/{{source_file_part}}"]
+if (is_mac) {
+  copy("glfw") {
+    sources = [
+      "/Users/libo/application/glfw-3.3.8.bin.MACOS/lib-x86_64/libglfw3.a",
+      "/Users/libo/application/VulkanSDK/1.3.261.1/macOS/lib/libvulkan.1.3.261.dylib"
+    ]
+    outputs = ["$root_build_dir/{{source_file_part}}"]
+  }
 }
 
 #######################################

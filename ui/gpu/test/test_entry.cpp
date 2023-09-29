@@ -9,11 +9,13 @@ void tutorial_01();
 void tutorial_02();
 
 void _GpuUnitTest() {
+#if defined(OS_MAC)
   tutorial_02();
+#endif
 }
 
 namespace ui {
-UIGPUAPI void GpuUnitTest() {
+extern "C" UIGPUAPI void GpuUnitTest() {
   std::cout << "gpu unit test begin!" << std::endl;
   _GpuUnitTest();
   std::cout << "gpu unit test end!" << std::endl;

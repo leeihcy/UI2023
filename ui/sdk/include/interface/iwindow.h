@@ -176,6 +176,8 @@ struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
 
 #endif
 
+typedef void* WINDOW_HANDLE;
+
 // window style
 typedef struct tagWindowStyle {
   // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage

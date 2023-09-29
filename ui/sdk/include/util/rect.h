@@ -2,6 +2,12 @@
 #define _UI_SDK_INCLUDE_UTIL_RECT_H_
 #include <algorithm>
 #include <string.h>
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 namespace ui {
 

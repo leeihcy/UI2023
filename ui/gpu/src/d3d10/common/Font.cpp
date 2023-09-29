@@ -1,7 +1,11 @@
-#include "stdafx.h"
 #include "font.h"
+#include "src/stdafx.h"
 #include "src/common_def.h"
-#include "..\UISDK\Src\Util\Stopwatch\stopwatch.h"
+#include <assert.h>
+
+// #include "..\UISDK\Src\Util\Stopwatch\stopwatch.h"
+#define SAFE_RELEASE(ptr)   do { if(ptr) { (ptr)->Release(); (ptr) = NULL; } } while(false)
+
 
 static Font  s_fontForDebug;
 ID3DX10Sprite*  Font::s_pSprite10 = nullptr;
@@ -55,28 +59,28 @@ void Font::Release()
 
 void Font::DrawDebugFps()
 {
-	static StopWatch watch;
-	static int frames = 0; 
-	static __int64 lastCalcFpsTime = 0;
-	static float fps = 0;
-	frames++;
+	// static StopWatch watch;
+	// static int frames = 0; 
+	// static __int64 lastCalcFpsTime = 0;
+	// static float fps = 0;
+	// frames++;
 
-	__int64 dwTickNow = watch.Now();
-	if (dwTickNow - lastCalcFpsTime > 1000)
-	{
-		fps = (float)frames / (float)(dwTickNow-lastCalcFpsTime) * 1000;
-		lastCalcFpsTime = dwTickNow;
-		frames = 0;
-	}
+	// __int64 dwTickNow = watch.Now();
+	// if (dwTickNow - lastCalcFpsTime > 1000)
+	// {
+	// 	fps = (float)frames / (float)(dwTickNow-lastCalcFpsTime) * 1000;
+	// 	lastCalcFpsTime = dwTickNow;
+	// 	frames = 0;
+	// }
 
-	s_fontForDebug.beginDraw();
+	// s_fontForDebug.beginDraw();
 
-	TCHAR buf[64];
-	wprintf(buf, TEXT("%0.2f fps"), fps);
+	// TCHAR buf[64];
+	// wprintf(buf, TEXT("%0.2f fps"), fps);
 
-	RECT rc = { 0, 0, 0, 0 };
-	s_fontForDebug.DrawText(buf, -1, &rc, RGB(255, 0, 0), DT_NOCLIP);
-	s_fontForDebug.endDraw();
+	// RECT rc = { 0, 0, 0, 0 };
+	// s_fontForDebug.DrawText(buf, -1, &rc, RGB(255, 0, 0), DT_NOCLIP);
+	// s_fontForDebug.endDraw();
 }
 
 ID3DX10Font*  Font::getFont()
@@ -88,7 +92,7 @@ ID3DX10Font*  Font::getFont()
 
 	CComPtr<ID3D10Device> pDevice;
 	s_pSprite10->GetDevice(&pDevice);
-	UIASSERT(pDevice);
+	assert(pDevice);
 	if (!pDevice)
 		return nullptr;
 

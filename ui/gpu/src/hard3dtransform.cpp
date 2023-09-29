@@ -90,35 +90,36 @@ void  Hard3DTransform::get_matrix(LPMATRIX44 pMatrix)
 	memcpy(pMatrix, &m_matrix, sizeof(MATRIX44));
 }
 
-void  Hard3DTransform::mappoint_layer_2_view(__inout POINT* ptInLayer)
+void  Hard3DTransform::mappoint_layer_2_view(__inout ui::Point* ptInLayer)
 {
 // TODO: m_matrix.MapPoint(ptInLayer, ptInLayer);
 }
-void  Hard3DTransform::mappoint_view_2_layer(__inout POINT* ptInLayer)
+void  Hard3DTransform::mappoint_view_2_layer(__inout ui::Point* ptInLayer)
 {
 // TODO: m_matrixInverse.MapPoint(ptInLayer, ptInLayer);
 }
 
 void  Hard3DTransform::maprect_layer_2_view(__in RECT* rcInLayer, __out QUAD* pqInView)
 {
-	POINT& ptA = pqInView->ptA;
-	POINT& ptB = pqInView->ptB;
-	POINT& ptC = pqInView->ptC;
-	POINT& ptD = pqInView->ptD;
+	assert(false); // TODO: 
+	// POINT& ptA = pqInView->ptA;
+	// POINT& ptB = pqInView->ptB;
+	// POINT& ptC = pqInView->ptC;
+	// POINT& ptD = pqInView->ptD;
 
-	ptA.x = rcInLayer->left;
-	ptA.y = rcInLayer->top;
-	ptB.x = rcInLayer->right;
-	ptB.y = rcInLayer->top;
-	ptC.x = rcInLayer->right;
-	ptC.y = rcInLayer->bottom;
-	ptD.x = rcInLayer->left;
-	ptD.y = rcInLayer->bottom;
+	// ptA.x = rcInLayer->left;
+	// ptA.y = rcInLayer->top;
+	// ptB.x = rcInLayer->right;
+	// ptB.y = rcInLayer->top;
+	// ptC.x = rcInLayer->right;
+	// ptC.y = rcInLayer->bottom;
+	// ptD.x = rcInLayer->left;
+	// ptD.y = rcInLayer->bottom;
 
-	mappoint_layer_2_view(&ptA);
-	mappoint_layer_2_view(&ptB);
-	mappoint_layer_2_view(&ptC);
-	mappoint_layer_2_view(&ptD);
+	// mappoint_layer_2_view(&ptA);
+	// mappoint_layer_2_view(&ptB);
+	// mappoint_layer_2_view(&ptC);
+	// mappoint_layer_2_view(&ptD);
 }
 
 void  Hard3DTransform::Invalidate()
@@ -137,8 +138,8 @@ void  Hard3DTransform::Update()
 	m_bInvalidate = false;
 	D3DXMatrixIdentity(&m_matrix);
    
-	// ÒªÏÈĞı×ª£¬ÔÙÒÆ¶¯¡£·ñÔòĞı×ª»á»ùÓÚÒÆ¶¯½øĞĞ´óĞı×ª£¬¶ø²»ÊÇÈÆ¶ÔÏó±¾Éí¡£
-	// Ğı×ª
+	// è¦å…ˆæ—‹è½¬ï¼Œå†ç§»åŠ¨ã€‚å¦åˆ™æ—‹è½¬ä¼šåŸºäºç§»åŠ¨è¿›è¡Œå¤§æ—‹è½¬ï¼Œè€Œä¸æ˜¯ç»•å¯¹è±¡æœ¬èº«ã€‚
+	// æ—‹è½¬
 	if (m_xRotate != 0 || m_yRotate != 0 || m_zRotate != 0)
 	{
 		D3DXMatrixRotationYawPitchRoll(&tempMatrix, 
@@ -146,18 +147,18 @@ void  Hard3DTransform::Update()
 		m_matrix *= tempMatrix;
 	} 
 
-	// ÒÆ¶¯
+	// ç§»åŠ¨
 	D3DXMatrixTranslation(&tempMatrix, m_xTranslate, m_yTranslate, m_zTranslate);
 	m_matrix *= tempMatrix;
  	
-	// Ëõ·Å
+	// ç¼©æ”¾
 	if (m_xScale != 1 || m_yScale != 1 || m_zScale != 1)
 	{
 		D3DXMatrixScaling(&tempMatrix, m_xScale, m_yScale, m_zScale);
 		m_matrix *= tempMatrix;
 	}
 
-    // Í¸ÊÓ
+    // é€è§†
     if (m_perspective > 0)
     {
         D3DXMATRIX  matrix;
@@ -167,7 +168,7 @@ void  Hard3DTransform::Update()
         m_matrix *= matrix;
     }
 
-	// Çó³ö·´×ªÖµ
+	// æ±‚å‡ºåè½¬å€¼
 	float fDet = D3DXMatrixDeterminant(&m_matrix);
 	D3DXMatrixInverse(&m_matrixInverse, &fDet, &m_matrix);
 }
@@ -270,10 +271,10 @@ void  Hard3DTransform::scaleZ(float z)
 	Invalidate();
 }
 
-// Èç¹û²»¼ÓÍ¸ÊÓ£¬rotate-yÊÇÃ»ÓĞ3dĞ§¹ûµÄ£¬Ö»»áÏÔÊ¾ÎªÄÚÈİ±äÕ­ÁË¡£
+// å¦‚æœä¸åŠ é€è§†ï¼Œrotate-yæ˜¯æ²¡æœ‰3dæ•ˆæœçš„ï¼Œåªä¼šæ˜¾ç¤ºä¸ºå†…å®¹å˜çª„äº†ã€‚
 // http://www.w3.org/TR/css3-transforms/
 //
-// Ö¸¶¨¹Û²ìÕß¾àÀëz=0Æ½ÃæµÄ¾àÀë£¬ÎªÔªËØ¼°ÆäÄÚÈİÓ¦ÓÃÍ¸ÊÓ±ä»»¡£µ±ÖµÎª0»ò¸ºÖµÊ±£¬ÎŞÍ¸ÊÓ±ä»»¡£
+// æŒ‡å®šè§‚å¯Ÿè€…è·ç¦»z=0å¹³é¢çš„è·ç¦»ï¼Œä¸ºå…ƒç´ åŠå…¶å†…å®¹åº”ç”¨é€è§†å˜æ¢ã€‚å½“å€¼ä¸º0æˆ–è´Ÿå€¼æ—¶ï¼Œæ— é€è§†å˜æ¢ã€‚
 void  Hard3DTransform::perspective(float n)
 {
 	if (n <= 0)
@@ -360,9 +361,9 @@ void  Hard3DTransform::GetLocalPos(RECTF* prcLocal)
 	prcLocal->bottom = m_fy+ m_fHeight;
 }
 
-// »ñÈ¡¶ÔÏóµÄ±ä»»¾ØÕó
-// get_matrixÃ»ÓĞ¿¼ÂÇ×Ô×ª
-// TODO: ½«get_matrixÓëGetWorldMatrixºÏ²¢³ÉÒ»¸öº¯Êı¡£Ôö¼ÓÒ»¸öinvalid×Ö¶Î
+// è·å–å¯¹è±¡çš„å˜æ¢çŸ©é˜µ
+// get_matrixæ²¡æœ‰è€ƒè™‘è‡ªè½¬
+// TODO: å°†get_matrixä¸GetWorldMatrixåˆå¹¶æˆä¸€ä¸ªå‡½æ•°ã€‚å¢åŠ ä¸€ä¸ªinvalidå­—æ®µ
 void  Hard3DTransform::GetWorldMatrix(D3DXMATRIX* pMatrix)
 {
     float fx, fy, fz;

@@ -8,11 +8,11 @@ public:
     TextureTile2DArray();
     ~TextureTile2DArray();
 
-    void  Create(ULONG row, ULONG col);
+    void  Create(int row, int col);
     void  Destroy();
 
-    ULONG  GetRow();
-    ULONG  GetCol();
+    int  GetRow();
+    int  GetCol();
 
     LPTEXTURETILE*& operator [](int row)
     {
@@ -21,6 +21,6 @@ public:
 
 private:
     LPTEXTURETILE**  m_ppArray;
-    ULONG  m_row;
-    ULONG  m_col;
+    int  m_row;
+    int  m_col;
 };

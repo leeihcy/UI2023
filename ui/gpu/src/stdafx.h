@@ -11,11 +11,11 @@
 #include <windows.h>
 
 #pragma warning(disable:4996)
-// warning C4201: Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹ : ÎŞÃû³ÆµÄ½á¹¹/ÁªºÏ
+// warning C4201: ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±• : æ— åç§°çš„ç»“æ„/è”åˆ
 #pragma warning(disable:4201)
-// warning C4100: ¡°lpReserved¡±: Î´ÒıÓÃµÄĞÎ²Î
+// warning C4100: â€œlpReservedâ€: æœªå¼•ç”¨çš„å½¢å‚
 #pragma warning(disable:4100)
-// warning C4481: Ê¹ÓÃÁË·Ç±ê×¼À©Õ¹: ÇëÖØĞ´ËµÃ÷·û¡°override¡±
+// warning C4481: ä½¿ç”¨äº†éæ ‡å‡†æ‰©å±•: è¯·é‡å†™è¯´æ˜ç¬¦â€œoverrideâ€
 #pragma warning(disable:4481)
 
 #pragma warning(disable:4838)
@@ -29,28 +29,15 @@
 using namespace std;
 
 
-#include <D3D10_1.h> 
-#include <d3dx10.h>
+// #include <D3D10_1.h> 
+// #include <d3dx10.h>
 
+// #include "../common/define.h"
+// #pragma comment(lib, "UISDK.lib")
+// using namespace ui;
+// #include "common\math\rect.h"
+// #include "common\math\color.h"
 
-#include "../UISDK/Inc/inc.h"
-#include "../common/define.h"
-#pragma comment(lib, "UISDK.lib")
-using namespace ui;
-#include "common\math\rect.h"
-#include "common\math\color.h"
-
-#include "Inc\inc.h"
-
-namespace ui
-{
-typedef struct _D3DCOLORVALUE {
-	float r;
-	float g;
-	float b;
-	float a;
-} D3DCOLORVALUE;
-}
 
 #ifdef _DEBUG
 #pragma comment(lib, "d3dx10d.lib") 
@@ -59,8 +46,6 @@ typedef struct _D3DCOLORVALUE {
 #endif
 #pragma comment(lib, "D3D10_1.lib")
 #pragma comment(lib, "d3d10.lib")
-
-extern HINSTANCE g_hInstance;
 
 #ifdef _DEBUG
 #define ENABLE_TRACE  0

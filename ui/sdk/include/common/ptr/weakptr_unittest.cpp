@@ -32,8 +32,6 @@ public:
 };
 
 void test_destructor() {
-    Math* p;
-    
     weak_ptr<Math> mathptr;
     assert(!mathptr);
 

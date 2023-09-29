@@ -18,6 +18,7 @@ struct WindowPlatform {
   virtual void Initialize() {};
   virtual void Release() {};
   virtual bool Create(const Rect &rect) = 0;
+  virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
   virtual void GetClientRect(Rect *prect) = 0;
@@ -48,6 +49,7 @@ public:
 public:
   void OnMessage();
   void Create(const Rect &rect);
+  WINDOW_HANDLE GetWindowHandle();
   void SetTitle(const char *title);
   void Show();
 

@@ -2,6 +2,7 @@
 #include "layer.h"
 #include "src/util/rectregion/rectregion.h"
 #include "include/common/ptr/weak_ptr.h"
+#include "include/interface/iwindow.h"
 
 namespace ui {
 class Application;
@@ -19,9 +20,9 @@ public:
   Layer *CreateLayer();
   void SetRootLayer(Layer *pChanged);
   Layer *GetRootLayer();
-#if 0 // defined(OS_WIN)
-  void BindHWND(HWND);
-  HWND GetHWND();
+#if defined(OS_WIN)
+  void BindHWND(WINDOW_HANDLE);
+  WINDOW_HANDLE GetHWND();
 #endif
   void RequestInvalidate();
   void _onRequestInvalidate();
@@ -36,8 +37,8 @@ public:
   
 protected:
   virtual Layer *virtualCreateLayer() = 0;
-#if 0 // defined(OS_WIN)
-  virtual void virtualBindHWND(HWND) = 0;
+#if defined(OS_WIN)
+  virtual void virtualBindHWND(WINDOW_HANDLE) = 0;
 #endif
   virtual void virtualCommit(const RectRegion &arrDirtyInWindow) = 0;
 
@@ -45,8 +46,8 @@ protected:
   Application *m_pUIApp;
 
   Layer *m_pRootLayer;
-#if 0 // defined(OS_WIN)
-  HWND m_hWnd;
+#if defined(OS_WIN)
+  WINDOW_HANDLE m_hWnd = nullptr;
 #endif
   WindowRender *m_pWindowRender;
 

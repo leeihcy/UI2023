@@ -44,8 +44,8 @@ void Compositor::SetRootLayer(Layer *pChanged) { m_pRootLayer = pChanged; }
 
 Layer *Compositor::GetRootLayer() { return m_pRootLayer; }
 
-#if 0 // defined(OS_WIN)
-void Compositor::BindHWND(HWND hWnd) {
+#if defined(OS_WIN)
+void Compositor::BindHWND(WINDOW_HANDLE hWnd) {
   if (m_hWnd == hWnd)
     return;
 
@@ -53,7 +53,7 @@ void Compositor::BindHWND(HWND hWnd) {
   this->virtualBindHWND(hWnd);
 }
 
-HWND Compositor::GetHWND() { return m_hWnd; }
+WINDOW_HANDLE Compositor::GetHWND() { return m_hWnd; }
 #endif
 
 void Compositor::RequestInvalidate() {

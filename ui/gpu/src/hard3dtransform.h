@@ -1,7 +1,8 @@
 #pragma once
-#include "../UISDK/Inc/Interface/irenderlayer.h"
-#include "../common/math/quad.h"
-#include "../common/math/matrix.h"
+#include "sdk/include/common/math/quad.h"
+#include "sdk/include/common/math/matrix.h"
+#include "sdk/include/interface/irenderlayer.h"
+#include <d3dx10.h>
 
 namespace ui
 {
@@ -25,8 +26,8 @@ public:
 			float fZ) override;
     virtual void  set_pos(int x, int y) override;
 	virtual void  set_size(int w, int h) override;
-	virtual void  mappoint_layer_2_view(__inout POINT* ptInLayer) override;
-	virtual void  mappoint_view_2_layer(__inout POINT* ptInLayer) override;
+	void  mappoint_layer_2_view(__inout ui::Point* ptInLayer) override;
+	void  mappoint_view_2_layer(__inout ui::Point* ptInLayer) override;
 	virtual void  maprect_layer_2_view(__in RECT* rcInLayer, __out QUAD* pqInView);
 
     virtual void  set_backface_visibility(bool b) override;
@@ -67,20 +68,20 @@ private:
 	bool   m_bInvalidate;
     bool   m_backface_visibility;
 
-	// 旋转中心相关数据
+	// 鏃嬭浆涓績鐩稿叧鏁版嵁
 	TRANSFORM_ROTATE_ORIGIN  m_eOriginTypeX;
 	TRANSFORM_ROTATE_ORIGIN  m_eOriginTypeY;
-	float  m_fAnchorPointX;  // 旋转中心
+	float  m_fAnchorPointX;  // 鏃嬭浆涓績
 	float  m_fAnchorPointY;
 	float  m_fAnchorPointZ; 
 
-    // 矩形对象参数
+    // 鐭╁舰瀵硅薄鍙傛暟
     float  m_fx;
     float  m_fy;
 	float  m_fWidth;
 	float  m_fHeight;
 
-    // 变换参数
+    // 鍙樻崲鍙傛暟
 	float  m_xTranslate;
 	float  m_yTranslate;
 	float  m_zTranslate;

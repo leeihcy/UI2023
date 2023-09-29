@@ -4,15 +4,15 @@ Texture2D  g_Texture;
 
 cbuffer cb0
 {
-	// 3D±ä»»
-	matrix    g_Matrix;       // ±ä»»¾ØÕó
-	matrix    g_orthMatrix;   // Õı½»Í¶Ó°¾ØÕó£¨ÕâÀï²»²ÉÓÃÍ¸ÊÓÍ¶Ó°¾ØÕó£¬ÒòÎªÍ¸ÊÓÍ¶Ó°µÄ¶ÔÏó´óĞ¡Ëæ×Åz¶ø¸Ä±ä¡£¶øÎÒÃÇÕâÀïÊÇÒªÇó¶ÔÏó´óĞ¡²»±ä£¬Ö»ÊÇĞı×ª¶øÒÓ£©
-	float2    g_vsDestPos = float2(0, 0);    // Ã»ÓĞ¾ØÕó±ä»»Ê±£¬ĞèÒªÉèÖÃ»æÖÆµÄÄ¿±êÎ»ÖÃ(x,y)
-	float     g_alpha = 1.0f;               // äÖÈ¾Ê±µÄalphaÍ¸Ã÷¶È£¨0~1£©
+	// 3Då˜æ¢
+	matrix    g_Matrix;       // å˜æ¢çŸ©é˜µ
+	matrix    g_orthMatrix;   // æ­£äº¤æŠ•å½±çŸ©é˜µï¼ˆè¿™é‡Œä¸é‡‡ç”¨é€è§†æŠ•å½±çŸ©é˜µï¼Œå› ä¸ºé€è§†æŠ•å½±çš„å¯¹è±¡å¤§å°éšç€zè€Œæ”¹å˜ã€‚è€Œæˆ‘ä»¬è¿™é‡Œæ˜¯è¦æ±‚å¯¹è±¡å¤§å°ä¸å˜ï¼Œåªæ˜¯æ—‹è½¬è€ŒçŸ£ï¼‰
+	float2    g_vsDestPos = float2(0, 0);    // æ²¡æœ‰çŸ©é˜µå˜æ¢æ—¶ï¼Œéœ€è¦è®¾ç½®ç»˜åˆ¶çš„ç›®æ ‡ä½ç½®(x,y)
+	float     g_alpha = 1.0f;               // æ¸²æŸ“æ—¶çš„alphaé€æ˜åº¦ï¼ˆ0~1ï¼‰
 }
 
 // 2016.6.13
-// ×¢£ºÕâÀï²»ÄÜÓÃWRAP.Ê¹ÓÃWRAP»áµ¼ÖÂ»æÖÆ·Ö¿éÊ±£¬·Ö¿éµÄ±ßÔµ³öÏÖÒì³£ÏßÌõ£¬¶ø¸Ä³ÉMIRROR¾ÍºÃÁË£¬Ô­ÒòÎ´Öª¡£
+// æ³¨ï¼šè¿™é‡Œä¸èƒ½ç”¨WRAP.ä½¿ç”¨WRAPä¼šå¯¼è‡´ç»˜åˆ¶åˆ†å—æ—¶ï¼Œåˆ†å—çš„è¾¹ç¼˜å‡ºç°å¼‚å¸¸çº¿æ¡ï¼Œè€Œæ”¹æˆMIRRORå°±å¥½äº†ï¼ŒåŸå› æœªçŸ¥ã€‚
 SamplerState Sampler
 {    
 	Filter = MIN_MAG_MIP_LINEAR;
@@ -27,8 +27,8 @@ struct VS_OUTPUT
 	float2 Tex : TEXCOORD;
 };
 
-// ¶¥µã×ÅÉ«Æ÷²»Ö´ĞĞÍ¸ÊÓ³ı·¨£¬ËüÖ»Íê³ÉÍ¶Ó°¾ØÕó²¿·Ö¡£
-// Í¸ÊÓ³ı·¨»áËæºóÓÉÓ²¼şÍê³É
+// é¡¶ç‚¹ç€è‰²å™¨ä¸æ‰§è¡Œé€è§†é™¤æ³•ï¼Œå®ƒåªå®ŒæˆæŠ•å½±çŸ©é˜µéƒ¨åˆ†ã€‚
+// é€è§†é™¤æ³•ä¼šéšåç”±ç¡¬ä»¶å®Œæˆ
 VS_OUTPUT VS( 
 		float3 vPos : POSITION,              
 		float4 Dif : COLOR,              
@@ -37,12 +37,12 @@ VS_OUTPUT VS(
 {    
 	VS_OUTPUT Output;   
 
-	// ÏÖÔÚÄ¬ÈÏvPos²»°üÀ¨Æ«ÒÆÁ¿£¬±ÜÃâÃ¿´Î¸üĞÂµÄÊ±ºò£¬¶¼ÒªÖØĞ´vertex buffer.
-	// ½«Æ«ÒÆÁ¿·ÅÔÚg_vsDestPos´«µİ½øÀ´
+	// ç°åœ¨é»˜è®¤vPosä¸åŒ…æ‹¬åç§»é‡ï¼Œé¿å…æ¯æ¬¡æ›´æ–°çš„æ—¶å€™ï¼Œéƒ½è¦é‡å†™vertex buffer.
+	// å°†åç§»é‡æ”¾åœ¨g_vsDestPosä¼ é€’è¿›æ¥
 	vPos.x += g_vsDestPos.x;
 	vPos.y += g_vsDestPos.y;
 
-    // ±ä»»
+    // å˜æ¢
 	Output.Pos = mul(float4(vPos, 1.0f), g_orthMatrix);
 
 	Output.Dif = Dif;    
@@ -50,7 +50,7 @@ VS_OUTPUT VS(
 	return Output;
 }
 
-// ´ø¾ØÕóµÄÓ³Éä
+// å¸¦çŸ©é˜µçš„æ˜ å°„
 VS_OUTPUT VSMatrix( 
 		float3 vPos : POSITION,              
 		float4 Dif : COLOR,              
@@ -59,12 +59,12 @@ VS_OUTPUT VSMatrix(
 {    
 	VS_OUTPUT Output;    
 	
-	// ÏÖÔÚÄ¬ÈÏvPos²»°üÀ¨Æ«ÒÆÁ¿£¬±ÜÃâÃ¿´Î¸üĞÂµÄÊ±ºò£¬¶¼ÒªÖØĞ´vertex buffer.
-	// ½«Æ«ÒÆÁ¿·ÅÔÚg_vsDestPos´«µİ½øÀ´
+	// ç°åœ¨é»˜è®¤vPosä¸åŒ…æ‹¬åç§»é‡ï¼Œé¿å…æ¯æ¬¡æ›´æ–°çš„æ—¶å€™ï¼Œéƒ½è¦é‡å†™vertex buffer.
+	// å°†åç§»é‡æ”¾åœ¨g_vsDestPosä¼ é€’è¿›æ¥
 	vPos.x += g_vsDestPos.x;
 	vPos.y += g_vsDestPos.y;
 
-	// ±ä»»
+	// å˜æ¢
 	float4 fTrans = mul(float4(vPos, 1.0f), g_Matrix);    
 	Output.Pos = mul(fTrans, g_orthMatrix);
 	Output.Dif = Dif;    
@@ -93,7 +93,7 @@ technique10 DrawTexture
 	}
 }
 
-// ¾ØÕó»æÖÆ
+// çŸ©é˜µç»˜åˆ¶
 technique10 DrawTextureMatrix
 {    
 	pass P0    
@@ -112,7 +112,7 @@ technique10 DrawRect
 	}
 }
 
-// ÀàËÆÓÚm_pDevice->ClearRenderTargetView¹¦ÄÜ£¬Ö±½Ó¸²¸ÇÄ¿±êÏñËØ
+// ç±»ä¼¼äºm_pDevice->ClearRenderTargetViewåŠŸèƒ½ï¼Œç›´æ¥è¦†ç›–ç›®æ ‡åƒç´ 
 technique10 FillRect
 {    
 	pass P0    
@@ -122,7 +122,7 @@ technique10 FillRect
 	}
 }
 
-// Ä¿Ç°ÊÇÓÃÓÚÊµÏÖstencil¼ô²Ã
+// ç›®å‰æ˜¯ç”¨äºå®ç°stencilå‰ªè£
 technique10 FillRectMatrix
 {    
 	pass P0    

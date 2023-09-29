@@ -3,6 +3,7 @@
 #include "include/util/log.h"
 
 #include "SkStream.h"
+#include "gpu/include/api.h"
 #if defined(OS_WIN)
 #include "src/util/windows.h"
 #endif
@@ -423,10 +424,24 @@ void SkiaRenderTarget::Save(const char *path) {
 
 void SkiaRenderTarget::Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray,
                                   int nCount) {
-  // if (m_pRenderBuffer)
-  // {
-  //     m_pRenderBuffer->Upload2Gpu(p, prcArray, nCount);
-  // }
+
+  SkPixmap pm;
+  if (!m_sksurface || !m_sksurface->peekPixels(&pm)) {
+    return;
+  }
+
+  ui::UploadGpuBitmapInfo source = { 0 };
+	source.hasAlphaChannel = true;
+	source.pFirstLineBits = (byte*)pm.addr();
+	source.pitch = (int)pm.rowBytes();
+	source.width = pm.width();
+	source.height = pm.height();
+	source.bpp = 32;
+
+	source.prcArray = prcArray;
+	source.nCount = nCount;
+
+	p->UploadHBITMAP(source);
 }
 
 } // namespace ui

@@ -60,8 +60,8 @@ long Window::FinalConstruct() {
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
 #endif
-  m_window_style.hard_composite =
-      false; // p->GetUIApplication()->IsGpuCompositeEnable();
+  // p->GetUIApplication()->IsGpuCompositeEnable();
+  m_window_style.hard_composite = true; // false; 
 
   return 0;
 }
@@ -96,6 +96,12 @@ void Window::Create(const Rect &rect) {
 
   m_platform->Initialize();
   m_platform->Create(rect);
+
+  m_objLayer.CreateLayer();
+}
+
+WINDOW_HANDLE Window::GetWindowHandle() {
+  return m_platform->GetWindowHandle();
 }
 
 void Window::SetTitle(const char *title_utf8) {
@@ -256,7 +262,7 @@ bool Window::CreateUI(const char *szId) {
 
   // 窗口作为根结点，一定会创建一个缓存
   m_objStyle.layer = 1;
-  m_objLayer.CreateLayer();
+  
   return true;
 }
 

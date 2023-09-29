@@ -1,16 +1,26 @@
 #include "include/macro/helper.h"
+#include "gpu/include/api.h"
 #include "hardware_layer.h"
 #include "hardware_compositor.h"
 #include "include/interface/renderlibrary.h"
-#include "ui/UICompositor/Inc/inc.h"
+
+#if defined(OS_WIN)
+#include "src/util/windows.h"
+#endif
 
 namespace ui {
 
 HardwareLayer::HardwareLayer() { m_pGpuTexture = nullptr; }
 
 HardwareLayer::~HardwareLayer() {
-  SAFE_RELEASE(m_pRenderTarget);
-  SAFE_RELEASE(m_pGpuTexture);
+  if (m_pRenderTarget) {
+    m_pRenderTarget->Release();
+    m_pRenderTarget = nullptr;
+  }
+  if (m_pGpuTexture) {
+    m_pGpuTexture->Release();
+    m_pGpuTexture = nullptr;
+  }
 }
 
 // void  HardwareLayer::DrawFull()
@@ -115,7 +125,7 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (!m_pLayerContent)
     return;
 
-#if 0 // defined(OS_WIN)
+#if defined(OS_WIN)
   Rect rcWnd;
   m_pLayerContent->GetWindowRect(&rcWnd);
   if (rcWnd.IsEmpty())
@@ -127,7 +137,7 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (m_bClipLayerInParentObj && m_pCompositor->GetRootLayer() != this) {
     m_pLayerContent->GetParentWindowRect(&rcParentWnd);
   } else {
-    ::GetClientRect(m_pCompositor->GetHWND(), &rcParentWnd);
+    ::GetClientRect((HWND)m_pCompositor->GetHWND(), (RECT*)&rcParentWnd);
   }
   pContext->SetClipRect(&rcParentWnd);
 
@@ -146,8 +156,6 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   } else {
     m_pGpuTexture->Compositor(pContext, nullptr);
   }
-#else
-  UIASSERT(false);
 #endif
 }
 

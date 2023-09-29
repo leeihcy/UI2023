@@ -45,6 +45,8 @@
 //
 namespace ui
 {
+    // TODO: 废弃。 20230929
+    // DPI是可以随时变化的，例如将窗口拖动到其它缩放比例屏幕上。
     int  ScaleByDpi_if_gt0(int x);
     int  RestoreByDpi(int x);
     int  RestoreByDpi_if_gt0(int x);

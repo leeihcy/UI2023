@@ -55,7 +55,9 @@ void Application::x_Init() {
 	m_pGifTimerMgr->Init(this);
 
     m_ToolTipMgr.Init(this);
+#endif
 
+#if defined(OS_WIN)
     // 获取操作系统版本信息
     ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
     m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
@@ -64,7 +66,8 @@ void Application::x_Init() {
     // 设置当前语言。主要是用于 strcoll 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？)
     // libo 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
 	// _wsetlocale( LC_ALL, _T("chs") );
-
+#endif
+#if 0
     // 初始化Gdiplus
     // 注：gdiplus会创建一个背景线程：GdiPlus.dll!BackgroundThreadProc()  + 0x59 字节	
     Image::InitGDIPlus();
@@ -77,8 +80,9 @@ void Application::x_Init() {
 
     // 针对layer window防止无响应时窗口变黑
     //DisableProcessWindowsGhosting();
-    m_bGpuEnable = false;
 #endif
+  m_bGpuEnable = false;
+  EnableGpuComposite();
 
   // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
   GetDpi();
@@ -176,7 +180,7 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam,
 }
 #endif
 
-#if 0 // defined(OS_WIN)
+#if defined(OS_WIN)
 
 bool Application::IsUnderXpOS() {
   bool bUnderXpOs = true;
@@ -450,13 +454,13 @@ bool Application::IsGpuCompositeEnable() { return m_bGpuEnable; }
 bool Application::EnableGpuComposite() {
   if (m_bGpuEnable)
     return true;
-#if 0 // defined(OS_WIN)
+#if defined(OS_WIN)
   if (!IsVistaOrWin7etc()) {
     UI_LOG_ERROR(TEXT("EnableGpuComposite Failed. OS Version mistake"));
     return false;
   }
 
-  HMODULE hModule = LoadLibrary(L"UICompositor.dll");
+  HMODULE hModule = LoadLibrary(L"uigpu.dll");
   if (!hModule) {
     UI_LOG_ERROR(TEXT("LoadLibrary UICompositor Failed. Error=%d"),
                  GetLastError());
@@ -473,7 +477,7 @@ bool Application::EnableGpuComposite() {
   }
 
   fn();
-  UI_LOG_INFOA("GpuCompositor Enable.");
+  UI_LOG_INFO("GpuCompositor Enable.");
 #endif
 
   m_bGpuEnable = true;
@@ -484,8 +488,8 @@ void Application::ShutdownGpuCompositor() {
   if (!m_bGpuEnable)
     return;
 
-#if 0 // defined(OS_WIN)
-  HMODULE hModule = GetModuleHandle(L"UICompositor.dll");
+#if defined(OS_WIN)
+  HMODULE hModule = GetModuleHandle(L"uigpu.dll");
   if (!hModule)
     return;
 

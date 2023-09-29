@@ -93,9 +93,11 @@ public:
 	void  MsgHandleLoop(bool* pbQuitLoopRef);
 	void  MsgHandleOnce();
 	void  RedrawTopWindows() { m_TopWindowMgr.UpdateAllWindow(); }
+	HWND  GetForwardPostMessageWnd();
+#endif
+#if defined(OS_WIN)
 	bool  IsUnderXpOS();
 	bool  IsVistaOrWin7etc();
-	HWND  GetForwardPostMessageWnd();
 #endif
   void RegisterDefaultUIObject();
   void ClearRegisterUIObject();
@@ -103,7 +105,7 @@ public:
 public:
 private:
   // gpu合成总开关
-  bool m_bGpuEnable;
+  bool m_bGpuEnable = false;
 
   typedef std::vector<IMeta *> UIOBJ_CREATE_DATA;
   typedef std::map<std::string, pfnParseSkinTag> UISKINTAGPARSE_DATA;
@@ -128,9 +130,14 @@ private:
 
 private:
   IApplication *m_pUIApplication = nullptr; // 对外提供的接口
-  // OSVERSIONINFOEX     m_osvi;                        // 操作系统版本
+  
   IUIEditor *m_pUIEditor; // 外部的编辑器指针，用于消息通知和数据获取
   IUIAutoTest *m_pUIAutoTest; // 外部的自动化测试指针。
+
+#if defined(OS_WIN)
+  // 操作系统版本
+  OSVERSIONINFOEX     m_osvi;    
+#endif
 
   // 是否是编辑器模式
   bool m_bEditorMode = false;

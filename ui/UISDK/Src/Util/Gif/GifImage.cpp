@@ -11,7 +11,7 @@
 #pragma region
 GIF_Frame::GIF_Frame()
 {
-	nRealDelayTime = 100;   // ¾ÓÈ»»¹ÓĞµÄgifÃ»ÓĞcontrol¿é..
+	nRealDelayTime = 100;   // å±…ç„¶è¿˜æœ‰çš„gifæ²¡æœ‰controlå—..
 	pImageWrap = nullptr;
 }
 
@@ -145,7 +145,7 @@ void GifImageRender::Release()
 		return;
 	}
 
-	m_pGifImage->DeleteRender(this);  // ×¢£º¸Ãµ÷ÓÃ»á´¥·¢delete this.Òò´ËºóÃæ²»×¼ÔÙÌí¼ÓÆäËü´úÂëÁË
+	m_pGifImage->DeleteRender(this);  // æ³¨ï¼šè¯¥è°ƒç”¨ä¼šè§¦å‘delete this.å› æ­¤åé¢ä¸å‡†å†æ·»åŠ å…¶å®ƒä»£ç äº†
 	return;
 }
 
@@ -222,15 +222,15 @@ bool GifImage::Destroy()
 }
 
 //
-// Ìø¹ıgifÎÄ¼şÖĞµÄÊı¾İ²¿·Ö
+// è·³è¿‡gifæ–‡ä»¶ä¸­çš„æ•°æ®éƒ¨åˆ†
 //
 int GifImage::skip_data_block(IStreamBufferReader*  pBuffer, byte* pBits)
 {
-	int nDataLength = 0;              // Í³¼ÆÊı¾İµÄ×Ü´óĞ¡
-	unsigned char cNextBlockLen = 0;  // ¶ÁÈ¡ÏÂÒ»¶ÎµÄÊı¾İ´óĞ¡
+	int nDataLength = 0;              // ç»Ÿè®¡æ•°æ®çš„æ€»å¤§å°
+	unsigned char cNextBlockLen = 0;  // è¯»å–ä¸‹ä¸€æ®µçš„æ•°æ®å¤§å°
 	do 
 	{
-		pBuffer->read((char*)&cNextBlockLen, 1);  // ±¾¶ÎÊı¾İ³¤¶È ×î´óÎªFF£¬Èç¹ûÎª0±íÊ¾Êı¾İ¶Î½áÊø
+		pBuffer->read((char*)&cNextBlockLen, 1);  // æœ¬æ®µæ•°æ®é•¿åº¦ æœ€å¤§ä¸ºFFï¼Œå¦‚æœä¸º0è¡¨ç¤ºæ•°æ®æ®µç»“æŸ
 		if( 0 == cNextBlockLen )
 			break;
 
@@ -249,14 +249,14 @@ int GifImage::skip_data_block(IStreamBufferReader*  pBuffer, byte* pBits)
 }
 
 //
-//	×é½¨Ò»Ö¡gifÊı¾İÎÄ¼ş
+//	ç»„å»ºä¸€å¸§gifæ•°æ®æ–‡ä»¶
 //
 void GifImage::build_one_frame_data(
 			GIF_FileMark* pFileMark,                  // 
 			GIF_LogicalScreenDescriptor* pDesc,       // 
-			void* pColorTable, int nColorTableSize,   // É«²Ê±íÊı¾İ£¬µ±´æÔÚlocal color tableÊ±£¬Ê¹ÓÃlocal color tableÊı¾İ
-			void* pImageData,  int nImageDataSize,    // µ¥Ö¡Êı¾İ
-			void** ppOut, int* pOutSize               // ·µ»ØÖµ,ppOutĞèÒªdelete[]½øĞĞÊÍ·Å
+			void* pColorTable, int nColorTableSize,   // è‰²å½©è¡¨æ•°æ®ï¼Œå½“å­˜åœ¨local color tableæ—¶ï¼Œä½¿ç”¨local color tableæ•°æ®
+			void* pImageData,  int nImageDataSize,    // å•å¸§æ•°æ®
+			void** ppOut, int* pOutSize               // è¿”å›å€¼,ppOutéœ€è¦delete[]è¿›è¡Œé‡Šæ”¾
 		)
 {
 	assert( nullptr != pFileMark );
@@ -296,7 +296,7 @@ void GifImage::build_one_frame_data(
 }
 
 //
-//	Ê¹ÓÃÂ·¾¶½øĞĞÎÄ¼şGIF¼ÓÔØ£¨Ö»ÓĞÍâ²¿ÇëÇóÒ»ÈËrenderÊ±£¬²ÅÕæÕıµ÷ÓÃload¼ÓÔØÎÄ¼ş£©
+//	ä½¿ç”¨è·¯å¾„è¿›è¡Œæ–‡ä»¶GIFåŠ è½½ï¼ˆåªæœ‰å¤–éƒ¨è¯·æ±‚ä¸€äººrenderæ—¶ï¼Œæ‰çœŸæ­£è°ƒç”¨loadåŠ è½½æ–‡ä»¶ï¼‰
 //
 bool GifImage::Load(const TCHAR* szPath, IMapAttribute* pMapAttrib)
 {
@@ -316,7 +316,7 @@ bool GifImage::Load(const TCHAR* szPath, IMapAttribute* pMapAttrib)
 bool  GifImage::Load(IStreamBufferReader*  pBuffer, IMapAttribute* pMapAttrib)
 {
 #ifdef _DEBUG
-    // ¼ÓÔØËÙ¶È²âÊÔ
+    // åŠ è½½é€Ÿåº¦æµ‹è¯•
     LARGE_INTEGER liPerFreq = {0};
     ::QueryPerformanceFrequency(&liPerFreq);
     LARGE_INTEGER liStart = {0};
@@ -356,13 +356,13 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
     int nRead = 0;
 	do 
 	{
-		// ÎÄ¼ş±êÖ¾
+		// æ–‡ä»¶æ ‡å¿—
 		GIF_FileMark header;
 		nRead = pBuffer->read((char*)&header, sizeof(GIF_FileMark));
 		if (nRead < sizeof(GIF_FileMark) || !header.Valid()) 
             break;
 
-		// ÎÄ¼şÈ«¾ÖĞÅÏ¢
+		// æ–‡ä»¶å…¨å±€ä¿¡æ¯
 		GIF_LogicalScreenDescriptor logicScreenDesc;
 		nRead = pBuffer->read((char*)&logicScreenDesc, sizeof(GIF_LogicalScreenDescriptor));
         if (nRead < sizeof(GIF_LogicalScreenDescriptor))
@@ -371,7 +371,7 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 		this->m_nImageWidth = logicScreenDesc.logical_screen_width;
 		this->m_nImageHeight = logicScreenDesc.logical_screen_height;
 
-		// È«¾ÖÑÕÉ«±í
+		// å…¨å±€é¢œè‰²è¡¨
 		byte* pGlobalColorTable = nullptr;
 		int   nGlobalColorTableSize = 0;
 
@@ -383,14 +383,14 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 			pGlobalColorTable = new byte[nGlobalColorTableSize];
 			nRead = pBuffer->read((char*)pGlobalColorTable, nGlobalColorTableSize);
 
-			// »ñÈ¡±³¾°»­Ë¢
+			// è·å–èƒŒæ™¯ç”»åˆ·
 // 			int R = pGlobalColorTable[logicScreenDesc.background_color_index*3];
 // 			int G = pGlobalColorTable[logicScreenDesc.background_color_index*3+1];
 // 			int B = pGlobalColorTable[logicScreenDesc.background_color_index*3+2];
 //			m_hBrushTransparent = CreateSolidBrush(RGB(R,G,B));
 		}
 
-		// Ñ­»·¶ÁÈ¡Ã¿Ò»Ö¡µÄÊı¾İ£¬ÖØ×é³ÉÒ»·ù·ùµ¥Ö¡µÄgifÎÄ¼ş£¬ÈÃimage¼ÓÔØ¡£
+		// å¾ªç¯è¯»å–æ¯ä¸€å¸§çš„æ•°æ®ï¼Œé‡ç»„æˆä¸€å¹…å¹…å•å¸§çš„gifæ–‡ä»¶ï¼Œè®©imageåŠ è½½ã€‚
 		GIF_Frame* pFrame = nullptr;
 		int nFrameStartPos = 0;
 	
@@ -404,7 +404,7 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 			if (bNextBlockFlag == GIF_BLOCK_FLAG_TRAILER)
 			{
 				bRet = true;
-				break;   // ÎÄ¼ş½áÊø
+				break;   // æ–‡ä»¶ç»“æŸ
 			}
 
 			if (nullptr == pFrame)
@@ -425,31 +425,31 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 					{
 					case GIF_EXT_FLAG_PLAIN:
 						{
-							// Ìø¹ı 
+							// è·³è¿‡ 
 							pBuffer->seek(13,ios_base::cur);
 							skip_data_block(pBuffer);
 						}
 						break;
 					case GIF_EXT_FLAG_CONTROL:
 						{
-							// Ìø¹ı
+							// è·³è¿‡
 							pBuffer->read((char*)&pFrame->control, sizeof(GIF_GraphicControlExtension));
 							pFrame->nRealDelayTime = pFrame->control.delay_time*10;
-							if ( 0 == pFrame->nRealDelayTime )    // ÓĞĞ©gif¸ÃÖµÎª0
+							if ( 0 == pFrame->nRealDelayTime )    // æœ‰äº›gifè¯¥å€¼ä¸º0
 								pFrame->nRealDelayTime = 100;
 
-							assert( pFrame->control.disposal_methold != 3 );// ÕâÖÖGIFÃ»ÓĞ¾­Ã»²âÊÔ£¬Ã»ÕÒµ½ÕâÑùËØ²Ä
+							assert( pFrame->control.disposal_methold != 3 );// è¿™ç§GIFæ²¡æœ‰ç»æ²¡æµ‹è¯•ï¼Œæ²¡æ‰¾åˆ°è¿™æ ·ç´ æ
 						}
 						break;
 					case GIF_EXT_FLAG_COMMENT:
 						{
-							// Ìø¹ı
+							// è·³è¿‡
 							skip_data_block(pBuffer);
 						}
 						break;
 					case GIF_EXT_FLAG_APP:
 						{
-							// Ìø¹ı 
+							// è·³è¿‡ 
 							pBuffer->seek(12,ios_base::cur);
 							skip_data_block(pBuffer);
 						}
@@ -462,7 +462,7 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 					pBuffer->read((char*)&pFrame->descriptor, sizeof(GIF_ImageDescriptor));
 
 					//////////////////////////////////////////////////////////////////////////
-					// ±¾µØÉ«²Ê±í
+					// æœ¬åœ°è‰²å½©è¡¨
 
 					byte* pLocalColorTable = nullptr;
 					int   nLocalColorTableSize = 0;
@@ -477,19 +477,19 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 					}
 
 					//////////////////////////////////////////////////////////////////////////
-					// ½âÂë
+					// è§£ç 
 
 					byte* pColorTableForThisFrame     = pLocalColorTable==nullptr? pGlobalColorTable:pLocalColorTable;
 					int   nColorTableSizeForThisFrame = pLocalColorTable==nullptr? nGlobalColorTableSize:nLocalColorTableSize;
 
 					BYTE byte_LZW_codesize = 0;
-					pBuffer->read((char*)&byte_LZW_codesize,1);   // Õâ¸öÖµÊÇ¸ÉÊ²Ã´µÄ£¿  <-- ÊÇLZWËã·¨µÄ³õÊ¼Î»³¤¶ÈLZW code size 
+					pBuffer->read((char*)&byte_LZW_codesize,1);   // è¿™ä¸ªå€¼æ˜¯å¹²ä»€ä¹ˆçš„ï¼Ÿ  <-- æ˜¯LZWç®—æ³•çš„åˆå§‹ä½é•¿åº¦LZW code size 
 
-					// ÏÈ³¢ÊÔÊ¹ÓÃ×Ô¼ºµÄ½âÂëËã·¨
+					// å…ˆå°è¯•ä½¿ç”¨è‡ªå·±çš„è§£ç ç®—æ³•
 					bool bDecodeRet = this->decode_by_lzw(pBuffer, pFrame, byte_LZW_codesize, pColorTableForThisFrame, nColorTableSizeForThisFrame);
 // 					if (false == bDecodeRet)
 // 					{
-// 						// Ê§°ÜÁËÔÙ³¢ÊÔÓÃgdiplusµÄ·½·¨½âÂë
+// 						// å¤±è´¥äº†å†å°è¯•ç”¨gdiplusçš„æ–¹æ³•è§£ç 
 // 						bDecodeRet = this->decode_by_gdiplus(pBuffer, pFrame, nFrameStartPos, header, logicScreenDesc, pColorTableForThisFrame, nColorTableSizeForThisFrame);
 // 					}
 
@@ -506,7 +506,7 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 						goto PARSE_ERROR;
 					}
 
-					// ±£´æÖ¡
+					// ä¿å­˜å¸§
 					m_vFrame.push_back(pFrame);
 					pFrame = nullptr;
 				}
@@ -517,7 +517,7 @@ bool GifImage::RealLoad(IStreamBufferReader*  pBuffer)
 		} while (1);  // do
 
 PARSE_ERROR:
-		if (pFrame)  // Ê£Óà²¿·ÖÃ»ÓĞimage dataÁË£¬µ¼ÖÂ»¹newÁËÒ»´Î£¬ÔÚÕâÀïÊÍ·Åµô
+		if (pFrame)  // å‰©ä½™éƒ¨åˆ†æ²¡æœ‰image dataäº†ï¼Œå¯¼è‡´è¿˜newäº†ä¸€æ¬¡ï¼Œåœ¨è¿™é‡Œé‡Šæ”¾æ‰
 		{
 			delete pFrame;
 			pFrame = nullptr;
@@ -538,7 +538,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 	int     nOutputDataSize = pFrame->descriptor.image_width*pFrame->descriptor.image_height; 
 
 	//////////////////////////////////////////////////////////////////////////
-	// ¶ÁÈ¡Í¼ÏñÊı¾İÓÃÓÚ½âÂë£¨ÏÈ¶ÁÈ¡Êı¾İ´óĞ¡£©
+	// è¯»å–å›¾åƒæ•°æ®ç”¨äºè§£ç ï¼ˆå…ˆè¯»å–æ•°æ®å¤§å°ï¼‰
 
 	int nDataBeginPos = pBuffer->tell();
 	int nDataLength = skip_data_block(pBuffer);
@@ -548,7 +548,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 	skip_data_block(pBuffer, pGifFrameImageData);
 
 	//////////////////////////////////////////////////////////////////////////
-	// LZW½âÂë
+	// LZWè§£ç 
 
 	pOutputData = new byte[nOutputDataSize];
 	memset(pOutputData, 0, nOutputDataSize);
@@ -564,12 +564,12 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 		SAFE_ARRAY_DELETE(pGifFrameImageData);
 		SAFE_ARRAY_DELETE(pOutputData);
 
-        pBuffer->seek(nDataBeginPos, ios_base::beg);   // ÖØĞÂÈÃgdiplus½âÂëµÄÎ»ÖÃ
+        pBuffer->seek(nDataBeginPos, ios_base::beg);   // é‡æ–°è®©gdiplusè§£ç çš„ä½ç½®
 		return false;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	// ½âÎö½»²æGIFÀàĞÍµÄÊı¾İ
+	// è§£æäº¤å‰GIFç±»å‹çš„æ•°æ®
 	
 	if (pFrame->descriptor.interlace_flag)
 	{
@@ -578,7 +578,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 		int     nReadCursor = 0;
 		int     nRowDataSize = pFrame->descriptor.image_width;
 
-		// Group 1£¬Ã¿¸ô8ĞĞÈ¡Ò»´Î£¬´ÓµÚ0ĞĞ¿ªÊ¼Ğ´»Ø
+		// Group 1ï¼Œæ¯éš”8è¡Œå–ä¸€æ¬¡ï¼Œä»ç¬¬0è¡Œå¼€å§‹å†™å›
 		for (int row = 0; row < pFrame->descriptor.image_height; row+=8)
 		{
 			nWriteCursor = row*nRowDataSize;
@@ -586,7 +586,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 			nReadCursor += nRowDataSize;
 		}
 
-		// Group 2£¬Ã¿¸ô8ĞĞÈ¡Ò»´Î£¬´ÓµÚ4ĞĞ¿ªÊ¼Ğ´»Ø
+		// Group 2ï¼Œæ¯éš”8è¡Œå–ä¸€æ¬¡ï¼Œä»ç¬¬4è¡Œå¼€å§‹å†™å›
 		for (int row = 4; row < pFrame->descriptor.image_height; row+=8)
 		{
 			nWriteCursor = row*nRowDataSize;
@@ -594,7 +594,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 			nReadCursor += nRowDataSize;
 		}
 
-		// Group 3£¬Ã¿¸ô4ĞĞÈ¡Ò»´Î£¬´ÓµÚ2ĞĞ¿ªÊ¼Ğ´»Ø
+		// Group 3ï¼Œæ¯éš”4è¡Œå–ä¸€æ¬¡ï¼Œä»ç¬¬2è¡Œå¼€å§‹å†™å›
 		for (int row = 2; row < pFrame->descriptor.image_height; row+=4)
 		{
 			nWriteCursor = row*nRowDataSize;
@@ -602,7 +602,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 			nReadCursor += nRowDataSize;
 		}
 
-		// Group 4£¬Ã¿¸ô2ĞĞÈ¡Ò»´Î£¬´ÓµÚ1ĞĞ¿ªÊ¼Ğ´»Ø
+		// Group 4ï¼Œæ¯éš”2è¡Œå–ä¸€æ¬¡ï¼Œä»ç¬¬1è¡Œå¼€å§‹å†™å›
 		for (int row = 1; row < pFrame->descriptor.image_height; row+=2)
 		{
 			nWriteCursor = row*nRowDataSize;
@@ -614,7 +614,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	// ½âÎöµ÷É«°åºÍÍ¸Ã÷Ë÷Òı
+	// è§£æè°ƒè‰²æ¿å’Œé€æ˜ç´¢å¼•
 
 	pFrame->image.Create(pFrame->descriptor.image_width,pFrame->descriptor.image_height, 32, Image::createAlphaChannel);
 
@@ -626,18 +626,18 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 	{
 		for( int i = 0; i < bytesperline; i += 4 )
 		{
-			int nColorTableIndex = pOutputData[npxIndex++];    // ¸ÃÏñËØ¶ÔÓ¦µÄµ÷É«°åµÄÖµ
+			int nColorTableIndex = pOutputData[npxIndex++];    // è¯¥åƒç´ å¯¹åº”çš„è°ƒè‰²æ¿çš„å€¼
 			int nColorTableIndexAddr = 3*nColorTableIndex;
 
 			if (pFrame->control.transparent_color_flag && 
 				pFrame->control.transparent_color_index == nColorTableIndex)
 			{
 
-				pBits[i]   = 0;          // ×¢£ºÕâÀï±ØĞëÓÃ0£¬Ïàµ±ÓÚalphaÍ¨µÀµÄÔ¤³Ë£¬·ñÔòimage.draw½«±ä³É°×µ×£¬¶ø²»ÊÇÍ¸Ã÷
+				pBits[i]   = 0;          // æ³¨ï¼šè¿™é‡Œå¿…é¡»ç”¨0ï¼Œç›¸å½“äºalphaé€šé“çš„é¢„ä¹˜ï¼Œå¦åˆ™image.drawå°†å˜æˆç™½åº•ï¼Œè€Œä¸æ˜¯é€æ˜
 				pBits[i+1] = 0;
 				pBits[i+2] = 0;
 
-				pBits[i+3] = 0;          // ¸ÃÏñËØÍ¸Ã÷
+				pBits[i+3] = 0;          // è¯¥åƒç´ é€æ˜
 			}
 			else
 			{
@@ -652,7 +652,7 @@ bool GifImage::decode_by_lzw(IStreamBufferReader*  pBuffer, GIF_Frame* pFrame, b
 		pBits += pFrame->image.GetPitch();
 	}
 
-#ifdef _DEBUGx // <-- ½«Ã¿Ò»Ö¡±£´æÎªÒ»¸öÎÄ¼ş
+#ifdef _DEBUGx // <-- å°†æ¯ä¸€å¸§ä¿å­˜ä¸ºä¸€ä¸ªæ–‡ä»¶
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
 	wprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
@@ -675,18 +675,18 @@ bool GifImage::decode_by_gdiplus(IStreamBufferReader*  pBuffer,
 	skip_data_block(pBuffer);
 	int nFrameEndPos = pBuffer->tell();
 
-	// µ¥Ö¡Í¼ÏñÊı¾İ
+	// å•å¸§å›¾åƒæ•°æ®
 	int   nImageDataSize = nFrameEndPos-nFrameStartPos;
 	void* pImageData = (void*)new char[nImageDataSize];
 
 	pBuffer->seek(nFrameStartPos, ios_base::beg);
 	pBuffer->read((char*)pImageData, nImageDataSize);
 
-	// ×é×°
+	// ç»„è£…
 	void* one_frame_gif_file_data = nullptr;
 	int   one_frame_gif_file_data_size = 0;
 
-	// TODO: ÕæµÄÓĞ±ØÒªÂğ£¿GdiplusÄÚ²¿Ó¦¸Ã»áÅĞ¶ÏÑ¡ÄÄ¸öÑÕÉ«±í°É
+	// TODO: çœŸçš„æœ‰å¿…è¦å—ï¼ŸGdipluså†…éƒ¨åº”è¯¥ä¼šåˆ¤æ–­é€‰å“ªä¸ªé¢œè‰²è¡¨å§
 // 	if( nullptr == pLocalColorTable )
 // 		this->build_one_frame_data(&header, &logicScreenDesc, pGlobalColorTable, nGlobalColorTableSize, pImageData, nImageDataSize, &one_frame_gif_file_data, &one_frame_gif_file_data_size );
 // 	else
@@ -701,7 +701,7 @@ bool GifImage::decode_by_gdiplus(IStreamBufferReader*  pBuffer,
 		nImageDataSize = 0;
 	}
 
-#ifdef _DEBUGx // <-- ½«Ã¿Ò»Ö¡±£´æÎªÒ»¸öÎÄ¼ş
+#ifdef _DEBUGx // <-- å°†æ¯ä¸€å¸§ä¿å­˜ä¸ºä¸€ä¸ªæ–‡ä»¶
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
 	wprintf(szPath, _T("C:\\one_frame\\%d.png"),n++ );
@@ -714,7 +714,7 @@ bool GifImage::decode_by_gdiplus(IStreamBufferReader*  pBuffer,
 	}
 #endif
 
-	// ¼ÓÔØÍ¼Æ¬
+	// åŠ è½½å›¾ç‰‡
 	if (false == pFrame->image.LoadFromData(one_frame_gif_file_data, one_frame_gif_file_data_size))
 	{
 		delete [] one_frame_gif_file_data;
@@ -726,7 +726,7 @@ bool GifImage::decode_by_gdiplus(IStreamBufferReader*  pBuffer,
 	one_frame_gif_file_data = nullptr;
 
 
-	// ÉèÖÃ±³¾°Í¸Ã÷É«
+	// è®¾ç½®èƒŒæ™¯é€æ˜è‰²
 	if (pFrame->control.transparent_color_flag)
 	{
 		if (false == this->decode_gif_image_transparent(pFrame, (LONG)pFrame->control.transparent_color_index))
@@ -773,10 +773,10 @@ ImageWrap*  GifImageBase::GetFrameIImage( int nIndex )
 }
 
 //
-//	ÉèÖÃ»æÖÆ²ÎÊı¡£ÔÚÏÔÊ¾Ç°±ØĞëµ÷ÓÃ¸Ãº¯Êı 
+//	è®¾ç½®ç»˜åˆ¶å‚æ•°ã€‚åœ¨æ˜¾ç¤ºå‰å¿…é¡»è°ƒç”¨è¯¥å‡½æ•° 
 //
 //	Return
-//		³É¹¦·µ»ØTRUE£¬Ê§°Ü·µ»ØFALSE
+//		æˆåŠŸè¿”å›TRUEï¼Œå¤±è´¥è¿”å›FALSE
 //
 GifImageRender* GifImageBase::AddRender(Gif_Timer_Notify* pNotify, Application*  pUIApp, int* pIndex)
 {
@@ -785,7 +785,7 @@ GifImageRender* GifImageBase::AddRender(Gif_Timer_Notify* pNotify, Application* 
 
 	if (0 == m_mapRenderItem.size())
 	{
-        // 		if (false == this->RealLoad())   // Ö»ÓĞÔÚÕæÕıÓĞÈËÇëÇóÒ»¸öRenderÊ±£¬²Å´´½¨
+        // 		if (false == this->RealLoad())   // åªæœ‰åœ¨çœŸæ­£æœ‰äººè¯·æ±‚ä¸€ä¸ªRenderæ—¶ï¼Œæ‰åˆ›å»º
         // 			return nullptr;
         // 
 
@@ -892,7 +892,7 @@ int GifImageRender::GetHeight()
 }
 
 //
-//	TODO: ÈçºÎÊµÏÖÁ¢¼´ÏÔÊ¾µÚÒ»Ö¡Êı¾İ
+//	TODO: å¦‚ä½•å®ç°ç«‹å³æ˜¾ç¤ºç¬¬ä¸€å¸§æ•°æ®
 //
 void GifImageBase::Start(int nIndex)
 {
@@ -912,15 +912,15 @@ void GifImageRender::Start()
 		return;
 
 	m_nDrawStatus = GIF_DRAW_STATUS_START;
-	if (nSize == 1)    // µ¥Ö¡gifÍ¼Æ¬²»ĞèÒªÊ¹ÓÃ¼ÆÊ±Æ÷
+	if (nSize == 1)    // å•å¸§gifå›¾ç‰‡ä¸éœ€è¦ä½¿ç”¨è®¡æ—¶å™¨
 	{
-		handle_disposal(nullptr);                           // Ë¢±³¾°
-		draw_frame( m_pGifImage->GetFrame(m_nCurFrameIndex));   // »æÖÆµÚÒ»Ö¡µ½m_hMemCanvasDCÖĞ
+		handle_disposal(nullptr);                           // åˆ·èƒŒæ™¯
+		draw_frame( m_pGifImage->GetFrame(m_nCurFrameIndex));   // ç»˜åˆ¶ç¬¬ä¸€å¸§åˆ°m_hMemCanvasDCä¸­
 		commit(m_notify.notify_hwnd.hDC, m_notify.notify_hwnd.x,m_notify.notify_hwnd.y);
 	}
 	else
 	{
-		Gif_TimerItem timer_item = { (int)this, ::GetTickCount(), 0, -1, this };  // -1ÎŞÏŞÑ­»·
+		Gif_TimerItem timer_item = { (int)this, ::GetTickCount(), 0, -1, this };  // -1æ— é™å¾ªç¯
 		GifTimerManager*  pTimerMgr = m_pUIApp->GetGifTimerMgr ();
 		pTimerMgr->AddItem(&timer_item);
 	//	Gif_Timer_Factory::CreateGifTimerEngine()->set_timer(timer_item);
@@ -956,16 +956,16 @@ void GifImageBase::Stop(int nIndex)
 }
 void GifImageRender::Stop()
 {
-	// Ë¢ĞÂ¸¸´°¿Ú£¬ÕâÀïĞèÒª×¢Òâ½øĞĞÍ¬²½£¬Ïß³ÌÖĞµÄ×îºóÒ»´Îon_timer¿ÉÄÜ½«ÏÂÃæµÄË¢±³¾°ÓÖ¸²¸ÇÁË
+	// åˆ·æ–°çˆ¶çª—å£ï¼Œè¿™é‡Œéœ€è¦æ³¨æ„è¿›è¡ŒåŒæ­¥ï¼Œçº¿ç¨‹ä¸­çš„æœ€åä¸€æ¬¡on_timerå¯èƒ½å°†ä¸‹é¢çš„åˆ·èƒŒæ™¯åˆè¦†ç›–äº†
 	m_nCurFrameIndex = 0;
 	m_nDrawStatus = GIF_DRAW_STATUS_STOP;
 
-	handle_disposal(nullptr);  // Ë¢±³¾°
+	handle_disposal(nullptr);  // åˆ·èƒŒæ™¯
 	this->commit(m_notify.notify_hwnd.hDC, m_notify.notify_hwnd.x,m_notify.notify_hwnd.y);
 }
 
 //
-//	Íâ²¿´°¿Úµ÷ÓÃ
+//	å¤–éƒ¨çª—å£è°ƒç”¨
 //
 void GifImageBase::OnPaint(HDC hDC, int nIndex)
 {
@@ -977,7 +977,7 @@ void GifImageBase::OnPaint(HDC hDC, int nIndex)
 }
 
 //
-//	UI¿Ø¼şµ÷ÓÃ£¬x,yÎª¿Ø¼şÄÚ²¿×ø±ê£¬Èç(0,0)
+//	UIæ§ä»¶è°ƒç”¨ï¼Œx,yä¸ºæ§ä»¶å†…éƒ¨åæ ‡ï¼Œå¦‚(0,0)
 //
 void GifImageBase::OnPaint(HDC hDC, int x, int y, int nIndex)
 {
@@ -1017,7 +1017,7 @@ void GifImageRender::OnAlphaPaint(HDC hDC, int x, int y, int cx, int cy)
 		0, 0, m_pGifImage->GetWidth(), m_pGifImage->GetHeight(), bf);
 }
 
-// ¸Ãº¯Êı¿ÉÄÜÔÚgif timerÏß³Ì±»µ÷ÓÃ
+// è¯¥å‡½æ•°å¯èƒ½åœ¨gif timerçº¿ç¨‹è¢«è°ƒç”¨
 void GifImageRender::commit(HDC hDC, int x, int y)
 {
 	switch (m_notify.eType)
@@ -1068,11 +1068,11 @@ GIF_DRAW_STATUS GifImageRender::GetStatus()
 }
 
 //
-//	µ±Ò»Ö¡»æÖÆÍê³Éºó£¬²¢µ½´ïdelayÊ±¼ä£¬½«Òª»æÖÆÏÂÒ»Ö¡Ê±£¬´¦ÀíËüµÄdisposal
+//	å½“ä¸€å¸§ç»˜åˆ¶å®Œæˆåï¼Œå¹¶åˆ°è¾¾delayæ—¶é—´ï¼Œå°†è¦ç»˜åˆ¶ä¸‹ä¸€å¸§æ—¶ï¼Œå¤„ç†å®ƒçš„disposal
 //
 void GifImageRender::handle_disposal(GIF_Frame* pFrame)
 {
-	// µ±pFrameÎª¿ÕÊ±£¬Ä¬ÈÏ¾ÍË¢ĞÂÕû¸öÍ¼Æ¬µÄ±³¾°
+	// å½“pFrameä¸ºç©ºæ—¶ï¼Œé»˜è®¤å°±åˆ·æ–°æ•´ä¸ªå›¾ç‰‡çš„èƒŒæ™¯
 	int  nDisposal = GIF_DISPOSAL_RESTORE_BACKGROUND;
 	RECT rcBack = {0,0, m_pGifImage->GetWidth(),m_pGifImage->GetHeight()};
 
@@ -1100,7 +1100,7 @@ void GifImageRender::handle_disposal(GIF_Frame* pFrame)
 		break;
 	case GIF_DISPOSAL_RESTORE_PREVIOUS:
 		{
-			// »¹Ô­
+			// è¿˜åŸ
 			if (m_hMemPrevSaveDC)
 				::BitBlt(m_hMemCanvasDC,0,0,m_pGifImage->GetWidth(),m_pGifImage->GetHeight(),m_hMemPrevSaveDC,0,0,SRCCOPY);
 		}
@@ -1108,11 +1108,11 @@ void GifImageRender::handle_disposal(GIF_Frame* pFrame)
 	}
 }
 //
-//	»æÖÆÒ»Ö¡Í¼Ïñ
+//	ç»˜åˆ¶ä¸€å¸§å›¾åƒ
 //
 //	[parameter]
 //		pFrame
-//			[in]	Òª»æÖÆµÄµ±Ç°Ö¡
+//			[in]	è¦ç»˜åˆ¶çš„å½“å‰å¸§
 //
 void GifImageRender::draw_frame(GIF_Frame* pFrame)
 {
@@ -1122,7 +1122,7 @@ void GifImageRender::draw_frame(GIF_Frame* pFrame)
 	switch (pFrame->control.disposal_methold)
 	{
 	case GIF_DISPOSAL_RESTORE_PREVIOUS:
-		if (nullptr == m_hMemPrevSaveDC)  // ÔÚÕâÀï½øĞĞm_hMemPrevSaveBitmapµÄ´´½¨
+		if (nullptr == m_hMemPrevSaveDC)  // åœ¨è¿™é‡Œè¿›è¡Œm_hMemPrevSaveBitmapçš„åˆ›å»º
 		{
 			m_hMemPrevSaveDC =::CreateCompatibleDC(nullptr);
 			Image image;
@@ -1131,14 +1131,14 @@ void GifImageRender::draw_frame(GIF_Frame* pFrame)
 
 			/*HBITMAP hOldBmp = */(HBITMAP)::SelectObject(m_hMemPrevSaveDC, m_hMemPrevSaveBitmap);
 		}
-		// ±¸·İ
+		// å¤‡ä»½
 		::BitBlt(m_hMemPrevSaveDC,0,0,m_pGifImage->GetWidth(),m_pGifImage->GetHeight(),m_hMemCanvasDC,0,0,SRCCOPY);
 		break;
 
 	case GIF_DISPOSAL_LEFT: 
 		break;
 	}
-#ifdef _DEBUGx // <-- ½«Ã¿Ò»Ö¡±£´æÎªÒ»¸öÎÄ¼ş
+#ifdef _DEBUGx // <-- å°†æ¯ä¸€å¸§ä¿å­˜ä¸ºä¸€ä¸ªæ–‡ä»¶
 	static int n = 0;
 	TCHAR szPath[MAX_PATH] = _T("");
 	wprintf(szPath, _T("C:\\one_frame\\%d_a.png"),++n );
@@ -1160,7 +1160,7 @@ void GifImageRender::draw_frame(GIF_Frame* pFrame)
 		pFrame->descriptor.image_width,
 		pFrame->descriptor.image_height);
 
-#ifdef _DEBUGx // <-- ½«Ã¿Ò»Ö¡±£´æÎªÒ»¸öÎÄ¼ş
+#ifdef _DEBUGx // <-- å°†æ¯ä¸€å¸§ä¿å­˜ä¸ºä¸€ä¸ªæ–‡ä»¶
 	wprintf(szPath, _T("C:\\one_frame\\%d_b.png"),n );
 	image.Attach(m_hMemCanvasBitmap, true);
 	image.SaveAsPng(szPath);
@@ -1174,7 +1174,7 @@ void GifImageRender::on_tick(Gif_TimerItem* pTimerItem)
 {
 	if (m_nDrawStatus != GIF_DRAW_STATUS_START)  
 	{
-		pTimerItem->nRepeat = 1;  // ÔİÍ£»òÍ£Ö¹×´Ì¬ÏÂ£¬ÔÚcheck_timerÖĞ½«×Ô¶¯É¾³ı
+		pTimerItem->nRepeat = 1;  // æš‚åœæˆ–åœæ­¢çŠ¶æ€ä¸‹ï¼Œåœ¨check_timerä¸­å°†è‡ªåŠ¨åˆ é™¤
 		return;
 	}
 	if (m_nDrawStatus != GIF_DRAW_STATUS_START)
@@ -1183,14 +1183,14 @@ void GifImageRender::on_tick(Gif_TimerItem* pTimerItem)
 		pTimerMgr->RemoveItem((int)this);
 		return;
 	}
-	GIF_Frame* pPrevFrame = m_pGifImage->GetFrame(m_nCurFrameIndex-1);  // µ±0 == m_nCurFrameIndexÊ±½«·µ»Ønullptr£¬ÕâÊ±µ÷ÓÃhandle_disposal¼´¿ÉË¢ĞÂÕû¸ö±³¾°
+	GIF_Frame* pPrevFrame = m_pGifImage->GetFrame(m_nCurFrameIndex-1);  // å½“0 == m_nCurFrameIndexæ—¶å°†è¿”å›nullptrï¼Œè¿™æ—¶è°ƒç”¨handle_disposalå³å¯åˆ·æ–°æ•´ä¸ªèƒŒæ™¯
 	this->handle_disposal(pPrevFrame);
 
 	GIF_Frame* pFrame = m_pGifImage->GetFrame(m_nCurFrameIndex);
 	draw_frame(pFrame);
 	this->commit(m_notify.notify_hwnd.hDC, m_notify.notify_hwnd.x,m_notify.notify_hwnd.y);
 
-	// ÎªÁË±ÜÃâÆµ·±µÄ¸üĞÂÁĞ±í£¬ÔÚÕâÀïÃ¿´Î½ö¸üĞÂGif_timer_itemÀïÃæµÄÊı¾İ£¬¶ø²»ÊÇÉ¾³ıÔÙÌí¼ÓÒ»¸ö
+	// ä¸ºäº†é¿å…é¢‘ç¹çš„æ›´æ–°åˆ—è¡¨ï¼Œåœ¨è¿™é‡Œæ¯æ¬¡ä»…æ›´æ–°Gif_timer_itemé‡Œé¢çš„æ•°æ®ï¼Œè€Œä¸æ˜¯åˆ é™¤å†æ·»åŠ ä¸€ä¸ª
 	int nNextFrameIndex = get_next_frame_index();
 	if (nNextFrameIndex < (int) m_pGifImage->m_vFrame.size())
 	{
@@ -1204,15 +1204,15 @@ void GifImageRender::on_tick(Gif_TimerItem* pTimerItem)
 	}
 }
 
-// <<--- ÓÉÓÚgdiplus¼ÓÔØµ¥Ö¡GIF³öÏÖÍ¸Ã÷É«µÄÖµ±»¸Ä±äµÄÎÊÌâ£¬ÏÖÔÚÒÑ¸ÄÓÃ×Ô¼ºµÄLZWËã·¨À´½âÂë
+// <<--- ç”±äºgdiplusåŠ è½½å•å¸§GIFå‡ºç°é€æ˜è‰²çš„å€¼è¢«æ”¹å˜çš„é—®é¢˜ï¼Œç°åœ¨å·²æ”¹ç”¨è‡ªå·±çš„LZWç®—æ³•æ¥è§£ç 
 //
-//	½âÎögif imageÖĞµÄÍ¸Ã÷ĞÅÏ¢
+//	è§£ægif imageä¸­çš„é€æ˜ä¿¡æ¯
 //
-//	ÓÉÓÚgifµÄÍ¸Ã÷ÊÇÍ¨¹ıÖ¸¶¨µ÷É«°åÖĞµÄÒ»¸öË÷ÒıÀ´ÊµÏÖ£¬¶ø²»ÄÜÍ¨¹ıÅĞ¶ÏºÍÍ¸Ã÷É«ÏàµÈÀ´ÊµÏÖ
-//	ÒòÎª±³¾°É«¿ÉÄÜºÍÍ¸Ã÷É«ÎªÏàÍ¬µÄÑÕÉ«
+//	ç”±äºgifçš„é€æ˜æ˜¯é€šè¿‡æŒ‡å®šè°ƒè‰²æ¿ä¸­çš„ä¸€ä¸ªç´¢å¼•æ¥å®ç°ï¼Œè€Œä¸èƒ½é€šè¿‡åˆ¤æ–­å’Œé€æ˜è‰²ç›¸ç­‰æ¥å®ç°
+//	å› ä¸ºèƒŒæ™¯è‰²å¯èƒ½å’Œé€æ˜è‰²ä¸ºç›¸åŒçš„é¢œè‰²
 //
-//	±¸×¢:
-//		image.GetWidthºÍimage.GetHeight²¢²»ÕæÊµ¡£ÕæÊµµÄÊı¾İ¿íºÍ¸ßÒª¶ÁÈ¡LogicalScreenDescriptorÖĞµÄwidth/height
+//	å¤‡æ³¨:
+//		image.GetWidthå’Œimage.GetHeightå¹¶ä¸çœŸå®ã€‚çœŸå®çš„æ•°æ®å®½å’Œé«˜è¦è¯»å–LogicalScreenDescriptorä¸­çš„width/height
 //
 bool GifImage::decode_gif_image_transparent(GIF_Frame* pFrame, int nTransparentIndex)
 {
@@ -1237,20 +1237,20 @@ bool GifImage::decode_gif_image_transparent(GIF_Frame* pFrame, int nTransparentI
 	if (nullptr == hBitmap || nullptr == lpBits)
 		return false;
 
-	RGBQUAD palettes[255];  // È¡×î´ó¿ÉÄÜµÄ´óĞ¡
+	RGBQUAD palettes[255];  // å–æœ€å¤§å¯èƒ½çš„å¤§å°
 	pFrame->image.GetColorTable(0,255, palettes);
 
-	BYTE*       pDestBits = lpBits;// + (pFrame->descriptor.image_height-1)*nDestRowBytes;  // ÇĞ»»µ½×îºóÒ»ĞĞ£¬ÒòÎªDIBÊÇÓÉÏÂµ½ÉÏµÄ£¨×ø±êË³Ğò£©
+	BYTE*       pDestBits = lpBits;// + (pFrame->descriptor.image_height-1)*nDestRowBytes;  // åˆ‡æ¢åˆ°æœ€åä¸€è¡Œï¼Œå› ä¸ºDIBæ˜¯ç”±ä¸‹åˆ°ä¸Šçš„ï¼ˆåæ ‡é¡ºåºï¼‰
 	const BYTE* pSrcBits  = ((const BYTE*)pFrame->image.GetBits()) + pFrame->descriptor.image_top_position*pFrame->image.GetPitch();
 
 	for (int row = 0; row < nDestHeight; row ++ )
 	{
 		for (int i=0,j=0; i<nDestRowBytes; i+=4,j++)
 		{
-			BYTE index = pSrcBits[j+pFrame->descriptor.image_left_position];  // È¡³öÕâ¸öÎ»ÖÃµÄµ÷É«°åË÷ÒıÖµ
+			BYTE index = pSrcBits[j+pFrame->descriptor.image_left_position];  // å–å‡ºè¿™ä¸ªä½ç½®çš„è°ƒè‰²æ¿ç´¢å¼•å€¼
 			if (index >= nTransparentIndex)
 			{
-				pDestBits[i] = pDestBits[i+1] = pDestBits[i+2] = pDestBits[i+3]	= 0; // ½«alphaÖÃÎª0£¬Í¸Ã÷µô
+				pDestBits[i] = pDestBits[i+1] = pDestBits[i+2] = pDestBits[i+3]	= 0; // å°†alphaç½®ä¸º0ï¼Œé€æ˜æ‰
 			}
 			else
 			{
@@ -1275,7 +1275,7 @@ bool GifImage::decode_gif_image_transparent(GIF_Frame* pFrame, int nTransparentI
 
 //////////////////////////////////////////////////////////////////////////
 //
-//  LZW ½âÂë GIF Êı¾İ
+//  LZW è§£ç  GIF æ•°æ®
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -1297,17 +1297,17 @@ GifLZWDecoder::GifLZWDecoder(byte nInitBitLength, byte* pDecodeResultData, int n
 
 
 //
-// ´Óµ±Ç°Êı¾İÁ÷ÖĞ¶ÁÈ¡ÏÂÒ»¸öÒª½øĞĞÔËĞĞµÄÊı×Ö¡£
+// ä»å½“å‰æ•°æ®æµä¸­è¯»å–ä¸‹ä¸€ä¸ªè¦è¿›è¡Œè¿è¡Œçš„æ•°å­—ã€‚
 //
-// ±¸×¢£º
-//	1. LZWÊÇ»ùÓÚÎ»µÄ£¬²»ÊÇ»ùÓÚ×Ö½ÚµÄ
-//  2. LZWµÄÎ»ÊÇ±ä³¤µÄ£¬²»¹Ì¶¨£¬ÓÉ lzw code size ~ 12£¬Ã¿µ±×ÖµäÖĞµÄÏîÉÏÒ»¸öÊıÁ¿¼¶Ê±£¬È¡µÄÎ»Êı¼Ó1£¬¼Óµ½12ºó·µ»Ølzw code size
-//  3. ÀıÈç  58         C1         05         D3         £¬ µ±Ç°nReadBitPosInByte=3£¬¼´01011,000ÕâÀï£¬m_nCurBitLength=11
+// å¤‡æ³¨ï¼š
+//	1. LZWæ˜¯åŸºäºä½çš„ï¼Œä¸æ˜¯åŸºäºå­—èŠ‚çš„
+//  2. LZWçš„ä½æ˜¯å˜é•¿çš„ï¼Œä¸å›ºå®šï¼Œç”± lzw code size ~ 12ï¼Œæ¯å½“å­—å…¸ä¸­çš„é¡¹ä¸Šä¸€ä¸ªæ•°é‡çº§æ—¶ï¼Œå–çš„ä½æ•°åŠ 1ï¼ŒåŠ åˆ°12åè¿”å›lzw code size
+//  3. ä¾‹å¦‚  58         C1         05         D3         ï¼Œ å½“å‰nReadBitPosInByte=3ï¼Œå³01011,000è¿™é‡Œï¼Œm_nCurBitLength=11
 //          01011000   11000001   00000101   11010011
 //
-//     ÔòÏÂÒ»¸öÈ¡µÄÊıÎª 58ÖĞµÄÇ°5Î»¼ÓÉÏC1ÖĞµÄºó6Î»£¬000001 01011 ->43, nReadBitPosInByte=6
-//     È»ºóÏÂÒ»¸öÈ¡µÄÊıÎª C1µÄÇ°2Á½¼ÓÉÏÕû¸ö8Î»µÄ05£¬»¹Òª¼ÓÉÏD3µÄ×îµÍÎ»£¬ 1 00000101 11 -> 1047£¬Õû¸ö¿ç¶ÈÁË3¸ö×Ö½Ú²ÅÈ¡µ½ÁËĞèÒªµÄÊı×Ö
-//     Òò´ËÏÂÃæ´úÂëÖĞµÄ (*((int*)pDataCur) ¾ÍÊÇÏÈÈ¡³öËÄ¸ö×Ö½ÚÀ´½øĞĞÒÆÎ»/Óë²Ù×÷¡£ÕâÀï²»ÄÜÊ¹ÓÃ byte»òÕßWORDÀ´´úÌæ
+//     åˆ™ä¸‹ä¸€ä¸ªå–çš„æ•°ä¸º 58ä¸­çš„å‰5ä½åŠ ä¸ŠC1ä¸­çš„å6ä½ï¼Œ000001 01011 ->43, nReadBitPosInByte=6
+//     ç„¶åä¸‹ä¸€ä¸ªå–çš„æ•°ä¸º C1çš„å‰2ä¸¤åŠ ä¸Šæ•´ä¸ª8ä½çš„05ï¼Œè¿˜è¦åŠ ä¸ŠD3çš„æœ€ä½ä½ï¼Œ 1 00000101 11 -> 1047ï¼Œæ•´ä¸ªè·¨åº¦äº†3ä¸ªå­—èŠ‚æ‰å–åˆ°äº†éœ€è¦çš„æ•°å­—
+//     å› æ­¤ä¸‹é¢ä»£ç ä¸­çš„ (*((int*)pDataCur) å°±æ˜¯å…ˆå–å‡ºå››ä¸ªå­—èŠ‚æ¥è¿›è¡Œç§»ä½/ä¸æ“ä½œã€‚è¿™é‡Œä¸èƒ½ä½¿ç”¨ byteæˆ–è€…WORDæ¥ä»£æ›¿
 //
 #define GET_NEXT_VALUE() \
 	((*((int*)pDataCur))>>nReadBitPosInByte) & ((1<<m_nCurBitLength)-1); \
@@ -1315,10 +1315,10 @@ GifLZWDecoder::GifLZWDecoder(byte nInitBitLength, byte* pDecodeResultData, int n
 	pDataCur += nReadBitPosInByte>>3;                  \
 	nReadBitPosInByte %= 8;
 
-// LZWËã·¨½âÂë
+// LZWç®—æ³•è§£ç 
 bool  GifLZWDecoder::Decode(const byte* pSrcData, int nSrcDataSize)
 {
-#if 0 // Õâ¿éËã·¨ÓĞÎÊÌâ£¬Ä³Ğ©Í¼Æ¬½âÎö²»³öÀ´¡£2018/3/2£¬²»ÔÙÊ¹ÓÃ.
+#if 0 // è¿™å—ç®—æ³•æœ‰é—®é¢˜ï¼ŒæŸäº›å›¾ç‰‡è§£æä¸å‡ºæ¥ã€‚2018/3/2ï¼Œä¸å†ä½¿ç”¨.
 	// http://rsb.info.nih.gov/ij/plugins/download/agr/Animated_Gif_Reader.java
 	int  code = 0;
 	int  incode = 0;
@@ -1419,22 +1419,22 @@ out_of_for:
 
 	int nRetSize = 0;
 
-	// ×¢Òâ£ºLZWÊÇ°´Î»¶ÁÈ¡µÄÊı¾İ£¬²¢²»ÊÇ°´×Ö½Ú¶ÁÈ¡µÄ
+	// æ³¨æ„ï¼šLZWæ˜¯æŒ‰ä½è¯»å–çš„æ•°æ®ï¼Œå¹¶ä¸æ˜¯æŒ‰å­—èŠ‚è¯»å–çš„
 	const byte*  pDataEnd = pSrcData+nSrcDataSize;
 	const byte*  pDataCur = pSrcData;
-	byte  nReadBitPosInByte = 0;      // µ±Ç°¶ÁÈ¡pData×Ö½ÚµÄÄÄÒ»Î»ÁË
+	byte  nReadBitPosInByte = 0;      // å½“å‰è¯»å–pDataå­—èŠ‚çš„å“ªä¸€ä½äº†
 
 	WORD  wPrefix = 0, wSuffix = 0;
 
 	wPrefix = GET_NEXT_VALUE();
 	do 
 	{
-		if (wPrefix == GIF_LZW_END_TAG)   // ½áÊø
+		if (wPrefix == GIF_LZW_END_TAG)   // ç»“æŸ
 			break;
 
-		// ÔÚÊµ¼ÊµÄ½âÂëÖĞ, µÚÒ»¸öÊı¾İÍùÍù¾ÍÊÇCLEAN±êÖ¾, ÕâÊÇÎªÁËËã·¨¶øÓÅ»¯µÄÉè¼Æ,ÕâÑùÎÒÃÇÄÜÖ±½Ó½øÈë½âÂëÑ­»·,¶ø²»±ØÔÚÑ­»·Íâ²¿³õÊ¼»¯.
-		// : µÄÈ·£¬¶ÔÓÚÒ»¸ö7Î»³¤µÄLZW£¬¶ÁÈ¡µ½µÄµÚÒ»¸öÊı¾İÕæµÄÊÇ0x80 = 128
-		if (wPrefix == GIF_LZW_CLEAN_TAG) // ÖØĞÂ³õÊ¼»¯£¬ÕâÒ²ÊÇÊı¾İµÄµÚÒ»¸ö×Ö½Ú
+		// åœ¨å®é™…çš„è§£ç ä¸­, ç¬¬ä¸€ä¸ªæ•°æ®å¾€å¾€å°±æ˜¯CLEANæ ‡å¿—, è¿™æ˜¯ä¸ºäº†ç®—æ³•è€Œä¼˜åŒ–çš„è®¾è®¡,è¿™æ ·æˆ‘ä»¬èƒ½ç›´æ¥è¿›å…¥è§£ç å¾ªç¯,è€Œä¸å¿…åœ¨å¾ªç¯å¤–éƒ¨åˆå§‹åŒ–.
+		// : çš„ç¡®ï¼Œå¯¹äºä¸€ä¸ª7ä½é•¿çš„LZWï¼Œè¯»å–åˆ°çš„ç¬¬ä¸€ä¸ªæ•°æ®çœŸçš„æ˜¯0x80 = 128
+		if (wPrefix == GIF_LZW_CLEAN_TAG) // é‡æ–°åˆå§‹åŒ–ï¼Œè¿™ä¹Ÿæ˜¯æ•°æ®çš„ç¬¬ä¸€ä¸ªå­—èŠ‚
 		{
 			memset(m_dict, 0, sizeof(DictItem)*4096);
 			m_nDictLower      = (1<<m_nInitBitLength)+2;
@@ -1454,34 +1454,34 @@ out_of_for:
 			return false;
 		}
 
-		// ÎªÊ²Ã´ÔÚÕâÀïÒªÏÈ´æÈëÒ»¸öÇ°×º£¿ÕâÊÇÎªÁË½â¾öÈçµ±µÚÒ»¸öÒªpush×ÖµäÏîÎª dict[82] = {7F,82}Ê±£¬
-		// 82Õâ¸ö×ÖµäÏî¸ù±¾¾Í²»´æÔÚ£¬²»ÄÜÓÃ×Ô¼ºÀ´¶¨Òå×Ô¼º¡£ Òò´ËÏÈĞ´Èë dict[82]={7F, }; suffixÏÈ²»Ğ´Èë¡£
-		// Õâ¸öÊ±ºòÄÜ¹»»ñÈ¡µ½dict[82].prefixÁË¡£
+		// ä¸ºä»€ä¹ˆåœ¨è¿™é‡Œè¦å…ˆå­˜å…¥ä¸€ä¸ªå‰ç¼€ï¼Ÿè¿™æ˜¯ä¸ºäº†è§£å†³å¦‚å½“ç¬¬ä¸€ä¸ªè¦pushå­—å…¸é¡¹ä¸º dict[82] = {7F,82}æ—¶ï¼Œ
+		// 82è¿™ä¸ªå­—å…¸é¡¹æ ¹æœ¬å°±ä¸å­˜åœ¨ï¼Œä¸èƒ½ç”¨è‡ªå·±æ¥å®šä¹‰è‡ªå·±ã€‚ å› æ­¤å…ˆå†™å…¥ dict[82]={7F, }; suffixå…ˆä¸å†™å…¥ã€‚
+		// è¿™ä¸ªæ—¶å€™èƒ½å¤Ÿè·å–åˆ°dict[82].prefixäº†ã€‚
 		m_dict[m_nDictUpper].prefix = wPrefix;
 
-		// ºó×º±ØĞëÊÇÒ»¸öµ¥¶ÀµÄ×Ö·û
+		// åç¼€å¿…é¡»æ˜¯ä¸€ä¸ªå•ç‹¬çš„å­—ç¬¦
 		WORD wSingleSuffix = wSuffix;
 		while (wSingleSuffix > GIF_LZW_CLEAN_TAG)
 			wSingleSuffix = m_dict[wSingleSuffix].prefix;
 		
 		Output(wPrefix);
 
-		if (m_nDictUpper == wSuffix ||          // <--ÕâÊÇÊ²Ã´ÒâË¼£¿µ±³öÏÖdict[82]={7F,82}ÕâÖÖ×Ô¼º¶¨Òå×Ô¼ºÊ±£¬±ØĞëÖ±½Ó½«ÕâÏî·ÅÈë×Öµä£¬¶ø²»ÊÇÔÙ¼ì²éÒ»ÏÂCheckExist{7F,7F}ÊÇ·ñ´æÔÚ¡£Èç¹û²»´æÔÚÔò½ÄĞÒ¹ı¹Ø£¬Èç¹û´æÔÚ£¬Ôò82ÕâÒ»ÏîÔò±»¶ªµôÁË£¬µ¼ÖÂÏÂÒ»´ÎÑ­»·Ê±dict[82].prefix=82, output(82)½«ËÀÑ­»·¡£
+		if (m_nDictUpper == wSuffix ||          // <--è¿™æ˜¯ä»€ä¹ˆæ„æ€ï¼Ÿå½“å‡ºç°dict[82]={7F,82}è¿™ç§è‡ªå·±å®šä¹‰è‡ªå·±æ—¶ï¼Œå¿…é¡»ç›´æ¥å°†è¿™é¡¹æ”¾å…¥å­—å…¸ï¼Œè€Œä¸æ˜¯å†æ£€æŸ¥ä¸€ä¸‹CheckExist{7F,7F}æ˜¯å¦å­˜åœ¨ã€‚å¦‚æœä¸å­˜åœ¨åˆ™ä¾¥å¹¸è¿‡å…³ï¼Œå¦‚æœå­˜åœ¨ï¼Œåˆ™82è¿™ä¸€é¡¹åˆ™è¢«ä¸¢æ‰äº†ï¼Œå¯¼è‡´ä¸‹ä¸€æ¬¡å¾ªç¯æ—¶dict[82].prefix=82, output(82)å°†æ­»å¾ªç¯ã€‚
 			false==CheckExist(wPrefix,wSingleSuffix))
 		{
-			PushDict(wPrefix, (byte)wSingleSuffix);   // ´æÈë×Öµä
+			PushDict(wPrefix, (byte)wSingleSuffix);   // å­˜å…¥å­—å…¸
 		}
 		wPrefix = wSuffix;
 
 	} while (pDataEnd>pDataCur);
 
-	UIASSERT(m_nResultDataSize==0);   // ±£Ö¤½«Ñ¹ËõµÄLZWÊı¾İ½âÑ¹ËõÎªÍ¼Æ¬´óĞ¡
+	UIASSERT(m_nResultDataSize==0);   // ä¿è¯å°†å‹ç¼©çš„LZWæ•°æ®è§£å‹ç¼©ä¸ºå›¾ç‰‡å¤§å°
 	return m_nResultDataSize == 0;
 
 #endif
 }
 
-// ¼ì²éprefix suffixÊÇ·ñÔÚ×ÖµäÖĞ´æÔÚ
+// æ£€æŸ¥prefix suffixæ˜¯å¦åœ¨å­—å…¸ä¸­å­˜åœ¨
 inline bool GifLZWDecoder::CheckExist(WORD wValue1, WORD wValue2)
 {
 	for (int i = m_nDictLower; i < m_nDictUpper; i++)
@@ -1494,8 +1494,8 @@ inline bool GifLZWDecoder::CheckExist(WORD wValue1, WORD wValue2)
 	return false;
 }
 
-// Êä³öÒ»¸öÓĞĞ§½á¹û¡£Èç¹ûwÖµÈÔÈ»ÊÇÒ»¸ö×ÖµäÏî£¬¼ÌĞøËÑË÷×Öµä¡£
-// TODO: ½«µİ¹éµ÷ÓÃÓÅ»¯³ÉÑ­»·µ÷ÓÃ
+// è¾“å‡ºä¸€ä¸ªæœ‰æ•ˆç»“æœã€‚å¦‚æœwå€¼ä»ç„¶æ˜¯ä¸€ä¸ªå­—å…¸é¡¹ï¼Œç»§ç»­æœç´¢å­—å…¸ã€‚
+// TODO: å°†é€’å½’è°ƒç”¨ä¼˜åŒ–æˆå¾ªç¯è°ƒç”¨
 inline void GifLZWDecoder::Output(WORD w)
 {
 	if(w > GIF_LZW_CLEAN_TAG)
@@ -1517,15 +1517,15 @@ inline void GifLZWDecoder::Output(WORD w)
 	}
 }
 
-// Ïò×ÖµäÖĞÌí¼ÓÒ»Ïî
+// å‘å­—å…¸ä¸­æ·»åŠ ä¸€é¡¹
 inline void GifLZWDecoder::PushDict(WORD wPrefix, byte wSuffix)
 {
 	m_dict[m_nDictUpper].suffix = wSuffix;
 
-	// GIF¹æ·¶¹æ¶¨µÄÊÇ12Î»£¬³¬¹ı12Î»µÄ±í´ï·¶Î§¾ÍÍÆµ¹ÖØÀ´£¬²¢ÇÒGIFÎªÁËÌá¸ßÑ¹ËõÂÊ£¬²ÉÓÃµÄÊÇ±ä³¤µÄ×Ö³¤¡£
-	// ±ÈÈçËµÔ­Ê¼Êı¾İÊÇ8Î»£¬ÄÇÃ´Ò»¿ªÊ¼£¬ÏÈ¼ÓÉÏÒ»Î»ÔÙËµ£¬¿ªÊ¼µÄ×Ö³¤¾Í³ÉÁË9Î»£¬È»ºó¿ªÊ¼¼Ó±êºÅ£¬µ±±êºÅ¼Óµ½512Ê±£¬
-	// Ò²¾ÍÊÇ³¬¹ı9ÎªËùÄÜ±í´ïµÄ×î´óÊı¾İÊ±£¬Ò²¾ÍÒâÎ¶×ÅºóÃæµÄ±êºÅÒªÓÃ10Î»×Ö³¤²ÅÄÜ±íÊ¾ÁË£¬ÄÇÃ´´ÓÕâÀï¿ªÊ¼£¬
-	// ºóÃæµÄ×Ö³¤¾ÍÊÇ10Î»ÁË¡£ÒÀ´ËÀàÍÆ£¬µ½ÁË2^12Ò²¾ÍÊÇ4096Ê±£¬ÔÚÕâÀï²åÒ»¸öÇå³ı±êÖ¾£¬´ÓºóÃæ¿ªÊ¼£¬´Ó9Î»ÔÙÀ´¡£
+	// GIFè§„èŒƒè§„å®šçš„æ˜¯12ä½ï¼Œè¶…è¿‡12ä½çš„è¡¨è¾¾èŒƒå›´å°±æ¨å€’é‡æ¥ï¼Œå¹¶ä¸”GIFä¸ºäº†æé«˜å‹ç¼©ç‡ï¼Œé‡‡ç”¨çš„æ˜¯å˜é•¿çš„å­—é•¿ã€‚
+	// æ¯”å¦‚è¯´åŸå§‹æ•°æ®æ˜¯8ä½ï¼Œé‚£ä¹ˆä¸€å¼€å§‹ï¼Œå…ˆåŠ ä¸Šä¸€ä½å†è¯´ï¼Œå¼€å§‹çš„å­—é•¿å°±æˆäº†9ä½ï¼Œç„¶åå¼€å§‹åŠ æ ‡å·ï¼Œå½“æ ‡å·åŠ åˆ°512æ—¶ï¼Œ
+	// ä¹Ÿå°±æ˜¯è¶…è¿‡9ä¸ºæ‰€èƒ½è¡¨è¾¾çš„æœ€å¤§æ•°æ®æ—¶ï¼Œä¹Ÿå°±æ„å‘³ç€åé¢çš„æ ‡å·è¦ç”¨10ä½å­—é•¿æ‰èƒ½è¡¨ç¤ºäº†ï¼Œé‚£ä¹ˆä»è¿™é‡Œå¼€å§‹ï¼Œ
+	// åé¢çš„å­—é•¿å°±æ˜¯10ä½äº†ã€‚ä¾æ­¤ç±»æ¨ï¼Œåˆ°äº†2^12ä¹Ÿå°±æ˜¯4096æ—¶ï¼Œåœ¨è¿™é‡Œæ’ä¸€ä¸ªæ¸…é™¤æ ‡å¿—ï¼Œä»åé¢å¼€å§‹ï¼Œä»9ä½å†æ¥ã€‚
 
 	if (m_nDictUpper >= m_nCurBitLengthEx)
 	{

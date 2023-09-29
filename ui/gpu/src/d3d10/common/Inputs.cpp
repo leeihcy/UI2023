@@ -1,6 +1,7 @@
-#include "stdafx.h"
 #include "Inputs.h"
 #include "Effects.h"
+
+#include "src/stdafx.h"
 
 // ID3D10Buffer*  Inputs::m_pVertexBuffer = nullptr;
 ID3D10InputLayout*  Inputs::m_pInputLayout = nullptr;
@@ -50,7 +51,10 @@ bool  Inputs::Init(ID3D10Device* pDevice)
 
 void  Inputs::Rlease()
 {
-    SAFE_RELEASE(m_pInputLayout);
+    if (m_pInputLayout) {
+     m_pInputLayout->Release();
+     m_pInputLayout = nullptr;   
+    }
 //    SAFE_RELEASE(m_pVertexBuffer);
 }
 

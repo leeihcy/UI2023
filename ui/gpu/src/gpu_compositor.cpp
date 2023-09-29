@@ -1,9 +1,13 @@
+#pragma warning(disable:4005)  // 宏重定义
+
+// #include "stdafx.h"
 #include "gpu_compositor.h"
 #include "d3d10\D3DApp.h"
 #include "d3d10\common\Effects.h"
 #include "d3d10\common\Font.h"
 #include "gpu_layer.h"
-#include "stdafx.h"
+#include <D3dx9math.h>
+#include <assert.h>
 using namespace ui;
 
 //////////////////////////////////////////////////////////////////////////
@@ -27,10 +31,22 @@ GpuComposition::~GpuComposition() {
     D3D10App::Get()->SetActiveSwapChain(nullptr);
   }
 
-  SAFE_RELEASE(m_pDepthStencilBuffer);
-  SAFE_RELEASE(m_pDepthStencilView);
-  SAFE_RELEASE(m_pRenderTargetView);
-  SAFE_RELEASE(m_pSwapChain);
+  if (m_pDepthStencilBuffer) {
+    m_pDepthStencilBuffer->Release();
+    m_pDepthStencilBuffer = nullptr;
+  }
+  if (m_pDepthStencilView) {
+    m_pDepthStencilView->Release();
+    m_pDepthStencilView = nullptr;
+  }
+  if (m_pRenderTargetView) {
+    m_pRenderTargetView->Release();
+    m_pRenderTargetView = nullptr;
+  }
+  if (m_pSwapChain) {
+    m_pSwapChain->Release();
+    m_pSwapChain = nullptr;
+  }
 }
 
 IGpuRenderLayer *GpuComposition::CreateLayerTexture() {
@@ -95,7 +111,10 @@ void GpuComposition::CreateSwapChain() {
 void GpuComposition::ReCreateRenderTargetView() {
   if (m_pRenderTargetView) {
     D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
-    SAFE_RELEASE(m_pRenderTargetView);
+    if (m_pRenderTargetView) {
+      m_pRenderTargetView->Release();
+      m_pRenderTargetView = nullptr;
+    }
   }
 
   ID3D10Texture2D *pBuffer = nullptr;
@@ -113,8 +132,14 @@ void GpuComposition::ReCreateRenderTargetView() {
 }
 
 void GpuComposition::ReCreateStencilView() {
-  SAFE_RELEASE(m_pDepthStencilView);
-  SAFE_RELEASE(m_pDepthStencilBuffer);
+  if (m_pDepthStencilView) {
+    m_pDepthStencilView->Release();
+    m_pDepthStencilView = nullptr;
+  }
+  if (m_pDepthStencilBuffer) {
+    m_pDepthStencilBuffer->Release();
+    m_pDepthStencilBuffer = nullptr;
+  }
 
   D3D10_TEXTURE2D_DESC dsDesc;
   dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -164,7 +189,10 @@ void GpuComposition::Resize(UINT nWidth, UINT nHeight) {
 
   // 光ResizeBuffers有问题，还得重新创建rendertargetview
   // Release all outstanding references to the swap chain's buffers.
-  SAFE_RELEASE(m_pRenderTargetView);
+  if (m_pRenderTargetView) {
+    m_pRenderTargetView->Release();
+    m_pRenderTargetView = nullptr;
+  }
 
   m_pSwapChain->ResizeBuffers(1, nWidth, nHeight, DXGI_FORMAT_B8G8R8A8_UNORM,
                               0);
@@ -195,7 +223,7 @@ bool GpuComposition::BeginCommit() {
   //      否则会导致背景重叠
 
   // ??? 使用{0,0,0,0}会导致渲染不正常
-  FLOAT rgba[4] = {1, 0, 0, 1};
+  FLOAT rgba[4] = {0, 0, 0, 1}; // {1, 0, 0, 1};
   D3D10App::Get()->m_pDevice->ClearRenderTargetView(m_pRenderTargetView, rgba);
 
   ClearStencil();

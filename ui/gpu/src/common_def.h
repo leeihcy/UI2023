@@ -2,7 +2,7 @@
 #define INCLUDED_COMMAND_DEF
 
 enum { 
-    TILE_SIZE = 256,  // 纹理分块大小
+    TILE_SIZE = 256,  // 绾圭悊鍒嗗潡澶у皬
 };
 
 

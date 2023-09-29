@@ -124,26 +124,26 @@ void  MultiMatrix(GpuLayerCommitContext& c, float* matrix16)
 
 extern "C" 
 {
-    UICOMPOSITOR_API IHardwareComposition*  UICreateHardwareComposition(
+    UIGPUAPI IHardwareComposition*  UICreateHardwareComposition(
         HWND hWnd)
     {
-	    // ¼ì²âÓ²¼þ£º
+	    // æ£€æµ‹ç¡¬ä»¶ï¼š
 	    GpuComposition* p = new GpuComposition(hWnd);
 	    return p;
     }
-    UICOMPOSITOR_API long  UIStartupGpuCompositor()
+    UIGPUAPI long  UIStartupGpuCompositor()
     {
         D3D10App::Startup();
         return 0;
     }
 
-    UICOMPOSITOR_API long  UIShutdownGpuCompositor()
+    UIGPUAPI long  UIShutdownGpuCompositor()
     {
         D3D10App::Shutdown();
         return 0;
     }
 
-	UICOMPOSITOR_API IRenderLayerTransform2*  CreateHard3DTransform()
+	UIGPUAPI IRenderLayerTransform2*  CreateHard3DTransform()
 	{
 		return Hard3DTransform::CreateInstance();
 	}

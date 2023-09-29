@@ -96,6 +96,6 @@ int RestoreByDpi_if_gt0(int x) {
     return x;
 
   return RestoreByDpi(x);
-}
+} 
 
 } // namespace ui

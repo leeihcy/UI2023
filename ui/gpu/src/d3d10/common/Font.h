@@ -1,4 +1,5 @@
 #pragma once
+#include <d3dx10.h>
 
 class Font
 {
@@ -23,7 +24,7 @@ private:
 	static ID3DX10Sprite*   s_pSprite10;
 	static ID3D10BlendState*  s_pFontBlendState10;
 
-	// 代码不要直接引用这个变量，应该使用getFont()
+	// 浠ｇ爜涓嶈鐩存帴寮曠敤杩欎釜鍙橀噺锛屽簲璇ヤ娇鐢╣etFont()
 	ID3DX10Font* __m_pFont10__ = nullptr;  
 
 	struct FontInfo
@@ -49,6 +50,6 @@ private:
 		OUT_DEFAULT_PRECIS,
 		DEFAULT_QUALITY,
 		DEFAULT_PITCH | FF_DONTCARE,
-		L"宋体",
+		L"瀹嬩綋",
 	};
 };

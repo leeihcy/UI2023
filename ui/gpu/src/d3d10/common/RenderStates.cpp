@@ -1,5 +1,7 @@
-#include "stdafx.h"
 #include "RenderStates.h"
+#include "src/stdafx.h"
+#define SAFE_RELEASE(ptr)   do { if(ptr) { (ptr)->Release(); (ptr) = NULL; } } while(false)
+
 
 ID3D10BlendState* RenderStates::pBlendStateTransparent = nullptr;
 ID3D10BlendState* RenderStates::pBlendStateDisableWriteRenderTarget = nullptr;
@@ -9,29 +11,29 @@ ID3D10DepthStencilState* RenderStates::pStencilStateClip = nullptr;
 ID3D10RasterizerState*  RenderStates::pRasterizerState = nullptr;
 
 //
-// ?? ÔÚfxÎÄ¼şÖĞÖ»È¥ÉèÖÃvs/ps£¬ÆäËüµÄstateÈ«ÓÉ´úÂëÀ´ÉèÖÃ 
+// ?? åœ¨fxæ–‡ä»¶ä¸­åªå»è®¾ç½®vs/psï¼Œå…¶å®ƒçš„stateå…¨ç”±ä»£ç æ¥è®¾ç½® 
 //
 bool RenderStates::Init(ID3D10Device* pDevice)
 {
-    // ¿ªÆô²Ã¼ô¡¢¿¹¾â³İ
+    // å¼€å¯è£å‰ªã€æŠ—é”¯é½¿
     {
         D3D10_RASTERIZER_DESC drd = {
             D3D10_FILL_SOLID, //D3D10_FILL_MODE FillMode;
-            D3D10_CULL_NONE,  //ÏÔÊ¾±³Ãæ
+            D3D10_CULL_NONE,  //æ˜¾ç¤ºèƒŒé¢
             FALSE, //BOOL FrontCounterClockwise;
             0, //INT DepthBias;
             0.0f,//FLOAT DepthBiasClamp;
             0.0f,//FLOAT SlopeScaledDepthBias;
             FALSE,//BOOL DepthClipEnable;
-            TRUE,//BOOL ScissorEnable;  // ÊÇ·ñÔÊĞí¼ô²Ã
-            TRUE,//BOOL MultisampleEnable;  // ¿ªÆô¿¹¾â³İ
+            TRUE,//BOOL ScissorEnable;  // æ˜¯å¦å…è®¸å‰ªè£
+            TRUE,//BOOL MultisampleEnable;  // å¼€å¯æŠ—é”¯é½¿
             FALSE//BOOL AntialiasedLineEnable;         
         };
         pDevice->CreateRasterizerState(&drd, &pRasterizerState);
         pDevice->RSSetState(pRasterizerState); 
     }
 
-    // Ä¬ÈÏÖ§³ÖÍ¸Ã÷ alhpa  Í¨µÀ
+    // é»˜è®¤æ”¯æŒé€æ˜ alhpa  é€šé“
     {
         D3D10_BLEND_DESC desc = {0};
         desc.AlphaToCoverageEnable = false;
@@ -72,7 +74,7 @@ bool RenderStates::Init(ID3D10Device* pDevice)
         }
     }
 
-	//  ²»ÆôÓÃÉî¶È»º´æ
+	//  ä¸å¯ç”¨æ·±åº¦ç¼“å­˜
     {
         D3D10_DEPTH_STENCIL_DESC desc = {0};
         desc.DepthEnable = false;
@@ -85,7 +87,7 @@ bool RenderStates::Init(ID3D10Device* pDevice)
         pDevice->OMSetDepthStencilState(pStencilStateDisable, 0);
     }
 
-    //Ìî³ä¼ô²ÃÇøÓò
+    //å¡«å……å‰ªè£åŒºåŸŸ
     {
         D3D10_DEPTH_STENCIL_DESC desc = {0};
 
@@ -114,7 +116,7 @@ bool RenderStates::Init(ID3D10Device* pDevice)
         }
     }
 
-    //»æÖÆ¼ô²ÃÇøÓòÖĞÎïÌå
+    //ç»˜åˆ¶å‰ªè£åŒºåŸŸä¸­ç‰©ä½“
     {
         D3D10_DEPTH_STENCIL_DESC desc = {0};
 
