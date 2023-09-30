@@ -3,7 +3,7 @@
 
 namespace ui {
 class GpuLayerCommitContext;
-struct IGpuRenderLayer;
+struct IGpuLayer;
 
 class HardwareLayer : public Layer {
 public:
@@ -25,7 +25,7 @@ protected:
 
 protected:
   // 硬件合成
-  IGpuRenderLayer *m_pGpuTexture;
+  IGpuLayer *m_pGpuTexture;
 };
 
 } // namespace ui

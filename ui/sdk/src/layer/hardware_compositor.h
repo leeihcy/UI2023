@@ -4,23 +4,20 @@
 namespace ui
 {
 class GpuLayerCommitContext;
-struct IHardwareComposition;
+struct IGpuCompositor;
 
 class HardwareCompositor : public Compositor
 {
 public:
     HardwareCompositor();
     ~HardwareCompositor();
-#if defined(OS_WIN)
-    virtual void  virtualBindHWND(WINDOW_HANDLE) override;
-#endif
+    virtual Layer*  createLayerObject() override;
+    virtual void  onBindHWND(WINDOW_HANDLE) override;
+    virtual void  doCommit(const RectRegion& arrDirtyInWindow) override;
     virtual void  UpdateDirty(RectRegion* outArrDirtyInWindow) override;
-    virtual void  virtualCommit(const RectRegion& arrDirtyInWindow) override;
     virtual void  Resize(uint nWidth, uint nSize) override;
 
-    virtual Layer*  virtualCreateLayer() override;
-
-    IGpuRenderLayer*  CreateGpuLayerTexture();
+    IGpuLayer*  CreateGpuLayerTexture();
 
 private:
     void  draw_full_recursion(Layer* p);
@@ -29,7 +26,7 @@ private:
 
 private:
     // 窗口交换链
-    IHardwareComposition*  m_pHardwareComposition;
+    IGpuCompositor*  m_gpu_composition = nullptr;
 };
 
 }

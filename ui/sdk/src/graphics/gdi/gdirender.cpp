@@ -1256,7 +1256,7 @@ void GdiRenderTarget::Save(const TCHAR *szPath) {
   }
 }
 
-void GdiRenderTarget::Upload2Gpu(IGpuRenderLayer *p, LPRECT prcArray,
+void GdiRenderTarget::Upload2Gpu(IGpuLayer *p, LPRECT prcArray,
                                  int nCount) {
   if (m_pRenderBuffer) {
     m_pRenderBuffer->Upload2Gpu(p, prcArray, nCount);

@@ -9,7 +9,7 @@ struct IRenderPen;
 struct IRenderTarget;
 class ImageData;
 struct IRenderFont;
-struct IGpuRenderLayer;
+struct IGpuLayer;
 struct Rect;
 struct Point;
 struct Size;
@@ -278,7 +278,7 @@ struct IRenderTarget {
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) = 0;
 
-  virtual void Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray, int nCount) = 0;
+  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) = 0;
 };
 
 struct IUICursor {

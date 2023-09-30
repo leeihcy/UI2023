@@ -20,10 +20,10 @@ public:
   Layer *CreateLayer();
   void SetRootLayer(Layer *pChanged);
   Layer *GetRootLayer();
-#if defined(OS_WIN)
+  
   void BindHWND(WINDOW_HANDLE);
   WINDOW_HANDLE GetHWND();
-#endif
+
   void RequestInvalidate();
   void _onRequestInvalidate();
   void UpdateAndCommit();
@@ -36,19 +36,15 @@ public:
   IWindowCommitListener *GetCommitListener();
   
 protected:
-  virtual Layer *virtualCreateLayer() = 0;
-#if defined(OS_WIN)
-  virtual void virtualBindHWND(WINDOW_HANDLE) = 0;
-#endif
-  virtual void virtualCommit(const RectRegion &arrDirtyInWindow) = 0;
+  virtual Layer *createLayerObject() = 0;
+  virtual void onBindHWND(WINDOW_HANDLE) = 0;
+  virtual void doCommit(const RectRegion &arrDirtyInWindow) = 0;
 
 protected:
   Application *m_pUIApp;
 
   Layer *m_pRootLayer;
-#if defined(OS_WIN)
   WINDOW_HANDLE m_hWnd = nullptr;
-#endif
   WindowRender *m_pWindowRender;
 
 private:

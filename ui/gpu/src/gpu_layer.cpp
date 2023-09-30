@@ -1,22 +1,18 @@
 #include "gpu_layer.h"
-#include "D3D10/d3dapp.h"
-#include "common_def.h"
-#include "d3d10\common/Effects.h"
-#include "d3d10\common/RenderStates.h"
-#include "gpu_compositor.h"
-#include "hard3dtransform.h"
-#include "stdafx.h"
+// #include "D3D10/d3dapp.h"
+// #include "d3d10\common/Effects.h"
+// #include "d3d10\common/RenderStates.h"
+// #include "gpu_compositor.h"
+// #include "hard3dtransform.h"
+// #include "stdafx.h"
 #include "texture_tile.h"
-
 
 using namespace ui;
 
 // http://www.chromium.org/developers/design-documents/gpu-accelerated-compositing-in-chrome
 
-GpuRenderLayer::GpuRenderLayer() {
-  m_pVertexBuffer = nullptr;
+GpuLayer::GpuLayer() {
   m_pParent = m_pChild = m_pNext = nullptr;
-  m_size.cx = m_size.cy = 0;
 
   m_pCompositor = nullptr;
 
@@ -31,15 +27,10 @@ GpuRenderLayer::GpuRenderLayer() {
 #endif
 }
 
-GpuRenderLayer::~GpuRenderLayer() {
-  if (m_pVertexBuffer) {
-    m_pVertexBuffer->Release();
-    m_pVertexBuffer = nullptr;
-  }
-
-  GpuRenderLayer *pChild = m_pChild;
+GpuLayer::~GpuLayer() {
+  GpuLayer *pChild = m_pChild;
   while (pChild) {
-    GpuRenderLayer *pTemp = pChild->m_pNext;
+    GpuLayer *pTemp = pChild->m_pNext;
     if (pChild) {
       delete pChild;
       pChild = nullptr;
@@ -49,20 +40,20 @@ GpuRenderLayer::~GpuRenderLayer() {
   m_pChild = m_pNext = nullptr;
   m_pParent = nullptr;
 
-  list<TextureTile *>::iterator iter = m_listTile.begin();
+  std::list<TextureTile *>::iterator iter = m_listTile.begin();
   for (; iter != m_listTile.end(); ++iter) {
     delete *iter;
   }
   m_listTile.clear();
 }
 
-IGpuRenderLayer *GpuRenderLayer::GetIGpuLayerTexture() {
-  return static_cast<IGpuRenderLayer *>(this);
+IGpuLayer *GpuLayer::GetIGpuLayerTexture() {
+  return static_cast<IGpuLayer *>(this);
 }
 
-void GpuRenderLayer::Release() { delete this; }
+void GpuLayer::Release() { delete this; }
 
-void GpuRenderLayer::SetHardwareComposition(GpuComposition *p) {
+void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
   m_pCompositor = p;
 }
 
@@ -106,26 +97,26 @@ void GpuRenderLayer::SetHardwareComposition(GpuComposition *p) {
 //---------------------------------------------------------------------------------------
 //
 
-void GpuRenderLayer::UploadHBITMAP(UploadGpuBitmapInfo &info) {
-  UINT nCount = info.nCount;
-  RECT *prcArray = (RECT *)info.prcArray;
+void GpuLayer::UploadHBITMAP(UploadGpuBitmapInfo &info) {
+  int nCount = info.nCount;
+  ui::Rect *prcArray = (ui::Rect *)info.prcArray;
 
-  RECT rcFull = {0, 0, info.width, info.height};
+  ui::Rect rcFull = {0, 0, info.width, info.height};
   if (0 == info.nCount || nullptr == info.prcArray) {
     nCount = 1;
     prcArray = &rcFull;
   }
 
-  for (UINT i = 0; i < nCount; i++) {
-    RECT rc = rcFull;
+  for (int i = 0; i < nCount; i++) {
+    ui::Rect rc = rcFull;
     if (prcArray)
-      IntersectRect(&rc, &rc, &prcArray[i]);
+      rc.Intersect(prcArray[i], &rc);
 
     upload_bitmap_rect(rc, info);
   }
 }
 
-void GpuRenderLayer::upload_bitmap_rect(RECT &rc, UploadGpuBitmapInfo &source) {
+void GpuLayer::upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &source) {
   // 分析受影响的 tile
   // -1: 例如(0~128)，受影响的就是一个区域0，不影响区域1(128/128=1)
   int xIndexFrom = rc.left / TILE_SIZE;
@@ -140,7 +131,7 @@ void GpuRenderLayer::upload_bitmap_rect(RECT &rc, UploadGpuBitmapInfo &source) {
   OutputDebugStringA(szText);
 #endif
 
-  RECT rcSrc;
+  ui::Rect rcSrc;
   for (int y = yIndexFrom; y <= yIndexTo; y++) {
     for (int x = xIndexFrom; x <= xIndexTo; x++) {
       rcSrc.left = x * TILE_SIZE;
@@ -150,10 +141,10 @@ void GpuRenderLayer::upload_bitmap_rect(RECT &rc, UploadGpuBitmapInfo &source) {
 
       // 超出纹理大小的区域直接忽略。这一般是针对于位于右侧和底部的
       // 那些分块
-      if (rcSrc.right > m_size.cx)
-        rcSrc.right = m_size.cx;
-      if (rcSrc.bottom > m_size.cy)
-        rcSrc.bottom = m_size.cy;
+      if (rcSrc.right > m_width)
+        rcSrc.right = m_width;
+      if (rcSrc.bottom > m_height)
+        rcSrc.bottom = m_height;
 
       m_arrayTile[y][x]->Upload(rcSrc, source);
 
@@ -171,7 +162,7 @@ void GpuRenderLayer::upload_bitmap_rect(RECT &rc, UploadGpuBitmapInfo &source) {
 //      大小，而不是去匹配真实的窗口大小。
 //      这样做的好处是窗口改变大小时不用频繁的删除添加新分块。
 //
-void GpuRenderLayer::create_tile(ULONG row, ULONG col) {
+void GpuLayer::doCreateTile(int row, int col) {
   assert(row > 0 && col > 0);
 
   if (m_arrayTile.GetCol() == col && m_arrayTile.GetRow() == row) {
@@ -186,7 +177,7 @@ void GpuRenderLayer::create_tile(ULONG row, ULONG col) {
   if (lDiff > 0) {
     // 添加
     for (int i = 0; i < lDiff; i++) {
-      m_listTile.push_back(new TextureTile);
+      m_listTile.push_back(newTile());
     }
 
 #if ENABLE_TRACE
@@ -196,7 +187,7 @@ void GpuRenderLayer::create_tile(ULONG row, ULONG col) {
 #endif
   } else if (lDiff < 0) {
     // 删除
-    list<TextureTile *>::iterator iter = m_listTile.begin();
+    std::list<TextureTile *>::iterator iter = m_listTile.begin();
     for (int i = 0; i < lDiff; i++) {
       delete *iter;
       iter = m_listTile.erase(iter);
@@ -218,9 +209,9 @@ void GpuRenderLayer::create_tile(ULONG row, ULONG col) {
   OutputDebugStringA(szText);
 #endif
 
-  list<TextureTile *>::iterator iter = m_listTile.begin();
-  for (ULONG y = 0; y < row; y++) {
-    for (ULONG x = 0; x < col; x++) {
+  std::list<TextureTile *>::iterator iter = m_listTile.begin();
+  for (int y = 0; y < row; y++) {
+    for (int x = 0; x < col; x++) {
       m_arrayTile[y][x] = (*iter);
       (*iter)->SetIndex(x, y);
       ++iter;
@@ -228,180 +219,32 @@ void GpuRenderLayer::create_tile(ULONG row, ULONG col) {
   }
 }
 
-void GpuRenderLayer::Resize(UINT nWidth, UINT nHeight) {
-  if (m_size.cx == (int)nWidth && m_size.cy == (int)nHeight) {
-    return;
-  }
-
-  int col = (int)ceil((float)nWidth / TILE_SIZE);
-  int row = (int)ceil((float)nHeight / TILE_SIZE);
-
-  create_tile(row, col);
-
-  m_size.cx = nWidth;
-  m_size.cy = nHeight;
-
-  // 创建vbo
-  if (m_pVertexBuffer) {
-    m_pVertexBuffer->Release();
-    m_pVertexBuffer = nullptr;
-  }
-
-  D3D10_BUFFER_DESC BufDesc;
-  BufDesc.ByteWidth = sizeof(DXUT_SCREEN_VERTEX_10) * 4 * row * col;
-  BufDesc.Usage = D3D10_USAGE_DYNAMIC;
-  BufDesc.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-  BufDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
-  BufDesc.MiscFlags = 0;
-
-  D3D10App::Get()->m_pDevice->CreateBuffer(&BufDesc, nullptr, &m_pVertexBuffer);
-
-  // 上传一个纹理所要用的顶点数据。批处理
-
-  DXUT_SCREEN_VERTEX_10 *pVB = nullptr;
-  if (SUCCEEDED(
-          m_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (LPVOID *)&pVB))) {
-    for (int y = 0; y < row; ++y) {
-      for (int x = 0; x < col; ++x) {
-        int x1 = x + 1;
-        int y1 = y + 1;
-
-        ui::D3DCOLORVALUE color = {1, 1, 1, 1};
-        DXUT_SCREEN_VERTEX_10 vertices[4] = {
-            {(float)TILE_SIZE * x, (float)TILE_SIZE * y, 0.f, color, 0, 0},
-            {(float)TILE_SIZE * x1, (float)TILE_SIZE * y, 0.f, color, 1, 0},
-            {(float)TILE_SIZE * x, (float)TILE_SIZE * y1, 0.f, color, 0, 1},
-            {(float)TILE_SIZE * x1, (float)TILE_SIZE * y1, 0.f, color, 1, 1},
-        };
-
-        CopyMemory(pVB, vertices, sizeof(DXUT_SCREEN_VERTEX_10) * 4);
-        pVB += 4;
-      }
-    }
-
-    m_pVertexBuffer->Unmap();
-  }
+void GpuLayer::CalcDrawDestRect(/*__in*/ RECTF *prc, /*__out*/ RECTF *prcfOut) {
+  prcfOut->left = prc->left * 2.0f / m_width - 1.0f;
+  prcfOut->right = prc->right * 2.0f / m_width - 1.0f;
+  prcfOut->top = 1.0f - prc->top * 2.0f / m_height;
+  prcfOut->bottom = 1.0f - prc->bottom * 2.0f / m_height;
+}
+void GpuLayer::CalcDrawDestRect(int xDest, int yDest, int wDest,
+                                      int hDest, /*__out*/ RECTF *prcfOut) {
+  prcfOut->left = xDest * 2.0f / m_width - 1.0f;
+  prcfOut->right = (xDest + wDest) * 2.0f / m_width - 1.0f;
+  prcfOut->top = 1.0f - yDest * 2.0f / m_height;
+  prcfOut->bottom = 1.0f - (yDest + hDest) * 2.0f / m_height;
+}
+void GpuLayer::CalcDrawDestRect(float xDest, float yDest, float wDest,
+                                      float hDest, /*__out*/ RECTF *prcfOut) {
+  prcfOut->left = xDest * 2.0f / m_width - 1.0f;
+  prcfOut->right = (xDest + wDest) * 2.0f / m_width - 1.0f;
+  prcfOut->top = 1.0f - yDest * 2.0f / m_height;
+  prcfOut->bottom = 1.0f - (yDest + hDest) * 2.0f / m_height;
 }
 
-void GpuRenderLayer::CalcDrawDestRect(__in RECTF *prc, __out RECTF *prcfOut) {
-  prcfOut->left = prc->left * 2.0f / m_size.cx - 1.0f;
-  prcfOut->right = prc->right * 2.0f / m_size.cx - 1.0f;
-  prcfOut->top = 1.0f - prc->top * 2.0f / m_size.cy;
-  prcfOut->bottom = 1.0f - prc->bottom * 2.0f / m_size.cy;
-}
-void GpuRenderLayer::CalcDrawDestRect(int xDest, int yDest, UINT wDest,
-                                      UINT hDest, __out RECTF *prcfOut) {
-  prcfOut->left = xDest * 2.0f / m_size.cx - 1.0f;
-  prcfOut->right = (xDest + wDest) * 2.0f / m_size.cx - 1.0f;
-  prcfOut->top = 1.0f - yDest * 2.0f / m_size.cy;
-  prcfOut->bottom = 1.0f - (yDest + hDest) * 2.0f / m_size.cy;
-}
-void GpuRenderLayer::CalcDrawDestRect(float xDest, float yDest, float wDest,
-                                      float hDest, __out RECTF *prcfOut) {
-  prcfOut->left = xDest * 2.0f / m_size.cx - 1.0f;
-  prcfOut->right = (xDest + wDest) * 2.0f / m_size.cx - 1.0f;
-  prcfOut->top = 1.0f - yDest * 2.0f / m_size.cy;
-  prcfOut->bottom = 1.0f - (yDest + hDest) * 2.0f / m_size.cy;
-}
-
-void MultiMatrix(GpuLayerCommitContext &c, float *matrix16);
-
-void GpuRenderLayer::Compositor(GpuLayerCommitContext *pContext,
-                                float *pMatrixTransform) {
-  if (0 == m_size.cx || 0 == m_size.cy)
-    return;
-  if (!pContext)
-    return;
-
-  //     if (pTransform && pTransform->get_type() != TRANSFORM_HARD3D)
-  //         return;
-
-  ID3D10Device *pDevice = D3D10App::Get()->m_pDevice;
-
-  // 剪裁stencil应该是用父对象的矩阵，而不应
-  // 该包含自己的旋转矩阵。这里在context里将父对象的矩阵脱离出来。
-  if (pContext->m_bTransformValid) {
-    // 如果是有矩阵变换，则剪裁区域可能不再是一个矩形，这时应该采用
-    // 模板缓存的方式来进行剪裁
-
-    // 1. 还原scissor区域为整个屏幕
-    SIZE sizeWnd = m_pCompositor->GetSize();
-    D3D10_RECT rects;
-    SetRect((LPRECT)&rects, 0, 0, sizeWnd.cx, sizeWnd.cy);
-    pDevice->RSSetScissorRects(1, &rects);
-
-    // 2. 清除当前模板缓存
-    m_pCompositor->ClearStencil();
-
-    // 3. 禁止back buffer写入
-    ID3D10BlendState *pOldBlendState = nullptr;
-    pDevice->OMGetBlendState(&pOldBlendState, 0, 0);
-    pDevice->OMSetBlendState(RenderStates::pBlendStateDisableWriteRenderTarget,
-                             0, 0xFFFFFFFF);
-
-    // 4. 按pContext->m_rcClip填充模板缓存为1
-    pDevice->OMSetDepthStencilState(RenderStates::pStencilStateCreateClip, 1);
-
-    Effects::m_pFxMatrix->SetMatrix((float *)pContext->m_matrixTransform);
-    RECTF rcTextArg = {0, 0, 1, 1};
-    RECTF rcDraw;
-    rcDraw.left = (float)pContext->m_rcClip.left;
-    rcDraw.top = (float)pContext->m_rcClip.top;
-    rcDraw.right = (float)pContext->m_rcClip.right;
-    rcDraw.bottom = (float)pContext->m_rcClip.bottom;
-    D3D10App::Get()->ApplyTechnique(Effects::m_pTechFillRectMatrix, &rcDraw,
-                                    &rcTextArg, 1);
-
-    // 5. 恢复back buffer写入
-    pDevice->OMSetBlendState(pOldBlendState, 0, 0xFFFFFFFF);
-    if (pOldBlendState) {
-      pOldBlendState->Release();
-      pOldBlendState = nullptr;
-    }
-
-    // 6. 设置模板缓存函数，只允许当前模板值为1的位置通过测试（剪裁）
-    pDevice->OMSetDepthStencilState(RenderStates::pStencilStateClip, 1);
-  } else {
-    D3D10_RECT rects[1];
-    memcpy(rects, &pContext->m_rcClip, sizeof(RECT));
-    pDevice->RSSetScissorRects(1, rects);
-  }
-
-  if (pMatrixTransform) {
-    MultiMatrix(*pContext, pMatrixTransform);
-  }
-
-  UINT stride = sizeof(DXUT_SCREEN_VERTEX_10);
-  UINT offset = 0;
-  D3D10App::Get()->m_pDevice->IASetVertexBuffers(0, 1, &m_pVertexBuffer,
-                                                 &stride, &offset);
-
-  ULONG row = m_arrayTile.GetRow();
-  ULONG col = m_arrayTile.GetCol();
-
-  long xOffset = 0;
-  long yOffset = 0;
-  for (ULONG y = 0; y < row; y++) {
-    yOffset = y * TILE_SIZE;
-    for (ULONG x = 0; x < col; x++) {
-      xOffset = x * TILE_SIZE;
-
-      m_arrayTile[y][x]->Compositor(xOffset, yOffset, (y * col + x) * 4,
-                                    pContext);
-    }
-  }
-
-  if (pContext->m_bTransformValid) {
-    // 7. 关闭模板缓存
-    pDevice->OMSetDepthStencilState(RenderStates::pStencilStateDisable, 0);
-  }
-}
-
-// void   GpuRenderLayer::oBitBlt(int xDest, int yDest, int /*wDest*/, int
+// void   GpuLayer::oBitBlt(int xDest, int yDest, int /*wDest*/, int
 // /*hDest*/, int xSrc, int ySrc)
 // {
-//     oStretchBlt((float)xDest, (float)yDest, (float)m_size.cx,
-//     (float)m_size.cy, xSrc, ySrc, m_size.cx, m_size.cy);
+//     oStretchBlt((float)xDest, (float)yDest, (float)m_width,
+//     (float)m_height, xSrc, ySrc, m_width, m_height);
 // }
 
 #if 0
@@ -444,13 +287,13 @@ void  GpuLayerTexture::Translation(float xPos, float yPos, float zPos)
 //     if (!pRoot)
 //         return;
 // 
-//     if (0 == pRoot->m_size.cx || 0 == pRoot->m_size.cy)
+//     if (0 == pRoot->m_width || 0 == pRoot->m_height)
 //         return;
 // 
 // 	   m_fTranslationZ = zPos;  // TODO:
 // 
-//     m_fTranslationX = xPos * 2.0f / pRoot->m_size.cx - 1.0f;
-//     m_fTranslationY = 1.0f - yPos * 2.0f / pRoot->m_size.cy;
+//     m_fTranslationX = xPos * 2.0f / pRoot->m_width - 1.0f;
+//     m_fTranslationY = 1.0f - yPos * 2.0f / pRoot->m_height;
 
     m_fTranslationX = xPos;
     m_fTranslationY = yPos;

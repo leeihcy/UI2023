@@ -134,7 +134,7 @@ void  RenderBuffer::GetImageData(ImageData*  pData)
 	pData->m_ptr = (BYTE*)bm.bmBits;
 }
 
-void  RenderBuffer::Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCount)
+void  RenderBuffer::Upload2Gpu(IGpuLayer* p, LPRECT prcArray, int nCount)
 {
     if (!p)
         return;

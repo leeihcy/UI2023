@@ -60,8 +60,8 @@ long Window::FinalConstruct() {
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
 #endif
-  // p->GetUIApplication()->IsGpuCompositeEnable();
-  m_window_style.hard_composite = true; // false; 
+  m_window_style.hard_composite = 
+    GetUIApplication()->IsGpuCompositeEnable();
 
   return 0;
 }

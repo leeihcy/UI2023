@@ -5,6 +5,9 @@ shared_library("uisdk") {
     }
 
     defines = ["UI_EXPORTS"]
+    deps = [
+      "//ui/gpu:uigpu"
+    ]
 
     include_dirs = [
         "//",
@@ -15,7 +18,6 @@ shared_library("uisdk") {
     ]
   
     lib_dirs = ["$root_build_dir/"]
-
     # skia
     # 将依赖库拷贝到out/debug目录下
     copy("skia") {

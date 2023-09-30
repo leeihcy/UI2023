@@ -53,7 +53,7 @@ public:
 	void  ApplyTechnique(ID3D10EffectTechnique*  pTech, ui::RECTF*  prcDraw, ui::RECTF*  prcTexture, float fAlpha);
 
 public:
-    static void Startup();
+    static bool Startup();
     static void Shutdown();
     static D3D10App*  Get();
 

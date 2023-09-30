@@ -13,7 +13,7 @@
 #include "src/skin_parse/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "src/panel/panel_meta.h"
-
+#include "gpu/include/api.h"
 #if defined(OS_MAC)
 #include "application_mac.h"
 #endif
@@ -82,6 +82,7 @@ void Application::x_Init() {
     //DisableProcessWindowsGhosting();
 #endif
   m_bGpuEnable = false;
+
   EnableGpuComposite();
 
   // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
@@ -467,7 +468,7 @@ bool Application::EnableGpuComposite() {
     return false;
   }
 
-  typedef long (*pfnUIStartupGpuCompositor)();
+  typedef bool (*pfnUIStartupGpuCompositor)();
   pfnUIStartupGpuCompositor fn = (pfnUIStartupGpuCompositor)::GetProcAddress(
       hModule, "UIStartupGpuCompositor");
 
@@ -476,11 +477,14 @@ bool Application::EnableGpuComposite() {
     return false;
   }
 
-  fn();
+  m_bGpuEnable = fn();
   UI_LOG_INFO("GpuCompositor Enable.");
+#else
+  m_bGpuEnable = ui::GpuStartup();
 #endif
-
-  m_bGpuEnable = true;
+  if (!m_bGpuEnable) {
+    UI_LOG_WARN("gpu startup failed!");
+  }
   return true;
 }
 
@@ -501,6 +505,8 @@ void Application::ShutdownGpuCompositor() {
     return;
 
   fn();
+#else
+  GpuShutdown();
 #endif
   m_bGpuEnable = false;
 }

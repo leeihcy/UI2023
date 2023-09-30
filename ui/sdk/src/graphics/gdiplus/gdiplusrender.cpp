@@ -1732,7 +1732,7 @@ void  GdiplusRenderTarget::Render2Target(IRenderTarget* pDst, Render2TargetParam
 		return Render2DC(pGdipDst->GetHDC(), pParam);
 	}
 }
-void  GdiplusRenderTarget::Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCount)
+void  GdiplusRenderTarget::Upload2Gpu(IGpuLayer* p, LPRECT prcArray, int nCount)
 {
     if (m_pRenderBuffer)
     {

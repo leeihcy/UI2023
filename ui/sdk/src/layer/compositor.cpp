@@ -9,9 +9,7 @@ namespace ui {
 Compositor::Compositor() {
   m_pRootLayer = nullptr;
   m_pUIApp = nullptr;
-#if 0 // defined(OS_WIN)
   m_hWnd = nullptr;
-#endif
   m_pWindowRender = nullptr;
   m_request_invalidate_ref = 0;
 }
@@ -32,11 +30,10 @@ void Compositor::SetUIApplication(Application *p) { m_pUIApp = p; }
 Application *Compositor::GetUIApplication() { return m_pUIApp; }
 
 Layer *Compositor::CreateLayer() {
-  Layer *pLayer = this->virtualCreateLayer();
+  Layer *pLayer = this->createLayerObject();
   if (pLayer) {
     pLayer->SetCompositorPtr(this);
   }
-
   return pLayer;
 }
 
@@ -44,17 +41,15 @@ void Compositor::SetRootLayer(Layer *pChanged) { m_pRootLayer = pChanged; }
 
 Layer *Compositor::GetRootLayer() { return m_pRootLayer; }
 
-#if defined(OS_WIN)
 void Compositor::BindHWND(WINDOW_HANDLE hWnd) {
   if (m_hWnd == hWnd)
     return;
 
   m_hWnd = hWnd;
-  this->virtualBindHWND(hWnd);
+  this->onBindHWND(hWnd);
 }
 
 WINDOW_HANDLE Compositor::GetHWND() { return m_hWnd; }
-#endif
 
 void Compositor::RequestInvalidate() {
   // #if 0 // defined(OS_WIN)
@@ -100,12 +95,12 @@ void Compositor::Commit(const RectRegion &arrDirtyInWindow) {
     m_commit_listener->PreCommit(arrDirtyInWindow.GetArrayPtr2(),
                          arrDirtyInWindow.GetCount());
 
-    this->virtualCommit(arrDirtyInWindow);
+    this->doCommit(arrDirtyInWindow);
 
     m_commit_listener->PostCommit(arrDirtyInWindow.GetArrayPtr2(),
                           arrDirtyInWindow.GetCount());
   } else {
-    this->virtualCommit(arrDirtyInWindow);
+    this->doCommit(arrDirtyInWindow);
   }
 }
 

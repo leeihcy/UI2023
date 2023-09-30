@@ -1,18 +1,18 @@
-#pragma warning(disable:4005)  // 宏重定义
+#pragma warning(disable : 4005) // 宏重定义
 
 // #include "stdafx.h"
 #include "gpu_compositor.h"
-#include "d3d10\D3DApp.h"
-#include "d3d10\common\Effects.h"
-#include "d3d10\common\Font.h"
-#include "gpu_layer.h"
+#include "d3d10/D3DApp.h"
+#include "d3d10/common/Effects.h"
+#include "d3d10/common/Font.h"
+#include "d3d10/d3d10_gpu_layer.h"
 #include <D3dx9math.h>
 #include <assert.h>
 using namespace ui;
 
 //////////////////////////////////////////////////////////////////////////
 
-GpuComposition::GpuComposition(HWND hWnd) {
+D3D10Compositor::D3D10Compositor(HWND hWnd) {
   m_pRootTexture = nullptr;
   m_hWnd = hWnd;
 
@@ -25,7 +25,7 @@ GpuComposition::GpuComposition(HWND hWnd) {
   CreateSwapChain();
 }
 
-GpuComposition::~GpuComposition() {
+D3D10Compositor::~D3D10Compositor() {
   if (D3D10App::Get()->IsActiveSwapChain(m_hWnd)) {
     D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
     D3D10App::Get()->SetActiveSwapChain(nullptr);
@@ -49,16 +49,16 @@ GpuComposition::~GpuComposition() {
   }
 }
 
-IGpuRenderLayer *GpuComposition::CreateLayerTexture() {
-  GpuRenderLayer *p = new GpuRenderLayer;
+IGpuLayer *D3D10Compositor::CreateLayerTexture() {
+  GpuLayer *p = new D3D10GpuLayer;
   p->SetHardwareComposition(this);
   return p;
 }
-void GpuComposition::SetRootLayerTexture(IGpuRenderLayer *p) {
-  m_pRootTexture = static_cast<GpuRenderLayer *>(p);
+void D3D10Compositor::SetRootLayerTexture(IGpuLayer *p) {
+  m_pRootTexture = static_cast<GpuLayer *>(p);
 }
-GpuRenderLayer *GpuComposition::GetRootLayerTexture() { return m_pRootTexture; }
-void GpuComposition::CreateSwapChain() {
+GpuLayer *D3D10Compositor::GetRootLayerTexture() { return m_pRootTexture; }
+void D3D10Compositor::CreateSwapChain() {
   if (!m_hWnd)
     return;
   if (!D3D10App::Get()->m_pDXGIFactory)
@@ -108,7 +108,7 @@ void GpuComposition::CreateSwapChain() {
   D3D10App::Get()->m_pDevice->RSSetViewports(1, &vp);
 }
 
-void GpuComposition::ReCreateRenderTargetView() {
+void D3D10Compositor::ReCreateRenderTargetView() {
   if (m_pRenderTargetView) {
     D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
     if (m_pRenderTargetView) {
@@ -131,7 +131,7 @@ void GpuComposition::ReCreateRenderTargetView() {
   pBuffer->Release();
 }
 
-void GpuComposition::ReCreateStencilView() {
+void D3D10Compositor::ReCreateStencilView() {
   if (m_pDepthStencilView) {
     m_pDepthStencilView->Release();
     m_pDepthStencilView = nullptr;
@@ -168,14 +168,14 @@ void GpuComposition::ReCreateStencilView() {
                                                      &m_pDepthStencilView);
 }
 
-void GpuComposition::Resize(UINT nWidth, UINT nHeight) {
+void D3D10Compositor::Resize(int nWidth, int nHeight) {
   if (!m_pSwapChain) {
     CreateSwapChain();
     if (!m_pSwapChain)
       return;
   }
 
-  if (m_sizeBackBuffer.cx == (int)nWidth && m_sizeBackBuffer.cy == (int)nHeight)
+  if (m_sizeBackBuffer.cx == nWidth && m_sizeBackBuffer.cy == nHeight)
     return;
 
   m_sizeBackBuffer.cx = nWidth;
@@ -201,7 +201,7 @@ void GpuComposition::Resize(UINT nWidth, UINT nHeight) {
   ReCreateStencilView();
 }
 
-bool GpuComposition::BeginCommit() {
+bool D3D10Compositor::BeginCommit() {
   if (!m_pSwapChain)
     return false;
 
@@ -235,7 +235,7 @@ bool GpuComposition::BeginCommit() {
 
   return true;
 }
-void GpuComposition::EndCommit() {
+void D3D10Compositor::EndCommit() {
   Font::DrawDebugFps();
 
   //     if (m_pRootTexture)
@@ -255,7 +255,7 @@ void GpuComposition::EndCommit() {
   }
 }
 
-void GpuComposition::ClearStencil() {
+void D3D10Compositor::ClearStencil() {
   assert(m_pDepthStencilView);
   D3D10App::Get()->m_pDevice->ClearDepthStencilView(
       m_pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);

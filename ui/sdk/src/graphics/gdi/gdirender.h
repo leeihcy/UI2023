@@ -69,7 +69,7 @@ public:
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor);
   virtual IRenderBrush *CreateSolidBrush(Color *pColor);
 
-  virtual void Upload2Gpu(IGpuRenderLayer *p, LPRECT prcArray, int nCount);
+  virtual void Upload2Gpu(IGpuLayer *p, LPRECT prcArray, int nCount);
 
 protected:
   void DrawBitmap(IRenderBitmap *hBitmap, int x, int y);

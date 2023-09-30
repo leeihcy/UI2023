@@ -6,25 +6,22 @@
 
 namespace ui {
 
-struct IGpuRenderLayer;
-struct IHardwareComposition {
+enum {
+  TILE_SIZE = 256, // 纹理分块大小
+};
+
+struct IGpuLayer;
+struct IGpuCompositor {
   virtual void Release() = 0;
-  virtual IGpuRenderLayer *CreateLayerTexture() = 0;
-  virtual void SetRootLayerTexture(IGpuRenderLayer *p) = 0;
+  virtual IGpuLayer *CreateLayerTexture() = 0;
+  virtual void SetRootLayerTexture(IGpuLayer *p) = 0;
 
   virtual bool BeginCommit() = 0;
   virtual void EndCommit() = 0;
-  virtual void Resize(unsigned int nWidth, unsigned int nHeight) = 0;
+  virtual void Resize(int nWidth, int nHeight) = 0;
 };
 
-// struct  IUICompositor
-// {
-//     virtual void  Upload() = 0;
-//     virtual void  SetNeedCommit() = 0;
-// };
-
 struct UploadGpuBitmapInfo {
-  /*HBITMAP hBitmap*/;
   int width;
   int height;
   int bpp;
@@ -110,7 +107,7 @@ inline void GpuLayerCommitContext::MultiAlpha(unsigned char alpha) {
   m_fAlpha *= alpha / 255.0f;
 }
 
-struct IGpuRenderLayer {
+struct IGpuLayer {
   virtual void Release() = 0;
 
 #if 0
@@ -123,24 +120,17 @@ struct IGpuRenderLayer {
                           float *pMatrixTransform) = 0;
 
   virtual void UploadHBITMAP(UploadGpuBitmapInfo &info) = 0;
-  virtual void Resize(unsigned int nWidth, unsigned int nHeight) = 0;
+  virtual void Resize(int nWidth, int nHeight) = 0;
 };
 
 // extern "C" UICOMPOSITOR_API IRenderLayerTransform2*  CreateHard3DTransform();
 
-// return:
-//     0  代表成功
-//     -1 代表失败
-extern "C" UIGPUAPI long UIStartupGpuCompositor();
-
-// return:
-//     无意义
-extern "C" UIGPUAPI long UIShutdownGpuCompositor();
-
-extern "C" UIGPUAPI ui::IHardwareComposition *
-UICreateHardwareComposition(/*HWND*/ int hWnd);
-
-extern "C" UIGPUAPI void GpuUnitTest();
+extern "C" {
+UIGPUAPI bool GpuStartup();
+UIGPUAPI void GpuShutdown();
+UIGPUAPI IGpuCompositor *CreateGpuComposition(void *hWnd);
+UIGPUAPI void GpuUnitTest();
+}
 
 } // namespace ui
 

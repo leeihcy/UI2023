@@ -12,16 +12,6 @@ typedef struct _D3DCOLORVALUE {
 	float a;
 } D3DCOLORVALUE;
 
-
-// typedef struct tagRECTF
-// {
-// 	float  left;
-// 	float  top;
-// 	float  right;
-// 	float  bottom;
-// }
-// RECTF, *LPRECTF;
-
 } // namespace ui
 
 #endif

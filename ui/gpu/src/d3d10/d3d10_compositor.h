@@ -1,8 +1,8 @@
-#ifndef _UI_GPU_SRC_GPU_COMPOSITOR_H_
-#define _UI_GPU_SRC_GPU_COMPOSITOR_H_
+#ifndef _UI_GPU_SRC_D3D10_GPU_COMPOSITOR_H_
+#define _UI_GPU_SRC_D3D10_GPU_COMPOSITOR_H_
 #include "gpu/include/api.h"
-#include <dxgi.h>
 #include <d3d10.h>
+#include <dxgi.h>
 
 //
 // 如何开启DX10的抗锯齿？
@@ -21,20 +21,20 @@
 //
 
 namespace ui {
-class GpuRenderLayer;
-class GpuComposition : public IHardwareComposition {
+class GpuLayer;
+class D3D10Compositor : public IGpuCompositor {
 public:
-  GpuComposition(HWND hWnd);
-  ~GpuComposition();
+  D3D10Compositor(HWND hWnd);
+  ~D3D10Compositor();
 
   virtual void Release() override { delete this; }
-  IGpuRenderLayer *CreateLayerTexture();
+  IGpuLayer *CreateLayerTexture();
   bool BeginCommit();
   void EndCommit();
-  void SetRootLayerTexture(IGpuRenderLayer *p);
-  GpuRenderLayer *GetRootLayerTexture();
+  void SetRootLayerTexture(IGpuLayer *p);
+  GpuLayer *GetRootLayerTexture();
 
-  void Resize(UINT nWidth, UINT nHeight);
+  void Resize(int nWidth, int nHeight);
   SIZE GetSize() { return m_sizeBackBuffer; }
 
   void ClearStencil();
@@ -46,7 +46,7 @@ protected:
 
 public:
 private:
-  GpuRenderLayer *m_pRootTexture;
+  GpuLayer *m_pRootTexture;
   HWND m_hWnd;
 
   IDXGISwapChain *m_pSwapChain;

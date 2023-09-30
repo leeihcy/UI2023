@@ -6,10 +6,10 @@
 
 //
 // 2014.4.10
-// Graphics::SetClipĞ§ÂÊ·Ç³£µÍ£¬ÔÚÂäÒ¶DemoÖĞ£¬SetClipÖ±½Ó½«CPU¸ÉÂú£¬È¥µôSetClipÔò»Ö¸´Îª0
-// ÎªÁË½â¾ö¸ÃÎÊÌâ£¬¾ö¶¨Ö»ÔÚÃ¿´ÎĞèÒªGraphics¶ÔÏóÊ±²Å´Óhdc´´½¨Ò»¸ö£¬
-// ÆäËüÊ±ºò²»±£Áô¸Ã¶ÔÏó£¬±ÜÃâÃ¿´ÎÉèÖÃ¼ô²ÃºÍÆ«ÒÆÊ±£¬»¹µÃÍ¬²½¸øGraphics¡£
-// ÁíÍâÓÉÓÚÊ¹ÓÃGdiplusÊ±£¬´ó²¿·ÖµÄ»æÍ¼¹¤×÷»¹ÊÇ½»¸øÁËgdiµÄalphablend
+// Graphics::SetClipæ•ˆç‡éå¸¸ä½ï¼Œåœ¨è½å¶Demoä¸­ï¼ŒSetClipç›´æ¥å°†CPUå¹²æ»¡ï¼Œå»æ‰SetClipåˆ™æ¢å¤ä¸º0
+// ä¸ºäº†è§£å†³è¯¥é—®é¢˜ï¼Œå†³å®šåªåœ¨æ¯æ¬¡éœ€è¦Graphicså¯¹è±¡æ—¶æ‰ä»hdcåˆ›å»ºä¸€ä¸ªï¼Œ
+// å…¶å®ƒæ—¶å€™ä¸ä¿ç•™è¯¥å¯¹è±¡ï¼Œé¿å…æ¯æ¬¡è®¾ç½®å‰ªè£å’Œåç§»æ—¶ï¼Œè¿˜å¾—åŒæ­¥ç»™Graphicsã€‚
+// å¦å¤–ç”±äºä½¿ç”¨Gdiplusæ—¶ï¼Œå¤§éƒ¨åˆ†çš„ç»˜å›¾å·¥ä½œè¿˜æ˜¯äº¤ç»™äº†gdiçš„alphablend
 //
 namespace ui
 {
@@ -31,7 +31,7 @@ public:
     virtual bool  CreateRenderBuffer(IRenderTarget*  pSrcRT);
     virtual bool  ResizeRenderBuffer(unsigned int nWidth, unsigned int nHeight);
 	virtual void  GetRenderBufferData(ImageData*  pData);
-    virtual void  BindHWND(HWND hWnd) { /*UIASSERT(0);*/ /*²»Ö§³Ö*/ }
+    virtual void  BindHWND(HWND hWnd) { /*UIASSERT(0);*/ /*ä¸æ”¯æŒ*/ }
 
     virtual void  SetMetaClipRegion(LPRECT prc, uint nrcCount) override;
     virtual void  PushRelativeClipRect(LPCRECT) override;
@@ -74,7 +74,7 @@ public:
     virtual IRenderPen*     CreateDotPen(int nWidth, Color* pColor); 
     virtual IRenderBrush*   CreateSolidBrush(Color* pColor);
 
-    virtual void  Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCount);
+    virtual void  Upload2Gpu(IGpuLayer* p, LPRECT prcArray, int nCount);
 
 public:
 	static void  DrawBitmap(Gdiplus::Graphics* pGraphics, IRenderBitmap* hBitmap, int x, int y );
@@ -95,17 +95,17 @@ private:
 protected:
 //	Gdiplus::Graphics*  m_pGraphics;
 //	Gdiplus::Bitmap*    m_pGdiMemBitmap;
-//	HRGN     m_hRgnMeta;   // ÓÃÓÚÄ£ÄâÊµÏÖGDIµÄSetMetaRgnº¯Êı
+//	HRGN     m_hRgnMeta;   // ç”¨äºæ¨¡æ‹Ÿå®ç°GDIçš„SetMetaRgnå‡½æ•°
 
     HDC      m_hBindDC;
     RenderBuffer*  m_pRenderBuffer;
-    long     m_lDrawingRef; // ±êÊ¶Íâ²¿µ÷ÓÃÁË¼¸´ÎBeginDraw£¬½â¾öÇ¶Ì×µ÷ÓÃ³öÏÖµÄÒ»Ğ©ÎÊÌâ
+    long     m_lDrawingRef; // æ ‡è¯†å¤–éƒ¨è°ƒç”¨äº†å‡ æ¬¡BeginDrawï¼Œè§£å†³åµŒå¥—è°ƒç”¨å‡ºç°çš„ä¸€äº›é—®é¢˜
 
 
-    // ¼ô²ÃÊı¾İ
+    // å‰ªè£æ•°æ®
     RectArray  m_arrayMetaClipRegion;
     stack<RECT>  m_stackClipRect;
 
-    POINT  m_ptOffset;   // ÓÃÓÚµ÷ÊÔÊ±²é¿´µ±Ç°HDCÆ«ÒÆÁ¿
+    POINT  m_ptOffset;   // ç”¨äºè°ƒè¯•æ—¶æŸ¥çœ‹å½“å‰HDCåç§»é‡
 };
 }

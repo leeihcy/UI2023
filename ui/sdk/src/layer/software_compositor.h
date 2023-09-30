@@ -11,11 +11,9 @@ namespace ui {
 //
 class SoftwareCompositor : public Compositor {
 public:
-  virtual Layer *virtualCreateLayer() override;
-#if defined(OS_WIN)
-  virtual void virtualBindHWND(WINDOW_HANDLE) override {};
-#endif
-  virtual void virtualCommit(const RectRegion &arrDirtyInWindow) override;
+  virtual Layer *createLayerObject() override;
+  virtual void onBindHWND(WINDOW_HANDLE) override {};
+  virtual void doCommit(const RectRegion &arrDirtyInWindow) override;
   virtual void UpdateDirty(RectRegion* outArrDirtyInWindow) override;
   virtual void Resize(uint nWidth, uint nSize) override;
 

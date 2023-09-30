@@ -70,6 +70,13 @@ bool WindowPlatformMac::Create(const Rect &rect) {
 
 void WindowPlatformMac::Destroy() {}
 
+WINDOW_HANDLE WindowPlatformMac::GetWindowHandle() {
+  return m_window;
+}
+WINDOW_HANDLE WindowPlatformMac::GetRootViewHandle() {
+  return m_window.contentView;
+}
+
 void WindowPlatformMac::SetTitle(const char *title) {
   NSString *text = [NSString stringWithUTF8String:title];
   if (text) {

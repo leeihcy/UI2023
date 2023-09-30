@@ -422,7 +422,7 @@ void SkiaRenderTarget::Save(const char *path) {
   (void)out.write(png->data(), png->size());
 }
 
-void SkiaRenderTarget::Upload2Gpu(IGpuRenderLayer *p, Rect *prcArray,
+void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray,
                                   int nCount) {
 
   SkPixmap pm;

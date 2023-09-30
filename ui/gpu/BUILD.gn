@@ -31,25 +31,43 @@ shared_library("uigpu") {
       ]
     }
   
-   
     sources = [
-      "src/stdafx.cpp",
-      "src/gpu_compositor.cpp",
-      "src/d3d10/d3dapp.cpp",
-      "src/d3d10/common/Effects.cpp",
-      "src/d3d10/common/Font.cpp",
-      "src/d3d10/common/Inputs.cpp",
-      "src/d3d10/common/RenderStates.cpp",
-      "src/UICompositor.rc",
-      "src/texture_tile.cpp",
-      "src/texture_tile_array.cpp",
-      "src/gpu_layer.cpp",
-      "src/ihardwarecompositor.cpp",
-      "src/hard3dtransform.cpp",
-
+      "src/igpucompositor.cpp",
       "tutorial/tutorial_01.cpp",
       "tutorial/tutorial_02.cpp"
     ]
+    if (is_win) {
+      sources += [
+        "src/d3d10/stdafx.cpp",
+        "src/d3d10/d3d10_compositor.cpp",
+        "src/d3d10/d3d10_gpu_layer.cpp",
+        "src/d3d10/d3d10_app.cpp",
+        "src/d3d10/d3d10_texture_tile.cpp",
+        "src/d3d10/common/Effects.cpp",
+        "src/d3d10/common/Font.cpp",
+        "src/d3d10/common/Inputs.cpp",
+        "src/d3d10/common/RenderStates.cpp",
+        "src/d3d10/UICompositor.rc",
+        "src/d3d10/hard3dtransform.cpp",
+      ]
+    } else {
+      sources += [
+
+        "src/gpu_layer.cpp",
+        "src/texture_tile.cpp",
+        "src/texture_tile_array.cpp",
+
+        "src/vulkan/vkapp.cpp",
+        "src/vulkan/vkcompositor.cpp",
+        "src/vulkan/vklayer.cpp",
+        "src/vulkan/vktexturetile.cpp",
+      ]
+    }
+    if (is_mac) {
+      sources += [
+        "src/vulkan/vkcompositor_mac.mm"
+      ]
+    }
 
     # 单元测试
     if (is_debug) {
@@ -69,6 +87,7 @@ shared_library("uigpu") {
         ldflags = [
             "-framework", "Cocoa",
             "-framework", "IOKit",
+            "-framework", "QuartzCore",  # Core Animation
         ]
     }
     else if (is_win) {

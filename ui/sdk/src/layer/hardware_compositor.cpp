@@ -2,24 +2,23 @@
 #include "hardware_layer.h"
 #include "include/inc.h"
 
+#include "gpu/include/api.h"
 #if defined(OS_WIN)
 #include "src/util/windows.h"
-#include "gpu/include/api.h"
 #endif
 
 namespace ui {
-HardwareCompositor::HardwareCompositor() { m_pHardwareComposition = nullptr; }
+HardwareCompositor::HardwareCompositor() {}
 
 HardwareCompositor::~HardwareCompositor() {
-  if (m_pHardwareComposition) {
-    m_pHardwareComposition->Release();
-    m_pHardwareComposition = nullptr;
+  if (m_gpu_composition) {
+    m_gpu_composition->Release();
+    m_gpu_composition = nullptr;
   }
 }
+void HardwareCompositor::onBindHWND(WINDOW_HANDLE hWnd) {
+  UIASSERT(!m_gpu_composition);
 #if defined(OS_WIN)
-void HardwareCompositor::virtualBindHWND(WINDOW_HANDLE hWnd) {
-  UIASSERT(!m_pHardwareComposition);
-
   HMODULE hModule = GetModuleHandle(L"uigpu.dll");
   if (!hModule) {
     hModule = ::LoadLibraryA("uigpu.dll");
@@ -28,7 +27,7 @@ void HardwareCompositor::virtualBindHWND(WINDOW_HANDLE hWnd) {
     }
   }
 
-  typedef IHardwareComposition *(*pfnUICreateHardwareComposition)(HWND hWnd);
+  typedef IGpuCompositor *(*pfnUICreateHardwareComposition)(HWND hWnd);
   pfnUICreateHardwareComposition fn =
       (pfnUICreateHardwareComposition)::GetProcAddress(
           hModule, "UICreateHardwareComposition");
@@ -38,16 +37,18 @@ void HardwareCompositor::virtualBindHWND(WINDOW_HANDLE hWnd) {
     return;
   }
 
-  m_pHardwareComposition = fn((HWND)m_hWnd);
-}
+  m_gpu_composition = fn((HWND)m_hWnd);
+#else
+  m_gpu_composition = ui::CreateGpuComposition(m_hWnd);
 #endif
+}
 
 void HardwareCompositor::Resize(uint nWidth, uint nSize) {
-  if (m_pHardwareComposition)
-    m_pHardwareComposition->Resize(nWidth, nSize);
+  if (m_gpu_composition)
+    m_gpu_composition->Resize(nWidth, nSize);
 }
 
-Layer *HardwareCompositor::virtualCreateLayer() { return new HardwareLayer(); }
+Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }
 
 // 硬件合成只能是每个层分别去调用updatedirty，而不是像软件渲染一样由parent
 // object遍历child时去调用
@@ -67,7 +68,6 @@ void HardwareCompositor::UpdateDirty(RectRegion *outArrDirtyInWindow) {
 
 void HardwareCompositor::update_dirty_recursion(Layer *p) {
   UIASSERT(p);
-
   static_cast<HardwareLayer *>(p)->UpdateDirty();
 
   p = p->GetFirstChild();
@@ -77,15 +77,15 @@ void HardwareCompositor::update_dirty_recursion(Layer *p) {
   }
 }
 
-void HardwareCompositor::virtualCommit(const RectRegion &arrDirtyInWindow) {
+void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   // FillRect(hDC, prcInWindow, (HBRUSH)GetStockObject(GRAY_BRUSH));
 
-  if (!m_pHardwareComposition)
+  if (!m_gpu_composition)
     return;
   if (!m_pRootLayer)
     return;
 
-  if (!m_pHardwareComposition->BeginCommit())
+  if (!m_gpu_composition->BeginCommit())
     return;
 
   GpuLayerCommitContext context;
@@ -95,7 +95,7 @@ void HardwareCompositor::virtualCommit(const RectRegion &arrDirtyInWindow) {
     p = p->GetNext();
   }
 
-  m_pHardwareComposition->EndCommit();
+  m_gpu_composition->EndCommit();
 }
 
 void HardwareCompositor::commit_recursion(Layer *p,
@@ -113,14 +113,14 @@ void HardwareCompositor::commit_recursion(Layer *p,
   }
 }
 
-IGpuRenderLayer *HardwareCompositor::CreateGpuLayerTexture() {
-  UIASSERT(m_pHardwareComposition);
-  if (!m_pHardwareComposition)
+IGpuLayer *HardwareCompositor::CreateGpuLayerTexture() {
+  UIASSERT(m_gpu_composition);
+  if (!m_gpu_composition)
     return nullptr;
 
-  IGpuRenderLayer *pGpuTexture = nullptr;
-  if (m_pHardwareComposition) {
-    pGpuTexture = m_pHardwareComposition->CreateLayerTexture();
+  IGpuLayer *pGpuTexture = nullptr;
+  if (m_gpu_composition) {
+    pGpuTexture = m_gpu_composition->CreateLayerTexture();
   }
 
   return pGpuTexture;

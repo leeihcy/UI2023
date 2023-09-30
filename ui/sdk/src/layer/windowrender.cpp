@@ -186,9 +186,7 @@ Compositor *WindowRender::get_create_compositor() {
     m_compositor->SetUIApplication(m_window.GetUIApplication());
     m_compositor->SetWindowRender(this);
 
-#if defined(OS_WIN)
     m_compositor->BindHWND(m_window.GetWindowHandle());
-#endif
   }
 
   return m_compositor.get();
@@ -200,12 +198,7 @@ void WindowRender::UpdateAndCommit() {
 
   m_compositor->UpdateAndCommit();
 }
-#if 0 // defined(OS_WIN)
-void WindowRender::BindHWND(HWND hWnd) {
-  if (m_compositor)
-    m_compositor->BindHWND(hWnd);
-}
-#endif
+
 
 // void  WindowRender::UpdateWindow(HDC hDC, Rect* prcDamageArray, uint nCount)
 // {
@@ -225,7 +218,7 @@ void WindowRender::BindHWND(HWND hWnd) {
 // 	Commit(hDC, prcDamageArray, nCount);
 // }
 
-// IGpuRenderLayer*  WindowRender::CreateGpuLayerTexture(RenderLayer* p)
+// IGpuLayer*  WindowRender::CreateGpuLayerTexture(RenderLayer* p)
 // {
 // 	if (nullptr == m_pHardwareComposition)
 // 	{
@@ -236,7 +229,7 @@ void WindowRender::BindHWND(HWND hWnd) {
 // 		}
 // 	}
 //
-// 	IGpuRenderLayer* pGpuTexture = nullptr;
+// 	IGpuLayer* pGpuTexture = nullptr;
 // 	if (m_pHardwareComposition)
 // 	{
 // 		pGpuTexture = m_pHardwareComposition->CreateLayerTexture();
@@ -346,7 +339,7 @@ void WindowRender::BindHWND(HWND hWnd) {
 //         pLayer = pChild->GetSelfRenderLayer2();
 //         if (pLayer)
 //         {
-// //             IGpuRenderLayer*  pGpuLayerTexture = pLayer->GetGpuTexture();
+// //             IGpuLayer*  pGpuLayerTexture = pLayer->GetGpuTexture();
 // //             UIASSERT(pGpuLayerTexture);
 //
 // //             pGpuLayerTexture->ClearChildren();

@@ -1,39 +1,24 @@
-#pragma once
+#ifndef _UI_GPU_SRC_TEXTURE_TILE_H_
+#define _UI_GPU_SRC_TEXTURE_TILE_H_
+#include "sdk/include/common/math/rect.h"
 #include "gpu/include/api.h"
-#include <d3d10.h>
-struct SOURCE_BITMAP_DATA;
 
-namespace ui
-{
-class GpuLayerCommitContext;
-class Hard3DTransform;
-}
+namespace ui {
 
-class TextureTile
-{
+class TextureTile {
 public:
-    TextureTile();
-    ~TextureTile();
+  virtual ~TextureTile() {}
+  
+  void SetIndex(int xIndex, int yIndex);
 
-    void  Upload(RECT& rcSrc, ui::UploadGpuBitmapInfo& source);
-    void  Compositor(
-            long xOffset,
-            long yOffset,
-            long vertexStartIndex,
-            ui::GpuLayerCommitContext* pContext);
+  virtual void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) = 0;
 
-    void  SetIndex(int xIndex, int yIndex);
-
-private:
-    bool  create();
-
-private:
-    long  m_width;
-	long  m_height;
-	long  m_xIndex;
-	long  m_yIndex;
-
-    ID3D10Texture2D*  m_pTextureBuffer;
-    ID3D10ShaderResourceView*  m_pShaderResourceView;
+protected:
+  long m_width = 0;
+  long m_height = 0;
+  long m_xIndex = 0;
+  long m_yIndex = 0;
 };
 
+}
+#endif

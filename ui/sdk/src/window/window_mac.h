@@ -19,6 +19,8 @@ public:
 
   bool Create(const Rect &rect) override;
   void Destroy();
+  WINDOW_HANDLE GetWindowHandle() override;
+  WINDOW_HANDLE GetRootViewHandle();
 
   void SetTitle(const char* title) override;
   void GetClientRect(Rect *prect) override;

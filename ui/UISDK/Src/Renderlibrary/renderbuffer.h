@@ -18,7 +18,7 @@ public:
 	void  Destroy();
     void  Dump(const wchar_t*);
 	void  GetImageData(ImageData*  pData);
-    void  Upload2Gpu(IGpuRenderLayer* p, LPRECT prcArray, int nCount);
+    void  Upload2Gpu(IGpuLayer* p, LPRECT prcArray, int nCount);
 
     static bool IsTopDownBitmap();
 
