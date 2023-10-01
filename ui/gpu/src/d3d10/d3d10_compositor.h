@@ -24,17 +24,18 @@ namespace ui {
 class GpuLayer;
 class D3D10Compositor : public IGpuCompositor {
 public:
-  D3D10Compositor(HWND hWnd);
+  D3D10Compositor();
   ~D3D10Compositor();
 
-  virtual void Release() override { delete this; }
-  IGpuLayer *CreateLayerTexture();
-  bool BeginCommit();
-  void EndCommit();
-  void SetRootLayerTexture(IGpuLayer *p);
+  bool Initialize(void* hwnd) override;
+  void Release() override { delete this; }
+  IGpuLayer *CreateLayerTexture() override;
+  bool BeginCommit() override;
+  void EndCommit() override;
+  void SetRootLayerTexture(IGpuLayer *p) override;
   GpuLayer *GetRootLayerTexture();
 
-  void Resize(int nWidth, int nHeight);
+  void Resize(int nWidth, int nHeight) override;
   SIZE GetSize() { return m_sizeBackBuffer; }
 
   void ClearStencil();

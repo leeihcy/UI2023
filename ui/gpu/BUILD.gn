@@ -107,6 +107,13 @@ if (is_mac) {
     outputs = ["$root_build_dir/{{source_file_part}}"]
   }
 }
+copy("shader") {
+  sources = [
+      "src/vulkan/shaders/frag.spv",
+      "src/vulkan/shaders/vert.spv",
+  ]
+  outputs = ["$root_build_dir/shaders/{{source_file_part}}"]
+}
 
 #######################################
 

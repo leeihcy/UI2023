@@ -1,8 +1,12 @@
 #ifndef _UI_GPU_SRC_VULKAN_VKAPP_H_
 #define _UI_GPU_SRC_VULKAN_VKAPP_H_
 #include <_types/_uint32_t.h>
-#include <vector>
 #include <optional>
+#include <vector>
+
+#if defined(OS_MAC)
+#define VK_USE_PLATFORM_MACOS_MVK
+#endif
 #include <vulkan/vulkan.h>
 
 namespace ui {
@@ -18,19 +22,24 @@ public:
 
 public:
   static VulkanApplication &Get();
+  VkInstance &GetVkInstance();
 
+  bool IsValidationLayersEnabled();
+  
 private:
   bool create_vulkan_instance();
-  bool pick_physical_device();
-  bool create_logical_device();
-  std::optional<uint32_t> find_queue_families(VkPhysicalDevice);
+  
+  void get_required_extensions(std::vector<const char *> &requiredExtensions);
+  void get_required_layers(std::vector<const char *> &requiredLayers);
 
-public:
+  bool is_extension_support(const std::vector<const char *>& extensions);
+  bool is_layer_support(const std::vector<const char *>& layers);
+
+private:
+  bool m_enable_validation_layers = false;
+  
   VkInstance m_vk_instance;
-  VkPhysicalDevice m_physical_device;
-  VkDevice m_logical_device;
-  uint32_t m_queue_families = 0;
-  VkQueue m_graphics_queue;
+  VkDebugUtilsMessengerEXT m_debug_messenger;
 
 };
 } // namespace ui

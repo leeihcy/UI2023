@@ -12,17 +12,14 @@ using namespace ui;
 
 //////////////////////////////////////////////////////////////////////////
 
-D3D10Compositor::D3D10Compositor(HWND hWnd) {
+D3D10Compositor::D3D10Compositor() {
   m_pRootTexture = nullptr;
-  m_hWnd = hWnd;
 
   m_pSwapChain = nullptr;
   m_pRenderTargetView = nullptr;
   m_pDepthStencilBuffer = nullptr;
   m_pDepthStencilView = nullptr;
   m_sizeBackBuffer.cx = m_sizeBackBuffer.cy = 8;
-
-  CreateSwapChain();
 }
 
 D3D10Compositor::~D3D10Compositor() {
@@ -47,6 +44,12 @@ D3D10Compositor::~D3D10Compositor() {
     m_pSwapChain->Release();
     m_pSwapChain = nullptr;
   }
+}
+
+bool D3D10Compositor::Initialize(void* hwnd) {
+  m_hWnd = hWnd;
+  CreateSwapChain();
+  return true;
 }
 
 IGpuLayer *D3D10Compositor::CreateLayerTexture() {

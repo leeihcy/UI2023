@@ -12,6 +12,8 @@ enum {
 
 struct IGpuLayer;
 struct IGpuCompositor {
+  virtual ~IGpuCompositor() {}
+  virtual bool Initialize(void *hWnd) = 0;
   virtual void Release() = 0;
   virtual IGpuLayer *CreateLayerTexture() = 0;
   virtual void SetRootLayerTexture(IGpuLayer *p) = 0;

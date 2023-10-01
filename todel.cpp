@@ -1,4 +1,58 @@
 
+typedef int VkStringErrorFlags;
+#define VK_STRING_ERROR_NONE 0
+#define VK_STRING_ERROR_LENGTH 1
+#define VK_STRING_ERROR_BAD_DATA 2
+// #define UTF8_ONE_BYTE_MASK 0x10000000
+// #define UTF8_TWO_BYTE_MASK 0x20000000
+// #define UTF8_THREE_BYTE_MASK 0x40000000
+// #define UTF8_ONE_BYTE_CODE UTF8_ONE_BYTE_MASK
+// #define UTF8_TWO_BYTE_CODE UTF8_TWO_BYTE_MASK
+// #define UTF8_THREE_BYTE_CODE UTF8_THREE_BYTE_MASK
+static const uint8_t UTF8_ONE_BYTE_CODE = 0xC0;
+static const uint8_t UTF8_ONE_BYTE_MASK = 0xE0;
+static const uint8_t UTF8_TWO_BYTE_CODE = 0xE0;
+static const uint8_t UTF8_TWO_BYTE_MASK = 0xF0;
+static const uint8_t UTF8_THREE_BYTE_CODE = 0xF0;
+static const uint8_t UTF8_THREE_BYTE_MASK = 0xF8;
+static const uint8_t UTF8_DATA_BYTE_CODE = 0x80;
+static const uint8_t UTF8_DATA_BYTE_MASK = 0xC0;
+
+VkStringErrorFlags vk_string_validate(const int max_length, const char *utf8) {
+    VkStringErrorFlags result = VK_STRING_ERROR_NONE;
+    int num_char_bytes = 0;
+    int i, j;
+    for (i = 0; i <= max_length; i++) {
+        if (utf8[i] == 0) {
+            break;
+        } else if (i == max_length) {
+            result |= VK_STRING_ERROR_LENGTH;
+            break;
+        } else if ((utf8[i] >= 0x20) && (utf8[i] < 0x7f)) {
+            num_char_bytes = 0;
+        } else if ((utf8[i] & UTF8_ONE_BYTE_MASK) == UTF8_ONE_BYTE_CODE) {
+            num_char_bytes = 1;
+        } else if ((utf8[i] & UTF8_TWO_BYTE_MASK) == UTF8_TWO_BYTE_CODE) {
+            num_char_bytes = 2;
+        } else if ((utf8[i] & UTF8_THREE_BYTE_MASK) == UTF8_THREE_BYTE_CODE) {
+            num_char_bytes = 3;
+        } else {
+            result = VK_STRING_ERROR_BAD_DATA;
+        }
+        // Validate the following num_char_bytes of data
+        for (j = 0; (j < num_char_bytes) && (i < max_length); j++) {
+            if (++i == max_length) {
+                result |= VK_STRING_ERROR_LENGTH;
+                break;
+            }
+            if ((utf8[i] & UTF8_DATA_BYTE_MASK) != UTF8_DATA_BYTE_CODE) {
+                result |= VK_STRING_ERROR_BAD_DATA;
+            }
+        }
+    }
+    return result;
+}
+
 
 // template <class T> class LayoutParamImpl : public T {
 // public:
