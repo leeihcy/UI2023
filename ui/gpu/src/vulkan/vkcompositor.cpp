@@ -1,8 +1,7 @@
 #include "vkcompositor.h"
 #include "vkapp.h"
 #include "vklayer.h"
-#include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
+#include "vkvertext.h"
 #include <cstdio>
 #include <fstream>
 #include <set>
@@ -22,9 +21,14 @@ static VulkanApplication &application() { return VulkanApplication::Get(); }
 VulkanCompositor::VulkanCompositor() { m_pRootTexture = nullptr; }
 
 VulkanCompositor::~VulkanCompositor() {
+  vkDeviceWaitIdle(m_logical_device);
+
   auto &app = application();
 
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    if (m_renderFinishedSemaphores.size() <= i) {
+      break;
+    }
     vkDestroySemaphore(m_logical_device, m_renderFinishedSemaphores[i], nullptr);
     vkDestroySemaphore(m_logical_device, m_imageAvailableSemaphores[i], nullptr);
     vkDestroyFence(m_logical_device, m_inFlightFences[i], nullptr);
@@ -58,7 +62,7 @@ void VulkanCompositor::Resize(int width, int height) {
 }
 
 IGpuLayer *VulkanCompositor::CreateLayerTexture() {
-  GpuLayer *p = new VulkanGpuLayer;
+  GpuLayer *p = new VulkanGpuLayer(*this);
   p->SetGpuCompositor(this);
   return p;
 }
@@ -116,10 +120,10 @@ bool VulkanCompositor::Initialize(void *hWnd) {
     printf("create_commandpool failed\n");
     return false;;
   }
-  if (!create_commandbuffer()) {
-    printf("create_commandbuffer failed\n");
-    return false;;
-  }
+  // if (!create_commandbuffer()) {
+  //   printf("create_commandbuffer failed\n");
+  //   return false;;
+  // }
   if (!create_sync_objects()) {
     printf("create_sync_objects failed\n");
     return false;
@@ -614,12 +618,23 @@ bool VulkanCompositor::create_graphics_pipeline() {
   VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
                                                     fragShaderStageInfo};
 
+  // ---
+  // 顶点格式设置
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
   vertexInputInfo.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-  vertexInputInfo.vertexBindingDescriptionCount = 0;
-  vertexInputInfo.vertexAttributeDescriptionCount = 0;
+  // vertexInputInfo.vertexBindingDescriptionCount = 0;
+  // vertexInputInfo.vertexAttributeDescriptionCount = 0;
+  auto bindingDescription = ShaderVertex::getBindingDescription();
+  auto attributeDescriptions = ShaderVertex::getAttributeDescriptions();
 
+  vertexInputInfo.vertexBindingDescriptionCount = 1;
+  vertexInputInfo.vertexAttributeDescriptionCount =
+      static_cast<uint32_t>(attributeDescriptions.size());
+  vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+  vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+  // ---
   VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
   inputAssembly.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -754,7 +769,8 @@ bool VulkanCompositor::create_commandpool() {
   return true;
 }
 
-bool VulkanCompositor::create_commandbuffer() {
+
+bool VulkanCompositor::create_commandbuffer(pfnCommandBufferRenderCallback callback, void* user_data) {
   m_command_buffers.resize(m_swapchain_framebuffers.size());
 
   VkCommandBufferAllocateInfo allocInfo{};
@@ -773,7 +789,7 @@ bool VulkanCompositor::create_commandbuffer() {
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
     if (vkBeginCommandBuffer(m_command_buffers[i], &beginInfo) != VK_SUCCESS) {
-      throw std::runtime_error("failed to begin recording command buffer!");
+      return false;
     }
 
     VkRenderPassBeginInfo renderPassInfo{};
@@ -790,10 +806,10 @@ bool VulkanCompositor::create_commandbuffer() {
     vkCmdBeginRenderPass(m_command_buffers[i], &renderPassInfo,
                          VK_SUBPASS_CONTENTS_INLINE);
 
-    vkCmdBindPipeline(m_command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
-                      m_graphics_pipeline);
+      vkCmdBindPipeline(m_command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        m_graphics_pipeline);
 
-    vkCmdDraw(m_command_buffers[i], 3, 1, 0, 0);
+      callback(m_command_buffers[i], user_data);
 
     vkCmdEndRenderPass(m_command_buffers[i]);
 
@@ -886,6 +902,53 @@ bool VulkanCompositor::draw_frame() {
   m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
   return true;
+}
+
+VkCommandBuffer VulkanCompositor::BeginSingleTimeCommands() {
+  VkCommandBufferAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  allocInfo.commandPool = m_command_pool;
+  allocInfo.commandBufferCount = 1;
+
+  VkCommandBuffer commandBuffer;
+  vkAllocateCommandBuffers(m_logical_device, &allocInfo,
+                           &commandBuffer);
+
+  VkCommandBufferBeginInfo beginInfo{};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+  vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+  return commandBuffer;
+}
+
+void VulkanCompositor::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
+  vkEndCommandBuffer(commandBuffer);
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &commandBuffer;
+
+  vkQueueSubmit(m_graphics_queue, 1, &submitInfo,
+                VK_NULL_HANDLE);
+  vkQueueWaitIdle(m_graphics_queue);
+
+  vkFreeCommandBuffers(m_logical_device,
+                       m_command_pool, 1, &commandBuffer);
+}
+
+
+void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+  VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
+
+  VkBufferCopy copyRegion{};
+  copyRegion.size = size;
+  vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+  EndSingleTimeCommands(commandBuffer);
 }
 
 } // namespace ui

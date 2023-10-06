@@ -125,7 +125,7 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (!m_pLayerContent)
     return;
 
-#if defined(OS_WIN)
+
   Rect rcWnd;
   m_pLayerContent->GetWindowRect(&rcWnd);
   if (rcWnd.IsEmpty())
@@ -137,7 +137,8 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (m_bClipLayerInParentObj && m_pCompositor->GetRootLayer() != this) {
     m_pLayerContent->GetParentWindowRect(&rcParentWnd);
   } else {
-    ::GetClientRect((HWND)m_pCompositor->GetHWND(), (RECT*)&rcParentWnd);
+    m_pCompositor->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
+    // ::GetClientRect((HWND)m_pCompositor->GetHWND(), (RECT*)&rcParentWnd);
   }
   pContext->SetClipRect(&rcParentWnd);
 
@@ -156,7 +157,6 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   } else {
     m_pGpuTexture->Compositor(pContext, nullptr);
   }
-#endif
 }
 
 void HardwareLayer::MapView2Layer(Point *pPoint) {

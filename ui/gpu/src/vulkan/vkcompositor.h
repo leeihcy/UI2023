@@ -4,7 +4,6 @@
 #include "gpu/include/api.h"
 #include "gpu/src/gpu_layer.h"
 #include "gpu/src/vulkan/vkapp.h"
-#include "vulkan/vulkan_core.h"
 
 #if defined(OS_MAC)
 #define VK_USE_PLATFORM_MACOS_MVK
@@ -13,6 +12,8 @@
 #include <vulkan/vulkan.h>
 
 namespace ui {
+
+typedef void(*pfnCommandBufferRenderCallback)(VkCommandBuffer command_buffer, void* userdata);
 
 // 一个compositor对应一个窗口
 class VulkanCompositor : public IGpuCompositor {
@@ -31,6 +32,18 @@ public:
   void SetRootLayerTexture(IGpuLayer *p) override;
   GpuLayer *GetRootLayerTexture();
 
+  VkPhysicalDevice GetVulkanPhysicalDevice() { return m_physical_device; }
+  VkDevice GetVulkanDevice() { return m_logical_device; }
+  VkQueue GetVulkanGraphicsQueue() { return m_graphics_queue; }
+  VkQueue GetVulkanPresentQueue() { return m_present_queue; }
+  VkCommandPool GetVulkanCommandPool() { return m_command_pool; }
+
+  bool create_commandbuffer(pfnCommandBufferRenderCallback callback, void* user_data);
+  void VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+  VkCommandBuffer BeginSingleTimeCommands();
+  void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+  
 private:
   bool create_vulkan_surface();
   bool pick_physical_device();
@@ -42,7 +55,6 @@ private:
   bool create_graphics_pipeline();
   bool create_framebuffers();
   bool create_commandpool();
-  bool create_commandbuffer();
   bool create_sync_objects();
 
   bool draw_frame();
@@ -55,7 +67,7 @@ private:
   };
   SurfaceInfo getSurfaceInfo();
   bool create_shader_module(char* code, int length, VkShaderModule* out);
-
+  
 private:
   void *m_hWnd;
 

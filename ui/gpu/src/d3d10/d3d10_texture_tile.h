@@ -7,8 +7,6 @@ struct SOURCE_BITMAP_DATA;
 namespace ui {
 class GpuLayerCommitContext;
 class Hard3DTransform;
-} // namespace ui
-
 
 class D3D10TextureTile : public TextureTile{
 public:
@@ -26,3 +24,5 @@ private:
   ID3D10Texture2D *m_pTextureBuffer;
   ID3D10ShaderResourceView *m_pShaderResourceView;
 };
+
+}

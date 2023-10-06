@@ -1,5 +1,19 @@
 #version 450
 
+// CPU上传顶点数据
+layout(location = 0) in vec2 inPosition;
+layout(location = 1) in vec3 inColor;
+
+layout(location = 0) out vec3 fragColor;
+
+void main() {
+  gl_Position = vec4(inPosition, 0.0, 1.0);
+  fragColor = inColor;
+}
+
+/* 硬编码实现的三角形绘制。
+#version 450
+
 layout(location = 0) out vec3 fragColor;
 
 vec2 positions[3] = vec2[](
@@ -17,4 +31,4 @@ vec3 colors[3] = vec3[](
 void main() {
     gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
     fragColor = colors[gl_VertexIndex];
-}
+} */

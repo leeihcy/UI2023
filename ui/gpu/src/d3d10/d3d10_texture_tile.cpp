@@ -7,6 +7,7 @@
 #include "hard3dtransform.h"
 #include "stdafx.h"
 
+namespace ui {
 
 D3D10TextureTile::D3D10TextureTile() {
   m_width = 0;
@@ -209,4 +210,6 @@ void D3D10TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
   if (pContext->m_fAlpha != 1.0f) {
     Effects::m_pFxAlpha->SetFloat(1.0f);
   }
+}
+
 }

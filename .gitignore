@@ -5,3 +5,4 @@
 out/
 ui/3rd/skia/lib
 ui/3rd/skia/bin
+*.spv
