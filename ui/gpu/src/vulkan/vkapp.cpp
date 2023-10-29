@@ -58,11 +58,13 @@ vulkanLogCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   } else if (messageSeverity ==
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
     level = "WARNING";
+    printf("[%s] [GPU][Validation]: %s\n", level, pCallbackData->pMessage);
   } else if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
     level = "ERROR";
     raise_exception = true;
+    printf("[%s] [GPU][Validation]: %s\n", level, pCallbackData->pMessage);
+    assert(false);
   }
-  printf("[%s] [GPU][Validation]: %s\n", level, pCallbackData->pMessage);
 
   // 是否中断函数调用
   return raise_exception ? VK_TRUE : VK_FALSE;
@@ -222,11 +224,9 @@ bool VulkanApplication::create_vulkan_instance() {
         (VkDebugUtilsMessengerCreateInfoEXT *)&debug_create_info;
   }
 
-  VkResult result = vkCreateInstance(&create_info, nullptr, &m_vk_instance);
-
 #if defined(OS_MAC)
   // 修正MACOS上的SDK BUG。
-  if (result == VK_ERROR_INCOMPATIBLE_DRIVER) {
+  // if (result == VK_ERROR_INCOMPATIBLE_DRIVER) {
     create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
     required_extensions.push_back(
@@ -236,10 +236,10 @@ bool VulkanApplication::create_vulkan_instance() {
     create_info.enabledExtensionCount = required_extensions.size();
     create_info.ppEnabledExtensionNames = required_extensions.data();
 
-    result = vkCreateInstance(&create_info, nullptr, &m_vk_instance);
-  }
+    // result = vkCreateInstance(&create_info, nullptr, &m_vk_instance);
+  // }
 #endif
-
+  VkResult result = vkCreateInstance(&create_info, nullptr, &m_vk_instance);
   if (result != VK_SUCCESS) {
     printf("vkCreateInstance failed, result = %d\n", result);
     return false;

@@ -1,6 +1,5 @@
 #include "vklayer.h"
 #include "vktexturetile.h"
-#include "vkvertext.h"
 #include "vkcompositor.h"
 #include <cmath>
 #include <vector>
@@ -15,7 +14,7 @@ namespace ui {
 //   | -1.0,  1.0            1.0,  1.0 |
 //    ---------------------------------
 //
-const std::vector<ShaderVertex> vertices = {
+const std::vector<vulkan::Pipeline::ShaderVertex> vertices = {
     {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},  // 0
     {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},  // 1
     {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},   // 2
@@ -27,7 +26,7 @@ VulkanGpuLayer::VulkanGpuLayer(VulkanCompositor &compositor)
     : m_compositor(compositor) {}
 
 VulkanGpuLayer::~VulkanGpuLayer() {
-  auto device = m_compositor.GetVulkanDevice();
+  auto device = m_compositor.GetVkDevice();
   vkDeviceWaitIdle(device);
 
   vkDestroyBuffer(device, m_indexBuffer, nullptr);
@@ -45,7 +44,7 @@ bool VulkanGpuLayer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                   VkMemoryPropertyFlags properties, VkBuffer &buffer,
                   VkDeviceMemory &bufferMemory) {
 
-  auto device = m_compositor.GetVulkanDevice();
+  auto device = m_compositor.GetVkDevice();
 
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -77,7 +76,7 @@ bool VulkanGpuLayer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 }
 
 void VulkanGpuLayer::createIndexBuffer() {
-  auto device = m_compositor.GetVulkanDevice();
+  auto device = m_compositor.GetVkDevice();
 
   VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
@@ -107,7 +106,7 @@ void VulkanGpuLayer::createIndexBuffer() {
 
 bool VulkanGpuLayer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* out) {
   VkPhysicalDeviceMemoryProperties memProperties;
-  vkGetPhysicalDeviceMemoryProperties(m_compositor.GetVulkanPhysicalDevice(), &memProperties);
+  vkGetPhysicalDeviceMemoryProperties(m_compositor.DeviceQueue().PhysicalDevice(), &memProperties);
 
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
     if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
@@ -120,7 +119,7 @@ bool VulkanGpuLayer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
 }
 
 void VulkanGpuLayer::createVertexBuffer() {
-  auto device = m_compositor.GetVulkanDevice();
+  auto device = m_compositor.GetVkDevice();
 
   VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 

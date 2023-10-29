@@ -1,5 +1,6 @@
 #include "vktexturetile.h"
 #include "include/api.h"
+#include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vkcompositor.h"
 #include "vulkan/vulkan_core.h"
 
@@ -9,7 +10,7 @@ VkTextureTile::VkTextureTile(VulkanCompositor &compositor)
     : m_compositor(compositor) {}
 
 VkTextureTile::~VkTextureTile() {
-  auto device = m_compositor.GetVulkanDevice();
+  auto device = m_compositor.GetVkDevice();
 
   vkDestroySampler(device, m_texture_sampler, nullptr);
   vkDestroyImageView(device, m_texture_imageview, nullptr);
@@ -31,7 +32,7 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
                            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                        stagingBuffer, stagingBufferMemory);
 
-  VkDevice device = m_compositor.GetVulkanDevice();
+  VkDevice device = m_compositor.GetVkDevice();
 
   void *data;
   vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
@@ -117,7 +118,7 @@ bool VkTextureTile::findMemoryType(uint32_t typeFilter,
                                    VkMemoryPropertyFlags properties,
                                    uint32_t *out) {
   VkPhysicalDeviceMemoryProperties memProperties;
-  vkGetPhysicalDeviceMemoryProperties(m_compositor.GetVulkanPhysicalDevice(),
+  vkGetPhysicalDeviceMemoryProperties(m_compositor.DeviceQueue().PhysicalDevice(),
                                       &memProperties);
 
   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
@@ -133,7 +134,8 @@ bool VkTextureTile::findMemoryType(uint32_t typeFilter,
 
 void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image,
                                       uint32_t width, uint32_t height) {
-  VkCommandBuffer commandBuffer = m_compositor.BeginSingleTimeCommands();
+  std::unique_ptr<vulkan::CommandBuffer> cb = m_compositor.CommandPool().CreateBuffer();
+  cb->Begin(); 
 
   VkBufferImageCopy region{};
   region.bufferOffset = 0;
@@ -146,28 +148,35 @@ void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image,
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
 
-  vkCmdCopyBufferToImage(commandBuffer, buffer, image,
+  vkCmdCopyBufferToImage(cb->handle(), buffer, image,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-  m_compositor.EndSingleTimeCommands(commandBuffer);
+  cb->End();
+  m_compositor.DeviceQueue().Submit(cb.get());
+  m_compositor.DeviceQueue().WaitIdle();
+  cb->Destroy();
 }
 
 void VkTextureTile::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                                VkDeviceSize size) {
-  VkCommandBuffer commandBuffer = m_compositor.BeginSingleTimeCommands();
+  std::unique_ptr<vulkan::CommandBuffer> cb = m_compositor.CommandPool().CreateBuffer();
+  cb->Begin(); 
 
   VkBufferCopy copyRegion{};
   copyRegion.size = size;
-  vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+  vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
 
-  m_compositor.EndSingleTimeCommands(commandBuffer);
+  cb->End();
+  m_compositor.DeviceQueue().Submit(cb.get());
+  m_compositor.DeviceQueue().WaitIdle();
+  cb->Destroy();
 }
 
 bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
                                           VkImageLayout oldLayout,
                                           VkImageLayout newLayout) {
-  VkCommandBuffer commandBuffer = m_compositor.BeginSingleTimeCommands();
-
+  std::unique_ptr<vulkan::CommandBuffer> cb = m_compositor.CommandPool().CreateBuffer();
+  cb->Begin(); 
   VkImageMemoryBarrier barrier{};
   barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   barrier.oldLayout = oldLayout;
@@ -202,10 +211,15 @@ bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
     return false;
   }
 
-  vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0,
+  vkCmdPipelineBarrier(cb->handle(), sourceStage, destinationStage, 0, 0,
                        nullptr, 0, nullptr, 1, &barrier);
 
-  m_compositor.EndSingleTimeCommands(commandBuffer);
+  cb->End();
+ 
+  m_compositor.DeviceQueue().Submit(cb.get());
+  m_compositor.DeviceQueue().WaitIdle();
+  cb->Destroy();
+
   return true;
 }
 
@@ -213,7 +227,7 @@ bool VkTextureTile::create_texture_image(uint32_t width, uint32_t height,
                                         VkFormat format, VkImageTiling tiling,
                                         VkImageUsageFlags usage,
                                         VkMemoryPropertyFlags properties) {
-  VkDevice device = m_compositor.GetVulkanDevice();
+  VkDevice device = m_compositor.GetVkDevice();
 
   VkImageCreateInfo imageInfo{};
   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -261,7 +275,7 @@ bool VkTextureTile::create_vulkan_buffer(VkDeviceSize size,
                                          VkBuffer &buffer,
                                          VkDeviceMemory &bufferMemory) {
 
-  VkDevice device = m_compositor.GetVulkanDevice();
+  VkDevice device = m_compositor.GetVkDevice();
 
   VkBufferCreateInfo bufferInfo{};
   bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -305,7 +319,7 @@ bool VkTextureTile::create_texture_imageview() {
   viewInfo.subresourceRange.baseArrayLayer = 0;
   viewInfo.subresourceRange.layerCount = 1;
 
-  if (vkCreateImageView(m_compositor.GetVulkanDevice(), &viewInfo, nullptr,
+  if (vkCreateImageView(m_compositor.GetVkDevice(), &viewInfo, nullptr,
                         &m_texture_imageview) != VK_SUCCESS) {
     return false;
   }
@@ -314,7 +328,7 @@ bool VkTextureTile::create_texture_imageview() {
 
 bool VkTextureTile::create_texture_sampler() {
   VkPhysicalDeviceProperties properties{};
-  vkGetPhysicalDeviceProperties(m_compositor.GetVulkanPhysicalDevice(),
+  vkGetPhysicalDeviceProperties(m_compositor.DeviceQueue().PhysicalDevice(),
                                 &properties);
 
   VkSamplerCreateInfo samplerInfo{};
@@ -335,7 +349,7 @@ bool VkTextureTile::create_texture_sampler() {
   samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
   samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-  if (vkCreateSampler(m_compositor.GetVulkanDevice(), &samplerInfo, nullptr,
+  if (vkCreateSampler(m_compositor.GetVkDevice(), &samplerInfo, nullptr,
                       &m_texture_sampler) != VK_SUCCESS) {
     return false;
   }
