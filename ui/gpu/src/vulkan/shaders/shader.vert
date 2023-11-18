@@ -11,7 +11,6 @@
 //    但是frag步骤没有内置的gl_Position变量，需要自己再加一个out输出color
 
 // CPU上传顶点数据
-/*
 layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec3 inColor;
 
@@ -21,9 +20,8 @@ void main() {
   gl_Position = vec4(inPosition, 0.0, 1.0);
   fragColor = inColor;
 }
-*/
 
-/* 硬编码实现的三角形绘制。*/
+/* 硬编码实现的三角形绘制。
 layout(location = 0) out vec3 fragColor;
 
 vec2 positions[3] = vec2[](
@@ -42,3 +40,4 @@ void main() {
     gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
     fragColor = colors[gl_VertexIndex];
 } 
+*/

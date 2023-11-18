@@ -26,10 +26,10 @@ public:
 
   std::unique_ptr<CommandBuffer> m_command_buffer;
 
-  // Semaphore used for vkAcquireNextImageKHR()
-  VkSemaphore m_acquire_semaphore = VK_NULL_HANDLE;
-  // Semaphore used for vkQueuePresentKHR()
-  VkSemaphore m_present_semaphore = VK_NULL_HANDLE;
+  // 用于同步 acquire -> submit 这两个操作
+  VkSemaphore m_acquire_submit_semaphore = VK_NULL_HANDLE;
+  // 用于同步 submit -> Present 这两个操作
+  VkSemaphore m_submit_present_semaphore = VK_NULL_HANDLE;
 
   VkFence m_fence = VK_NULL_HANDLE;
 };

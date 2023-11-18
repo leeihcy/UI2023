@@ -85,17 +85,17 @@ void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   if (!m_pRootLayer)
     return;
 
-  if (!m_gpu_composition->BeginCommit())
+  GpuLayerCommitContext context;
+  if (!m_gpu_composition->BeginCommit(&context))
     return;
 
-  GpuLayerCommitContext context;
   Layer *p = m_pRootLayer;
   while (p) {
     commit_recursion(p, &context);
     p = p->GetNext();
   }
 
-  m_gpu_composition->EndCommit();
+  m_gpu_composition->EndCommit(&context);
 }
 
 void HardwareCompositor::commit_recursion(Layer *p,

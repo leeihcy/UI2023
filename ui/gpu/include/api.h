@@ -11,6 +11,8 @@ enum {
 };
 
 struct IGpuLayer;
+class GpuLayerCommitContext;
+
 struct IGpuCompositor {
   virtual ~IGpuCompositor() {}
   virtual bool Initialize(void *hWnd) = 0;
@@ -18,8 +20,8 @@ struct IGpuCompositor {
   virtual IGpuLayer *CreateLayerTexture() = 0;
   virtual void SetRootLayerTexture(IGpuLayer *p) = 0;
 
-  virtual bool BeginCommit() = 0;
-  virtual void EndCommit() = 0;
+  virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
+  virtual void EndCommit(GpuLayerCommitContext*) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
 
@@ -47,6 +49,8 @@ public:
   void MultiAlpha(unsigned char alpha);
 
 public:
+  void* m_data = nullptr;
+
   int m_xOffset;
   int m_yOffset;
 

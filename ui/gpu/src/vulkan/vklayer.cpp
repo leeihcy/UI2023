@@ -1,6 +1,8 @@
 #include "vklayer.h"
+#include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vktexturetile.h"
 #include "vkcompositor.h"
+#include "vulkan/vulkan_core.h"
 #include <cmath>
 #include <vector>
 
@@ -14,13 +16,17 @@ namespace ui {
 //   | -1.0,  1.0            1.0,  1.0 |
 //    ---------------------------------
 //
-const std::vector<vulkan::Pipeline::ShaderVertex> vertices = {
+const vulkan::Pipeline::ShaderVertex RECT_VERTICES[] = {
     {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},  // 0
     {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},  // 1
     {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},   // 2
     {{-1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}}}; // 3
 
-const std::vector<uint16_t> indices = {0, 1, 2, 2, 3, 0};
+const uint16_t RECT_INDICES[] = {0, 1, 2, 2, 3, 0};
+
+
+// -------------------------------------
+
 
 VulkanGpuLayer::VulkanGpuLayer(VulkanCompositor &compositor)
     : m_compositor(compositor) {}
@@ -78,7 +84,7 @@ bool VulkanGpuLayer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 void VulkanGpuLayer::createIndexBuffer() {
   auto device = m_compositor.GetVkDevice();
 
-  VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+  VkDeviceSize bufferSize = sizeof(RECT_INDICES[0]) * RECT_INDICES.size();
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
@@ -89,7 +95,7 @@ void VulkanGpuLayer::createIndexBuffer() {
 
   void *data;
   vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, indices.data(), (size_t)bufferSize);
+  memcpy(data, RECT_INDICES.data(), (size_t)bufferSize);
   vkUnmapMemory(device, stagingBufferMemory);
 
   createBuffer(
@@ -121,7 +127,7 @@ bool VulkanGpuLayer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags p
 void VulkanGpuLayer::createVertexBuffer() {
   auto device = m_compositor.GetVkDevice();
 
-  VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+  VkDeviceSize bufferSize = sizeof(RECT_VERTICES[0]) * RECT_VERTICES.size();
 
   VkBuffer stagingBuffer;
   VkDeviceMemory stagingBufferMemory;
@@ -135,7 +141,7 @@ void VulkanGpuLayer::createVertexBuffer() {
   // 为了向BUFFER写入数据，需要先将BUFFER映射到CPU内存中进行读写。
   void *data;
   vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, vertices.data(), (size_t)bufferSize);
+  memcpy(data, RECT_VERTICES.data(), (size_t)bufferSize);
   vkUnmapMemory(device, stagingBufferMemory);
 
   createBuffer(bufferSize,
@@ -196,14 +202,14 @@ void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   //       int y1 = y + 1;
 
   //       ui::D3DCOLORVALUE color = {1, 1, 1, 1};
-  //       DXUT_SCREEN_VERTEX_10 vertices[4] = {
+  //       DXUT_SCREEN_VERTEX_10 RECT_VERTICES[4] = {
   //           {(float)TILE_SIZE * x, (float)TILE_SIZE * y, 0.f, color, 0, 0},
   //           {(float)TILE_SIZE * x1, (float)TILE_SIZE * y, 0.f, color, 1, 0},
   //           {(float)TILE_SIZE * x, (float)TILE_SIZE * y1, 0.f, color, 0, 1},
   //           {(float)TILE_SIZE * x1, (float)TILE_SIZE * y1, 0.f, color, 1, 1},
   //       };
 
-  //       CopyMemory(pVB, vertices, sizeof(DXUT_SCREEN_VERTEX_10) * 4);
+  //       CopyMemory(pVB, RECT_VERTICES, sizeof(DXUT_SCREEN_VERTEX_10) * 4);
   //       pVB += 4;
   //     }
   //   }
@@ -212,22 +218,17 @@ void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   // }
 }
 
-static void render(VkCommandBuffer command_buffer, void* userdata) {
-  ((VulkanGpuLayer*)userdata)->on_compositor(command_buffer);
-}
 
 void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                 float *pMatrixTransform) {
-  m_compositor.create_commandbuffer(render, (void*)this);
-}
-
-void VulkanGpuLayer::on_compositor(VkCommandBuffer buffer) {
-  
   // vertexCount：尽管这里我们没有使用顶点缓冲，但仍然需要指定三个顶点用于三角形的绘制。
   // instanceCount：用于实例渲染，为1时表示不进行实例渲染。
   // firstVertex：用于定义着色器变量gl_VertexIndex的值。
   // firstInstance：用于定义着色器变量gl_InstanceIndex的值。
   // vkCmdDraw(buffer, 3, 1, 0, 0);
+
+  vulkan::CommandBuffer* command_buffer = (vulkan::CommandBuffer*)pContext->m_data;
+  VkCommandBuffer buffer = command_buffer->handle();
 
   VkBuffer vertexBuffers[] = {m_vertexBuffer};
   VkDeviceSize offsets[] = {0};
@@ -235,7 +236,7 @@ void VulkanGpuLayer::on_compositor(VkCommandBuffer buffer) {
   vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
   if (true/*draw_by_index*/) {
     vkCmdBindIndexBuffer(buffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-    vkCmdDrawIndexed(buffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(buffer, static_cast<uint32_t>(RECT_INDICES.size()), 1, 0, 0, 0);
   }
   else {
     // vkCmdDraw(command, count, 1, 0, 0);

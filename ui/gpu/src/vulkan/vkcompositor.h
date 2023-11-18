@@ -33,8 +33,8 @@ public:
   void Release() override { delete this; }
   
   IGpuLayer *CreateLayerTexture() override;
-  bool BeginCommit() override;
-  void EndCommit() override;
+  bool BeginCommit(GpuLayerCommitContext*) override;
+  void EndCommit(GpuLayerCommitContext*) override;
   void Resize(int nWidth, int nHeight) override;
 
   void SetRootLayerTexture(IGpuLayer *p) override;
@@ -45,7 +45,6 @@ public:
   vulkan::CommandPool& CommandPool() { return m_command_pool; }
   vulkan::DeviceQueue& DeviceQueue() { return m_device_queue; }
 
-  bool create_commandbuffer(pfnCommandBufferRenderCallback callback, void* user_data);
   void VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 public:
@@ -62,10 +61,10 @@ public:
 private:
   bool create_vulkan_surface();
 
-  bool draw_frame();
   void draw_frame_wait_for_previous_frame_to_finish();
   void draw_frame_acquire_image_from_swap_chain();
-  bool draw_frame_record_command_buffer();
+  vulkan::CommandBuffer* draw_frame_begin_record_command_buffer();
+  void draw_frame_end_record_command_buffer(vulkan::CommandBuffer*);
   void draw_frame_submit_command_buffer();
   void draw_frame_present_swap_chain();
 
@@ -84,11 +83,7 @@ private:
   vulkan::Pipeline m_pipeline;
 
   vulkan::CommandPool m_command_pool;
-  std::vector<VkCommandBuffer> m_command_buffers;
-
-  // std::vector<VkFence> m_inFlightFences;
-  // std::vector<VkFence> m_imagesInFlight;
-  // size_t m_currentFrame = 0;
+  vulkan::CommandBuffer* m_current_command_buffer = nullptr; // raw_ptr
 };
 
 } // namespace ui

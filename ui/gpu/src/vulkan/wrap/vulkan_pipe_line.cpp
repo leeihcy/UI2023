@@ -90,7 +90,7 @@ void Pipeline::build_vertex_input(Context &ctx,
   ctx.vertex_input.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-#if 1
+#if 0 // 直接在shader中写死顶点的版本
   ctx.vertex_input.vertexBindingDescriptionCount = 0;
   ctx.vertex_input.vertexAttributeDescriptionCount = 0;
 #else

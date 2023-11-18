@@ -3,6 +3,7 @@
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vkapp.h"
 #include "vklayer.h"
+#include "vulkan/vulkan_core.h"
 #include <_types/_uint32_t.h>
 #include <cstdio>
 #include <fstream>
@@ -59,9 +60,37 @@ void VulkanCompositor::SetRootLayerTexture(IGpuLayer *p) {
   m_pRootTexture = static_cast<GpuLayer *>(p);
 }
 
-bool VulkanCompositor::BeginCommit() { return true; }
-void VulkanCompositor::EndCommit() {
-  draw_frame();
+//
+// 1. Wait for the previous frame to finish
+// 2. Acquire an image from the swap chain
+// 3. Record a command buffer which draws the scene onto that image
+// 使用command_buffer进行绘制。
+// 4. Submit the recorded command buffer
+// 5. Present the swap chain image
+//
+bool VulkanCompositor::BeginCommit(GpuLayerCommitContext* ctx) {
+  assert(nullptr == m_current_command_buffer);
+  
+
+  draw_frame_wait_for_previous_frame_to_finish();
+  draw_frame_acquire_image_from_swap_chain();
+  m_current_command_buffer = draw_frame_begin_record_command_buffer();
+
+  ctx->m_data = m_current_command_buffer;
+  // vkCmdDraw(m_current_command_buffer->handle(), 3, 1, 0, 0);
+
+  return true;
+}
+void VulkanCompositor::EndCommit(GpuLayerCommitContext*) {
+  if (!m_current_command_buffer) {
+    return;
+  }
+  draw_frame_end_record_command_buffer(m_current_command_buffer);
+  m_current_command_buffer = nullptr;
+
+  draw_frame_submit_command_buffer();
+  draw_frame_present_swap_chain();
+
 }
 
 bool VulkanCompositor::Initialize(void *hWnd) {
@@ -90,7 +119,7 @@ bool VulkanCompositor::Initialize(void *hWnd) {
   }
   if (!m_command_pool.Initialize()) {
     printf("create_commandpool failed\n");
-    return false;;
+    return false;
   }
   if (!m_swapchain.CreateCommandBuffer()) {
     printf("CreateCommandBuffer failed\n");
@@ -205,78 +234,6 @@ bool VulkanCompositor::create_vulkan_surface() {
 // }
 
  
-bool VulkanCompositor::draw_frame() {
-  //
-  // 1. Wait for the previous frame to finish
-  // 2. Acquire an image from the swap chain
-  // 3. Record a command buffer which draws the scene onto that image
-  // 4. Submit the recorded command buffer
-  // 5. Present the swap chain image
-  //
-
-  draw_frame_wait_for_previous_frame_to_finish();
-  draw_frame_acquire_image_from_swap_chain();
-  draw_frame_record_command_buffer();
-  draw_frame_submit_command_buffer();
-  draw_frame_present_swap_chain();
-
-#if 0
-  vkWaitForFences(m_device_queue.Device(), 1, &m_inFlightFences[m_currentFrame],
-                  VK_TRUE, UINT64_MAX);
-
-  uint32_t imageIndex;
-  vkAcquireNextImageKHR(m_device_queue.Device(), m_swapchain, UINT64_MAX,
-                        m_imageAvailableSemaphores[m_currentFrame],
-                        VK_NULL_HANDLE, &imageIndex);
-
-  if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-    vkWaitForFences(m_device_queue.Device(), 1, &m_imagesInFlight[imageIndex], VK_TRUE,
-                    UINT64_MAX);
-  }
-  m_imagesInFlight[imageIndex] = m_inFlightFences[m_currentFrame];
-
-  // VkSubmitInfo submitInfo{};
-  // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-  // VkSemaphore waitSemaphores[] = {m_imageAvailableSemaphores[m_currentFrame]};
-  // VkPipelineStageFlags waitStages[] = {
-  //     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-  // submitInfo.waitSemaphoreCount = 1;
-  // submitInfo.pWaitSemaphores = waitSemaphores;
-  // submitInfo.pWaitDstStageMask = waitStages;
-
-  // submitInfo.commandBufferCount = 1;
-  // submitInfo.pCommandBuffers = &m_command_buffers[imageIndex];
-
-  // VkSemaphore signalSemaphores[] = {m_renderFinishedSemaphores[m_currentFrame]};
-  // submitInfo.signalSemaphoreCount = 1;
-  // submitInfo.pSignalSemaphores = signalSemaphores;
-
-  // vkResetFences(m_device_queue.Device(), 1, &m_inFlightFences[m_currentFrame]);
-
-  // if (vkQueueSubmit(m_device_queue.GraphicsQueue(), 1, &submitInfo,
-  //                   m_inFlightFences[m_currentFrame]) != VK_SUCCESS) {
-  //   return false;
-  // }
-
-  // VkPresentInfoKHR presentInfo{};
-  // presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-  // presentInfo.waitSemaphoreCount = 1;
-  // presentInfo.pWaitSemaphores = signalSemaphores;
-
-  // VkSwapchainKHR swapChains[] = { m_swapchain.handle() };
-  // presentInfo.swapchainCount = 1;
-  // presentInfo.pSwapchains = swapChains;
-
-  // presentInfo.pImageIndices = &imageIndex;
-
-  // vkQueuePresentKHR(m_device_queue.PresentQueue(), &presentInfo);
-
-  // m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-#endif
-  return true;
-}
 
 void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
   std::unique_ptr<vulkan::CommandBuffer> cb = m_command_pool.CreateBuffer();

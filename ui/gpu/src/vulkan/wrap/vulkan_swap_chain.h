@@ -48,7 +48,7 @@ private:
   VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
   VkSwapchainCreateInfoKHR m_info;
 
-  // swap chain中的图片列表，以及对应每个图片的其它关联数据
+  // swap chain中的图w片列表，以及对应每个图片的其它关联数据
   std::vector<std::unique_ptr<SwapChainImage>> m_images;
   uint32_t m_current_image_index = 0;
 

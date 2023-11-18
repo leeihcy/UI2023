@@ -244,7 +244,7 @@ bool SwapChain::init_sync() {
 
 //   // 当gpu能获取到image（使用完）的时候会激活acquire_semaphore
 //   vkAcquireNextImageKHR(m_bridge.GetVkDevice(), m_swapchain, UINT64_MAX,
-//                         m_images[m_current_image_index]->m_acquire_semaphore,
+//                         m_images[m_current_image_index]->m_acquire_submit_semaphore,
 //                         VK_NULL_HANDLE, &imageIndex);
 
 //   return true;

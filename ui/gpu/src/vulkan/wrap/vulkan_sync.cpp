@@ -9,13 +9,6 @@ SyncItem::SyncItem(IVulkanBridge& bridge) : m_bridge(bridge) {
 
 }
 
-//   this->m_acquire_semaphore = o.m_acquire_semaphore;
-//   o.m_acquire_semaphore = VK_NULL_HANDLE;
-//   this->m_present_semaphore = o.m_present_semaphore;
-//   o.m_present_semaphore = VK_NULL_HANDLE;
-//   this->m_fence = o.m_fence;
-//   o.m_fence = VK_NULL_HANDLE;
-
 SyncItem::~SyncItem() {
   Destroy();
 }
@@ -24,9 +17,9 @@ void SyncItem::Initialize() {
   VkSemaphoreCreateInfo semaphoreInfo{};
   semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
   vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
-                    &m_acquire_semaphore);
+                    &m_acquire_submit_semaphore);
   vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
-                    &m_present_semaphore);
+                    &m_submit_present_semaphore);
 
   VkFenceCreateInfo fenceInfo{};
   fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -39,13 +32,13 @@ void SyncItem::Destroy() {
   VkDevice device = m_bridge.GetVkDevice();
 
   // Destroy Semaphores.
-  if (VK_NULL_HANDLE != m_present_semaphore) {
-    vkDestroySemaphore(device, m_present_semaphore, nullptr);
-    m_present_semaphore = VK_NULL_HANDLE;
+  if (VK_NULL_HANDLE != m_submit_present_semaphore) {
+    vkDestroySemaphore(device, m_submit_present_semaphore, nullptr);
+    m_submit_present_semaphore = VK_NULL_HANDLE;
   }
-  if (VK_NULL_HANDLE != m_acquire_semaphore) {
-    vkDestroySemaphore(device, m_acquire_semaphore, nullptr);
-    m_acquire_semaphore = VK_NULL_HANDLE;
+  if (VK_NULL_HANDLE != m_acquire_submit_semaphore) {
+    vkDestroySemaphore(device, m_acquire_submit_semaphore, nullptr);
+    m_acquire_submit_semaphore = VK_NULL_HANDLE;
   }
   if (VK_NULL_HANDLE != m_fence) {
     vkDestroyFence(device, m_fence, nullptr);
