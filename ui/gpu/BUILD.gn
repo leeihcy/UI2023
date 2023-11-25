@@ -71,6 +71,7 @@ shared_library("uigpu") {
         "src/vulkan/wrap/vulkan_image_view.cpp",
         "src/vulkan/wrap/vulkan_pipe_line.cpp",
         "src/vulkan/wrap/vulkan_sync.cpp",
+        "src/vulkan/wrap/vulkan_buffer.cpp",
       ]
     }
     if (is_mac) {

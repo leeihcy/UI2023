@@ -1,7 +1,8 @@
 #include "vklayer.h"
+#include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "vktexturetile.h"
 #include "vkcompositor.h"
+#include "vktexturetile.h"
 #include "vulkan/vulkan_core.h"
 #include <cmath>
 #include <vector>
@@ -17,146 +18,53 @@ namespace ui {
 //    ---------------------------------
 //
 const vulkan::Pipeline::ShaderVertex RECT_VERTICES[] = {
-    {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}},  // 0
+    {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}}, // 0
     {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},  // 1
     {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},   // 2
     {{-1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}}}; // 3
 
 const uint16_t RECT_INDICES[] = {0, 1, 2, 2, 3, 0};
 
-
 // -------------------------------------
 
-
-VulkanGpuLayer::VulkanGpuLayer(VulkanCompositor &compositor)
-    : m_compositor(compositor) {}
+VulkanGpuLayer::VulkanGpuLayer(vulkan::IVulkanBridge& bridge)
+    : m_bridge(bridge),
+    m_vertexBuffer(bridge),
+    m_indexBuffer(bridge) {}
 
 VulkanGpuLayer::~VulkanGpuLayer() {
-  auto device = m_compositor.GetVkDevice();
-  vkDeviceWaitIdle(device);
-
-  vkDestroyBuffer(device, m_indexBuffer, nullptr);
-  vkFreeMemory(device, m_indexBufferMemory, nullptr);
-
-  vkDestroyBuffer(device, m_vertexBuffer, nullptr);
-  vkFreeMemory(device, m_vertexBufferMemory, nullptr);
 }
 
-TextureTile *VulkanGpuLayer::newTile() { 
-  return new VkTextureTile(m_compositor); 
-}
-
-bool VulkanGpuLayer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                  VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                  VkDeviceMemory &bufferMemory) {
-
-  auto device = m_compositor.GetVkDevice();
-
-  VkBufferCreateInfo bufferInfo{};
-  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size = size;
-  bufferInfo.usage = usage;
-  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-  if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-    return false;
-  }
-
-  VkMemoryRequirements memRequirements;
-  vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
-
-  VkMemoryAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  allocInfo.allocationSize = memRequirements.size;
-  if (!findMemoryType(memRequirements.memoryTypeBits, properties, &allocInfo.memoryTypeIndex)) {
-    return false;
-  }
-
-  if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) !=
-      VK_SUCCESS) {
-    return false;
-  }
-
-  vkBindBufferMemory(device, buffer, bufferMemory, 0);
-  return true;
+TextureTile *VulkanGpuLayer::newTile() {
+  return new VkTextureTile(m_bridge);
 }
 
 void VulkanGpuLayer::createIndexBuffer() {
-  auto device = m_compositor.GetVkDevice();
 
-  VkDeviceSize bufferSize = sizeof(RECT_INDICES[0]) * RECT_INDICES.size();
-
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-               stagingBuffer, stagingBufferMemory);
-
-  void *data;
-  vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, RECT_INDICES.data(), (size_t)bufferSize);
-  vkUnmapMemory(device, stagingBufferMemory);
-
-  createBuffer(
-      bufferSize,
-      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory);
-
-  m_compositor.VulkanCopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
-
-  vkDestroyBuffer(device, stagingBuffer, nullptr);
-  vkFreeMemory(device, stagingBufferMemory, nullptr);
+  m_indexBuffer.Create(vulkan::Buffer::INDEX, (void*)RECT_INDICES,
+                        sizeof(RECT_INDICES));
 }
 
+// bool VulkanGpuLayer::findMemoryType(uint32_t typeFilter,
+//                                     VkMemoryPropertyFlags properties,
+//                                     uint32_t *out) {
+//   VkPhysicalDeviceMemoryProperties memProperties;
+//   vkGetPhysicalDeviceMemoryProperties(
+//       m_compositor.GetDeviceQueue().PhysicalDevice(), &memProperties);
 
-bool VulkanGpuLayer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* out) {
-  VkPhysicalDeviceMemoryProperties memProperties;
-  vkGetPhysicalDeviceMemoryProperties(m_compositor.DeviceQueue().PhysicalDevice(), &memProperties);
-
-  for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-    if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
-                                    properties) == properties) {
-      *out = i;
-      return true;
-    }
-  }
-  return false;
-}
+//   for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+//     if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
+//                                     properties) == properties) {
+//       *out = i;
+//       return true;
+//     }
+//   }
+//   return false;
+// }
 
 void VulkanGpuLayer::createVertexBuffer() {
-  auto device = m_compositor.GetVkDevice();
-
-  VkDeviceSize bufferSize = sizeof(RECT_VERTICES[0]) * RECT_VERTICES.size();
-
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  createBuffer(bufferSize, 
-    // 该buffer可以用作一个transfer command(传输命令)的源
-    VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-               stagingBuffer, stagingBufferMemory);
-
-  // 为了向BUFFER写入数据，需要先将BUFFER映射到CPU内存中进行读写。
-  void *data;
-  vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-  memcpy(data, RECT_VERTICES.data(), (size_t)bufferSize);
-  vkUnmapMemory(device, stagingBufferMemory);
-
-  createBuffer(bufferSize,
-    // 该buffer可以用作一个transfer command(传输命令)的目标
-               VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-                   // 
-               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 
-               m_vertexBuffer,
-               m_vertexBufferMemory);
-
-  m_compositor.VulkanCopyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
-
-  vkDestroyBuffer(device, stagingBuffer, nullptr);
-  vkFreeMemory(device, stagingBufferMemory, nullptr);
+  m_vertexBuffer.Create(vulkan::Buffer::VERTEX, (void*)RECT_VERTICES,
+                        sizeof(RECT_VERTICES));
 }
 
 void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
@@ -218,7 +126,6 @@ void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   // }
 }
 
-
 void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                 float *pMatrixTransform) {
   // vertexCount：尽管这里我们没有使用顶点缓冲，但仍然需要指定三个顶点用于三角形的绘制。
@@ -227,18 +134,24 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   // firstInstance：用于定义着色器变量gl_InstanceIndex的值。
   // vkCmdDraw(buffer, 3, 1, 0, 0);
 
-  vulkan::CommandBuffer* command_buffer = (vulkan::CommandBuffer*)pContext->m_data;
+  vulkan::CommandBuffer *command_buffer =
+      (vulkan::CommandBuffer *)pContext->m_data;
   VkCommandBuffer buffer = command_buffer->handle();
 
-  VkBuffer vertexBuffers[] = {m_vertexBuffer};
+  VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
   VkDeviceSize offsets[] = {0};
-  
+
   vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
-  if (true/*draw_by_index*/) {
-    vkCmdBindIndexBuffer(buffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-    vkCmdDrawIndexed(buffer, static_cast<uint32_t>(RECT_INDICES.size()), 1, 0, 0, 0);
-  }
-  else {
+  if (true /*draw_by_index*/) {
+    vkCmdBindIndexBuffer(buffer, m_indexBuffer.handle(), 0, VK_INDEX_TYPE_UINT16);
+
+    // vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+    //                         pipelineLayout, 0, 1,
+    //                         &descriptorSets[currentFrame], 0, nullptr);
+
+    vkCmdDrawIndexed(buffer, std::size(RECT_INDICES), 1,
+                     0, 0, 0);
+  } else {
     // vkCmdDraw(command, count, 1, 0, 0);
   }
 }

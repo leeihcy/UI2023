@@ -1,11 +1,11 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_COMMAND_BUFFER_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_COMMAND_BUFFER_H_
-#include "src/vulkan/wrap/vulkan_bridge.h"
 #include <vulkan/vulkan.h>
 
 namespace vulkan {
 class DeviceQueue;
 class CommandPool;
+struct IVulkanBridge;
 
 class CommandBuffer {
 public:

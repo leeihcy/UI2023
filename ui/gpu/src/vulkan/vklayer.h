@@ -1,8 +1,10 @@
 #ifndef _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #define _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #include "src/gpu_layer.h"
+#include "src/vulkan/wrap/vulkan_bridge.h"
 #include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
+#include "wrap/vulkan_buffer.h"
 
 namespace ui
 {
@@ -10,7 +12,7 @@ class VulkanCompositor;
 
 class VulkanGpuLayer : public GpuLayer {
 public:
-  VulkanGpuLayer(VulkanCompositor& compositor);
+  explicit VulkanGpuLayer(vulkan::IVulkanBridge& bridge);
   ~VulkanGpuLayer();
 
   void Resize(int nWidth, int nHeight) override;
@@ -20,20 +22,14 @@ public:
   void on_compositor(VkCommandBuffer buffer);
 
 private:
-  bool createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                  VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                  VkDeviceMemory &bufferMemory);
   void createVertexBuffer();
   void createIndexBuffer();                  
-  bool findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, uint32_t* out);
 
 private:
-  VulkanCompositor& m_compositor;
+  vulkan::IVulkanBridge& m_bridge;
 
-  VkBuffer m_vertexBuffer;
-  VkDeviceMemory m_vertexBufferMemory;
-  VkBuffer m_indexBuffer;
-  VkDeviceMemory m_indexBufferMemory;
+  vulkan::Buffer m_vertexBuffer;
+  vulkan::Buffer m_indexBuffer;
 };
 
 } // namespace ui

@@ -51,7 +51,7 @@ void VulkanCompositor::Resize(int width, int height) {
 }
 
 IGpuLayer *VulkanCompositor::CreateLayerTexture() {
-  GpuLayer *p = new VulkanGpuLayer(*this);
+  GpuLayer *p = new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge*>(this));
   p->SetGpuCompositor(this);
   return p;
 }
@@ -265,6 +265,9 @@ VkPipeline VulkanCompositor::GetVkPipeline() {
 }
 vulkan::CommandPool& VulkanCompositor::GetCommandPool() {
   return m_command_pool;
+}
+vulkan::DeviceQueue& VulkanCompositor::GetDeviceQueue() { 
+  return m_device_queue; 
 }
 vulkan::SwapChain& VulkanCompositor::GetSwapChain() {
   return m_swapchain;

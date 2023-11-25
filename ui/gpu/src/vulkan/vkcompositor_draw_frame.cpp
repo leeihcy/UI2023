@@ -73,6 +73,14 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
     // ----
     // vkCmdDraw(command_buffer, 3, 1, 0, 0);
   }
+
+  vkCmdBindDescriptorSets(
+      sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+      m_pipeline.layout(), 0, 1,
+      &m_pipeline.descriptor_set(m_swapchain.GetCurrentImageIndex()), 0, nullptr);
+
+  m_pipeline.UpdateUniformBuffer(m_swapchain.GetCurrentImageIndex());
+
   return sync->m_command_buffer.get();
 }
 

@@ -1,6 +1,8 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #include "src/vulkan/wrap/vulkan_bridge.h"
+#include "src/vulkan/wrap/vulkan_buffer.h"
+#include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 #include <memory>
 #include <vector>
@@ -16,8 +18,11 @@ class Pipeline {
 public:
   Pipeline(IVulkanBridge& bridge);
   ~Pipeline();
+
   VkPipeline handle() { return m_graphics_pipeline; }
-  
+  VkPipelineLayout layout() { return m_pipeline_layout; }
+  VkDescriptorSet& descriptor_set(int index) { return m_descriptorSets[index]; }
+
   bool Initialize(uint32_t w, uint32_t h, VkFormat format);
   void Destroy();
 
@@ -28,13 +33,20 @@ public:
   struct ShaderVertex {
     glm::vec2 pos;
     glm::vec3 color;
-    // glm::vec2 texCoord;
+    glm::vec2 texCoord;
   };
+
+  struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+  };
+
   struct Context {
     VkPipelineInputAssemblyStateCreateInfo input_assembly{};
     VkPipelineVertexInputStateCreateInfo vertex_input{};
     VkVertexInputBindingDescription vertex_input_binding_description{};
-    VkVertexInputAttributeDescription vertex_input_attribute_descriptions[2] = {};
+    VkVertexInputAttributeDescription vertex_input_attribute_descriptions[3] = {};
     VkPipelineShaderStageCreateInfo vertex_shader{};
     VkPipelineShaderStageCreateInfo fragment_shader{};
     VkPipelineViewportStateCreateInfo viewport_state{};
@@ -67,10 +79,18 @@ private:
   void build_viewport_scissor(Context &ctx, uint32_t w, uint32_t h);
   void build_rasterization(Context &ctx);
   void build_color_blend(Context &ctx);
+  void build_descriptor_set_layout();
+  void createDescriptorPool();
+  void createDescriptorSets();
   bool build_layout();
   bool create_renderpass(VkFormat format);
   bool create_pipeline(Context &ctx);
   void destroy_context(Context &ctx);
+
+  void createUniformBuffers();
+
+public:
+  void UpdateUniformBuffer(uint32_t currentImage);
 
 private:
   IVulkanBridge& m_bridge; // raw_ptr<
@@ -79,6 +99,13 @@ private:
   VkPipelineLayout m_pipeline_layout = VK_NULL_HANDLE;
 
   VkRenderPass m_renderpass = VK_NULL_HANDLE;
+
+  VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
+
+  VkDescriptorPool m_descriptorPool = VK_NULL_HANDLE;;
+  std::vector<VkDescriptorSet> m_descriptorSets;
+
+  std::vector<vulkan::Buffer> m_uniform_buffers;
 };
 
 }

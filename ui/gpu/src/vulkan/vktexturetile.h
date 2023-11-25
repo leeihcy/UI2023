@@ -1,6 +1,7 @@
 #ifndef _UI_GPU_SRC_VULKAN_TEXTURETILE_H_
 #define _UI_GPU_SRC_VULKAN_TEXTURETILE_H_
 #include "src/texture_tile.h"
+#include "src/vulkan/wrap/vulkan_bridge.h"
 #include <_types/_uint32_t.h>
 #include <vulkan/vulkan.h>
 
@@ -9,7 +10,7 @@ class VulkanCompositor;
 
 class VkTextureTile : public TextureTile {
 public:
-  VkTextureTile(VulkanCompositor &compositor);
+  VkTextureTile(vulkan::IVulkanBridge& bridge);
   ~VkTextureTile();
 
 protected:
@@ -36,7 +37,7 @@ private:
                            VkImageLayout oldLayout, VkImageLayout newLayout);
 
 private:
-  VulkanCompositor &m_compositor;
+  vulkan::IVulkanBridge& m_bridge;
 
   VkImage m_texture_image = VK_NULL_HANDLE;
   VkDeviceMemory m_texture_image_memory = VK_NULL_HANDLE;

@@ -11,14 +11,25 @@
 //    但是frag步骤没有内置的gl_Position变量，需要自己再加一个out输出color
 
 // CPU上传顶点数据
+
+layout(binding = 0) uniform UniformBufferObject {
+   mat4 model;
+   mat4 view;
+   mat4 proj;
+} ubo;
+
 layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec3 inColor;
+layout(location = 2) in vec2 inTexCoord;
 
 layout(location = 0) out vec3 fragColor;
+layout(location = 1) out vec2 fragTexCoord;
 
 void main() {
-  gl_Position = vec4(inPosition, 0.0, 1.0);
+  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
+  // gl_Position = vec4(inPosition, 0.0, 1.0);
   fragColor = inColor;
+  fragTexCoord = inTexCoord;
 }
 
 /* 硬编码实现的三角形绘制。
