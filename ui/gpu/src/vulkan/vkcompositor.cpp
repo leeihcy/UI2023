@@ -13,6 +13,7 @@
 
 #if defined(OS_MAC)
 void *GetNSWindowRootView(void *window);
+void GetNSWindowActureSize(void* window, int* width, int* height);
 #endif
 
 #define MAX_FRAMES_IN_FLIGHT 2
@@ -138,6 +139,12 @@ bool VulkanCompositor::create_vulkan_surface() {
   createInfo.hinstance = GetModuleHandle(nullptr);
 
   vkCreateWin32SurfaceKHR(app.m_vk_instance, &createInfo, nullptr, &m_surface);
+
+  RECT rc;
+  ::GetClientRect(m_hWnd, &rc);
+  m_width = rc.right - rc.left;
+  m_height = rc.bottom - rc.top;
+
 #elif defined(OS_MAC)
   // https://github.com/glfw/glfw/blob/master/src/cocoa_window.m
 
@@ -152,6 +159,7 @@ bool VulkanCompositor::create_vulkan_surface() {
     return false;
   }
 
+  GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
   // VkMetalSurfaceCreateInfoEXT createInfo;
   // createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
   // createInfo.pNext = NULL;

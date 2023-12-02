@@ -119,9 +119,7 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
   m_info.minImageCount = count;
 
   // extent
-  if (capabilities.currentExtent.width != UINT32_MAX) {
-    m_info.imageExtent = capabilities.currentExtent;
-  } else {
+  if (width > 0 && height > 0) {
     VkExtent2D actualExtent = {static_cast<uint32_t>(width),
                                static_cast<uint32_t>(height)};
 
@@ -133,6 +131,8 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
                    capabilities.maxImageExtent.height);
 
     m_info.imageExtent = actualExtent;
+  } else if (capabilities.currentExtent.width != UINT32_MAX) {
+    m_info.imageExtent = capabilities.currentExtent;
   }
 
   // transform
