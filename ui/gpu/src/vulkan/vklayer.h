@@ -2,7 +2,6 @@
 #define _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #include "src/gpu_layer.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
-#include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 #include "wrap/vulkan_buffer.h"
 

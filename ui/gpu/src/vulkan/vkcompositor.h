@@ -50,6 +50,7 @@ public:
   vulkan::CommandPool &GetCommandPool() override;
   vulkan::DeviceQueue &GetDeviceQueue() override;
   vulkan::SwapChain &GetSwapChain() override;
+  vulkan::Pipeline& GetPipeline() override;
   int GetGraphicsQueueFamily() override;
   int GetPresentQueueFamily() override;
 

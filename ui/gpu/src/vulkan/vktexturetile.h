@@ -2,8 +2,8 @@
 #define _UI_GPU_SRC_VULKAN_TEXTURETILE_H_
 #include "src/texture_tile.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
-#include <_types/_uint32_t.h>
 #include <vulkan/vulkan.h>
+#include "wrap/vulkan_buffer.h"
 
 namespace ui {
 class VulkanCompositor;
@@ -15,6 +15,8 @@ public:
 
 protected:
   void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) override;
+  void Compositor(long xOffset, long yOffset, long vertexStartIndex,
+                  ui::GpuLayerCommitContext *pContext) override;
 
 private:
   bool create();
@@ -26,7 +28,6 @@ private:
                            VkMemoryPropertyFlags properties);
 
   bool create_texture_imageview();
-  bool create_texture_sampler();
 
   bool findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                       uint32_t *out);
@@ -43,8 +44,8 @@ private:
   VkDeviceMemory m_texture_image_memory = VK_NULL_HANDLE;
 
   VkImageView m_texture_imageview = VK_NULL_HANDLE;
-  VkSampler m_texture_sampler = VK_NULL_HANDLE;
-
+  // 每个纹理对应一个descriptorset
+  VkDescriptorSet m_texture_descriptorset = VK_NULL_HANDLE;
 };
 
 } // namespace ui

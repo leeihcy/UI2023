@@ -4,6 +4,7 @@
 #include "vkcompositor.h"
 #include "vulkan/vulkan_core.h"
 
+
 namespace ui {
 
 VkTextureTile::VkTextureTile(vulkan::IVulkanBridge& bridge)
@@ -12,10 +13,10 @@ VkTextureTile::VkTextureTile(vulkan::IVulkanBridge& bridge)
 VkTextureTile::~VkTextureTile() {
   auto device = m_bridge.GetVkDevice();
 
-  vkDestroySampler(device, m_texture_sampler, nullptr);
   vkDestroyImageView(device, m_texture_imageview, nullptr);
   vkDestroyImage(device, m_texture_image, nullptr);
   vkFreeMemory(device, m_texture_image_memory, nullptr);
+
 }
 
 void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
@@ -50,34 +51,24 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
   pSrcBits += rcSrc.top * source.pitch;
 
+  // 创建的VK_FORMAT_B8G8R8A8_SRGB格式image view
   if (source.hasAlphaChannel) {
     int w = rcSrc.right - rcSrc.left;
 
     // 不要使用for{for循环，效率太低。
     for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
       memcpy(pTexels, pSrcBits + (rcSrc.left * 4), w * 4);
-
-      /*
-      int dstcol = 0;
-      for (int col = rcSrc.left; col < rcSrc.right; col++, dstcol++)
-      {
-              pTexels[dstcol*4 + 0] = pSrcBits[col*4 + 2]; // Red
-              pTexels[dstcol*4 + 1] = pSrcBits[col*4 + 1]; // Green
-              pTexels[dstcol*4 + 2] = pSrcBits[col*4 + 0]; // Blue
-              pTexels[dstcol*4 + 3] = pSrcBits[col*4 + 3]; // Alpha
-      }
-      */
-
       pSrcBits += source.pitch;
       pTexels += TILE_SIZE * 4;
     }
   } else {
     for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
       int dstcol = 0;
+      // 创建的VK_FORMAT_B8G8R8A8_SRGB格式image view
       for (int col = rcSrc.left; col < rcSrc.right; col++, dstcol++) {
-        pTexels[dstcol * 4 + 0] = pSrcBits[col * 4 + 2]; // Red
+        pTexels[dstcol * 4 + 0] = pSrcBits[col * 4 + 0]; // Blue
         pTexels[dstcol * 4 + 1] = pSrcBits[col * 4 + 1]; // Green
-        pTexels[dstcol * 4 + 2] = pSrcBits[col * 4 + 0]; // Blue
+        pTexels[dstcol * 4 + 2] = pSrcBits[col * 4 + 2]; // Red
         pTexels[dstcol * 4 + 3] = 255;
       }
 
@@ -88,29 +79,90 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
   vkUnmapMemory(device, stagingBufferMemory);
 
-  transitionImageLayout(m_texture_image, VK_FORMAT_R8G8B8A8_SRGB,
+  transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_UNDEFINED,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
   copyBufferToImage(stagingBuffer, m_texture_image,
                     static_cast<uint32_t>(TILE_SIZE),
                     static_cast<uint32_t>(TILE_SIZE));
-  transitionImageLayout(m_texture_image, VK_FORMAT_R8G8B8A8_SRGB,
+  transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+  if (m_texture_descriptorset == VK_NULL_HANDLE) {
+    VkDescriptorSetAllocateInfo textureAllocInfo = {};
+    textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    textureAllocInfo.descriptorPool = m_bridge.GetPipeline().texture_descriptor_pool();
+    
+    VkDescriptorSetLayout layouts[1] = {m_bridge.GetPipeline().texture_descriptor_set_layout()};
+    textureAllocInfo.descriptorSetCount = std::size(layouts);
+    textureAllocInfo.pSetLayouts = layouts;
+
+    if (vkAllocateDescriptorSets(device, &textureAllocInfo,
+                                 &m_texture_descriptorset) != VK_SUCCESS) {
+      throw std::runtime_error("failed to allocate descriptor sets");
+    }
+  }
+  VkDescriptorImageInfo imageInfo = {};
+  imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  imageInfo.imageView = m_texture_imageview;
+  imageInfo.sampler = m_bridge.GetPipeline().texture_sampler();
+
+  VkWriteDescriptorSet texturedescriptorWrites = {};
+  texturedescriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  texturedescriptorWrites.dstSet = m_texture_descriptorset;
+  texturedescriptorWrites.dstBinding = 0;
+  texturedescriptorWrites.dstArrayElement = 0;
+  texturedescriptorWrites.descriptorType =
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  texturedescriptorWrites.descriptorCount = 1;
+  texturedescriptorWrites.pImageInfo = &imageInfo;
+  texturedescriptorWrites.pTexelBufferView = nullptr;
+
+  vkUpdateDescriptorSets(device, 1, &texturedescriptorWrites, 0, nullptr);
+}
+
+void VkTextureTile::Compositor(long xOffset, long yOffset, long vertexStartIndex,
+                  ui::GpuLayerCommitContext *pContext)
+{
+  vulkan::CommandBuffer *command_buffer =
+      (vulkan::CommandBuffer *)pContext->m_data;
+  VkCommandBuffer buffer = command_buffer->handle();
+
+  // VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
+  // VkDeviceSize offsets[] = {0};
+
+  // vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
+  //   vkCmdBindIndexBuffer(buffer, m_indexBuffer.handle(), 0, VK_INDEX_TYPE_UINT16);
+
+    VkDescriptorSet sets[2] = { m_bridge.GetPipeline().descriptor_set(0), m_texture_descriptorset };
+    vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            m_bridge.GetPipeline().layout(), 0, 2,
+                            sets, 0, nullptr);
+
+  // m_bridge.GetPipeline().UpdateDescriptorSets(1, &m_texture_imageview);
+
+    vkCmdDrawIndexed(buffer,
+                     4, // indexCount
+                     1, // instanceCount
+                     0, // firstIndex
+                     vertexStartIndex, // vertexOffset
+                     0  // firstInstance
+    );
+    // vkCmdDraw(command, count, 1, 0, 0);
 }
 
 bool VkTextureTile::create() {
 
   create_texture_image(
-      TILE_SIZE, TILE_SIZE, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+      TILE_SIZE, TILE_SIZE, VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
   create_texture_imageview();
-  create_texture_sampler();
   return true;
 }
 
@@ -312,7 +364,7 @@ bool VkTextureTile::create_texture_imageview() {
   viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   viewInfo.image = m_texture_image;
   viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-  viewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+  viewInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
   viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
   viewInfo.subresourceRange.baseMipLevel = 0;
   viewInfo.subresourceRange.levelCount = 1;
@@ -321,36 +373,6 @@ bool VkTextureTile::create_texture_imageview() {
 
   if (vkCreateImageView(m_bridge.GetVkDevice(), &viewInfo, nullptr,
                         &m_texture_imageview) != VK_SUCCESS) {
-    return false;
-  }
-  return true;
-}
-
-bool VkTextureTile::create_texture_sampler() {
-  VkPhysicalDeviceProperties properties{};
-  vkGetPhysicalDeviceProperties(m_bridge.GetDeviceQueue().PhysicalDevice(),
-                                &properties);
-
-  VkSamplerCreateInfo samplerInfo{};
-  samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-  samplerInfo.magFilter = VK_FILTER_LINEAR;
-  samplerInfo.minFilter = VK_FILTER_LINEAR;
-  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  // samplerInfo.anisotropyEnable = VK_TRUE;
-  // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-  samplerInfo.anisotropyEnable = VK_FALSE;
-  samplerInfo.maxAnisotropy = 1.0f;
-
-  samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-  samplerInfo.unnormalizedCoordinates = VK_FALSE;
-  samplerInfo.compareEnable = VK_FALSE;
-  samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-  samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-
-  if (vkCreateSampler(m_bridge.GetVkDevice(), &samplerInfo, nullptr,
-                      &m_texture_sampler) != VK_SUCCESS) {
     return false;
   }
   return true;

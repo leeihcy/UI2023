@@ -7,6 +7,7 @@ namespace vulkan {
 class CommandPool;
 class SwapChain;
 class DeviceQueue;
+class Pipeline;
 
 struct IVulkanBridge {
   virtual VkDevice GetVkDevice() = 0;
@@ -18,6 +19,7 @@ struct IVulkanBridge {
   virtual vulkan::SwapChain& GetSwapChain() = 0;
   virtual vulkan::CommandPool& GetCommandPool() = 0;
   virtual vulkan::DeviceQueue& GetDeviceQueue() = 0;
+  virtual vulkan::Pipeline& GetPipeline() = 0;
   virtual int GetGraphicsQueueFamily() = 0;
   virtual int GetPresentQueueFamily() = 0;
 }; 

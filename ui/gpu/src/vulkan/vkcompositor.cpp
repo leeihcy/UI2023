@@ -272,6 +272,9 @@ vulkan::DeviceQueue& VulkanCompositor::GetDeviceQueue() {
 vulkan::SwapChain& VulkanCompositor::GetSwapChain() {
   return m_swapchain;
 }
+vulkan::Pipeline& VulkanCompositor::GetPipeline() {
+  return m_pipeline;
+}
 int VulkanCompositor::GetGraphicsQueueFamily() {
   return m_device_queue.GraphicsQueueFamily();
 }

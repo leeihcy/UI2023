@@ -44,11 +44,11 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
     // VkViewport viewport{};
     // viewport.x = 0.0f;
     // viewport.y = 0.0f;
-    // viewport.width = (float)swapChainExtent.width;
-    // viewport.height = (float)swapChainExtent.height;
+    // viewport.width = (float)m_swapchain.Extent2D().width;
+    // viewport.height = (float)m_swapchain.Extent2D().height;
     // viewport.minDepth = 0.0f;
     // viewport.maxDepth = 1.0f;
-    // vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    // vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
     // VkRect2D scissor{};
     // scissor.offset = {0, 0};
@@ -74,11 +74,12 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
     // vkCmdDraw(command_buffer, 3, 1, 0, 0);
   }
 
-  vkCmdBindDescriptorSets(
-      sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-      m_pipeline.layout(), 0, 1,
-      &m_pipeline.descriptor_set(m_swapchain.GetCurrentImageIndex()), 0, nullptr);
+  // vkCmdBindDescriptorSets(
+  //     sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+  //     m_pipeline.layout(), 0, 1,
+  //     &m_pipeline.descriptor_set(m_swapchain.GetCurrentImageIndex()), 0, nullptr);
 
+  // TODO: 这个位置需要调整。
   m_pipeline.UpdateUniformBuffer(m_swapchain.GetCurrentImageIndex());
 
   return sync->m_command_buffer.get();

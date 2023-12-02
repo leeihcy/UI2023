@@ -22,6 +22,8 @@ public:
 
 public:
   void Create(TYPE type, void *data, int data_size);
+  void Destroy();
+  
   VkBuffer handle() { return m_buffer; }
   VkDeviceMemory memory() { return m_buffer_memory; }
 

@@ -1,10 +1,15 @@
 #include "vulkan_pipe_line.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 #include "src/vulkan/vkapp.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_buffer.h"
 #include "src/vulkan/wrap/vulkan_swap_chain.h"
+#include "src/vulkan/wrap/vulkan_util.h"
 #include "vulkan_device_queue.h"
 
+#include <cstddef>
 #include <fstream>
 #include <vulkan/vulkan.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -35,10 +40,21 @@ void Pipeline::Destroy() {
     vkDestroyPipeline(m_bridge.GetVkDevice(), m_graphics_pipeline, nullptr);
     m_graphics_pipeline = VK_NULL_HANDLE;
   }
+
+  if (m_texture_sampler != VK_NULL_HANDLE) {
+    vkDestroySampler(m_bridge.GetVkDevice(), m_texture_sampler, nullptr);
+    m_texture_sampler = VK_NULL_HANDLE;
+  }
+
   if (m_descriptor_set_layout != VK_NULL_HANDLE) {
     vkDestroyDescriptorSetLayout(m_bridge.GetVkDevice(), m_descriptor_set_layout, nullptr);
     m_descriptor_set_layout = VK_NULL_HANDLE;
   }
+  if (m_texture_descriptor_set_layout != VK_NULL_HANDLE) {
+    vkDestroyDescriptorSetLayout(m_bridge.GetVkDevice(), m_texture_descriptor_set_layout, nullptr);
+    m_texture_descriptor_set_layout = VK_NULL_HANDLE;
+  }
+  
   if (m_descriptorPool != VK_NULL_HANDLE) {
     // vkFreeDescriptorSets(m_bridge.GetVkDevice(), m_descriptorPool,
     //                      m_uniform_buffers.size(), m_descriptorSets.data());
@@ -49,6 +65,12 @@ void Pipeline::Destroy() {
     vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_descriptorPool, nullptr);
     m_descriptorPool = VK_NULL_HANDLE;
   }
+
+  if (m_texture_descriptor_pool != VK_NULL_HANDLE) {
+    vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_texture_descriptor_pool, nullptr);
+    m_texture_descriptor_pool = VK_NULL_HANDLE;
+  }
+
   m_uniform_buffers.clear();
 }
 
@@ -66,6 +88,9 @@ bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h, VkFormat format)
     if (!build_fragment_shader(context))
       break;
     build_color_blend(context);
+
+    build_descriptor_set_layout(1);
+    build_texture_descriptor_set_layout();
     if (!build_layout())
       break;
     if (!create_renderpass(format)) 
@@ -73,9 +98,15 @@ bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h, VkFormat format)
     if (!create_pipeline(context))
       break;
 
-    createUniformBuffers();
-    createDescriptorPool();
-    createDescriptorSets();
+    if (!create_texture_sampler()) {
+      break;
+    }
+
+    create_uniform_buffers();
+    create_descriptor_pool();
+    create_descriptor_sets();
+
+    create_texture_descriptor_pool();
 
     success = true;
   } while (0);
@@ -143,7 +174,9 @@ void Pipeline::build_vertex_input(Context &ctx,
 void Pipeline::build_input_assembly(Context &ctx) {
   ctx.input_assembly.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-  ctx.input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+  // VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; 需要6个索引
+  ctx.input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;  // 只需要4个索引
   ctx.input_assembly.primitiveRestartEnable = VK_FALSE;
 }
 
@@ -164,6 +197,8 @@ bool Pipeline::build_vertex_shader(Context &ctx) {
   return true;
 }
 
+// Orthographic Projection Matrix
+// 正交投影矩阵
 void Pipeline::build_viewport_scissor(Context &ctx, uint32_t width,
                                       uint32_t height) {
   ctx.viewport.x = 0.0f;
@@ -189,8 +224,11 @@ void Pipeline::build_rasterization(Context &ctx) {
   ctx.rasterizer.rasterizerDiscardEnable = VK_FALSE;
   ctx.rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
   ctx.rasterizer.lineWidth = 1.0f;
-  ctx.rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-  ctx.rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE; // VK_FRONT_FACE_CLOCKWISE;
+  ctx.rasterizer.cullMode = VK_CULL_MODE_NONE;
+  // ctx.rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+  ctx.rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+  // ctx.rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+
   ctx.rasterizer.depthBiasEnable = VK_FALSE;
 
   ctx.multisampling.sType =
@@ -236,7 +274,37 @@ void Pipeline::build_color_blend(Context &ctx) {
   ctx.color_blending.blendConstants[3] = 0.0f;
 }
 
-void Pipeline::build_descriptor_set_layout() {
+bool Pipeline::create_texture_sampler() {
+  VkPhysicalDeviceProperties properties{};
+  vkGetPhysicalDeviceProperties(m_bridge.GetDeviceQueue().PhysicalDevice(),
+                                &properties);
+
+  VkSamplerCreateInfo samplerInfo{};
+  samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+  samplerInfo.magFilter = VK_FILTER_LINEAR;
+  samplerInfo.minFilter = VK_FILTER_LINEAR;
+  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  // samplerInfo.anisotropyEnable = VK_TRUE;
+  // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+  samplerInfo.anisotropyEnable = VK_FALSE;
+  samplerInfo.maxAnisotropy = 1.0f;
+
+  samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+  samplerInfo.unnormalizedCoordinates = VK_FALSE;
+  samplerInfo.compareEnable = VK_FALSE;
+  samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+  samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+  if (vkCreateSampler(m_bridge.GetVkDevice(), &samplerInfo, nullptr,
+                      &m_texture_sampler) != VK_SUCCESS) {
+    return false;
+  }
+  return true;
+}
+
+void Pipeline::build_descriptor_set_layout(int texture_count) {
   VkDescriptorSetLayoutBinding uboLayoutBinding{};
   uboLayoutBinding.binding = 0;
   uboLayoutBinding.descriptorCount = 1;
@@ -246,10 +314,11 @@ void Pipeline::build_descriptor_set_layout() {
 
   VkDescriptorSetLayoutBinding samplerLayoutBinding{};
   samplerLayoutBinding.binding = 1;
-  samplerLayoutBinding.descriptorCount = 1;
+  samplerLayoutBinding.descriptorCount = texture_count;
   samplerLayoutBinding.descriptorType =
       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   samplerLayoutBinding.pImmutableSamplers = nullptr;
+  // 指定在frag shader中使用sampler
   samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
   VkDescriptorSetLayoutBinding bindings[2] = {uboLayoutBinding,
@@ -265,7 +334,30 @@ void Pipeline::build_descriptor_set_layout() {
   }
 }
 
-void Pipeline::createDescriptorPool() {
+void Pipeline::build_texture_descriptor_set_layout() {
+  VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+  samplerLayoutBinding.binding = 0;
+  samplerLayoutBinding.descriptorCount = 1;
+  samplerLayoutBinding.descriptorType =
+      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  samplerLayoutBinding.pImmutableSamplers = nullptr;
+  // 指定在frag shader中使用sampler
+  samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+  VkDescriptorSetLayoutBinding textureBindings[1] = { samplerLayoutBinding };
+
+  VkDescriptorSetLayoutCreateInfo layoutInfo{};
+  layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+  layoutInfo.bindingCount = std::size(textureBindings);
+  layoutInfo.pBindings = textureBindings;
+
+	if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr, &m_texture_descriptor_set_layout) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create descriptor set layout!");
+	}
+}
+
+void Pipeline::create_descriptor_pool() {
   vulkan::SwapChain& swapchain = m_bridge.GetSwapChain();
 
   VkDescriptorPoolSize poolSizes[2] = {};
@@ -286,7 +378,26 @@ void Pipeline::createDescriptorPool() {
   }
 }
 
-void Pipeline::createDescriptorSets() {
+void Pipeline::create_texture_descriptor_pool()
+{
+  VkDescriptorPoolSize texturePoolSizes[1] = {};
+	texturePoolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	texturePoolSizes[0].descriptorCount = 99;
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = std::size(texturePoolSizes);
+	poolInfo.pPoolSizes = texturePoolSizes;
+	poolInfo.maxSets = 99;
+
+	if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr, &m_texture_descriptor_pool) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create descriptor pool!");
+	}
+}
+
+
+void Pipeline::create_descriptor_sets() {
   vulkan::SwapChain& swapchain = m_bridge.GetSwapChain();
 
   std::vector<VkDescriptorSetLayout> layouts(swapchain.Size(),
@@ -302,6 +413,10 @@ void Pipeline::createDescriptorSets() {
       VK_SUCCESS) {
     throw std::runtime_error("failed to allocate descriptor sets!");
   }
+}
+
+void Pipeline::UpdateDescriptorSets(int count, VkImageView* texture_image_views) {
+  vulkan::SwapChain& swapchain = m_bridge.GetSwapChain();
 
   for (size_t i = 0; i < swapchain.Size(); i++) {
     VkDescriptorBufferInfo bufferInfo{};
@@ -309,11 +424,14 @@ void Pipeline::createDescriptorSets() {
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(UniformBufferObject);
 
-    // VkDescriptorImageInfo imageInfo{};
-    // imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    // imageInfo.imageView = textureImageView;
-    // imageInfo.sampler = textureSampler;
-
+    std::vector<VkDescriptorImageInfo> imageInfos(count);
+    for (int i = 0; i < count; i++) {
+      VkDescriptorImageInfo imageInfo;
+      imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      imageInfo.imageView = texture_image_views[i];
+      imageInfo.sampler = m_texture_sampler;
+      imageInfos.push_back(imageInfo);
+    }
     VkWriteDescriptorSet descriptorWrites[1] = {};
 
     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -330,8 +448,8 @@ void Pipeline::createDescriptorSets() {
     // descriptorWrites[1].dstArrayElement = 0;
     // descriptorWrites[1].descriptorType =
     //     VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    // descriptorWrites[1].descriptorCount = 1;
-    // descriptorWrites[1].pImageInfo = &imageInfo;
+    // descriptorWrites[1].descriptorCount = count;
+    // descriptorWrites[1].pImageInfo = imageInfos.data();
 
     vkUpdateDescriptorSets(m_bridge.GetVkDevice(),
                            std::size(descriptorWrites),
@@ -340,13 +458,15 @@ void Pipeline::createDescriptorSets() {
 }
 
 bool Pipeline::build_layout() {
-  build_descriptor_set_layout();
-
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
-  pipelineLayoutInfo.setLayoutCount = 1;
-  pipelineLayoutInfo.pSetLayouts = &m_descriptor_set_layout;
+
+  VkDescriptorSetLayout descriptorSetLayouts[2] = { 
+    m_descriptor_set_layout, m_texture_descriptor_set_layout };
+
+  pipelineLayoutInfo.setLayoutCount = std::size(descriptorSetLayouts);
+  pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts;
 
   if (vkCreatePipelineLayout(m_bridge.GetVkDevice(), &pipelineLayoutInfo, nullptr,
                              &m_pipeline_layout) != VK_SUCCESS) {
@@ -441,7 +561,7 @@ bool Pipeline::create_shader_module(char *code, int length,
   return true;
 }
 
-void Pipeline::createUniformBuffers() {
+void Pipeline::create_uniform_buffers() {
   VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
   int size = m_bridge.GetSwapChain().Size();
@@ -455,30 +575,37 @@ void Pipeline::createUniformBuffers() {
 }
 
 void Pipeline::UpdateUniformBuffer(uint32_t currentImage) {
-  static auto startTime = std::chrono::high_resolution_clock::now();
+  // static auto startTime = std::chrono::high_resolution_clock::now();
   auto& swapchain = m_bridge.GetSwapChain();
 
-  auto currentTime = std::chrono::high_resolution_clock::now();
-  float time = std::chrono::duration<float, std::chrono::seconds::period>(
-                   currentTime - startTime)
-                   .count();
+  // auto currentTime = std::chrono::high_resolution_clock::now();
+  // float time = std::chrono::duration<float, std::chrono::seconds::period>(
+  //                  currentTime - startTime)
+  //                  .count();
 
   UniformBufferObject ubo{};
-  ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
-                          glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.view =
-      glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                  glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.proj = glm::perspective(
-      glm::radians(45.0f),
-      swapchain.Extent2D().width / (float)swapchain.Extent2D().height, 0.1f, 10.0f);
-  ubo.proj[1][1] *= -1;
+  // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
+  //                         glm::vec3(0.0f, 0.0f, 1.0f));
+  // ubo.view =
+  //     glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+  //                 glm::vec3(0.0f, 0.0f, 1.0f));
+  // ubo.proj = glm::perspective(
+  //     glm::radians(45.0f),
+  //     swapchain.Extent2D().width / (float)swapchain.Extent2D().height, 0.1f, 10.0f);
+  // ubo.proj[1][1] *= -1;
+
+  ubo.model = glm::mat4(1.0);
+  // ubo.ortho = glm::mat4(1.0);
+  ubo.ortho = glm::orthoLH<float>(0, swapchain.Extent2D().width, 0, swapchain.Extent2D().height, -2000.f, 2000.f);
+  // ubo.orth = PrepareOrthographicProjectionMatrix(0, swapchain.Extent2D().width, swapchain.Extent2D().height, 0, -2000.f, 2000.f);
 
   void *data;
   vkMapMemory(m_bridge.GetVkDevice(), m_uniform_buffers[currentImage].memory(), 0, sizeof(ubo), 0,
               &data);
   memcpy(data, &ubo, sizeof(ubo));
   vkUnmapMemory(m_bridge.GetVkDevice(), m_uniform_buffers[currentImage].memory());
+
+  UpdateDescriptorSets(0, nullptr);
 }
 
 } // namespace vulkan

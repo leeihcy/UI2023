@@ -18,16 +18,22 @@ Buffer::Buffer(Buffer&& o):m_bridge(o.m_bridge) {
 }
 
 Buffer::~Buffer() {
-  auto device = m_bridge.GetVkDevice();
-  vkDeviceWaitIdle(device);
+  Destroy();
+}
 
-  if (m_buffer != VK_NULL_HANDLE) {
-    vkDestroyBuffer(device, m_buffer, nullptr);
-    m_buffer = VK_NULL_HANDLE;
-  }
-  if (m_buffer_memory != VK_NULL_HANDLE) {
-    vkFreeMemory(device, m_buffer_memory, nullptr);
-    m_buffer_memory = VK_NULL_HANDLE;
+void Buffer::Destroy() {
+  if (m_buffer != VK_NULL_HANDLE || m_buffer_memory != VK_NULL_HANDLE) {
+    auto device = m_bridge.GetVkDevice();
+    vkDeviceWaitIdle(device);
+
+    if (m_buffer != VK_NULL_HANDLE) {
+      vkDestroyBuffer(device, m_buffer, nullptr);
+      m_buffer = VK_NULL_HANDLE;
+    }
+    if (m_buffer_memory != VK_NULL_HANDLE) {
+      vkFreeMemory(device, m_buffer_memory, nullptr);
+      m_buffer_memory = VK_NULL_HANDLE;
+    }
   }
 }
 
@@ -109,6 +115,10 @@ void Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
 }
 
 void Buffer::Create(TYPE type, void *data, int data_size) {
+  
+  // TBD: 优化复用？
+  Destroy();
+
   auto device = m_bridge.GetVkDevice();
 
   VkDeviceSize bufferSize = data_size;
