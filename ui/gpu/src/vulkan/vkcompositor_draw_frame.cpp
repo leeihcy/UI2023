@@ -9,6 +9,9 @@ void VulkanCompositor::draw_frame_wait_for_previous_frame_to_finish() {
   vulkan::SyncItem *sync = m_swapchain.GetCurrentSync();
 
   vkWaitForFences(GetVkDevice(), 1, &sync->m_fence, VK_TRUE, UINT64_MAX);
+
+  // lldb调试时会出现exception，先无视，好像无解，等以后SDK更新吧。
+  vkResetFences(m_device_queue.Device(), 1, &sync->m_fence);
 }
 
 void VulkanCompositor::draw_frame_acquire_image_from_swap_chain() {
@@ -24,8 +27,6 @@ void VulkanCompositor::draw_frame_acquire_image_from_swap_chain() {
                         VK_NULL_HANDLE, &imageIndex);
 
   m_swapchain.SetCurrentImageIndex(imageIndex);
-
-  vkResetFences(m_device_queue.Device(), 1, &sync->m_fence);
 }
 
 vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer() {

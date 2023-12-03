@@ -268,7 +268,7 @@ void SwapChain::SetCurrentImageIndex(uint32_t i) {
   m_current_image_index = i;
 }
 uint32_t SwapChain::GetCurrentImageIndex() {
-  return m_current_frame_index;
+  return m_current_image_index;
 }
 
 } // namespace vulkan
