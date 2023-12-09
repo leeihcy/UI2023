@@ -122,6 +122,7 @@ struct IGpuLayer {
     void  Rotate(float xRotate, float yRotate, float zRotate);
     void  RotateBy(float xRotate, float yRotate, float zRotate);
 #endif
+  virtual void OnBeginCommit(GpuLayerCommitContext *ctx) = 0;
   virtual void Compositor(GpuLayerCommitContext *pContext,
                           float *pMatrixTransform) = 0;
 

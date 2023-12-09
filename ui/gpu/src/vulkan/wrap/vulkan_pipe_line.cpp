@@ -199,7 +199,7 @@ bool Pipeline::build_vertex_shader(Context &ctx) {
 
 // Orthographic Projection Matrix
 // 正交投影矩阵
-void Pipeline::build_viewport_scissor(Context &ctx, uint32_t width,
+void Pipeline:: build_viewport_scissor(Context &ctx, uint32_t width,
                                       uint32_t height) {
   ctx.viewport.x = 0.0f;
   ctx.viewport.y = 0.0f;
@@ -312,17 +312,8 @@ void Pipeline::build_descriptor_set_layout(int texture_count) {
   uboLayoutBinding.pImmutableSamplers = nullptr;
   uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-  VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-  samplerLayoutBinding.binding = 1;
-  samplerLayoutBinding.descriptorCount = texture_count;
-  samplerLayoutBinding.descriptorType =
-      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  samplerLayoutBinding.pImmutableSamplers = nullptr;
-  // 指定在frag shader中使用sampler
-  samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-  VkDescriptorSetLayoutBinding bindings[2] = {uboLayoutBinding,
-                                                          samplerLayoutBinding};
+  VkDescriptorSetLayoutBinding bindings[1] = {uboLayoutBinding};
   VkDescriptorSetLayoutCreateInfo layoutInfo{};
   layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layoutInfo.bindingCount = std::size(bindings);
@@ -360,17 +351,15 @@ void Pipeline::build_texture_descriptor_set_layout() {
 void Pipeline::create_descriptor_pool() {
   vulkan::SwapChain& swapchain = m_bridge.GetSwapChain();
 
-  VkDescriptorPoolSize poolSizes[2] = {};
+  VkDescriptorPoolSize poolSizes[1] = {};
   poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  poolSizes[0].descriptorCount = static_cast<uint32_t>(swapchain.Size());
-  poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  poolSizes[1].descriptorCount = static_cast<uint32_t>(swapchain.Size());
+  poolSizes[0].descriptorCount = 1; // static_cast<uint32_t>(swapchain.Size());
 
   VkDescriptorPoolCreateInfo poolInfo{};
   poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
   poolInfo.poolSizeCount = std::size(poolSizes);
   poolInfo.pPoolSizes = poolSizes;
-  poolInfo.maxSets = static_cast<uint32_t>(swapchain.Size());
+  poolInfo.maxSets = 1; // static_cast<uint32_t>(swapchain.Size());
 
   if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr, &m_descriptorPool) !=
       VK_SUCCESS) {
@@ -382,13 +371,13 @@ void Pipeline::create_texture_descriptor_pool()
 {
   VkDescriptorPoolSize texturePoolSizes[1] = {};
 	texturePoolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	texturePoolSizes[0].descriptorCount = 99;
+	texturePoolSizes[0].descriptorCount = 999999; // TBD
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = std::size(texturePoolSizes);
 	poolInfo.pPoolSizes = texturePoolSizes;
-	poolInfo.maxSets = 99;
+	poolInfo.maxSets = 999999; // TBD
 
 	if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr, &m_texture_descriptor_pool) != VK_SUCCESS)
 	{
@@ -405,56 +394,53 @@ void Pipeline::create_descriptor_sets() {
   VkDescriptorSetAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   allocInfo.descriptorPool = m_descriptorPool;
-  allocInfo.descriptorSetCount = static_cast<uint32_t>(swapchain.Size());
+  allocInfo.descriptorSetCount = 1; // static_cast<uint32_t>(swapchain.Size());
   allocInfo.pSetLayouts = layouts.data();
 
-  m_descriptorSets.resize(swapchain.Size());
-  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo, m_descriptorSets.data()) !=
+  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo, &m_descriptor_sets) !=
       VK_SUCCESS) {
     throw std::runtime_error("failed to allocate descriptor sets!");
   }
 }
 
-void Pipeline::UpdateDescriptorSets(int count, VkImageView* texture_image_views) {
-  vulkan::SwapChain& swapchain = m_bridge.GetSwapChain();
+VkDescriptorSet Pipeline::AllocatateTextureDescriptorSets() {
+  VkDescriptorSetAllocateInfo textureAllocInfo = {};
+  textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+  textureAllocInfo.descriptorPool = texture_descriptor_pool();
 
-  for (size_t i = 0; i < swapchain.Size(); i++) {
-    VkDescriptorBufferInfo bufferInfo{};
-    bufferInfo.buffer = m_uniform_buffers[i].handle();
-    bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(UniformBufferObject);
+  VkDescriptorSetLayout layouts[1] = {
+      m_bridge.GetPipeline().texture_descriptor_set_layout()};
+  textureAllocInfo.descriptorSetCount = std::size(layouts);
+  textureAllocInfo.pSetLayouts = layouts;
 
-    std::vector<VkDescriptorImageInfo> imageInfos(count);
-    for (int i = 0; i < count; i++) {
-      VkDescriptorImageInfo imageInfo;
-      imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      imageInfo.imageView = texture_image_views[i];
-      imageInfo.sampler = m_texture_sampler;
-      imageInfos.push_back(imageInfo);
-    }
-    VkWriteDescriptorSet descriptorWrites[1] = {};
-
-    descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrites[0].dstSet = m_descriptorSets[i];
-    descriptorWrites[0].dstBinding = 0;
-    descriptorWrites[0].dstArrayElement = 0;
-    descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    descriptorWrites[0].descriptorCount = 1;
-    descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-    // descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    // descriptorWrites[1].dstSet = m_descriptorSets[i];
-    // descriptorWrites[1].dstBinding = 1;
-    // descriptorWrites[1].dstArrayElement = 0;
-    // descriptorWrites[1].descriptorType =
-    //     VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    // descriptorWrites[1].descriptorCount = count;
-    // descriptorWrites[1].pImageInfo = imageInfos.data();
-
-    vkUpdateDescriptorSets(m_bridge.GetVkDevice(),
-                           std::size(descriptorWrites),
-                           descriptorWrites, 0, nullptr);
+  VkDescriptorSet texture_descriptorset = VK_NULL_HANDLE;
+  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &textureAllocInfo,
+                               &texture_descriptorset) != VK_SUCCESS) {
+    throw std::runtime_error("failed to allocate descriptor sets");
   }
+  return texture_descriptorset;
+}
+
+void Pipeline::UpdateDescriptorSets(int count,
+                                    VkImageView *texture_image_views) {
+  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
+
+  VkDescriptorBufferInfo bufferInfo{};
+  bufferInfo.buffer = m_uniform_buffers[0].handle(); // TBD
+  bufferInfo.range = sizeof(UniformBufferObject);
+
+  VkWriteDescriptorSet descriptorWrites[1] = {};
+
+  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+  descriptorWrites[0].dstSet = m_descriptor_sets;
+  descriptorWrites[0].dstBinding = 0;
+  descriptorWrites[0].dstArrayElement = 0;
+  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  descriptorWrites[0].descriptorCount = 1;
+  descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+  vkUpdateDescriptorSets(m_bridge.GetVkDevice(), std::size(descriptorWrites),
+                         descriptorWrites, 0, nullptr);
 }
 
 bool Pipeline::build_layout() {

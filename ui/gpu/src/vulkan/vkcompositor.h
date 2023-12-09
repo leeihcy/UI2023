@@ -55,6 +55,9 @@ public:
   int GetPresentQueueFamily() override;
 
 private:
+  void destory();
+  void destroy_swapchain();
+
   bool create_vulkan_surface();
 
   void draw_frame_wait_for_previous_frame_to_finish();

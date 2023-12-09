@@ -1,7 +1,8 @@
 #include "hardware_compositor.h"
 #include "hardware_layer.h"
 #include "include/inc.h"
-
+#include "include/util/log.h"
+#include "base/stopwatch.h"
 #include "gpu/include/api.h"
 #if defined(OS_WIN)
 #include "src/util/windows.h"
@@ -85,6 +86,8 @@ void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   if (!m_pRootLayer)
     return;
 
+  StopWatch stop_watch;
+
   GpuLayerCommitContext context;
   if (!m_gpu_composition->BeginCommit(&context))
     return;
@@ -96,6 +99,9 @@ void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   }
 
   m_gpu_composition->EndCommit(&context);
+
+  int ms = stop_watch.ElapseMsSinceLast();
+  UI_LOG_INFO("hardware commit cost %d ms", ms);
 }
 
 void HardwareCompositor::commit_recursion(Layer *p,

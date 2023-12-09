@@ -92,20 +92,18 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
 
-  if (m_texture_descriptorset == VK_NULL_HANDLE) {
-    VkDescriptorSetAllocateInfo textureAllocInfo = {};
-    textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    textureAllocInfo.descriptorPool = m_bridge.GetPipeline().texture_descriptor_pool();
-    
-    VkDescriptorSetLayout layouts[1] = {m_bridge.GetPipeline().texture_descriptor_set_layout()};
-    textureAllocInfo.descriptorSetCount = std::size(layouts);
-    textureAllocInfo.pSetLayouts = layouts;
+  update_texture_descriptorset();
+}
 
-    if (vkAllocateDescriptorSets(device, &textureAllocInfo,
-                                 &m_texture_descriptorset) != VK_SUCCESS) {
-      throw std::runtime_error("failed to allocate descriptor sets");
-    }
+void VkTextureTile::update_texture_descriptorset() {
+  if (m_bind_pool != m_bridge.GetPipeline().texture_descriptor_pool()) {
+    m_texture_descriptorset = nullptr;
   }
+  if (m_texture_descriptorset == VK_NULL_HANDLE) {
+    m_texture_descriptorset = m_bridge.GetPipeline().AllocatateTextureDescriptorSets();
+    m_bind_pool = m_bridge.GetPipeline().texture_descriptor_pool();
+  }
+
   VkDescriptorImageInfo imageInfo = {};
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
   imageInfo.imageView = m_texture_imageview;
@@ -122,7 +120,14 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
   texturedescriptorWrites.pImageInfo = &imageInfo;
   texturedescriptorWrites.pTexelBufferView = nullptr;
 
-  vkUpdateDescriptorSets(device, 1, &texturedescriptorWrites, 0, nullptr);
+  vkUpdateDescriptorSets(m_bridge.GetVkDevice(), 1, &texturedescriptorWrites, 0, nullptr);
+}
+
+void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {
+  if (m_bind_pool != m_bridge.GetPipeline().texture_descriptor_pool()) {
+    m_texture_descriptorset = nullptr;
+    update_texture_descriptorset();
+  }
 }
 
 void VkTextureTile::Compositor(long xOffset, long yOffset, long vertexStartIndex,
@@ -132,27 +137,18 @@ void VkTextureTile::Compositor(long xOffset, long yOffset, long vertexStartIndex
       (vulkan::CommandBuffer *)pContext->m_data;
   VkCommandBuffer buffer = command_buffer->handle();
 
-  // VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
-  // VkDeviceSize offsets[] = {0};
+  VkDescriptorSet sets[1] = {m_texture_descriptorset};
+  vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          m_bridge.GetPipeline().layout(), 1, 1, sets, 0,
+                          nullptr);
 
-  // vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
-  //   vkCmdBindIndexBuffer(buffer, m_indexBuffer.handle(), 0, VK_INDEX_TYPE_UINT16);
-
-    VkDescriptorSet sets[2] = { m_bridge.GetPipeline().descriptor_set(0), m_texture_descriptorset };
-    vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                            m_bridge.GetPipeline().layout(), 0, 2,
-                            sets, 0, nullptr);
-
-  // m_bridge.GetPipeline().UpdateDescriptorSets(1, &m_texture_imageview);
-
-    vkCmdDrawIndexed(buffer,
-                     4, // indexCount
-                     1, // instanceCount
-                     0, // firstIndex
-                     vertexStartIndex, // vertexOffset
-                     0  // firstInstance
-    );
-    // vkCmdDraw(command, count, 1, 0, 0);
+  vkCmdDrawIndexed(buffer,
+                   4,                // indexCount
+                   1,                // instanceCount
+                   0,                // firstIndex
+                   vertexStartIndex, // vertexOffset
+                   0                 // firstInstance
+  );
 }
 
 bool VkTextureTile::create() {

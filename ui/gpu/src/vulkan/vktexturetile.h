@@ -3,6 +3,7 @@
 #include "src/texture_tile.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include <vulkan/vulkan.h>
+#include "vulkan/vulkan_core.h"
 #include "wrap/vulkan_buffer.h"
 
 namespace ui {
@@ -14,6 +15,7 @@ public:
   ~VkTextureTile();
 
 protected:
+  void OnBeginCommit(GpuLayerCommitContext *ctx) override;
   void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) override;
   void Compositor(long xOffset, long yOffset, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext) override;
@@ -28,6 +30,7 @@ private:
                            VkMemoryPropertyFlags properties);
 
   bool create_texture_imageview();
+  void update_texture_descriptorset();
 
   bool findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                       uint32_t *out);
@@ -46,6 +49,7 @@ private:
   VkImageView m_texture_imageview = VK_NULL_HANDLE;
   // 每个纹理对应一个descriptorset
   VkDescriptorSet m_texture_descriptorset = VK_NULL_HANDLE;
+  VkDescriptorPool m_bind_pool = VK_NULL_HANDLE;
 };
 
 } // namespace ui

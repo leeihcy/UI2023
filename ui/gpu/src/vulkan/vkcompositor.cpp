@@ -4,16 +4,14 @@
 #include "vkapp.h"
 #include "vklayer.h"
 #include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
-#include <cstdio>
 #include <fstream>
 #include <set>
 #include <string>
-
+#include "base/stopwatch.h"
 
 #if defined(OS_MAC)
 void *GetNSWindowRootView(void *window);
-void GetNSWindowActureSize(void* window, int* width, int* height);
+void GetNSWindowActureSize(void *window, int *width, int *height);
 #endif
 
 #define MAX_FRAMES_IN_FLIGHT 2
@@ -31,28 +29,33 @@ VulkanCompositor::VulkanCompositor()
 }
 
 VulkanCompositor::~VulkanCompositor() {
+  destory();
+}
+
+void VulkanCompositor::destory() {
   VkDevice device = m_device_queue.Device();
   VkPhysicalDevice pysical_device = m_device_queue.PhysicalDevice();
   vkDeviceWaitIdle(m_device_queue.Device());
 
+  destroy_swapchain();
   auto &app = application();
 
-  m_pipeline.Destroy();
-  m_swapchain.Destroy();
+  
   m_command_pool.Destroy();
   m_device_queue.Destroy();
+
   vkDestroySurfaceKHR(app.GetVkInstance(), m_surface, nullptr);
+}
+
+void VulkanCompositor::destroy_swapchain() {
+  m_pipeline.Destroy();
+  m_swapchain.Destroy();
 }
 
 GpuLayer *VulkanCompositor::GetRootLayerTexture() { return m_pRootTexture; }
 
-void VulkanCompositor::Resize(int width, int height) {
-  m_width = width;
-  m_height = height;
-}
-
 IGpuLayer *VulkanCompositor::CreateLayerTexture() {
-  GpuLayer *p = new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge*>(this));
+  GpuLayer *p = new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge *>(this));
   p->SetGpuCompositor(this);
   return p;
 }
@@ -69,9 +72,15 @@ void VulkanCompositor::SetRootLayerTexture(IGpuLayer *p) {
 // 4. Submit the recorded command buffer
 // 5. Present the swap chain image
 //
-bool VulkanCompositor::BeginCommit(GpuLayerCommitContext* ctx) {
+bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
   assert(nullptr == m_current_command_buffer);
-  
+
+  StopWatch stop_watch;
+
+  // 给每个tile一次更新descriptor set机会
+  if (m_pRootTexture) {
+    m_pRootTexture->OnBeginCommit(ctx);
+  }
 
   draw_frame_wait_for_previous_frame_to_finish();
   draw_frame_acquire_image_from_swap_chain();
@@ -80,9 +89,15 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext* ctx) {
   ctx->m_data = m_current_command_buffer;
   // vkCmdDraw(m_current_command_buffer->handle(), 3, 1, 0, 0);
 
+  int ms = stop_watch.ElapseMsSinceLast();
+  printf("gpu begin commit cost %d ms\n", ms);
+
   return true;
 }
-void VulkanCompositor::EndCommit(GpuLayerCommitContext*) {
+void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
+
+  StopWatch stop_watch;
+
   if (!m_current_command_buffer) {
     return;
   }
@@ -92,10 +107,22 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext*) {
   draw_frame_submit_command_buffer();
   draw_frame_present_swap_chain();
 
+  int ms = stop_watch.ElapseMsSinceLast();
+  printf("gpu end commit cost %d ms\n", ms);
 }
 
 bool VulkanCompositor::Initialize(void *hWnd) {
   m_hWnd = hWnd;
+
+  // 获取窗口大小
+#if defined(OS_WIN)
+  RECT rc;
+  ::GetClientRect(m_hWnd, &rc);
+  m_width = rc.right - rc.left;
+  m_height = rc.bottom - rc.top;
+#elif defined(OS_MAC)
+  GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
+#endif
 
   create_vulkan_surface();
 
@@ -104,29 +131,48 @@ bool VulkanCompositor::Initialize(void *hWnd) {
     return false;
   }
 
-  if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
-    printf("create_swapchain failed\n");
-    return false;
-  }
-  if (!m_pipeline.Initialize(m_swapchain.Extent2D().width,
-                             m_swapchain.Extent2D().height,
-                             m_swapchain.ImageFormat())) {
-    printf("create_graphics_pipeline failed\n");
-    return false;
-  }
-  if (!m_swapchain.CreateFrameBuffer()) {
-    printf("m_swapchain CreateFramebuffer failed\n");
-    return false;
-  }
   if (!m_command_pool.Initialize()) {
     printf("create_commandpool failed\n");
     return false;
   }
+
+  Resize(m_width, m_height);
+  return true;
+}
+
+void VulkanCompositor::Resize(int width, int height) {
+  m_width = width;
+  m_height = height;
+
+  vkDeviceWaitIdle(GetVkDevice());
+  destroy_swapchain();
+  
+  if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
+    printf("create_swapchain failed\n");
+    return /*false*/;
+  }
+
+  VkFormat image_format = m_swapchain.ImageFormat();
+
+  // ~~pipe line应该只需要创建一次就够了。~~
+  if (m_pipeline.handle() == VK_NULL_HANDLE) {
+    if (!m_pipeline.Initialize(m_swapchain.Extent2D().width,
+                              m_swapchain.Extent2D().height,
+                              image_format)) {
+      printf("create_graphics_pipeline failed\n");
+      return /*false*/;
+    }
+  }
+
+  if (!m_swapchain.CreateFrameBuffer()) {
+    printf("m_swapchain CreateFramebuffer failed\n");
+    return /*false*/;
+  }
+
   if (!m_swapchain.CreateCommandBuffer()) {
     printf("CreateCommandBuffer failed\n");
-    return false;;
+    return /*false*/;
   }
-  return true;
 }
 
 bool VulkanCompositor::create_vulkan_surface() {
@@ -139,12 +185,6 @@ bool VulkanCompositor::create_vulkan_surface() {
   createInfo.hinstance = GetModuleHandle(nullptr);
 
   vkCreateWin32SurfaceKHR(app.m_vk_instance, &createInfo, nullptr, &m_surface);
-
-  RECT rc;
-  ::GetClientRect(m_hWnd, &rc);
-  m_width = rc.right - rc.left;
-  m_height = rc.bottom - rc.top;
-
 #elif defined(OS_MAC)
   // https://github.com/glfw/glfw/blob/master/src/cocoa_window.m
 
@@ -159,7 +199,6 @@ bool VulkanCompositor::create_vulkan_surface() {
     return false;
   }
 
-  GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
   // VkMetalSurfaceCreateInfoEXT createInfo;
   // createInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
   // createInfo.pNext = NULL;
@@ -188,7 +227,8 @@ bool VulkanCompositor::create_vulkan_surface() {
 
 //   uint32_t imageCount = surface_info.capabilities.minImageCount + 1;
 //   if (surface_info.capabilities.maxImageCount > 0) {
-//     imageCount = std::min(imageCount, surface_info.capabilities.maxImageCount);
+//     imageCount = std::min(imageCount,
+//     surface_info.capabilities.maxImageCount);
 //   }
 
 //   VkSwapchainCreateInfoKHR createInfo{};
@@ -209,9 +249,9 @@ bool VulkanCompositor::create_vulkan_surface() {
 //   int graphics_queue_family = m_device_queue.GraphicsQueueFamily();
 //   int present_queue_family = m_device_queue.PresentQueueFamily();
 //   if (graphics_queue_family != present_queue_family) {
-//     uint32_t queueFamilyIndices[] = { 
-//       (uint32_t)graphics_queue_family, 
-//       (uint32_t)present_queue_family 
+//     uint32_t queueFamilyIndices[] = {
+//       (uint32_t)graphics_queue_family,
+//       (uint32_t)present_queue_family
 //     };
 //     createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 //     createInfo.queueFamilyIndexCount = std::size(queueFamilyIndices);
@@ -226,7 +266,8 @@ bool VulkanCompositor::create_vulkan_surface() {
 //     return false;
 //   }
 
-//   VkResult result = vkGetSwapchainImagesKHR(m_device_queue.Device(), m_swapchain,
+//   VkResult result = vkGetSwapchainImagesKHR(m_device_queue.Device(),
+//   m_swapchain,
 //                                             &imageCount, nullptr);
 //   m_swapchain_images.resize(imageCount);
 //   result = vkGetSwapchainImagesKHR(m_device_queue.Device(), m_swapchain,
@@ -241,9 +282,8 @@ bool VulkanCompositor::create_vulkan_surface() {
 //   return true;
 // }
 
- 
-
-void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
+                                        VkDeviceSize size) {
   std::unique_ptr<vulkan::CommandBuffer> cb = m_command_pool.CreateBuffer();
   cb->Begin();
   {
@@ -268,21 +308,15 @@ VkRenderPass VulkanCompositor::GetVkRenderPass() {
 VkCommandPool VulkanCompositor::GetVkCommandPool() {
   return m_command_pool.handle();
 }
-VkPipeline VulkanCompositor::GetVkPipeline() {
-  return m_pipeline.handle();
-}
-vulkan::CommandPool& VulkanCompositor::GetCommandPool() {
+VkPipeline VulkanCompositor::GetVkPipeline() { return m_pipeline.handle(); }
+vulkan::CommandPool &VulkanCompositor::GetCommandPool() {
   return m_command_pool;
 }
-vulkan::DeviceQueue& VulkanCompositor::GetDeviceQueue() { 
-  return m_device_queue; 
+vulkan::DeviceQueue &VulkanCompositor::GetDeviceQueue() {
+  return m_device_queue;
 }
-vulkan::SwapChain& VulkanCompositor::GetSwapChain() {
-  return m_swapchain;
-}
-vulkan::Pipeline& VulkanCompositor::GetPipeline() {
-  return m_pipeline;
-}
+vulkan::SwapChain &VulkanCompositor::GetSwapChain() { return m_swapchain; }
+vulkan::Pipeline &VulkanCompositor::GetPipeline() { return m_pipeline; }
 int VulkanCompositor::GetGraphicsQueueFamily() {
   return m_device_queue.GraphicsQueueFamily();
 }

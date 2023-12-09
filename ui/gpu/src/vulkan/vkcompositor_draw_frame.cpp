@@ -42,19 +42,20 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
   VkCommandBuffer command_buffer = sync->m_command_buffer->handle();
   // callback(sync->m_command_buffer->handle(), user_data);
   {
-    // VkViewport viewport{};
-    // viewport.x = 0.0f;
-    // viewport.y = 0.0f;
-    // viewport.width = (float)m_swapchain.Extent2D().width;
-    // viewport.height = (float)m_swapchain.Extent2D().height;
-    // viewport.minDepth = 0.0f;
-    // viewport.maxDepth = 1.0f;
-    // vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+  //   VkViewport viewport{};
+  //   viewport.x = 0.0f;
+  //   viewport.y = 0.0f;
+  //   viewport.width = (float)m_width;
+  //   viewport.height = (float)m_height;
+  //   viewport.minDepth = 0.0f;
+  //   viewport.maxDepth = 1.0f;
+  //   vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
-    // VkRect2D scissor{};
-    // scissor.offset = {0, 0};
-    // scissor.extent = swapChainExtent;
-    // vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+  //   VkRect2D scissor{};
+  //   scissor.offset = {0, 0};
+  //   scissor.extent.width = m_width;
+  //   scissor.extent.height = m_height;
+  //   vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
     // VkBuffer vertexBuffers[] = {vertexBuffer};
     // VkDeviceSize offsets[] = {0};
@@ -75,13 +76,12 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
     // vkCmdDraw(command_buffer, 3, 1, 0, 0);
   }
 
-  // vkCmdBindDescriptorSets(
-  //     sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-  //     m_pipeline.layout(), 0, 1,
-  //     &m_pipeline.descriptor_set(m_swapchain.GetCurrentImageIndex()), 0, nullptr);
-
   // TODO: 这个位置需要调整。
   m_pipeline.UpdateUniformBuffer(m_swapchain.GetCurrentImageIndex());
+  vkCmdBindDescriptorSets(
+      sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+      m_pipeline.layout(), 0, 1,
+      &m_pipeline.descriptor_sets(), 0, nullptr);
 
   return sync->m_command_buffer.get();
 }

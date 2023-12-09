@@ -19,16 +19,18 @@ public:
   Pipeline(IVulkanBridge& bridge);
   ~Pipeline();
 
+  bool Initialize(uint32_t w, uint32_t h, VkFormat format);
+  void Destroy();
+  
   VkPipeline handle() { return m_graphics_pipeline; }
   VkPipelineLayout layout() { return m_pipeline_layout; }
-  VkDescriptorSet& descriptor_set(int index) { return m_descriptorSets[index]; }
+  VkDescriptorSet& descriptor_sets() { return m_descriptor_sets; }
   VkDescriptorSetLayout texture_descriptor_set_layout() { return m_texture_descriptor_set_layout; }
   VkDescriptorPool texture_descriptor_pool() { return m_texture_descriptor_pool; }
   VkSampler texture_sampler() { return m_texture_sampler; }
-  bool Initialize(uint32_t w, uint32_t h, VkFormat format);
-  void Destroy();
 
   VkRenderPass GetVkRenderPass() { return m_renderpass; }
+  VkDescriptorSet AllocatateTextureDescriptorSets();
   
 public:
   // shader.vert glsl文件中的顶点格式定义
@@ -112,7 +114,7 @@ private:
 
   VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
   VkDescriptorPool m_descriptorPool = VK_NULL_HANDLE;
-  std::vector<VkDescriptorSet> m_descriptorSets;
+  VkDescriptorSet m_descriptor_sets;
 
   VkDescriptorSetLayout m_texture_descriptor_set_layout = VK_NULL_HANDLE;
   VkDescriptorPool m_texture_descriptor_pool = VK_NULL_HANDLE;

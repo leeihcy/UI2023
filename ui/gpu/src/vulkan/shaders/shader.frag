@@ -6,7 +6,6 @@
 // 2. fragColor是已经基于三个顶点的颜色计算好的一个插件颜色，怎么理解？
 // 3. Rasterrization，就是将三个角离散化成每一个具体的像素点。
 
-layout(set = 0, binding = 1) uniform sampler2D texSamplerNotUse;
 layout(set = 1, binding = 0) uniform sampler2D texSampler;
 
 layout(location = 0) in vec3 fragColor;
