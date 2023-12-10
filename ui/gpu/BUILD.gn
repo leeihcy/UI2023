@@ -135,12 +135,11 @@ shared_library("uigpu") {
             "-framework", "QuartzCore",  # Core Animation
       ]
     }
-    
-  
-    cflags += [
-      "/wd4005",
-      "/wd4267",  # 从“size_t”转换到“uint32_t” ，可能丢失数据
-    ]
+
+    # cflags += [
+    #   "/wd4005",
+    #   "/wd4267",  # 从“size_t”转换到“uint32_t” ，可能丢失数据
+    # ]
 }
 if (is_mac) {
   copy("glfw") {

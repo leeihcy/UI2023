@@ -2,6 +2,7 @@
 
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
+#include "ui/gpu/include/api.h"
 #include "src/private_inc.h"
 #include "src/resource/colormanager.h"
 #include "src/resource/fontmanager.h"
@@ -505,7 +506,7 @@ void Application::ShutdownGpuCompositor() {
 
   fn();
 #else
-  GpuShutdown();
+  ui::GpuShutdown();
 #endif
   m_bGpuEnable = false;
 }
