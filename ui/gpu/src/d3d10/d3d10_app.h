@@ -1,5 +1,6 @@
 #pragma once
 #include "common\Inputs.h"
+#include <windows.h>
 
 // TODO:
 // 1. 多屏幕下的device要怎么处理？
@@ -28,7 +29,8 @@
 
 class Stage3D;
 class Direct3DRenderTarget;
-
+struct ID3D10EffectTechnique;
+struct IDXGIFactory;
 
 class D3D10App
 {
@@ -43,7 +45,7 @@ public:
 	bool  Init();
 	void  Destroy();
 
-	UINT  GetDeviceMultisampleQuality() { 
+	unsigned int GetDeviceMultisampleQuality() { 
 			return m_nMultisampleQuality; }
 
     bool  IsActiveSwapChain(HWND  hWnd);

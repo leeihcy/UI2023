@@ -1,16 +1,12 @@
 #pragma warning(disable : 4005) // 宏重定义
 
-#if defined(OS_WIN)
-#include <d3d10.h>
 #include <d3d10_1.h>
 #include <windows.h>
-#endif
 
 #include "D3D10_App.h"
 #include "common\Effects.h"
 #include "common\Font.h"
 #include "common\RenderStates.h"
-#include "src/stdafx.h"
 #include <assert.h>
 
 D3D10App *D3D10App::s_pApp = nullptr;
@@ -31,7 +27,7 @@ D3D10App::~D3D10App() {
 
 D3D10App *D3D10App::Get() { return s_pApp; }
 
-void D3D10App::Startup() {
+bool D3D10App::Startup() {
   if (!s_pApp) {
     s_pApp = new D3D10App;
     s_pApp->Init();

@@ -1,5 +1,6 @@
 #include "RenderStates.h"
-#include "src/stdafx.h"
+// #include "src/stdafx.h"
+#include <assert.h>
 #define SAFE_RELEASE(ptr)   do { if(ptr) { (ptr)->Release(); (ptr) = NULL; } } while(false)
 
 

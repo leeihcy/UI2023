@@ -1,7 +1,9 @@
 #include "font.h"
-#include "src/stdafx.h"
-#include "src/common_def.h"
+// #include "src/stdafx.h"
+#include "src/d3d10/common_def.h"
 #include <assert.h>
+#include <atlbase.h>
+#include <atlcom.h>
 
 // #include "..\UISDK\Src\Util\Stopwatch\stopwatch.h"
 #define SAFE_RELEASE(ptr)   do { if(ptr) { (ptr)->Release(); (ptr) = NULL; } } while(false)

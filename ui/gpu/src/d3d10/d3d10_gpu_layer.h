@@ -1,6 +1,7 @@
 #ifndef _UI_GPU_SRC_D3D10_D3D10_GPU_LAYER_H_
 #define _UI_GPU_SRC_D3D10_D3D10_GPU_LAYER_H_
 #include "src/gpu_layer.h"
+struct ID3D10Buffer;
 
 namespace ui
 {
@@ -10,6 +11,9 @@ public:
   D3D10GpuLayer();
   ~D3D10GpuLayer();
 
+  void OnBeginCommit(GpuLayerCommitContext *ctx) override {
+
+  }
   void Resize(int nWidth, int nHeight) override;
   void Compositor(GpuLayerCommitContext *pContext, float *pMatrixTransform) override;
   TextureTile* newTile() override;

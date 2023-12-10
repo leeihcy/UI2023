@@ -1,7 +1,5 @@
 #include "window_win.h"
-#include "src/util/windows.h"
 #include "include/util/math.h"
-#include <string.h>
 #include <atlconv.h>
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
@@ -181,7 +179,7 @@ LRESULT WindowPlatformWin::WndProc(unsigned int uMsg, WPARAM wParam,
   // //if (static_cast<IMessage*>(this)->ProcessMessage(&msg, 0))
   //   UISendMessage(&msg);
   lRes = WndProc_GetRetValue(uMsg, wParam, lParam, msg.bHandled, msg.lRet);
-
+ 
   if (uMsg == WM_NCDESTROY) {
     // 注：为什么不在这里直接调用OnFinalMessage，却还要再加一个状态位？
     // 因为WM_NCDESTROY函数由DestroyWindow api触发，而DestroyWindow api

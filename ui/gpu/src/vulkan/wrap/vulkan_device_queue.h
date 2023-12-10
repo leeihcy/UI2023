@@ -2,7 +2,6 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_DEVIDE_QUEUE_H_
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <set>

@@ -6,6 +6,7 @@
 // #include "hard3dtransform.h"
 // #include "stdafx.h"
 #include "texture_tile.h"
+#include <assert.h>
 
 using namespace ui;
 

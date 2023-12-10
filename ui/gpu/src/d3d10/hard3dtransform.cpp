@@ -1,6 +1,4 @@
 #include "hard3dtransform.h"
-#include "stdafx.h"
-
 using namespace ui;
 
 Hard3DTransform::Hard3DTransform() { identity(); }

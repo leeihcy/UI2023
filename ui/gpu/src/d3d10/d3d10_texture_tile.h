@@ -1,7 +1,9 @@
 #pragma once
 #include "src/texture_tile.h"
 #include "gpu/include/api.h"
-#include <d3d10.h>
+struct ID3D10Texture2D;
+struct ID3D10ShaderResourceView;
+
 struct SOURCE_BITMAP_DATA;
 
 namespace ui {
@@ -13,6 +15,9 @@ public:
   D3D10TextureTile();
   ~D3D10TextureTile();
 
+   void OnBeginCommit(GpuLayerCommitContext *ctx) override {
+      
+   }
   void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source);
   void Compositor(long xOffset, long yOffset, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext);

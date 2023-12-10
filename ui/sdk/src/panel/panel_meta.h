@@ -19,7 +19,7 @@ struct PanelMeta : public MetaImpl<IPanel> {
     param.major_type = OBJ_PANEL;
     param.minor_type = PANEL_SIMPLE;
     param.category = CATEGORY_CONTAINER;
-    param.descrption = u8"容器基类，负责内部控制布局";
+    param.descrption = "容器基类，负责内部控制布局";
     param.default_size = {300, 300};
     return param;
   }
@@ -40,7 +40,7 @@ struct RoundPanelMeta : public MetaImpl<IRoundPanel> {
     param.major_type = OBJ_PANEL;
     param.minor_type = PANEL_SIMPLE;
     param.category = CATEGORY_CONTAINER;
-    param.descrption = u8"容器基类，负责内部控制布局";
+    param.descrption = "容器基类，负责内部控制布局";
     param.default_size = {300, 300};
     return param;
   }

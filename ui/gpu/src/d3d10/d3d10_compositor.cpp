@@ -1,11 +1,11 @@
 #pragma warning(disable : 4005) // 宏重定义
 
 // #include "stdafx.h"
-#include "gpu_compositor.h"
-#include "d3d10/D3DApp.h"
-#include "d3d10/common/Effects.h"
-#include "d3d10/common/Font.h"
-#include "d3d10/d3d10_gpu_layer.h"
+#include "src/d3d10/d3d10_compositor.h"
+#include "src/d3d10/D3D10_app.h"
+#include "src/d3d10/common/Effects.h"
+#include "src/d3d10/common/Font.h"
+#include "src/d3d10/d3d10_gpu_layer.h"
 #include <D3dx9math.h>
 #include <assert.h>
 using namespace ui;
@@ -47,14 +47,14 @@ D3D10Compositor::~D3D10Compositor() {
 }
 
 bool D3D10Compositor::Initialize(void* hwnd) {
-  m_hWnd = hWnd;
+  m_hWnd = (HWND)hwnd;
   CreateSwapChain();
   return true;
 }
 
 IGpuLayer *D3D10Compositor::CreateLayerTexture() {
   GpuLayer *p = new D3D10GpuLayer;
-  p->SetHardwareComposition(this);
+  p->SetGpuCompositor(this);
   return p;
 }
 void D3D10Compositor::SetRootLayerTexture(IGpuLayer *p) {
@@ -204,7 +204,7 @@ void D3D10Compositor::Resize(int nWidth, int nHeight) {
   ReCreateStencilView();
 }
 
-bool D3D10Compositor::BeginCommit() {
+bool D3D10Compositor::BeginCommit(GpuLayerCommitContext*) {
   if (!m_pSwapChain)
     return false;
 
@@ -238,7 +238,7 @@ bool D3D10Compositor::BeginCommit() {
 
   return true;
 }
-void D3D10Compositor::EndCommit() {
+void D3D10Compositor::EndCommit(GpuLayerCommitContext*) {
   Font::DrawDebugFps();
 
   //     if (m_pRootTexture)

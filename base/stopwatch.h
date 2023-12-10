@@ -10,14 +10,14 @@ public:
   }
   int ElapseMsSinceLast() {
     auto now = std::chrono::system_clock::now();
-    int result = std::chrono::duration_cast<std::chrono::microseconds>(now - m_last).count();
+    auto result = std::chrono::duration_cast<std::chrono::microseconds>(now - m_last).count();
     m_last = now;
-    return result;
+    return (int)result;
   }
   int ElapseMsSinceStart() {
     auto now = std::chrono::system_clock::now();
     m_last = now;
-    return std::chrono::duration_cast<std::chrono::microseconds>(now - m_start).count();
+    return (int)std::chrono::duration_cast<std::chrono::microseconds>(now - m_start).count();
   }
 private:
   std::chrono::system_clock::time_point m_start;

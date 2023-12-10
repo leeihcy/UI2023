@@ -10,6 +10,7 @@
 #include "vulkan_device_queue.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <vulkan/vulkan.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -166,7 +167,7 @@ void Pipeline::build_vertex_input(Context &ctx,
   ctx.vertex_input_attribute_descriptions[2].offset = offsetof(ShaderVertex, texCoord);
 
   ctx.vertex_input.vertexAttributeDescriptionCount =
-      std::size(ctx.vertex_input_attribute_descriptions);
+      (uint32_t)std::size(ctx.vertex_input_attribute_descriptions);
   ctx.vertex_input.pVertexAttributeDescriptions = ctx.vertex_input_attribute_descriptions;
 #endif
 }
@@ -185,7 +186,7 @@ bool Pipeline::build_vertex_shader(Context &ctx) {
   if (!read_spv_file("shaders/vert.spv", vertShaderCode)) {
     return false;
   }
-  if (!create_shader_module(vertShaderCode.data(), vertShaderCode.size(),
+  if (!create_shader_module(vertShaderCode.data(), (uint32_t)vertShaderCode.size(),
                             &ctx.vertex_shader.module)) {
     return false;
   }
@@ -538,7 +539,6 @@ bool Pipeline::create_shader_module(char *code, int length,
   createInfo.codeSize = length;
   createInfo.pCode = reinterpret_cast<const uint32_t *>(code);
 
-  VkShaderModule shaderModule;
   if (vkCreateShaderModule(m_bridge.GetVkDevice(), &createInfo, nullptr,
                            out_module) != VK_SUCCESS) {
     return false;

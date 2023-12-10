@@ -20,7 +20,7 @@ struct WindowMeta : public MetaImpl<IWindow> {
     param.major_type = OBJ_WINDOW;
     param.minor_type = WINDOW_SIMPLE;
     param.category = CATEGORY_WINDOW;
-    param.descrption = u8"窗口";
+    param.descrption = "窗口";
     param.default_size = {500, 500};
     return param;
   }

@@ -1,6 +1,7 @@
 #include "vulkan_device_queue.h"
 #include "vulkan/vulkan_core.h"
 #include "src/vulkan/vkcompositor.h"
+#include <cstdint>
 #include <string>
 
 namespace vulkan {
@@ -178,7 +179,7 @@ bool DeviceQueue::create_logical_device() {
     queue_create_infos.push_back(queue_info);
   }
   device_create_info.pQueueCreateInfos = queue_create_infos.data();
-  device_create_info.queueCreateInfoCount = queue_create_infos.size();
+  device_create_info.queueCreateInfoCount = (uint32_t)queue_create_infos.size();
 
   // features
   VkPhysicalDeviceFeatures deviceFeatures = {};
@@ -191,7 +192,7 @@ bool DeviceQueue::create_logical_device() {
 #if defined(OS_MAC)
   required_extensions.push_back("VK_KHR_portability_subset");
 #endif
-  device_create_info.enabledExtensionCount = required_extensions.size();
+  device_create_info.enabledExtensionCount = (uint32_t)required_extensions.size();
   device_create_info.ppEnabledExtensionNames = required_extensions.data();
 
   // layers

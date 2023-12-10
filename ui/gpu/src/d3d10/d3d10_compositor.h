@@ -1,8 +1,13 @@
 #ifndef _UI_GPU_SRC_D3D10_GPU_COMPOSITOR_H_
 #define _UI_GPU_SRC_D3D10_GPU_COMPOSITOR_H_
 #include "gpu/include/api.h"
-#include <d3d10.h>
-#include <dxgi.h>
+
+struct IDXGISwapChain;
+struct ID3D10RenderTargetView;
+struct ID3D10Texture2D;
+struct ID3D10DepthStencilView;
+
+#include <windows.h>
 
 //
 // 如何开启DX10的抗锯齿？
@@ -30,13 +35,15 @@ public:
   bool Initialize(void* hwnd) override;
   void Release() override { delete this; }
   IGpuLayer *CreateLayerTexture() override;
-  bool BeginCommit() override;
-  void EndCommit() override;
+  bool BeginCommit(GpuLayerCommitContext*) override;
+  void EndCommit(GpuLayerCommitContext*) override;
   void SetRootLayerTexture(IGpuLayer *p) override;
   GpuLayer *GetRootLayerTexture();
 
   void Resize(int nWidth, int nHeight) override;
   SIZE GetSize() { return m_sizeBackBuffer; }
+  // int GetWidth() override { m_sizeBackBuffer.cx; }
+  // int GetHeight() override { m_sizeBackBuffer.cy; }
 
   void ClearStencil();
 

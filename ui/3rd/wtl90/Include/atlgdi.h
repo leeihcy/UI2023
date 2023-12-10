@@ -1211,6 +1211,8 @@ typedef CRgnT<true>    CRgn;
 template <bool t_bManaged>
 class CDCT
 {
+typedef CDCT<false>   CDCHandle;
+typedef CDCT<true>    CDC;
 public:
 // Data members
 	HDC m_hDC;

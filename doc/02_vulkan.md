@@ -1,3 +1,7 @@
+https://vulkan-tutorial.com/Development_environment
+
+SDK下载：https://vulkan.lunarg.com/sdk/home#windows
+
 > https://zhuanlan.zhihu.com/p/430397192
 >
 在Vulkan里，没有任何API允许你直接的，立即的像GPU发出任何命令。所有的命令，包括渲染的Draw Call，计算的调用，甚至内存的操作例如资源的拷贝，都需要通过App自己创建的Command Buffer。

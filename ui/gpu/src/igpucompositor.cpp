@@ -1,8 +1,6 @@
 #include "gpu/include/api.h"
-#if defined(OS_WIN)
-#include "d3d10/stdafx.h"
-#include "d3d10/gpu_compositor.h"
-#include "d3d10/gpu_layer.h"
+#if defined(ENABLE_D3D10)
+#include "d3d10/d3d10_compositor.h"
 #include "d3d10/d3d10_app.h"
 #include "d3d10/hard3dtransform.h"
 #else
@@ -113,7 +111,7 @@ void  IGpuLayerTexture::RotateBy(float xRotate, float yRotate, float zRotate)
 
 */
 //////////////////////////////////////////////////////////////////////////
-#if defined(OS_WIN)
+#if defined(ENABLE_D3D10)
 void MultiMatrix(GpuLayerCommitContext &c, float *matrix16) {
   D3DXMATRIX mat1(matrix16);
   if (D3DXMatrixIsIdentity(&mat1))
@@ -131,7 +129,7 @@ void MultiMatrix(GpuLayerCommitContext &c, float *matrix16) {
 extern "C" {
 UIGPUAPI IGpuCompositor *CreateGpuComposition(void* hWnd) {
   std::unique_ptr<IGpuCompositor> p;
-#if defined(OS_WIN)  
+#if defined(ENABLE_D3D10)  
   p.reset(new D3D10Compositor());
 #else
   p.reset(new VulkanCompositor());
@@ -144,7 +142,7 @@ UIGPUAPI IGpuCompositor *CreateGpuComposition(void* hWnd) {
 }
 
 UIGPUAPI bool GpuStartup() {
-#if defined(OS_WIN)
+#if defined(ENABLE_D3D10)
   return D3D10App::Startup();
 #else
   return VulkanApplication::Get().Startup();
@@ -152,14 +150,14 @@ UIGPUAPI bool GpuStartup() {
 }
 
 UIGPUAPI void GpuShutdown() {
-#if defined(OS_WIN)
+#if defined(ENABLE_D3D10)
   D3D10App::Shutdown();
 #else
   VulkanApplication::Get().Shutdown();
 #endif
 }
 
-#if defined(OS_WIN) // TODO:
+#if defined(ENABLE_D3D10) // TODO:
 UIGPUAPI IRenderLayerTransform2 *CreateHard3DTransform() {
   return Hard3DTransform::CreateInstance();
 }

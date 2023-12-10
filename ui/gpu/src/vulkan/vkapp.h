@@ -1,7 +1,5 @@
 #ifndef _UI_GPU_SRC_VULKAN_VKAPP_H_
 #define _UI_GPU_SRC_VULKAN_VKAPP_H_
-#include <_types/_uint32_t.h>
-#include <optional>
 #include <vector>
 
 #if defined(OS_MAC)

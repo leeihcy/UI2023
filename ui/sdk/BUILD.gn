@@ -172,6 +172,7 @@ shared_library("uisdk") {
       sources += [
         "src/message_loop/message_loop_win.cpp",
         "src/message_loop/win/msghelper.cpp",
+        "src/window/window_win.h",
         "src/window/window_win.cpp",
       ]
       #libs += [

@@ -13,7 +13,6 @@
 #include "src/skin_parse/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "src/panel/panel_meta.h"
-#include "gpu/include/api.h"
 #if defined(OS_MAC)
 #include "application_mac.h"
 #endif
@@ -470,7 +469,7 @@ bool Application::EnableGpuComposite() {
 
   typedef bool (*pfnUIStartupGpuCompositor)();
   pfnUIStartupGpuCompositor fn = (pfnUIStartupGpuCompositor)::GetProcAddress(
-      hModule, "UIStartupGpuCompositor");
+      hModule, "GpuStartup");
 
   if (!fn) {
     UI_LOG_ERROR(TEXT("UIStartupGpuCompositor Failed"));
@@ -499,7 +498,7 @@ void Application::ShutdownGpuCompositor() {
 
   typedef long (*pfnUIShutdownGpuCompositor)();
   pfnUIShutdownGpuCompositor fn = (pfnUIShutdownGpuCompositor)::GetProcAddress(
-      hModule, "UIShutdownGpuCompositor");
+      hModule, "GpuShutdown");
 
   if (!fn)
     return;

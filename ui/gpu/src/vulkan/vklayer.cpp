@@ -1,10 +1,8 @@
 #include "vklayer.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
+#include "src/vulkan/wrap/vulkan_pipe_line.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "vkcompositor.h"
 #include "vktexturetile.h"
-#include "vulkan/vulkan_core.h"
-#include <_types/_uint16_t.h>
 #include <cmath>
 #include <vector>
 

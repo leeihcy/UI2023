@@ -130,7 +130,7 @@ struct Rect : public RectLTRB {
   int Width() const { return width(); }
   int height() const { return bottom - top; }
   int Height() const { return height(); }
-  bool operator==(const Rect &rc) {
+  bool operator==(const Rect &rc) const {
     return memcmp(this, &rc, sizeof(Rect)) == 0;
   }
 };
@@ -156,7 +156,7 @@ struct Length {
   int value = 0;
   Unit unit = Unit::Number;
 
-  bool operator==(const Length &o) {
+  bool operator==(const Length &o) const {
     return o.value == this->value && o.unit == this->unit;
   }
   static Length MakeNumber(int n) { return {n, Unit::Number}; }

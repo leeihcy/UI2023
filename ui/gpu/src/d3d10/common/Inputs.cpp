@@ -1,7 +1,6 @@
 #include "Inputs.h"
 #include "Effects.h"
-
-#include "src/stdafx.h"
+#include <d3d10.h>
 
 // ID3D10Buffer*  Inputs::m_pVertexBuffer = nullptr;
 ID3D10InputLayout*  Inputs::m_pInputLayout = nullptr;

@@ -2,8 +2,7 @@
 #include "message_loop.h"
 #include "src/util/windows.h"
 
-#include <atlbase.h>
-CAppModule _Module;
+WTL::CAppModule _Module;
 
 namespace ui {
 

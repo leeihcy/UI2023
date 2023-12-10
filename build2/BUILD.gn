@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 config("compiler_defaults") {
-  cflags = ["-std=c++17"]
+  cflags = ["-std=c++20"]
   
   if (is_win) {
     defines = ["OS_WIN"]

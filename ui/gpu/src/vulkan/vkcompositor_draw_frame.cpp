@@ -1,7 +1,7 @@
 #include "src/vulkan/wrap/vulkan_swap_chain_image.h"
 #include "vkcompositor.h"
 #include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
+#include <cstdint>
 
 namespace ui {
 
@@ -107,7 +107,7 @@ void VulkanCompositor::draw_frame_submit_command_buffer() {
   submitInfo.pWaitDstStageMask = waitStages;
 
   VkCommandBuffer command_buffers[] = {sync->m_command_buffer->handle()};
-  submitInfo.commandBufferCount = std::size(command_buffers);
+  submitInfo.commandBufferCount = (uint32_t)std::size(command_buffers);
   submitInfo.pCommandBuffers = command_buffers;
 
   // submit完成之后，才允许present。用于同步present操作。
@@ -117,7 +117,7 @@ void VulkanCompositor::draw_frame_submit_command_buffer() {
 
   if (vkQueueSubmit(m_device_queue.GraphicsQueue(), 1, &submitInfo,
                     sync->m_fence) != VK_SUCCESS) {
-    throw std::runtime_error("failed to submit draw command buffer!");
+    printf("failed to submit draw command buffer!\n");
   }
 }
 void VulkanCompositor::draw_frame_present_swap_chain() {

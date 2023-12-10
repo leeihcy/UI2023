@@ -1,10 +1,10 @@
 #include "vkapp.h"
-#include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
-#include <cstddef>
 #include <cstdio>
-#include <set>
-#include <string>
+#include <assert.h>
+#if defined(OS_WIN)
+#include <windows.h>
+#include <vulkan/vulkan_win32.h>
+#endif
 
 namespace ui {
 static VulkanApplication s_app;

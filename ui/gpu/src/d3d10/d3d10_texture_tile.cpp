@@ -1,11 +1,7 @@
 #include "d3d10_texture_tile.h"
-#include "common_def.h"
-#if defined(OS_WIN)
-#include "d3d10\common\Effects.h"
-#include "d3d10\d3dapp.h"
-#endif
-#include "hard3dtransform.h"
-#include "stdafx.h"
+#include "src/d3d10/d3d10_app.h"
+#include "src/d3d10/common/Effects.h"
+#include <d3d10.h>
 
 namespace ui {
 
@@ -32,7 +28,7 @@ D3D10TextureTile::~D3D10TextureTile() {
 // 注：dx10开始，已经不再支持24位的格式D3DFMT_R8G8B8格式了。
 // 见：https://msdn.microsoft.com/en-us/library/windows/desktop/cc308051(v=vs.85).aspx
 
-void D3D10TextureTile::Upload(RECT &rcSrc, ui::UploadGpuBitmapInfo &source) {
+void D3D10TextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
   if (!m_pTextureBuffer) {
     create();
   }
@@ -189,7 +185,7 @@ void D3D10TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
   ID3D10EffectTechnique *pTech = nullptr;
   if (pContext->m_bTransformValid) {
     Effects::m_pFxMatrix->SetMatrix(
-        (float *)(D3DXMATRIX *)pContext->m_matrixTransform);
+        (float *)pContext->m_matrixTransform);
 
     pTech = Effects::m_pTechDrawTextureMatrix;
   } else {

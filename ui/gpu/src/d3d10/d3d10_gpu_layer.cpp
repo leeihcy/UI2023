@@ -1,4 +1,11 @@
 #include "d3d10_gpu_layer.h"
+#include "d3d10_texture_tile.h"
+#include "d3d10_app.h"
+#include "d3d10_compositor.h"
+#include "src/d3d10/common/RenderStates.h"
+#include "src/d3d10/common/Effects.h"
+// #include <d3d10_1.h>
+#include <dxgi.h>
 
 namespace ui
 {
@@ -22,7 +29,7 @@ void MultiMatrix(GpuLayerCommitContext &c, float *matrix16);
 
 void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                 float *pMatrixTransform) {
-  if (0 == m_size.cx || 0 == m_size.cy)
+  if (0 == m_width || 0 == m_height)
     return;
   if (!pContext)
     return;
@@ -39,13 +46,13 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     // 模板缓存的方式来进行剪裁
 
     // 1. 还原scissor区域为整个屏幕
-    SIZE sizeWnd = m_pCompositor->GetSize();
+    SIZE sizeWnd = static_cast<D3D10Compositor*>(m_pCompositor)->GetSize();
     D3D10_RECT rects;
     SetRect((LPRECT)&rects, 0, 0, sizeWnd.cx, sizeWnd.cy);
     pDevice->RSSetScissorRects(1, &rects);
 
     // 2. 清除当前模板缓存
-    m_pCompositor->ClearStencil();
+    static_cast<D3D10Compositor*>(m_pCompositor)->ClearStencil();
 
     // 3. 禁止back buffer写入
     ID3D10BlendState *pOldBlendState = nullptr;

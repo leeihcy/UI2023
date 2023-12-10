@@ -1,5 +1,11 @@
 #pragma once
-#include <D3D10.h>
+struct ID3D10EffectTechnique;
+struct ID3D10EffectShaderResourceVariable;
+struct ID3D10EffectMatrixVariable;
+struct ID3D10EffectVectorVariable;
+struct ID3D10EffectScalarVariable;
+struct ID3D10Device;
+struct ID3D10Effect;
 
 class Effects
 {

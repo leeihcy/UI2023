@@ -31,7 +31,7 @@ void HardwareCompositor::onBindHWND(WINDOW_HANDLE hWnd) {
   typedef IGpuCompositor *(*pfnUICreateHardwareComposition)(HWND hWnd);
   pfnUICreateHardwareComposition fn =
       (pfnUICreateHardwareComposition)::GetProcAddress(
-          hModule, "UICreateHardwareComposition");
+          hModule, "CreateGpuComposition");
 
   if (!fn) {
     UIASSERT(0);

@@ -5,7 +5,6 @@
 #include "src/vulkan/wrap/vulkan_image_view.h"
 #include "src/vulkan/wrap/vulkan_swap_chain_image.h"
 #include "src/vulkan/wrap/vulkan_sync.h"
-#include <_types/_uint32_t.h>
 #include <memory>
 #include <vector>
 #include <vulkan/vulkan.h>

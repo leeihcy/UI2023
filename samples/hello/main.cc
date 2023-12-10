@@ -3,6 +3,7 @@ using namespace std;
 
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
+#include <string_view>
 
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
   printf("on_window_destroy\n");
@@ -33,7 +34,7 @@ int main() {
 
   ui::Rect rc = {100, 100, 500, 400};
   window->Create(rc);
-  window->SetTitle(u8"你好Hello!");
+  window->SetTitle("你好Hello!");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));

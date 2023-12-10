@@ -1,12 +1,8 @@
 #include "Effects.h"
-#include "src/resource.h"
-#include "src/stdafx.h"
+#include "src/d3d10/resource.h"
 #include <assert.h>
-
-#if defined(OS_WIN)
-#include <d3d10.h>
+#include <d3d10_1.h>
 #include <d3dx10.h>
-#endif
 
 ID3D10Effect *Effects::m_pEffect = nullptr;
 
@@ -37,12 +33,12 @@ bool Effects::Init(ID3D10Device *pDevice) {
 #ifdef _DEBUG
   TCHAR szPath[MAX_PATH] = {0};
   GetModuleFileName(hInstance, szPath, MAX_PATH);
-  TCHAR *p = _tcsrchr(szPath, TEXT('\\'));
+  TCHAR *p = wcsrchr(szPath, L'\\');
   if (p) {
     *(p + 1) = 0;
   }
 
-  _tcscat(szPath, TEXT("..\\..\\ui\\gpu\\src\\d3d10\\d3d10.fx"));
+  wcscat(szPath, TEXT("..\\..\\ui\\gpu\\src\\d3d10\\d3d10.fx"));
 
   HRESULT hr = D3DX10CreateEffectFromFile(
       szPath, nullptr, nullptr, "fx_4_0", dwShaderFlags, 0, pDevice, nullptr,

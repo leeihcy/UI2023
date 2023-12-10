@@ -23,6 +23,8 @@ struct IGpuCompositor {
   virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
   virtual void EndCommit(GpuLayerCommitContext*) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
+  // virtual int GetWidth() = 0;
+  // virtual int GetHeight() = 0;
 };
 
 struct UploadGpuBitmapInfo {

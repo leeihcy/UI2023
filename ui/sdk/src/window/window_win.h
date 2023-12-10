@@ -1,9 +1,8 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_WIN_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_WIN_H_
 #include "window.h"
-
-#include "src/util/windows.h"
 #include <string>
+#include "src/util/windows.h"
 
 namespace ui {
 
@@ -68,7 +67,7 @@ public:
   // WndProc的原始消息处理   // 经过virtual扩展了
   // VIRTUAL_BEGIN_MSG_MAP(WindowPlatformWin)
   BEGIN_MSG_MAP_EX(WindowPlatformWin)
-  MESSAGE_HANDLER(WM_ERASEBKGND, _OnEraseBkgnd)
+  MESSAGE_HANDLER(WM_ERASEBKGND, _OnEraseBkgnd) 
   MESSAGE_HANDLER(WM_PAINT, _OnPaint)
 #if 0
   MESSAGE_HANDLER(WM_SETCURSOR, _OnSetCursor)
@@ -133,7 +132,7 @@ public:
 #if (_WIN32_WINNT >= 0x0501)
   MESSAGE_HANDLER(WM_THEMECHANGED, _OnThemeChange)
 #endif
-#endif
+#endif 
   END_MSG_MAP()
 
   LRESULT StartProc(HWND hwnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam,
@@ -173,7 +172,10 @@ public:
   static CREATE_WND_DATA s_create_wnd_data;
 
 private:
+  // 改为使用atl内的类：
+  // C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\atlmfc\include\atlwin.h
   CWndProcThunk m_thunk; // ATL中的THUNK，用于将一个窗口过程作成自己的成员函数
+  
   WNDPROC m_oldWndProc; // 该窗口的原始窗口过程
 
   ui::Window &m_ui_window;

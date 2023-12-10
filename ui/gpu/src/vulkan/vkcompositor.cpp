@@ -3,11 +3,14 @@
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vkapp.h"
 #include "vklayer.h"
-#include "vulkan/vulkan_core.h"
-#include <fstream>
-#include <set>
-#include <string>
 #include "base/stopwatch.h"
+
+#include "vulkan/vulkan.h"
+#if defined(OS_WIN)
+#include "windows.h"
+#include "vulkan/vulkan_win32.h"
+#endif
+
 
 #if defined(OS_MAC)
 void *GetNSWindowRootView(void *window);
@@ -117,7 +120,7 @@ bool VulkanCompositor::Initialize(void *hWnd) {
   // 获取窗口大小
 #if defined(OS_WIN)
   RECT rc;
-  ::GetClientRect(m_hWnd, &rc);
+  ::GetClientRect((HWND)m_hWnd, &rc);
   m_width = rc.right - rc.left;
   m_height = rc.bottom - rc.top;
 #elif defined(OS_MAC)
@@ -181,10 +184,10 @@ bool VulkanCompositor::create_vulkan_surface() {
 #if defined(OS_WIN)
   VkWin32SurfaceCreateInfoKHR createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-  createInfo.hwnd = m_hWnd;
+  createInfo.hwnd = (HWND)m_hWnd;
   createInfo.hinstance = GetModuleHandle(nullptr);
 
-  vkCreateWin32SurfaceKHR(app.m_vk_instance, &createInfo, nullptr, &m_surface);
+  vkCreateWin32SurfaceKHR(app.GetVkInstance(), &createInfo, nullptr, &m_surface);
 #elif defined(OS_MAC)
   // https://github.com/glfw/glfw/blob/master/src/cocoa_window.m
 

@@ -11,14 +11,14 @@
 #define _CSTDDEF_
 
 #include <windows.h>
+#include <windowsx.h>
 #include <wingdi.h>
 
 
 #include <atlbase.h>
 #include <atlcore.h>
-// #include <Src\Atl\atlstdthunk.h> <-- 会崩溃，先不用了
 #include "ui/3rd/wtl90/Include/atlapp.h"
-#include "ui/3rd/wtl90/Include/atlcrack.h"
+
 
 // #define _WTL_NO_CSTRING
 // #include <../3rd/wtl90/Include/atlmisc.h>
@@ -31,11 +31,88 @@
 // extern HINSTANCE g_hInstance;
 
 
+///////////////////////////////////////////////////////////////////////////////
+// Message map macro for cracked handlers
+
+// Note about message maps with cracked handlers:
+// For ATL 3.0, a message map using cracked handlers MUST use BEGIN_MSG_MAP_EX.
+// For ATL 7.0 or higher, you can use BEGIN_MSG_MAP for CWindowImpl/CDialogImpl derived classes,
+// but must use BEGIN_MSG_MAP_EX for classes that don't derive from CWindowImpl/CDialogImpl.
+
+#define BEGIN_MSG_MAP_EX(theClass) \
+public: \
+	BOOL m_bMsgHandled; \
+	/* "handled" management for cracked handlers */ \
+	BOOL IsMsgHandled() const \
+	{ \
+		return m_bMsgHandled; \
+	} \
+	void SetMsgHandled(BOOL bHandled) \
+	{ \
+		m_bMsgHandled = bHandled; \
+	} \
+	BOOL ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID = 0) \
+	{ \
+		BOOL bOldMsgHandled = m_bMsgHandled; \
+		BOOL bRet = _ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult, dwMsgMapID); \
+		m_bMsgHandled = bOldMsgHandled; \
+		return bRet; \
+	} \
+	BOOL _ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID) \
+	{ \
+		BOOL bHandled = TRUE; \
+		hWnd; \
+		uMsg; \
+		wParam; \
+		lParam; \
+		lResult; \
+		bHandled; \
+		switch(dwMsgMapID) \
+		{ \
+		case 0:
+
+
+
+// LRESULT OnMessageHandlerEX(UINT uMsg, WPARAM wParam, LPARAM lParam)
+#define MESSAGE_HANDLER_EX(msg, func) \
+	if(uMsg == msg) \
+	{ \
+		SetMsgHandled(TRUE); \
+		lResult = func(uMsg, wParam, lParam); \
+		if(IsMsgHandled()) \
+			return TRUE; \
+	}
+
+
+#define MESSAGE_HANDLER(msg, func) \
+	if(uMsg == msg) \
+	{ \
+		bHandled = TRUE; \
+		lResult = func(uMsg, wParam, lParam, bHandled); \
+		if(bHandled) \
+			return TRUE; \
+	}
+
+
+#define END_MSG_MAP() \
+			break; \
+		default: \
+			ATLTRACE(static_cast<int>(ATL::atlTraceWindowing), 0, _T("Invalid message map ID (%i)\n"), dwMsgMapID); \
+			ATLASSERT(FALSE); \
+			break; \
+		} \
+		return FALSE; \
+	}
+
+
 #undef SendMessage
 #undef LoadBitmap
 #undef DrawState
 #undef GetObject
 #undef FindWindow
+#undef GetWindowStyle
+#undef GetFirstChild
+#undef GetTopWindow
 #undef max
 #undef min
 #endif

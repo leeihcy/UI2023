@@ -1,11 +1,10 @@
 #include "vulkan_swap_chain.h"
 #include "src/vulkan/vkapp.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_image_view.h"
-#include "vulkan/vulkan_core.h"
-#include "vulkan_device_queue.h"
-#include <_types/_uint32_t.h>
+#include <vulkan/vulkan.h>
+#include <assert.h>
 #include <memory>
+#include <algorithm>
 
 namespace vulkan {
 
