@@ -1,7 +1,7 @@
 shared_library("uisdk") {
     cflags = []
     if (is_debug && (is_mac || is_linux)) {
-      cflags += ["-g"]
+      cflags += ["-g", "-O0"]
     }
 
     defines = ["UI_EXPORTS"]

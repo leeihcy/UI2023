@@ -92,7 +92,7 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
   ctx->m_data = m_current_command_buffer;
   // vkCmdDraw(m_current_command_buffer->handle(), 3, 1, 0, 0);
 
-  int ms = stop_watch.ElapseMsSinceLast();
+  int ms = stop_watch.ElapseMicrosecondsSinceLast();
   printf("gpu begin commit cost %d ms\n", ms);
 
   return true;
@@ -110,8 +110,8 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
   draw_frame_submit_command_buffer();
   draw_frame_present_swap_chain();
 
-  int ms = stop_watch.ElapseMsSinceLast();
-  printf("gpu end commit cost %d ms\n", ms);
+  int ms = stop_watch.ElapseMicrosecondsSinceLast();
+  printf("gpu end commit cost %d 微秒\n", ms);
 }
 
 bool VulkanCompositor::Initialize(void *hWnd) {

@@ -14,7 +14,7 @@ public:
   ImageRender(IImageRender *p);
   ~ImageRender();
 
-  UI_DECLARE_RENDERBASE(ImageRender, XML_RENDER_TYPE_IMAGE, RENDER_TYPE_IMAGE)
+  void onRouteMessage(ui::Msg *msg);
 
   // UI_BEGIN_MSG_MAP()
   // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
@@ -72,9 +72,6 @@ public:
   ImageListItemRender(IImageListItemRender *p);
   ~ImageListItemRender();
 
-  UI_DECLARE_RENDERBASE(ImageListItemRender, XML_RENDER_TYPE_IMAGELISTITEM,
-                        RENDER_TYPE_IMAGELISTITEM)
-
   // UI_BEGIN_MSG_MAP()
   // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
   // // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
@@ -103,9 +100,6 @@ class ImageListRender : public RenderBase
 public:
   ImageListRender(IImageListRender *p);
   ~ImageListRender();
-
-  UI_DECLARE_RENDERBASE(ImageListRender, XML_RENDER_TYPE_IMAGELIST,
-                        RENDER_TYPE_IMAGELIST)
 
   // UI_BEGIN_MSG_MAP()
   // UIMSG_RENDERBASE_DRAWSTATE(DrawState)

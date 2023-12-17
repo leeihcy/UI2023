@@ -81,7 +81,7 @@ void Window::onSerialize(SerializeParam *pData) {
   s.AddString(XML_TEXT, m_strConfigWindowText);
 }
 
-void Window::Create(const Rect &rect) {
+void Window::Create(const char *szId, const Rect &rect) {
 #if defined(OS_WIN)
   m_platform.reset(new WindowPlatformWin(*this));
 #elif defined(OS_MAC)
@@ -92,7 +92,7 @@ void Window::Create(const Rect &rect) {
   assert(false);
 #endif
 
-  CreateUI(nullptr);
+  CreateUI(szId);
 
   m_platform->Initialize();
   m_platform->Create(rect);

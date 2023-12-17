@@ -96,6 +96,35 @@ struct GetDesiredSizeMessage : public Msg {
 //   }
 
 
+
+struct IRenderTarget;
+struct RENDERBASE_DRAWSTATE {
+  IRenderTarget *pRenderTarget;
+  Rect rc;
+  int nState;
+};
+
+struct TEXTRENDERBASE_DRAWSTATE {
+  RENDERBASE_DRAWSTATE ds_renderbase;
+  const char *szText;
+  int nDrawTextFlag;
+};
+
+//
+//  RenderBase绘制消息
+//
+//  message : UI_WM_RENDERBASE_DRAWSTATE
+//  code : NA
+//  wparam :
+//  lparam : RENDERBASE_DRAWSTATE*
+//
+#define UI_MSG_RENDERBASE_DRAWSTATE 168261825
+struct RenderBaseDrawStateMessage : public Msg {
+  RenderBaseDrawStateMessage() { message = UI_MSG_RENDERBASE_DRAWSTATE; };
+  RENDERBASE_DRAWSTATE draw_state;
+};
+
+
 struct MSG {
 #if 0 // defined(OS_WIN)
   HWND hWnd;

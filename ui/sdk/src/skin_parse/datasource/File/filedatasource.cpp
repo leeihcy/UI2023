@@ -1,82 +1,61 @@
 #include "filedatasource.h"
 // #include "Inc\Util\iimage.h"
 // #include "src/Atl\image.h"
+#include "include/util/path.h"
+#include "sdk/include/macro/helper.h"
 #include "src/skin_parse/datasource/File/filebufferreader.h"
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "src/util/util.h"
-#include "sdk/include/macro/helper.h"
 
-namespace ui
-{
+namespace ui {
 
-FileDataSource::FileDataSource():m_ISkinDataSource(this)
-{
-
-}
-FileDataSource*  FileDataSource::Create()
-{
-	return new FileDataSource();
-}
-void  FileDataSource::Release()
-{
-	delete this;
-}
-ISkinDataSource*  FileDataSource::GetISkinDataSource()
-{
-	return &m_ISkinDataSource;
+FileDataSource::FileDataSource() : m_ISkinDataSource(this) {}
+FileDataSource *FileDataSource::Create() { return new FileDataSource(); }
+void FileDataSource::Release() { delete this; }
+ISkinDataSource *FileDataSource::GetISkinDataSource() {
+  return &m_ISkinDataSource;
 }
 
-void  FileDataSource::SetPath(const char* szPath)
-{
-    if (szPath)
-        m_strPath = szPath;
-    else
-        m_strPath.clear();
+void FileDataSource::SetPath(const char *szPath) {
+  if (szPath)
+    m_strPath = szPath;
+  else
+    m_strPath.clear();
 
-	int nLength = (int)m_strPath.length();
-	if (nLength > 1)
-	{
-		if (m_strPath[nLength-1] != '\\')
-		{
-			m_strPath.append("\\");
-		}
-	}
+  int nLength = (int)m_strPath.length();
+  if (nLength > 1) {
+    if (m_strPath[nLength - 1] != Path::SEPARATOR) {
+      m_strPath.push_back(Path::SEPARATOR);
+    }
+  }
 }
 
-const char*  FileDataSource::GetPath()
-{
-    return m_strPath.c_str();
+const char *FileDataSource::GetPath() { return m_strPath.c_str(); }
+
+void FileDataSource::SetData(byte *data, int size) { UIASSERT(0); }
+
+SKIN_PACKET_TYPE FileDataSource::GetType() { return SKIN_PACKET_TYPE_DIR; }
+bool FileDataSource::Load_UIDocument(UIDocument *pDocument,
+                                     const char *szPath) {
+  if (nullptr == pDocument || nullptr == szPath)
+    return false;
+
+  std::string strTemp = m_strPath;
+  strTemp.append(szPath);
+
+  return pDocument->LoadFile(strTemp.c_str());
 }
 
-void FileDataSource::SetData(byte* data, int size)
-{
-	UIASSERT(0);
-}
+bool FileDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap,
+                                       const char *szPath,
+                                       RENDER_BITMAP_LOAD_FLAG e) {
+  if (nullptr == pBitmap || nullptr == szPath)
+    return false;
 
-SKIN_PACKET_TYPE  FileDataSource::GetType()
-{
-    return SKIN_PACKET_TYPE_DIR;
-}
-bool FileDataSource::Load_UIDocument(UIDocument* pDocument, const char* szPath)
-{
-    if (nullptr == pDocument || nullptr == szPath)
-        return false;
+  std::string strTemp = m_strPath;
+  strTemp.append(szPath);
 
-    std::string strTemp = m_strPath;
-    strTemp.append(szPath);
-
-    return pDocument->LoadFile(strTemp.c_str());
-}
-
-bool  FileDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPath, RENDER_BITMAP_LOAD_FLAG e)
-{
-    if (nullptr == pBitmap || nullptr == szPath)
-        return false;
-
-    std::string strTemp = m_strPath;
-    strTemp.append(szPath);
-
-    return pBitmap->LoadFromFile(strTemp.c_str(), e);
+  return pBitmap->LoadFromFile(strTemp.c_str(), e);
 }
 
 #if 0 // defined(OS_WIN)
@@ -122,35 +101,35 @@ bool  FileDataSource::Load_StreamBuffer(const char* szPath, IStreamBufferReader*
     return true;
 }
 #endif
-bool FileDataSource::FileExist(const char* szPath)
-{
-	std::string strTemp = m_strPath;
-	strTemp.append(szPath);
+bool FileDataSource::FileExist(const char *szPath) {
+  std::string strTemp = m_strPath;
+  strTemp.append(szPath);
 
-	return ui::util::Path_FileExists(strTemp.c_str()) ? true : false;
+  return ui::util::Path_FileExists(strTemp.c_str()) ? true : false;
 }
 
-// 
-// bool  FileDataSource::CalcFilePath(const char* szPath, IResource* pSkinRes, std::string& strLastPath)
+//
+// bool  FileDataSource::CalcFilePath(const char* szPath, IResource* pSkinRes,
+// std::string& strLastPath)
 // {
 //     if (nullptr == szPath || nullptr == pSkinRes)
 //         return false;
-// 
+//
 //     if (strlen(szPath) >= MAX_PATH)
 //         return false;
-// 
+//
 //     // 1. 直接就是绝对路径
 //     if (util::IsFullPath(szPath))
 //     {
 //         if (!::PathFileExists(szPath))
 //             return false;
-// 
+//
 //         strLastPath = szPath;
 //         return true;
 //     }
-// 
+//
 //     char  szFullPath[MAX_PATH] = _T("");
-// 
+//
 //     // 相对于皮肤包路径
 //     const char* szSkinDir = pSkinRes->GetPath();
 //     if (util::CalcFullPathByRelative(szSkinDir, szPath, szFullPath))
@@ -161,14 +140,14 @@ bool FileDataSource::FileExist(const char* szPath)
 //             return true;
 //         }
 //     }
-// 
+//
 //     // 相对于配置文件路径
 //     IUIDocument*  pDoc = nullptr;
 //     pElement->GetDocument(&pDoc);
-// 
+//
 //     if (nullptr == pDoc)
 //         return false;
-// 
+//
 //     char  szFileDir[MAX_PATH] = _T("");
 //     if (false == util::GetPathDir(pDoc->GetPath(), szFileDir))
 //     {
@@ -176,7 +155,7 @@ bool FileDataSource::FileExist(const char* szPath)
 //         return false;
 //     }
 //     SAFE_RELEASE(pDoc);
-// 
+//
 //     if (util::CalcFullPathByRelative(szFileDir, szPath, szFullPath))
 //     {
 //         if (PathFileExists(szFullPath))
@@ -185,8 +164,8 @@ bool FileDataSource::FileExist(const char* szPath)
 //             return true;
 //         }
 //     }
-// 
+//
 //     return false;
 // }
 
-}
+} // namespace ui

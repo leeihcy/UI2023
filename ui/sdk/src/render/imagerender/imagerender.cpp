@@ -1,6 +1,8 @@
 #include "imagerender.h"
 #include "include/inc.h"
+#include "include/interface/irenderbase.h"
 #include "include/interface/renderlibrary.h"
+#include "include/macro/msg.h"
 #include "include/util/struct.h"
 #include "src/attribute/9region_attribute.h"
 #include "src/attribute/attribute.h"
@@ -26,6 +28,14 @@ ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
 ImageRender::~ImageRender() {
   SAFE_RELEASE(m_pBitmap);
   // SAFE_RELEASE(m_pColorBk);
+}
+
+void ImageRender::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
+    DrawState(&((RenderBaseDrawStateMessage*)msg)->draw_state);
+    return;
+  }
+  RenderBase::onRouteMessage(msg);
 }
 
 void ImageRender::SetAlpha(int nAlpha) { m_nAlpha = nAlpha; }

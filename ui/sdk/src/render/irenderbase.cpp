@@ -53,16 +53,16 @@ void IRenderBase::Serialize(SerializeParam *pData) {
 }
 
 void IRenderBase::DrawState(IRenderTarget *p, const Rect *prc, int nState) {
-  RENDERBASE_DRAWSTATE drawstate = {0};
-  drawstate.pRenderTarget = p;
+  RenderBaseDrawStateMessage msg;
+  msg.draw_state.pRenderTarget = p;
   if (prc) {
-    drawstate.rc.CopyFrom(*prc);
+    msg.draw_state.rc.CopyFrom(*prc);
   }
-  drawstate.nState = nState;
+  msg.draw_state.nState = nState;
 
-  static_cast<IMessage *>(this)->SendMessage(UI_MSG_RENDERBASE_DRAWSTATE,
-                                             (ui::llong)&drawstate, 0);
-};
+  static_cast<IMessage *>(this)->RouteMessage(&msg);
+}
+
 Size IRenderBase::GetDesiredSize() {
   GetDesiredSizeMessage msg;
   static_cast<IMessage *>(this)->RouteMessage(&msg);

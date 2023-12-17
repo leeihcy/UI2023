@@ -16,8 +16,6 @@ public:
     ColorRender(IColorRender* p);
     ~ColorRender();
 
-    UI_DECLARE_RENDERBASE(ColorRender, XML_RENDER_TYPE_COLOR, RENDER_TYPE_COLOR)
-
 	// UI_BEGIN_MSG_MAP()
     //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
     //     UIMSG_QUERYINTERFACE(ColorRender)
@@ -47,8 +45,6 @@ class SysColorRender : public /*Theme*/RenderBase
 public:
     SysColorRender(ISysColorRender* p);
     ~SysColorRender();
-
-    UI_DECLARE_RENDERBASE(SysColorRender, XML_RENDER_TYPE_SYSCOLOR, RENDER_TYPE_THEME_SYSCOLOR)
 
 	// UI_BEGIN_MSG_MAP()
     //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
@@ -83,8 +79,6 @@ class GradientRender : public RenderBase
 public:
     GradientRender(IGradientRender* p);
     ~GradientRender();
-
-    UI_DECLARE_RENDERBASE(GradientRender, XML_RENDER_TYPE_GRADIENT, RENDER_TYPE_GRADIENT)
 
 	// UI_BEGIN_MSG_MAP()
     //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
@@ -134,8 +128,6 @@ class ColorListRender : public RenderBase
 public:
     ColorListRender(IColorListRender* p);
     ~ColorListRender();
-
-    UI_DECLARE_RENDERBASE(ColorListRender, XML_RENDER_TYPE_COLORLIST, RENDER_TYPE_COLORLIST)
 
 	// UI_BEGIN_MSG_MAP()
     //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)

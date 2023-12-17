@@ -6,12 +6,12 @@
 #include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
 #include "src/object/object.h"
+#include "src/window/window.h"
 #include "src/resource/res_bundle.h"
 #include "src/resource/stylemanager.h"
 #include "src/resource/uiresource.h"
 #include "src/skin_parse/skinparseengine.h"
 #include "src/skin_parse/xml/xmlwrap.h"
-// #include "..\UIObject\Window\windowbase.h"
 #include "include/interface/ilayout.h"
 
 namespace ui {
@@ -344,13 +344,10 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
 
   // 默认将该控件添加一个notify object为窗口对象，并将msgmapid设置为0
   if (pNotifyTarget == NOTIFY_TARGET_ROOT) {
-#if 0
-        WindowBase* pWindowBase = pObj->GetWindowObject();
-        if (pObj != pWindowBase && pWindowBase)
-            pObj->SetNotify(pWindowBase->GetIMessage(), 0);
-#else
-    UIASSERT(false);
-#endif
+    Window *pWindowBase = pObj->GetWindow();
+    if (pObj != pWindowBase && pWindowBase) {
+      pObj->SetNotify(pWindowBase->GetIMessage(), 0);
+    }
   } else if (pNotifyTarget == NOTIFY_TARGET_NULL) {
 
   } else {

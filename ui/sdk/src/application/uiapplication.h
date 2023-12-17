@@ -107,12 +107,11 @@ private:
   // gpu合成总开关
   bool m_bGpuEnable = false;
 
-  typedef std::vector<IMeta *> UIOBJ_CREATE_DATA;
   typedef std::map<std::string, pfnParseSkinTag> UISKINTAGPARSE_DATA;
   typedef std::map<std::string, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
 
   // 保存UI对象的XML字符串，用于从字符串创建UI对象
-  UIOBJ_CREATE_DATA m_vecUIObjectDesc;
+  std::vector<IMeta *> m_vecUIObjectDesc;
   UISKINTAGPARSE_DATA m_mapSkinTagParseData;
   UICONTROLTAGPARSE_DATA m_mapControlTagParseData;
 

@@ -237,18 +237,27 @@ UIElementProxy PugiXmlElement::FirstChild() {
   if (!nodeChild)
     return UIElementProxy();
 
+  if (nodeChild.type() == pugi::node_comment) {
+    while ((nodeChild = nodeChild.next_sibling())) {
+      if (nodeChild.type() == pugi::node_comment)
+        continue;
+
+      break;
+    } 
+    if (!nodeChild)
+      return UIElementProxy();
+  }
+
   return UIElementProxy(new PugiXmlElement(nodeChild, m_pDocument));
 }
 
 UIElementProxy PugiXmlElement::NextElement() {
   pugi::xml_node nodeNext = m_node;
   while ((nodeNext = nodeNext.next_sibling())) {
-    if (nodeNext.type() == pugi::node_comment)
-      continue;
-
-    break;
+    if (nodeNext.type() != pugi::node_comment) {
+      break;
+    }
   }
-
   if (!nodeNext)
     return UIElementProxy();
 

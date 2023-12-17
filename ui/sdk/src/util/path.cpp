@@ -20,6 +20,12 @@ public:
 
 // ---------------------------------------------------------
 
+#if defined(OS_WIN)
+const char Path::SEPARATOR = '\\';
+#else
+const char Path::SEPARATOR = '/';
+#endif
+
 Path::Path() {}
 Path::~Path() {
   if (m_impl) {

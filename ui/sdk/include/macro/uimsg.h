@@ -318,25 +318,6 @@ struct GETDESIREDSIZEINFO {
       return true;                                                             \
   }
 
-//
-//  RenderBase绘制消息
-//
-//  message : UI_WM_RENDERBASE_DRAWSTATE
-//  code : NA
-//  wparam :
-//  lparam : RENDERBASE_DRAWSTATE*
-//
-#define UI_MSG_RENDERBASE_DRAWSTATE 168261825
-
-// void DrawState(RENDERBASE_DRAWSTATE* pDrawStruct);
-#define UIMSG_RENDERBASE_DRAWSTATE(func)                                       \
-  if (uMsg == UI_MSG_RENDERBASE_DRAWSTATE) {                                   \
-    SetMsgHandled(true);                                                       \
-    func((RENDERBASE_DRAWSTATE *)wParam);                                      \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
 // void OnDrawState(TEXTRENDERBASE_DRAWSTATE* pDrawStruct);
 #define UIMSG_TEXTRENDERBASE_DRAWSTATE(func)                                   \
   if (uMsg == UI_MSG_RENDERBASE_DRAWSTATE) {                                   \

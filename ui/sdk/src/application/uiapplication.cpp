@@ -83,7 +83,7 @@ void Application::x_Init() {
 #endif
   m_bGpuEnable = false;
 
-  EnableGpuComposite();
+  // EnableGpuComposite();
 
   // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
   GetDpi();
@@ -515,7 +515,7 @@ void Application::LoadUIObjectListToToolBox() {
   if (!m_pUIEditor)
     return;
 
-  UIOBJ_CREATE_DATA::iterator iter = m_vecUIObjectDesc.begin();
+  auto iter = m_vecUIObjectDesc.begin();
   for (; iter != m_vecUIObjectDesc.end(); iter++) {
     m_pUIEditor->OnToolBox_AddObject((*iter));
   }

@@ -36,18 +36,6 @@ struct UIAPI C9Region {
   short bottomright;
 };
 
-struct IRenderTarget;
-struct RENDERBASE_DRAWSTATE {
-  IRenderTarget *pRenderTarget;
-  Rect rc;
-  int nState;
-};
-
-struct TEXTRENDERBASE_DRAWSTATE {
-  RENDERBASE_DRAWSTATE ds_renderbase;
-  const char *szText;
-  int nDrawTextFlag;
-};
 
 enum {
   TOOLTIP_ACTION_FLAG_NORMAL =

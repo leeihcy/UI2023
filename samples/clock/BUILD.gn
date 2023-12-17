@@ -1,0 +1,34 @@
+
+executable("clock") {
+    output_name = "sample_clock"
+
+    deps = [
+        "//ui/sdk:sdk"
+    ]
+    include_dirs = [
+        "//ui",
+    ]
+    sources = [
+        "main.cc",
+    ]
+
+    cflags = []
+    if (is_debug) {
+      cflags += ["-g", "-O0"]
+    }
+}
+
+
+copy("copy_clock_resource") {
+  sources = [
+    "resource/resource.xml", 
+    "resource/clock.xml", 
+    "resource/clock.jpg", 
+    "resource/hourhand.png", 
+    "resource/minhand.png", 
+    "resource/sechand.png",
+  ]
+  outputs = [
+    "$root_build_dir/sample/clock/{{source_file_part}}"
+  ]
+}

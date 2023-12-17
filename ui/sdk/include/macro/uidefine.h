@@ -226,15 +226,6 @@ enum OBJECT_STATE_BIT {
 #define SWP_NO_REDRAW 8
 #define SWP_NO_SENDCHANGING 0x10
 
-#define UI_DECLARE_RENDERBASE(className, xml, rendertype)                      \
-  static const char *GetXmlName() { return xml; }                              \
-  static int GetType() { return rendertype; }
-
-// 本宏定义主要是用于theme类型的renderbase，要根据控件类型进行创建
-#define UI_DECLARE_RENDERBASE2(className, xml, rendertype)                     \
-  static const char *GetXmlName() { return xml; }                              \
-  static int GetType() { return rendertype; }
-
 #define UI_DECLARE_TEXTRENDERBASE(className, xml, rendertype)                  \
   static const char *GetXmlName() { return xml; }                              \
   static int GetType() { return rendertype; }

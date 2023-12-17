@@ -20,6 +20,8 @@ public:
   Path Join(const char* sub_path);
   const char* ToString();
 
+public:
+  static const char SEPARATOR;
 private:
   PathImpl* m_impl = nullptr;
 };

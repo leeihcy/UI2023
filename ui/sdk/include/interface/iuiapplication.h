@@ -75,8 +75,7 @@ public:
   IResource *GetDefaultSkinRes();
 
   void RestoreRegisterUIObject();
-  bool RegisterControlTagParseFunc(const char *szTag,
-                                   pfnParseControlTag func);
+  bool RegisterControlTagParseFunc(const char *szTag, pfnParseControlTag func);
   bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
 
@@ -85,8 +84,7 @@ public:
   bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 
-  bool RegisterUIRenderBaseCreateData(const char *szName, int nType,
-                                      pfnUICreateRenderBasePtr pfunc);
+  bool RegisterUIRenderBase(IMeta& meta);
   bool CreateRenderBase(int nType, IObject *pObject, IRenderBase **ppOut);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
@@ -104,7 +102,7 @@ public:
                           bool bCreateDefault, ILayout **ppOut);
   void EnumLayoutType(pfnEnumLayoutTypeCallback callback, llong wParam,
                       llong lParam);
-  bool RegisterLayout(const char* name, pfnUICreateLayoutPtr pfn);  
+  bool RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn);
 
 #if 0
     bool  IsDialogMessage(MSG* pMsg);

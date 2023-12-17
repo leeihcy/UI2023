@@ -562,7 +562,7 @@ ImageResItem *ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
 
     char szInsert[16] = {0};
     for (int i = nScale; i > 1; i--) {
-      sprintf(szInsert, "@%dx", i);
+      snprintf(szInsert, 16, "@%dx", i);
       std::string strTest(str);
       strTest.insert(pos, szInsert);
 

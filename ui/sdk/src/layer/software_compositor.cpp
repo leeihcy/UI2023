@@ -1,5 +1,7 @@
 // #include "stdafx.h"
 #include "software_compositor.h"
+
+#include "base/stopwatch.h"
 #include "include/interface/renderlibrary.h"
 #include "software_layer.h"
 #include "src/window/window.h"
@@ -13,6 +15,9 @@ void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   if (!m_pRootLayer)
     return;
 
+  
+  StopWatch stop_watch;  
+
   // 先返回当前窗口脏区域
   m_pRootLayer->CopyDirtyRect(outArrDirtyInWindow);
 
@@ -25,6 +30,9 @@ void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   // 		update_dirty_recursion(p);
   // 		p = p->GetNext();
   // 	}
+
+  int ms = stop_watch.ElapseMicrosecondsSinceLast();
+  UI_LOG_INFO("software update dirty cost %d 微秒", ms);
 }
 
 void SoftwareCompositor::update_dirty_recursion(Layer *p) {
