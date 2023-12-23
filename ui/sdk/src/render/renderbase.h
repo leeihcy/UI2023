@@ -54,9 +54,10 @@ public:
   ImageRes *GetSkinImageRes();
 
   void _LoadColor(const char *szColorId, Color *&pColorRef);
-  void _LoadBitmap(const char *szBitmapId, IRenderBitmap *&pBitmapRef);
+  std::shared_ptr<IRenderBitmap> _LoadBitmap(const char *id);
+
   const char *_GetColorId(Color *&pColorRef);
-  const char *_GetBitmapId(IRenderBitmap *&pBitmapRef);
+  const char *_GetBitmapId(IRenderBitmap* pBitmap);
 
 protected:
   Application *m_pUIApplication;

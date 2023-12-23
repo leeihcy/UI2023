@@ -1,10 +1,12 @@
 #include "include/interface/itextrenderbase.h"
 #include "include/inc.h"
 #include "include/interface/iuiapplication.h"
+#include "include/interface/renderlibrary.h"
 #include "sdk/include/util/struct.h"
 #include "src/object/object.h"
 #include "src/render/render_meta.h"
 #include "src/render/textrender/textrender.h"
+#include <memory>
 
 namespace ui {
 
@@ -64,15 +66,14 @@ void ITextRenderBase::Serialize(SerializeParam *pData) {
   static_cast<IMessage*>(this)->RouteMessage(&msg);
 }
 
-void ITextRenderBase::_LoadFont(const char *szFontId,
-                                IRenderFont *&pRenderFont) {
-  __pImpl->_LoadFont(szFontId, pRenderFont);
+std::shared_ptr<IRenderFont> ITextRenderBase::_LoadFont(const char *szFontId) {
+  return __pImpl->_LoadFont(szFontId);
 }
 const char *ITextRenderBase::_SaveFont(IRenderFont *&pRenderFont) {
   return __pImpl->_SaveFont(pRenderFont);
 }
-void ITextRenderBase::_LoadDefalutFont(IRenderFont **ppRenderFont) {
-  __pImpl->_LoadDefalutFont(ppRenderFont);
+std::shared_ptr<IRenderFont> ITextRenderBase::_LoadDefalutFont() {
+  return __pImpl->_LoadDefalutFont();
 }
 void ITextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
   __pImpl->_LoadColor(szColorId, pColor);
@@ -80,7 +81,6 @@ void ITextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
 const char *ITextRenderBase::_SaveColor(Color *&pColor) {
   return __pImpl->_SaveColor(pColor);
 }
-
 Size ITextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
   //     Size s = {0,0};
   //
@@ -149,7 +149,7 @@ void ITextRenderBase::CheckSkinTextureChanged() {
 
 //////////////////////////////////////////////////////////////////////////
 
-void IColorListTextRender::SetRenderFont(IRenderFont *p) {
+void IColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> p) {
   __pImpl->SetRenderFont(p);
 }
 void IColorListTextRender::SetCount(int nCount) { __pImpl->SetCount(nCount); }
@@ -165,7 +165,7 @@ void IFontColorListTextRender::SetCount(int nCount) {
 void IFontColorListTextRender::SetColor(int nIndex, unsigned int color) {
   return __pImpl->SetColor(nIndex, color);
 }
-void IFontColorListTextRender::SetFont(int nIndex, IRenderFont *p) {
+void IFontColorListTextRender::SetFont(int nIndex, std::shared_ptr<IRenderFont> p) {
   return __pImpl->SetFont(nIndex, p);
 }
 

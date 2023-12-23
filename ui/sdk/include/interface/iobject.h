@@ -108,8 +108,8 @@ struct UIAPI IObject : public IMessage {
   void Invalidate(Rect *prcObj, int nCount);
   void UpdateLayout();
   
-  void SetObjectPos(int x, int y, int cx, int cy, int nFlag);
-  void SetObjectPos(const Rect *prc, int nFlag);
+  void SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags nFlag);
+  void SetObjectPos(const Rect *prc, SetPositionFlags nFlag);
 
   bool IsVisible();
   bool IsCollapsed();

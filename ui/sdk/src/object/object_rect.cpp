@@ -643,14 +643,14 @@ Size Object::GetDesiredSize() {
   return m_pLayoutParam->CalcDesiredSize();
 }
 
-void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
+void Object::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags) {
   if (cx < 0)
     cx = 0;
   if (cy < 0)
     cy = 0;
 
-  bool bMove = (nFlag & SWP_NO_MOVE) ? false : true;
-  bool bSize = (nFlag & SWP_NO_SIZE) ? false : true;
+  bool bMove = flags.move;
+  bool bSize = flags.size;
 
   //  TODO: 加上这一段代码会导致SetVisible中的布局出现问题，如果pp -> p ->
   //  o，o发生变化
@@ -664,14 +664,14 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   //         cy == m_rcParent.Height())
   //         return;
 
-  nFlag |= SWP_NO_ZORDER; // 该函数不提供修改ZORDER的功能
-  WINDOWPOS wndpos = {0, 0, x, y, cx, cy, nFlag};
-  m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (llong)&wndpos);
-  x = wndpos.x;
-  y = wndpos.y;
-  cx = wndpos.cx;
-  cy = wndpos.cy;
-  nFlag = wndpos.flags;
+  // nFlag |= SWP_NO_ZORDER; // 该函数不提供修改ZORDER的功能
+  // WINDOWPOS wndpos = {0, 0, x, y, cx, cy, nFlag};
+  // m_pIObject->SendMessage(WM_WINDOWPOSCHANGING, 0, (llong)&wndpos);
+  // x = wndpos.x;
+  // y = wndpos.y;
+  // cx = wndpos.cx;
+  // cy = wndpos.cy;
+  // nFlag = wndpos.flags;
 
   if (x == m_rcParent.left && y == m_rcParent.top)
     bMove = false;
@@ -687,12 +687,12 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
     x = m_rcParent.left;
     y = m_rcParent.top;
   } else {
-    if (nFlag & SWP_FORCESENDSIZEMSG) {
-      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
-    }
-    if (nFlag & SWP_FORCEUPDATEOBJECT) {
-      this->Invalidate();
-    }
+    // if (nFlag & SWP_FORCESENDSIZEMSG) {
+    //   notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
+    // }
+    // if (nFlag & SWP_FORCEUPDATEOBJECT) {
+    //   this->Invalidate();
+    // }
     return; // DONOTHING
   }
 
@@ -704,7 +704,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   // Rect rcOldVisibleRect = {0};
   if (bMove || bSize) {
     // 刷新移动前的区域位置
-    if (!(nFlag & SWP_NO_REDRAW)) {
+    if (flags.redraw) {
       // this->GetRectInWindow(&rcOldVisibleRect, true);  //
       // 获取下当前会刷新的区域范围，放在后面进行提交
       this->Invalidate();
@@ -712,28 +712,28 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag) {
   }
 
   m_rcParent.Set(x, y, x + cx, y + cy);
-  if (!(nFlag & SWP_NOUPDATELAYOUTPOS)) {
+  if (flags.update_layout_pos) {
     UpdateLayoutPos();
   }
 
   // MSDN: MoveWindow sends the WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED,
   // WM_MOVE, WM_SIZE, and WM_NCCALCSIZE messages to the window.
   // 在这里我们暂时只先发送WM_MOVE/WM_SIZE消息
-  if (!(nFlag & SWP_NO_SENDCHANGING)) {
-    if (bMove) {
-      notify_WM_MOVE(m_rcParent.left, m_rcParent.top);
-    }
-    if (bSize) {
-      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
-    }
+  // if (!(nFlag & SWP_NO_SENDCHANGING)) {
+  //   if (bMove) {
+  //     notify_WM_MOVE(m_rcParent.left, m_rcParent.top);
+  //   }
+  //   if (bSize) {
+  //     notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
+  //   }
 
-    WINDOWPOS wndpos2 = {0, 0, x, y, cx, cy, nFlag};
-    m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (ui::llong)&wndpos2);
-  }
+  //   WINDOWPOS wndpos2 = {0, 0, x, y, cx, cy, nFlag};
+  //   m_pIObject->SendMessage(WM_WINDOWPOSCHANGED, 0, (ui::llong)&wndpos2);
+  // }
 
   if (bMove || bSize) {
     // 刷新移动后的区域位置
-    if (!(nFlag & SWP_NO_REDRAW)) {
+    if (flags.redraw) {
       // 2015.9.22
       // 如果是硬件合成模式，则最终窗口上的缓存并不包含其它
       // 层的内容，直接CommitDoubleBuffer会导致内容丢失。
@@ -757,11 +757,11 @@ GetRectInWindow(&rcArray[1], true);
   }
 }
 
-void Object::SetObjectPos(const Rect *prc, unsigned int nFlag) {
+void Object::SetObjectPos(const Rect *prc, SetPositionFlags flags) {
   if (nullptr == prc)
     return;
 
-  this->SetObjectPos(prc->left, prc->top, prc->width(), prc->height(), nFlag);
+  this->SetObjectPos(prc->left, prc->top, prc->width(), prc->height(), flags);
 }
 
 // 根据m_rcParent更新

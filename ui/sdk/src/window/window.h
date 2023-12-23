@@ -21,8 +21,10 @@ struct WindowPlatform {
   virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
+  virtual float GetScaleFactor() = 0;
   virtual void GetClientRect(Rect *prect) = 0;
   virtual void GetWindowRect(Rect *prect) = 0;
+  virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
   virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
   virtual bool IsWindowVisible() = 0;
@@ -52,6 +54,7 @@ public:
   WINDOW_HANDLE GetWindowHandle();
   void SetTitle(const char *title);
   void Show();
+  float GetScaleFactor();
 
   bool CreateUI(const char *szId);
 
@@ -66,6 +69,9 @@ public:
   virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
   void Commit(IRenderTarget* pRT, const Rect* prect, int count);
   
+  // Object
+  void SetObjectPos( int x, int y, int cx, int cy, SetPositionFlags flags) override;
+
 public:
   // platform回调
   void onClose();
@@ -78,6 +84,8 @@ private:
   // void on_paint(SkCanvas &canvas);
   // void on_erase_bkgnd(SkCanvas &canvas);
   // void swap_buffer();
+  
+  void onCreate();
 
 protected:
   long FinalConstruct();

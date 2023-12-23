@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <skin>
   <layout>
-    <Window id="clock" minwidth="200" minheight="200">
-      <Panel id="panel_clock" width="600" height="600" back.render.type="image" bkgnd.render.image="clock_bk">
-        <!-- <PictureCtrl transparent="1" zorder="1" layer="1" id="hour" bkgnd.render.type="image" bkgnd.render.image="clock_hour" layout.left="285" layout.top="0"/>
-        <PictureCtrl transparent="1" zorder="2" layer="1" id="min" bkgnd.render.type="image" bkgnd.render.image="clock_min"  layout.left="285" layout.top="0"/>
-        <PictureCtrl transparent="1" zorder="3" layer="1" id="sec" bkgnd.render.type="image" bkgnd.render.image="clock_sec" layout.left="285" layout.top="0"/> -->
+    <Window id="clock" width="600" height="600">
+      <Panel id="panel_clock" width="600" height="600" back.render.type="image" back.render.image="clock_bk">
+        <Control transparent="1" zorder="1" layer="1" id="hour" back.render.type="image" back.render.image="clock_hour" layout.left="285" layout.top="0"/>
+        <Control transparent="1" zorder="2" layer="1" id="min" back.render.type="image" back.render.image="clock_min"  layout.left="285" layout.top="0"/>
+        <Control transparent="1" zorder="3" layer="1" id="sec" back.render.type="image" back.render.image="clock_sec" layout.left="285" layout.top="0"/> 
       </Panel>
     </Window>
   </layout>

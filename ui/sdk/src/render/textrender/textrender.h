@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #if 0 // defined(OS_WIN)
 #include "Vsstyle.h"
 #include "uxtheme.h"
@@ -57,9 +58,9 @@ public:
   bool IsThemeRender();
   void CheckSkinTextureChanged();
 
-  void _LoadFont(const char *szFontId, IRenderFont *&pRenderFont);
-  const char *_SaveFont(IRenderFont *&pRenderFont);
-  void _LoadDefalutFont(IRenderFont **ppRenderFont);
+  std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
+  const char *_SaveFont(IRenderFont *pRenderFont);
+  std::shared_ptr<IRenderFont> _LoadDefalutFont();
   void _LoadColor(const char *szColorId, Color *&pColor);
   const char *_SaveColor(Color *&pColor);
 
@@ -96,9 +97,9 @@ public:
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  IRenderFont *GetRenderFont() { return m_pRenderFont; }
+  IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
 
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont>);
   void SetColor(Color *pColText);
   bool GetColor(Color &color);
 
@@ -108,7 +109,7 @@ public:
 protected:
   ISimpleTextRender *m_pISimpleTextRender;
   Color *m_pColorText;
-  IRenderFont *m_pRenderFont;
+  std::shared_ptr<IRenderFont> m_pRenderFont;
 
 #ifdef EDITOR_MODE
   std::string m_strFontId;
@@ -134,16 +135,16 @@ public:
   // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
 
 public:
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont> );
 
 protected:
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  IRenderFont *GetRenderFont() { return m_pRenderFont; }
+  IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
   int OnSkinTextureChanged(unsigned int, int, int);
 
-  void LoadFont(const char *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
-  const char *GetFontId() { return _SaveFont(m_pRenderFont); }
+  void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
+  const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
   void LoadColor(const char *szColorId) {
     _LoadColor(szColorId, m_pColorText);
   }
@@ -153,7 +154,7 @@ private:
   IContrastColorTextRender *m_pIContrastColorTextRender;
 
   Color *m_pColorText;
-  IRenderFont *m_pRenderFont;
+  std::shared_ptr<IRenderFont> m_pRenderFont;
 
   bool m_bNeedCalcColor;
 };
@@ -180,13 +181,13 @@ public:
   int OnSkinTextureChanged(unsigned int, int, int);
 
   IRenderFont *GetRenderFont();
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont>);
 
   void SetCount(int nCount);
   int GetCount();
 
-  void LoadFont(const char *szFontId) { _LoadFont(szFontId, m_pRenderFont); }
-  const char *GetFontId() { return _SaveFont(m_pRenderFont); }
+  void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
+  const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
 
 protected:
   void Clear();
@@ -195,7 +196,7 @@ private:
   IContrastColorListTextRender *m_pIContrastColorListTextRender;
 
   std::vector<Color *> m_vTextColor;
-  IRenderFont *m_pRenderFont;
+  std::shared_ptr<IRenderFont> m_pRenderFont;
   int m_nCount;
 };
 
@@ -220,7 +221,7 @@ public:
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
   IRenderFont *GetRenderFont();
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont>);
 
   void LoadFont(const char *szFontId);
   const char *GetFontId();
@@ -240,7 +241,7 @@ private:
   IColorListTextRender *m_pIColorListTextRender;
 
   std::vector<Color*> m_vTextColor;
-  IRenderFont *m_pRenderFont;
+  std::shared_ptr<IRenderFont> m_pRenderFont;
   int m_nCount;
 
 #ifdef EDITOR_MODE
@@ -276,7 +277,7 @@ public:
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
 
   IRenderFont *GetRenderFont();
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont>);
 
   void SetCount(int nCount);
   int GetCount();
@@ -287,7 +288,7 @@ public:
   const char *GetFont();
 
   void SetColor(int nIndex, unsigned int color);
-  void SetFont(int nIndex, IRenderFont *);
+  void SetFont(int nIndex, std::shared_ptr<IRenderFont>);
 
 protected:
   void Clear();
@@ -296,7 +297,7 @@ private:
   IFontColorListTextRender *m_pIFontColorListTextRender;
 
   std::vector<Color *> m_vTextColor;
-  std::vector<IRenderFont *> m_vTextFont;
+  std::vector<std::shared_ptr<IRenderFont> > m_vTextFont;
 
   int m_nCount;
 };

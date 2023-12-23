@@ -137,19 +137,27 @@ void AverageLayout::DoArrange(ArrangeParam* param) {
 }
 
 void AverageLayout::ArrangeObject_H(Object *pChildObj, Rect *prc) {
+  SetPositionFlags flags;
+  flags.update_layout_pos = false;
+  flags.force_send_size_message = true;
+
   pChildObj->SetObjectPos(
       prc->left + pChildObj->GetMarginL(), prc->top + m_pPanel->GetPaddingT(),
       prc->Width() - pChildObj->GetMarginW(),
       prc->Height() - pChildObj->GetMarginH(),
-      SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS | SWP_FORCESENDSIZEMSG);
+      flags);
 }
 
 void AverageLayout::ArrangeObject_V(Object *pChildObj, Rect *prc) {
+  SetPositionFlags flags;
+  flags.update_layout_pos = false;
+  flags.force_send_size_message = true;
+
   pChildObj->SetObjectPos(
       prc->left + pChildObj->GetMarginL(), prc->top + m_pPanel->GetPaddingT(),
       prc->Width() - pChildObj->GetMarginW(),
       prc->Height() - pChildObj->GetMarginH(),
-      SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS | SWP_FORCESENDSIZEMSG);
+      flags);
 }
 
 // void AverageLayout::ChildObjectVisibleChanged(IObject *pObj) {

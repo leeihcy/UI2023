@@ -5,6 +5,7 @@
 #include "src/attribute/flags_attribute.h"
 #include "src/attribute/int_attribute.h"
 #include "src/object/object.h"
+#include "src/helper/scale/scale_factor.h"
 #include "src/util/DPI/dpihelper.h"
 
 namespace ui {
@@ -90,6 +91,7 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   //////////////////////////////////////////////////////////////////////////
   // 计算出 pChild 的 rectP的宽和高
   Size s = pParam->CalcDesiredSize();
+  UI_LOG_INFO("%d, %d", s.width, s.height);
 
   // 先CalcDesiredSize，再getconfigleft,防止在CalcDesiredSize中修改config left
   int left = pParam->GetConfigLeft();
@@ -166,8 +168,12 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   }
 
   rcChildObj.Offset(x, y);
-  pChild->SetObjectPos(&rcChildObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
-                                        SWP_FORCESENDSIZEMSG);
+
+  SetPositionFlags flags;
+  flags.update_layout_pos = false;
+  flags.redraw = false;
+  flags.force_send_size_message = true;
+  pChild->SetObjectPos(&rcChildObj, flags);
 }
 
 // void CanvasLayout::ChildObjectVisibleChanged(IObject *pObj) {
@@ -223,16 +229,19 @@ Size CanvasLayoutParam::CalcDesiredSize() {
     size = msg.size;
 
     // 如果有指定width、height的其中一个，那么忽略在上一步中得到的值
-    if (this->m_nConfigWidth != AUTO)
+    if (this->m_nConfigWidth != AUTO) {
       size.width = this->m_nConfigWidth;
-    if (this->m_nConfigHeight != AUTO)
+    }
+    if (this->m_nConfigHeight != AUTO) {
       size.height = this->m_nConfigHeight;
+    }
   }
 
   // 计算 margin 的大小
   //     size.width += m_pObj->GetMarginW();
   //     size.height += m_pObj->GetMarginH();
 
+  UI_LOG_INFO("%d, %d", size.width, size.height);
   return size;
 }
 
@@ -334,7 +343,7 @@ void CanvasLayoutParam::Serialize(SerializeParam *pData) {
 
 int CanvasLayoutParam::GetConfigLeft() { return m_nConfigLeft; }
 void CanvasLayoutParam::LoadConfigLeft(int n) {
-  m_nConfigLeft = ScaleByDpi_if_gt0(n);
+  m_nConfigLeft = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigLeft() {
   return RestoreByDpi_if_gt0(m_nConfigLeft);
@@ -343,7 +352,7 @@ void CanvasLayoutParam::SetConfigLeft(int n) { m_nConfigLeft = n; }
 
 int CanvasLayoutParam::GetConfigTop() { return m_nConfigTop; }
 void CanvasLayoutParam::LoadConfigTop(int n) {
-  m_nConfigTop = ScaleByDpi_if_gt0(n);
+  m_nConfigTop = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigTop() {
   return RestoreByDpi_if_gt0(m_nConfigTop);
@@ -352,7 +361,7 @@ void CanvasLayoutParam::SetConfigTop(int n) { m_nConfigTop = n; }
 
 int CanvasLayoutParam::GetConfigRight() { return m_nConfigRight; }
 void CanvasLayoutParam::LoadConfigRight(int n) {
-  m_nConfigRight = ScaleByDpi_if_gt0(n);
+  m_nConfigRight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigRight() {
   return RestoreByDpi_if_gt0(m_nConfigRight);
@@ -361,7 +370,7 @@ void CanvasLayoutParam::SetConfigRight(int n) { m_nConfigRight = n; }
 
 int CanvasLayoutParam::GetConfigBottom() { return m_nConfigBottom; }
 void CanvasLayoutParam::LoadConfigBottom(int n) {
-  m_nConfigBottom = ScaleByDpi_if_gt0(n);
+  m_nConfigBottom = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigBottom() {
   return RestoreByDpi_if_gt0(m_nConfigBottom);
@@ -371,7 +380,7 @@ void CanvasLayoutParam::SetConfigBottom(int n) { m_nConfigBottom = n; }
 int CanvasLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
 void CanvasLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
 void CanvasLayoutParam::LoadConfigWidth(int n) {
-  m_nConfigWidth = ScaleByDpi_if_gt0(n);
+  m_nConfigWidth = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
 }
 int CanvasLayoutParam::SaveConfigWidth() {
   return RestoreByDpi_if_gt0(m_nConfigWidth);
@@ -380,7 +389,7 @@ int CanvasLayoutParam::SaveConfigWidth() {
 int CanvasLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
 void CanvasLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
 void CanvasLayoutParam::LoadConfigHeight(int n) {
-  m_nConfigHeight = ScaleByDpi_if_gt0(n);
+  m_nConfigHeight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
 }
 int CanvasLayoutParam::SaveConfigHeight() {
   return RestoreByDpi_if_gt0(m_nConfigHeight);

@@ -42,6 +42,7 @@ public:
   void SetWindowRect(int x, int y, int width, int height);
   void GetClientRect(Rect *prect);
   void GetWindowRect(Rect *prect);
+  void SetWindowPos(int x, int y, int w, int h, SetWindowPosFlags flags) override;
   void CenterWindow();
   bool IsChildWindow() override;
   bool IsWindowVisible() override;

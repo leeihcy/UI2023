@@ -1,4 +1,5 @@
 #include "include/interface/iobject.h"
+#include "include/util/rect.h"
 #include "src/object/object.h"
 #include "src/window/window.h"
 #include "include/interface/ixmlwrap.h"
@@ -92,11 +93,11 @@ void  IObject::InitDefaultAttrib()
 {
 	__pImpl->InitDefaultAttrib(); 
 }
-void  IObject::SetObjectPos(int x, int y, int cx, int cy, int nFlag)
+void  IObject::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags nFlag)
 { 
 	__pImpl->SetObjectPos(x, y, cx, cy, nFlag);
 }
-void  IObject::SetObjectPos(const Rect* prc, int nFlag)          
+void  IObject::SetObjectPos(const Rect* prc, SetPositionFlags nFlag)          
 {
 	__pImpl->SetObjectPos(prc, nFlag);
 }

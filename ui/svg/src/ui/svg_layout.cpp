@@ -73,8 +73,10 @@ void SvgLayout::Arrange(ArrangeParam *param) {
     rect.right = rect.left + pParam->m_width;
     rect.bottom = rect.top + pParam->m_height;
 
-    child->SetObjectPos(&rect, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
-                                    SWP_FORCESENDSIZEMSG);
+    SetPositionFlags flags;
+    flags.update_layout_pos = false;
+    flags.force_send_size_message = true;
+    child->SetObjectPos(&rect, flags);
   }
 
   // Size s = pParam->CalcDesiredSize();

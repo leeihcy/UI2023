@@ -14,6 +14,7 @@
 #include "src/util/DPI/dpihelper.h"
 #include "uiresource.h"
 #include <math.h>
+#include <memory>
 
 namespace ui {
 ImageResItem::ImageResItem() {
@@ -79,15 +80,19 @@ bool ImageResItem::IsMyRenderBitmap(IRenderBitmap *pRenderBitmap) {
   return false;
 }
 
-IRenderBitmap *ImageResItem::GetImage(Resource *pSkinRes,
-                                      GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
-                                      bool *pbFirstTimeCreate) {
+std::shared_ptr<IRenderBitmap>
+ImageResItem::GetImage(Resource *pSkinRes,
+                       GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                       bool *pbFirstTimeCreate) {
   if (nullptr == pSkinRes)
     return nullptr;
 
   switch (eRenderType) {
+  case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA:
+    return GetSkiaImage(pSkinRes, pbFirstTimeCreate);
+
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDI:
-    return GetImage_gdi(pSkinRes, pbFirstTimeCreate);
+    //   return GetImage_gdi(pSkinRes, pbFirstTimeCreate);
 
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS:
     //         return GetImage_gdiplus(pSkinRes, pbFirstTimeCreate);
@@ -105,38 +110,32 @@ IRenderBitmap *ImageResItem::GetImage(Resource *pSkinRes,
   return nullptr;
 }
 
-IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
-                                          bool *pbFirstTimeCreate) {
-#if 0 // defined(OS_WIN)
+std::shared_ptr<IRenderBitmap>
+ImageResItem::GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate) {
+
   SkinDataSource *pDataSource = pSkinRes->GetDataSource();
   if (nullptr == pDataSource)
     return nullptr;
 
-  if (m_bNeedAntiAliasing) {
-    // TODO:
-    UIASSERT(0);
-    // return GetImage_gdiplus(pSkinRes, pbFirstTimeCreate);
+  if (m_render_bitmap) {
+    return m_render_bitmap;
   }
 
-  if (m_pGdiBitmap) {
-    m_pGdiBitmap->AddRef();
-    return (IRenderBitmap *)m_pGdiBitmap;
-  }
-
-  RenderBitmapFactory::CreateInstance(
+  m_render_bitmap = RenderBitmapFactory::CreateInstance(
       pSkinRes->GetUIApplication()->GetIUIApplication(),
-      GRAPHICS_RENDER_LIBRARY_TYPE_GDI, m_eType,
-      (IRenderBitmap **)&m_pGdiBitmap);
+      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA, m_eType);
 
-  if (!m_pGdiBitmap)
-    return nullptr;
+  if (!m_render_bitmap) {
+    return m_render_bitmap;
+  }
 
-  m_pGdiBitmap->SetOutRef((IRenderResource **)&m_pGdiBitmap);
-  SetRenderBitmapAttribute(m_pGdiBitmap);
+  // m_pGdiBitmap->SetOutRef((IRenderResource **)&m_pGdiBitmap);
+  // SetRenderBitmapAttribute(m_pGdiBitmap);
 
   /*if (false == m_pGdiBitmap->LoadFromFile(m_strPath.c_str(),
    * m_bMustHasAlphaChannel))*/
   // 2015.2.11
+  //
   // gdi也可以用于透明窗口了。干脆将所有图片都加载为32位的，省的gdi的jpg图片无法在透明窗口中显示
   long flags = RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL;
   if (NeedDpiAdapt()) {
@@ -144,22 +143,79 @@ IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
     flags |= (m_nFileDpiScale) << 24;
   }
 
-  if (false == pDataSource->Load_RenderBitmap(m_pGdiBitmap, m_strPath.c_str(),
+  if (false == pDataSource->Load_RenderBitmap(m_render_bitmap.get(),
+                                              m_strPath.c_str(),
                                               (RENDER_BITMAP_LOAD_FLAG)flags)) {
-    SAFE_RELEASE(m_pGdiBitmap);
+    m_render_bitmap.reset();
     UI_LOG_ERROR("Load gdi bitmap from file failed. path=%s",
                  m_strPath.c_str());
-    return nullptr;
+    return std::shared_ptr<IRenderBitmap>();
   }
 
   if (pbFirstTimeCreate)
     *pbFirstTimeCreate = true;
 
-  return (IRenderBitmap *)m_pGdiBitmap;
-#else
-  return nullptr;
-#endif
+  return m_render_bitmap;
 }
+
+// IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
+//                                           bool *pbFirstTimeCreate) {
+// #if 0 // defined(OS_WIN)
+//   SkinDataSource *pDataSource = pSkinRes->GetDataSource();
+//   if (nullptr == pDataSource)
+//     return nullptr;
+
+//   if (m_bNeedAntiAliasing) {
+//     // TODO:
+//     UIASSERT(0);
+//     // return GetImage_gdiplus(pSkinRes, pbFirstTimeCreate);
+//   }
+
+//   if (m_pGdiBitmap) {
+//     m_pGdiBitmap->AddRef();
+//     return (IRenderBitmap *)m_pGdiBitmap;
+//   }
+
+//   RenderBitmapFactory::CreateInstance(
+//       pSkinRes->GetUIApplication()->GetIUIApplication(),
+//       GRAPHICS_RENDER_LIBRARY_TYPE_GDI, m_eType,
+//       (IRenderBitmap **)&m_pGdiBitmap);
+
+//   if (!m_pGdiBitmap)
+//     return nullptr;
+
+//   m_pGdiBitmap->SetOutRef((IRenderResource **)&m_pGdiBitmap);
+//   SetRenderBitmapAttribute(m_pGdiBitmap);
+
+//   /*if (false == m_pGdiBitmap->LoadFromFile(m_strPath.c_str(),
+//    * m_bMustHasAlphaChannel))*/
+//   // 2015.2.11
+//   //
+//   gdi也可以用于透明窗口了。干脆将所有图片都加载为32位的，省的gdi的jpg图片无法在透明窗口中显示
+//   long flags = RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL;
+//   if (NeedDpiAdapt()) {
+//     flags |= RENDER_BITMAP_LOAD_DPI_ADAPT;
+//     flags |= (m_nFileDpiScale) << 24;
+//   }
+
+//   if (false == pDataSource->Load_RenderBitmap(m_pGdiBitmap,
+//   m_strPath.c_str(),
+//                                               (RENDER_BITMAP_LOAD_FLAG)flags))
+//                                               {
+//     SAFE_RELEASE(m_pGdiBitmap);
+//     UI_LOG_ERROR("Load gdi bitmap from file failed. path=%s",
+//                  m_strPath.c_str());
+//     return nullptr;
+//   }
+
+//   if (pbFirstTimeCreate)
+//     *pbFirstTimeCreate = true;
+
+//   return (IRenderBitmap *)m_pGdiBitmap;
+// #else
+//   return nullptr;
+// #endif
+// }
 
 bool ImageResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   if (false == m_bUseSkinHLS)
@@ -178,7 +234,7 @@ bool ImageResItem::ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s,
                              int nFlag) {
   if (false == m_bUseSkinHLS)
     return true;
-
+#if 0 // TODO:
   if (pBitmap) {
     if (nullptr == m_pOriginImageData) {
       m_pOriginImageData = new ImageData;
@@ -191,6 +247,7 @@ bool ImageResItem::ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s,
     }
     return pBitmap->ChangeHSL(m_pOriginImageData, h, s, l, nFlag);
   }
+#endif
   return false;
 }
 
@@ -450,8 +507,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType, IMapAttribute *pMapAttrib,
 
   ImageResItem *pItem = this->InsertImage(eType, szId, szFullPath);
   if (!pItem) {
-    UI_LOG_WARN("insert image m_strID=%s, path=%s failed.", szId,
-                szFullPath);
+    UI_LOG_WARN("insert image m_strID=%s, path=%s failed.", szId, szFullPath);
     return nullptr;
   }
 
@@ -691,43 +747,42 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
 // #endif
 // }
 
-bool ImageRes::GetBitmap(const char *szImageID,
-                         GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
-                         IRenderBitmap **pRenderBitmap) {
-  if (!szImageID || !szImageID[0] || !pRenderBitmap)
-    return false;
+std::shared_ptr<IRenderBitmap>
+ImageRes::GetBitmap(const char *szImageID,
+                    GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
+  if (!szImageID || !szImageID[0])
+    return std::shared_ptr<IRenderBitmap>();
 
   ImageResItem *pItem = this->GetImageItem2(szImageID);
   if (!pItem) {
     // 获取失败，尝试向上一级资源获取
     if (m_pSkinRes->GetParentSkinRes()) {
       return m_pSkinRes->GetParentSkinRes()->GetImageRes().GetBitmap(
-          szImageID, eRenderType, pRenderBitmap);
+          szImageID, eRenderType);
     }
 
     UI_LOG_ERROR("GetImageItem：%s failed .1", szImageID);
-    return false;
+    return std::shared_ptr<IRenderBitmap>();
   }
 
   bool bFirstTimeCreate = false;
-  IRenderBitmap *pBitmap =
+  std::shared_ptr<IRenderBitmap> pBitmap =
       pItem->GetImage(m_pSkinRes, eRenderType, &bFirstTimeCreate);
   if (!pBitmap) {
     UI_LOG_ERROR("GetImage：%s failed .2", szImageID);
-    return false;
+    return pBitmap;
   }
 
-  if (bFirstTimeCreate && pItem->GetUseSkinHLS()) {
-    // 检查当前皮肤的HLS
-    if (m_pSkinRes && m_pSkinRes->GetHLSInfo()) {
-      SKIN_HLS_INFO *pHLSInfo = m_pSkinRes->GetHLSInfo();
-      pItem->ModifyHLS(pBitmap, pHLSInfo->h, pHLSInfo->l, pHLSInfo->s,
-                       pHLSInfo->nFlag);
-    }
-  }
+  // if (bFirstTimeCreate && pItem->GetUseSkinHLS()) {
+  //   // 检查当前皮肤的HLS
+  //   if (m_pSkinRes && m_pSkinRes->GetHLSInfo()) {
+  //     SKIN_HLS_INFO *pHLSInfo = m_pSkinRes->GetHLSInfo();
+  //     pItem->ModifyHLS(pBitmap, pHLSInfo->h, pHLSInfo->l, pHLSInfo->s,
+  //                      pHLSInfo->nFlag);
+  //   }
+  // }
 
-  *pRenderBitmap = pBitmap;
-  return true;
+  return pBitmap;
 }
 
 const char *ImageRes::GetRenderBitmapId(IRenderBitmap *pBitmap) {

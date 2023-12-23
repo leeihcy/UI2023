@@ -132,9 +132,6 @@ protected:
 
 public:
   virtual void virtualInnerInitWindow();
-
-  virtual void SetObjectPos(int x, int y, int cx, int cy,
-                            int nFlag = 0) override;
   virtual void virtualSetVisibleEx(VISIBILITY_TYPE eType) override;
   virtual void virtualSetEnable(bool b) override;
   virtual bool IsVisible() override;

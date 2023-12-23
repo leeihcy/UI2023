@@ -436,6 +436,20 @@ void WindowPlatformWin::GetWindowRect(Rect *prect) {
   RECT2Rect(rc, prect);
 }
 
+void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h, SetWindowPosFlags flags) {
+  int windows_flags = 0;
+  if (flags.move == false) {
+    widnows_flags |= SWP_NOMOVE;
+  }
+  if (flags.size == false) {
+    windows_flags |= SWP_NOSIZE;
+  }
+  if (!flags.activate) {
+    windows_flags |= SWO_NOACTIVATE;
+  }
+  ::SetWindowPos(m_hWnd, HWND_TOP, x, y, w, h, windows_flags);
+}
+
 void WindowPlatformWin::CenterWindow() {
   // ::CenterWindow(m_hWnd);
 }

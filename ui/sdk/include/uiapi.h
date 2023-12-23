@@ -67,10 +67,10 @@ UIAPI IMapAttribute* UICreateIMapAttribute();
 UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
 
 struct IRenderBitmap;
-UIAPI void
+UIAPI std::shared_ptr<IRenderBitmap>
 UICreateRenderBitmap(IApplication *pUIApp,
                      GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
-                     IMAGE_ITEM_TYPE eType, IRenderBitmap **ppOut);
+                     IMAGE_ITEM_TYPE eType);
 
 struct IRenderTarget;
 UIAPI IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,

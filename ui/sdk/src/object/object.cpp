@@ -1,4 +1,5 @@
 #include "object.h"
+#include "include/interface/imeta.h"
 #include "object_layer.h"
 
 #include "include/interface/ilayout.h"
@@ -14,6 +15,7 @@
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
+#include "src/window/window.h"
 #include "src/resource/colorres.h"
 #include "src/resource/cursorres.h"
 #include "src/resource/res_bundle.h"
@@ -176,11 +178,22 @@ Window *Object::GetWindow() {
     pParent = pParent->m_pParent;
   } while (1);
 
-  IWindow *pWindow =
-      (IWindow *)pParent->GetIObject()->QueryInterface(IWindow::UUID());
-  if (pWindow)
-    return pWindow->GetImpl();
-  return nullptr;
+  if (!pParent->m_meta) {
+    return nullptr;
+  }
+  
+  // query interface有点慢，直接换meta major type来判断。
+  if (pParent->m_meta->Detail().major_type != OBJ_WINDOW) {
+    return nullptr;
+  }
+  return static_cast<Window*>(pParent);
+
+  // IWindow *pWindow =
+  //     (IWindow *)pParent->GetIObject()->QueryInterface(IWindow::UUID());
+  // if (pWindow)
+  //   return pWindow->GetImpl();
+  // return nullptr;
+
 }
 #if 0 // defined(OS_WIN)
 HWND Object::GetHWND() {

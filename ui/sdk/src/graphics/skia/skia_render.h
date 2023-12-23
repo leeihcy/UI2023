@@ -71,8 +71,6 @@ public:
   //	virtual void  DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree,
   //DRAWBITMAPPARAM* pParam);
   virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) override;
-  static void DrawBitmapEx(/*HDC*/llong hDC, IRenderBitmap *hBitmap,
-                           DRAWBITMAPPARAM *pParam);
 
   virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) override;
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) override;

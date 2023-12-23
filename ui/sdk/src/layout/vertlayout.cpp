@@ -230,8 +230,10 @@ void VertLayout::DoArrange(ArrangeParam* param) {
       rcObj.right = rcObj.left + info.width;
     }
 
-    pChild->SetObjectPos(&rcObj, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
-                                     SWP_FORCESENDSIZEMSG);
+    SetPositionFlags flags;
+    flags.update_layout_pos = false;
+    flags.force_send_size_message = true;
+    pChild->SetObjectPos(&rcObj, flags);
   }
 }
 

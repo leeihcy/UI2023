@@ -1,5 +1,6 @@
 #include "textrender.h"
 
+#include "include/interface/renderlibrary.h"
 #include "src/render/renderbase.h"
 
 #include "include/interface/imapattr.h"
@@ -16,6 +17,7 @@
 #include "src/application/uiapplication.h"
 #include "src/resource/colorres.h"
 #include "sdk/include/util/struct.h"
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                      //
@@ -76,8 +78,7 @@ const char *TextRenderBase::GetHaloColorId() {
   return _SaveColor(m_pColorTextBkgnd);
 }
 
-void TextRenderBase::_LoadFont(const char *szFontId,
-                               IRenderFont *&pRenderFont) {
+std::shared_ptr<IRenderFont> TextRenderBase::_LoadFont(const char *szFontId) {
 #if 0
     SAFE_RELEASE(pRenderFont);
     IFontRes*  pFontRes = GetSkinFontRes();
@@ -99,7 +100,7 @@ void TextRenderBase::_LoadFont(const char *szFontId,
 #endif
 }
 
-const char *TextRenderBase::_SaveFont(IRenderFont *&pRenderFont) {
+const char *TextRenderBase::_SaveFont(IRenderFont *pRenderFont) {
   if (!pRenderFont)
     return nullptr;
 
@@ -112,7 +113,7 @@ const char *TextRenderBase::_SaveFont(IRenderFont *&pRenderFont) {
   return nullptr;
 }
 
-void TextRenderBase::_LoadDefalutFont(IRenderFont **ppRenderFont) {
+std::shared_ptr<IRenderFont> TextRenderBase::_LoadDefalutFont() {
 #if 0
 	WindowBase* pWnd = m_pObject->GetWindowObject();
 	if (!pWnd)
@@ -149,6 +150,7 @@ void TextRenderBase::_LoadDefalutFont(IRenderFont **ppRenderFont) {
 #else
   UIASSERT(0);
 #endif
+  return std::shared_ptr<IRenderFont>();
 }
 
 void TextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
@@ -233,11 +235,9 @@ SimpleTextRender::SimpleTextRender(ISimpleTextRender *p) : TextRenderBase(p) {
   m_pISimpleTextRender = p;
 
   // m_pColorText = nullptr;
-  m_pRenderFont = nullptr;
 }
 SimpleTextRender::~SimpleTextRender() {
   // SAFE_RELEASE(m_pColorText);
-  SAFE_RELEASE(m_pRenderFont);
 }
 
 // 如果字体指针为空，则取object对象的配置字体。
@@ -252,7 +252,7 @@ void SimpleTextRender::OnSerialize(SerializeParam *pData) {
   }
 
   if (!m_pRenderFont && pData->IsLoad()) {
-    _LoadDefalutFont(&m_pRenderFont);
+    m_pRenderFont = _LoadDefalutFont();
   }
 }
 
@@ -271,7 +271,7 @@ void SimpleTextRender::LoadFont(const char *szFontId) {
     return;
 
   szFontId = pSkinRes->GetI18nRes().MapConfigValue(szFontId);
-  _LoadFont(szFontId, m_pRenderFont);
+  m_pRenderFont = _LoadFont(szFontId);
 }
 const char *SimpleTextRender::GetFontId() {
 #ifdef EDITOR_MODE
@@ -280,13 +280,8 @@ const char *SimpleTextRender::GetFontId() {
   return nullptr;
 }
 
-void SimpleTextRender::SetRenderFont(IRenderFont *pFont) {
-  SAFE_RELEASE(m_pRenderFont);
-
+void SimpleTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
   m_pRenderFont = pFont;
-
-  if (pFont)
-    pFont->AddRef();
 }
 
 void SimpleTextRender::SetColor(Color *pColText) {
@@ -324,7 +319,7 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
     //   param.bkcolor = *m_pColorTextBkgnd;
     param.wParam = m_wparamDrawText;
     param.lParam = m_lparamDrawText;
-    pRenderTarget->DrawString(m_pRenderFont, &param);
+    pRenderTarget->DrawString(m_pRenderFont.get(), &param);
   }
 }
 
@@ -335,11 +330,9 @@ ContrastColorTextRender::ContrastColorTextRender(IContrastColorTextRender *p)
   m_pIContrastColorTextRender = p;
 
   m_pColorText = nullptr;
-  m_pRenderFont = nullptr;
   m_bNeedCalcColor = false;
 }
 ContrastColorTextRender::~ContrastColorTextRender() {
-  SAFE_RELEASE(m_pRenderFont);
   // SAFE_RELEASE(m_pColorText);
 }
 
@@ -359,7 +352,7 @@ void ContrastColorTextRender::OnSerialize(SerializeParam *pData) {
 
   if (pData->IsLoad()) {
     if (!m_pRenderFont) {
-      _LoadDefalutFont(&m_pRenderFont);
+      m_pRenderFont = _LoadDefalutFont();
     }
 
     // 如果没有配置背景色，则默认设置一个
@@ -377,13 +370,9 @@ void ContrastColorTextRender::OnSerialize(SerializeParam *pData) {
   }
 }
 
-void ContrastColorTextRender::SetRenderFont(IRenderFont *pFont) {
-  SAFE_RELEASE(m_pRenderFont);
-
+void ContrastColorTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
   m_pRenderFont = pFont;
 
-  if (pFont)
-    pFont->AddRef();
 }
 
 void ContrastColorTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
@@ -444,12 +433,10 @@ ContrastColorListTextRender::ContrastColorListTextRender(
     IContrastColorListTextRender *p)
     : TextRenderBase(p) {
   m_nCount = 0;
-  m_pRenderFont = nullptr;
   m_pIContrastColorListTextRender = p;
 }
 ContrastColorListTextRender::~ContrastColorListTextRender() {
   this->Clear();
-  SAFE_RELEASE(m_pRenderFont);
 }
 void ContrastColorListTextRender::Clear() {
   // for (int i = 0; i < m_nCount; i++) {
@@ -483,7 +470,7 @@ void ContrastColorListTextRender::OnSerialize(SerializeParam *pData) {
   }
 
   if (pData->IsLoad() && !m_pRenderFont) {
-    _LoadDefalutFont(&m_pRenderFont);
+    m_pRenderFont = _LoadDefalutFont();
   }
 }
 
@@ -514,15 +501,11 @@ void ContrastColorListTextRender::DrawState(
 }
 
 IRenderFont *ContrastColorListTextRender::GetRenderFont() {
-  return m_pRenderFont;
+  return m_pRenderFont.get();
 }
 
-void ContrastColorListTextRender::SetRenderFont(IRenderFont *pFont) {
-  SAFE_RELEASE(m_pRenderFont);
+void ContrastColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
   m_pRenderFont = pFont;
-
-  if (pFont)
-    pFont->AddRef();
 }
 
 void ContrastColorListTextRender::SetCount(int nCount) {
@@ -540,12 +523,10 @@ int ContrastColorListTextRender::GetCount() { return (int)m_vTextColor.size(); }
 ColorListTextRender::ColorListTextRender(IColorListTextRender *p)
     : TextRenderBase(p) {
   m_nCount = 0;
-  m_pRenderFont = nullptr;
   m_pIColorListTextRender = p;
 }
 ColorListTextRender::~ColorListTextRender() {
   this->Clear();
-  SAFE_RELEASE(m_pRenderFont);
 }
 void ColorListTextRender::Clear() {
   // for (int i = 0; i < m_nCount; i++) {
@@ -573,7 +554,7 @@ void ColorListTextRender::OnSerialize(SerializeParam *pData) {
   }
 
   if (pData->IsLoad() && !m_pRenderFont) {
-    _LoadDefalutFont(&m_pRenderFont);
+    m_pRenderFont = _LoadDefalutFont();
   }
 }
 
@@ -590,7 +571,7 @@ void ColorListTextRender::LoadFont(const char *szFontId) {
     return;
 
   szFontId = pSkinRes->GetI18nRes().MapConfigValue(szFontId);
-  _LoadFont(szFontId, m_pRenderFont);
+  m_pRenderFont = _LoadFont(szFontId);
 }
 const char *ColorListTextRender::GetFontId() {
   // return _SaveFont(m_pRenderFont);
@@ -654,14 +635,10 @@ void ColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
   // param.szText = pDrawStruct->szText;
   // pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_pRenderFont, &param);
 }
-IRenderFont *ColorListTextRender::GetRenderFont() { return m_pRenderFont; }
+IRenderFont *ColorListTextRender::GetRenderFont() { return m_pRenderFont.get(); }
 
-void ColorListTextRender::SetRenderFont(IRenderFont *pFont) {
-  SAFE_RELEASE(m_pRenderFont);
+void ColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
   m_pRenderFont = pFont;
-
-  if (pFont)
-    pFont->AddRef();
 }
 
 void ColorListTextRender::SetCount(int nCount) {
@@ -812,7 +789,7 @@ const char *FontColorListTextRender::GetFont() {
     if (i > 0)
       strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-    const char *szTemp = _SaveFont(m_vTextFont[i]);
+    const char *szTemp = _SaveFont(m_vTextFont[i].get());
     if (szTemp)
       strBuffer.append(szTemp);
   }
@@ -837,23 +814,19 @@ void FontColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
                           : pDrawStruct->nDrawTextFlag;
   param.szText = pDrawStruct->szText;
   param.prc = &(pDrawStruct->ds_renderbase.rc);
-  pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_vTextFont[nRealState],
+  pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_vTextFont[nRealState].get(),
                                                        &param);
 }
 IRenderFont *FontColorListTextRender::GetRenderFont() {
   if (m_vTextFont.size() > 0)
-    return m_vTextFont[0];
+    return m_vTextFont[0].get();
 
   return nullptr;
 }
 
-void FontColorListTextRender::SetRenderFont(IRenderFont *pRenderFont) {
+void FontColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pRenderFont) {
   if (m_vTextFont.size() > 0) {
-    SAFE_RELEASE(m_vTextFont[0]);
     m_vTextFont[0] = pRenderFont;
-
-    if (pRenderFont)
-      pRenderFont->AddRef();
   }
 }
 
@@ -879,17 +852,13 @@ void FontColorListTextRender::SetColor(int nIndex, unsigned int col) {
   // }
   // m_vTextColor[nIndex] = Color::CreateInstance(col);
 }
-void FontColorListTextRender::SetFont(int nIndex, IRenderFont *pFont) {
+void FontColorListTextRender::SetFont(int nIndex, std::shared_ptr<IRenderFont> pFont) {
   if (nIndex >= m_nCount)
     return;
 
-  SAFE_RELEASE(m_vTextFont[nIndex]);
-
   m_vTextFont[nIndex] = pFont;
-
-  if (pFont)
-    pFont->AddRef();
 }
+
 //////////////////////////////////////////////////////////////////////////
 #if 0
 ThemeTextRenderBase::ThemeTextRenderBase(IThemeTextRenderBase* p):TextRenderBase(p)

@@ -3,6 +3,7 @@
 
 #include "include/interface/iuires.h"
 #include "include/interface/renderlibrary.h"
+#include "include/macro/xmldefine.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/object/object.h"
@@ -78,47 +79,40 @@ const char *RenderBase::_GetColorId(Color *&pColorRef) {
   return nullptr;
 }
 
-void RenderBase::_LoadBitmap(const char *szBitmapId,
-                             IRenderBitmap *&pBitmapRef) {
-#if 0 // defined(OS_WIN)
-  SAFE_RELEASE(pBitmapRef);
-  if (!szBitmapId)
-    return;
+std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {
+  if (!id)
+    return std::shared_ptr<IRenderBitmap>();
 
-  if (m_pObject) {
-    Resource *pSkinRes = m_pObject->GetResource();
-    if (!pSkinRes)
-      return;
+  // if (m_pObject) {
+  //   Resource *pSkinRes = m_pObject->GetResource();
+  //   if (!pSkinRes)
+  //     return;
 
-    GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
-    WindowBase *pWnd = m_pObject->GetWindowObject();
-    if (pWnd) {
-      WindowRender *pRender = pWnd->GetWindowRender();
-      if (pRender)
-        eType = pRender->GetGraphicsRenderType();
-    }
+  //   GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+  //   Window *pWnd = m_pObject->GetWindow();
+  //   if (pWnd) {
+  //     WindowRender *pRender = pWnd->GetWindowRender();
+  //     if (pRender)
+  //       eType = pRender->GetGraphicsRenderType();
+  //   }
 
-    pSkinRes->GetImageRes().GetBitmap(szBitmapId, eType, &pBitmapRef);
-  } else {
+  //   pSkinRes->GetImageRes().GetBitmap(szBitmapId, eType, &pBitmapRef);
+  // } else {
     ImageRes *pImageRes = GetSkinImageRes();
     if (!pImageRes)
-      return;
+      return std::shared_ptr<IRenderBitmap>();
 
-    pImageRes->GetBitmap(szBitmapId, UI::GRAPHICS_RENDER_LIBRARY_TYPE_GDI,
-                         &pBitmapRef);
-  }
-#else
-  UIASSERT(false);
-#endif
+    return pImageRes->GetBitmap(id, GRAPHICS_RENDER_LIBRARY_TYPE_SKIA);
+  // }
 }
 
-const char *RenderBase::_GetBitmapId(IRenderBitmap *&pBitmapRef) {
-  if (!pBitmapRef)
+const char *RenderBase::_GetBitmapId(IRenderBitmap *pBitmap) {
+  if (!pBitmap)
     return nullptr;
 
   ImageRes *pImageRes = GetSkinImageRes();
   if (!pImageRes)
     return nullptr;
 
-  return pImageRes->GetRenderBitmapId(pBitmapRef);
+  return pImageRes->GetRenderBitmapId(pBitmap);
 }

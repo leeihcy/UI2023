@@ -53,7 +53,8 @@ IRenderBitmap*  IImageRender::GetRenderBitmap()
 }
 void  IImageRender::SetRenderBitmap(IRenderBitmap* pBitmap)
 {
-	__pImpl->SetRenderBitmap(pBitmap);
+  assert(false);  // TOD:
+	//__pImpl->SetRenderBitmap(pBitmap);
 }
 
 void  IImageListRender::SetIImageListRenderBitmap(IImageListRenderBitmap* pBitmap)

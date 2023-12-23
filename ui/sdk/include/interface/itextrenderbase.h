@@ -54,9 +54,9 @@ struct UIAPI ITextRenderBase : public IMessage {
   void Serialize(SerializeParam *pData);
 
 protected:
-  void _LoadFont(const char *szFontId, IRenderFont *&pRenderFont);
+  std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
   const char *_SaveFont(IRenderFont *&pRenderFont);
-  void _LoadDefalutFont(IRenderFont **ppRenderFont);
+  std::shared_ptr<IRenderFont> _LoadDefalutFont();
   void _LoadColor(const char *szColorId, Color *&pColor);
   const char *_SaveColor(Color *&pColor);
 
@@ -99,7 +99,7 @@ struct UIAPI IContrastColorListTextRender : public ITextRenderBase {
 
 class ColorListTextRender;
 struct UIAPI IColorListTextRender : public ITextRenderBase {
-  void SetRenderFont(IRenderFont *);
+  void SetRenderFont(std::shared_ptr<IRenderFont>);
   void SetCount(int nCount);
   void SetColor(int nIndex, Color col);
 
@@ -110,7 +110,7 @@ class FontColorListTextRender;
 struct UIAPI IFontColorListTextRender : public ITextRenderBase {
   void SetCount(int nCount);
   void SetColor(int nIndex, unsigned int color);
-  void SetFont(int nIndex, IRenderFont *);
+  void SetFont(int nIndex, std::shared_ptr<IRenderFont> );
 
 
   UI_DECLARE_INTERFACE(FontColorListTextRender);

@@ -27,6 +27,8 @@ Panel::Panel(IPanel *p) : Object(p) {
   m_rcBkgndRenderRegion.SetEmpty();
   m_rcForegndRenderRegion.SetEmpty();
 
+  m_meta = &PanelMeta::Get();
+
   OBJSTYLE s = {0};
   s.default_transparent = 1;
   s.default_reject_self_mouse_msg = 1;

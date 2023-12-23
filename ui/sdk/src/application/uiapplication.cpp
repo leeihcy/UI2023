@@ -14,6 +14,7 @@
 #include "src/skin_parse/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "src/panel/panel_meta.h"
+#include "src/control/control_meta.h"
 #if defined(OS_MAC)
 #include "application_mac.h"
 #endif
@@ -289,6 +290,7 @@ void Application::ClearRegisterUIObject() {
 void Application::RegisterDefaultUIObject() {
   RegisterUIObject(&WindowMeta::Get());
   RegisterUIObject(&PanelMeta::Get());
+  RegisterUIObject(&ControlMeta::Get());
 #if 0
   RegisterUIObject(RoundPanelMeta::Get());
   RegisterUIObject(ScrollPanelMeta::Get());

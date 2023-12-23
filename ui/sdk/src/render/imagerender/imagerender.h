@@ -6,6 +6,7 @@
 #include "src/render/renderbase.h"
 //#include "UISDK\Animate\Inc\animate_base_inc.h"
 #include <map>
+#include <memory>
 
 namespace ui {
 
@@ -17,9 +18,6 @@ public:
   void onRouteMessage(ui::Msg *msg);
 
   // UI_BEGIN_MSG_MAP()
-  // UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  // // TODO: onRouteMessage UIMSG_GETDESIREDSIZE(GetDesiredSize)
-  // UIMSG_SERIALIZE(OnSerialize)
   // UIMSG_QUERYINTERFACE(ImageRender)
   // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
 
@@ -37,8 +35,8 @@ public:
     m_eBkColorFillType = eType;
   }
 
-  IRenderBitmap *GetRenderBitmap() { return m_pBitmap; }
-  void SetRenderBitmap(IRenderBitmap *pBitmap);
+  IRenderBitmap *GetRenderBitmap() { return m_render_bitmap.get(); }
+  // void SetRenderBitmap(IRenderBitmap *pBitmap);
 
 protected:
   void OnSerialize(SerializeParam *pData);
@@ -47,16 +45,16 @@ protected:
 
 private:
   void LoadBitmap(const char *szBitmapId) {
-    _LoadBitmap(szBitmapId, m_pBitmap);
+    m_render_bitmap = _LoadBitmap(szBitmapId);
   }
-  const char *GetBitmapId() { return _GetBitmapId(m_pBitmap); }
+  const char *GetBitmapId() { return _GetBitmapId(m_render_bitmap.get()); }
   void LoadColor(const char *szColorId) { _LoadColor(szColorId, m_pColorBk); }
   const char *GetColorId() { return _GetColorId(m_pColorBk); }
 
 protected:
   IImageRender *m_pIImageRender;
 
-  IRenderBitmap *m_pBitmap;
+  std::shared_ptr<IRenderBitmap> m_render_bitmap;
   Color *m_pColorBk;
   C9Region m_Region; // 拉伸绘制时才用
   // 绘制区域(为空表示未设置)，有可能只是绘制图片的一部分.子类可以通过修改该值实现某些需求
@@ -86,7 +84,7 @@ public:
 protected:
   IImageListItemRender *m_pIImageListItemRender;
 
-  IImageListRenderBitmap *m_pImageList;
+  std::shared_ptr<IImageListRenderBitmap> m_image_list;
   int m_nImagelistIndex;
 };
 
@@ -140,7 +138,7 @@ protected:
 protected:
   IImageListRender *m_pIImageListRender;
 
-  IImageListRenderBitmap *m_pImageList;
+  std::shared_ptr<IImageListRenderBitmap> m_image_list;
   int m_nImageDrawType;
   C9Region m_9Region;
 

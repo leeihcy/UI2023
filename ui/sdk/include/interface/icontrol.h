@@ -5,7 +5,7 @@
 
 namespace ui
 {
-	interface ITextRenderBase;
+struct ITextRenderBase;
 
 // control style
 // #define CONTROL_STYLE_GROUP             0x00002000    // 是否是一个新组的开始
@@ -14,19 +14,18 @@ typedef struct tagControlStyle
 {
 	bool  group : 1;
 	bool  ownerdraw : 1;
-}ControlStyle;
+} ControlStyle;
 
 class Control;
-struct UIAPI_UUID(78EC44D9-137E-46A1-8ACA-0E12A209FF4F) IControl 
-         : public IObject
+struct UIAPI IControl : public IObject
 {
    void  ModifyControlStyle(ControlStyle* add, ControlStyle* remove);
    bool  TestControlStyle(ControlStyle* test);
    bool  IsGroup();
    void  SetGroup(bool);
 
-   const wchar_t*  GetToolTipText();
-   void  SetToolTipText(const wchar_t* szText);
+   const char*  GetToolTipText();
+   void  SetToolTipText(const char* szText);
 
    ITextRenderBase*  CreateDefaultTextRender();
    ITextRenderBase*  GetTextRenderDefault();

@@ -1,6 +1,7 @@
 #include "window.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
+#include "src/layout/desktop_layout.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
 #include "window_meta.h"
@@ -60,8 +61,7 @@ long Window::FinalConstruct() {
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
 #endif
-  m_window_style.hard_composite = 
-    GetUIApplication()->IsGpuCompositeEnable();
+  m_window_style.hard_composite = GetUIApplication()->IsGpuCompositeEnable();
 
   return 0;
 }
@@ -96,6 +96,8 @@ void Window::Create(const char *szId, const Rect &rect) {
 
   m_platform->Initialize();
   m_platform->Create(rect);
+
+  onCreate();
 
   m_objLayer.CreateLayer();
 }
@@ -262,8 +264,106 @@ bool Window::CreateUI(const char *szId) {
 
   // 窗口作为根结点，一定会创建一个缓存
   m_objStyle.layer = 1;
-  
+
   return true;
+}
+
+void Window::onCreate() {
+
+#if 0
+  	//
+	//  有可能m_strID为空（不加载资源，例如临时的popupconotrolwindow）
+	//	因此没有将AddTopWindowObject、OnInitWindow放在CreateUI中执行
+	//
+	// if (!IsChildWindow())--子窗口也是一个UI窗口，也维护起来
+	{
+		TopWindowManager* pTopWndMgr = 
+            GetUIApplication()->GetTopWindowMgr();
+		if (pTopWndMgr)
+			pTopWndMgr->AddTopWindowObject(this);
+	}
+#endif
+
+  // 布局
+  if (m_window_style.attach) // attach的窗口直接使用外部的大小
+  {
+    // ::GetClientRect(m_hWnd, &m_rcParent);
+
+    //     // 避免此时调用GetDesiredSize又去测量窗口大小了，
+    //     // 导致窗口被修改为自适应大小
+    // CRect rcWindow;
+    // ::GetWindowRect(m_hWnd, &rcWindow);
+    // SetConfigWidth(rcWindow.Width());
+    // SetConfigHeight(rcWindow.Height());
+
+    //     // 因为Attach到的窗口初始化时已经收不到WM_SIZE了，
+    //     // 因此自己再发一次，
+    //     // 通知创建RenderTarget，否则后面的一些刷新将失败
+    // notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
+    //     this->UpdateLayout();
+  } else {
+    if (m_window_style.setcreaterect) {
+      // 避免此时调用GetDesiredSize又去测量窗口大小了，
+      // 导致窗口被修改为自适应大小
+      // CRect rcWindow;
+      // ::GetWindowRect(m_hWnd, &rcWindow);
+      // SetConfigWidth(rcWindow.Width());
+      // SetConfigHeight(rcWindow.Height());
+
+      // ::GetClientRect(m_hWnd, &m_rcParent);
+      // this->UpdateLayout();
+    } else {
+      // 不能放在 OnInitialize 后面。
+      // 因为有可能OnInitialize中已经调用过 SetWindowPos
+      DesktopLayout dl;
+      dl.Arrange(this);
+    }
+  }
+
+#if 0
+  if (!m_strConfigWindowText.empty())
+    ::SetWindowText(m_hWnd, m_strConfigWindowText.c_str());
+
+  // 创建默认字体
+  if (!m_pDefaultFont)
+    SetDefaultRenderFont(L"");
+
+  // 防止在实现显示动画时，先显示了一些初始化中刷新的内容。
+  // 注：不能只限制一个layer
+  m_oWindowRender.SetCanCommit(false);
+  {
+    // 给子类一个初始化的机会 (virtual)，
+    // 例如设置最大化/还原按钮的状态
+    this->virtualInnerInitWindow();
+
+    m_objStyle.initialized = 1;
+    UISendMessage(m_pIMessage, UI_MSG_INITIALIZE);
+    ForwardInitializeMessageToDecendant(this);
+    UISendMessage(m_pIMessage, UI_MSG_INITIALIZE2);
+  }
+  if (m_pCallbackProxy) {
+    m_pCallbackProxy->DoBindPlz(true);
+  }
+  if (m_pCallbackProxy) {
+    m_pCallbackProxy->OnWindowInit();
+  }
+
+  m_oWindowRender.SetCanCommit(true);
+
+  // 设置默认对象
+  m_oMouseManager.SetDefaultObject(m_oMouseManager.GetOriginDefaultObject(),
+                                   false);
+
+  if (m_window_style.attach) // 主动触发刷新
+  {
+    Invalidate();
+  }
+
+  IUIAutoTest *pAutoTest = GetUIApplication()->GetUIAutoTestPtr();
+  if (pAutoTest) {
+    pAutoTest->OnWindowInit(static_cast<IWindow *>(m_pIWindowBase));
+  }
+#endif
 }
 
 void Window::SetGpuComposite(bool b) {
@@ -334,6 +434,15 @@ bool Window::IsWindowVisible() { return m_platform->IsWindowVisible(); }
 
 void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
   m_platform->Commit(pRT, prect, count);
+}
+
+float Window::GetScaleFactor() { return m_platform->GetScaleFactor(); }
+
+
+void  Window::SetObjectPos( int x, int y, int cx, int cy, SetPositionFlags flags)
+{
+  m_platform->SetWindowPos(x, y, cx, cy, flags);
+  m_platform->GetClientRect(&m_rcParent);
 }
 
 } // namespace ui

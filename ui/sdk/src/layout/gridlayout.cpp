@@ -487,8 +487,10 @@ void GridLayout::DoArrange(ArrangeParam *param) {
     if (nConfigH >= 0)
       rc.bottom = rc.top + nConfigH;
 
-    pChild->SetObjectPos(&rc, SWP_NO_REDRAW | SWP_NOUPDATELAYOUTPOS |
-                                  SWP_FORCESENDSIZEMSG);
+    SetPositionFlags flags;
+    flags.update_layout_pos = false;
+    flags.force_send_size_message = true;
+    pChild->SetObjectPos(&rc, flags);
   }
 }
 

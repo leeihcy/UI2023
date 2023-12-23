@@ -105,9 +105,8 @@ struct UIAPI IImageRes : public IRootInterface {
   IImageResItem *GetImageResItem(long lIndex);
   IImageResItem *GetImageResItem(const char *szId);
   bool ModifyImage(const char *szId, const char *szPath);
-  bool GetBitmap(const char *szImageId,
-                 GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
-                 /*out*/ IRenderBitmap **ppRenderBitmap);
+  std::shared_ptr<IRenderBitmap> GetBitmap(const char *szImageId,
+                 GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
 #if 0 // defined(OS_WIN)
   HBITMAP LoadBitmap(const char *szId);
 #endif

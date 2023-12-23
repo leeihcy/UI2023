@@ -1,19 +1,31 @@
 #include "include/inc.h"
 
 #include "include/interface/iwindow.h"
+#include "include/interface/renderlibrary.h"
+#include "include/macro/xmldefine.h"
+#include "src/graphics/skia/skia_bitmap.h"
 #include "src/graphics/skia/skia_render.h"
+#include <memory>
 // #include "src/Renderlibrary\gdi\gdibitmap.h"
 // #include "src/Renderlibrary\gdi\gdirender.h"
 // #include "src/Base\Object\object.h"
 namespace ui {
 
-void RenderBitmapFactory::CreateInstance(
+std::shared_ptr<IRenderBitmap> RenderBitmapFactory::CreateInstance(
     IApplication *pUIApp, GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
-    IMAGE_ITEM_TYPE eType, IRenderBitmap **ppOut) {
-  if (nullptr == ppOut)
-    return;
+    IMAGE_ITEM_TYPE eType) {
 
   switch (eGraphicsRenderType) {
+  case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA: {
+    if (eType == IMAGE_ITEM_TYPE_ICON) {
+      // GdiplusIconRenderBitmap::CreateInstance(ppOut);
+    } else if (eType == IMAGE_ITEM_TYPE_IMAGE_LIST) {
+      // GdiplusImageListRenderBitmap::CreateInstance(ppOut);
+    } else {
+      return SkiaRenderBitmap::CreateInstance();
+    }
+  } break;
+
 #if 0 // defined(OS_WIN)
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDI: {
     if (eType == IMAGE_ITEM_TYPE_ICON) {
@@ -100,6 +112,7 @@ void RenderBitmapFactory::CreateInstance(
     UIASSERT(0);
     break;
   }
+  return std::shared_ptr<IRenderBitmap>();
 }
 
 // IRenderTarget* 没有引用计数机制
@@ -111,8 +124,7 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
   switch (eType) {
   case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA: {
     pRenderTarget = new SkiaRenderTarget(bNeedAlphaChannel);
-  }
-    break;
+  } break;
 #if 0 // defined(OS_WIN)
   case GRAPHICS_RENDER_LIBRARY_TYPE_GDI: {
     pRenderTarget = new GdiRenderTarget(bNeedAlphaChannel);
@@ -180,11 +192,12 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
   return pRenderTarget;
 }
 
-void UICreateRenderBitmap(IApplication *pUIApp,
-                          GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
-                          IMAGE_ITEM_TYPE eType, IRenderBitmap **ppOut) {
-  RenderBitmapFactory::CreateInstance(pUIApp, eGraphicsRenderType, eType,
-                                      ppOut);
+std::shared_ptr<IRenderBitmap>
+UICreateRenderBitmap(IApplication *pUIApp,
+                     GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
+                     IMAGE_ITEM_TYPE eType) {
+  return RenderBitmapFactory::CreateInstance(pUIApp, eGraphicsRenderType,
+                                             eType);
 }
 
 GRAPHICS_RENDER_LIBRARY_TYPE

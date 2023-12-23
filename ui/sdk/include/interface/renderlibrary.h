@@ -42,6 +42,7 @@ typedef struct tagDRAWBITMAPPARAM {
   tagDRAWBITMAPPARAM() {
     memset(this, 0, sizeof(tagDRAWBITMAPPARAM));
     nAlpha = 255;
+    scale_factor = 1.0f;
     nFlag = DRAW_BITMAP_BITBLT;
   }
 
@@ -57,6 +58,8 @@ typedef struct tagDRAWBITMAPPARAM {
   int hSrc;
   C9Region *pRegion; // 不需要拉伸时，不使用
   unsigned char nAlpha;
+
+  float scale_factor;
 
   // out param
   Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
@@ -114,9 +117,9 @@ struct Render2TargetParam {
 struct IRenderResource {
   virtual ~IRenderResource(){};
   virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
-  virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
-  virtual long AddRef() = 0;
-  virtual long Release() = 0;
+//   virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
+//   virtual long AddRef() = 0;
+//   virtual long Release() = 0;
 };
 
 enum RENDER_BITMAP_LOAD_FLAG {
@@ -133,11 +136,13 @@ struct IRenderBitmap : public IRenderResource {
   virtual bool LoadFromData(unsigned char *pData, int nSize,
                             RENDER_BITMAP_LOAD_FLAG e) = 0;
 
+  virtual IMAGE_ITEM_TYPE GetImageType() = 0;
   virtual bool Create(int nWidth, int nHeight) = 0;
   virtual void Destroy() = 0;
   virtual int GetWidth() = 0;
   virtual int GetHeight() = 0;
   virtual int GetBPP() = 0;
+#if 0
   virtual Color GetAverageColor() { return Color::Make(0); }
 
   // virtual void Attach(HBITMAP /*hBitmap*/, bool /*bDelete*/){};
@@ -149,7 +154,7 @@ struct IRenderBitmap : public IRenderResource {
   virtual bool SaveBits(ImageData *pImageData) = 0;
   virtual bool ChangeHSL(const ImageData *pOriginImageData, short h, short s,
                          short l, int nFlag) = 0;
-  virtual IMAGE_ITEM_TYPE GetImageType() = 0;
+#endif
 };
 
 struct IImageListRenderBitmap : public IRenderBitmap {
@@ -171,9 +176,10 @@ public:
 
 class RenderBitmapFactory {
 public:
-  static void CreateInstance(IApplication *pUIApp,
-                             GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
-                             IMAGE_ITEM_TYPE eType, IRenderBitmap **ppOut);
+  static std::shared_ptr<IRenderBitmap>
+  CreateInstance(IApplication *pUIApp,
+                 GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
+                 IMAGE_ITEM_TYPE eType);
 };
 
 #define FONTITEM_FLAG_UNDERLINE 0x01

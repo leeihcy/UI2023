@@ -14,6 +14,7 @@
 // #include "i18nres.h"
 // #include "../Base/Object/object.h"
 #include "include/interface/ixmlwrap.h"
+#include <memory>
 
 using namespace ui;
 
@@ -271,9 +272,9 @@ bool  IImageRes::ModifyImage(const char* szId, const char* szPath)
 { 
     return m_pImpl->ModifyImage(szId, szPath);
 }
-bool  IImageRes::GetBitmap(const char* szImageID, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType, IRenderBitmap** ppRenderBitmap)
+std::shared_ptr<IRenderBitmap> IImageRes::GetBitmap(const char* szImageID, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType)
 { 
-    return m_pImpl->GetBitmap(szImageID, eRenderType, ppRenderBitmap);
+    return m_pImpl->GetBitmap(szImageID, eRenderType);
 }
 #if 0 // defined(OS_WIN)
 HBITMAP  IImageRes::LoadBitmap(const char* szId)  

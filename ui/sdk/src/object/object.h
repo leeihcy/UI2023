@@ -158,8 +158,8 @@ public:
   // void  UpdateMyLayout();
   void UpdateLayoutPos();
   void UpdateObjectNonClientRegion();
-  virtual void SetObjectPos(int x, int y, int cx, int cy, unsigned int nFlag = 0);
-  void SetObjectPos(const Rect *prc, unsigned int nFlag);
+  virtual void SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags);
+  void SetObjectPos(const Rect *prc, SetPositionFlags flags);
 
   void GetParentRect(Rect *prc);
   Point GetWindowPoint();

@@ -112,6 +112,30 @@ void SetWindowRect(Rect *prect) {
   // [mWindow setContentSize:NSMakeSize(width, height)];
   // return true;
 }
+
+
+void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
+  if (!flags.move && !flags.size) {
+    return;
+  }
+
+  CGFloat factor = m_window.backingScaleFactor;
+  if (flags.size && flags.move) {
+    [m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor) display:(true)];
+    return;
+  }
+
+  if (flags.size) {
+    [m_window setContentSize:NSMakeSize(w/factor, h/factor)];
+    return;
+  }
+  if (flags.move) {
+    [m_window setFrameOrigin:NSMakePoint(x/factor, y/factor)];
+    return;
+  }
+}
+
+
 void WindowPlatformMac::Invalidate(const Rect *prect) {
   if (!prect) {
     [m_window.contentView display];
@@ -135,6 +159,10 @@ void WindowPlatformMac::Show() {
   [m_window makeKeyAndOrderFront:NSApp];
 }
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
+
+float WindowPlatformMac::GetScaleFactor() {
+  return m_window.backingScaleFactor;
+}
 
 // void WindowPlatformMac::Submit(sk_sp<SkSurface> sksurface) {
 void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,

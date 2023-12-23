@@ -11,14 +11,17 @@
 #include "src/attribute/int_attribute.h"
 #include "src/attribute/rect_attribute.h"
 #include "src/attribute/string_attribute.h"
+#include "src/helper/scale/scale_factor.h"
 #include "src/object/object.h"
+#include "src/render/render_meta.h"
+#include <memory>
+
 
 namespace ui {
 
 ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
   m_pIImageRender = p;
 
-  m_pBitmap = nullptr;
   m_pColorBk = nullptr;
   m_nImageDrawType = DRAW_BITMAP_BITBLT;
   m_nAlpha = 255;
@@ -26,7 +29,6 @@ ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
   m_eBkColorFillType = BKCOLOR_FILL_ALL;
 }
 ImageRender::~ImageRender() {
-  SAFE_RELEASE(m_pBitmap);
   // SAFE_RELEASE(m_pColorBk);
 }
 
@@ -34,6 +36,21 @@ void ImageRender::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
     DrawState(&((RenderBaseDrawStateMessage*)msg)->draw_state);
     return;
+  }
+  else if (msg->message == UI_MSG_SERIALIZE) {
+    OnSerialize(static_cast<SerializeMessage*>(msg)->param);
+    return;
+  }
+  else if (msg->message == UI_MSG_GETDESIREDSIZE) {
+    GetDesiredSize(&static_cast<GetDesiredSizeMessage*>(msg)->size);
+    return;
+  }
+  else if (msg->message == UI_MSG_QUERYINTERFACE) {
+    auto* m = static_cast<QueryInterfaceMessage*>(msg);
+    if (m->uuid == ImageRenderMeta::Get().UUID()) {
+      *(m->pp) = m_pIImageRender;
+      return;
+    }
   }
   RenderBase::onRouteMessage(msg);
 }
@@ -93,12 +110,10 @@ void ImageRender::OnSerialize(SerializeParam *pData) {
       ->SetDefault(DRAW_BITMAP_BITBLT);
 }
 
-void ImageRender::SetRenderBitmap(IRenderBitmap *pBitmap) {
-  SAFE_RELEASE(m_pBitmap);
-  m_pBitmap = pBitmap;
-  if (m_pBitmap)
-    m_pBitmap->AddRef();
-}
+// void ImageRender::SetRenderBitmap(IRenderBitmap *pBitmap) {
+//   m_render_bitmap.reset();
+//   m_render_bitmap = pBitmap;
+// }
 
 void ImageRender::SetColor(Color c) {
   // SAFE_RELEASE(m_pColorBk);
@@ -116,7 +131,7 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
   // }
 
   Rect rcRealDraw = {0, 0, 0, 0};
-  if (m_pBitmap) {
+  if (m_render_bitmap) {
     DRAWBITMAPPARAM param;
     param.nFlag = m_nImageDrawType;
     param.xDest = prc->left;
@@ -128,11 +143,11 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
       param.ySrc = m_rcSrc.top;
       param.wSrc = m_rcSrc.right - m_rcSrc.left;
       param.hSrc = m_rcSrc.bottom - m_rcSrc.top;
-    } else if (m_pBitmap) {
+    } else if (m_render_bitmap) {
       param.xSrc = 0;
       param.ySrc = 0;
-      param.wSrc = m_pBitmap->GetWidth();
-      param.hSrc = m_pBitmap->GetHeight();
+      param.wSrc = m_render_bitmap->GetWidth();
+      param.hSrc = m_render_bitmap->GetHeight();
     }
     if (!m_Region.IsAll_0())
       param.pRegion = &m_Region;
@@ -145,7 +160,9 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
       param.prcRealDraw = &rcRealDraw;
     }
-    pDrawStruct->pRenderTarget->DrawBitmap(m_pBitmap, &param);
+
+    param.scale_factor = ScaleFactorHelper::GetObjectScaleFactor(m_pObject);
+    pDrawStruct->pRenderTarget->DrawBitmap(m_render_bitmap.get(), &param);
   }
 
   // if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
@@ -185,11 +202,11 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 }
 void ImageRender::GetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
-  if (nullptr == m_pBitmap)
+  if (!m_render_bitmap)
     return;
 
-  pSize->width = m_pBitmap->GetWidth();
-  pSize->height = m_pBitmap->GetHeight();
+  pSize->width = m_render_bitmap->GetWidth();
+  pSize->height = m_render_bitmap->GetHeight();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -198,11 +215,9 @@ ImageListItemRender::ImageListItemRender(IImageListItemRender *p)
     : ImageRender(p) {
   m_pIImageListItemRender = p;
   m_nImagelistIndex = -1;
-  m_pImageList = nullptr;
 }
 ImageListItemRender::~ImageListItemRender() {
   m_nImagelistIndex = 0;
-  m_pImageList = nullptr;
 }
 
 void ImageListItemRender::OnSerialize(SerializeParam *pData) {
@@ -214,15 +229,16 @@ void ImageListItemRender::OnSerialize(SerializeParam *pData) {
   }
 
   if (pData->IsLoad()) {
-    if (m_pBitmap) {
-      if (m_pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST)
-        SAFE_RELEASE(m_pBitmap);
+    if (m_render_bitmap) {
+      if (m_render_bitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST) {
+        m_render_bitmap.reset();
+      }
     }
-    if (m_pBitmap) {
-      m_pImageList = static_cast<IImageListRenderBitmap *>(m_pBitmap);
+    if (m_render_bitmap) {
+      m_image_list = std::static_pointer_cast<IImageListRenderBitmap>(m_render_bitmap);
 
       Point pt = {0, 0};
-      m_pImageList->GetIndexPos(m_nImagelistIndex, &pt);
+      m_image_list->GetIndexPos(m_nImagelistIndex, &pt);
       m_rcSrc.left = pt.x;
       m_rcSrc.top = pt.y;
 
@@ -237,11 +253,11 @@ void ImageListItemRender::OnSerialize(SerializeParam *pData) {
 void ImageListItemRender::GetDesiredSize(Size *pSize) {
   pSize->width = 0;
   pSize->height = 0;
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return;
 
-  pSize->width = m_pImageList->GetItemWidth();
-  pSize->height = m_pImageList->GetItemHeight();
+  pSize->width = m_image_list->GetItemWidth();
+  pSize->height = m_image_list->GetItemHeight();
 }
 
 void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
@@ -251,11 +267,11 @@ void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     return;
   }
 
-  if (-1 == m_nImagelistIndex && m_pImageList) {
+  if (-1 == m_nImagelistIndex && m_image_list) {
     Point pt = {0, 0};
     Size s = {0, 0};
 
-    if (false == m_pImageList->GetIndexPos(pDrawStruct->nState, &pt))
+    if (false == m_image_list->GetIndexPos(pDrawStruct->nState, &pt))
       return;
     this->GetDesiredSize(&s);
 
@@ -274,7 +290,6 @@ void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 ImageListRender::ImageListRender(IImageListRender *p) : RenderBase(p) {
   m_pIImageListRender = p;
 
-  m_pImageList = nullptr;
   m_nImageDrawType = DRAW_BITMAP_BITBLT;
 
   m_nPrevState = RENDER_STATE_NORMAL;
@@ -283,7 +298,6 @@ ImageListRender::ImageListRender(IImageListRender *p) : RenderBase(p) {
   m_bUseAlphaAnimate = false;
 }
 ImageListRender::~ImageListRender() {
-  SAFE_RELEASE(m_pImageList);
   DestroyAnimate();
 }
 
@@ -316,30 +330,28 @@ void ImageListRender::OnSerialize(SerializeParam *pData) {
 }
 
 void ImageListRender::LoadImageList(const char *szText) {
-  SAFE_RELEASE(m_pImageList);
+  m_image_list.reset();
 
-  IRenderBitmap *pBitmap = nullptr;
-  _LoadBitmap(szText, pBitmap);
+  std::shared_ptr<IRenderBitmap> pBitmap = _LoadBitmap(szText);
   if (nullptr == pBitmap)
     return;
 
   if (pBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST) {
     UI_LOG_WARN("ImageType != IMAGE_ITEM_TYPE_IMAGE_LIST. Bitmap: %s",
                 szText);
-    SAFE_RELEASE(pBitmap);
     return;
   }
-  m_pImageList = static_cast<IImageListRenderBitmap *>(pBitmap);
+  m_image_list = std::static_pointer_cast<IImageListRenderBitmap>(pBitmap);
 
   // 如果图片没有alpha通道，则不能支持alpha动画
-  if (m_pImageList) {
-    if (m_pImageList->GetBPP() != 32) {
+  if (m_image_list) {
+    if (m_image_list->GetBPP() != 32) {
       m_bUseAlphaAnimate = false;
     }
   }
 }
 const char *ImageListRender::GetImageListId() {
-  ui::IRenderBitmap *p = static_cast<ui::IRenderBitmap *>(m_pImageList);
+  ui::IRenderBitmap *p = static_cast<ui::IRenderBitmap *>(m_image_list.get());
   return _GetBitmapId(p);
 }
 
@@ -386,13 +398,14 @@ const char *ImageListRender::GetState2Index() {
 
 void ImageListRender::SetIImageListRenderBitmap(
     IImageListRenderBitmap *pBitmap) {
-  SAFE_RELEASE(m_pImageList);
-  m_pImageList = pBitmap;
-  if (m_pImageList)
-    m_pImageList->AddRef();
+  // SAFE_RELEASE(m_pImageList);
+  // m_pImageList = pBitmap;
+  // if (m_pImageList)
+  //   m_pImageList->AddRef();
+  assert(false); // TODO:
 }
 
-IRenderBitmap *ImageListRender::GetRenderBitmap() { return m_pImageList; }
+IRenderBitmap *ImageListRender::GetRenderBitmap() { return m_image_list.get(); }
 #if 0
 uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pStoryboard)
 {
@@ -410,7 +423,7 @@ uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pSto
 }
 #endif
 void ImageListRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return;
 
   IRenderTarget *pRenderTarget = pDrawStruct->pRenderTarget;
@@ -506,7 +519,7 @@ void ImageListRender::CreateAnimate(int nFrom, int nTo) {
 void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
                                           const Rect *prc, int nIndex,
                                           byte bAlpha) {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return;
 
   //    UI_LOG_ERROR("%s  nIndex=%d, nAlpha=%d", FUNC_NAME, nIndex, bAlpha);
@@ -520,14 +533,14 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   param.yDest = prc->top;
   param.wDest = prc->Width();
   param.hDest = prc->Height();
-  param.wSrc = m_pImageList->GetItemWidth();
-  param.hSrc = m_pImageList->GetItemHeight();
+  param.wSrc = m_image_list->GetItemWidth();
+  param.hSrc = m_image_list->GetItemHeight();
   if (!m_9Region.IsAll_0())
     param.pRegion = &m_9Region;
   param.nAlpha = bAlpha;
 
   Point pt = {0, 0};
-  m_pImageList->GetIndexPos(nRealIndex, &pt);
+  m_image_list->GetIndexPos(nRealIndex, &pt);
   param.xSrc = pt.x;
   param.ySrc = pt.y;
   // 	if (m_eImageLayout == IMAGELIST_LAYOUT_TYPE_H)
@@ -540,35 +553,35 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   // 		param.xSrc = 0;
   // 		param.ySrc = nIndex*m_nItemHeight;
   // 	}
-  pRenderTarget->DrawBitmap(m_pImageList, &param);
+  pRenderTarget->DrawBitmap(m_image_list.get(), &param);
 }
 
 void ImageListRender::GetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return;
 
-  pSize->width = m_pImageList->GetItemWidth();
-  pSize->height = m_pImageList->GetItemHeight();
+  pSize->width = m_image_list->GetItemWidth();
+  pSize->height = m_image_list->GetItemHeight();
 }
 
 int ImageListRender::GetItemWidth() {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return 0;
 
-  return m_pImageList->GetItemWidth();
+  return m_image_list->GetItemWidth();
 }
 int ImageListRender::GetItemHeight() {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return 0;
 
-  return m_pImageList->GetItemHeight();
+  return m_image_list->GetItemHeight();
 }
 int ImageListRender::GetItemCount() {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return 0;
 
-  return m_pImageList->GetItemCount();
+  return m_image_list->GetItemCount();
 }
 
 void ImageListRender::SetImageStretch9Region(C9Region *p) {
@@ -581,10 +594,10 @@ void ImageListRender::SetImageStretch9Region(C9Region *p) {
 //	获取指定状态对应的图片项
 //
 int ImageListRender::GetStateIndex(int nState) {
-  if (nullptr == m_pImageList)
+  if (!m_image_list)
     return -1;
 
-  if (m_pImageList->GetItemCount() <= 0)
+  if (m_image_list->GetItemCount() <= 0)
     return -1;
 
   if (m_mapState2Index.empty())
@@ -608,7 +621,7 @@ int ImageListRender::GetStateIndex(int nState) {
     return -1;
   } else {
     int &nRet = iter->second;
-    if (nRet < 0 || nRet >= m_pImageList->GetItemCount())
+    if (nRet < 0 || nRet >= m_image_list->GetItemCount())
       return -1;
 
     return nRet;

@@ -29,6 +29,16 @@ struct SizeF {
   float height;
 };
 
+struct SetPositionFlags {
+  bool move = true;
+  bool size = true;
+  bool update_layout_pos = true;
+
+  bool activate = false;
+  bool redraw = false;
+  bool force_send_size_message = false;
+};
+
 struct RectXYWH {
   int x;
   int y;
