@@ -7,7 +7,7 @@
 // #include <functional>
 
 namespace uia {
-struct IAnimateManager;
+struct IAnimate;
 }
 namespace ui {
 class Application;
@@ -69,7 +69,7 @@ public:
 
   IResourceManager &GetResourceManager();
   ITopWindowManager *GetTopWindowMgr();
-  uia::IAnimateManager *GetAnimateManager();
+  uia::IAnimate *GetAnimate();
   // IMessageFilterMgr*  GetMessageFilterMgr();
 
   IResource *GetDefaultSkinRes();

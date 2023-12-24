@@ -4,9 +4,12 @@
 #include <X11/Xutil.h>
 
 #include "../window/linux/display.h"
+#include "include/interface/ianimate.h"
 #include "message_loop.h"
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <cstddef>
+#include <memory>
 
 namespace ui {
 
@@ -28,10 +31,14 @@ public:
   void Quit() override;
   void PostTask(PostTaskType &&task) override;
   int ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
+  void CreateAnimateTimer() override;
+  void DestroyAnimateTimer() override;
 
 public:
   void onIdle();
   static void onIdleEntry(void *info);
+  MessageLoop* GetMessageLoop() { return m_message_loop; }
+  void OnAnimateTimer();
 
 private:
   MacMessageLoopType m_type = MacMessageLoopType::_NSAppRun;
@@ -41,6 +48,7 @@ private:
 
   CFRunLoopSourceRef m_idle_source;
   //   CFRunLoopTimerRef m_timer_source;
+  CFRunLoopTimerRef m_animate_timer = nullptr;
 
   signal<void()> m_idle_tasks;
 };

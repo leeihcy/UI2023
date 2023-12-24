@@ -1,19 +1,22 @@
 # import("//build/config/common.gni")
 
 group("x") {
-    deps = [
-        "//ui:ui"
-    ]
-}
-group("unittest") {
-    deps = [
-        "//ui:unittest"
-    ]
+  deps = [
+    "//ui:ui"
+  ]
 }
 
 group("samples") {
+  deps = [
+    "//samples:ui"
+  ]
+}
+
+if (is_debug) {
+  group("unittest") {
     deps = [
-        "//samples:ui"
+      "//ui:unittest"
     ]
+  }
 }
  

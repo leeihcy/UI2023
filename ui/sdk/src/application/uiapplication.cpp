@@ -1,5 +1,7 @@
 #include "uiapplication.h"
 
+#include "include/interface/ianimate.h"
+#include "src/animate/animate.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
 #include "ui/gpu/include/api.h"
@@ -15,6 +17,8 @@
 #include "src/window/window_meta.h"
 #include "src/panel/panel_meta.h"
 #include "src/control/control_meta.h"
+#include <cstddef>
+#include <memory>
 #if defined(OS_MAC)
 #include "application_mac.h"
 #endif
@@ -22,9 +26,12 @@
 namespace ui {
 
 Application::Application(IApplication *p)
-    : m_pUIApplication(p),
-      m_TopWindowMgr(this), m_renderBaseFactory(*this),
-      m_textRenderFactroy(*this), m_animate(*this), m_resource_manager(*this) {
+    : m_pUIApplication(p), 
+      m_TopWindowMgr(this), 
+      m_renderBaseFactory(*this),
+      m_textRenderFactroy(*this),
+      m_resource_manager(*this),
+      m_message_loop(*this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif
@@ -38,6 +45,7 @@ ResourceManager &Application::GetResourceManager() {
 
 void Application::x_Init() {
   UI_LOG_INFO("Application Init: 0x%x", this);
+  m_animate = std::make_unique<uia::Animate>(this);
 
 #if 0 // defined(OS_WIN)
   //	::CoInitialize(0);
@@ -49,7 +57,6 @@ void Application::x_Init() {
   m_pUIEditor = nullptr;
 
 #if 0
-    m_animate.Init(&m_WaitForHandlesMgr);
 
 	m_pGifTimerMgr = nullptr;
 	m_pGifTimerMgr = new GifTimerManager();
@@ -150,8 +157,6 @@ Application::~Application(void) {
 
   m_pUIEditor = nullptr;
 
-  m_animate.UnInit();
-
 #if 0
 	SAFE_DELETE(m_pGifTimerMgr);
     Image::ReleaseGDIPlus();
@@ -168,8 +173,17 @@ ITopWindowManager *Application::GetITopWindowMgr() {
   return m_TopWindowMgr.GetITopWindowManager();
 }
 
-uia::IAnimateManager *Application::GetAnimateManager() {
-  return m_animate.GetAnimateManager();
+uia::IAnimate *Application::GetAnimate() {
+  return m_animate->GetIAnimate();
+}
+void Application::CreateAnimateTimer() {
+  m_message_loop.CreateAnimateTimer();
+}
+void Application::DestroyAnimateTimer() {
+  m_message_loop.DestroyAnimateTimer();
+}
+void Application::OnAnimateTimer() {
+  m_animate->OnTick();
 }
 
 #if 0 // defined(OS_WIN)

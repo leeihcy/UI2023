@@ -129,7 +129,7 @@ bool  AnimateImpl::Start(bool bBlock)
     if (!pUIApp)
         return false;
 
-    UIA::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateMgr();
+    UIA::IAnimate* pAnimateMgr = pUIApp->GetAnimateMgr();
     if (!pAnimateMgr)
         return false;
 

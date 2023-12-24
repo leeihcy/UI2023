@@ -60,8 +60,8 @@ Layer::~Layer() {
     m_pLayerContent->OnLayerDestory();
   }
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
   if (pAni) {
     pAni->ClearStoryboardByNotify(
         static_cast<uia::IAnimateEventCallback *>(this));
@@ -265,8 +265,8 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
 
   // 开启隐式动画
   if (pParam) {
-    uia::IAnimateManager *pAni =
-        m_pCompositor->GetUIApplication()->GetAnimateManager();
+    uia::IAnimate *pAni =
+        m_pCompositor->GetUIApplication()->GetAnimate();
 
     pAni->RemoveStoryboardByNotityAndId(
         static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_OPACITY);
@@ -317,8 +317,8 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
 
   m_fyRotate = f;
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_YROTATE);
@@ -369,8 +369,8 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
 
   m_fxRotate = f;
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_XROTATE);
@@ -421,8 +421,8 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
 
   m_fzRotate = f;
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_ZROTATE);
@@ -472,8 +472,8 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
   m_fxScale = x;
   m_fyScale = y;
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_SCALE);
@@ -532,8 +532,8 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
   m_yTranslate = y;
   m_zTranslate = z;
 
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_TRANSLATE);
@@ -751,8 +751,8 @@ Object *Layer::GetLayerContentObject() {
 
 // 本类中所有的创建动画都走这里，用于数量统计
 uia::IStoryboard *Layer::create_storyboard(int id) {
-  uia::IAnimateManager *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimateManager();
+  uia::IAnimate *pAni =
+      m_pCompositor->GetUIApplication()->GetAnimate();
 
   uia::IStoryboard *pStoryboard = pAni->CreateStoryboard(
       static_cast<uia::IAnimateEventCallback *>(this), id);

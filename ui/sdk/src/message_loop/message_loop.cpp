@@ -1,4 +1,5 @@
 #include "message_loop.h"
+#include "src/application/uiapplication.h"
 #if defined(OS_LINUX)
 #include "message_loop_linux.h"
 #elif defined(OS_MAC)
@@ -9,7 +10,7 @@
 
 namespace ui {
 
-MessageLoop::MessageLoop() {
+MessageLoop::MessageLoop(Application& app) : m_app(app) {
 
 #if defined(OS_LINUX)
   m_platform = new MessageLoopPlatformLinux();
@@ -35,6 +36,18 @@ void MessageLoop::PostTask(PostTaskType &&task) {
 int MessageLoop::ScheduleTask(ScheduleTaskType &&task, int delay_ms) {
 
   return m_platform->ScheduleTask(std::forward<ScheduleTaskType>(task), delay_ms);
+}
+
+void MessageLoop::CreateAnimateTimer() {
+  assert(m_platform);
+  m_platform->CreateAnimateTimer();
+}
+void MessageLoop::DestroyAnimateTimer() {
+  assert(m_platform);
+  m_platform->DestroyAnimateTimer();
+}
+void MessageLoop::OnAnimateTimer() {
+  m_app.OnAnimateTimer();
 }
 
 void MessageLoop::Run() { m_platform->Run(); }

@@ -10,6 +10,7 @@ namespace ui {
 class MessageLoopPlatformWin : public MessageLoopPlatform {
 public:
   MessageLoopPlatformWin();
+  ~MessageLoopPlatformWin();
 
   void Initialize(MessageLoop*) override;
   void Release() override;
@@ -20,17 +21,26 @@ public:
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
 
+
 private:
   void Run(bool *quit_ref);
-	bool  IsDialogMessage(::MSG* pMsg);
+	bool IsDialogMessage(::MSG* pMsg);
+
+  void OnSetTimer(int hHandle);
+  void OnKillTimer(int hHandle);
+  void OnWaitForHandleObjectCallback(int, int);
+
 private:
   MessageLoop* m_message_loop = nullptr;
-  
+  bool quit_flag = false;
+
   WaitForHandlesMgr m_WaitForHandlesMgr;
   MessageFilterMgr m_MsgFilterMgr;
   ForwardPostMessageWindow m_WndForwardPostMsg;
 
-  bool quit_flag = false;
+	LARGE_INTEGER     m_liPerFreq;     // 用于帧数计算
+	HANDLE m_hTimer;
+  HMODULE  m_hModuleWinmm;
 };
 
 } // namespace ui

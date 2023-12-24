@@ -1,4 +1,5 @@
 #include "message_loop.h"
+#include "src/application/uiapplication.h"
 using namespace ui;
 
 void idle_task(MessageLoop* loop) {
@@ -19,7 +20,8 @@ bool timeout_task(MessageLoop* loop) {
 
 void test1() {
     printf("program will auto exit at 3 seconds\n");
-    MessageLoop loop;
+    Application app(nullptr);
+    MessageLoop loop(app);
     loop.PostTask(Slot(idle_task, &loop));
     loop.ScheduleTask(Slot(timeout_task, &loop), 1000);
     loop.Run();

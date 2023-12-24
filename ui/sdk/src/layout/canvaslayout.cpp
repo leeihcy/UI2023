@@ -91,7 +91,6 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   //////////////////////////////////////////////////////////////////////////
   // 计算出 pChild 的 rectP的宽和高
   Size s = pParam->CalcDesiredSize();
-  UI_LOG_INFO("%d, %d", s.width, s.height);
 
   // 先CalcDesiredSize，再getconfigleft,防止在CalcDesiredSize中修改config left
   int left = pParam->GetConfigLeft();
@@ -240,8 +239,6 @@ Size CanvasLayoutParam::CalcDesiredSize() {
   // 计算 margin 的大小
   //     size.width += m_pObj->GetMarginW();
   //     size.height += m_pObj->GetMarginH();
-
-  UI_LOG_INFO("%d, %d", size.width, size.height);
   return size;
 }
 

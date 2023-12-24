@@ -1,10 +1,11 @@
 #ifndef _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 #define _UI_SDK_SRC_BASE_UIAPPLICATION_H_
 
+#include "include/interface/ianimate.h"
 #include "include/interface/iuiapplication.h"
 #include "src/message_loop/message_loop.h"
 #include "src/resource/resource_manager.h"
-#include "src/animate/wrap/animate.h"
+#include "src/animate/wrap/animate_wrap.h"
 #include "src/helper/topwindow/topwindowmanager.h"
 #include "src/layout/layout_factory.h"
 #include "src/render/renderbase_factory.h"
@@ -54,7 +55,12 @@ public:
 
   ITopWindowManager *GetITopWindowMgr();
   TopWindowManager *GetTopWindowMgr() { return &m_TopWindowMgr; }
-  uia::IAnimateManager *GetAnimateManager();
+  
+  uia::IAnimate *GetAnimate();
+  void CreateAnimateTimer();
+  void DestroyAnimateTimer();
+  void OnAnimateTimer();
+  
 #if 0    
   GifTimerManager*    GetGifTimerMgr() { return m_pGifTimerMgr; }
 	HMODULE  GetUID2DModule();
@@ -125,7 +131,8 @@ private:
   GifTimerManager *m_pGifTimerMgr;
   ToolTipManager m_ToolTipMgr;
 #endif
-  AnimateHelper m_animate;
+
+  std::unique_ptr<uia::Animate> m_animate;
 
 private:
   IApplication *m_pUIApplication = nullptr; // 对外提供的接口

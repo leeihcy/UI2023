@@ -3,6 +3,7 @@
 
 #include "include/interface/iobject.h"
 #include "include/interface/iwindow.h"
+#include "include/interface/iuiinterface.h"
 #include "src/application/uiapplication.h"
 #include "src/layout/layout.h"
 #include "src/object/object.h"

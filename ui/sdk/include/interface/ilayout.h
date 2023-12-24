@@ -89,13 +89,13 @@ struct IAverageLayoutParam : public ILayoutParam {
 
 enum class ArrangeReason {
   // 正常布局
-  None,
+  NoReason,
   // obj_to_range显示隐藏变更
   VisibleChanged,
 };
 struct ArrangeParam {
   IObject * obj_to_arrange = nullptr;
-  ArrangeReason reason = ArrangeReason::None;
+  ArrangeReason reason = ArrangeReason::NoReason;
 };
 
 struct ILayout {

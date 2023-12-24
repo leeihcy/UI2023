@@ -1,9 +1,5 @@
-#include <iostream>
-using namespace std;
-
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
-#include <string_view>
 
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
   printf("on_window_destroy\n");

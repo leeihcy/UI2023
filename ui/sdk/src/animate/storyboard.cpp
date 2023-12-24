@@ -32,7 +32,7 @@ IStoryboard*  Storyboard::GetIStoryboard()
 	return m_pIStoryboard;
 }
 
-void  Storyboard::SetAnimateMgr(AnimateManager*  p)
+void  Storyboard::SetAnimateMgr(Animate*  p)
 {
     m_pAnimateMgr = p;
 }

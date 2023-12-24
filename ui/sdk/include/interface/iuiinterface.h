@@ -24,26 +24,24 @@ namespace ui
 	// 句柄定义
 	struct IApplication;
 
-    class TopWindowManager;
-    struct UIAPI ITopWindowManager : public IRootInterface
-    {
-        ITopWindowManager(TopWindowManager* p);
-        TopWindowManager* GetImpl();
+        class TopWindowManager;
+        struct UIAPI ITopWindowManager : public IRootInterface {
+          ITopWindowManager(TopWindowManager *p);
+          TopWindowManager *GetImpl();
 
-        long  AddTopWindowObject(IWindow*);
-        long  RemoveTopWindowObject(IWindow*);
-        //void     ChangeSkin(IResource* pNewSkinRes);
+          long AddTopWindowObject(IWindow *);
+          long RemoveTopWindowObject(IWindow *);
+          // void     ChangeSkin(IResource* pNewSkinRes);
 
-        bool  UpdateAllWindow();
-        void  SendMessage2AllWnd(UIMSG*  pMsg);
-        //void  PostMessage2AllWnd(UIMSG* pMsg);
-        void  ForwardMessage2AllObj(UIMSG*  pMsg);
+          bool UpdateAllWindow();
+          void SendMessage2AllWnd(UIMSG *pMsg);
+          // void  PostMessage2AllWnd(UIMSG* pMsg);
+          void ForwardMessage2AllObj(UIMSG *pMsg);
 
-    private:
-        TopWindowManager*  m_pImpl;
-    };
+        private:
+          TopWindowManager *m_pImpl;
+        };
 
-    
     //////////////////////////////////////////////////////////////////////////
 
 	//

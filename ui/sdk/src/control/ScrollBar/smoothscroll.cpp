@@ -119,7 +119,7 @@ void  SmoothScroll::CreateScrollAnimate(uint nPower)
 	}
 	else
 	{
-        UIA::IAnimateManager*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
+        UIA::IAnimate*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
 		m_pAnimateStoryboard = pAnimateMgr->CreateStoryboard(
 				this, ScrollAnimate);
 
@@ -176,7 +176,7 @@ void  SmoothScroll::CreateBouncyEdgeOutAnimate(uint nPower)
 	}
 	else
 	{
-        UIA::IAnimateManager*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
+        UIA::IAnimate*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
 		m_pAnimateStoryboard = pAnimateMgr->CreateStoryboard(
 				this, BouncyEdgeAnimate_Out);
 
@@ -194,7 +194,7 @@ void  SmoothScroll::CreateBouncyEdgeBackAnimate()
 {
 	DestroyAnimate();
 
-    UIA::IAnimateManager*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
+    UIA::IAnimate*  pAnimateMgr = m_pUIApplication->GetAnimateMgr();
 	m_pAnimateStoryboard = pAnimateMgr->CreateStoryboard(
 		    this, BouncyEdgeAnimate_Back);
 
@@ -224,7 +224,7 @@ void  SmoothScroll::DestroyAnimate()
 {
     if (m_pUIApplication && m_pAnimateStoryboard)
     {
-        UIA::IAnimateManager* pAnimateMgr = m_pUIApplication->GetAnimateMgr();
+        UIA::IAnimate* pAnimateMgr = m_pUIApplication->GetAnimateMgr();
 
         pAnimateMgr->RemoveStoryboard(m_pAnimateStoryboard);
         m_pAnimateStoryboard = nullptr;

@@ -34,6 +34,41 @@ https://skia.org/docs/user/build/
 windows: 
 skia_use_system_libjpeg = false
 
+mac dylib debug:
+```js
+is_official_build = false
+is_component_build = true
+is_debug = true
+symbol_level = 2
+target_cpu="x64"
+skia_use_system_expat = false
+skia_use_system_harfbuzz = false
+skia_use_system_icu = false
+skia_use_system_libjpeg_turbo = false
+skia_use_system_libpng = false
+skia_use_system_libwebp = false
+skia_use_system_zlib = false
+skia_enable_skottie = true
+```
+
+mac  dylib release:
+```js
+is_official_build = true
+is_component_build = true
+is_debug = false
+target_cpu="x64"
+skia_use_system_expat = false
+skia_use_system_harfbuzz = false
+skia_use_system_icu = false
+skia_use_system_libjpeg_turbo = false
+skia_use_system_libpng = false
+skia_use_system_libwebp = false
+skia_use_system_zlib = false
+skia_enable_tools = true
+```
+
+编译命令： ninja skia
+
 ### ui
 下载GNU gcc g++: https://github.com/niXman/mingw-builds-binaries/releases
 找到 x86_64-win32-seh 链接下载到7z包，解压开，将bin配置到系统PATH即可。

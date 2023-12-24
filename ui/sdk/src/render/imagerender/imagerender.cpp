@@ -489,7 +489,7 @@ void ImageListRender::DestroyAnimate() {
     if (m_bUseAlphaAnimate && m_bIsAnimate)
     {
         IApplication* pUIApp = m_pObject->GetIUIApplication();
-        uia::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateManager();
+        uia::IAnimate* pAnimateMgr = pUIApp->GetAnimate();
         pAnimateMgr->ClearStoryboardByNotify(
             static_cast<IAnimateEventCallback*>(this));
         m_bIsAnimate = false;
@@ -500,7 +500,7 @@ void ImageListRender::DestroyAnimate() {
 void ImageListRender::CreateAnimate(int nFrom, int nTo) {
 #if 0
     IApplication* pUIApp = m_pObject->GetIUIApplication();
-    uia::IAnimateManager* pAnimateMgr = pUIApp->GetAnimateManager();
+    uia::IAnimate* pAnimateMgr = pUIApp->GetAnimate();
     pAnimateMgr->ClearStoryboardByNotify(
         static_cast<IAnimateEventCallback*>(this));
 

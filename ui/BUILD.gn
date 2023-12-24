@@ -9,10 +9,13 @@ group("ui") {
 }
 
 ######################################
+if (is_debug) {
 
 group("unittest") {
     deps = [
         "sdk:sdk_test",
         "gpu:gpu_test"
     ]
+}
+
 }

@@ -41,6 +41,12 @@ const char *LevelToStringA(const ui::LOG_LEVEL &l) {
 void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const wchar_t *szFormat,
                  ...) {
+  if (lLevel == ui::LOG_LEVEL_DEBUG) {
+// #if !defined(_DEBUG)
+    return;
+// #endif
+  }
+
   // level
   std::wstring output;
   output.append(LevelToString(lLevel));
@@ -82,6 +88,12 @@ void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
 void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const char *szFormat,
                  ...) {
+  if (lLevel == ui::LOG_LEVEL_DEBUG) {
+// #if !defined(_DEBUG)
+    return;
+// #endif
+  }
+
   // level
   std::string output;
   output.append(LevelToStringA(lLevel));

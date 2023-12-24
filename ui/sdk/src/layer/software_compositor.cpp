@@ -32,7 +32,7 @@ void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   // 	}
 
   int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  UI_LOG_INFO("software update dirty cost %d 微秒", ms);
+  UI_LOG_DEBUG("software update dirty cost %d 微秒", ms);
 }
 
 void SoftwareCompositor::update_dirty_recursion(Layer *p) {

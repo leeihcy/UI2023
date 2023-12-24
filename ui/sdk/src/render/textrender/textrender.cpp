@@ -98,6 +98,7 @@ std::shared_ptr<IRenderFont> TextRenderBase::_LoadFont(const char *szFontId) {
 #else
   UIASSERT(false);
 #endif
+  return std::shared_ptr<IRenderFont>();
 }
 
 const char *TextRenderBase::_SaveFont(IRenderFont *pRenderFont) {

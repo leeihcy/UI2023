@@ -18,8 +18,8 @@ executable("clock") {
     }
 }
 
-
 copy("copy_clock_resource") {
+  print("copy_clock_resource")
   sources = [
     "resource/resource.xml", 
     "resource/clock.xml", 

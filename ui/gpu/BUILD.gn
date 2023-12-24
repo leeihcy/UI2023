@@ -158,8 +158,14 @@ copy("shader") {
   outputs = ["$root_build_dir/shaders/{{source_file_part}}"]
 }
 
-#######################################
+group("gpu") {
+  deps = [
+    ":uigpu"
+  ]
+}
 
+#######################################
+if (is_debug) {
 executable("uigpu_unittest") {
   deps = [
     "//ui/gpu:uigpu"
@@ -179,14 +185,10 @@ executable("uigpu_unittest") {
   ]
 }
 
-group("gpu") {
-  deps = [
-    ":uigpu"
-  ]
-}
-
 group("gpu_test") {
+  print("group gpu_test")
   deps = [
     ":uigpu_unittest"
   ]
+}
 }

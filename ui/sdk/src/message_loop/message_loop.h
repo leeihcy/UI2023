@@ -2,6 +2,9 @@
 #define _UI_SDK_SRC_BASE_MSG_LOOP_H_
 
 #include "include/common/signalslot/signal.h"
+#include "include/interface/ianimate.h"
+#include "include/interface/iuiapplication.h"
+#include <memory>
 
 namespace ui {
 
@@ -9,6 +12,7 @@ using ScheduleTaskType = slot<bool()>;
 using PostTaskType = slot<void()>;
 
 class MessageLoop;
+class Application;
 
 struct MessageLoopPlatform {
   virtual ~MessageLoopPlatform(){};
@@ -18,11 +22,13 @@ struct MessageLoopPlatform {
   virtual void Quit() = 0;
   virtual void PostTask(PostTaskType &&task) = 0;
   virtual int ScheduleTask(ScheduleTaskType &&task, int delay_ms) = 0;
+  virtual void CreateAnimateTimer() = 0;
+  virtual void DestroyAnimateTimer() = 0;
 };
 
 class MessageLoop {
 public:
-  MessageLoop();
+  MessageLoop(Application& app);
   ~MessageLoop();
 
   void Run();
@@ -31,7 +37,14 @@ public:
   void PostTask(PostTaskType &&task);
   int ScheduleTask(ScheduleTaskType &&task, int delay_ms);
 
+  void CreateAnimateTimer();
+  void DestroyAnimateTimer();
+  void OnAnimateTimer();
+
+  Application& GetApplication() { return m_app; }
+
 private:
+  Application& m_app;
   MessageLoopPlatform *m_platform = nullptr;
 };
 } // namespace ui

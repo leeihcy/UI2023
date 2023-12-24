@@ -63,8 +63,8 @@ IResourceManager &IApplication::GetResourceManager() {
 ITopWindowManager *IApplication::GetTopWindowMgr() {
   return m_pImpl->GetITopWindowMgr();
 }
-uia::IAnimateManager *IApplication::GetAnimateManager() {
-  return m_pImpl->GetAnimateManager();
+uia::IAnimate *IApplication::GetAnimate() {
+  return m_pImpl->GetAnimate();
 }
 // IMessageFilterMgr*  IApplication::GetMessageFilterMgr()
 // {
