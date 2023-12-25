@@ -57,7 +57,7 @@ public:
   TopWindowManager *GetTopWindowMgr() { return &m_TopWindowMgr; }
   
   uia::IAnimate *GetAnimate();
-  void CreateAnimateTimer();
+  void CreateAnimateTimer(int fps);
   void DestroyAnimateTimer();
   void OnAnimateTimer();
   

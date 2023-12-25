@@ -61,121 +61,121 @@ void ForwardPostMessageWindow::Post(slot<void()> &&callback) {
   ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, (WPARAM)data, 0);
 }
 
-WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l) {
-  m_hHandle = h;
-  m_pCallback = pCB;
-  m_lParam = l;
-}
+// WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l) {
+//   m_hHandle = h;
+//   m_pCallback = pCB;
+//   m_lParam = l;
+// }
 
-WaitForHandlesMgr::WaitForHandlesMgr() {
-  m_pHandles = nullptr;
-  m_nHandleCount = 0;
-}
-WaitForHandlesMgr::~WaitForHandlesMgr() {
-  _MyIter iter = m_list.begin();
-  _MyIter iterEnd = m_list.end();
-  for (; iter != iterEnd; iter++) {
-    delete (*iter);
-  }
-  m_list.clear();
-  m_nHandleCount = 0;
+// WaitForHandlesMgr::WaitForHandlesMgr() {
+//   m_pHandles = nullptr;
+//   m_nHandleCount = 0;
+// }
+// WaitForHandlesMgr::~WaitForHandlesMgr() {
+//   _MyIter iter = m_list.begin();
+//   _MyIter iterEnd = m_list.end();
+//   for (; iter != iterEnd; iter++) {
+//     delete (*iter);
+//   }
+//   m_list.clear();
+//   m_nHandleCount = 0;
 
-  if (m_pHandles) {
-    delete[] m_pHandles;
-    m_pHandles = nullptr;
-  }
-  m_nHandleCount = 0;
-}
+//   if (m_pHandles) {
+//     delete[] m_pHandles;
+//     m_pHandles = nullptr;
+//   }
+//   m_nHandleCount = 0;
+// }
 
-WaitForHandle *WaitForHandlesMgr::FindHandle(HANDLE h) {
-  if (nullptr == h)
-    return nullptr;
+// WaitForHandle *WaitForHandlesMgr::FindHandle(HANDLE h) {
+//   if (nullptr == h)
+//     return nullptr;
 
-  _MyIter iter = m_list.begin();
-  _MyIter iterEnd = m_list.end();
+//   _MyIter iter = m_list.begin();
+//   _MyIter iterEnd = m_list.end();
 
-  for (; iter != iterEnd; iter++)
-    if (h == (*iter)->GetHandle())
-      return *iter;
+//   for (; iter != iterEnd; iter++)
+//     if (h == (*iter)->GetHandle())
+//       return *iter;
 
-  return nullptr;
-}
+//   return nullptr;
+// }
 
-std::list<WaitForHandle *>::iterator
-WaitForHandlesMgr::FindHandleIter(HANDLE h) {
-  if (nullptr == h)
-    return m_list.end();
+// std::list<WaitForHandle *>::iterator
+// WaitForHandlesMgr::FindHandleIter(HANDLE h) {
+//   if (nullptr == h)
+//     return m_list.end();
 
-  _MyIter iter = m_list.begin();
-  _MyIter iterEnd = m_list.end();
+//   _MyIter iter = m_list.begin();
+//   _MyIter iterEnd = m_list.end();
 
-  for (; iter != iterEnd; iter++)
-    if (h == (*iter)->GetHandle())
-      return iter;
+//   for (; iter != iterEnd; iter++)
+//     if (h == (*iter)->GetHandle())
+//       return iter;
 
-  return m_list.end();
-}
-bool WaitForHandlesMgr::AddHandle(HANDLE h, IWaitForHandleCallback *pCB,
-                                  long l) {
-  if (nullptr == h || nullptr == pCB)
-    return false;
+//   return m_list.end();
+// }
+// bool WaitForHandlesMgr::AddHandle(HANDLE h, IWaitForHandleCallback *pCB,
+//                                   long l) {
+//   if (nullptr == h || nullptr == pCB)
+//     return false;
 
-  if (FindHandle(h))
-    return false;
+//   if (FindHandle(h))
+//     return false;
 
-  WaitForHandle *p = new WaitForHandle(h, pCB, l);
-  m_list.push_back(p);
+//   WaitForHandle *p = new WaitForHandle(h, pCB, l);
+//   m_list.push_back(p);
 
-  UpdateHandleArray();
-  return true;
-}
-bool WaitForHandlesMgr::RemoveHandle(HANDLE h) {
-  if (nullptr == h)
-    return false;
+//   UpdateHandleArray();
+//   return true;
+// }
+// bool WaitForHandlesMgr::RemoveHandle(HANDLE h) {
+//   if (nullptr == h)
+//     return false;
 
-  _MyIter iter = FindHandleIter(h);
-  if (iter == m_list.end())
-    return false;
+//   _MyIter iter = FindHandleIter(h);
+//   if (iter == m_list.end())
+//     return false;
 
-  WaitForHandle *p = *iter;
-  if (p) {
-    delete p;
-    p = nullptr;
-  }
-  m_list.erase(iter);
+//   WaitForHandle *p = *iter;
+//   if (p) {
+//     delete p;
+//     p = nullptr;
+//   }
+//   m_list.erase(iter);
 
-  UpdateHandleArray();
-  return true;
-}
+//   UpdateHandleArray();
+//   return true;
+// }
 
-bool WaitForHandlesMgr::UpdateHandleArray() {
-  if (m_pHandles) {
-    delete[] m_pHandles;
-    m_pHandles = nullptr;
-  }
-  m_nHandleCount = (int)m_list.size();
+// bool WaitForHandlesMgr::UpdateHandleArray() {
+//   if (m_pHandles) {
+//     delete[] m_pHandles;
+//     m_pHandles = nullptr;
+//   }
+//   m_nHandleCount = (int)m_list.size();
 
-  if (0 == m_nHandleCount)
-    return true;
+//   if (0 == m_nHandleCount)
+//     return true;
 
-  m_pHandles = new HANDLE[m_nHandleCount];
-  _MyIter iter = m_list.begin();
-  _MyIter iterEnd = m_list.end();
+//   m_pHandles = new HANDLE[m_nHandleCount];
+//   _MyIter iter = m_list.begin();
+//   _MyIter iterEnd = m_list.end();
 
-  for (int i = 0; iter != iterEnd; iter++, i++) {
-    m_pHandles[i] = (*iter)->GetHandle();
-  }
-  return true;
-}
+//   for (int i = 0; iter != iterEnd; iter++, i++) {
+//     m_pHandles[i] = (*iter)->GetHandle();
+//   }
+//   return true;
+// }
 
-void WaitForHandlesMgr::Do(HANDLE h) {
-  WaitForHandle *pWaitForHandle = this->FindHandle(h);
-  if (nullptr == pWaitForHandle)
-    return;
+// void WaitForHandlesMgr::Do(HANDLE h) {
+//   WaitForHandle *pWaitForHandle = this->FindHandle(h);
+//   if (nullptr == pWaitForHandle)
+//     return;
 
-  pWaitForHandle->GetCB()->OnWaitForHandleObjectCallback(
-      (long *)h, pWaitForHandle->GetLParam());
-}
+//   pWaitForHandle->GetCB()->OnWaitForHandleObjectCallback(
+//       (long *)h, pWaitForHandle->GetLParam());
+// }
 
 // 不使用stl::list，这样至少能在自己的PreTranslateMessage响应中调用RemoveMessageFilter操作
 BOOL MessageFilterMgr::PreTranslateMessage(::MSG *pMsg) {

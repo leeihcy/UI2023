@@ -176,8 +176,8 @@ ITopWindowManager *Application::GetITopWindowMgr() {
 uia::IAnimate *Application::GetAnimate() {
   return m_animate->GetIAnimate();
 }
-void Application::CreateAnimateTimer() {
-  m_message_loop.CreateAnimateTimer();
+void Application::CreateAnimateTimer(int fps) {
+  m_message_loop.CreateAnimateTimer(fps);
 }
 void Application::DestroyAnimateTimer() {
   m_message_loop.DestroyAnimateTimer();

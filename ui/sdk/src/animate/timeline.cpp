@@ -62,6 +62,7 @@ bool Timeline::OnTick() {
 
   case TT_BY_MS:
     nTimeElapse = m_stopWatch.ElapseMillisecondsSinceStart();
+    // printf("nTimeElapse = %d\n", nTimeElapse);
     break;
 
   case TT_BY_SECOND:

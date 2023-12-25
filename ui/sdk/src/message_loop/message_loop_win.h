@@ -21,20 +21,21 @@ public:
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
 
+  void CreateAnimateTimer(int fps) override;
+  void DestroyAnimateTimer() override;
 
 private:
   void Run(bool *quit_ref);
 	bool IsDialogMessage(::MSG* pMsg);
 
-  void OnSetTimer(int hHandle);
-  void OnKillTimer(int hHandle);
-  void OnWaitForHandleObjectCallback(int, int);
-
+  // void OnWaitForHandleObjectCallback(int, int);
+  void OnAnimateTimer();
+  
 private:
   MessageLoop* m_message_loop = nullptr;
   bool quit_flag = false;
 
-  WaitForHandlesMgr m_WaitForHandlesMgr;
+  // WaitForHandlesMgr m_WaitForHandlesMgr;
   MessageFilterMgr m_MsgFilterMgr;
   ForwardPostMessageWindow m_WndForwardPostMsg;
 

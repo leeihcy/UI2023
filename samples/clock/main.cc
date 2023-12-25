@@ -54,7 +54,7 @@ int main() {
 
   ui::WindowPtr window(resource);
 
-  ui::Rect rc = {100, 100, 500, 400};
+  ui::Rect rc = {100, 100, 700, 700};
   window->Create("clock", rc);
   window->SetTitle("webgl demo");
   window->Show();

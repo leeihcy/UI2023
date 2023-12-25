@@ -38,12 +38,14 @@ int MessageLoop::ScheduleTask(ScheduleTaskType &&task, int delay_ms) {
   return m_platform->ScheduleTask(std::forward<ScheduleTaskType>(task), delay_ms);
 }
 
-void MessageLoop::CreateAnimateTimer() {
+void MessageLoop::CreateAnimateTimer(int fps) {
   assert(m_platform);
-  m_platform->CreateAnimateTimer();
+  m_platform->CreateAnimateTimer(fps);
 }
 void MessageLoop::DestroyAnimateTimer() {
-  assert(m_platform);
+  if (!m_platform) {
+    return;
+  }
   m_platform->DestroyAnimateTimer();
 }
 void MessageLoop::OnAnimateTimer() {

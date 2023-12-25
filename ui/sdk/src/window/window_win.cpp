@@ -390,6 +390,10 @@ void WindowPlatformWin::Show() { ::ShowWindow(m_hWnd, SW_SHOW); }
 
 void WindowPlatformWin::Hide() { ::ShowWindow(m_hWnd, SW_HIDE); }
 
+float WindowPlatformWin::GetScaleFactor() {
+  return 1.0f;
+}
+
 void WindowPlatformWin::SetBorderless(bool no_border) {}
 
 void WindowPlatformWin::Invalidate(const Rect *prect) {
@@ -413,7 +417,7 @@ void WindowPlatformWin::SetMinMaxSize(int wMin, int hMin, int wMax, int hMax) {
  * 1. 只有在被Map后，才能进行窗口Move操作，否则窗口管理器将无视这些设置。
  */
 void WindowPlatformWin::SetWindowRect(int x, int y, int width, int height) {
-  ::SetWindowPos(m_hWnd, 0, x, y, width, height, SWP_NO_ZORDER);
+  ::SetWindowPos(m_hWnd, 0, x, y, width, height, SWP_NOZORDER);
 }
 
 void WindowPlatformWin::GetClientRect(Rect *prect) {
@@ -436,16 +440,16 @@ void WindowPlatformWin::GetWindowRect(Rect *prect) {
   RECT2Rect(rc, prect);
 }
 
-void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h, SetWindowPosFlags flags) {
+void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
   int windows_flags = 0;
   if (flags.move == false) {
-    widnows_flags |= SWP_NOMOVE;
+    windows_flags |= SWP_NOMOVE;
   }
   if (flags.size == false) {
     windows_flags |= SWP_NOSIZE;
   }
   if (!flags.activate) {
-    windows_flags |= SWO_NOACTIVATE;
+    windows_flags |= SWP_NOACTIVATE;
   }
   ::SetWindowPos(m_hWnd, HWND_TOP, x, y, w, h, windows_flags);
 }

@@ -1,6 +1,7 @@
 #include "message_loop_win.h"
 #include "message_loop.h"
 #include "src/util/windows.h"
+#include <cassert>
 
 WTL::CAppModule _Module;
 
@@ -30,12 +31,7 @@ void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
   m_WndForwardPostMsg.Create(this);
 }
 
-void MessageLoopPlatformWin::Release() {
-  if (m_hTimer) {
-    CloseHandle(m_hTimer);
-    m_hTimer = nullptr;
-  }
-}
+void MessageLoopPlatformWin::Release() { DestroyAnimateTimer(); }
 
 void MessageLoopPlatformWin::Run() { Run(nullptr); }
 void MessageLoopPlatformWin::Quit() { ::PostQuitMessage(0); }
@@ -129,8 +125,12 @@ bool MessageLoopPlatformWin::IsDialogMessage(::MSG *pMsg) {
 //
 void MessageLoopPlatformWin::Run(bool *quit_ref) {
   unsigned int dwRet = 0;
-  unsigned int &nCount = m_WaitForHandlesMgr.m_nHandleCount;
-  HANDLE *&pHandles = m_WaitForHandlesMgr.m_pHandles;
+  // unsigned int &nCount = m_WaitForHandlesMgr.m_nHandleCount;
+  // HANDLE *&pHandles = m_WaitForHandlesMgr.m_pHandles;
+
+  const int HANDLE_SIZE = 1;
+  HANDLE handles[HANDLE_SIZE] = {m_hTimer};
+
   ::MSG msg;
 
   // 会传递pbQuitLoopRef参数的，有可能是Modal类型的菜单，这种情况下需要更多的条件判断
@@ -139,11 +139,14 @@ void MessageLoopPlatformWin::Run(bool *quit_ref) {
     bool bExit = false;
     bool &bQuitRef = (quit_ref == nullptr ? bExit : *quit_ref);
     while (false == bQuitRef) {
-      dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, false, INFINITE,
+      dwRet = ::MsgWaitForMultipleObjects(HANDLE_SIZE, handles, false, INFINITE,
                                           QS_ALLINPUT) -
               WAIT_OBJECT_0;
-      if (nCount > 0 && dwRet < nCount) {
-        m_WaitForHandlesMgr.Do(pHandles[dwRet]);
+      if (HANDLE_SIZE > 0 && dwRet < HANDLE_SIZE) {
+        // m_WaitForHandlesMgr.Do(pHandles[dwRet]);
+        if (handles[dwRet] == m_hTimer && m_hTimer) {
+          OnAnimateTimer();
+        }
       } else {
         while (::PeekMessage(&msg, nullptr, 0, 0, PM_NOREMOVE)) {
           if (WM_QUIT ==
@@ -174,11 +177,14 @@ void MessageLoopPlatformWin::Run(bool *quit_ref) {
     }
   } else {
     while (1) {
-      dwRet = ::MsgWaitForMultipleObjects(nCount, pHandles, false, INFINITE,
+      dwRet = ::MsgWaitForMultipleObjects(HANDLE_SIZE, handles, false, INFINITE,
                                           QS_ALLINPUT) -
               WAIT_OBJECT_0;
-      if (nCount > 0 && dwRet < nCount) {
-        m_WaitForHandlesMgr.Do(pHandles[dwRet]);
+      if (HANDLE_SIZE > 0 && dwRet < HANDLE_SIZE) {
+        // m_WaitForHandlesMgr.Do(pHandles[dwRet]);
+        if (handles[dwRet] == m_hTimer && m_hTimer) {
+          OnAnimateTimer();
+        }
       } else {
         while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
           if (WM_QUIT == msg.message) {
@@ -200,92 +206,88 @@ void MessageLoopPlatformWin::Run(bool *quit_ref) {
   return;
 }
 
-void MessageLoopPlatformWin::OnSetTimer(int hHandle) {
-  if (m_pWaitforHandle) {
-    m_pWaitforHandle->AddHandle(hHandle,
-                                static_cast<IWaitForHandleCallback *>(this), 0);
+// void MessageLoopPlatformWin::OnSetTimer(int hHandle) {
+//   if (m_pWaitforHandle) {
+//     m_pWaitforHandle->AddHandle(hHandle,
+//                                 static_cast<IWaitForHandleCallback *>(this), 0);
+//   }
+// }
+
+// void MessageLoopPlatformWin::OnKillTimer(int hHandle) {
+//   if (m_pWaitforHandle) {
+//     m_pWaitforHandle->RemoveHandle(hHandle);
+//   }
+// }
+
+// void MessageLoopPlatformWin::OnWaitForHandleObjectCallback(int, int) {
+//   if (m_animate)
+//     m_animate->OnTick();
+// }
+
+void MessageLoopPlatformWin::OnAnimateTimer() {
+  m_message_loop->OnAnimateTimer();
+}
+
+void MessageLoopPlatformWin::CreateAnimateTimer(int fps) {
+  if (m_hTimer) {
+    return;
   }
-}
-
-void MessageLoopPlatformWin::OnKillTimer(int hHandle) {
-  if (m_pWaitforHandle) {
-    m_pWaitforHandle->RemoveHandle(hHandle);
+  if (fps <= 0) {
+    return;
   }
+
+  // 自动重置，即调用WaitForSingleObject时重置HANDLE
+  // 如果是手动的，得再次调用SetWaitableTimer来重置
+  m_hTimer = CreateWaitableTimer(nullptr, FALSE, nullptr);
+
+  // improve_timer_resolution(m_hModuleWinmm);
+
+  // if (m_pITimerCallback)
+  //     m_pITimerCallback->OnSetTimer(m_hTimer);
+
+  // TODO: 不靠谱，没解决
+  //     if (m_nFps == 60)
+  //     {
+  //         //  尝试等待垂直同步后再开始计时，以达到每一帧都在屏幕扫描完成之后
+  //         WaitForVerticalBlank();
+  //     }
+
+  int nPeriod = 1000 / fps; // 计时器周期
+
+  LARGE_INTEGER liDueTime;
+  liDueTime.QuadPart =
+      -1000 * 10 *
+      nPeriod; // 第一次响应延迟时间。负值表示一个相对的时间，代表以100纳秒为单位的相对时间，（如从现在起的5ms，则设置为-50000）
+
+  // 注： 不要使用TimerAPCProc,该方式需要让线程处理alertable状态，
+  //      即调用SleepEx(x, TRUE)让线程进入等待状态
+  // LONG lPeriod：设置定时器周期性的自我激发，该参数的单位为毫秒。
+  // 如果为0，则表示定时器只发出一次信号，大于0时，定时器每隔一段时
+  // 间自动重新激活一个计时器，直至取消计时器使用
+  if (!SetWaitableTimer(m_hTimer, &liDueTime, nPeriod, nullptr, nullptr, 0)) {
+    assert(false);
+  }
+
+  // 	SleepEx
+  // 	if (!SetWaitableTimer(m_hTimer, &liDueTime, nPeriod, TimerAPCProc,
+  // (LPVOID)this, 0))
+  // 	{
+  // 		assert(0);
+  // 	}
 }
 
-void MessageLoopPlatformWin::OnWaitForHandleObjectCallback(int, int) {
-  if (m_animate)
-    m_animate->OnTick();
+void MessageLoopPlatformWin::DestroyAnimateTimer() {
+  if (!m_hTimer) {
+    return;
+  }
+  // if (m_pITimerCallback)
+  //     m_pITimerCallback->OnKillTimer(m_hTimer);
+
+  CancelWaitableTimer(m_hTimer);
+  m_hTimer = nullptr;
+
+  // restore_timer_resolution(m_hModuleWinmm);
 }
-
-
-void Animate::SetTimer() {
-	if (m_bTimerStart)
-		return;
-
-// 	::SetTimer(nullptr, 0, 1, TimerProc);
-// 	return;
-
-    if (!m_hTimer)
-    {
-        // 自动重置，即调用WaitForSingleObject时重置HANDLE
-        // 如果是手动的，得再次调用SetWaitableTimer来重置
-	    m_hTimer = CreateWaitableTimer(nullptr, FALSE, nullptr);
-    }
-#if 0    
-    improve_timer_resolution(m_hModuleWinmm);
-
-    if (m_pITimerCallback)
-        m_pITimerCallback->OnSetTimer(m_hTimer);
-
-    if (0 == m_nFps)
-        m_nFps = 60;
-
-    // TODO: 不靠谱，没解决
-//     if (m_nFps == 60)
-//     {
-//         //  尝试等待垂直同步后再开始计时，以达到每一帧都在屏幕扫描完成之后
-//         WaitForVerticalBlank();
-//     }
-
-    int nPeriod = 1000/m_nFps;  // 计时器周期
-
-    LARGE_INTEGER liDueTime;
-    liDueTime.QuadPart = -1000*10*nPeriod;   // 第一次响应延迟时间。负值表示一个相对的时间，代表以100纳秒为单位的相对时间，（如从现在起的5ms，则设置为-50000）
-
-    // 注： 不要使用TimerAPCProc,该方式需要让线程处理alertable状态，
-    //      即调用SleepEx(x, TRUE)让线程进入等待状态
-    // LONG lPeriod：设置定时器周期性的自我激发，该参数的单位为毫秒。
-    // 如果为0，则表示定时器只发出一次信号，大于0时，定时器每隔一段时
-    // 间自动重新激活一个计时器，直至取消计时器使用
-    if (!SetWaitableTimer(m_hTimer, &liDueTime, nPeriod, nullptr, nullptr, 0))  
-    {
-        UIASSERT(0);
-    }
-    m_bTimerStart = true;
-
-// 	SleepEx
-// 	if (!SetWaitableTimer(m_hTimer, &liDueTime, nPeriod, TimerAPCProc, (LPVOID)this, 0))
-// 	{
-// 		assert(0);
-// 	}
-#endif
-}
-void Animate::KillTimer() {
-#if 0
-	if (m_hTimer)
-	{
-        if (m_pITimerCallback)
-            m_pITimerCallback->OnKillTimer(m_hTimer);
-
-		CancelWaitableTimer(m_hTimer);
-        m_bTimerStart = false;
-
-        restore_timer_resolution(m_hModuleWinmm);
-	}
-#endif
-}
-
 
 #if 0 // defined(OS_WIN)
 VOID CALLBACK TimerAPCProc(
@@ -350,6 +352,5 @@ void CALLBACK TimerProc(HWND, unsigned int, UINT_PTR, unsigned int)
 	g_pAnimate->OnTick();
 }
 #endif
-
 
 } // namespace ui

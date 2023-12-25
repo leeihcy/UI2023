@@ -160,8 +160,11 @@ void MessageLoopPlatformMac::OnAnimateTimer() {
   m_message_loop->OnAnimateTimer();
 }
 
-void MessageLoopPlatformMac::CreateAnimateTimer() {
+void MessageLoopPlatformMac::CreateAnimateTimer(int fps) {
   if (m_animate_timer != nullptr) {
+    return;
+  }
+  if (fps <= 0) {
     return;
   }
 
@@ -172,7 +175,7 @@ void MessageLoopPlatformMac::CreateAnimateTimer() {
   // 60fps
   m_animate_timer = CFRunLoopTimerCreate(NULL, // allocator
                                                  CFAbsoluteTimeGetCurrent(),
-                                                 1/60.0,       // interval
+                                                 1/(double)fps,       // interval
                                                  0,               // flags
                                                  0,               // priority
                                                  onAnimateTimer, &timer_context);

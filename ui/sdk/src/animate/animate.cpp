@@ -321,7 +321,7 @@ void Animate::OnTick() {
 }
 
 void Animate::SetTimer() {
-  m_pUIApplication->CreateAnimateTimer();
+  m_pUIApplication->CreateAnimateTimer(m_nFps);
 }
 void Animate::KillTimer() {
   m_pUIApplication->DestroyAnimateTimer();

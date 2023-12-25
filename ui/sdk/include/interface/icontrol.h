@@ -8,8 +8,8 @@ namespace ui
 struct ITextRenderBase;
 
 // control style
-// #define CONTROL_STYLE_GROUP             0x00002000    // ÊÇ·ñÊÇÒ»¸öĞÂ×éµÄ¿ªÊ¼
-// #define CONTROL_STYLE_OWNERDRAW         0x00004000    // ÊÇ·ñ×Ô»æ
+// #define CONTROL_STYLE_GROUP             0x00002000    // æ˜¯å¦æ˜¯ä¸€ä¸ªæ–°ç»„çš„å¼€å§‹
+// #define CONTROL_STYLE_OWNERDRAW         0x00004000    // æ˜¯å¦è‡ªç»˜
 typedef struct tagControlStyle
 {
 	bool  group : 1;

@@ -2,6 +2,7 @@
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_WIN_H_
 #include "window.h"
 #include <string>
+#include "include/util/rect.h"
 #include "src/util/windows.h"
 
 namespace ui {
@@ -42,7 +43,7 @@ public:
   void SetWindowRect(int x, int y, int width, int height);
   void GetClientRect(Rect *prect);
   void GetWindowRect(Rect *prect);
-  void SetWindowPos(int x, int y, int w, int h, SetWindowPosFlags flags) override;
+  void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) override;
   void CenterWindow();
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
@@ -52,6 +53,7 @@ public:
 
   void Show() override;
   void Hide();
+  float GetScaleFactor() override;
 
   void Invalidate(const Rect *prect) override;
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;

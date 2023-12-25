@@ -31,7 +31,7 @@ public:
   void Quit() override;
   void PostTask(PostTaskType &&task) override;
   int ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
-  void CreateAnimateTimer() override;
+  void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;
 
 public:

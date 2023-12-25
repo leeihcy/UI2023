@@ -38,43 +38,43 @@ struct IWaitForHandlesMgr {
 };
 
 // 实现消息循环中等待HANDLE的功能
-class WaitForHandle {
-public:
-  WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l);
-  HANDLE GetHandle() { return m_hHandle; }
-  IWaitForHandleCallback *GetCB() { return m_pCallback; }
-  long GetLParam() { return m_lParam; }
+// class WaitForHandle {
+// public:
+//   WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l);
+//   HANDLE GetHandle() { return m_hHandle; }
+//   IWaitForHandleCallback *GetCB() { return m_pCallback; }
+//   long GetLParam() { return m_lParam; }
 
-protected:
-  HANDLE m_hHandle;
-  IWaitForHandleCallback *m_pCallback;
-  long m_lParam;
-};
+// protected:
+//   HANDLE m_hHandle;
+//   IWaitForHandleCallback *m_pCallback;
+//   long m_lParam;
+// };
 
-class WaitForHandlesMgr : public IWaitForHandlesMgr {
-public:
-  WaitForHandlesMgr();
-  ~WaitForHandlesMgr();
+// class WaitForHandlesMgr : public IWaitForHandlesMgr {
+// public:
+//   WaitForHandlesMgr();
+//   ~WaitForHandlesMgr();
 
-  typedef std::list<WaitForHandle *> _MyList;
-  typedef std::list<WaitForHandle *>::iterator _MyIter;
+//   typedef std::list<WaitForHandle *> _MyList;
+//   typedef std::list<WaitForHandle *>::iterator _MyIter;
 
-  WaitForHandle *FindHandle(HANDLE h);
-  _MyIter FindHandleIter(HANDLE h);
-  bool AddHandle(HANDLE h, IWaitForHandleCallback *pCB, long l);
-  bool RemoveHandle(HANDLE h);
-  bool UpdateHandleArray();
-  void Do(HANDLE h);
+//   WaitForHandle *FindHandle(HANDLE h);
+//   _MyIter FindHandleIter(HANDLE h);
+//   bool AddHandle(HANDLE h, IWaitForHandleCallback *pCB, long l);
+//   bool RemoveHandle(HANDLE h);
+//   bool UpdateHandleArray();
+//   void Do(HANDLE h);
 
-  HANDLE *GetHandles() { return m_pHandles; }
+//   HANDLE *GetHandles() { return m_pHandles; }
 
-protected:
-  std::list<WaitForHandle *> m_list;
+// protected:
+//   std::list<WaitForHandle *> m_list;
 
-public:
-  HANDLE *m_pHandles;
-  unsigned int
-      m_nHandleCount; // 因为要在while循环中调用，因此作为public变量直接调用
-};
+// public:
+//   HANDLE *m_pHandles;
+//   unsigned int
+//       m_nHandleCount; // 因为要在while循环中调用，因此作为public变量直接调用
+// };
 
 } // namespace ui
