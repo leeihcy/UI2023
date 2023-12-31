@@ -39,10 +39,9 @@ public:
   virtual bool AddAttr_REGION4(const char *szKey, REGION4 *pr) override;
   virtual bool AddAttr_int(const char *szKey, int nValue) override;
 
-  virtual bool
-  ExtractMapAttrByPrefix(const char *szPrefix, bool bErase,
-                         /*out*/ IMapAttribute **ppMapAttribute) override;
-  virtual void Destroy() override;
+  virtual std::shared_ptr<IMapAttribute>
+    ExtractMapAttrByPrefix(const char *szPrefix, bool bErase) override;
+  // virtual void Destroy() override;
   virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) override;
 
   virtual void BeginEnum() override;

@@ -4,7 +4,6 @@
 #include "include/util/struct.h"
 #include "src/object/message.h"
 #include "src/render/renderbase.h"
-//#include "UISDK\Animate\Inc\animate_base_inc.h"
 #include <map>
 #include <memory>
 
@@ -16,11 +15,6 @@ public:
   ~ImageRender();
 
   void onRouteMessage(ui::Msg *msg);
-
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_QUERYINTERFACE(ImageRender)
-  // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
-
 public:
   void SetAlpha(int nAlpha);
   int GetAlpha();

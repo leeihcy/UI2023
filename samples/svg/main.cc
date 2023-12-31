@@ -23,7 +23,7 @@ public:
     create_ui();
 
     ui::Rect rc = {100, 100, 500, 400};
-    m_window->Create(nullptr, rc);
+    m_window->Create(nullptr, &rc);
 
     load_next();
 

@@ -29,7 +29,7 @@ int main() {
   ui::WindowPtr window(app->RootBundle());
 
   ui::Rect rc = {100, 100, 500, 400};
-  window->Create(nullptr, rc);
+  window->Create(nullptr, &rc);
   window->SetTitle("你好Hello!");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));

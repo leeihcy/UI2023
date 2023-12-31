@@ -81,7 +81,7 @@ void Window::onSerialize(SerializeParam *pData) {
   s.AddString(XML_TEXT, m_strConfigWindowText);
 }
 
-void Window::Create(const char *szId, const Rect &rect) {
+void Window::Create(const char *szId, const Rect* rect) {
 #if defined(OS_WIN)
   m_platform.reset(new WindowPlatformWin(*this));
 #elif defined(OS_MAC)
@@ -92,10 +92,19 @@ void Window::Create(const char *szId, const Rect &rect) {
   assert(false);
 #endif
 
-  CreateUI(szId);
+  if (rect) {
+    m_window_style.setcreaterect = true;
+  }
 
+  CreateUI(szId);
+  
   m_platform->Initialize();
-  m_platform->Create(rect);
+
+  Rect rc = {0, 0, 400, 400};
+  if (rect) {
+    rc.CopyFrom(*rect);
+  }
+  m_platform->Create(rc);
 
   onCreate();
 
@@ -305,13 +314,13 @@ void Window::onCreate() {
     if (m_window_style.setcreaterect) {
       // 避免此时调用GetDesiredSize又去测量窗口大小了，
       // 导致窗口被修改为自适应大小
-      // CRect rcWindow;
-      // ::GetWindowRect(m_hWnd, &rcWindow);
-      // SetConfigWidth(rcWindow.Width());
-      // SetConfigHeight(rcWindow.Height());
+      Rect rcWindow;
+      m_platform->GetWindowRect(&rcWindow);
+      SetConfigWidth(rcWindow.Width());
+      SetConfigHeight(rcWindow.Height());
 
-      // ::GetClientRect(m_hWnd, &m_rcParent);
-      // this->UpdateLayout();
+      m_platform->GetClientRect(&m_rcParent);
+      this->UpdateLayout();
     } else {
       // 不能放在 OnInitialize 后面。
       // 因为有可能OnInitialize中已经调用过 SetWindowPos

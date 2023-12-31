@@ -81,6 +81,11 @@ SKIN_PACKET_TYPE  ISkinDataSource::GetType()
 {
 	return m_pImpl->GetType();
 }
+
+bool ISkinDataSource::Load(const char* szPath, slot<void(const char*)>&& callback) {
+  return m_pImpl->Load(szPath, std::move(callback));
+}
+
 #if 0 // defined(OS_WIN)
 bool  ISkinDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {

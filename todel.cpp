@@ -130,11 +130,10 @@ public:
 
     TLayoutParam *p = new TLayoutParam();
     p->SetObject(pObj->GetImpl());
-    IMapAttribute *pMapAttr = nullptr;
-    pObj->GetImpl()->GetMapAttribute(&pMapAttr);
+    std::shared_ptr<IMapAttribute> pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
     if (!pMapAttr) {
-      UICreateIMapAttribute(&pMapAttr);
+      pMapAttr = UICreateIMapAttribute();
     }
     if (pMapAttr) {
       SerializeParam data = {0};
@@ -149,7 +148,6 @@ public:
       if (pMapAttr->GetAttrCount() == 0) {
         pObj->GetImpl()->ClearMapAttribute();
       }
-      SAFE_RELEASE(pMapAttr);
     }
 
     return static_cast<ILayoutParam *>(p);
@@ -285,22 +283,6 @@ int Object::GetConfigBottom() {
   }
 }
 
-void Object::SetConfigWidth(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigWidth(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigWidth(n);
-  }
-}
-void Object::SetConfigHeight(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigHeight(n);
-  } else {
-    CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigHeight(n);
-  }
-}
 void Object::SetConfigLayoutFlags(int n) {
   if (m_pLayoutParam) {
     if (m_pLayoutParam->GetLayoutType() == LAYOUT_TYPE_CANVAS)

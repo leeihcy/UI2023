@@ -6,6 +6,9 @@
 #include "src/skin_parse/datasource/File/filebufferreader.h"
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "src/util/util.h"
+#include <fstream>
+#include <ios>
+#include <vector>
 
 namespace ui {
 
@@ -35,6 +38,35 @@ const char *FileDataSource::GetPath() { return m_strPath.c_str(); }
 void FileDataSource::SetData(byte *data, int size) { UIASSERT(0); }
 
 SKIN_PACKET_TYPE FileDataSource::GetType() { return SKIN_PACKET_TYPE_DIR; }
+
+bool FileDataSource::Load(const char* szPath, slot<void(const char*)>&& callback) {
+ if (!szPath)
+    return false;
+
+  std::string strTemp = m_strPath;
+  strTemp.append(szPath);
+ 
+  if (!util::Path_FileExists(strTemp.c_str())) {
+    return false;
+  }
+
+  std::fstream f(strTemp.c_str(), std::ios_base::in|std::ios_base::binary);
+  if (!f) {
+    return false;
+  }
+
+  f.seekg(0, std::ios::end);
+  size_t size = f.tellg();
+
+  std::vector<char> buf;
+  buf.reserve(size);
+  f.seekg(0, std::ios::beg);
+
+  f.read(buf.data(), size);
+  callback.emit(buf.data());
+  return true;
+}
+
 bool FileDataSource::Load_UIDocument(UIDocument *pDocument,
                                      const char *szPath) {
   if (nullptr == pDocument || nullptr == szPath)

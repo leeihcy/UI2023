@@ -1,10 +1,12 @@
 #include "mapattr.h"
 #include "include/inc.h"
+#include "include/interface/imapattr.h"
 #include "include/interface/iuiapplication.h"
 #include "include/interface/iuires.h"
 #include "src/application/uiapplication.h"
 #include "src/render/renderbase.h"
 #include "src/render/textrender/textrender.h"
+#include <memory>
 
 namespace ui {
 
@@ -409,17 +411,14 @@ bool CMapAttribute::AddAttr_int(const char *szKey, int nValue) {
 
 // 使用前缀Prefix，从当前属性中抽取出相应的属性集放在ppMapAttribute中返回给外部
 // 外部调用完之后，需要使用ppMapAttribute->Release释放内存
-bool CMapAttribute::ExtractMapAttrByPrefix(
-    const char *szPrefix, bool bErase,
-    /*out*/ IMapAttribute **ppMapAttribute) {
-  if (nullptr == ppMapAttribute)
-    return false;
+std::shared_ptr<IMapAttribute> CMapAttribute::ExtractMapAttrByPrefix(
+    const char *szPrefix, bool bErase) {
 
   if (nullptr == szPrefix || 0 == strlen(szPrefix)) {
     //         *ppMapAttribute = static_cast<IMapAttribute*>(this);
     //         this->AddRef();
     //         return true;
-    return false;
+    return std::shared_ptr<IMapAttribute>();
   }
 
   ATTRMAP::iterator iter = m_mapAttr.begin();
@@ -427,7 +426,7 @@ bool CMapAttribute::ExtractMapAttrByPrefix(
 
   int nPrifixLength = (int)strlen(szPrefix);
 
-  IMapAttribute *pSubMapAttrib = UICreateIMapAttribute();
+  std::shared_ptr<IMapAttribute> pSubMapAttrib = UICreateIMapAttribute();
 
   for (; iter != iterEnd;) {
     char *szKey = const_cast<char *>(iter->first.c_str());
@@ -443,13 +442,12 @@ bool CMapAttribute::ExtractMapAttrByPrefix(
     }
   }
 
-  *ppMapAttribute = pSubMapAttrib;
-  return true;
+  return pSubMapAttrib;
 }
 
-void CMapAttribute::Destroy() {
-    delete this;
-}
+// void CMapAttribute::Destroy() {
+//     delete this;
+// }
 
 // 将自己的属性拷贝给pDestMapAttrib，如果pDestMapAttrib中已经存在，则按钮bOverride参数判断是否覆盖
 void CMapAttribute::CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) {
@@ -487,9 +485,8 @@ bool CMapAttribute::EnumNext(const char **szKey, const char **szValue) {
 }
 void CMapAttribute::EndEnum() { m_iterEnum = m_mapAttr.end(); }
 
-IMapAttribute* UICreateIMapAttribute() {
-  CMapAttribute *p = new CMapAttribute;
-  return static_cast<IMapAttribute *>(p);
+std::shared_ptr<IMapAttribute> UICreateIMapAttribute() {
+  return std::shared_ptr<IMapAttribute>(static_cast<IMapAttribute*>(new CMapAttribute));
 }
 
 int UICreateIListAttribute(IListAttribute **ppOut) {

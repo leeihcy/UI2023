@@ -3,7 +3,8 @@ executable("clock") {
     output_name = "sample_clock"
 
     deps = [
-        "//ui/sdk:sdk"
+        "//ui/sdk:sdk",
+        "//ui/svg:svg"
     ]
     include_dirs = [
         "//ui",
@@ -24,6 +25,7 @@ copy("copy_clock_resource") {
     "resource/resource.xml", 
     "resource/clock.xml", 
     "resource/clock.jpg", 
+    "resource/clock.svg", 
     "resource/hourhand.png", 
     "resource/minhand.png", 
     "resource/sechand.png",

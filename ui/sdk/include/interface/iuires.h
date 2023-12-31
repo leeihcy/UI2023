@@ -208,7 +208,7 @@ struct UIAPI IStyleResItem : public IRootInterface {
   // 		void  SetAttribute(const char* key, const char* value);
   // 		void  RemoveAttribute(const char* key);
 
-  IMapAttribute *GetAttributeMap();
+  std::shared_ptr<IMapAttribute> GetAttributeMap();
 
   void SetXmlElement(IUIElement *p);
   IUIElement *GetXmlElement();

@@ -23,6 +23,8 @@ struct RenderContext {
 
   // 控件大小（画布大小）
   ui::Size canvas_size;
+
+  // svg在控件上的绘制区域。
   ui::RectFXYWH view_port;
 
   // dom内容基于该区域进行作图

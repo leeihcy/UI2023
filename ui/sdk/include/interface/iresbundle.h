@@ -2,6 +2,7 @@
 #define _UI_ISKINRES_H_
 
 #include "sdk/include/macro/uidefine.h"
+#include "sdk/include/common/signalslot/slot.h"
 
 namespace ui {
 struct IResourceManager;

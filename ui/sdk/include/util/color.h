@@ -78,6 +78,7 @@ struct UIAPI Color {
   void ToWebString(char *szBuffer);
 
   bool operator==(const Color& c) const;
+  bool IsTransparnt() const;
 
   union {
     uint value;

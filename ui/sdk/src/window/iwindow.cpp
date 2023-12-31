@@ -11,7 +11,7 @@
 namespace ui {
 UI_IMPLEMENT_INTERFACE(Window, Panel)
 
-void IWindow::Create(const char *szId, const Rect &rect) { __pImpl->Create(szId, rect); }
+void IWindow::Create(const char *szId, const Rect* rect) { __pImpl->Create(szId, rect); }
 void IWindow::SetTitle(const char * title_utf8) { __pImpl->SetTitle(title_utf8); }
 void IWindow::Show() { __pImpl->Show(); }
 

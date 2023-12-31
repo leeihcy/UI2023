@@ -2,6 +2,7 @@
 #define _UI_ISKINDATASOURCE_H_
 #include <ios>
 #include "sdk/include/interface.h"
+#include "sdk/include/common/signalslot/slot.h"
 
 namespace Gdiplus {
 class Bitmap;
@@ -37,6 +38,7 @@ struct UIAPI ISkinDataSource {
 
   const char *GetPath();
   SKIN_PACKET_TYPE GetType();
+  bool Load(const char* szPath, slot<void(const char*)>&& callback);
   bool Load_Image(const char *szPath, ImageWrap *pImage);
   bool Load_GdiplusImage(const char *szPath, GdiplusBitmapLoadWrap *pImage);
   bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);

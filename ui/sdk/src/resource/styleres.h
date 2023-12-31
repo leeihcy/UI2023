@@ -50,8 +50,8 @@ public:
   UIElement *GetXmlElement();
   bool GetXmlElement2(UIElement **pp);
 
-  void SetAttributeMap(IMapAttribute *pMapAttrib);
-  IMapAttribute *GetAttributeMap();
+  void SetAttributeMap(std::shared_ptr<IMapAttribute> pMapAttrib);
+  std::shared_ptr<IMapAttribute> GetAttributeMap();
   void SetAttribute(const char *key, const char *value);
   const char *GetAttribute(const char *key);
   bool ModifyAttribute(const char *key, const char *value);
@@ -67,7 +67,7 @@ private:
   STYLE_SELECTOR_TYPE m_eSelectorType;
   std::string m_strID;              // 该选择器的ID
   std::string m_strInherits;        // 继承列表
-  IMapAttribute *m_pMapAttrib; // 该选择器的属性集
+  std::shared_ptr<IMapAttribute> m_pMapAttrib; // 该选择器的属性集
 
   // 非持久数据
   std::vector<std::string> m_vInheritList; // 继承列表，运行中解释m_strInherits

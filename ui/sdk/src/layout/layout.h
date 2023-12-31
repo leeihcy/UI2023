@@ -77,12 +77,12 @@ public:
       return nullptr;
 
     TParam *p = new TParam(pObj->GetImpl());
-    IMapAttribute *pMapAttr = pObj->GetImpl()->GetMapAttribute();
+    std::shared_ptr<IMapAttribute> pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
     SerializeParam data = {0};
     data.pSkinRes = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-    data.pMapAttrib = pMapAttr;
+    data.pMapAttrib = pMapAttr.get();
 
     p->Serialize(&data);
 

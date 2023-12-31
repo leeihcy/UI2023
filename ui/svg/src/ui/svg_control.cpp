@@ -1,15 +1,16 @@
 #include "svg_control.h"
+#include "sdk/include/interface/iattribute.h"
+#include "sdk/include/interface/iskindatasource.h"
+#include "src/element/dom.h"
 #include "svg_layout.h"
 #include "svg_meta.h"
-#include "src/element/dom.h"
 
-#include "SkData.h"
 #include "SkBitmap.h"
+#include "SkData.h"
 #include "SkFont.h"
 #include "SkImage.h"
-#include "SkTextBlob.h"
 #include "SkRRect.h"
-#include "include/utils/SkTextUtils.h"
+#include "SkTextBlob.h"
 
 namespace ui {
 
@@ -19,14 +20,18 @@ Svg::Svg(ISvg *p) : ui::MessageProxy(p) {
 }
 
 void Svg::onRouteMessage(Msg *msg) {
-  if (msg->message == UI_MSG_ERASEBKGND) {
-    static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
-    onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
-    return;
-  }
+  // if (msg->message == UI_MSG_ERASEBKGND) {
+  //   static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
+  //   onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
+  //   return;
+  // }
   if (msg->message == UI_MSG_PAINT) {
     static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
     onPaint(static_cast<PaintMessage *>(msg)->rt);
+    return;
+  } else if (msg->message == UI_MSG_SERIALIZE) {
+    static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
+    onSerialize(static_cast<SerializeMessage *>(msg)->param);
     return;
   }
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
@@ -35,14 +40,37 @@ void Svg::onRouteMessage(Msg *msg) {
     return;
   }
   if (msg->message == UI_MSG_GETDESIREDSIZE) {
-    static_cast<GetDesiredSizeMessage*>(msg)->size = onGetDesiredSize();
+    static_cast<GetDesiredSizeMessage *>(msg)->size = onGetDesiredSize();
     return;
   }
 
   static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
 }
 
-void Svg::onFinalConstruct() {
+void Svg::onFinalConstruct() {}
+
+void Svg::onSerialize(SerializeParam *pData) {
+  AttributeSerializerWrap s(pData, "Svg");
+  s.AddString("file", Slot(&Svg::setImageResourceId, this),
+              Slot(&Svg::getImageResourceId, this));
+}
+
+void Svg::setImageResourceId(const char *id) {
+  if (!id || !id[0]) {
+    return;
+  }
+  ui::ISkinDataSource *data_source = m_pISvg->GetResource()->GetDataSource();
+  if (!data_source) {
+    return;
+  }
+  
+  data_source->Load(
+      id, ui::Slot<void(Svg *, const char *), Svg *>(
+              [](Svg *pthis, const char *data) { pthis->Load(data); }, this));
+}
+const char *Svg::getImageResourceId() {
+  // TODO:
+  return nullptr;
 }
 
 void Svg::onPaint(ui::IRenderTarget *rt) {
@@ -50,8 +78,8 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   // elements:
   RenderContext context;
   context.canvas = (SkCanvas *)rt->GetHandle();
-  context.canvas_size = { m_pISvg->GetWidth(), m_pISvg->GetHeight() };
-  
+  context.canvas_size = {m_pISvg->GetWidth(), m_pISvg->GetHeight()};
+
   context.fill_paint.setStroke(false);
   context.stroke_paint.setStroke(true);
 
@@ -69,14 +97,6 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   }
 }
 
-void Svg::onEraseBkgnd(ui::IRenderTarget *rt) {
-  // svg 背景
-  Rect rc;
-  m_pISvg->GetObjectClientRect(&rc);
-  ui::Color c = ui::Color::Make(0xFFFFFFFF);
-  rt->DrawRect(&rc, &c);
-}
-
 ui::Size Svg::onGetDesiredSize() {
   Size size = {0, 0};
   if (!m_root) {
@@ -86,8 +106,7 @@ ui::Size Svg::onGetDesiredSize() {
   return m_root->GetDesiredSize();
 }
 
-void Svg::SetAttribute(ui::SerializeParam& data) {}
-
+void Svg::SetAttribute(ui::SerializeParam &data) {}
 
 bool Svg::Load(const char *stream) {
   if (m_root) {

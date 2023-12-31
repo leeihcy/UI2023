@@ -222,7 +222,7 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
     const char* szText = nullptr;
 
     //	先加载默认配置，再遍历检查当前语言的配置
-    IMapAttribute* pMapAttrib = UICreateIMapAttribute();
+    std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
     pElem->GetAttribList(pMapAttrib);
 
     std::string  strID;
@@ -300,7 +300,6 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
             strID.c_str(), strFaceName.c_str());
     }
 
-    pMapAttrib->Destroy();
 #endif
 }
 }

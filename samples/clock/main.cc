@@ -2,6 +2,7 @@
 #include "sdk/include/interface/iobject.h"
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
+#include "svg/include/inc.h"
 #include <cstdio>
 
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
@@ -34,7 +35,7 @@ public:
 ClockAnimate g_clock_animate;
 
 void start_animate(ui::IApplication *app, ui::IWindow *window) {
-  ui::IObject *hour = window->FindObject("hour");
+  /*ui::IObject *hour = window->FindObject("hour");
   ui::IObject *min = window->FindObject("min");
   ui::IObject *sec = window->FindObject("sec");
   if (!hour || !min || !sec) {
@@ -46,17 +47,18 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
   uia::IFromToTimeline* timeline1 = story->CreateTimeline(0);
   timeline1->SetParam(0, 100, 3*1000);
   story->Begin();
+  */
 }
 
 int main() {
   ui::ApplicationPtr app;
+  ui::SvgRegisterObjects(app.get());
   ui::IResource *resource = app->LoadResource("sample/clock");
 
   ui::WindowPtr window(resource);
 
-  ui::Rect rc = {100, 100, 700, 700};
-  window->Create("clock", rc);
-  window->SetTitle("webgl demo");
+  window->Create("clock", nullptr);
+  window->SetTitle("clock demo");
   window->Show();
 
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));

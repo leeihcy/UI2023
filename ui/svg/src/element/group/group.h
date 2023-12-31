@@ -1,7 +1,7 @@
 #ifndef _UI_SVG_SRC_ELEMENT_GROUP_GROUP_H_
 #define _UI_SVG_SRC_ELEMENT_GROUP_GROUP_H_
 
-#include "src/element/element.h"
+#include "svg/src/element/element.h"
 
 namespace svg {
 

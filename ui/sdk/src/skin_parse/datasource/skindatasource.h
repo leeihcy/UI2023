@@ -1,6 +1,7 @@
 #pragma once
 #include "include/interface/iskindatasource.h"
 #include "include/interface/renderlibrary.h"
+#include "include/common/signalslot/slot.h"
 
 namespace ui
 {
@@ -9,7 +10,7 @@ struct UIDocument;
 
 struct SkinDataSource
 {
-    virtual ~SkinDataSource() {}
+  virtual ~SkinDataSource() {}
 	virtual void  Release() = 0;
 	virtual ISkinDataSource*  GetISkinDataSource() = 0;
 
@@ -19,6 +20,7 @@ struct SkinDataSource
 	virtual SKIN_PACKET_TYPE  GetType() = 0;
 
 	virtual bool  FileExist(const char* szPath) = 0;
+  virtual bool  Load(const char* szPath, slot<void(const char*)>&& callback) = 0;
 
 	virtual bool  Load_UIDocument(UIDocument* pDocument, const char* szPath) = 0;
 	virtual bool  Load_RenderBitmap(IRenderBitmap* pBitmap, const char* szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;

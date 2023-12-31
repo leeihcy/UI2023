@@ -91,6 +91,7 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   //////////////////////////////////////////////////////////////////////////
   // 计算出 pChild 的 rectP的宽和高
   Size s = pParam->CalcDesiredSize();
+  s = ScaleFactorHelper::Scale(s, pParam->GetObject());
 
   // 先CalcDesiredSize，再getconfigleft,防止在CalcDesiredSize中修改config left
   int left = pParam->GetConfigLeft();

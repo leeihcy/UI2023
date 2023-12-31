@@ -200,7 +200,7 @@ class Window;
 struct UIAPI IWindow : public IPanel {
   friend struct WindowMeta;
 
-  void Create(const char *szId, const Rect &rect);
+  void Create(const char *szId, const Rect* rect);
   void SetTitle(const char *title);
   void Show();
 

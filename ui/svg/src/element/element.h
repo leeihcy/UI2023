@@ -1,7 +1,7 @@
 #ifndef _UI_SVG_SRC_ELEMENT_ELEMENT_H_
 #define _UI_SVG_SRC_ELEMENT_ELEMENT_H_
-#include "SkCanvas.h"
-#include "render_context.h"
+// #include "SkCanvas.h"
+#include "svg/src/element/render_context.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/util/color.h"
 

@@ -63,7 +63,7 @@ struct IMessage;
 
 struct IMapAttribute;
 struct IListAttribute;
-UIAPI IMapAttribute* UICreateIMapAttribute();
+UIAPI std::shared_ptr<IMapAttribute> UICreateIMapAttribute();
 UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
 
 struct IRenderBitmap;

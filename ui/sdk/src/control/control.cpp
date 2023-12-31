@@ -131,9 +131,9 @@ ITextRenderBase *Control::CreateDefaultTextRender() {
   //       &m_pTextRender);
 
   //   if (m_pTextRender) {
-  //     IMapAttribute *pMapAttr = m_pIMapAttributeRemain;
+  //     std::shared_ptr<IMapAttribute> pMapAttr = m_pIMapAttributeRemain;
   //     if (!pMapAttr)
-  //       UICreateIMapAttribute(&pMapAttr);
+  //       pMapAttr = UICreateIMapAttribute();
 
   //     SerializeParam data = {0};
   //     data.pUIApplication = GetUIApplication()->GetIUIApplication();
@@ -211,7 +211,7 @@ void Control::onEraseBkgnd(IRenderTarget *pRenderTarget) {
 void Control::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
   if (m_pBkgndRender) {
-    *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
+    *pSize = m_pBkgndRender->GetDesiredSize();
   }
 }
 

@@ -1,6 +1,7 @@
 #ifndef _UI_ICOLORRENDER_H_
 #define _UI_ICOLORRENDER_H_
 #include "irenderbase.h"
+#include "include/util/color.h"
 
 namespace ui {
 

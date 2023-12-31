@@ -838,7 +838,7 @@ ILayoutParam *Object::GetSafeLayoutParam() {
   m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
 
   SerializeParam data = {0};
-  data.pMapAttrib = m_pIMapAttributeRemain;
+  data.pMapAttrib = m_pIMapAttributeRemain.get();
   data.pSkinRes = GetIResource();
   data.nFlags = SERIALIZEFLAG_LOAD;
   m_pLayoutParam->Serialize(&data);

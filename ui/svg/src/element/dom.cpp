@@ -87,16 +87,15 @@ std::unique_ptr<Element> Dom::handle_element(pugi::xml_node &node) {
     return nullptr;
   }
 
-  ui::IMapAttribute *pMapAttrib = ui::UICreateIMapAttribute();
-  create_attribute_map(node, pMapAttrib);
+  std::shared_ptr<ui::IMapAttribute> pMapAttrib = ui::UICreateIMapAttribute();
+  create_attribute_map(node, pMapAttrib.get());
 
   ui::SerializeParam data = {0};
   data.nFlags = ui::SERIALIZEFLAG_LOAD;
-  data.pMapAttrib = pMapAttrib;
+  data.pMapAttrib = pMapAttrib.get();
   element->SetAttribute(data);
 
   scan_node(element.get(), node);
-  pMapAttrib->Destroy();
 
   return element;
 }

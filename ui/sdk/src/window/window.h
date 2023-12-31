@@ -50,7 +50,7 @@ public:
 
 public:
   void OnMessage();
-  void Create(const char *szId, const Rect &rect);
+  void Create(const char *szId, const Rect* rect);
   WINDOW_HANDLE GetWindowHandle();
   void SetTitle(const char *title);
   void Show();

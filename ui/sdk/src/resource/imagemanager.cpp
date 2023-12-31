@@ -194,8 +194,8 @@ void ImageManager::OnNewChild(UIElement *pElem) {
   std::string bstrTagName = pElem->GetTagName();
 
   //	加载所有属性
-  IMapAttribute *pMapAttrib = UICreateIMapAttribute();
-  pElem->GetAttribList(pMapAttrib);
+  std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
+  pElem->GetAttribList(pMapAttrib.get());
 
   // 获取路径
   std::string bstrPath = pElem->GetData();
@@ -209,7 +209,6 @@ void ImageManager::OnNewChild(UIElement *pElem) {
   }
 
   if (bstrPath.empty()) {
-    pMapAttrib->Destroy();
     return;
   }
 
@@ -268,7 +267,7 @@ void ImageManager::OnNewChild(UIElement *pElem) {
 #endif
   } else {
     ImageResItem *p =
-        m_resImage.LoadItem(bstrTagName.c_str(), pMapAttrib, strPath.c_str());
+        m_resImage.LoadItem(bstrTagName.c_str(), pMapAttrib.get(), strPath.c_str());
     if (p) {
       IUIEditor *pEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
       if (pEditor) {
@@ -278,8 +277,6 @@ void ImageManager::OnNewChild(UIElement *pElem) {
       UI_LOG_WARN("insert image failed. path=%s", strPath.c_str());
     }
   }
-
-  pMapAttrib->Destroy();
 }
 
 UIElement *ImageManager::GetImageXmlElem(const char *szId) {

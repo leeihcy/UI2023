@@ -2402,8 +2402,7 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 			pResItem = pResLayout->AddResItem(pObj);
 	}
 
-    IMapAttribute* pMapAttrib = NULL;
-    UICreateIMapAttribute(&pMapAttrib);
+    std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
     UIASSERT(pMapAttrib);
 
 	//
@@ -2443,13 +2442,11 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 	if (m_pUIApp->IsDesignMode() && NULL != pResItem)
 	{
 		//ATTRMAP attrMapStyle;
-        IMapAttribute* pAttrMapStyle = NULL;
-        UICreateIMapAttribute(&pAttrMapStyle);
-		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pAttrMapStyle);
+        std::shared_ptr<IMapAttribute> pAttrMapStyle = UICreateIMapAttribute();
+		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pAttrMapStyle.get());
 		pResItem->SetStyleAttr(pAttrMapStyle);
-        SAFE_RELEASE(pAttrMapStyle);
 
-		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pMapAttrib);
+		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pMapAttrib.get());
 		pResItem->SetLastAttr(pMapAttrib);
 
 #if 0 // -- 架构改造
@@ -2659,8 +2656,7 @@ bool CXmlLayoutParse::loadRenderChain(Object* pObjParent)
 		if (m_xml.GetTagName() != XML_RENDERCHAIN_LAYER)
 			continue;
 
-        IMapAttribute*  pMapAttrib = NULL;
-        UICreateIMapAttribute(&pMapAttrib);
+        std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
 
 		for (int j = 0; ; j++)
 		{

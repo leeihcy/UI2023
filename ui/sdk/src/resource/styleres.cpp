@@ -13,10 +13,6 @@ StyleResItem::StyleResItem() {
   m_eSelectorType = STYLE_SELECTOR_TYPE_TAG;
 }
 StyleResItem::~StyleResItem() {
-  if (m_pMapAttrib) {
-    m_pMapAttrib->Destroy();
-    m_pMapAttrib = nullptr;
-  }
   SAFE_DELETE(m_pIStyleResItem);
   SAFE_RELEASE(m_pXmlElement);
 }
@@ -85,15 +81,11 @@ bool StyleResItem::RemoveInheritItem(const char *sz) {
   return false;
 }
 
-void StyleResItem::SetAttributeMap(IMapAttribute *pMapAttrib) {
-  if (m_pMapAttrib) {
-    m_pMapAttrib->Destroy();
-    m_pMapAttrib = nullptr;
-  }
+void StyleResItem::SetAttributeMap(std::shared_ptr<IMapAttribute> pMapAttrib) {
   m_pMapAttrib = pMapAttrib;
 }
 
-IMapAttribute* StyleResItem::GetAttributeMap() {
+std::shared_ptr<IMapAttribute> StyleResItem::GetAttributeMap() {
   return m_pMapAttrib;
 }
 
@@ -160,9 +152,9 @@ bool StyleResItem::InheritMyAttributesToAnother(StyleResItem *pChild) {
   if (nullptr == pChild)
     return false;
 
-  IMapAttribute *pMapAttrib = pChild->GetAttributeMap();
+  std::shared_ptr<IMapAttribute> pMapAttrib = pChild->GetAttributeMap();
   if (pMapAttrib) {
-    m_pMapAttrib->CopyTo(pMapAttrib, false);
+    m_pMapAttrib->CopyTo(pMapAttrib.get(), false);
   }
 
   return true;
@@ -481,8 +473,8 @@ bool StyleRes::UnloadStyle(const char *szTagName,
                            const char *szStyleClass, const char *szID,
                            IListAttribute *pListAttribte) {
   // 先拿到所有的样式列表
-  IMapAttribute *pStyleAttr = UICreateIMapAttribute();
-  LoadStyle(szTagName, szStyleClass, szID, pStyleAttr);
+  std::shared_ptr<IMapAttribute> pStyleAttr = UICreateIMapAttribute();
+  LoadStyle(szTagName, szStyleClass, szID, pStyleAttr.get());
 
   pListAttribte->BeginEnum();
 
@@ -511,10 +503,6 @@ bool StyleRes::UnloadStyle(const char *szTagName,
   }
   pStyleAttr->EndEnum();
 
-  if (pStyleAttr) {
-    pStyleAttr->Destroy();
-    pStyleAttr = nullptr;
-  }
   return true;
 }
 

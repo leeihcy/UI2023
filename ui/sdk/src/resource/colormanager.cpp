@@ -81,11 +81,10 @@ int ColorManager::ParseNewElement(UIElement *pElem) {
 }
 void ColorManager::OnNewChild(UIElement *pElem) {
   //	加载所有属性
-  IMapAttribute *pMapAttrib = UICreateIMapAttribute();
-  pElem->GetAttribList(pMapAttrib);
-  if (false == m_resColor.LoadItem(pMapAttrib, pElem->GetData())) {
+  std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
+  pElem->GetAttribList(pMapAttrib.get());
+  if (false == m_resColor.LoadItem(pMapAttrib.get(), pElem->GetData())) {
     UI_LOG_WARN("insert color failed.");
   }
-  pMapAttrib->Destroy();
 }
 } // namespace ui

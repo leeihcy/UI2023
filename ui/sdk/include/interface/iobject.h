@@ -72,7 +72,7 @@ struct UIAPI IObject : public IMessage {
   void SetId(const char *szText);
   // HWND GetHWND();
   void InitDefaultAttrib();
-  IMapAttribute* GetMapAttribute();
+  std::shared_ptr<IMapAttribute> GetMapAttribute();
   void ClearMapAttribute();
   void SetOutRef(void **ppOutRef);
   // void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);

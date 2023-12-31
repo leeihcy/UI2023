@@ -20,7 +20,8 @@ public:
   virtual Size CalcDesiredSize() override;
 
   static int ParseAlignAttr(const char *);
-
+  Object* GetObject() { return m_pObj; }
+  
 public:
   virtual int GetConfigLeft() override;
   virtual void SetConfigLeft(int) override;
@@ -58,13 +59,15 @@ public:
 private:
   Object *m_pObj;
 
-  int
-      m_nConfigWidth; // 对象的宽度，可取值： 数值 | "auto" .
-                      // （对于window对象，width
-                      // 是指client区域的大小，不是整个窗口的大小；width包括padding，但不包括margin）
-  int
-      m_nConfigHeight; // 对象的高度，可取值： 数值 | "auto" .
-                       // （对于window对象，height是指client区域的大小，不是整个窗口的大小；height包括padding，但不包括margin）
+  // 对象的宽度，可取值： 数值 | "auto" .
+  // （对于window对象，width
+  // 是指client区域的大小，不是整个窗口的大小；width包括padding，但不包括margin）
+  int m_nConfigWidth; 
+                      
+  // 对象的高度，可取值： 数值 | "auto" .              
+  // （对于window对象，height是指client区域的大小，不是整个窗口的大小；height包括padding，但不包括margin）      
+  int m_nConfigHeight; 
+                       
   // 在这里需要说明，对象的最终占用的宽度= margin.left + width + margin.right
   // 也就是说这里的width = padding.left + padding.right + content.width
   int m_nConfigLeft;

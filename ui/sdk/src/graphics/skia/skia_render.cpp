@@ -34,6 +34,9 @@ SkiaRenderTarget::~SkiaRenderTarget() {
 void SkiaRenderTarget::Release() { delete this; }
 
 void SkiaRenderTarget::update_clip_rgn() {
+  // TODO: canvas->clipRect 不支持replace操作，导致clip区域越来越小，无法还原
+  // 目前好像只能通过 save/restore 来还原clip区域，太恶心了。先不支持clip吧。
+#if 0
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   int count = m_arrayMetaClipRegion.GetCount();
@@ -60,6 +63,7 @@ void SkiaRenderTarget::update_clip_rgn() {
     toSkRect(rcIntersect, &skrc);
     canvas->clipRect(skrc);
   }
+#endif
 }
 
 void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {

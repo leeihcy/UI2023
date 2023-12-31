@@ -94,6 +94,10 @@ bool Color::operator==(const Color& c) const {
   return this->value == c.value;
 }
 
+bool Color::IsTransparnt() const {
+  return this->a == 0;
+}
+
 // uint Color::GetGDIValue() {
 //   uint gdiColor = 0;
 //   // gdiColor = RGB(r, g, b);

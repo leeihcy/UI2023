@@ -5,6 +5,7 @@
 #include "include/interface/ilayout.h"
 #include "include/interface/iwindow.h"
 // #include "include/interface/ipanel.h"
+#include "src/layout/canvaslayout.h"
 #include "src/resource/uiresource.h"
 // #include "src/Renderbase\renderbase\renderbase.h"
 // #include "src/Renderbase\textrenderbase\textrender.h"
@@ -23,6 +24,7 @@
 // #include "src/Atl\image.h"
 #include "include/interface/imapattr.h"
 #include <algorithm>
+#include <memory>
 // #include "..\Accessible\accessibleimpl.h"
 // #include "..\Accessible\object_accessible.h"
 #include "object_meta.h"
@@ -67,11 +69,6 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
 Object::~Object(void) {
   if (m_ppOutRef)
     *m_ppOutRef = nullptr;
-
-  if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Destroy();
-    m_pIMapAttributeRemain = nullptr;
-  }
 
   SAFE_RELEASE(m_pLayoutParam);
 #if 0 // defined(OS_WIN)
@@ -365,11 +362,11 @@ void Object::LoadAttributes(bool bReload) {
 
   StyleRes &styleRes = m_pSkinRes->GetStyleRes();
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
-                     strId.c_str(), m_pIMapAttributeRemain);
+                     strId.c_str(), m_pIMapAttributeRemain.get());
 
   SerializeParam data = {0};
   data.pSkinRes = m_pSkinRes->GetIResource();
-  data.pMapAttrib = m_pIMapAttributeRemain;
+  data.pMapAttrib = m_pIMapAttributeRemain.get();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
@@ -380,8 +377,7 @@ void Object::LoadAttributes(bool bReload) {
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain->Destroy();
-    m_pIMapAttributeRemain = nullptr;
+    m_pIMapAttributeRemain.reset();
   }
 }
 
@@ -390,12 +386,9 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
   if (!pElement)
     return;
 
-  if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Destroy();
-    m_pIMapAttributeRemain = nullptr;
-  }
+  m_pIMapAttributeRemain.reset();
   m_pIMapAttributeRemain = UICreateIMapAttribute();
-  pElement->GetAttribList(m_pIMapAttributeRemain);
+  pElement->GetAttribList(m_pIMapAttributeRemain.get());
   this->LoadAttributes(bReload); 
 
   // 通知编辑器关联控件和xml结点.
@@ -421,14 +414,11 @@ void Object::AddAttribute(const char *szKey, const char *szValue) {
   }
   m_pIMapAttributeRemain->AddAttr(szKey, szValue);
 }
-IMapAttribute* Object::GetMapAttribute() {
+std::shared_ptr<IMapAttribute> Object::GetMapAttribute() {
   return m_pIMapAttributeRemain;
 }
 void Object::ClearMapAttribute() {
-  if (m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain->Destroy();
-    m_pIMapAttributeRemain = nullptr;
-  }
+  m_pIMapAttributeRemain.reset();
 }
 
 // 设置padding的值，同时更新非客户区的大小
@@ -453,7 +443,7 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 //     //
 //     在编辑框中创建的对象，也给创建一个空属性列表，用于序列化默认的TEXTSTYLE等。
 //     assert(nullptr == m_pIMapAttributeRemain);
-//     UICreateIMapAttribute(&m_pIMapAttributeRemain);
+//     m_pIMapAttributeRemain = UICreateIMapAttribute();
 // }
 //
 
@@ -1128,7 +1118,7 @@ void Object::SetRejectMouseMsgSelf(bool b) {
 
 // 当手动创建一个对象（非从xml中加载时，可以调用该函数完全默认属性的加载)
 void Object::InitDefaultAttrib() {
-  IMapAttribute *pMapAttrib = nullptr;
+  std::shared_ptr<IMapAttribute> pMapAttrib;
   if (m_pIMapAttributeRemain) {
     pMapAttrib = m_pIMapAttributeRemain;
   } else {
@@ -1149,11 +1139,11 @@ void Object::InitDefaultAttrib() {
     strStyle = szStyle;
 
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(), nullptr,
-                     pMapAttrib);
+                     pMapAttrib.get());
 
   SerializeParam data = {0};
   data.pSkinRes = m_pSkinRes->GetIResource();
-  data.pMapAttrib = pMapAttrib;
+  data.pMapAttrib = pMapAttrib.get();
   data.nFlags = SERIALIZEFLAG_LOAD;
 
   m_pIMapAttributeRemain = pMapAttrib;
@@ -1165,8 +1155,7 @@ void Object::InitDefaultAttrib() {
 
   // 如果没有多余的属性，直接释放，节省内存
   if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain->Destroy();
-    m_pIMapAttributeRemain = nullptr;
+    m_pIMapAttributeRemain.reset();
   }
 }
 //
@@ -1749,3 +1738,23 @@ int Object::GetMinWidth() { return m_lMinWidth; }
 int Object::GetMinHeight() { return m_lMinHeight; }
 void Object::SetMinWidth(int n) { m_lMinWidth = n; }
 void Object::SetMinHeight(int n) { m_lMinHeight = n; }
+
+
+void Object::SetConfigWidth(int n) {
+  if (m_pLayoutParam) {
+    if (m_pLayoutParam->UUID() == ICanvasLayout::UUID())
+      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigWidth(n);
+  } else {
+    // TODO:
+    // CanvasLayout::GetObjectLayoutParam(this)->SetConfigWidth(n);
+  }
+}
+void Object::SetConfigHeight(int n) {
+  if (m_pLayoutParam) {
+    if (m_pLayoutParam->UUID() == ICanvasLayout::UUID())
+      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigHeight(n);
+  } else {
+    // TODO:
+    // CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigHeight(n);
+  }
+}

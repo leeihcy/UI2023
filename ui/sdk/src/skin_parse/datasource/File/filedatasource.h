@@ -17,6 +17,7 @@ public:
   virtual void SetData(byte *data, int size) override;
   virtual SKIN_PACKET_TYPE GetType() override;
 
+  virtual bool Load(const char* szPath, slot<void(const char*)>&& callback) override;
   virtual bool Load_UIDocument(UIDocument *pDocument,
                                const char *szPath) override;
   virtual bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *szPath,

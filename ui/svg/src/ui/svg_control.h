@@ -22,10 +22,14 @@ public:
 
 protected:
   void onFinalConstruct();
-  void onEraseBkgnd(ui::IRenderTarget* pRenderTarget);
+  void onSerialize(SerializeParam *pData);
+  // void onEraseBkgnd(ui::IRenderTarget* pRenderTarget);
   void onPaint(ui::IRenderTarget *rt);
   ui::Size onGetDesiredSize();
   
+  void setImageResourceId(const char *);
+  const char* getImageResourceId();
+
 private:
   ISvg* m_pISvg;
   std::unique_ptr<svg::Svg> m_root;

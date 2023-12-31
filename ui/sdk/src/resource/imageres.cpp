@@ -50,10 +50,6 @@ ImageResItem::~ImageResItem() {
   // 		m_pGdiplusBitmap->SetOutRef(nullptr);
   //     }
   SAFE_DELETE(m_pOriginImageData);
-  if (m_pMapAttrib) {
-    m_pMapAttrib->Destroy();
-    m_pMapAttrib = nullptr;
-  }
   SAFE_DELETE(m_pIImageResItem);
 }
 
@@ -332,7 +328,7 @@ void ImageResItem::SetAttribute(IMapAttribute *pMapAttrib) {
   if (!m_pMapAttrib) {
     m_pMapAttrib = UICreateIMapAttribute();
   }
-  pMapAttrib->CopyTo(m_pMapAttrib, true);
+  pMapAttrib->CopyTo(m_pMapAttrib.get(), true);
 
   bool bUseSkinHLS = false;
   bool bNeedAntiAliasing = false;

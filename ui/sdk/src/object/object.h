@@ -127,7 +127,7 @@ public:
 
   const char *GetAttribute(const char *szKey, bool bErase);
   void AddAttribute(const char *szKey, const char *szValue);
-  IMapAttribute* GetMapAttribute();
+  std::shared_ptr<IMapAttribute> GetMapAttribute();
   void ClearMapAttribute();
   void InitDefaultAttrib();
    
@@ -399,7 +399,7 @@ protected:
   int m_lMinWidth;
   int m_lMinHeight;
 
-  IMapAttribute *m_pIMapAttributeRemain; // 用于扩展。未解析的属性
+  std::shared_ptr<IMapAttribute> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
   IRenderBase *m_pBkgndRender;           // 背景渲染
   IRenderBase *m_pForegndRender;         // 前景渲染
   ITextRenderBase *m_pTextRender; // 文字渲染，由control负责读取该属性

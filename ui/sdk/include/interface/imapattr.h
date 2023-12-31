@@ -1,6 +1,7 @@
 #ifndef _UI_IMAPATTR_H_
 #define _UI_IMAPATTR_H_
 #include "sdk/include/interface.h"
+#include <memory.h>
 
 namespace ui {
 #define MAPATTR_RET_OK 0
@@ -14,11 +15,11 @@ struct Rect;
 struct C9Region;
 
 struct IMapAttribute {
+  virtual ~IMapAttribute() {}
   virtual bool HasAttrib(const char *szKey) = 0;
-  virtual bool
-  ExtractMapAttrByPrefix(const char *szPrefix, bool bErase,
-                         /*out*/ IMapAttribute **pMapAttribute) = 0;
-  virtual void Destroy() = 0;
+  virtual std::shared_ptr<IMapAttribute>
+    ExtractMapAttrByPrefix(const char *szPrefix, bool bErase) = 0;
+  // virtual void Destroy() = 0;
   virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverwrite) = 0;
   virtual int GetAttrCount() = 0;
 
@@ -68,7 +69,7 @@ struct IListAttribute {
   virtual int Release() = 0;
   virtual int AddRef() = 0;
 };
-UIAPI int UICreateIMapAttribute(IMapAttribute **ppOut);
+UIAPI std::shared_ptr<IMapAttribute> UICreateIMapAttribute();
 UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
 
 } // namespace ui

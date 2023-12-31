@@ -508,7 +508,7 @@ const char*  IStyleResItem::GetAttribute(const char* szKey)
 // }
 
 
-IMapAttribute*  IStyleResItem::GetAttributeMap()
+std::shared_ptr<IMapAttribute> IStyleResItem::GetAttributeMap()
 { 
    return m_pImpl->GetAttributeMap();
 }
@@ -717,6 +717,7 @@ ISkinDataSource*  IResource::GetDataSource()
 
 	return p->GetISkinDataSource();
 }
+
 unsigned int  IResource::GetXmlDocCount()               
 { 
     return m_pImpl->GetXmlDocCount();

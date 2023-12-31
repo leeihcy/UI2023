@@ -8,11 +8,11 @@ SvgLayoutParam::SvgLayoutParam(ui::IObject *p) { m_obj = p; }
 
 void SvgLayoutParam::Load() {
 
-  IMapAttribute *pMapAttr = m_obj->GetMapAttribute();
+  std::shared_ptr<IMapAttribute> pMapAttr = m_obj->GetMapAttribute();
   SerializeParam data = {0};
   data.pSkinRes = m_obj->GetResource();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-  data.pMapAttrib = pMapAttr;
+  data.pMapAttrib = pMapAttr.get();
 
   Serialize(&data);
 

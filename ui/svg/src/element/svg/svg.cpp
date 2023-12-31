@@ -7,7 +7,20 @@ namespace svg {
 
 // 计算view port位置。将svg内容填充满控件大小（等比例）
 void Svg::calcViewPort(RenderContext &ctx) {
-  ui::Size view_port_size = getViewPortWithDefault();
+  ui::Size view_port_size = ctx.canvas_size;
+
+  if (m_width.unit == ui::Length::Unit::Number && m_height.unit == ui::Length::Unit::Number) { 
+    view_port_size.width = m_width.value;
+    view_port_size.height = m_height.value;
+  } else {
+    if (m_width.unit == ui::Length::Unit::Number) {
+      view_port_size.height = view_port_size.width = m_width.value;
+    }
+    if (m_height.unit == ui::Length::Unit::Number) {
+      view_port_size.width = view_port_size.height = m_height.value;
+    }
+  }
+
   if (view_port_size.width <= 0 || view_port_size.height <= 0) {
     ctx.view_port.width = ctx.view_port.height = 0;
     return;
@@ -17,6 +30,7 @@ void Svg::calcViewPort(RenderContext &ctx) {
   float tan_canvas =
       (float)ctx.canvas_size.width / (float)ctx.canvas_size.height;
 
+  // 居中绘制
   ctx.view_port.x = 0;
   ctx.view_port.y = 0;
   if (tan_view_port > tan_canvas) {
@@ -26,6 +40,9 @@ void Svg::calcViewPort(RenderContext &ctx) {
     ctx.view_port.height = ctx.canvas_size.height;
     ctx.view_port.width = ctx.canvas_size.height * tan_view_port;
   }
+
+  ctx.view_port.x = (ctx.canvas_size.width - ctx.view_port.width) / 2;
+  ctx.view_port.y = (ctx.canvas_size.height - ctx.view_port.height) / 2;
 }
 
 SkMatrix Svg::calcViewBoxMatrix(RenderContext &ctx) {
@@ -137,6 +154,8 @@ ui::Size Svg::getViewPortWithDefault() {
   return size;
 }
 
-ui::Size Svg::GetDesiredSize() { return getViewPortWithDefault(); }
+ui::Size Svg::GetDesiredSize() { 
+  return getViewPortWithDefault(); 
+}
 
 } // namespace svg

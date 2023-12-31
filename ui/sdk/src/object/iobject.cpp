@@ -919,7 +919,7 @@ void  IObject::AddAttribute(const char* szKey, const char*  szValue)
 { 
 	__pImpl->AddAttribute(szKey, szValue); 
 }
-IMapAttribute* IObject::GetMapAttribute()
+std::shared_ptr<IMapAttribute> IObject::GetMapAttribute()
 { 
 	return __pImpl->GetMapAttribute(); 
 }
