@@ -5,6 +5,10 @@
 #include "svg/include/inc.h"
 #include <cstdio>
 
+
+// https://cssanimation.rocks/clocks/
+
+
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
   printf("on_window_destroy\n");
   uiapp->Quit();
@@ -57,7 +61,8 @@ int main() {
 
   ui::WindowPtr window(resource);
 
-  window->Create("clock", nullptr);
+  ui::Rect rc = ui::Rect::MakeXYWH(0, 0, 400, 400);
+  window->Create("clock", /*&rr*/nullptr);
   window->SetTitle("clock demo");
   window->Show();
 

@@ -26,9 +26,9 @@ struct PanelMeta : public MetaImpl<IPanel> {
 };
 
 struct RoundPanelMeta : public MetaImpl<IRoundPanel> {
-  static IMeta *Get() {
+  static RoundPanelMeta& Get() {
     static RoundPanelMeta s;
-    return &s;
+    return s;
   }
 
   Uuid UUID() override { return {0x021AC934, 0x3E6C, 0x11EE, {0x82, 0xD1, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
@@ -40,7 +40,7 @@ struct RoundPanelMeta : public MetaImpl<IRoundPanel> {
     param.major_type = OBJ_PANEL;
     param.minor_type = PANEL_SIMPLE;
     param.category = CATEGORY_CONTAINER;
-    param.descrption = "容器基类，负责内部控制布局";
+    param.descrption = "圆角容器";
     param.default_size = {300, 300};
     return param;
   }

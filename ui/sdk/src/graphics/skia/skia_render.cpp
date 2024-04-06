@@ -178,7 +178,7 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
     }
   }
 
-  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(%x, %x)", width, height,
+  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(0x%x, 0x%x)", width, height,
               fix_width, fix_height, fix_width, fix_height);
 
   SkImageInfo info = SkImageInfo::Make(

@@ -44,7 +44,12 @@ bool SkiaRenderBitmap::LoadFromData(unsigned char *pData, int nSize,
 IMAGE_ITEM_TYPE SkiaRenderBitmap::GetImageType() {
   return IMAGE_ITEM_TYPE_IMAGE;
 }
-bool SkiaRenderBitmap::Create(int nWidth, int nHeight) { return false; }
+
+bool SkiaRenderBitmap::Create(int nWidth, int nHeight) { 
+  // m_bitmap->Create();
+  return false; 
+}
+
 void SkiaRenderBitmap::Destroy() { return m_bitmap.reset(); }
 int SkiaRenderBitmap::GetWidth() { return m_bitmap.width(); }
 int SkiaRenderBitmap::GetHeight() { return m_bitmap.height(); }

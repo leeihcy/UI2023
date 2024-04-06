@@ -8,6 +8,7 @@
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/stringselect_attribute.h"
+#include "src/helper/scale/scale_factor.h"
 #include "src/layout/layout.h"
 #include "src/window/window.h"
 
@@ -57,7 +58,7 @@ void Panel::onRouteMessage(ui::Msg *msg) {
     return;
   }
   else if (msg->message == UI_MSG_POSTPAINT) {
-    onPostPaint(static_cast<EraseBkgndMessage*>(msg)->rt);
+    onPostPaint(static_cast<PostPaintMessage*>(msg)->rt);
     return;
   }
   else if (msg->message == UI_MSG_GETDESIREDSIZE) {
@@ -126,8 +127,11 @@ void Panel::virtualOnSize(unsigned int nType, unsigned int cx,
 void Panel::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
 
-  if (this->m_pLayout)
+  if (this->m_pLayout && m_pChild)
     *pSize = this->m_pLayout->Measure();
+  else if (m_pBkgndRender) {
+    *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
+  }
 
   Rect rcNonClient = {0};
   GetNonClientRegion(&rcNonClient);

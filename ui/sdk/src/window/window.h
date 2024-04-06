@@ -111,7 +111,7 @@ private:
   // 窗口的渲染放在这个对象里面，windowbase不负责渲染
   WindowRender m_window_render;
 
-	WindowStyle  m_window_style;
+	WindowStyle m_window_style;
     
   int m_width = 0;
   int m_height = 0;

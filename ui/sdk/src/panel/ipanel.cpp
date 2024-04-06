@@ -1,10 +1,10 @@
 #include "include/interface/ipanel.h"
 #include "src/panel/panel.h"
-// #include "round_panel.h"
+#include "src/panel/round_panel.h"
 
 namespace ui {
 UI_IMPLEMENT_INTERFACE(Panel, Object)
-// UI_IMPLEMENT_INTERFACE(RoundPanel, Panel)
+UI_IMPLEMENT_INTERFACE(RoundPanel, Panel)
 
 ILayout *IPanel::GetLayout() { return __pImpl->GetLayout(); }
 void IPanel::SetLayout(ILayout *p) { __pImpl->SetLayout(p); }

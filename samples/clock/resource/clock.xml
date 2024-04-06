@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <skin>
   <layout>
-    <Window id="clock">
-      <Panel id="panel_clock" width="600" height="600" back.render.type="color" back.render.color="white">
-        <Svg file="clock.svg" back.render.type="color" back.render.colorx="blue"/>
-        
-        <Controlx zorder="1" id="hour" style="hand" 
-          layout.width="10" layout.height="100"/>
-        <Controlx zorder="2" id="min"  style="hand" back.render.image="clock_min" 
-          layout.width="5" layout.height="200"/>
-        <Controlx zorder="3" id="sec"  style="hand" back.render.image="clock_sec" 
-          back.render.color="red" layout.width="10" layout.height="100"/> 
+    <Window id="clock" width="600" height="600" back.render.type="color" back.render.color="gray" >
+      <RoundPanel id="panel_clock" corner="50" fore.render.type="color" fore.render.color="white" 
+        layout.left="30" layout.top="30" layout.right="30" layout.bottom="30" border-radius="50%">
+          <Svg file="clock.svg" layout.left="20" layout.top="20" layout.right="20" layout.bottom="20"/>
           
-      </Panel>
+          <Controlx zorder="1" id="hour" style="hand" 
+            layout.width="10" layout.height="100"/>
+          <Controlx zorder="2" id="min"  style="hand" back.render.image="clock_min" 
+            layout.width="5" layout.height="200"/>
+          <Controlx zorder="3" id="sec"  style="hand" back.render.image="clock_sec" 
+            back.render.color="red" layout.width="10" layout.height="100"/> 
+      </RoundPanel>
     </Window>
   </layout>
   <style>

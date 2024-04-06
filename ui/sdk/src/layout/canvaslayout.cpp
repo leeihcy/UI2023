@@ -91,7 +91,7 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   //////////////////////////////////////////////////////////////////////////
   // 计算出 pChild 的 rectP的宽和高
   Size s = pParam->CalcDesiredSize();
-  s = ScaleFactorHelper::Scale(s, pParam->GetObject());
+  // s = ScaleFactorHelper::Scale(s, pParam->GetObject());
 
   // 先CalcDesiredSize，再getconfigleft,防止在CalcDesiredSize中修改config left
   int left = pParam->GetConfigLeft();
@@ -341,28 +341,34 @@ void CanvasLayoutParam::Serialize(SerializeParam *pData) {
 
 int CanvasLayoutParam::GetConfigLeft() { return m_nConfigLeft; }
 void CanvasLayoutParam::LoadConfigLeft(int n) {
+  // m_nConfigLeft = n;
   m_nConfigLeft = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigLeft() {
   return RestoreByDpi_if_gt0(m_nConfigLeft);
+  // return m_nConfigLeft;
 }
 void CanvasLayoutParam::SetConfigLeft(int n) { m_nConfigLeft = n; }
 
 int CanvasLayoutParam::GetConfigTop() { return m_nConfigTop; }
 void CanvasLayoutParam::LoadConfigTop(int n) {
   m_nConfigTop = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
+  // m_nConfigTop = n;
 }
 int CanvasLayoutParam::SaveConfigTop() {
+  // return m_nConfigTop;
   return RestoreByDpi_if_gt0(m_nConfigTop);
 }
 void CanvasLayoutParam::SetConfigTop(int n) { m_nConfigTop = n; }
 
 int CanvasLayoutParam::GetConfigRight() { return m_nConfigRight; }
 void CanvasLayoutParam::LoadConfigRight(int n) {
+  // m_nConfigRight = n;
   m_nConfigRight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigRight() {
   return RestoreByDpi_if_gt0(m_nConfigRight);
+  // return m_nConfigRight;
 }
 void CanvasLayoutParam::SetConfigRight(int n) { m_nConfigRight = n; }
 

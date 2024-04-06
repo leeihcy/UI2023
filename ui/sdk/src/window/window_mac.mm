@@ -26,12 +26,18 @@ WindowPlatformMac::WindowPlatformMac(ui::Window &w) : m_ui_window(w) {}
 void WindowPlatformMac::Initialize() {}
 WindowPlatformMac::~WindowPlatformMac() {}
 
-bool WindowPlatformMac::Create(const Rect &rect) {
+// rect乘以了缩放系数。
+bool WindowPlatformMac::Create(const Rect &content_rect) {
   NSUInteger windowStyle =
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
        NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
-  NSRect windowRect = NSMakeRect(100, 100, 400, 400);
-  m_window = [[NSWindow alloc] initWithContentRect:windowRect
+
+  float scale = [[NSScreen mainScreen] backingScaleFactor];
+
+  NSRect ns_content_rect = NSMakeRect(
+    content_rect.left / scale, content_rect.top / scale, 
+    content_rect.Width() / scale, content_rect.Height() / scale);
+  m_window = [[NSWindow alloc] initWithContentRect:ns_content_rect
                                          styleMask:windowStyle
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
@@ -113,20 +119,34 @@ void SetWindowRect(Rect *prect) {
   // return true;
 }
 
-
+// xywh 乘以了缩放系数
 void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
+  // printf("SetWindowPos %d,%d  %d,%d \n", x,y,w,h);
   if (!flags.move && !flags.size) {
     return;
   }
 
   CGFloat factor = m_window.backingScaleFactor;
+  NSRect rect = NSMakeRect(0, 0, w/factor, h/factor);
+
+  NSUInteger windowStyle =
+      (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+       NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
+
+  NSRect frame_rect = [m_window frameRectForContentRect:rect];
+  // printf("SetWindowPos rect2 %f,%f  %f,%f \n",
+  //   frame_rect.origin.x, frame_rect.origin.y, 
+  //   frame_rect.size.width, frame_rect.size.height);
+
   if (flags.size && flags.move) {
-    [m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor) display:(true)];
+    //[m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor) display:(true)];
+    [m_window setFrame:NSMakeRect(x/factor, y/factor, frame_rect.size.width, frame_rect.size.height) display:(true)];
     return;
   }
 
   if (flags.size) {
-    [m_window setContentSize:NSMakeSize(w/factor, h/factor)];
+    // [m_window setContentSize:NSMakeSize(w/factor, h/factor)];
+    [m_window setContentSize:NSMakeSize(frame_rect.size.width, frame_rect.size.height)];
     return;
   }
   if (flags.move) {
@@ -222,6 +242,7 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
 }
 
 void WindowPlatformMac::notifySize() {
+  // printf("WindowPlatformMac %f\n", m_window.backingScaleFactor);
   m_ui_window.onSize(m_window.frame.size.width * m_window.backingScaleFactor,
                      m_window.frame.size.height * m_window.backingScaleFactor);
 }

@@ -211,7 +211,7 @@ void Control::onEraseBkgnd(IRenderTarget *pRenderTarget) {
 void Control::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
   if (m_pBkgndRender) {
-    *pSize = m_pBkgndRender->GetDesiredSize();
+    *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
   }
 }
 

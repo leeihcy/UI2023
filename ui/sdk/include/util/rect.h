@@ -83,6 +83,8 @@ struct Rect : public RectLTRB {
     this->bottom = 0;
   }
   bool IsEmpty() const { return left == right && top == bottom; }
+  bool IsZero() const { return left == 0 && right == 0 && top == 0 && bottom == 0; }
+  
   void Set(int l, int t, int r, int b) {
     left = l;
     top = t;

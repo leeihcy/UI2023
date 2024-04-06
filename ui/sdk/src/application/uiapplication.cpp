@@ -305,8 +305,8 @@ void Application::RegisterDefaultUIObject() {
   RegisterUIObject(&WindowMeta::Get());
   RegisterUIObject(&PanelMeta::Get());
   RegisterUIObject(&ControlMeta::Get());
+  RegisterUIObject(&RoundPanelMeta::Get());
 #if 0
-  RegisterUIObject(RoundPanelMeta::Get());
   RegisterUIObject(ScrollPanelMeta::Get());
   RegisterUIObject(CustomWindowMeta::Get());
   RegisterUIObject(HwndHostMeta::Get());

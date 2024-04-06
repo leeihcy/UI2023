@@ -374,11 +374,6 @@ enum GRAPHICS_RENDER_LIBRARY_TYPE
 #define XML_MASK_RENDER_PREFIX               "mask."            // 在绘制完子结点后，再画的一层(PostPaint)
 #define XML_PANEL_RENDER_REGION              "render.region"    // 皮肤图片在窗口上显示的区域，类型于padding的配置
 
-#define XML_ROUNDPANEL_CORNER_LEFTTOP        "corner.lefttop"
-#define XML_ROUNDPANEL_CORNER_RIGHTTOP       "corner.righttop"
-#define XML_ROUNDPANEL_CORNER_LEFTBOTTOM     "corner.leftbottom"
-#define XML_ROUNDPANEL_CORNER_RIGHTBOTTOM    "corner.rightbottom"
-
 enum ROUND_CORNER_TYPE
 {
     ROUND_CORNER_NONE,

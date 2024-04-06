@@ -21,6 +21,7 @@ namespace ui {
 
 Window::Window(IWindow *p)
     : Panel(p), m_window_render(*this), m_mouse_key(*this), m_pIWindow(p) {
+  memset(&m_window_style, 0, sizeof(m_window_style));
   UI_LOG_DEBUG("Window");
 }
 Window::~Window() {
@@ -127,6 +128,7 @@ void Window::Show() {
 
 void Window::enterResize(bool b) { m_window_style.enter_resize = b; }
 
+// width height是乘以了缩放系统的值。
 void Window::onSize(int width, int height) {
   if (m_width == width && m_height == height) {
     return;
