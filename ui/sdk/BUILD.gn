@@ -1,5 +1,8 @@
 shared_library("uisdk") {
     cflags = []
+    ldflags = []
+    libs = []
+
     if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g", "-O0"]
     }
@@ -16,6 +19,21 @@ shared_library("uisdk") {
         "//ui/3rd/skia/src/",
         "//ui/3rd/skia/src/include/core/"
     ]
+
+    # Python deps
+    # defines += ["HAVE_WCHAR_H"]
+    if (is_mac) {
+      cflags += [
+        "-isystem",
+        "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/include/python3.9"
+      ]
+      ldflags += [
+        "-L/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib"
+      ]
+      libs += [
+        "python3.9"
+      ]
+    }
   
     lib_dirs = ["$root_build_dir/"]
     # skia
@@ -36,20 +54,20 @@ shared_library("uisdk") {
       outputs = ["$root_build_dir/{{source_file_part}}"]
     }
     if (is_win) {
-      libs = [
+      libs += [
         "atls.lib",  # ATL
         "skia.dll.lib",
       ]
-      ldflags = [
+      ldflags += [
         
        ]
     }
     else if (is_mac || is_linux) {
        # 直接在当前目录查找libskia.dylib
-      ldflags = [
+      ldflags += [
         "-rpath", ".",
       ]
-      libs = ["skia"]
+      libs += ["skia"]
     }
     
    
@@ -86,6 +104,8 @@ shared_library("uisdk") {
         "src/attribute/size_attribute.cpp",
         "src/attribute/string_attribute.cpp",
         "src/attribute/textrenderbase_attribute.cpp",
+        "src/control/control.cpp",
+        "src/control/icontrol.cpp",
         "src/graphics/bitmap/skiabitmap.cpp",
         "src/graphics/renderlibrary.cpp",
         "src/graphics/skia/skia_render.cpp",
@@ -126,8 +146,7 @@ shared_library("uisdk") {
         "src/panel/ipanel.cpp",
         "src/panel/panel.cpp",
         "src/panel/round_panel.cpp",
-        "src/control/control.cpp",
-        "src/control/icontrol.cpp",
+        "src/python/py_module.cpp",
         "src/render/colorrender/colorrender.cpp",
         "src/render/colorrender/icolorrender.cpp",
         "src/render/imagerender/iimagerender.cpp",

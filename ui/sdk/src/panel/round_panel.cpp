@@ -100,8 +100,8 @@ void RoundPanel::prePaint(IRenderTarget *pRenderTarget, int width, int height) {
   SkVector radii[4] = {
       {ul, ul},
       {ur, ur},
-      {ll, ll},
       {lr, lr},
+      {ll, ll},
   };
   rr.setRectRadii(SkRect::MakeXYWH(0, 0, width, height), radii);
 
