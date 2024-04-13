@@ -13,17 +13,27 @@ static PyMethodDef UISdkMethods[] = {
 };
 
 // 定义模块
-static struct PyModuleDef nes_module = {
+static struct PyModuleDef uisdk_module = {
     PyModuleDef_HEAD_INIT,
-    "uisdk",            // 模块名
+    "uisdk",             // 模块名
     nullptr,             // 文档
     -1,                  // 变量大小
     UISdkMethods         // 方法表
 };
 
+bool InitPyApplication(PyObject* module);
+bool InitPyWindow(PyObject *module);
+
 // import时会触发这个函数
 // 不定义这个函数import会报错：
 // dynamic module does not define module export function (PyInit_nesc)
 PyMODINIT_FUNC PyInit_uisdk(void) {
-    return PyModule_Create(&nes_module);
+  PyObject *m = PyModule_Create(&uisdk_module);
+  if (!m) {
+    return nullptr;
+  }
+
+  InitPyApplication(m);
+  InitPyWindow(m);
+  return m;
 }
