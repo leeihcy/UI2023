@@ -1,8 +1,4 @@
 
-declare_args() {
-  is_debug = false
-}
-
 if (target_os == "") {
   target_os = host_os
 }
@@ -22,9 +18,30 @@ is_win = host_os == "win" && current_os == "win" && target_os == "win"
 
 is_x64 = target_cpu == "x64"
 
+##
+
+declare_args() {
+  is_debug = false
+  is_clang = !is_win  # 目前windows默认使用的msvc
+  
+  static_link_crt = is_win  # static or dynamic link crt
+  winver = "0x0A00"  # to define WINVER, _WIN32_WINNT and NTDDI_VERSION
+}
+
 
 # All binary targets will get this list of configs by default.
 _shared_binary_target_configs = [ "//build_tools/gn:compiler_defaults" ]
+
+if (is_win) {
+  _shared_binary_target_configs += [
+    "//build_tools/gn/config/win:default",
+    "//build_tools/gn/config/win:optmize",
+    "//build_tools/gn/config/win:crt_link",
+    "//build_tools/gn/config/win:core_libraries",
+    "//build_tools/gn/config/win:win_macros",
+    "//build_tools/gn/config/win:target_arch",
+  ]
+}
 
 # Apply that default list to the binary target types.
 set_defaults("executable") {
@@ -43,8 +60,10 @@ set_defaults("source_set") {
   configs = _shared_binary_target_configs
 }
 
+
 if (is_win) {
   set_default_toolchain("//build_tools/gn/toolchain/msvc:msvc")
+  import("config/win/setup_environment.gni")
 } else if (is_mac) {
   set_default_toolchain("//build_tools/gn/toolchain/clang:clang")
 } else {

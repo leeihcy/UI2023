@@ -1,0 +1,261 @@
+assert(is_win)
+
+# =============================================================================
+# Default
+# =============================================================================
+
+config("default") {
+  defines = [
+    "UNICODE",
+    "_UNICODE",
+  ]
+
+  cflags = [
+    "/EHsc",
+    "/Gd",
+    "/Gm-",
+    "/Oy-",
+    "/W3",
+    "/WX-",
+    "/Zi",
+    "/Zl",
+  ]
+  if (vs_version >= 70) {
+    cflags += [
+      "/GS",
+      "/Zc:forScope",
+      "/Zc:wchar_t",
+    ]
+  }
+  if (vs_version >= 80) {
+    cflags += [
+      "/analyze-",
+      "/bigobj",
+      "/fp:precise",
+    ]
+  }
+  if (vs_version >= 90) {
+    cflags += [
+      "/analyze-",
+      "/bigobj",
+      "/fp:precise",
+    ]
+  }
+  if (vs_version >= 140) {
+    cflags += [ "/utf-8" ]
+  }
+
+  cflags_c = []
+  cflags_cc = [ "/EHsc" ]
+  if (vs_version <= 60) {
+    cflags_c += [ "/TC" ]
+    cflags_cc += [ "/TP" ]
+  }
+
+  ldflags = [
+    "/DEBUG",
+    "/NODEFAULTLIB",
+  ]
+  if (vs_version >= 110) {
+    ldflags += [ "/MANIFEST:EMBED" ]
+  }
+}
+
+# =============================================================================
+# Optmize flags
+# =============================================================================
+
+config("optmize") {
+  cflags = []
+  if (is_debug) {
+    cflags += [ "/Od" ]
+    if (vs_version >= 70) {
+      cflags += [ "/RTC1" ]
+    }
+    if (vs_version >= 158) {
+      cflags += [ "/JMC" ]
+    }
+  } else {
+    cflags += [
+      "/Gy",
+      "/O2",
+      "/Oi",
+    ]
+    if (vs_version >= 70) {
+      cflags += [ "/GL" ]
+    }
+  }
+
+  ldflags = []
+  if (!is_debug) {
+    ldflags += [
+      "/INCREMENTAL:NO",
+      "/OPT:ICF",
+      "/OPT:REF",
+    ]
+    if (vs_version >= 70) {
+      ldflags += [ "/LTCG" ]
+    }
+    if (vs_version >= 70 && target_cpu == "x86") {
+      ldflags += [ "/SAFESEH" ]
+    }
+  }
+
+  arflags = []
+  if (!is_debug && vs_version >= 70) {
+    arflags += [ "/LTCG" ]
+  }
+}
+
+# =============================================================================
+# Dynamic or static link CRT
+# =============================================================================
+
+config("crt_link") {
+  cflags = []
+  if (static_link_crt) {
+    if (is_debug) {
+      cflags += [ "/MTd" ]
+    } else {
+      cflags += [ "/MT" ]
+    }
+  } else {
+    if (is_debug) {
+      cflags += [ "/MDd" ]
+    } else {
+      cflags += [ "/MD" ]
+    }
+  }
+
+  libs = [ "oldnames.lib" ]
+  if (static_link_crt) {
+    if (is_debug) {
+      libs += [
+        "libcmtd.lib",
+        "libcpmtd.lib",
+      ]
+      if (vs_version >= 140) {
+        libs += [
+          "libvcruntimed.lib",
+          "libucrtd.lib",
+        ]
+      }
+    } else {
+      libs += [
+        "libcmt.lib",
+        "libcpmt.lib",
+      ]
+      if (vs_version >= 140) {
+        libs += [
+          "libvcruntime.lib",
+          "libucrt.lib",
+        ]
+      }
+    }
+  } else {
+    if (is_debug) {
+      libs += [
+        "msvcrtd.lib",
+        "msvcprtd.lib",
+      ]
+      if (vs_version >= 140) {
+        libs += [
+          "vcruntimed.lib",
+          "ucrtd.lib",
+        ]
+      }
+    } else {
+      libs += [
+        "msvcrt.lib",
+        "msvcprt.lib",
+      ]
+      if (vs_version >= 140) {
+        libs += [
+          "vcruntime.lib",
+          "ucrt.lib",
+        ]
+      }
+    }
+  }
+}
+
+# =============================================================================
+# Core libraries to link default
+# =============================================================================
+
+config("core_libraries") {
+  libs = [
+    "kernel32.lib",
+    "user32.lib",
+    "gdi32.lib",
+    "winspool.lib",
+    "comdlg32.lib",
+    "advapi32.lib",
+    "shell32.lib",
+    "ole32.lib",
+    "oleaut32.lib",
+    "uuid.lib",
+    "odbc32.lib",
+    "odbccp32.lib",
+  ]
+}
+
+# =============================================================================
+# Defines
+# =============================================================================
+
+config("win_macros") {
+  defines = [
+    "WINVER=$winver",
+    "_WIN32_WINNT=$winver",
+    "_WIN32_WINDOWS=$winver",
+    "NTDDI_VERSION=${winver}0000",
+    "WIN32_LEAN_AND_MEAN",
+    "_CRT_NONSTDC_NO_DEPRECATE",
+    "_CRT_NONSTDC_NO_WARNINGS",
+    "_CRT_SECURE_NO_DEPRECATE",
+    "_CRT_SECURE_NO_WARNINGS",
+  ]
+  if (is_winxp) {
+    defines += [ "_USING_V110_SDK71_" ]
+  }
+}
+
+# =============================================================================
+# Target arch
+# =============================================================================
+
+config("target_arch") {
+  if (target_cpu == "x86") {
+    ldflags = [ "/MACHINE:X86" ]
+    arflags = [ "/MACHINE:X86" ]
+  } else {
+    assert(vs_version >= 80)
+    ldflags = [ "/MACHINE:X64" ]
+    arflags = [ "/MACHINE:X64" ]
+  }
+}
+
+# =============================================================================
+# Console or windows subsystem
+# =============================================================================
+
+config("console_subsystem") {
+  if (target_cpu == "x86") {
+    ldflags = [ "/SUBSYSTEM:CONSOLE,5.01" ]
+    arflags = [ "/SUBSYSTEM:CONSOLE,5.01" ]
+  } else {
+    ldflags = [ "/SUBSYSTEM:CONSOLE,5.02" ]
+    arflags = [ "/SUBSYSTEM:CONSOLE,5.02" ]
+  }
+}
+
+config("windows_subsystem") {
+  if (target_cpu == "x86") {
+    ldflags = [ "/SUBSYSTEM:WINDOWS,5.01" ]
+    arflags = [ "/SUBSYSTEM:WINDOWS,5.01" ]
+  } else {
+    ldflags = [ "/SUBSYSTEM:WINDOWS,5.02" ]
+    arflags = [ "/SUBSYSTEM:WINDOWS,5.02" ]
+  }
+}

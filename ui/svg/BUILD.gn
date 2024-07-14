@@ -1,8 +1,11 @@
 shared_library("uisvg") {
-    cflags = [
-      "-Wno-deprecated",
-      "-Wno-deprecated-declarations"
-    ]
+    cflags = []
+    
+    if (is_clang) {
+      cflags+= [
+        "-Wno-deprecated-declarations"
+      ]
+    }
 
     defines = ["UI_SVG_EXPORTS"]
     include_dirs = [

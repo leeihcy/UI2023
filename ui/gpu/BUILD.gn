@@ -7,10 +7,15 @@ declare_args() {
 shared_library("uigpu") {
     cflags = []
 
+
     deps = [
-      ":copy_glfw",
       ":copy_shader"
     ]
+    if (is_mac) {
+      deps += [
+        ":copy_glfw"
+      ]
+    }
 
     # if (is_win) {
     #   enable_d3d10 = true

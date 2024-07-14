@@ -1,11 +1,14 @@
 shared_library("uisdk") {
-    cflags = [
-      "-Wno-deprecated",
-      "-Wno-deprecated-declarations"
-    ]
+    cflags = []
     ldflags = []
     libs = []
+    lib_dirs = []
 
+    if (is_clang) {
+      cflags+= [
+        "-Wno-deprecated-declarations"
+      ]
+    }
     if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g", "-O0"]
     }
@@ -37,22 +40,21 @@ shared_library("uisdk") {
       libs += [
         "python3.9"
       ]
-      # cflags += [
-      #   "-isystem",
-      #   "/Users/libo/xuexi/python/Python-3.10.4/Include/",
-      #   "-isystem",
-      #   "/Users/libo/xuexi/python/Python-3.10.4/"
-      # ]
-      # ldflags += [
-      #   "-L/Users/libo/xuexi/python/Python-3.10.4/"
-      # ]
-      # libs += [
-      #   "python3.10",
-      #   "intl"
-      # ]
+    }
+    else if (is_win) {
+      include_dirs += [
+        "C:\Users\libo\AppData\Local\Programs\Python\Python311\include"
+      ]
+      lib_dirs += [
+        "C:\Users\libo\AppData\Local\Programs\Python\Python311\libs"
+      ]
+      libs += [
+        "python311.lib",
+        "python3.lib"
+      ]
     }
   
-    lib_dirs = ["$root_build_dir/bin"]
+    lib_dirs += ["$root_build_dir/bin"]
     if (is_win) {
       libs += [
         "atls.lib",  # ATL
