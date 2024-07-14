@@ -1,9 +1,13 @@
 */.vs/
 .vscode/
+.idea/
 *.user
 .DS_Store
 out/
 ui/3rd/skia/lib
 ui/3rd/skia/bin
+build_tools/linux
+build_tools/windows
+build_tools/mac
 *.spv
 *.pyc

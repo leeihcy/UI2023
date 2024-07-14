@@ -13,9 +13,19 @@ public:
   PyObjectPtr(PyObject* o) : ptr(o){
     Py_XINCREF(ptr);
   }
+  PyObjectPtr(PyObject* o, bool addref) : ptr(o){
+    if (addref) {
+      Py_XINCREF(ptr);
+    }
+  }
   PyObjectPtr(const PyObjectPtr& o) {
     this->ptr = o.ptr;
     Py_XINCREF(ptr);
+  }
+  PyObjectPtr& operator=(const PyObjectPtr& o) {
+    this->ptr = o.ptr;
+    Py_XINCREF(ptr);
+    return *this;
   }
   PyObjectPtr(PyObjectPtr&& o) {
     this->ptr = o.ptr;
@@ -55,5 +65,15 @@ typedef struct {
   ui::IWindowPtr win;
 } PyWindow;
 
+
+//
+// on_paint(e:uisdk.Event): pass
+//
+typedef struct {
+  PyObject_HEAD;
+  ui::Event* event;
+} PyEvent;
+
+PyObjectPtr MakePyEvent(ui::Event* e);
 
 #endif

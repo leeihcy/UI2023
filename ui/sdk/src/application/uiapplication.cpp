@@ -37,7 +37,10 @@ Application::Application(IApplication *p)
 #endif
 }
 void Application::Run() { m_message_loop.Run(); }
-void Application::Quit() { m_message_loop.Quit(); }
+void Application::Quit() { 
+  // UI_LOG_INFO("Application::Quit");
+  m_message_loop.Quit(); 
+}
 
 ResourceManager &Application::GetResourceManager() {
   return m_resource_manager;

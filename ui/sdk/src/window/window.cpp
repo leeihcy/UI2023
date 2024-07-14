@@ -195,6 +195,11 @@ void Window::onDestroy() {
   WindowDestroyEvent event;
   event.window = m_pIWindow;
   emit(WINDOW_DESTROY_EVENT, &event);
+
+  // 释放资源
+  DestroyChildObject();
+  // events中slot可能绑定了一些参数对象，需要释放掉。
+  clear_events();
 }
 
 void Window::onPaint(Rect *dirty) {

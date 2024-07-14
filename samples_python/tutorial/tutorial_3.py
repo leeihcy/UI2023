@@ -10,20 +10,16 @@ class MyWindow(uisdk.Window):
     self.connect("paint", self.on_paint)
 
   def on_paint(self, event):
-    print("on_paint")
+    print("on_paint", dir(event))
 
 
-
-def main(a, **kwargs):
-  print(a)
-  print(kwargs)
+def main():
   app = uisdk.Application()
 
   win = MyWindow(app)
   win.connect("destroy", app.quit)
   win.show()
   app.run()
-  pass
 
-# main(0, {"b":2, "c":3})
-main(0)
+
+main()

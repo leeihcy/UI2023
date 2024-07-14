@@ -52,6 +52,7 @@ public:
 
   void connect(const char* event_name, slot<void(Event*)>&& s);
   void emit(const char* event_name, Event* event);
+  void clear_events();
 
   IMeta *GetMeta();
   void RouteMessage(Msg* msg);

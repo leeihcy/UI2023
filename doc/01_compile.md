@@ -1,4 +1,16 @@
 
+## 搭建编译环境
+
+运行命令拉取编译环境，将下载编译所需要的各种依赖文件。
+注意：可能需要搭梯子。
+
+```sh
+$ python3 build_tools/sync.py
+```
+
+然后，将build_tools/${platform} 添加到系统的PATH环境变量中，如:~/.zshrc 或 ~/.bashrc
+
+
 ## git submodule
 
 ### skia
@@ -15,7 +27,7 @@ $ git checkout -b m108 origin/chrome/m108
 
 ## 编译 
 
-### gn_toolchain
+### ~~gn_toolchain~~
 
 引用了开源gn_toolchain https://github.com/Streamlet/gn_toolchain
 ```sh

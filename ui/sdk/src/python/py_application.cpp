@@ -51,9 +51,7 @@ bool InitPyApplication(PyObject *module) {
   if (PyType_Ready(&typeinfo) < 0)
     return false;
 
-  Py_INCREF(&typeinfo);
   if (-1 == PyModule_AddObject(module, "Application", (PyObject *)&typeinfo)) {
-    Py_DECREF(&typeinfo);
     PyErr_Print();
     return false;
   }

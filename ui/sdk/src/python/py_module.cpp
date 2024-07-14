@@ -23,6 +23,7 @@ static struct PyModuleDef uisdk_module = {
 
 bool InitPyApplication(PyObject* module);
 bool InitPyWindow(PyObject *module);
+bool InitPyEvent(PyObject *module);
 
 // import时会触发这个函数
 // 不定义这个函数import会报错：
@@ -35,5 +36,6 @@ PyMODINIT_FUNC PyInit_uisdk(void) {
 
   InitPyApplication(m);
   InitPyWindow(m);
+  InitPyEvent(m);
   return m;
 }

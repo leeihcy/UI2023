@@ -70,6 +70,10 @@ void Message::emit(const char *event_name, Event *event) {
   iter->second.emit(event);
 }
 
+void Message::clear_events() {
+  m_events.clear();
+}
+
 llong Message::SendMessage(uint message, llong wParam, llong lParam)
 {
   return m_pIMessage->SendMessage(message, wParam, lParam);

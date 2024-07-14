@@ -160,6 +160,7 @@ shared_library("uisdk") {
         "src/panel/panel.cpp",
         "src/panel/round_panel.cpp",
         "src/python/py_application.cpp",
+        "src/python/py_events.cpp",
         "src/python/py_module.cpp",
         "src/python/py_window.cpp",
         "src/render/colorrender/colorrender.cpp",

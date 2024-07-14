@@ -31,6 +31,7 @@ static int __init__(PyObject *self, PyObject *args, PyObject *kwds) {
 
 static void __dealloc__(PyObject *self) {
   self_win.reset();
+  // std::cout << "PyWindow __dealloc__" << std::endl;
 }
 static PyObject *__str__(PyObject *self) {
   return Py_BuildValue("s", "Window");
@@ -51,9 +52,10 @@ static void OnEvent(PyObjectPtr callable, ui::Event *event) {
     return;
   }
 
-  PyObjectPtr args(Py_BuildValue("(i)", 0));
-  PyObject *result = PyObject_CallObject(callable.ptr, *args);
+  PyObjectPtr eo = MakePyEvent(event);
+  PyObjectPtr args(Py_BuildValue("(O)", *eo));
 
+  PyObject *result = PyObject_CallObject(callable.ptr, *args);
   if (!result) {
     PyErr_Print();
   }
@@ -61,14 +63,8 @@ static void OnEvent(PyObjectPtr callable, ui::Event *event) {
 static PyObject *PyConnect(PyObject *self, PyObject *args) {
   const char* event = nullptr;
   PyObject* callback = nullptr;
-  PyObject* callback_args = nullptr;
 
-  auto size = PyTuple_Size(args);
-  if (size > 2) {
-    PyArg_ParseTuple(args, "sOO", &event, &callback, &callback_args);
-  } else {
-    PyArg_ParseTuple(args, "sO", &event, &callback);
-  }
+  PyArg_ParseTuple(args, "sO", &event, &callback);
 
   // 要增加callback的引用计数，否则可能会销毁了。
   self_win->connect(event, ui::Slot(OnEvent, PyObjectPtr(callback)));
@@ -100,9 +96,7 @@ bool InitPyWindow(PyObject *module) {
   if (PyType_Ready(&typeinfo) < 0)
     return false;
 
-  Py_INCREF(&typeinfo);
   if (-1 == PyModule_AddObject(module, "Window", (PyObject *)&typeinfo)) {
-    Py_DECREF(&typeinfo);
     PyErr_Print();
     return false;
   }
