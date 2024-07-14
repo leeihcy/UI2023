@@ -31,6 +31,6 @@ copy("copy_clock_resource") {
     "resource/sechand.png",
   ]
   outputs = [
-    "$root_build_dir/sample/clock/{{source_file_part}}"
+    "$root_build_dir/bin/sample/clock/{{source_file_part}}"
   ]
 }

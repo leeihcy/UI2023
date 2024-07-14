@@ -7,6 +7,11 @@ declare_args() {
 shared_library("uigpu") {
     cflags = []
 
+    deps = [
+      ":copy_glfw",
+      ":copy_shader"
+    ]
+
     # if (is_win) {
     #   enable_d3d10 = true
     #   enable_vulkan = false
@@ -14,6 +19,11 @@ shared_library("uigpu") {
     if (enable_d3d10) {
       cflags += [
         "-DENABLE_D3D10"
+      ]
+    }
+    else if (enable_vulkan) {
+      cflags += [
+        "-Wno-deprecated-volatile"
       ]
     }
 
@@ -31,7 +41,7 @@ shared_library("uigpu") {
     ]
     defines = ["UI_EXPORTS"]
     libs = []
-    lib_dirs = ["$root_build_dir/"]
+    lib_dirs = ["$root_build_dir/bin"]
    
     sources = [
       "src/gpu_layer.cpp",
@@ -142,20 +152,20 @@ shared_library("uigpu") {
     # ]
 }
 if (is_mac) {
-  copy("glfw") {
+  copy("copy_glfw") {
     sources = [
       "/Users/libo/application/glfw-3.3.8.bin.MACOS/lib-x86_64/libglfw3.a",
       "/Users/libo/application/VulkanSDK/1.3.261.1/macOS/lib/libvulkan.1.3.261.dylib"
     ]
-    outputs = ["$root_build_dir/{{source_file_part}}"]
+    outputs = ["$root_build_dir/bin/{{source_file_part}}"]
   }
 }
-copy("shader") {
+copy("copy_shader") {
   sources = [
       "src/vulkan/shaders/frag.spv",
       "src/vulkan/shaders/vert.spv",
   ]
-  outputs = ["$root_build_dir/shaders/{{source_file_part}}"]
+  outputs = ["$root_build_dir/bin/shaders/{{source_file_part}}"]
 }
 
 group("gpu") {

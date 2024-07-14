@@ -1,10 +1,10 @@
 # The location of the build configuration file.
-buildconfig = "//build/BUILDCONFIG.gn"
+buildconfig = "//build_tools/gn/BUILDCONFIG.gn"
 
 # 修改exec_script的解释器为python3，默认是python
 script_executable = "python3"
 
 default_args = {
-    is_debug = false
+  is_debug = false
 }
 

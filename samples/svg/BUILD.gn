@@ -33,6 +33,6 @@ copy("copy_svg_files") {
     "test/transform_1.svg",
   ]
   outputs = [
-    "$root_build_dir/sample/svg/{{source_file_part}}"
+    "$root_build_dir/bin/sample/svg/{{source_file_part}}"
   ]
 }

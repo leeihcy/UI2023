@@ -1,6 +1,7 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+
+declare_args() {
+  is_debug = false
+}
 
 if (target_os == "") {
   target_os = host_os
@@ -23,14 +24,14 @@ is_x64 = target_cpu == "x64"
 
 
 # All binary targets will get this list of configs by default.
-_shared_binary_target_configs = [ "//build:compiler_defaults" ]
+_shared_binary_target_configs = [ "//build_tools/gn:compiler_defaults" ]
 
 # Apply that default list to the binary target types.
 set_defaults("executable") {
   configs = _shared_binary_target_configs
 
   # Executables get this additional configuration.
-  configs += [ "//build:executable_ldconfig" ]
+  configs += [ "//build_tools/gn:executable_ldconfig" ]
 }
 set_defaults("static_library") {
   configs = _shared_binary_target_configs
@@ -43,12 +44,9 @@ set_defaults("source_set") {
 }
 
 if (is_win) {
-  set_default_toolchain("//build/toolchain/gcc:gcc")
-}
-else {
-  set_default_toolchain("//build/toolchain/msvc:msvc")
-}
-
-declare_args() {
-  is_debug = false
+  set_default_toolchain("//build_tools/gn/toolchain/msvc:msvc")
+} else if (is_mac) {
+  set_default_toolchain("//build_tools/gn/toolchain/clang:clang")
+} else {
+  set_default_toolchain("//build_tools/gn/toolchain/gcc:gcc")
 }

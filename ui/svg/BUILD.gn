@@ -1,8 +1,8 @@
 shared_library("uisvg") {
-    cflags = []
-    if (is_debug && (is_mac || is_linux)) {
-      cflags += ["-g"]
-    }
+    cflags = [
+      "-Wno-deprecated",
+      "-Wno-deprecated-declarations"
+    ]
 
     defines = ["UI_SVG_EXPORTS"]
     include_dirs = [
@@ -14,7 +14,7 @@ shared_library("uisvg") {
         # "//ui/3rd/skia/src/modules/svg/include/"
     ]
   
-    lib_dirs = ["$root_build_dir/"]
+    lib_dirs = ["$root_build_dir/bin"]
     
     deps = [
       "//ui/sdk:uisdk"
