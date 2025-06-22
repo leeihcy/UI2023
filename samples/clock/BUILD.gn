@@ -1,5 +1,6 @@
 
 executable("clock") {
+  output_dir = "$root_out_dir/bin"
     output_name = "sample_clock"
 
     deps = [
@@ -20,7 +21,6 @@ executable("clock") {
 }
 
 copy("copy_clock_resource") {
-  print("copy_clock_resource")
   sources = [
     "resource/resource.xml", 
     "resource/clock.xml", 

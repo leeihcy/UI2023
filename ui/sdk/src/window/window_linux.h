@@ -13,22 +13,24 @@ public:
   void Initialize() override;
 
   bool Create(const Rect &rect) override;
+  WINDOW_HANDLE GetWindowHandle() override; 
   bool CreateTransparent(const Rect &rect);
   void Destroy();
 
-  void SetWindowTitle(const char *title);
+  void SetTitle(const char *title) override;
   std::string GetWindowTitle();
   void SetBorderless(bool no_border = true);
   void SetMinMaxSize(int wMin, int hMin, int wMax, int hMax);
   void SetWindowRect(int x, int y, int width, int height);
+  void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) override;
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
   void CenterWindow();
-  void InvalidateRect(Rect* prect) override;
-  void ValidateRect(Rect* prect) override;
+  void Invalidate(const Rect* prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   ::Window GetParentWindow();
+  float GetScaleFactor() override;
 
   void Attach(::Window window);
   ::Window Detach();
@@ -36,7 +38,8 @@ public:
   void Show() override;
   void Hide();
 
-  void Submit(sk_sp<SkSurface> sksurface) override;
+  void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+
   void Invalidate();
 
   // XEventDispatcher

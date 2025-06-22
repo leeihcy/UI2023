@@ -3,7 +3,7 @@
 
 group("ui") {
     deps = [
-        "hello",
+        "01_hello:hello",
         "svg",
         "clock",
     ]

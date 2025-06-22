@@ -2,7 +2,7 @@
 #include "sdk/include/interface/iwindow.h"
 
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
-  printf("on_window_destroy\n");
+  printf("%s", "on_window_destroy\n");
   uiapp->Quit();
 }
 void on_window_paint(ui::Event *e) {
@@ -28,9 +28,9 @@ int main() {
   ui::ApplicationPtr app;
   ui::WindowPtr window(app->RootBundle());
 
-  ui::Rect rc = {100, 100, 500, 400};
+  ui::Rect rc = ui::Rect::MakeXYWH(0, 0, 1440, 900);
   window->Create(nullptr, &rc);
-  window->SetTitle("你好Hello!");
+  window->SetTitle("1.你好Hello!");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));

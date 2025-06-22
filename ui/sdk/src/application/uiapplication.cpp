@@ -277,7 +277,6 @@ bool Application::RegisterUIObject(IMeta *pObjDesc) {
 
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
-    m_vecUIObjectDesc[i];
     if (m_vecUIObjectDesc[i] == pObjDesc) {
       UI_LOG_WARN("register duplicate. name=%s", pObjDesc->Name());
       return false;

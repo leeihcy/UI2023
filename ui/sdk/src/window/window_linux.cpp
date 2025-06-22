@@ -1,33 +1,38 @@
 #include "window_linux.h"
 #include <string.h>
 
+#include "src/graphics/skia/skia_render.h"
+
 namespace ui {
 
 WindowPlatformLinux::WindowPlatformLinux(ui::Window &w) : m_ui_window(w) {}
 void WindowPlatformLinux::Initialize() { m_display.Init(); }
 
-void WindowPlatformLinux::~WindowPlatformLinux() {
-  m_display.Destroy();
-}
+WindowPlatformLinux::~WindowPlatformLinux() { m_display.Destroy(); }
 
 bool WindowPlatformLinux::Create(const Rect &rect) {
-  ::Window window = XCreateSimpleWindow(
-      m_display, m_display.GetDefaultRootWindow(), rect.x, rect.y, rect.width,
-      rect.height, 300, m_display.GetBlack(), m_display.GetWhite());
+  m_ui_window.m_dpi.SetSystemDpi(m_display.GetMonitorScaleFactor());
+
+  ::Window window =
+      XCreateSimpleWindow(m_display, m_display.GetDefaultRootWindow(),
+                          rect.left, rect.top, rect.width(), rect.height(), 300,
+                          m_display.GetBlack(), m_display.GetWhite());
 
   // 必须再显示设置一次窗口位置，否则窗口一会坐标变成（0,0）
   XSizeHints hints;
   memset(&hints, 0, sizeof(hints));
-  hints.x = rect.x;
-  hints.y = rect.y;
-  hints.width = rect.width;
-  hints.height = rect.height;
+  hints.x = rect.left;
+  hints.y = rect.top;
+  hints.width = rect.width();
+  hints.height = rect.height();
   hints.flags |= USPosition | USSize | PPosition | PSize;
   XSetWMNormalHints(m_display, window, &hints);
 
   Attach(window);
   return true;
 }
+
+WINDOW_HANDLE WindowPlatformLinux::GetWindowHandle() { return nullptr; }
 
 bool WindowPlatformLinux::CreateTransparent(const Rect &rect) {
 
@@ -42,8 +47,8 @@ bool WindowPlatformLinux::CreateTransparent(const Rect &rect) {
   attr.background_pixel = 0x0; // 0x80808080;
 
   ::Window win = XCreateWindow(m_display, m_display.GetDefaultRootWindow(),
-                               rect.x, rect.y, rect.width, rect.height, 0,
-                               info.depth, InputOutput, info.visual,
+                               rect.left, rect.top, rect.width(), rect.height(),
+                               0, info.depth, InputOutput, info.visual,
                                CWColormap | CWBorderPixel | CWBackPixel, &attr);
   this->Attach(win);
   return true;
@@ -192,13 +197,21 @@ std::string WindowPlatformLinux::GetWindowTitle() {
   return std::string((char *)property.value);
 #endif
 }
-void WindowPlatformLinux::SetWindowTitle(const char *title) {
-#if 0
-    XTextProperty property;
-    if (0 == XStringListToTextProperty((char**)&title, 1, &property)) {
-        return;
-    }
-    XSetWMName(m_display, m_window, &property);
+void WindowPlatformLinux::SetTitle(const char *title) {
+#if 1
+  // TBD：其它两个不支持中文？
+  XTextProperty text_prop;
+  if (Xutf8TextListToTextProperty(m_display, (char **)&title, 1,
+                                  XUTF8StringStyle, &text_prop) == Success) {
+    XSetWMName(m_display, m_window, &text_prop);
+    XFree(text_prop.value);
+  }
+#elif 0
+  XTextProperty property;
+  if (0 == XStringListToTextProperty((char **)&title, 1, &property)) {
+    return;
+  }
+  XSetWMName(m_display, m_window, &property);
 #else
   XStoreName(m_display, m_window, title);
 #endif
@@ -231,6 +244,11 @@ void WindowPlatformLinux::SetMinMaxSize(int wMin, int hMin, int wMax,
   }
   XSetWMNormalHints(m_display, m_window, &hints);
 #endif
+}
+
+void WindowPlatformLinux::SetWindowPos(int x, int y, int w, int h,
+                                       SetPositionFlags flags) {
+  assert(false); // TODO:
 }
 
 /**
@@ -278,10 +296,7 @@ void WindowPlatformLinux::GetClientRect(Rect *prect) {
   XGetGeometry(m_display, m_window, &root, &x, &y, &width, &height,
                &border_width, &depth);
 
-  prect->x = x;
-  prect->y = y;
-  prect->width = width;
-  prect->height = height;
+  *prect = Rect::MakeXYWH(x, y, width, height);
 }
 
 void WindowPlatformLinux::GetWindowRect(Rect *prect) {
@@ -332,11 +347,11 @@ void WindowPlatformLinux::GetWindowRect(Rect *prect) {
                &border_width, &depth);
 
   ::Window window_child;
-  XTranslateCoordinates(m_display, m_window, root, x, y, &prect->x, &prect->y,
-                        &window_child);
+  XTranslateCoordinates(m_display, m_window, root, x, y, &prect->left,
+                        &prect->top, &window_child);
 
-  prect->width = width;
-  prect->height = height;
+  prect->right = prect->left + width;
+  prect->bottom = prect->top + height;
 }
 
 void WindowPlatformLinux::CenterWindow() {
@@ -347,10 +362,10 @@ void WindowPlatformLinux::CenterWindow() {
   int screen_width = m_display.GetScreenWidth();
   int screen_height = m_display.GetScreenHeight();
 
-  int x = (screen_width - rc.width) >> 1;
-  int y = (screen_height - rc.height) >> 1;
+  int x = (screen_width - rc.width()) >> 1;
+  int y = (screen_height - rc.height()) >> 1;
 
-  this->SetWindowRect(x, y, rc.width, rc.height);
+  this->SetWindowRect(x, y, rc.width(), rc.height());
 }
 
 ::Window WindowPlatformLinux::GetParentWindow() {
@@ -372,12 +387,24 @@ int get_window_depth(Display *display, ::Window window) {
   return attr.depth;
 }
 
-void WindowPlatformLinux::Submit(sk_sp<SkSurface> sksurface) {
+void WindowPlatformLinux::Commit(ui::IRenderTarget *pRT, const Rect *prect,
+                                 int count) {
   if (!m_gc) {
     return;
   }
+
+  if (pRT->GetGraphicsRenderLibraryType() !=
+      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+    return;
+  }
+  SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
+  SkSurface *surface = skiaRT->GetSkiaSurface();
+  if (!surface) {
+    return;
+  }
+
   SkPixmap pm;
-  if (!sksurface->peekPixels(&pm)) {
+  if (!surface->peekPixels(&pm)) {
     return;
   }
 
@@ -408,7 +435,7 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
     XClientMessageEvent *client_event = (XClientMessageEvent *)&event;
     auto type = client_event->data.l[0];
     if (type == m_display.WM_DELETE()) {
-      m_ui_window->onDestroy();
+      m_ui_window.onDestroy();
     } else if (type == m_display.WM_TAKE_FOCUS()) {
       // m_ui_window->onFocus();
     }
@@ -420,12 +447,12 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
 
     // Rect dirty = {0, 0, 0, 0};
     // TODO:
-    m_ui_window->onPaint(nullptr);
+    m_ui_window.onPaint(nullptr);
   } else if (event.type == ConfigureNotify) {
     // x, y 不靠谱，有时一直返回的是0
     printf("Configure Notify: %d,%d, %d %d\n", event.xconfigure.x,
            event.xconfigure.y, event.xconfigure.width, event.xconfigure.height);
-    m_ui_window->onSize(event.xconfigure.width, event.xconfigure.height);
+    m_ui_window.onSize(event.xconfigure.width, event.xconfigure.height);
     // if (m_width != event.xconfigure.width ||
     //     m_height != event.xconfigure.height) {
     //   m_width = event.xconfigure.width;
@@ -467,10 +494,7 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
 #endif
 }
 
-void WindowPlatformLinux::InvalidateRect(Rect *prect) {
-  // TODO:
-}
-void WindowPlatformLinux::ValidateRect(Rect *prect) {
+void WindowPlatformLinux::Invalidate(const Rect *prect) {
   // TODO:
 }
 bool WindowPlatformLinux::IsChildWindow() {
@@ -481,5 +505,6 @@ bool WindowPlatformLinux::IsWindowVisible() {
   // TODO:
   return true;
 }
+float WindowPlatformLinux::GetScaleFactor() { return 2.0f; }
 
 } // namespace ui

@@ -55,6 +55,7 @@ set_defaults("static_library") {
 }
 set_defaults("shared_library") {
   configs = _shared_binary_target_configs
+  configs += [ "//build_tools/gn:executable_ldconfig" ]
 }
 set_defaults("source_set") {
   configs = _shared_binary_target_configs

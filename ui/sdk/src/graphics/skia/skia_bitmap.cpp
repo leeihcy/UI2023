@@ -1,7 +1,7 @@
 #include "src/graphics/skia/skia_bitmap.h"
-#include "ui/3rd/skia/src/include/core/SkColorSpace.h"
-#include "ui/3rd/skia/src/include/core/SkData.h"
-#include "ui/3rd/skia/src/include/core/SkImageGenerator.h"
+#include "third_party/skia/src/include/core/SkColorSpace.h"
+#include "third_party/skia/src/include/core/SkData.h"
+#include "third_party/skia/src/include/core/SkImageGenerator.h"
 namespace ui {
 
 std::shared_ptr<IRenderBitmap> SkiaRenderBitmap::CreateInstance() {

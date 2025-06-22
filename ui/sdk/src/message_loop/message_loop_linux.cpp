@@ -54,11 +54,19 @@ struct XEventSource {
     GSource *source = g_source_new(&source_funcs, sizeof(XEventSource));
     ((XEventSource *)source)->loop = data;
 
-    static GPollFD display_fd = {display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR,
-                                 0};
+    static GPollFD display_fd = {
+      display.fd(),  // fd
+      G_IO_IN | G_IO_HUP | G_IO_ERR,  // events
+      0  // real events
+    };
+
+    // 监听display事件
     g_source_add_poll(source, &display_fd);
+
+    g_source_attach(source, NULL);
     return source;
   }
+
   static void Destroy(GSource *source) {
     // GPollFD display_fd = {m_display.fd(), G_IO_IN | G_IO_HUP | G_IO_ERR, 0};
     // g_source_remove_poll(m_xevent_source, &display_fd);
@@ -75,8 +83,6 @@ void MessageLoopPlatformLinux::Initialize(MessageLoop *p) {
   m_display.Init();
 
   this->m_xevent_source = XEventSource::Create(this, m_display);
-  g_source_attach(m_xevent_source, NULL); // this->context);
-  //   g_source_ref(m_xevent_source);
 }
 
 void MessageLoopPlatformLinux::Release() {
@@ -150,6 +156,13 @@ void MessageLoopPlatformLinux::processXEvent(const XEvent &event) {
     return;
   }
   dispatcher->OnXEvent(event);
+}
+
+void MessageLoopPlatformLinux::CreateAnimateTimer(int fps) {
+
+}
+void MessageLoopPlatformLinux::DestroyAnimateTimer() {
+  
 }
 
 } // namespace ui

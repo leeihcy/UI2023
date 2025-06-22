@@ -34,6 +34,12 @@ using ullong = unsigned long long;
 #endif
 #endif
 
+#ifdef _WIN32
+    #define CDECL __cdecl  // Windows 使用 __cdecl
+#else
+    #define CDECL          // Linux 下空定义（无修饰符）
+#endif
+
 struct IApplication;
 struct IMessage;
 struct IObject;

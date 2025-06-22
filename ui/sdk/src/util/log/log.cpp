@@ -1,6 +1,9 @@
 #include "include/util/log.h"
 #include "include/inc.h"
 #include <string>
+#if defined(OS_LINUX)
+#include <stdarg.h>
+#endif
 #include "src/util/windows.h"
 
 namespace ui {
@@ -38,7 +41,7 @@ const char *LevelToStringA(const ui::LOG_LEVEL &l) {
   }
 }
 
-void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
+void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const wchar_t *szFormat,
                  ...) {
   if (lLevel == ui::LOG_LEVEL_DEBUG) {
@@ -85,7 +88,7 @@ void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
 #endif
 }
 
-void __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
+void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const char *szFormat,
                  ...) {
   if (lLevel == ui::LOG_LEVEL_DEBUG) {

@@ -2,7 +2,7 @@
 #define _UI_SDK_SRC_GRAPHICS_BITMAP_SKIABITMAP_H_
 
 #include "ui/sdk/src/graphics/bitmap/bitmap.h"
-#include "ui/3rd/skia/src/include/core/SkBitmap.h"
+#include "third_party/skia/src/include/core/SkBitmap.h"
 
 namespace ui {
 

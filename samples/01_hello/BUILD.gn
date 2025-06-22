@@ -1,6 +1,7 @@
 
 
 executable("hello") {
+    output_dir = "$root_out_dir/bin"
     output_name = "sample_hello"
 
     deps = [

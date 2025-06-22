@@ -9,6 +9,8 @@
 #include "src/layer/windowrender.h"
 
 #include "window_mouse_key.h"
+#include "window_dpi.h"
+
 
 namespace ui {
 class Window;
@@ -101,6 +103,9 @@ public:
 public:
   // 鼠标键盘处理类
   WindowMouseKey m_mouse_key;
+
+  // 缩放辅助类
+  WindowDPI m_dpi;
   
   // 平台相关函数。
   std::unique_ptr<WindowPlatform> m_platform;

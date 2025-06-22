@@ -20,7 +20,9 @@ public:
 
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
-
+  void CreateAnimateTimer(int fps) override;
+  void DestroyAnimateTimer() override;
+  
 public:
   void processXEvent();
 

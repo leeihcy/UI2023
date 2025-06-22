@@ -1,6 +1,6 @@
 # import("//build/config/common.gni")
 
-group("x") {
+group("ui") {
   deps = [
     "//ui:ui"
   ]

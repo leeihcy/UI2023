@@ -1,6 +1,7 @@
 #include "vkapp.h"
 #include <cstdio>
 #include <assert.h>
+#include <string.h>
 #if defined(OS_WIN)
 #include <windows.h>
 #include <vulkan/vulkan_win32.h>

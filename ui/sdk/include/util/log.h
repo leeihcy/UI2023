@@ -14,11 +14,11 @@ enum LOG_LEVEL {
   LOG_LEVEL_FATAL = 4
 };
 
-void UIAPI __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
+void UIAPI CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                        const char *szFunction, long lLine,
                        const wchar_t *szFormat, ...);
 
-void UIAPI __cdecl Log(ui::LOG_LEVEL lLevel, const char *szFile,
+void UIAPI CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                         const char *szFunction, long lLine,
                         const char *szFormat, ...);
 }

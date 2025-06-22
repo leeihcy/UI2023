@@ -1,5 +1,5 @@
 #include "include/interface/renderlibrary.h"
-#include "ui/3rd/skia/src/include/core/SkBitmap.h"
+#include "third_party/skia/src/include/core/SkBitmap.h"
 #include <memory>
 // #include "Src\Util\DPI\dpihelper.h"
 

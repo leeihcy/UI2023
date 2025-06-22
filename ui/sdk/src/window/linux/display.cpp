@@ -67,6 +67,7 @@ void X11Display::BindXEventDispatcher(::Window window,
                                       XEventDispatcher *dispatcher) {
   XSaveContext(m_display, window, m_context, (XPointer)dispatcher);
 }
+
 XEventDispatcher *X11Display::FindDispatcher(::Window window) {
   XPointer pointer = nullptr;
   XFindContext(m_display, window, m_context, &pointer);
@@ -74,6 +75,17 @@ XEventDispatcher *X11Display::FindDispatcher(::Window window) {
     return nullptr;
   }
   return (XEventDispatcher *)pointer;
+}
+
+float X11Display::GetMonitorScaleFactor() {
+  float scale = 1.0f;
+  Screen *screen = DefaultScreenOfDisplay(m_display);
+  int width_mm = DisplayWidthMM(m_display, m_screen_number);
+  int width_px = WidthOfScreen(screen);
+  int dpi = (width_px * 25.4) / width_mm;
+
+  // gdk_screen_get_monitor_scale_factor();
+  return 0;
 }
 
 } // namespace ui

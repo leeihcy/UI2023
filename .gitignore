@@ -9,5 +9,7 @@ ui/3rd/skia/bin
 build_tools/linux
 build_tools/windows
 build_tools/mac
+third_party/
+script/local/
 *.spv
 *.pyc

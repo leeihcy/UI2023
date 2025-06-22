@@ -20,7 +20,8 @@ ctx = Context()
 
 def initialize():
   file_path = os.path.abspath(__file__)
-  ctx.build_tools_dir = os.path.dirname(file_path)
+  root_dir = os.path.dirname(os.path.dirname(file_path))
+  ctx.build_tools_dir = os.path.join(root_dir, "build_tools")
   
   ctx.linux_dir = os.path.join(ctx.build_tools_dir, "linux")
   ctx.windows_dir = os.path.join(ctx.build_tools_dir, "windows")
@@ -55,8 +56,6 @@ def download(url, save_path):
 
 
 def sync_gn():
-  print("###### 开始准备 gn 环境")
-
   # 不下载代码了，直接下载二进制文件
   # if not os.path.exists("gn"):
   #   os.system("git clone https://gn.googlesource.com/gn")
@@ -89,8 +88,6 @@ def sync_gn():
       
 
 def sync_ninja():
-  print("###### 开始准备 ninja 环境")
-
   # 不下载代码了，直接下载二进制文件
   # if not os.path.exists("ninja"):
   #   os.system("git clone git://github.com/ninja-build/ninja.git")

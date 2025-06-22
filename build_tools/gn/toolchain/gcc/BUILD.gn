@@ -81,7 +81,7 @@ toolchain("gcc") {
   }
 
   tool("link") {
-    outfile = "{{target_output_name}}{{output_extension}}"
+    outfile = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     rspfile = "$outfile.rsp"
     if (is_mac) {
       command = "g++ -g -o $outfile @$rspfile  {{solibs}} {{libs}} {{ldflags}}"

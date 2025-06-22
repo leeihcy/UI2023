@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <fstream>
 #include <vulkan/vulkan.h>
 #include <glm/gtc/matrix_transform.hpp>

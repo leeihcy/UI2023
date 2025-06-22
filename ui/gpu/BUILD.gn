@@ -5,11 +5,11 @@ declare_args() {
 }
 
 shared_library("uigpu") {
+    output_dir = "$root_out_dir/bin" 
     cflags = []
 
-
     deps = [
-      ":copy_shader"
+      ":compile_shaders"
     ]
     if (is_mac) {
       deps += [
@@ -103,10 +103,12 @@ shared_library("uigpu") {
         "src/vulkan/wrap/vulkan_util.cpp",
       ]
 
+      VULKAN_SDK_DIR = exec_script("//script/get_env.py", ["VULKAN_SDK_DIR"], "string")
+      include_dirs += [
+        VULKAN_SDK_DIR + "/include"
+      ]
+
       if (is_win) {
-        include_dirs += [
-          "C:/VulkanSDK/1.3.268.0/Include"
-        ]
         lib_dirs += [
           "C:\VulkanSDK\1.3.268.0\Lib"
         ]
@@ -115,14 +117,11 @@ shared_library("uigpu") {
         ]
       }
       else if (is_mac) {
-        include_dirs += [
-          "/Users/libo/application/VulkanSDK/1.3.261.1/macOS/include"
-        ]
-        
         libs += ["vulkan.1.3.261"]
       }
-      
-
+      else if (is_linux) {
+        libs += ["vulkan"]
+      }
     }
     if (is_mac) {
       sources += [
@@ -165,12 +164,18 @@ if (is_mac) {
     outputs = ["$root_build_dir/bin/{{source_file_part}}"]
   }
 }
-copy("copy_shader") {
-  sources = [
-      "src/vulkan/shaders/frag.spv",
-      "src/vulkan/shaders/vert.spv",
+
+action("compile_shaders") {
+  script = "//ui/gpu/src/vulkan/shaders/compile.py"
+  inputs = [
+    "src/vulkan/shaders/shader.frag",
+    "src/vulkan/shaders/shader.vert",
   ]
-  outputs = ["$root_build_dir/bin/shaders/{{source_file_part}}"]
+  outputs = [
+    "$root_build_dir/bin/shaders/vert.spv",
+    "$root_build_dir/bin/shaders/frag.spv",
+  ]
+  args = [rebase_path("$root_build_dir/bin/shaders")]
 }
 
 group("gpu") {
@@ -182,6 +187,7 @@ group("gpu") {
 #######################################
 if (is_debug) {
 executable("uigpu_unittest") {
+  output_dir = "$root_out_dir/bin"
   deps = [
     "//ui/gpu:uigpu"
   ]

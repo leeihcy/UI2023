@@ -3,6 +3,7 @@
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include <vulkan/vulkan.h>
 #include <assert.h>
+#include <cstring>
 #include <memory>
 #include <algorithm>
 

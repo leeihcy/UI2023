@@ -1,4 +1,10 @@
+declare_args() {
+  enable_python = true
+}
+
 shared_library("uisdk") {
+  output_dir = "$root_out_dir/bin"
+
     cflags = []
     ldflags = []
     libs = []
@@ -23,37 +29,48 @@ shared_library("uisdk") {
         "//",
         "//ui/",
         "//ui/sdk/",
-        "//ui/3rd/skia/src/",
-        "//ui/3rd/skia/src/include/core/"
+        "//third_party/skia/src/",
+        "//third_party/skia/src/include/core/",
     ]
 
-    # Python deps
-    # defines += ["HAVE_WCHAR_H"]
-    if (is_mac) {
-      cflags += [
-        "-isystem",
-        "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/include/python3.9"
-      ]
-      ldflags += [
-        "-L/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib"
-      ]
-      libs += [
-        "python3.9"
-      ]
+    if (enable_python) {
+      # Python deps
+      # defines += ["HAVE_WCHAR_H"]
+
+
+      PYTHON_INC_DIR = exec_script("//script/get_env.py", ["PYTHON_INC_DIR"], "string")
+      PYTHON_LIB_DIR = exec_script("//script/get_env.py", ["PYTHON_LIB_DIR"], "string")
+
+      if (is_mac) {
+        cflags += [
+          "-isystem",
+          PYTHON_INC_DIR
+        ]
+        ldflags += [
+          "-L" + PYTHON_LIB_DIR
+        ]
+        libs += [
+          "python3.9"
+        ]
+      }
+      else if (is_win) {
+        include_dirs += [ PYTHON_INC_DIR ]
+        lib_dirs += [ PYTHON_LIB_DIR ]
+        libs += [
+          "python311.lib",
+          "python3.lib"
+        ]
+      }
+      else if (is_linux) {
+        include_dirs += [ PYTHON_INC_DIR ]
+        lib_dirs += [ PYTHON_LIB_DIR ]
+
+        libs += [
+          "python3.12"
+        ]
+      }
     }
-    else if (is_win) {
-      include_dirs += [
-        "C:\Users\libo\AppData\Local\Programs\Python\Python311\include"
-      ]
-      lib_dirs += [
-        "C:\Users\libo\AppData\Local\Programs\Python\Python311\libs"
-      ]
-      libs += [
-        "python311.lib",
-        "python3.lib"
-      ]
-    }
-  
+
     lib_dirs += ["$root_build_dir/bin"]
     if (is_win) {
       libs += [
@@ -64,11 +81,13 @@ shared_library("uisdk") {
         
        ]
     }
-    else if (is_mac || is_linux) {
+    else if (is_mac ) {
        # 直接在当前目录查找libskia.dylib
       ldflags += [
         "-rpath", ".",
       ]
+      libs += ["skia"]
+    } else if (is_linux) {
       libs += ["skia"]
     }
     
@@ -195,11 +214,14 @@ shared_library("uisdk") {
         "src/util/path.cpp",
         "src/window/iwindow.cpp",
         "src/window/window.cpp",
+        "src/window/window_mouse_key.h",
         "src/window/window_mouse_key.cpp",
+        "src/window/window_dpi.h",
+        "src/window/window_dpi.cpp",
     ]
 
     if (is_linux) {
-      cflags += exec_script("//build/pkg-config.py", ["--cflags", "glib-2.0"], "value")
+      cflags += exec_script("//build_tools/gn/pkg-config.py", ["--cflags", "glib-2.0"], "value")
     }
 
     if (is_win) {
@@ -221,7 +243,10 @@ shared_library("uisdk") {
         ]
         libs += [
             "glib-2.0",
-            "x11"
+            "X11",
+
+            # XRandR (X Resize, Rotate and Reflection) 是 X11 的标准扩展
+            # "Xrandr",
         ]
     }
     if (is_mac) {
@@ -268,14 +293,18 @@ shared_library("uisdk") {
 copy("copy_skia") {
   if (is_mac) { 
     if (is_debug) {
-        sources = ["//ui/3rd/skia/src/out/debug/libskia.dylib"]
+        sources = ["//third_party/skia/src/out/debug/libskia.dylib"]
     } else {
-        sources = ["//ui/3rd/skia/src/out/dylib/libskia.dylib"]
+        sources = ["//third_party/skia/src/out/dylib/libskia.dylib"]
     }
   } else if (is_win) {
     sources = [
-      "//ui/3rd/skia/src/out/Shared/skia.dll",
-      "//ui/3rd/skia/src/out/Shared/skia.dll.lib"
+      "//third_party/skia/src/out/Shared/skia.dll",
+      "//third_party/skia/src/out/Shared/skia.dll.lib"
+    ]
+  } else if (is_linux) {
+    sources = [
+      "//third_party/skia/src/out/debug/libskia.so"
     ]
   }
   outputs = ["$root_build_dir/bin/{{source_file_part}}"]
@@ -293,6 +322,7 @@ group("sdk") {
 
 if (is_debug) {
 executable("uisdk_unittest") {
+  output_dir = "$root_out_dir/bin"
   deps = [
     "//ui/sdk:uisdk"
   ]
@@ -304,6 +334,7 @@ executable("uisdk_unittest") {
   include_dirs = [
     "//ui/",
     "//ui/sdk/",
+    "//third_party/skia/src",
   ]
   sources = [
     "test/test_main.cpp"

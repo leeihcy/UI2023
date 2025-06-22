@@ -38,6 +38,8 @@ public:
   void BindXEventDispatcher(::Window window, XEventDispatcher* dispatcher);
   XEventDispatcher* FindDispatcher(::Window window);
 
+  float GetMonitorScaleFactor();
+
 private:
   static Display *m_display;
   static XContext m_context;

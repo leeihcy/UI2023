@@ -1,4 +1,5 @@
 shared_library("uisvg") {
+  output_dir = "$root_out_dir/bin"
     cflags = []
     
     if (is_clang) {
@@ -12,8 +13,8 @@ shared_library("uisvg") {
         "//",
         "//ui/",
         "//ui/svg/",
-        "//ui/3rd/skia/src/",
-        "//ui/3rd/skia/src/include/core/",
+        "//third_party/skia/src/",
+        "//third_party/skia/src/include/core/",
         # "//ui/3rd/skia/src/modules/svg/include/"
     ]
   
@@ -31,11 +32,13 @@ shared_library("uisvg") {
         "-libpath:$root_build_dir/",
        ]
     }
-    else if (is_mac || is_linux) {
+    else if (is_mac) {
       libs = ["skia"]
       ldflags = [
         "-rpath", ".",
       ]
+    } else if (is_linux) {
+      libs = ["skia"]
     }
 
     sources = [
