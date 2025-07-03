@@ -1,4 +1,4 @@
-#include "display.h"
+#include "display_x11.h"
 
 #include <X11/Xresource.h> // XUniqueContext
 #include <assert.h>

@@ -4,6 +4,13 @@
 运行命令拉取编译环境，将下载编译所需要的各种依赖文件。
 注意：可能需要搭梯子。
 
+1. 安装python sdk
+   
+2. 安装vulkan sdk
+https://vulkan.lunarg.com/sdk/home
+例如：https://sdk.lunarg.com/sdk/download/1.4.313.0/linux/vulkansdk-linux-x86_64-1.4.313.0.tar.xz
+
+
 ```sh
 $ python3 script/init.py
 ```
@@ -109,6 +116,19 @@ $ gn gen .
 $ ninja skia
 ```
 
+### 编译swiftshader
+
+```sh
+cd third_party/swiftshader
+
+cd build
+cmake ..
+cmake --build . --parallel
+
+./vk-unittests
+
+```
+
 
 ### ui
 下载GNU gcc g++: https://github.com/niXman/mingw-builds-binaries/releases
@@ -146,13 +166,28 @@ $ git submodule add https://chromium.googlesource.com/chromium/mini_chromium thi
 
 ```sh
 # 创建
-$ git submodule add git@github.com:google/skia.git ui/3rd/skia/src
+$ git submodule add https://github.com/google/skia.git ui/3rd/skia/src
+
 # 其他电脑
 $ git submodule update --init --force
 
 # 分支
 $ git checkout -b m108 origin/chrome/m108
 ```
+
+### swifter shader
+
+CPU实现的Vulkan
+
+```sh
+# 需要翻墙
+$ git submodule add https://swiftshader.googlesource.com/SwiftShader third_party/swiftshader
+```
+
+### 其它
+
+手动修改.gitmodules文件后，需要执行git submodule sync命令才能生效。
+
 
 
 ## 开发环境配置

@@ -237,9 +237,24 @@ shared_library("uisdk") {
     }
     if (is_linux) {
         sources += [
-            "src/window/window_linux.cpp",
-            "src/window/linux/display.cpp",
+            "src/window/window_linux_x11.cpp",
+            "src/window/window_linux_x11.h",
+            "src/window/linux/display_x11.cpp",
+            "src/window/linux/display_x11.h",
             "src/message_loop/message_loop_linux.cpp",
+            "src/message_loop/message_loop_linux.h",
+
+            "src/window/window_linux_wayland.cpp",
+            "src/window/window_linux_wayland.h",    
+            "src/window/linux/display_wayland.cpp",
+            "src/window/linux/display_wayland.h",
+            "src/message_loop/message_loop_linux_wayland.cpp",
+            "src/message_loop/message_loop_linux_wayland.h",
+
+            # wayland-scanner client-header /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+            # wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
+            "src/window/linux/xdg-shell-client-protocol.h",
+            "src/window/linux/xdg-shell-protocol.c",
         ]
         libs += [
             "glib-2.0",
@@ -247,6 +262,9 @@ shared_library("uisdk") {
 
             # XRandR (X Resize, Rotate and Reflection) 是 X11 的标准扩展
             # "Xrandr",
+
+
+            "wayland-client",
         ]
     }
     if (is_mac) {

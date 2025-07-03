@@ -1,16 +1,16 @@
-#include "window_linux.h"
+#include "window_linux_x11.h"
 #include <string.h>
 
 #include "src/graphics/skia/skia_render.h"
 
 namespace ui {
 
-WindowPlatformLinux::WindowPlatformLinux(ui::Window &w) : m_ui_window(w) {}
-void WindowPlatformLinux::Initialize() { m_display.Init(); }
+WindowPlatformLinuxX11::WindowPlatformLinuxX11(ui::Window &w) : m_ui_window(w) {}
+void WindowPlatformLinuxX11::Initialize() { m_display.Init(); }
 
-WindowPlatformLinux::~WindowPlatformLinux() { m_display.Destroy(); }
+WindowPlatformLinuxX11::~WindowPlatformLinuxX11() { m_display.Destroy(); }
 
-bool WindowPlatformLinux::Create(const Rect &rect) {
+bool WindowPlatformLinuxX11::Create(const Rect &rect) {
   m_ui_window.m_dpi.SetSystemDpi(m_display.GetMonitorScaleFactor());
 
   ::Window window =
@@ -32,9 +32,9 @@ bool WindowPlatformLinux::Create(const Rect &rect) {
   return true;
 }
 
-WINDOW_HANDLE WindowPlatformLinux::GetWindowHandle() { return nullptr; }
+WINDOW_HANDLE WindowPlatformLinuxX11::GetWindowHandle() { return nullptr; }
 
-bool WindowPlatformLinux::CreateTransparent(const Rect &rect) {
+bool WindowPlatformLinuxX11::CreateTransparent(const Rect &rect) {
 
   XVisualInfo info = {0};
   XMatchVisualInfo(m_display, m_display.GetDefaultRootWindow(), 32, TrueColor,
@@ -54,7 +54,7 @@ bool WindowPlatformLinux::CreateTransparent(const Rect &rect) {
   return true;
 }
 
-void WindowPlatformLinux::Destroy() {
+void WindowPlatformLinuxX11::Destroy() {
   if (!m_window) {
     return;
   }
@@ -63,7 +63,7 @@ void WindowPlatformLinux::Destroy() {
   XDestroyWindow(m_display, window);
 }
 
-void WindowPlatformLinux::Attach(::Window window) {
+void WindowPlatformLinuxX11::Attach(::Window window) {
   if (!window) {
     return;
   }
@@ -87,7 +87,7 @@ void WindowPlatformLinux::Attach(::Window window) {
   // this->on_create();
 }
 
-::Window WindowPlatformLinux::Detach() {
+::Window WindowPlatformLinuxX11::Detach() {
   ::Window window = m_window;
 
   m_display.BindXEventDispatcher(window, nullptr);
@@ -98,7 +98,7 @@ void WindowPlatformLinux::Attach(::Window window) {
   return window;
 }
 
-void WindowPlatformLinux::initGC() {
+void WindowPlatformLinuxX11::initGC() {
   if (m_gc) {
     return;
   }
@@ -118,7 +118,7 @@ void WindowPlatformLinux::initGC() {
   // XFlush(display);
 }
 
-void WindowPlatformLinux::initEvent() {
+void WindowPlatformLinuxX11::initEvent() {
   long eventMask = StructureNotifyMask | ButtonReleaseMask | ButtonPressMask |
                    ExposureMask | PointerMotionMask | KeyPressMask |
                    KeyReleaseMask | FocusChangeMask | SubstructureRedirectMask;
@@ -131,12 +131,12 @@ void WindowPlatformLinux::initEvent() {
                   sizeof(protocols) / sizeof(Atom));
 }
 
-void WindowPlatformLinux::Show() {
+void WindowPlatformLinuxX11::Show() {
   XMapWindow(m_display, m_window);
   //   XFlush(m_display);
 }
 
-void WindowPlatformLinux::Hide() { XUnmapWindow(m_display, m_window); }
+void WindowPlatformLinuxX11::Hide() { XUnmapWindow(m_display, m_window); }
 
 struct MwmHints {
   unsigned long flags;
@@ -156,7 +156,7 @@ enum {
   MWM_FUNC_MAXIMIZE = (1L << 4),
   MWM_FUNC_CLOSE = (1L << 5)
 };
-void WindowPlatformLinux::SetBorderless(bool no_border) {
+void WindowPlatformLinuxX11::SetBorderless(bool no_border) {
   Atom mwmHintsProperty = XInternAtom(m_display, "_MOTIF_WM_HINTS", 0);
   struct MwmHints hints;
   hints.flags = MWM_HINTS_DECORATIONS;
@@ -165,13 +165,13 @@ void WindowPlatformLinux::SetBorderless(bool no_border) {
                   PropModeReplace, (unsigned char *)&hints, 5);
 }
 
-void WindowPlatformLinux::Invalidate() {
+void WindowPlatformLinuxX11::Invalidate() {
   // XClearWindow(display, window);
   XClearArea(m_display, m_window, 0, 0, 1, 1, true);
   XFlush(m_display);
 }
 
-std::string WindowPlatformLinux::GetWindowTitle() {
+std::string WindowPlatformLinuxX11::GetWindowTitle() {
 #if 0 // 方式一
     Atom type;
     int form;
@@ -197,7 +197,7 @@ std::string WindowPlatformLinux::GetWindowTitle() {
   return std::string((char *)property.value);
 #endif
 }
-void WindowPlatformLinux::SetTitle(const char *title) {
+void WindowPlatformLinuxX11::SetTitle(const char *title) {
 #if 1
   // TBD：其它两个不支持中文？
   XTextProperty text_prop;
@@ -217,7 +217,7 @@ void WindowPlatformLinux::SetTitle(const char *title) {
 #endif
 }
 
-void WindowPlatformLinux::SetMinMaxSize(int wMin, int hMin, int wMax,
+void WindowPlatformLinuxX11::SetMinMaxSize(int wMin, int hMin, int wMax,
                                         int hMax) {
 #if 1
   XSizeHints hints;
@@ -246,7 +246,7 @@ void WindowPlatformLinux::SetMinMaxSize(int wMin, int hMin, int wMax,
 #endif
 }
 
-void WindowPlatformLinux::SetWindowPos(int x, int y, int w, int h,
+void WindowPlatformLinuxX11::SetWindowPos(int x, int y, int w, int h,
                                        SetPositionFlags flags) {
   assert(false); // TODO:
 }
@@ -254,7 +254,7 @@ void WindowPlatformLinux::SetWindowPos(int x, int y, int w, int h,
 /**
  * 1. 只有在被Map后，才能进行窗口Move操作，否则窗口管理器将无视这些设置。
  */
-void WindowPlatformLinux::SetWindowRect(int x, int y, int width, int height) {
+void WindowPlatformLinuxX11::SetWindowRect(int x, int y, int width, int height) {
   /* 调用XSetWMNormalHints设置窗口位置不对。
   XSizeHints hints;
   memset(&hints, 0, sizeof(hints));
@@ -284,7 +284,7 @@ void WindowPlatformLinux::SetWindowRect(int x, int y, int width, int height) {
 #endif
 }
 
-void WindowPlatformLinux::GetClientRect(Rect *prect) {
+void WindowPlatformLinuxX11::GetClientRect(Rect *prect) {
   if (!prect) {
     return;
   }
@@ -299,7 +299,7 @@ void WindowPlatformLinux::GetClientRect(Rect *prect) {
   *prect = Rect::MakeXYWH(x, y, width, height);
 }
 
-void WindowPlatformLinux::GetWindowRect(Rect *prect) {
+void WindowPlatformLinuxX11::GetWindowRect(Rect *prect) {
   if (!prect) {
     return;
   }
@@ -354,7 +354,7 @@ void WindowPlatformLinux::GetWindowRect(Rect *prect) {
   prect->bottom = prect->top + height;
 }
 
-void WindowPlatformLinux::CenterWindow() {
+void WindowPlatformLinuxX11::CenterWindow() {
   Rect rc = {0};
   this->GetWindowRect(&rc);
 
@@ -368,7 +368,7 @@ void WindowPlatformLinux::CenterWindow() {
   this->SetWindowRect(x, y, rc.width(), rc.height());
 }
 
-::Window WindowPlatformLinux::GetParentWindow() {
+::Window WindowPlatformLinuxX11::GetParentWindow() {
   ::Window parent = 0;
   ::Window root = 0;
   ::Window *children = nullptr;
@@ -387,7 +387,7 @@ int get_window_depth(Display *display, ::Window window) {
   return attr.depth;
 }
 
-void WindowPlatformLinux::Commit(ui::IRenderTarget *pRT, const Rect *prect,
+void WindowPlatformLinuxX11::Commit(ui::IRenderTarget *pRT, const Rect *prect,
                                  int count) {
   if (!m_gc) {
     return;
@@ -430,7 +430,7 @@ void WindowPlatformLinux::Commit(ui::IRenderTarget *pRT, const Rect *prect,
             pm.height());
 }
 
-void WindowPlatformLinux::OnXEvent(const XEvent &event) {
+void WindowPlatformLinuxX11::OnXEvent(const XEvent &event) {
   if (event.type == ClientMessage) {
     XClientMessageEvent *client_event = (XClientMessageEvent *)&event;
     auto type = client_event->data.l[0];
@@ -494,17 +494,17 @@ void WindowPlatformLinux::OnXEvent(const XEvent &event) {
 #endif
 }
 
-void WindowPlatformLinux::Invalidate(const Rect *prect) {
+void WindowPlatformLinuxX11::Invalidate(const Rect *prect) {
   // TODO:
 }
-bool WindowPlatformLinux::IsChildWindow() {
+bool WindowPlatformLinuxX11::IsChildWindow() {
   // TODO:
   return false;
 }
-bool WindowPlatformLinux::IsWindowVisible() {
+bool WindowPlatformLinuxX11::IsWindowVisible() {
   // TODO:
   return true;
 }
-float WindowPlatformLinux::GetScaleFactor() { return 2.0f; }
+float WindowPlatformLinuxX11::GetScaleFactor() { return 2.0f; }
 
 } // namespace ui

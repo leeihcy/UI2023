@@ -1,6 +1,7 @@
 #include "message_loop.h"
 #include "src/application/uiapplication.h"
 #if defined(OS_LINUX)
+#include "message_loop_linux_wayland.h"
 #include "message_loop_linux.h"
 #elif defined(OS_MAC)
 #include "message_loop_mac.h"
@@ -13,7 +14,11 @@ namespace ui {
 MessageLoop::MessageLoop(Application& app) : m_app(app) {
 
 #if defined(OS_LINUX)
+if (WaylandDisplay::IsWaylandDesktopEnviroment()) {
+  m_platform = new MessageLoopPlatformLinuxWayland();
+} else {
   m_platform = new MessageLoopPlatformLinux();
+}
 #elif defined(OS_MAC)
   m_platform = new MessageLoopPlatformMac();
 #else

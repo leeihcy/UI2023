@@ -5,7 +5,7 @@
 
 #include "glib.h"
 #include "message_loop.h"
-#include "../window/linux/display.h"
+#include "../window/linux/display_x11.h"
 
 
 namespace ui {

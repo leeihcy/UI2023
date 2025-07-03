@@ -4,6 +4,7 @@
 #include "src/layout/desktop_layout.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
+#include "src/window/linux/display_wayland.h"
 #include "window_meta.h"
 
 #include <SkColorSpace.h>
@@ -14,7 +15,8 @@
 #elif defined(OS_MAC)
 #include "window_mac.h"
 #elif defined(OS_LINUX)
-#include "window_linux.h"
+#include "window_linux_x11.h"
+#include "window_linux_wayland.h"
 #endif
 
 namespace ui {
@@ -88,7 +90,11 @@ void Window::Create(const char *szId, const Rect* rect) {
 #elif defined(OS_MAC)
   m_platform.reset(new WindowPlatformMac(*this));
 #elif defined(OS_LINUX)
-  m_platform.reset(new WindowPlatformLinux(*this));
+  if (WaylandDisplay::IsWaylandDesktopEnviroment()) {
+    m_platform.reset(new WindowPlatformLinuxWayland(*this));
+  } else {
+    m_platform.reset(new WindowPlatformLinuxX11(*this));
+  }
 #else
   assert(false);
 #endif

@@ -1,15 +1,15 @@
-#ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_H_
-#define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_H_
-#include "linux/display.h"
+#ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_X11_H_
+#define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_X11_H_
+#include "linux/display_x11.h"
 #include "window.h"
 
 #include <string>
 
 namespace ui {
-class WindowPlatformLinux : public WindowPlatform, public XEventDispatcher {
+class WindowPlatformLinuxX11 : public WindowPlatform, public XEventDispatcher {
 public:
-  WindowPlatformLinux(ui::Window &w);
-  ~WindowPlatformLinux();
+  WindowPlatformLinuxX11(ui::Window &w);
+  ~WindowPlatformLinuxX11();
   void Initialize() override;
 
   bool Create(const Rect &rect) override;
