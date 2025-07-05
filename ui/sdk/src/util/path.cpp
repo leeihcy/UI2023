@@ -61,8 +61,13 @@ Path Path::ExecutePath() {
 
   return Path(real_path);
 
-  // #elif defined(OS_LINUX)
-
+#elif defined(OS_LINUX)
+  char path[PATH_MAX] = {0};
+  ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+  if (len != -1) {
+    path[len] = '\0';
+  }
+  return Path(path);
 #else
   UIASSERT(false);
   return Path();

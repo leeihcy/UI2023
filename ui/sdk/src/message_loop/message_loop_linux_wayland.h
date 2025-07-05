@@ -21,7 +21,7 @@ public:
 
 private:
   MessageLoop* m_message_loop = nullptr;
-  bool quit_flag = false;
+  bool m_running = true;
 
   WaylandDisplay m_display;
 };

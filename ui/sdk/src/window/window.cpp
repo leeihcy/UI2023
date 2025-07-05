@@ -208,7 +208,7 @@ void Window::onDestroy() {
   clear_events();
 }
 
-void Window::onPaint(Rect *dirty) {
+void Window::onPaint(const Rect *dirty) {
   // if (dirty) {
   //   UI_LOG_DEBUG(L"Window onPaint {%d,%d, %d,%d}", dirty->x, dirty->y,
   //                dirty->width, dirty->height);
@@ -216,13 +216,14 @@ void Window::onPaint(Rect *dirty) {
   //   UI_LOG_DEBUG(L"Window onPaint full");
   // }
 
-  // if (dirty) {
-  //   Rect rc;
-  //   rc.CopyFrom(*dirty);
-  //   m_objLayer.GetLayer()->Invalidate(&rc);
-  // } else {
-  //   m_objLayer.GetLayer()->Invalidate(nullptr);
-  // }
+  if (dirty) {
+    Rect rc;
+    rc.CopyFrom(*dirty);
+    m_objLayer.GetLayer()->Invalidate(&rc);
+  } else {
+    m_objLayer.GetLayer()->Invalidate(nullptr);
+  }
+
   if (dirty) {
     m_window_render.OnWindowPaint(*dirty);
   } else {

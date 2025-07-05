@@ -78,7 +78,7 @@ public:
   // platform回调
   void onClose();
   void onDestroy();
-  void onPaint(Rect *dirty);
+  void onPaint(const Rect *dirty);
   void onSize(int width, int height);
   void enterResize(bool);
 

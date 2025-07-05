@@ -10,8 +10,8 @@ using namespace std;
 #include "svg/include/interface/isvg.h"
 
 const char *samples[] = {
-    "hello_svg.svg", "use.svg",       "transform_1.svg", "group.svg",     "tiger.svg",
-    "shapes.svg",      "viewbox_1.svg", "viewbox_2.svg",
+    "hello_svg.svg", "use.svg",       "transform_1.svg", "group.svg",
+    "tiger.svg",     "shapes.svg",    "viewbox_1.svg",   "viewbox_2.svg",
     "viewbox_3.svg", "icon_font.svg",
 };
 const constexpr int samples_count = std::size(samples);

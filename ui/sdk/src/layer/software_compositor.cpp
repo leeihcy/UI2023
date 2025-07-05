@@ -66,7 +66,8 @@ void SoftwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
     arrDirtyInWindow.GetArrayPtr2(), 
     nCount);
 
-  // m_pRootLayer->GetRenderTarget()->Save("/Users/libo/Desktop/1.png");
+  // for debug
+  // m_pRootLayer->GetRenderTarget()->Save("/home/libo/Desktop/image/1.png");
 }
 
 void SoftwareCompositor::commit_recursion(Layer *p) {

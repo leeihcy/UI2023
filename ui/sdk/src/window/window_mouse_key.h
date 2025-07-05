@@ -9,6 +9,8 @@ class WindowMouseKey {
 public:
   WindowMouseKey(Window& window);
 
+  void OnMouseEnter();
+  void OnMouseLeave();
   void OnMouseMove(int x, int y);
   void OnLButtonDown(int x, int y);
   void OnLButtonUp(int x, int y);
