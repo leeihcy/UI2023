@@ -9,7 +9,6 @@ namespace ui {
 Compositor::Compositor() {
   m_pRootLayer = nullptr;
   m_pUIApp = nullptr;
-  m_hWnd = nullptr;
   m_pWindowRender = nullptr;
   m_request_invalidate_ref = 0;
 }
@@ -41,15 +40,9 @@ void Compositor::SetRootLayer(Layer *pChanged) { m_pRootLayer = pChanged; }
 
 Layer *Compositor::GetRootLayer() { return m_pRootLayer; }
 
-void Compositor::BindHWND(WINDOW_HANDLE hWnd) {
-  if (m_hWnd == hWnd)
-    return;
-
-  m_hWnd = hWnd;
-  this->onBindHWND(hWnd);
+void Compositor::BindWindow(Window* w) {
+  this->onBindWindow(w);
 }
-
-WINDOW_HANDLE Compositor::GetHWND() { return m_hWnd; }
 
 void Compositor::RequestInvalidate() {
   // #if 0 // defined(OS_WIN)

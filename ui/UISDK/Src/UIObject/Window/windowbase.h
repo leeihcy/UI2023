@@ -131,7 +131,6 @@ protected:
   HMONITOR GetPrimaryMonitor();
 
 public:
-  virtual void virtualInnerInitWindow();
   virtual void virtualSetVisibleEx(VISIBILITY_TYPE eType) override;
   virtual void virtualSetEnable(bool b) override;
   virtual bool IsVisible() override;

@@ -42,7 +42,7 @@ typedef struct tagObjStyle {
   bool default_reject_self_mouse_msg : 1;
   bool
       default_transparent : 1; // 该控件默认是透明的。默认所有的控件不透明，用于提升绘制效率
-  bool default_tabstop : 1;    // 默认该控件能否tabstop
+  bool default_tabstop : 1; // 默认该控件能否tabstop
 
 } OBJSTYLE;
 typedef struct tagObjState {
@@ -67,7 +67,7 @@ class Object;
 struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
   IResource *GetResource();
-	IWindow*  GetWindow();
+  IWindow *GetWindow();
   const char *GetId();
   void SetId(const char *szText);
   // HWND GetHWND();
@@ -97,8 +97,8 @@ struct UIAPI IObject : public IMessage {
   IObject *EnumNcChildObject(IObject *p);
   IObject *EnumAllChildObject(IObject *p);
 
-  IObject* AddChild(IObject *p);
-  IObject* AddNcChild(IObject *p);
+  IObject *AddChild(IObject *p);
+  IObject *AddNcChild(IObject *p);
   bool IsMyChild(IObject *pChild, bool bFindInGrand);
   bool RemoveChildInTree(IObject *pChild);
   void InsertChild(IObject *pObj, IObject *pInsertAfter);
@@ -107,7 +107,7 @@ struct UIAPI IObject : public IMessage {
   void Invalidate(const Rect *prcObj);
   void Invalidate(Rect *prcObj, int nCount);
   void UpdateLayout();
-  
+
   void SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags nFlag);
   void SetObjectPos(const Rect *prc, SetPositionFlags nFlag);
 
@@ -152,8 +152,8 @@ struct UIAPI IObject : public IMessage {
   void SetMinWidth(int);
   void SetMinHeight(int);
   ILayoutParam *GetSafeLayoutParam();
-  ILayoutParam* GetLayoutParam();
-  void SetLayoutParam(ILayoutParam*);
+  ILayoutParam *GetLayoutParam();
+  void SetLayoutParam(ILayoutParam *);
   void SetPaddingRegion(REGION4 *prc);
   void GetPaddingRegion(REGION4 *prc);
   void SetMarginRegion(REGION4 *prc);
@@ -179,10 +179,9 @@ struct UIAPI IObject : public IMessage {
   IRenderBase *GetForeRender();
   void SetBackRender(IRenderBase *);
   void SetTextRender(ITextRenderBase *);
-#if 0
-		ILayer*  GetLayer();
-		ILayer*  GetSelfLayer();
-#endif
+  ILayer *GetLayer();
+  ILayer *GetSelfLayer();
+
   void ForwardMessageToChildObject(UIMSG *pMsg);
   void ForwardInitializeMessageToDecendant();
   // 动画属性

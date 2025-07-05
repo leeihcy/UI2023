@@ -63,9 +63,7 @@ IResourceManager &IApplication::GetResourceManager() {
 ITopWindowManager *IApplication::GetTopWindowMgr() {
   return m_pImpl->GetITopWindowMgr();
 }
-uia::IAnimate *IApplication::GetAnimate() {
-  return m_pImpl->GetAnimate();
-}
+uia::IAnimate *IApplication::GetAnimate() { return m_pImpl->GetAnimate(); }
 // IMessageFilterMgr*  IApplication::GetMessageFilterMgr()
 // {
 // 	return m_pImpl->GetMessageFilterMgr();
@@ -107,7 +105,7 @@ void IApplication::LoadUIObjectListToToolBox() {
   m_pImpl->LoadUIObjectListToToolBox();
 }
 
-bool IApplication::RegisterUIRenderBase(IMeta& meta) {
+bool IApplication::RegisterUIRenderBase(IMeta &meta) {
   return m_pImpl->GetRenderBaseFactory().RegisterUIRenderBase(meta);
 }
 
@@ -277,14 +275,12 @@ bool IApplication::RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn) {
 //     return m_pImpl->GetForwardPostMessageWnd();
 // }
 
-// bool  IApplication::IsGpuCompositeEnable()
-// {
-//     return m_pImpl->IsGpuCompositeEnable();
-// }
-// bool  IApplication::EnableGpuComposite()
-// {
-//     return m_pImpl->EnableGpuComposite();
-// }
+bool IApplication::IsGpuCompositeEnable() {
+  return m_pImpl->IsGpuCompositeEnable();
+}
+bool IApplication::EnableGpuComposite() {
+  return m_pImpl->EnableGpuComposite();
+}
 
 // IWindowBase*  IApplication::GetWindowBaseFromHWND(HWND hWnd)
 // {

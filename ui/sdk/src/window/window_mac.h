@@ -17,7 +17,7 @@ public:
   ~WindowPlatformMac();
   void Initialize() override;
 
-  bool Create(const Rect &rect) override;
+  bool Create(CreateWindowParam& param) override;
   void Destroy();
   WINDOW_HANDLE GetWindowHandle() override;
   WINDOW_HANDLE GetRootViewHandle();

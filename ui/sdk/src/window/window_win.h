@@ -31,7 +31,7 @@ public:
   ~WindowPlatformWin();
   void Initialize() override;
 
-  bool Create(const Rect &rect) override;
+  bool Create(CreateWindowParam& param) override;
   bool CreateTransparent(const Rect &rect);
   void Destroy();
 

@@ -12,7 +12,7 @@ public:
     HardwareCompositor();
     ~HardwareCompositor();
     virtual Layer*  createLayerObject() override;
-    virtual void  onBindHWND(WINDOW_HANDLE) override;
+    virtual void  onBindWindow(Window* w) override;
     virtual void  doCommit(const RectRegion& arrDirtyInWindow) override;
     virtual void  UpdateDirty(RectRegion* outArrDirtyInWindow) override;
     virtual void  Resize(uint nWidth, uint nSize) override;

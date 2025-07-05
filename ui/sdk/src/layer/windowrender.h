@@ -2,6 +2,7 @@
 #define _UI_SDK_SRC_LAYER_WINDOWRENDER_H_
 
 #include <memory>
+#include "include/interface/iwindow.h"
 #include "include/macro/xmldefine.h"
 //#pragma comment(lib, "UICompositor.lib")
 
@@ -35,9 +36,8 @@ public:
   IWindowRender *GetIWindowRender();
 
 public:
-#if 0 // defined(OS_WIN)
-  void BindHWND(HWND hWnd);
-#endif
+  void OnWindowCreate();
+
   void OnSerialize(SerializeParam *pData);
   void OnWindowSize(unsigned int nWidth, unsigned int nHeight);
   void OnWindowPaint(const Rect& dirty);

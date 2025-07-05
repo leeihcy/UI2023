@@ -715,8 +715,6 @@ long WindowBase::_OnCreate(
 {
 	bHandled = FALSE;
 
-    m_oWindowRender.BindHWND(m_hWnd);
-
     // 特殊处理：
     // 用于将D2D RenderTarget绑定到窗口上面.D2D与GDI/GDIPlus
     // 不一样，它不需要再弄一个双缓冲，直接begindraw/enddraw即可
@@ -733,9 +731,6 @@ long WindowBase::_OnCreate(
 	return 0;
 }
 
-void  WindowBase::virtualInnerInitWindow()
-{
-}
 
 long  WindowBase::_OnClose(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {

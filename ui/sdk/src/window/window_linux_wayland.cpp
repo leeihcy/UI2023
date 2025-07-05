@@ -8,37 +8,40 @@
 
 #include "include/interface.h"
 #include "include/interface/iwindow.h"
+#include "include/macro/uidefine.h"
 #include "src/graphics/skia/skia_render.h"
+#include "src/window/linux/xdg-shell-client-protocol.h"
 
 namespace ui {
 
 WindowPlatformLinuxWayland::WindowPlatformLinuxWayland(ui::Window &w)
     : m_ui_window(w) {}
 WindowPlatformLinuxWayland::~WindowPlatformLinuxWayland() {
-  destroy_toplevel();
-  destroy_surface();
+  Destroy();
 }
 
 void WindowPlatformLinuxWayland::Initialize() {}
 void WindowPlatformLinuxWayland::Release() {}
 
-void WindowPlatformLinuxWayland::destroy() { destroy_surface(); }
+void WindowPlatformLinuxWayland::Destroy() { 
+  destroy_toplevel();
+  destroy_surface(); 
+}
 
 static void xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
                                   uint32_t serial) {
   xdg_surface_ack_configure(xdg_surface, serial);
-  ((WindowPlatformLinuxWayland *)data)->_on_xdg_surface_configure(xdg_surface);
+  ((WindowPlatformLinuxWayland *)data)->on_xdg_surface_configure(xdg_surface);
 }
 void xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
                             int32_t width, int32_t height,
                             struct wl_array *states) {
-
   ((WindowPlatformLinuxWayland *)data)
-      ->_on_xdg_toplevel_configure(xdg_toplevel, width, height, states);
+      ->on_xdg_toplevel_configure(xdg_toplevel, width, height, states);
 }
 
 void xdg_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel) {
-  ((WindowPlatformLinuxWayland *)data)->_on_xdg_toplevel_close(xdg_toplevel);
+  ((WindowPlatformLinuxWayland *)data)->on_xdg_toplevel_close(xdg_toplevel);
 }
 
 static const struct xdg_surface_listener xdg_surface_listener = {
@@ -49,9 +52,15 @@ static const struct xdg_toplevel_listener xdg_toplevel_listener = {
     .close = xdg_toplevel_close,
 };
 
-bool WindowPlatformLinuxWayland::Create(const Rect &rect) {
-  m_width = rect.Width();
-  m_height = rect.Height();
+bool WindowPlatformLinuxWayland::Create(CreateWindowParam& param) {
+  if (param.position) {
+    m_width = param.w;
+    m_height = param.h;
+  } else {
+    // TBD: 
+    m_width = 400;
+    m_height = 400;
+  }
 
   create_surface();
 
@@ -107,7 +116,7 @@ void WindowPlatformLinuxWayland::destroy_toplevel() {
 }
 
 WINDOW_HANDLE WindowPlatformLinuxWayland::GetWindowHandle() {
-  return (WINDOW_HANDLE)m_xdg_toplevel;
+  return (WINDOW_HANDLE)m_surface;
 }
 void WindowPlatformLinuxWayland::SetTitle(const char *title) {
   if (title) {
@@ -125,10 +134,10 @@ void WindowPlatformLinuxWayland::Show() {
   }
   WaylandVisibleState old = m_visible;
   m_visible = WaylandVisibleState::Visible;
-  _on_visible_state_changed(old);
+  on_visible_state_changed(old);
 }
 
-void WindowPlatformLinuxWayland::_on_visible_state_changed(
+void WindowPlatformLinuxWayland::on_visible_state_changed(
     WaylandVisibleState old) {
 
   // wayland没有支持显示和隐藏。这里通过创建和销毁toplevel来实现显隐
@@ -149,7 +158,15 @@ void WindowPlatformLinuxWayland::GetWindowRect(Rect *prect) {
   prect->Set(0, 0, m_width, m_height);
 }
 void WindowPlatformLinuxWayland::SetWindowPos(int x, int y, int w, int h,
-                                              SetPositionFlags flags) {}
+                                              SetPositionFlags flags) {
+  if (flags.size) {
+    m_width = w;
+    m_height = h;
+  }
+  if (m_xdg_toplevel && m_xdg_surface) {
+    xdg_surface_set_window_geometry(m_xdg_surface, 0, 0, m_width, m_height);
+  }
+                                              }
 void WindowPlatformLinuxWayland::Invalidate(const Rect *prect) {
   m_ui_window.onPaint(prect);
 }
@@ -257,18 +274,36 @@ void WaylandSurfaceSharedMemory::Free() {
   m_size = 0;
 }
 
-void WindowPlatformLinuxWayland::_on_xdg_surface_configure(
+void WindowPlatformLinuxWayland::on_xdg_surface_configure(
     struct xdg_surface *xdg_surface) {}
 
-void WindowPlatformLinuxWayland::_on_xdg_toplevel_configure(
+
+// 窗口激活/失活也会触发这个函数
+void WindowPlatformLinuxWayland::on_xdg_toplevel_configure(
     struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height,
     struct wl_array *states) {
+  
+  int old_width = 0;
+  int old_height = 0;
+
   if (width == 0 || height == 0) {
     // 使用创建时外部指定的大小。
   } else {
+    old_width = m_width;
+    old_height = m_height;
+
     m_width = width;
     m_height = height;
   }
+
+  if (old_width != m_width || old_height != m_height) {
+    on_size();
+  }
+
+  m_ui_window.onPaint(nullptr); // TODO: 如何监听刷新事件。
+}
+
+void WindowPlatformLinuxWayland::on_size() {
 
   m_shm.Alloc(m_width, m_height);
 
@@ -278,41 +313,54 @@ void WindowPlatformLinuxWayland::_on_xdg_toplevel_configure(
       pool, 0, m_width, m_height, m_width * 4, WL_SHM_FORMAT_ARGB8888);
   wl_shm_pool_destroy(pool);
 
-#if defined(_DEBUG)
-  memset(m_shm.data(), 0xff, m_shm.size()); // white background
-#endif
+// #if defined(_DEBUG)
+//  memset(m_shm.data(), 0xff, m_shm.size()); // white background
+// #endif
 
   wl_surface_attach(m_surface, buffer, 0, 0);
   m_ui_window.onSize(m_width, m_height);
-  m_ui_window.onPaint(nullptr); // TODO: 如何监听刷新事件。
 }
 
-void WindowPlatformLinuxWayland::_on_xdg_toplevel_close(
+void WindowPlatformLinuxWayland::on_xdg_toplevel_close(
     struct xdg_toplevel *xdg_toplevel) {
   m_ui_window.onClose();
-  destroy();
+  Destroy();
   m_ui_window.onDestroy();
 }
 
 void WindowPlatformLinuxWayland::on_pointer_enter(wl_fixed_t surface_x,
                                                   wl_fixed_t surface_y) {
   m_ui_window.m_mouse_key.OnMouseEnter();
-  m_ui_window.m_mouse_key.OnMouseMove((int)surface_x, (int)surface_x);
+
+  int x = wl_fixed_to_int(surface_x);  
+  int y = wl_fixed_to_int(surface_y); 
+  m_ui_window.m_mouse_key.OnMouseMove(x, y);
 }
 void WindowPlatformLinuxWayland::on_pointer_leave() {
   m_ui_window.m_mouse_key.OnMouseLeave();
 }
-void WindowPlatformLinuxWayland::on_pointer_motion(uint32_t time, wl_fixed_t x,
-                                                   wl_fixed_t y) {
-  m_ui_window.m_mouse_key.OnMouseMove((int)x, (int)y);
+void WindowPlatformLinuxWayland::on_pointer_motion(uint32_t time, wl_fixed_t fixed_x,
+                                                   wl_fixed_t fixed_y) {
+  int x = wl_fixed_to_int(fixed_x);  
+  int y = wl_fixed_to_int(fixed_y); 
+  m_ui_window.m_mouse_key.OnMouseMove(x, y);
 }
-void WindowPlatformLinuxWayland::on_pointer_button(uint32_t time,
+void WindowPlatformLinuxWayland::on_pointer_button(uint32_t serial, uint32_t time,
                                                    uint32_t button,
-                                                   uint32_t state, wl_fixed_t x,
-                                                   wl_fixed_t y) {
+                                                   uint32_t state, wl_fixed_t fixed_x,
+                                                   wl_fixed_t fixed_y) {
+  int x = wl_fixed_to_int(fixed_x);  
+  int y = wl_fixed_to_int(fixed_y);  
+
   if (button == BTN_LEFT) {
     if (state == WL_POINTER_BUTTON_STATE_PRESSED) {
       m_ui_window.m_mouse_key.OnLButtonDown(x, y);
+
+      // TODO: 实现decorate
+      if (y < 50) {
+        xdg_toplevel_move(m_xdg_toplevel, m_display.get_wl_seat(), serial);
+      } 
+
     } else if (state == WL_POINTER_BUTTON_STATE_RELEASED)  {
       m_ui_window.m_mouse_key.OnLButtonUp(x, y);
     }
@@ -323,6 +371,22 @@ void WindowPlatformLinuxWayland::on_pointer_button(uint32_t time,
       m_ui_window.m_mouse_key.OnRButtonUp(x, y);
     }
   }
+}
+
+  // IGpuCompositorWindowWayland
+void WindowPlatformLinuxWayland::GetWindowSize(int* w, int* h) {
+  if (w) {
+    *w = m_width;
+  }
+  if (h) {
+    *h = m_height;
+  }
+}
+struct wl_display* WindowPlatformLinuxWayland::GetWaylandDisplay() {
+  return m_display.get_display();
+}
+struct wl_surface* WindowPlatformLinuxWayland::GetWaylandSurface() {
+  return m_surface;
 }
 
 } // namespace ui

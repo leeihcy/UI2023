@@ -4,6 +4,7 @@
 #include "include/util/log.h"
 #include "base/stopwatch.h"
 #include "gpu/include/api.h"
+#include "sdk/src/window/window.h"
 #if defined(OS_WIN)
 #include "src/util/windows.h"
 #endif
@@ -17,8 +18,10 @@ HardwareCompositor::~HardwareCompositor() {
     m_gpu_composition = nullptr;
   }
 }
-void HardwareCompositor::onBindHWND(WINDOW_HANDLE hWnd) {
+void HardwareCompositor::onBindWindow(Window* w) {
   UIASSERT(!m_gpu_composition);
+
+  IGpuCompositorWindow* p = w->GetWindowPlatform()->GetGpuCompositorWindow();
 #if defined(OS_WIN)
   HMODULE hModule = GetModuleHandle(L"uigpu.dll");
   if (!hModule) {
@@ -28,7 +31,7 @@ void HardwareCompositor::onBindHWND(WINDOW_HANDLE hWnd) {
     }
   }
 
-  typedef IGpuCompositor *(*pfnUICreateHardwareComposition)(HWND hWnd);
+  typedef IGpuCompositor *(*pfnUICreateHardwareComposition)(IGpuCompositorWindow*);
   pfnUICreateHardwareComposition fn =
       (pfnUICreateHardwareComposition)::GetProcAddress(
           hModule, "CreateGpuComposition");
@@ -38,9 +41,9 @@ void HardwareCompositor::onBindHWND(WINDOW_HANDLE hWnd) {
     return;
   }
 
-  m_gpu_composition = fn((HWND)m_hWnd);
+  m_gpu_composition = fn(p);
 #else
-  m_gpu_composition = ui::CreateGpuComposition(m_hWnd);
+  m_gpu_composition = ui::CreateGpuComposition(p);
 #endif
 }
 

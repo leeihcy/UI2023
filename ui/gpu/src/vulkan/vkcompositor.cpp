@@ -1,20 +1,24 @@
 #include "vkcompositor.h"
+#include "base/stopwatch.h"
+#include "gpu/include/api.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vkapp.h"
 #include "vklayer.h"
-#include "base/stopwatch.h"
 
 #include "vulkan/vulkan.h"
 #if defined(OS_WIN)
-#include "windows.h"
 #include "vulkan/vulkan_win32.h"
+#include "windows.h"
 #endif
-
 
 #if defined(OS_MAC)
 void *GetNSWindowRootView(void *window);
 void GetNSWindowActureSize(void *window, int *width, int *height);
+#endif
+
+#if defined(OS_LINUX)
+#include <vulkan/vulkan_wayland.h>
 #endif
 
 #define MAX_FRAMES_IN_FLIGHT 2
@@ -31,9 +35,7 @@ VulkanCompositor::VulkanCompositor()
   m_pRootTexture = nullptr;
 }
 
-VulkanCompositor::~VulkanCompositor() {
-  destory();
-}
+VulkanCompositor::~VulkanCompositor() { destory(); }
 
 void VulkanCompositor::destory() {
   VkDevice device = m_device_queue.Device();
@@ -43,7 +45,6 @@ void VulkanCompositor::destory() {
   destroy_swapchain();
   auto &app = application();
 
-  
   m_command_pool.Destroy();
   m_device_queue.Destroy();
 
@@ -114,23 +115,26 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
   printf("gpu end commit cost %d 微秒\n", ms);
 }
 
-bool VulkanCompositor::Initialize(void *hWnd) {
-  m_hWnd = hWnd;
+bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
 
   // 获取窗口大小
-#if defined(OS_WIN)
-  RECT rc;
-  ::GetClientRect((HWND)m_hWnd, &rc);
-  m_width = rc.right - rc.left;
-  m_height = rc.bottom - rc.top;
-#elif defined(OS_MAC)
-  GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
-#endif
+  window->GetWindowSize(&m_width, &m_height);
+// #if defined(OS_WIN)
+//   RECT rc;
+//   ::GetClientRect((HWND)m_hWnd, &rc);
+//   m_width = rc.right - rc.left;
+//   m_height = rc.bottom - rc.top;
+// #elif defined(OS_MAC)
+//   GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
+// #endif
 
-  create_vulkan_surface();
+  if (!create_vulkan_surface(window)) {
+     printf("create_vulkan_surface failed\n");
+    return false;
+  }
 
   if (!m_device_queue.Initialize()) {
-    printf("m_device_queue initialize\n");
+    printf("m_device_queue initialize failed\n");
     return false;
   }
 
@@ -149,7 +153,7 @@ void VulkanCompositor::Resize(int width, int height) {
 
   vkDeviceWaitIdle(GetVkDevice());
   destroy_swapchain();
-  
+
   if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
     printf("create_swapchain failed\n");
     return /*false*/;
@@ -160,8 +164,7 @@ void VulkanCompositor::Resize(int width, int height) {
   // ~~pipe line应该只需要创建一次就够了。~~
   if (m_pipeline.handle() == VK_NULL_HANDLE) {
     if (!m_pipeline.Initialize(m_swapchain.Extent2D().width,
-                              m_swapchain.Extent2D().height,
-                              image_format)) {
+                               m_swapchain.Extent2D().height, image_format)) {
       printf("create_graphics_pipeline failed\n");
       return /*false*/;
     }
@@ -178,24 +181,29 @@ void VulkanCompositor::Resize(int width, int height) {
   }
 }
 
-bool VulkanCompositor::create_vulkan_surface() {
+bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
   auto &app = application();
 
 #if defined(OS_WIN)
+  assert(window->GetType() == GpuCompositorWindowType::WindowsHWND);
+
   VkWin32SurfaceCreateInfoKHR createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-  createInfo.hwnd = (HWND)m_hWnd;
+  createInfo.hwnd = ((IGpuCompositorWindowHWND)window)->GetHWND();
   createInfo.hinstance = GetModuleHandle(nullptr);
 
-  vkCreateWin32SurfaceKHR(app.GetVkInstance(), &createInfo, nullptr, &m_surface);
+  vkCreateWin32SurfaceKHR(app.GetVkInstance(), &createInfo, nullptr,
+                          &m_surface);
 #elif defined(OS_MAC)
   // https://github.com/glfw/glfw/blob/master/src/cocoa_window.m
+  assert(window->GetType() == GpuCompositorWindowType::MacOSNSView);
 
   VkMacOSSurfaceCreateInfoMVK createInfo;
   createInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
   createInfo.pNext = NULL;
   createInfo.flags = 0;
-  createInfo.pView = GetNSWindowRootView(m_hWnd);
+  createInfo.pView = ((IGpuCompositorWindowNSView)window)->GetNSWindowRootView(); 
+     //GetNSWindowRootView(m_hWnd);
   VkResult err = vkCreateMacOSSurfaceMVK(app.GetVkInstance(), &createInfo,
                                          nullptr, &m_surface);
   if (err != VK_SUCCESS) {
@@ -211,6 +219,24 @@ bool VulkanCompositor::create_vulkan_surface() {
   // VkResult err =
   // vkCreateMetalSurfaceEXT(app.m_vk_instance,
   //                                        &createInfo, nullptr, &m_surface);
+#elif defined(OS_LINUX)
+  if (window->GetType() == GpuCompositorWindowType::LinuxWayland) {
+    IGpuCompositorWindowWayland* wayland = static_cast<IGpuCompositorWindowWayland*>(window);
+
+    VkWaylandSurfaceCreateInfoKHR createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+    createInfo.display = wayland->GetWaylandDisplay(); 
+    createInfo.surface = wayland->GetWaylandSurface();
+    
+    VkSurfaceKHR surface;
+    VkResult result = vkCreateWaylandSurfaceKHR(app.GetVkInstance(), &createInfo,
+                                                nullptr, &m_surface);
+    if (result != VK_SUCCESS) {
+      return false;
+    }
+  } else {
+    return false;
+  }
 
 #endif
   return true;

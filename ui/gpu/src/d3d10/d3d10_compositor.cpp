@@ -1,3 +1,4 @@
+#include "gpu/include/api.h"
 #pragma warning(disable : 4005) // 宏重定义
 
 // #include "stdafx.h"
@@ -46,8 +47,10 @@ D3D10Compositor::~D3D10Compositor() {
   }
 }
 
-bool D3D10Compositor::Initialize(void* hwnd) {
-  m_hWnd = (HWND)hwnd;
+bool D3D10Compositor::Initialize(IGpuCompositorWindow* w) {
+  assert(w->GetType() == GpuCompositorWindowType::WindowsHWND);
+
+  m_hWnd = ((IGpuCompositorWindowHWND*)w)->GetHWND();
   CreateSwapChain();
   return true;
 }

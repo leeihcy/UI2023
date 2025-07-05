@@ -6,6 +6,7 @@
 
 namespace ui {
 class Application;
+class Window;
 
 class Compositor {
 public:
@@ -21,8 +22,7 @@ public:
   void SetRootLayer(Layer *pChanged);
   Layer *GetRootLayer();
   
-  void BindHWND(WINDOW_HANDLE);
-  WINDOW_HANDLE GetHWND();
+  void BindWindow(Window* w);
 
   void RequestInvalidate();
   void _onRequestInvalidate();
@@ -37,14 +37,14 @@ public:
   
 protected:
   virtual Layer *createLayerObject() = 0;
-  virtual void onBindHWND(WINDOW_HANDLE) = 0;
+  virtual void onBindWindow(Window* w) = 0;
   virtual void doCommit(const RectRegion &arrDirtyInWindow) = 0;
 
 protected:
   Application *m_pUIApp;
 
   Layer *m_pRootLayer;
-  WINDOW_HANDLE m_hWnd = nullptr;
+  Window* m_window = nullptr;
   WindowRender *m_pWindowRender;
 
 private:

@@ -362,11 +362,11 @@ struct GETDESIREDSIZEINFO {
 //
 #define UI_MSG_PRECREATEWINDOW 168270752
 
-// bool  PreCreateWindow(CREATESTRUCT* pcs);
+// bool  PreCreateWindow(CreateWindowParam* pcs);
 #define UIMSG_PRECREATEWINDOW(func)                                            \
   if (uMsg == UI_MSG_PRECREATEWINDOW) {                                        \
     SetMsgHandled(true);                                                       \
-    lResult = func((CREATESTRUCT *)wParam);                                    \
+    lResult = func((CreateWindowParam *)wParam);                                    \
     if (IsMsgHandled())                                                        \
       return true;                                                             \
   }

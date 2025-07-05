@@ -186,7 +186,7 @@ Compositor *WindowRender::get_create_compositor() {
     m_compositor->SetUIApplication(m_window.GetUIApplication());
     m_compositor->SetWindowRender(this);
 
-    m_compositor->BindHWND(m_window.GetWindowHandle());
+    m_compositor->BindWindow(&m_window);
   }
 
   return m_compositor.get();
@@ -199,6 +199,12 @@ void WindowRender::UpdateAndCommit() {
   m_compositor->UpdateAndCommit();
 }
 
+void WindowRender::OnWindowCreate() {
+  if (!m_compositor) {
+    return;
+  }
+  m_compositor->BindWindow(&m_window);
+}
 
 // void  WindowRender::UpdateWindow(HDC hDC, Rect* prcDamageArray, uint nCount)
 // {

@@ -5,6 +5,8 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include <vulkan/vulkan_win32.h>
+#elif defined(OS_LINUX)
+#include <vulkan/vulkan_wayland.h>
 #endif
 
 namespace ui {
@@ -166,6 +168,8 @@ void VulkanApplication::get_required_extensions(
 #elif defined(OS_MAC)
   required_extensions.push_back(VK_MVK_MACOS_SURFACE_EXTENSION_NAME);
   // + "VK_EXT_metal_surface"
+#elif defined (OS_LINUX)
+  required_extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
 #endif
 
   if (m_enable_validation_layers) {

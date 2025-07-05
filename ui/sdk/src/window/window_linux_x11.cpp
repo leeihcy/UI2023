@@ -5,14 +5,18 @@
 
 namespace ui {
 
-WindowPlatformLinuxX11::WindowPlatformLinuxX11(ui::Window &w) : m_ui_window(w) {}
+WindowPlatformLinuxX11::WindowPlatformLinuxX11(ui::Window &w)
+    : m_ui_window(w) {}
 void WindowPlatformLinuxX11::Initialize() { m_display.Init(); }
 
 WindowPlatformLinuxX11::~WindowPlatformLinuxX11() { m_display.Destroy(); }
 
-bool WindowPlatformLinuxX11::Create(const Rect &rect) {
+bool WindowPlatformLinuxX11::Create(CreateWindowParam &param) {
   m_ui_window.m_dpi.SetSystemDpi(m_display.GetMonitorScaleFactor());
 
+  assert(false);
+  // TODO:
+#if 0
   ::Window window =
       XCreateSimpleWindow(m_display, m_display.GetDefaultRootWindow(),
                           rect.left, rect.top, rect.width(), rect.height(), 300,
@@ -29,6 +33,7 @@ bool WindowPlatformLinuxX11::Create(const Rect &rect) {
   XSetWMNormalHints(m_display, window, &hints);
 
   Attach(window);
+#endif
   return true;
 }
 
@@ -218,7 +223,7 @@ void WindowPlatformLinuxX11::SetTitle(const char *title) {
 }
 
 void WindowPlatformLinuxX11::SetMinMaxSize(int wMin, int hMin, int wMax,
-                                        int hMax) {
+                                           int hMax) {
 #if 1
   XSizeHints hints;
   memset(&hints, 0, sizeof(hints));
@@ -247,14 +252,15 @@ void WindowPlatformLinuxX11::SetMinMaxSize(int wMin, int hMin, int wMax,
 }
 
 void WindowPlatformLinuxX11::SetWindowPos(int x, int y, int w, int h,
-                                       SetPositionFlags flags) {
+                                          SetPositionFlags flags) {
   assert(false); // TODO:
 }
 
 /**
  * 1. 只有在被Map后，才能进行窗口Move操作，否则窗口管理器将无视这些设置。
  */
-void WindowPlatformLinuxX11::SetWindowRect(int x, int y, int width, int height) {
+void WindowPlatformLinuxX11::SetWindowRect(int x, int y, int width,
+                                           int height) {
   /* 调用XSetWMNormalHints设置窗口位置不对。
   XSizeHints hints;
   memset(&hints, 0, sizeof(hints));
@@ -388,7 +394,7 @@ int get_window_depth(Display *display, ::Window window) {
 }
 
 void WindowPlatformLinuxX11::Commit(ui::IRenderTarget *pRT, const Rect *prect,
-                                 int count) {
+                                    int count) {
   if (!m_gc) {
     return;
   }
@@ -506,5 +512,20 @@ bool WindowPlatformLinuxX11::IsWindowVisible() {
   return true;
 }
 float WindowPlatformLinuxX11::GetScaleFactor() { return 2.0f; }
+
+void WindowPlatformLinuxX11::GetWindowSize(int *w, int *h) {
+  ::Window root;
+  int x, y;
+  unsigned int width, height, border_width, depth;
+  // Window parent_window = GetParentWindow();
+  XGetGeometry(m_display, m_window, &root, &x, &y, &width, &height,
+               &border_width, &depth);
+  if (w) {
+    *w = width;
+  }
+  if (h) {
+    *h = height;
+  }
+}
 
 } // namespace ui

@@ -99,10 +99,10 @@ void WaylandDisplayPrivate::on_pointer_motion(uint32_t time, wl_fixed_t x,
 static void pointer_button(void *data, struct wl_pointer *pointer,
                            uint32_t serial, uint32_t time, uint32_t button,
                            uint32_t state) {
-  ((WaylandDisplayPrivate *)data)->on_pointer_button(time, button, state);
+  ((WaylandDisplayPrivate *)data)->on_pointer_button(serial, time, button, state);
 }
 
-void WaylandDisplayPrivate::on_pointer_button(uint32_t time, uint32_t button,
+void WaylandDisplayPrivate::on_pointer_button(uint32_t serial, uint32_t time, uint32_t button,
                                               uint32_t state) {
   if (!m_hover_surface) {
     return;
@@ -112,7 +112,8 @@ void WaylandDisplayPrivate::on_pointer_button(uint32_t time, uint32_t button,
   if (!callback) {
     return;
   }
-  callback->on_pointer_button(time, button, state, m_last_pointer_x, m_last_pointer_y);
+  callback->on_pointer_button(serial, time, button, state, m_last_pointer_x,
+                              m_last_pointer_y);
 }
 
 static struct wl_pointer_listener pointer_listener = {
@@ -214,6 +215,10 @@ struct wl_shm *WaylandDisplay::get_wl_shm() {
 }
 struct xdg_wm_base *WaylandDisplay::get_xdg_wm_base() {
   return WaylandDisplayPrivate::getInstance().m_xdg_wm_base;
+}
+
+struct wl_seat *WaylandDisplay::get_wl_seat() {
+  return WaylandDisplayPrivate::getInstance().m_wl_seat;
 }
 
 void WaylandDisplayPrivate::BindSurface(struct wl_surface *k,

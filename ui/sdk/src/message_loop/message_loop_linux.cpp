@@ -159,10 +159,10 @@ void MessageLoopPlatformLinux::processXEvent(const XEvent &event) {
 }
 
 void MessageLoopPlatformLinux::CreateAnimateTimer(int fps) {
-
+  assert(false);
 }
 void MessageLoopPlatformLinux::DestroyAnimateTimer() {
-  
+  assert(false);
 }
 
 } // namespace ui

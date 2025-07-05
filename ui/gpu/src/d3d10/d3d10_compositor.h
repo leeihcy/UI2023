@@ -32,7 +32,7 @@ public:
   D3D10Compositor();
   ~D3D10Compositor();
 
-  bool Initialize(void* hwnd) override;
+  bool Initialize(IGpuCompositorWindow*) override;
   void Release() override { delete this; }
   IGpuLayer *CreateLayerTexture() override;
   bool BeginCommit(GpuLayerCommitContext*) override;

@@ -1,22 +1,13 @@
 #include "include/inc.h"
 #include "include/interface/irenderlayer.h"
-#include "windowrender.h"
 #include "layer.h"
+#include "windowrender.h"
 
 namespace ui {
-IWindowRender::IWindowRender(WindowRender* p)
-{
-	m_pWindowRenderImpl = p;
-}
-IWindowRender::~IWindowRender()
-{
+IWindowRender::IWindowRender(WindowRender *p) { m_pWindowRenderImpl = p; }
+IWindowRender::~IWindowRender() {}
 
-}
-
-WindowRender*  IWindowRender::GetImpl()
-{
-	return m_pWindowRenderImpl;
-}
+WindowRender *IWindowRender::GetImpl() { return m_pWindowRenderImpl; }
 #if 0
 void  IWindowRender::SetCanCommit(bool b)
 {
@@ -54,21 +45,16 @@ IWindowCommitListener*  IWindowRender::GetCommitListener()
 #endif
 //////////////////////////////////////////////////////////////////////////
 
-ILayer::ILayer(Layer* p)
-{
-	m_pImpl = p;
+ILayer::ILayer(Layer *p) { m_pImpl = p; }
+
+void ILayer::PostCompositorRequest() { m_pImpl->PostCompositorRequest(); }
+IRenderTarget *ILayer::GetRenderTarget() { return m_pImpl->GetRenderTarget(); }
+void ILayer::ScaleTo(float x, float y, LayerAnimateParam *param) {
+  m_pImpl->ScaleTo(x, y, param);
 }
 
-void  ILayer::PostCompositorRequest()
-{
-	m_pImpl->PostCompositorRequest();
+void ILayer::RotateZTo(float f, LayerAnimateParam *param) {
+  m_pImpl->RotateZTo(f, param);
 }
-IRenderTarget*  ILayer::GetRenderTarget()
-{
-    return m_pImpl->GetRenderTarget();
-}
-void  ILayer::ScaleTo(float x, float y, LayerAnimateParam* param)
-{
-	m_pImpl->ScaleTo(x, y, param);
-}
-}
+
+} // namespace ui

@@ -27,13 +27,20 @@ void WindowPlatformMac::Initialize() {}
 WindowPlatformMac::~WindowPlatformMac() {}
 
 // rect乘以了缩放系数。
-bool WindowPlatformMac::Create(const Rect &content_rect) {
+bool WindowPlatformMac::Create(CreateWindowParam& param) {
   NSUInteger windowStyle =
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
        NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
 
   float scale = [[NSScreen mainScreen] backingScaleFactor];
 
+  // TODO:
+  assert(false);
+  if (param.position) {
+  } else {
+
+  }
+#if 0
   NSRect ns_content_rect = NSMakeRect(
     content_rect.left / scale, content_rect.top / scale, 
     content_rect.Width() / scale, content_rect.Height() / scale);
@@ -41,6 +48,7 @@ bool WindowPlatformMac::Create(const Rect &content_rect) {
                                          styleMask:windowStyle
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
+#endif
   WindowDelegate *delegate = [[WindowDelegate alloc] initWithWindow:this];
 
   // create view

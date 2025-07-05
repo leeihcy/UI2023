@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_WAYLAND_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_LINUX_WAYLAND_H_
 
+#include "gpu/include/api.h"
 #include "linux/display_wayland.h"
 #include "window.h"
 #include <string>
@@ -29,14 +30,20 @@ private:
 enum WaylandVisibleState { Hidden, Minimized, Visible, Maximized };
 
 class WindowPlatformLinuxWayland : public WindowPlatform,
+                                   public ui::IGpuCompositorWindowWayland,
                                    public ISurfacePointerCallback {
 public:
   WindowPlatformLinuxWayland(ui::Window &w);
   ~WindowPlatformLinuxWayland();
 
+  // WindowPlatform
+  virtual IGpuCompositorWindow *GetGpuCompositorWindow() override {
+    return static_cast<IGpuCompositorWindow *>(this);
+  }
+
   void Initialize() override;
   void Release() override;
-  bool Create(const Rect &rect) override;
+  bool Create(CreateWindowParam &param) override;
   WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;
   void Show() override;
@@ -51,21 +58,30 @@ public:
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
 
 public:
-  void _on_xdg_surface_configure(struct xdg_surface *xdg_surface);
-  void _on_xdg_toplevel_configure(struct xdg_toplevel *xdg_toplevel,
-                                  int32_t width, int32_t height,
-                                  struct wl_array *states);
-  void _on_xdg_toplevel_close(struct xdg_toplevel *xdg_toplevel);
-  void _on_visible_state_changed(WaylandVisibleState old);
+  void Destroy();
 
-  void destroy();
+public:
+  void on_xdg_surface_configure(struct xdg_surface *xdg_surface);
+  void on_xdg_toplevel_configure(struct xdg_toplevel *xdg_toplevel,
+                                 int32_t width, int32_t height,
+                                 struct wl_array *states);
+  void on_xdg_toplevel_close(struct xdg_toplevel *xdg_toplevel);
 
+  void on_size();
+  void on_visible_state_changed(WaylandVisibleState old);
+
+protected:
   // ISurfacePointerCallback
   void on_pointer_enter(wl_fixed_t surface_x, wl_fixed_t surface_y) override;
   void on_pointer_leave() override;
   void on_pointer_motion(uint32_t time, wl_fixed_t x, wl_fixed_t y) override;
-  void on_pointer_button(uint32_t time, uint32_t button, uint32_t state,
-                         wl_fixed_t x, wl_fixed_t y) override;
+  void on_pointer_button(uint32_t serial, uint32_t time, uint32_t button,
+                         uint32_t state, wl_fixed_t x, wl_fixed_t y) override;
+
+  // IGpuCompositorWindowWayland
+  void GetWindowSize(int *w, int *h) override;
+  struct wl_display *GetWaylandDisplay() override;
+  struct wl_surface *GetWaylandSurface() override;
 
 private:
   struct wl_buffer *create_shm_buffer(int width, int height, uint32_t format);

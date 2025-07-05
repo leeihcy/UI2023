@@ -180,12 +180,14 @@ typedef void* WINDOW_HANDLE;
 
 // window style
 typedef struct tagWindowStyle {
+  // 已初始化完成
+  bool  initialized : 1;     
   // 表示该窗口已经被销毁了(WM_NCDESTROY)，用于触发OnFinalMessage
   bool destroyed : 1; 
   // 表示该窗口是attach的，创建、销毁由外部来控制
   bool attach : 1; 
   // 创建窗口时指定了窗口大小，不用再进行窗口布局了
-  bool setcreaterect : 1; 
+  // ~~bool setcreaterect : 1; ~~ 使用CreateWindowParam替代
   // 用于解决win7下面Dialog显示大小于GetWindowRect不一致的问题
   bool dialog_noresize : 1;
   // 本窗口使用硬件合成 
@@ -203,6 +205,9 @@ struct UIAPI IWindow : public IPanel {
   void Create(const char *szId, const Rect* rect);
   void SetTitle(const char *title);
   void Show();
+
+  void EnableGpuComposite(bool b);
+  bool IsGpuComposite();
 
   UI_DECLARE_INTERFACE(Window)
 };

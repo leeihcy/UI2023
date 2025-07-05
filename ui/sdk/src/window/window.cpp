@@ -15,8 +15,8 @@
 #elif defined(OS_MAC)
 #include "window_mac.h"
 #elif defined(OS_LINUX)
-#include "window_linux_x11.h"
 #include "window_linux_wayland.h"
+#include "window_linux_x11.h"
 #endif
 
 namespace ui {
@@ -84,7 +84,7 @@ void Window::onSerialize(SerializeParam *pData) {
   s.AddString(XML_TEXT, m_strConfigWindowText);
 }
 
-void Window::Create(const char *szId, const Rect* rect) {
+void Window::Create(const char *szId, const Rect *rect) {
 #if defined(OS_WIN)
   m_platform.reset(new WindowPlatformWin(*this));
 #elif defined(OS_MAC)
@@ -99,22 +99,25 @@ void Window::Create(const char *szId, const Rect* rect) {
   assert(false);
 #endif
 
-  if (rect) {
-    m_window_style.setcreaterect = true;
-  }
-
   CreateUI(szId);
-  
+
   m_platform->Initialize();
 
-  Rect rc = {0, 0, 400, 400};
+  CreateWindowParam param = {0};
   if (rect) {
-    rc.CopyFrom(*rect);
+    // m_window_style.setcreaterect = true;
+
+    // 外部指定了窗口大小
+    param.position = true;
+    param.x = rect->left;
+    param.y = rect->top;
+    param.w = rect->Width();
+    param.h = rect->Height();
   }
-  m_platform->Create(rc);
+  SendMessage(UI_MSG_PRECREATEWINDOW, (llong)&param);
+  m_platform->Create(param);
 
-  onCreate();
-
+  onCreate(param);
   m_objLayer.CreateLayer();
 }
 
@@ -291,8 +294,9 @@ bool Window::CreateUI(const char *szId) {
   return true;
 }
 
-void Window::onCreate() {
+void Window::onCreate(CreateWindowParam &param) {
 
+  m_window_render.OnWindowCreate();
 #if 0
   	//
 	//  有可能m_strID为空（不加载资源，例如临时的popupconotrolwindow）
@@ -325,7 +329,7 @@ void Window::onCreate() {
     // notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
     //     this->UpdateLayout();
   } else {
-    if (m_window_style.setcreaterect) {
+    if (param.position) {
       // 避免此时调用GetDesiredSize又去测量窗口大小了，
       // 导致窗口被修改为自适应大小
       Rect rcWindow;
@@ -342,7 +346,6 @@ void Window::onCreate() {
       dl.Arrange(this);
     }
   }
-
 #if 0
   if (!m_strConfigWindowText.empty())
     ::SetWindowText(m_hWnd, m_strConfigWindowText.c_str());
@@ -350,29 +353,31 @@ void Window::onCreate() {
   // 创建默认字体
   if (!m_pDefaultFont)
     SetDefaultRenderFont(L"");
-
+#endif
   // 防止在实现显示动画时，先显示了一些初始化中刷新的内容。
   // 注：不能只限制一个layer
-  m_oWindowRender.SetCanCommit(false);
+  m_window_render.SetCanCommit(false);
   {
     // 给子类一个初始化的机会 (virtual)，
     // 例如设置最大化/还原按钮的状态
     this->virtualInnerInitWindow();
 
     m_objStyle.initialized = 1;
-    UISendMessage(m_pIMessage, UI_MSG_INITIALIZE);
+    SendMessage(UI_MSG_INITIALIZE);
     ForwardInitializeMessageToDecendant(this);
-    UISendMessage(m_pIMessage, UI_MSG_INITIALIZE2);
+    SendMessage(UI_MSG_INITIALIZE2);
   }
+#if 0
   if (m_pCallbackProxy) {
     m_pCallbackProxy->DoBindPlz(true);
   }
   if (m_pCallbackProxy) {
     m_pCallbackProxy->OnWindowInit();
   }
+#endif
 
-  m_oWindowRender.SetCanCommit(true);
-
+  m_window_render.SetCanCommit(true);
+#if 0
   // 设置默认对象
   m_oMouseManager.SetDefaultObject(m_oMouseManager.GetOriginDefaultObject(),
                                    false);
@@ -387,6 +392,29 @@ void Window::onCreate() {
     pAutoTest->OnWindowInit(static_cast<IWindow *>(m_pIWindowBase));
   }
 #endif
+}
+
+// 递归通知子对象加载完成
+void Window::recursion_on_load_notify(Object *pParent) {
+  pParent->virtualOnLoad();
+
+  Object *pChild = pParent->GetChildObject();
+  while (pChild) {
+    recursion_on_load_notify(pChild);
+    pChild = pChild->GetNextObject();
+  }
+  pChild = pParent->GetNcChildObject();
+  while (pChild) {
+    recursion_on_load_notify(pChild);
+    pChild = pChild->GetNextObject();
+  }
+}
+
+void Window::virtualInnerInitWindow() {
+  m_window_style.initialized = 1;
+
+  // 窗口加载即将完成，在内部调用所有
+  recursion_on_load_notify(this);
 }
 
 void Window::SetGpuComposite(bool b) {
@@ -461,9 +489,8 @@ void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
 
 float Window::GetScaleFactor() { return m_platform->GetScaleFactor(); }
 
-
-void  Window::SetObjectPos( int x, int y, int cx, int cy, SetPositionFlags flags)
-{
+void Window::SetObjectPos(int x, int y, int cx, int cy,
+                          SetPositionFlags flags) {
   m_platform->SetWindowPos(x, y, cx, cy, flags);
   m_platform->GetClientRect(&m_rcParent);
 }

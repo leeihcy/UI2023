@@ -260,6 +260,19 @@ public:                                                                        \
     static classname s;                                                        \
     return s;                                                                  \
   }
+
+
+struct CreateWindowParam {
+  bool position;
+  int x;
+  int y;
+  int w;
+  int h;
+  
+  bool transparent;
+  bool topmost;
+};
+
 } // namespace ui
 
 #endif // _UIDEFINE_H_

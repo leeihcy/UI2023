@@ -8,6 +8,7 @@
 
 #include "SkStream.h"
 #include "gpu/include/api.h"
+#include <cassert>
 #if defined(OS_WIN)
 #include "src/util/windows.h"
 #endif
@@ -178,8 +179,8 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
     }
   }
 
-  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(0x%x, 0x%x)", width, height,
-              fix_width, fix_height, fix_width, fix_height);
+  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(0x%x, 0x%x)", width,
+              height, fix_width, fix_height, fix_width, fix_height);
 
   SkImageInfo info = SkImageInfo::Make(
       fix_width, fix_height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
@@ -342,7 +343,7 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   }
 
   if (pParam->nFlag & DRAW_BITMAP_BITBLT) {
-    
+
     int src_width = pParam->wSrc;
     int src_height = pParam->hSrc;
 
@@ -399,8 +400,8 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   // else if (pParam->nFlag & DRAW_BITMAP_STRETCH_BORDER)
   // {
   // 	GdiplusRenderTarget::DrawBitmap(&g, p, pParam->xDest, pParam->yDest,
-  // pParam->wDest, pParam->hDest, 		pParam->xSrc, pParam->ySrc, pParam->wSrc,
-  // pParam->hSrc, pParam->pRegion, false, pImageAttribute);
+  // pParam->wDest, pParam->hDest, 		pParam->xSrc, pParam->ySrc,
+  // pParam->wSrc, pParam->hSrc, pParam->pRegion, false, pImageAttribute);
 
   //       if (pParam->prcRealDraw)
   //       {
@@ -455,8 +456,8 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   // 		bNeedToStretch = true;
 
   // 		double tan_x_y_image = (double)pParam->wSrc /
-  // (double)pParam->hSrc; 		double tan_x_y_dest = (double)pParam->wDest /
-  // (double)pParam->hDest;
+  // (double)pParam->hSrc; 		double tan_x_y_dest =
+  // (double)pParam->wDest / (double)pParam->hDest;
 
   // 		if (tan_x_y_image > tan_x_y_dest) // 横向占满
   // 		{
@@ -710,8 +711,31 @@ void SkiaRenderTarget::Render2DC(/*HDC*/ llong _hDC,
 }
 #endif
 
+// software，将子layer画到父layer上面。
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
-                                     Render2TargetParam *pParam) {}
+                                     Render2TargetParam *pParam) {
+  if (!m_sksurface) {
+    return;
+  }
+
+  SkiaRenderTarget *target = static_cast<SkiaRenderTarget *>(pDst);
+  if (!target->m_sksurface) {
+    return;
+  }
+
+  SkCanvas *target_canvas = target->m_sksurface->getCanvas();
+  sk_sp<SkImage> source_image(m_sksurface->makeImageSnapshot());
+  if (!source_image) {
+    return;
+  }
+
+  SkSamplingOptions options;
+  SkPaint paint;
+  target_canvas->drawImageRect(
+      source_image, SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc, pParam->wSrc, pParam->hSrc),
+      SkRect::MakeXYWH(pParam->xDst, pParam->yDst, pParam->wDst, pParam->hDst),
+      options, &paint, SkCanvas::kFast_SrcRectConstraint);
+}
 
 void SkiaRenderTarget::Save(const char *path) {
   if (!m_sksurface) {

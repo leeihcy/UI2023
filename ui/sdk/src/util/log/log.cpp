@@ -1,5 +1,7 @@
 #include "include/util/log.h"
 #include "include/inc.h"
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 #if defined(OS_LINUX)
 #include <stdarg.h>
@@ -51,8 +53,8 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
   }
 
   // level
-  std::wstring output;
-  output.append(LevelToString(lLevel));
+  std::string output;
+  output.append(LevelToStringA(lLevel));
 
   // content
   va_list argList;
@@ -65,26 +67,36 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
     buffer = (wchar_t *)/*alloca*/ malloc(size * sizeof(wchar_t));
     int ret = vswprintf(buffer, size, szFormat, argList);
     if (ret < 0 || ret >= size) {
+      free(buffer);
       continue;
     }
 
-    output.append(buffer);
+    // linux不支持同时输出宽窄字符（printf/wprintf）,谁先调用谁抢得输出。
+    // 因此统一转换成utf8字符输出。
+    int wide_size = wcstombs(nullptr, buffer, 0);
+    char *utf8_buffer = nullptr;
+    utf8_buffer = (char*) malloc(size+1);
+    wcstombs(utf8_buffer, buffer, wide_size);
+
+    output.append(utf8_buffer);
+    free(buffer);
+    free(utf8_buffer);
     break;
   }
 
   va_end(argList);
-  output.append(L"\r\n");
+  output.append("\r\n");
 
   // file name, line function
-  wchar_t buffer[1024] = {0};
-  swprintf(buffer, 1024, L"\t%s(%d) : %s\r\n", szFile, lLine, szFunction);
+  char buffer[1024] = {0};
+  snprintf(buffer, 1024, "\t%s(%d) : %s\r\n", szFile, lLine, szFunction);
 
   output.append(buffer);
 
 #if 0 // defined(OS_WIN)
   OutputDebugString(output.c_str());
 #else
-  wprintf(output.c_str());
+  printf(output.c_str());
 #endif
 }
 
@@ -112,10 +124,13 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
     buffer = (char*)/*alloca*/ malloc(size);
     int ret = vsnprintf(buffer, size, szFormat, argList);
     if (ret < 0 || ret >= size) {
+      free(buffer);
       continue;
     }
 
     output.append(buffer);
+
+    free(buffer);
     break;
   }
 
@@ -130,7 +145,7 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
 #if 0 // defined(OS_WIN)
   OutputDebugStringA(output.c_str());
 #else
-  printf("%s", output.c_str());
+  printf(output.c_str());
 #endif
 }
 

@@ -1,6 +1,6 @@
 #include "include/interface/iwindow.h"
-#include "include/uiapi.h"
 #include "include/macro/uidefine.h"
+#include "include/uiapi.h"
 #include "src/window/window.h"
 #include "src/window/window_meta.h"
 
@@ -11,10 +11,13 @@
 namespace ui {
 UI_IMPLEMENT_INTERFACE(Window, Panel)
 
-void IWindow::Create(const char *szId, const Rect* rect) { __pImpl->Create(szId, rect); }
-void IWindow::SetTitle(const char * title_utf8) { __pImpl->SetTitle(title_utf8); }
+void IWindow::Create(const char *szId, const Rect *rect) {
+  __pImpl->Create(szId, rect);
+}
+void IWindow::SetTitle(const char *title_utf8) {
+  __pImpl->SetTitle(title_utf8);
+}
 void IWindow::Show() { __pImpl->Show(); }
-
 
 #if 0
 UI_IMPLEMENT_INTERFACE(WindowBase, Panel)
@@ -179,58 +182,38 @@ long  IWindowBase::SetDroppable(bool b)
 {
 	return __pImpl->SetCanDrop(b);
 }
-void  IWindowBase::EnableGpuComposite(bool b)
-{
-	return __pImpl->SetGpuComposite(b);
-}
-bool  IWindowBase::IsGpuComposite()
-{
-	return __pImpl->IsGpuComposite();
-}
-void  IWindowBase::DirectComposite()
-{
-	__pImpl->DirectComposite();
+#endif
+
+void IWindow::EnableGpuComposite(bool b) { return __pImpl->SetGpuComposite(b); }
+bool IWindow::IsGpuComposite() { return __pImpl->IsGpuComposite(); }
+
+# if 0 
+void IWindowBase::DirectComposite() { __pImpl->DirectComposite(); }
+
+void IWindowBase::SetWindowMessageCallback(IWindowDelegate *p) {
+  __pImpl->SetWindowMessageCallback(p);
 }
 
-void  IWindowBase::SetWindowMessageCallback(IWindowDelegate* p)
-{
-	__pImpl->SetWindowMessageCallback(p);
+signal_mc<long> &IWindowBase::SizeChangedEvent() {
+  return __pImpl->size_changed;
 }
 
-signal_mc<long>&  IWindowBase::SizeChangedEvent()
-{
-	return __pImpl->size_changed;
+signal_mc<bool &> &IWindowBase::OnCloseEvent() { return __pImpl->on_close; }
+
+void ui::IWindowBase::ChangeSkinLayout(const wchar_t *szLayoutId) {
+  __pImpl->ChangeSkinLayout(szLayoutId);
 }
 
-signal_mc<bool&>&  IWindowBase::OnCloseEvent()
-{
-    return __pImpl->on_close;
+bool ui::IWindowBase::IsSizeMoveIng() { return __pImpl->IsSizeMoveIng(); }
+
+void IWindowBase::GetWindowNormalRect(Rect *prc) {
+  __pImpl->GetWindowNormalRect(prc);
+}
+void IWindowBase::SetWindowNormalRect(const Rect *prc) {
+  __pImpl->SetWindowNormalRect(prc);
 }
 
-void ui::IWindowBase::ChangeSkinLayout(const wchar_t* szLayoutId)
-{
-	__pImpl->ChangeSkinLayout(szLayoutId);
-}
-
-bool ui::IWindowBase::IsSizeMoveIng()
-{
-	return __pImpl->IsSizeMoveIng();
-}
-
-
-void  IWindowBase::GetWindowNormalRect(Rect* prc)
-{
-	__pImpl->GetWindowNormalRect(prc);
-}
-void  IWindowBase::SetWindowNormalRect(const Rect* prc)
-{
-	__pImpl->SetWindowNormalRect(prc);
-}
-
-void  IWindowBase::UpdateDesktopLayout()
-{
-	__pImpl->UpdateDesktopLayout();
-}
+void IWindowBase::UpdateDesktopLayout() { __pImpl->UpdateDesktopLayout(); }
 #endif
 #if 0
 	extern "C"
@@ -256,4 +239,4 @@ void  IWindowBase::UpdateDesktopLayout()
 	}
 #endif
 
-}
+} // namespace ui

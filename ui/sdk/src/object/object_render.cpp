@@ -161,7 +161,7 @@ void Object::Invalidate(const Rect *prcObj) {
   if (!pLayer) // 刚创建，还未初始化layer阶段
     return;
 
-  Object &layerObj = pLayer->GetObjet();
+  Object &layerObj = pLayer->GetObject();
 
   Rect rc = {0};
   if (!CalcRectInAncestor(&layerObj, prcObj, true, &rc))

@@ -307,7 +307,7 @@ void RegisterWndClass() {
   }
 }
 
-bool WindowPlatformWin::Create(const Rect &rect) {
+bool WindowPlatformWin::Create(CreateWindowParam& param) {
   RegisterWndClass();
 
   //	创建窗口句柄
@@ -315,10 +315,6 @@ bool WindowPlatformWin::Create(const Rect &rect) {
   ::ZeroMemory(&cs, sizeof(CREATESTRUCT));
   long lStyle = 0;
   long lExStyle = 0;
-
-  RECT rc;
-  Rect2RECT(rect, &rc);
-  RECT *prc = &rc;
 
   HWND hWndParent = 0;
   cs.hwndParent = hWndParent;
@@ -336,19 +332,17 @@ bool WindowPlatformWin::Create(const Rect &rect) {
 
   cs.lpszClass = WND_CLASS_NAME;
   cs.lpszName = _T("");
-  if (prc) {
-    cs.x = ScaleByDpi(prc->left);
-    cs.y = ScaleByDpi(prc->top);
-    cs.cx = ScaleByDpi(prc->right - prc->left);
-    cs.cy = ScaleByDpi(prc->bottom - prc->top);
-    m_ui_window.GetWindowStyle().setcreaterect = 1;
+  if (param.position) {
+    cs.x = ScaleByDpi(param.x);
+    cs.y = ScaleByDpi(param.y);
+    cs.cx = ScaleByDpi(param.w);
+    cs.cy = ScaleByDpi(param.h);
+    // m_ui_window.GetWindowStyle().setcreaterect = 1;
   } else {
     cs.x = cs.y = 0;
     // 这里不能直接写一个值。有可能窗口配置的也是这个大小，将导致收不到WM_SIZE消息，布局失败
     cs.cx = cs.cy = CW_USEDEFAULT; // 500;
   }
-
-  // UISendMessage(this, UI_MSG_PRECREATEWINDOW, (WPARAM)&cs);
 
   s_create_wnd_data.AddCreateWndData(&m_thunk.cd, this);
   HWND hWnd =

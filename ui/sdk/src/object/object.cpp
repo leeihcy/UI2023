@@ -218,7 +218,7 @@ ObjectLayer *Object::GetLayerEx() {
 Object *Object::GetLayerCreator() {
   ObjectLayer *p = GetLayerEx();
   if (p)
-    return &p->GetObjet();
+    return &p->GetObject();
 
   return nullptr;
 }

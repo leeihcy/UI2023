@@ -1,10 +1,11 @@
 #include "uiapplication.h"
 
 #include "include/interface/ianimate.h"
-#include "src/animate/animate.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
-#include "ui/gpu/include/api.h"
+#include "src/animate/animate.h"
+#include "src/control/control_meta.h"
+#include "src/panel/panel_meta.h"
 #include "src/private_inc.h"
 #include "src/resource/colormanager.h"
 #include "src/resource/fontmanager.h"
@@ -15,10 +16,14 @@
 #include "src/resource/stylemanager.h"
 #include "src/skin_parse/skinparseengine.h"
 #include "src/window/window_meta.h"
-#include "src/panel/panel_meta.h"
-#include "src/control/control_meta.h"
+#include "ui/gpu/include/api.h"
 #include <cstddef>
 #include <memory>
+
+#if !defined(OS_WIN)
+#include <libgen.h>  // dirname
+#endif
+
 #if defined(OS_MAC)
 #include "application_mac.h"
 #endif
@@ -26,28 +31,46 @@
 namespace ui {
 
 Application::Application(IApplication *p)
-    : m_pUIApplication(p), 
-      m_TopWindowMgr(this), 
-      m_renderBaseFactory(*this),
-      m_textRenderFactroy(*this),
-      m_resource_manager(*this),
+    : m_pUIApplication(p), m_TopWindowMgr(this), m_renderBaseFactory(*this),
+      m_textRenderFactroy(*this), m_resource_manager(*this),
       m_message_loop(*this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif
 }
 void Application::Run() { m_message_loop.Run(); }
-void Application::Quit() { 
+void Application::Quit() {
   // UI_LOG_INFO("Application::Quit");
-  m_message_loop.Quit(); 
+  m_message_loop.Quit();
 }
 
 ResourceManager &Application::GetResourceManager() {
   return m_resource_manager;
 }
 
+// 切换当前目录为程序所在目录，避免使用相对目录加载皮肤时失败。
+static void FixWorkDir() {
+  char exe_path[PATH_MAX] = {0};
+  char *dir_path;
+
+#ifdef _WIN32
+  GetModuleFileNameA(NULL, exe_path, PATH_MAX);
+#else
+  if (readlink("/proc/self/exe", exe_path, PATH_MAX) == -1) {
+    return;
+  }
+#endif
+
+  dir_path = dirname(exe_path);
+  UI_LOG_INFO("chdir to %s", dir_path);
+
+  chdir(dir_path);
+}
+
 void Application::x_Init() {
   UI_LOG_INFO("Application Init: 0x%x", this);
+  FixWorkDir();
+
   m_animate = std::make_unique<uia::Animate>(this);
 
 #if 0 // defined(OS_WIN)
@@ -69,14 +92,15 @@ void Application::x_Init() {
 #endif
 
 #if defined(OS_WIN)
-    // 获取操作系统版本信息
-    ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
-    m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    GetVersionEx((OSVERSIONINFO*) &m_osvi);
+  // 获取操作系统版本信息
+  ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
+  m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  GetVersionEx((OSVERSIONINFO *)&m_osvi);
 
-    // 设置当前语言。主要是用于 strcoll 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？)
-    // libo 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
-	// _wsetlocale( LC_ALL, _T("chs") );
+  // 设置当前语言。主要是用于 strcoll
+  // 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？) libo
+  // 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
+  // _wsetlocale( LC_ALL, _T("chs") );
 #endif
 #if 0
     // 初始化Gdiplus
@@ -176,18 +200,14 @@ ITopWindowManager *Application::GetITopWindowMgr() {
   return m_TopWindowMgr.GetITopWindowManager();
 }
 
-uia::IAnimate *Application::GetAnimate() {
-  return m_animate->GetIAnimate();
-}
+uia::IAnimate *Application::GetAnimate() { return m_animate->GetIAnimate(); }
 void Application::CreateAnimateTimer(int fps) {
   m_message_loop.CreateAnimateTimer(fps);
 }
 void Application::DestroyAnimateTimer() {
   m_message_loop.DestroyAnimateTimer();
 }
-void Application::OnAnimateTimer() {
-  m_animate->OnTick();
-}
+void Application::OnAnimateTimer() { m_animate->OnTick(); }
 
 #if 0 // defined(OS_WIN)
 //	一个空的窗口过程，因为UI这个窗口类的窗口过程最终要被修改成为一个类的成员函数，
@@ -267,7 +287,7 @@ bool Application::GetControlTagParseFunc(const char *szTag,
 //	为了实现UI对象的创建（从字符串来创建其对应的类），在app类中保存了所有UI对象的创建信息。
 //
 //	注:
-//如果仅仅采用在UICreateObject中添加映射列表，无法处理第三方实现一个UI对象的情况，因些
+// 如果仅仅采用在UICreateObject中添加映射列表，无法处理第三方实现一个UI对象的情况，因些
 //      必须将该映射列表保存为动态数组。当第三方实现了一个UI类时，向app来注册其创建信息。
 //
 
@@ -487,8 +507,8 @@ bool Application::EnableGpuComposite() {
   }
 
   typedef bool (*pfnUIStartupGpuCompositor)();
-  pfnUIStartupGpuCompositor fn = (pfnUIStartupGpuCompositor)::GetProcAddress(
-      hModule, "GpuStartup");
+  pfnUIStartupGpuCompositor fn =
+      (pfnUIStartupGpuCompositor)::GetProcAddress(hModule, "GpuStartup");
 
   if (!fn) {
     UI_LOG_ERROR(TEXT("UIStartupGpuCompositor Failed"));
@@ -516,8 +536,8 @@ void Application::ShutdownGpuCompositor() {
     return;
 
   typedef long (*pfnUIShutdownGpuCompositor)();
-  pfnUIShutdownGpuCompositor fn = (pfnUIShutdownGpuCompositor)::GetProcAddress(
-      hModule, "GpuShutdown");
+  pfnUIShutdownGpuCompositor fn =
+      (pfnUIShutdownGpuCompositor)::GetProcAddress(hModule, "GpuShutdown");
 
   if (!fn)
     return;
@@ -539,8 +559,7 @@ void Application::LoadUIObjectListToToolBox() {
   }
 }
 
-bool Application::CreateRenderBaseByName(const char *szName,
-                                         IObject *pObject,
+bool Application::CreateRenderBaseByName(const char *szName, IObject *pObject,
                                          IRenderBase **ppOut) {
   IResource *pSkinRes = nullptr;
   if (pObject) {

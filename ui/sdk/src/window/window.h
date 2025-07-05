@@ -14,12 +14,18 @@
 
 namespace ui {
 class Window;
+class CreateWindowParam;
+struct IGpuCompositorWindow;
 
 struct WindowPlatform {
   virtual ~WindowPlatform(){};
+
+  // 用于GPU模块获取创建窗口Surface的参数。
+  virtual IGpuCompositorWindow* GetGpuCompositorWindow() = 0;
+
   virtual void Initialize() {};
   virtual void Release() {};
-  virtual bool Create(const Rect &rect) = 0;
+  virtual bool Create(CreateWindowParam& param) = 0;
   virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
@@ -49,6 +55,7 @@ public:
 
   IWindow*   GetIWindow() { return m_pIWindow; }
   WindowRender&  GetWindowRender() { return m_window_render; }
+  WindowPlatform* GetWindowPlatform() { return m_platform.get(); }
 
 public:
   void OnMessage();
@@ -68,7 +75,9 @@ public:
 	bool  IsChildWindow();
 	bool  IsWindowVisible();
 
-  virtual bool  virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
+  virtual bool virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
+  virtual void virtualInnerInitWindow();
+
   void Commit(IRenderTarget* pRT, const Rect* prect, int count);
   
   // Object
@@ -86,8 +95,9 @@ private:
   // void on_paint(SkCanvas &canvas);
   // void on_erase_bkgnd(SkCanvas &canvas);
   // void swap_buffer();
-  
-  void onCreate();
+  void  recursion_on_load_notify(Object* pParent);
+
+  void onCreate(CreateWindowParam& param);
 
 protected:
   long FinalConstruct();

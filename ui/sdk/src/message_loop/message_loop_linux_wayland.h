@@ -4,6 +4,7 @@
 #include "message_loop.h"
 #include "src/window/linux/display_wayland.h"
 
+
 namespace ui {
 
 class MessageLoopPlatformLinuxWayland : public MessageLoopPlatform {
@@ -22,6 +23,9 @@ public:
 private:
   MessageLoop* m_message_loop = nullptr;
   bool m_running = true;
+
+  int m_epoll_fd = -1;
+  int m_animate_timer_fd = -1;
 
   WaylandDisplay m_display;
 };

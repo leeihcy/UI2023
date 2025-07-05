@@ -76,31 +76,25 @@ bool ObjectLayer::IsChildOf(ILayerContent *pParentLayer) {
   if (!pParentLayer)
     return false;
 
-#if 0
-	if (pParentLayer->Type() == LayerContentTypeObject)
-	{
-		Object& parentObject =
-			static_cast<ObjectLayer*>(pParentLayer)->GetObject();
+  if (pParentLayer->Type() == LayerContentTypeObject) {
+    Object &parentObject =
+        static_cast<ObjectLayer *>(pParentLayer)->GetObject();
 
-		return parentObject.IsMyChild(&m_obj, true);
-	}
-	else if (pParentLayer->Type() == LayerContentTypeListItem)
-	{
-		Panel* panel = 
-			static_cast<IListItemLayerContent*>(pParentLayer)
-			->GetListItem().GetRootPanel();
-		if (!panel)
-			return false;
+    return parentObject.IsMyChild(&m_obj, true);
+  } else if (pParentLayer->Type() == LayerContentTypeListItem) {
+    assert(false);
+#if 0 // TODO:
+    Panel *panel = static_cast<IListItemLayerContent *>(pParentLayer)
+                       ->GetListItem()
+                       .GetRootPanel();
+    if (!panel)
+      return false;
 
-		return panel->IsMyChild(&m_obj, true);
-	}
-	else
-	{
-		UIASSERT(0);
-	}
-#else
-  UIASSERT(false);
+    return panel->IsMyChild(&m_obj, true);
 #endif
+  } else {
+    UIASSERT(0);
+  }
   return false;
 }
 

@@ -12,7 +12,7 @@ struct ISurfacePointerCallback {
   virtual void on_pointer_enter(wl_fixed_t surface_x, wl_fixed_t surface_y) {}
   virtual void on_pointer_leave() {}
   virtual void on_pointer_motion(uint32_t time, wl_fixed_t x, wl_fixed_t y) {}
-  virtual void on_pointer_button(uint32_t time, uint32_t button, uint32_t state,
+  virtual void on_pointer_button(uint32_t serial, uint32_t time, uint32_t button, uint32_t state,
                                  wl_fixed_t x, wl_fixed_t y) {}
 };
 
@@ -34,7 +34,7 @@ public:
                         wl_fixed_t surface_y);
   void on_pointer_leave(struct wl_surface *surface);
   void on_pointer_motion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
-  void on_pointer_button(uint32_t time, uint32_t button, uint32_t state);
+  void on_pointer_button(uint32_t serial, uint32_t time, uint32_t button, uint32_t state);
 
 protected:
   struct wl_display *m_display = nullptr;
@@ -66,6 +66,7 @@ public:
   struct wl_compositor *get_wl_compositor();
   struct wl_shm *get_wl_shm();
   struct xdg_wm_base *get_xdg_wm_base();
+  struct wl_seat *get_wl_seat();
 
   void BindSurface(struct wl_surface *, ISurfacePointerCallback *);
   void UnbindSurface(struct wl_surface *);

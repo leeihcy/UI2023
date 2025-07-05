@@ -15,7 +15,7 @@ public:
   void DestroyLayer();
 
   Layer *GetLayer() const { return m_pLayer; }
-  Object &GetObjet() { return m_obj; }
+  Object &GetObject() { return m_obj; }
 
   void OnSize(uint nWidth, uint nHeight);
   void OnObjPosInTreeChanged();

@@ -25,7 +25,7 @@ public:
   VulkanCompositor();
   ~VulkanCompositor();
 
-  bool Initialize(void *hWnd) override;
+  bool Initialize(IGpuCompositorWindow*) override;
   void Release() override { delete this; }
 
   IGpuLayer *CreateLayerTexture() override;
@@ -58,7 +58,7 @@ private:
   void destory();
   void destroy_swapchain();
 
-  bool create_vulkan_surface();
+  bool create_vulkan_surface(IGpuCompositorWindow* window);
 
   void draw_frame_wait_for_previous_frame_to_finish();
   void draw_frame_acquire_image_from_swap_chain();

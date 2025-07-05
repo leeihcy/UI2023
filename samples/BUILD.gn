@@ -4,8 +4,8 @@
 group("ui") {
     deps = [
         "01_hello:hello",
-        "svg",
-        "clock",
+        "02_svg:svg",
+        "03_clock:clock",
     ]
 }
 
