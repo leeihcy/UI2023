@@ -8,7 +8,7 @@
           
           <Control zorder="1" id="hour" style="hand" back.render.image="clock_hour"/>
           <Control zorder="2" id="min"  style="hand" back.render.image="clock_min"/>
-          <Control zorder="3"  layer="1"  id="sec"  style="hand" back.render.image="clock_sec"/> 
+          <Control zorder="3" id="sec" layer="1"  style="hand" back.render.image="clock_sec"/> 
       </RoundPanel>
     </Window>
   </layout>

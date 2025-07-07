@@ -33,6 +33,7 @@ struct SetPositionFlags {
   bool move = true;
   bool size = true;
   bool update_layout_pos = true;
+  bool send_noitfy = true;
 
   bool activate = false;
   bool redraw = false;

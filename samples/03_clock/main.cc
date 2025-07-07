@@ -75,13 +75,15 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
 }
 
 int main() {
+  bool use_gpu = true;
+
   ui::ApplicationPtr app;
-  // app->EnableGpuComposite();
+  if (use_gpu) { app->EnableGpuComposite(); }
   ui::SvgRegisterObjects(app.get());
   ui::IResource *resource = app->LoadResource("sample/clock");
 
   ui::WindowPtr window(resource);
-  // window->EnableGpuComposite(true);
+  if (use_gpu) { window->EnableGpuComposite(true); }
 
   window->Create("clock",nullptr);
   window->SetTitle("clock demo");
