@@ -87,7 +87,7 @@ toolchain("msvc") {
   }
   tool("solink") {
     # E.g. "foo.dll":
-    dllname = "{{output_dir}}/bin/{{target_output_name}}{{output_extension}}"
+    dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     libname = "${dllname}.lib"  # e.g. foo.dll.lib
     pdbname = "{{output_dir}}/pdb/{{target_output_name}}{{output_extension}}.pdb"
     rspfile = "${dllname}.rsp"
@@ -140,7 +140,7 @@ toolchain("msvc") {
     rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{rlibs}}"
   }
   tool("link") {
-    exename = "{{output_dir}}/bin/{{target_output_name}}{{output_extension}}"
+    exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     pdbname = "{{output_dir}}/pdb/{{target_output_name}}{{output_extension}}.pdb"
     rspfile = "$exename.rsp"
 

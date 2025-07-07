@@ -79,7 +79,6 @@ protected:
                          uint32_t state, wl_fixed_t x, wl_fixed_t y) override;
 
   // IGpuCompositorWindowWayland
-  void GetWindowSize(int *w, int *h) override;
   struct wl_display *GetWaylandDisplay() override;
   struct wl_surface *GetWaylandSurface() override;
 

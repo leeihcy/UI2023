@@ -77,15 +77,8 @@ shared_library("uisdk") {
         "atls.lib",  # ATL
         "skia.dll.lib",
       ]
-      ldflags += [
-        
-       ]
     }
     else if (is_mac ) {
-       # 直接在当前目录查找libskia.dylib
-      ldflags += [
-        "-rpath", ".",
-      ]
       libs += ["skia"]
     } else if (is_linux) {
       libs += ["skia"]
@@ -313,7 +306,7 @@ copy("copy_skia") {
     if (is_debug) {
         sources = ["//third_party/skia/src/out/debug/libskia.dylib"]
     } else {
-        sources = ["//third_party/skia/src/out/dylib/libskia.dylib"]
+        sources = ["//third_party/skia/src/out/release/libskia.dylib"]
     }
   } else if (is_win) {
     sources = [
@@ -321,9 +314,11 @@ copy("copy_skia") {
       "//third_party/skia/src/out/Shared/skia.dll.lib"
     ]
   } else if (is_linux) {
-    sources = [
-      "//third_party/skia/src/out/debug/libskia.so"
-    ]
+    if (is_debug) {
+      sources = [ "//third_party/skia/src/out/debug/libskia.so" ]
+    } else {
+      sources = [ "//third_party/skia/src/out/release/libskia.so" ]
+    }
   }
   outputs = ["$root_build_dir/bin/{{source_file_part}}"]
 }

@@ -54,9 +54,6 @@ public:
   // XEventDispatcher
   void OnXEvent(const XEvent &event) override;
 
-  // IGpuCompositorWindowX11
-  void GetWindowSize(int* w, int* h) override;
-
 private:
   void initGC();
   void initEvent();

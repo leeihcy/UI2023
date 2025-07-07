@@ -1,8 +1,10 @@
 #include "window_mac.h"
-#include "../../../3rd/skia/src/include/core/SkBitmap.h"
-#include "../../../3rd/skia/src/include/utils/mac/SkCGUtils.h"
-#include "../../../3rd/skia/src/src/utils/mac/SkUniqueCFRef.h"
+#include "include/util/rect.h"
+#include "third_party/skia/src/include/core/SkBitmap.h"
+#include "third_party/skia/src/include/utils/mac/SkCGUtils.h"
+#include "third_party/skia/src/src/utils/mac/SkUniqueCFRef.h"
 #import "Cocoa/Cocoa.h"
+#import "QuartzCore/CAMetalLayer.h"
 #include "src/graphics/skia/skia_render.h"
 #include <string.h>
 
@@ -34,13 +36,11 @@ bool WindowPlatformMac::Create(CreateWindowParam& param) {
 
   float scale = [[NSScreen mainScreen] backingScaleFactor];
 
-  // TODO:
-  assert(false);
+  ui::Rect content_rect = ui::Rect::MakeXYWH(0, 0, 400, 400);
   if (param.position) {
-  } else {
-
+    content_rect.Set(param.x, param.y, param.x+param.w, param.y+param.h);
   }
-#if 0
+
   NSRect ns_content_rect = NSMakeRect(
     content_rect.left / scale, content_rect.top / scale, 
     content_rect.Width() / scale, content_rect.Height() / scale);
@@ -48,7 +48,6 @@ bool WindowPlatformMac::Create(CreateWindowParam& param) {
                                          styleMask:windowStyle
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
-#endif
   WindowDelegate *delegate = [[WindowDelegate alloc] initWithWindow:this];
 
   // create view
@@ -114,6 +113,7 @@ void WindowPlatformMac::GetWindowRect(Rect *prect) {
   prect->bottom =
       prect->top + m_window.frame.size.height * m_window.backingScaleFactor;
 }
+
 void SetWindowRect(Rect *prect) {
   // // Given CG and NS's coordinate system, the "Y" position of a window is the
   // Y coordinate
@@ -225,9 +225,9 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
         NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
 
-    CGBitmapInfo bitmapInfo = kCGImageAlphaNoneSkipLast;
-    //  bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
-    bitmapInfo = kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst;
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Little;
+    // bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
+    // bitmapInfo = kCGBitmapByteOrder32Little /*| kCGImageAlphaNoneSkipFirst*/;
 
     CGImageRef image = CGImageCreate(
         pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace, bitmapInfo,
@@ -262,6 +262,13 @@ void WindowPlatformMac::onPaint(const Rect &dirty) {
                (int)(dirty.bottom * m_window.backingScaleFactor)};
   m_ui_window.onPaint(&rect);
 }
+
+void* WindowPlatformMac::GetNSWindowRootView() {
+  NSView* view = m_window.contentView;
+  [view setWantsLayer:YES];
+  view.layer = [CAMetalLayer layer];
+  return (void*)(view);
+};
 
 } // namespace ui
 

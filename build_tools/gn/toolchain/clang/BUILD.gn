@@ -27,7 +27,7 @@ toolchain("clang") {
   object_subdir = "{{target_out_dir}}/{{label_name}}"
 
   # If dSYMs are enabled, this flag will be added to the link tools.
-  linker_out = "{{output_dir}}/bin/{{target_output_name}}{{output_extension}}"
+  linker_out = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
   dsym_output_dir =
       "{{root_out_dir}}/symbol/{{target_output_name}}{{output_extension}}.dSYM"
   dsymutil_comand = "dsymutil -o $dsym_output_dir $linker_out"
@@ -109,7 +109,7 @@ toolchain("clang") {
   tool("solink") {
     # E.g. "./libfoo.dylib":
 
-    dylib = "{{output_dir}}/bin/{{target_output_name}}{{output_extension}}"
+    dylib = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     rspfile = dylib + ".rsp"
 
     # These variables are not built into GN but are helpers that implement
@@ -125,8 +125,12 @@ toolchain("clang") {
 
     does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 
+    # 指定 -install_name @executable_path/xxxx.dylib，将dylib的依赖目录设置为程序所在目录。
+    # 指定 -install_name @rpath/xxxx.dylib，将dylib的依赖目录设置为rpath目录进行搜索。
+    install_name_command = "-install_name @rpath/{{target_output_name}}{{output_extension}}"
+
     link_command =
-        "$ld -shared {{ldflags}} -o \"$dylib\" \"@$rspfile\" && $dsym_switch"
+        "$ld -shared {{ldflags}} -o \"$dylib\" $install_name_command \"@$rspfile\" && $dsym_switch"
     replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
     extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
 
@@ -182,7 +186,7 @@ toolchain("clang") {
     outputs += dsym_output
   }
   tool("link") {
-    outfile = "{{output_dir}}/bin/{{target_output_name}}{{output_extension}}"
+    outfile = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     rspfile = "$outfile.rsp"
 
     command = "$ld {{ldflags}} -o \"$outfile\" \"@$rspfile\" && $dsym_switch"

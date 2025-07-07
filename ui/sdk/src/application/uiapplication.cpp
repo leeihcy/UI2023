@@ -21,11 +21,13 @@
 #include <memory>
 
 #if !defined(OS_WIN)
-#include <libgen.h>  // dirname
+#include <libgen.h> // dirname
 #endif
 
 #if defined(OS_MAC)
 #include "application_mac.h"
+#include <mach-o/dyld.h>  // _NSGetExecutablePath
+#include <unistd.h>       // chdir
 #endif
 
 namespace ui {
@@ -53,18 +55,33 @@ static void FixWorkDir() {
   char exe_path[PATH_MAX] = {0};
   char *dir_path;
 
-#ifdef _WIN32
+#if defined(OS_WIN)
   GetModuleFileNameA(NULL, exe_path, PATH_MAX);
-#else
+#elif defined(OS_LINUX)
   if (readlink("/proc/self/exe", exe_path, PATH_MAX) == -1) {
     return;
   }
-#endif
-
   dir_path = dirname(exe_path);
   UI_LOG_INFO("chdir to %s", dir_path);
 
   chdir(dir_path);
+#else
+  char path[PATH_MAX];
+  uint32_t size = sizeof(path);
+
+  // 获取可执行文件路径（macOS 专用）
+  if (_NSGetExecutablePath(path, &size) != 0) {
+    return;
+  }
+
+  // 解析真实路径（处理符号链接）
+  char resolved_path[PATH_MAX];
+  if (realpath(path, resolved_path) == nullptr) {
+    return;
+  }
+  char *dir = dirname(resolved_path);
+  chdir(dir);
+#endif
 }
 
 void Application::x_Init() {

@@ -116,18 +116,6 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
 }
 
 bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
-
-  // 获取窗口大小
-  window->GetWindowSize(&m_width, &m_height);
-// #if defined(OS_WIN)
-//   RECT rc;
-//   ::GetClientRect((HWND)m_hWnd, &rc);
-//   m_width = rc.right - rc.left;
-//   m_height = rc.bottom - rc.top;
-// #elif defined(OS_MAC)
-//   GetNSWindowActureSize(m_hWnd, &m_width, &m_height);
-// #endif
-
   if (!create_vulkan_surface(window)) {
      printf("create_vulkan_surface failed\n");
     return false;
@@ -143,7 +131,6 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
     return false;
   }
 
-  Resize(m_width, m_height);
   return true;
 }
 
@@ -202,7 +189,7 @@ bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
   createInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
   createInfo.pNext = NULL;
   createInfo.flags = 0;
-  createInfo.pView = ((IGpuCompositorWindowNSView)window)->GetNSWindowRootView(); 
+  createInfo.pView = ((IGpuCompositorWindowNSView*)window)->GetNSWindowRootView(); 
      //GetNSWindowRootView(m_hWnd);
   VkResult err = vkCreateMacOSSurfaceMVK(app.GetVkInstance(), &createInfo,
                                          nullptr, &m_surface);

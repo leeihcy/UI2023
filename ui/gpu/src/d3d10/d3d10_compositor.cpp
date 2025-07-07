@@ -49,7 +49,6 @@ D3D10Compositor::~D3D10Compositor() {
 
 bool D3D10Compositor::Initialize(IGpuCompositorWindow* w) {
   assert(w->GetType() == GpuCompositorWindowType::WindowsHWND);
-
   m_hWnd = ((IGpuCompositorWindowHWND*)w)->GetHWND();
   CreateSwapChain();
   return true;

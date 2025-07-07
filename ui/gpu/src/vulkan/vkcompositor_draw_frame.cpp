@@ -76,12 +76,8 @@ vulkan::CommandBuffer* VulkanCompositor::draw_frame_begin_record_command_buffer(
     // vkCmdDraw(command_buffer, 3, 1, 0, 0);
   }
 
-  // TODO: 这个位置需要调整。
-  m_pipeline.UpdateUniformBuffer(m_swapchain.GetCurrentImageIndex());
-  vkCmdBindDescriptorSets(
-      sync->m_command_buffer->handle(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-      m_pipeline.layout(), 0, 1,
-      &m_pipeline.descriptor_sets(), 0, nullptr);
+  uint32_t currentImage = m_swapchain.GetCurrentImageIndex();
+  m_pipeline.UpdateUniformBuffer(currentImage, command_buffer);
 
   return sync->m_command_buffer.get();
 }

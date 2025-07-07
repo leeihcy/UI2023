@@ -109,13 +109,15 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
     return false;
   }
 
-  // image count
+  // 查询swap chain管理的VkImage数量(minImageCount)：
+  // 双缓冲：2个。一个用于当前显示的帧，另一个用于下一帧的渲染。
+  // 三缓冲：3个。
+  // Image数量越多，内存占用越多，但可能减少GPU空闲等待。
   const uint32_t desired_image_count = 3;
   uint32_t count = std::max(desired_image_count, capabilities.minImageCount);
   if (capabilities.maxImageCount > 0) {
     count = std::min(count, capabilities.maxImageCount);
   }
-
   m_info.minImageCount = count;
 
   // extent

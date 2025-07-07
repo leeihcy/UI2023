@@ -513,19 +513,5 @@ bool WindowPlatformLinuxX11::IsWindowVisible() {
 }
 float WindowPlatformLinuxX11::GetScaleFactor() { return 2.0f; }
 
-void WindowPlatformLinuxX11::GetWindowSize(int *w, int *h) {
-  ::Window root;
-  int x, y;
-  unsigned int width, height, border_width, depth;
-  // Window parent_window = GetParentWindow();
-  XGetGeometry(m_display, m_window, &root, &x, &y, &width, &height,
-               &border_width, &depth);
-  if (w) {
-    *w = width;
-  }
-  if (h) {
-    *h = height;
-  }
-}
 
 } // namespace ui

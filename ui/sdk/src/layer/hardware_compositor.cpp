@@ -45,11 +45,19 @@ void HardwareCompositor::onBindWindow(Window* w) {
 #else
   m_gpu_composition = ui::CreateGpuComposition(p);
 #endif
+
+  if (!m_gpu_composition) {
+    return;
+  }
+  ui::Rect rc;
+  w->GetWindowPlatform()->GetClientRect(&rc);
+  m_gpu_composition->Resize(rc.Width(), rc.Height());
 }
 
 void HardwareCompositor::Resize(uint nWidth, uint nSize) {
-  if (m_gpu_composition)
+  if (m_gpu_composition) {
     m_gpu_composition->Resize(nWidth, nSize);
+  }
 }
 
 Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }

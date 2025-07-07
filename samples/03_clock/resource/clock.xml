@@ -8,12 +8,12 @@
           
           <Control zorder="1" id="hour" style="hand" back.render.image="clock_hour"/>
           <Control zorder="2" id="min"  style="hand" back.render.image="clock_min"/>
-          <Control zorder="3" id="sec" layer="1"  style="hand" back.render.image="clock_sec"/> 
+          <Control zorder="3" id="sec" style="hand" back.render.image="clock_sec"/> 
       </RoundPanel>
     </Window>
   </layout>
   <style>
-    <class id='hand' transparent="1" layout.left="285" layout.top="0"
+    <class id='hand' transparent="1" layer="1" layout.left="285" layout.top="0"
       back.render.type="image"  
     />
   </style>

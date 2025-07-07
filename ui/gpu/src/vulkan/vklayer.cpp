@@ -1,9 +1,10 @@
 #include "vklayer.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 #include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_pipe_line.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
+#include "src/vulkan/wrap/vulkan_pipe_line.h"
 #include "vktexturetile.h"
-#include <cmath>
 #include <vector>
 
 namespace ui {
@@ -27,24 +28,18 @@ namespace ui {
 //     {{0, 0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} }, // 0
 //     {{0, 256}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },  // 1
 //     {{256, 256}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },   // 2
-//     {{256, 0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }}; // 3    
+//     {{256, 0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }}; // 3
 
 // static const uint16_t RECT_INDICES[] = {0, 1, 2, 2, 3, 0};
 
-
 // -------------------------------------
 
-VulkanGpuLayer::VulkanGpuLayer(vulkan::IVulkanBridge& bridge)
-    : m_bridge(bridge),
-    m_vertexBuffer(bridge),
-    m_indexBuffer(bridge) {}
+VulkanGpuLayer::VulkanGpuLayer(vulkan::IVulkanBridge &bridge)
+    : m_bridge(bridge), m_vertexBuffer(bridge), m_indexBuffer(bridge) {}
 
-VulkanGpuLayer::~VulkanGpuLayer() {
-}
+VulkanGpuLayer::~VulkanGpuLayer() {}
 
-TextureTile *VulkanGpuLayer::newTile() {
-  return new VkTextureTile(m_bridge);
-}
+TextureTile *VulkanGpuLayer::newTile() { return new VkTextureTile(m_bridge); }
 
 void VulkanGpuLayer::createVertexBuffer() {
 
@@ -76,7 +71,7 @@ void VulkanGpuLayer::createVertexBuffer() {
 
 void VulkanGpuLayer::createIndexBuffer() {
 
- std::vector<uint16_t> index_array;
+  std::vector<uint16_t> index_array;
 
   int base = 0;
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
@@ -86,18 +81,17 @@ void VulkanGpuLayer::createIndexBuffer() {
       index_array.push_back(1 + base);
       index_array.push_back(2 + base);
       index_array.push_back(3 + base);
-      
+
       base += 4;
     }
   }
 
-  m_indexBuffer.Create(vulkan::Buffer::INDEX, (void*)index_array.data(),
-                        sizeof(uint16_t)*index_array.size());
-
+  m_indexBuffer.Create(vulkan::Buffer::INDEX, (void *)index_array.data(),
+                       sizeof(uint16_t) * index_array.size());
 }
 
 void VulkanGpuLayer::OnBeginCommit(GpuLayerCommitContext *ctx) {
-   int row = m_arrayTile.GetRow();
+  int row = m_arrayTile.GetRow();
   int col = m_arrayTile.GetCol();
 
   for (int y = 0; y < row; y++) {
@@ -111,11 +105,7 @@ void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   if (m_width == (int)nWidth && m_height == (int)nHeight) {
     return;
   }
-
-  int col = (int)std::ceil((float)nWidth / TILE_SIZE);
-  int row = (int)std::ceil((float)nHeight / TILE_SIZE);
-
-  doCreateTile(row, col);
+  doCreateTile(nWidth, nHeight);
 
   m_width = nWidth;
   m_height = nHeight;
@@ -137,47 +127,28 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
   vkCmdBindIndexBuffer(buffer, m_indexBuffer.handle(), 0, VK_INDEX_TYPE_UINT16);
 
+  // 更新layer在世界坐标转换矩阵。
+  glm::mat4 transfrom;
+  if (pMatrixTransform) {
+    memcpy(&transfrom, pMatrixTransform, sizeof(transfrom));
+  } else {
+    transfrom = glm::mat4(1.0f);
+  }
+  glm::mat4 model = glm::translate(
+      transfrom, glm::vec3(pContext->m_xOffset, pContext->m_yOffset, 0));
+  m_bridge.GetPipeline().UpdatePushData(buffer, model);
 
   int row = m_arrayTile.GetRow();
   int col = m_arrayTile.GetCol();
 
-  long xOffset = 0;
-  long yOffset = 0;
+  int index = 0;
   for (int y = 0; y < row; y++) {
-    yOffset = y * TILE_SIZE;
     for (int x = 0; x < col; x++) {
-      xOffset = x * TILE_SIZE;
-
-      m_arrayTile[y][x]->Compositor(xOffset, yOffset, (y * col + x) * 4,
-                                    pContext);
+      // 不需要偏移量，只需要顶点索引。
+      m_arrayTile[y][x]->Compositor(0, 0, index, pContext);
+      index += 4;
     }
   }
-
-#if 0
-  // vertexCount：尽管这里我们没有使用顶点缓冲，但仍然需要指定三个顶点用于三角形的绘制。
-  // instanceCount：用于实例渲染，为1时表示不进行实例渲染。
-  // firstVertex：用于定义着色器变量gl_VertexIndex的值。
-  // firstInstance：用于定义着色器变量gl_InstanceIndex的值。
-  // vkCmdDraw(buffer, 3, 1, 0, 0);
-
-  vulkan::CommandBuffer *command_buffer =
-      (vulkan::CommandBuffer *)pContext->m_data;
-  VkCommandBuffer buffer = command_buffer->handle();
-
-  VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
-  VkDeviceSize offsets[] = {0};
-
-  vkCmdBindVertexBuffers(buffer, 0, 1, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(buffer, m_indexBuffer.handle(), 0, VK_INDEX_TYPE_UINT16);
-
-    // vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-    //                         pipelineLayout, 0, 1,
-    //                         &descriptorSets[currentFrame], 0, nullptr);
-
-    vkCmdDrawIndexed(buffer, std::size(RECT_INDICES), 1,
-                     0, 0, 0);
-    // vkCmdDraw(command, count, 1, 0, 0);
-#endif
 }
 
 } // namespace ui

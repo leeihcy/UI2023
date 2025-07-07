@@ -10,47 +10,31 @@
 //    因此没必要再单独加一个layout location 0 out vec4 position。
 //    但是frag步骤没有内置的gl_Position变量，需要自己再加一个out输出color
 
-// CPU上传顶点数据
-
+// 每帧更新一次。
 layout(binding = 0) uniform UniformBufferObject {
-   mat4 model;
-//   mat4 view;
-//   mat4 proj;
+   // mat4 view;
+   // mat4 proj;
    mat4 ortho;
 } ubo;
 
-layout(location = 0) in vec2 inPosition;
-layout(location = 1) in vec3 inColor;
-layout(location = 2) in vec2 inTexCoord;
+// 极小且高频更新的数据
+layout(push_constant) uniform PushData {
+  // 每个对象的转换矩阵
+  mat4 model;
+} push;
+
+// 顶点缓存数据
+layout(location = 0) in vec2 inPosition;  // 局部坐标(像素坐标)
+layout(location = 1) in vec3 inColor;     //
+layout(location = 2) in vec2 inTexCoord;  // 对象的tile纹理坐标(0~1)
 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 
 void main() {
-  // gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 0.0, 1.0);
-   // gl_Position = vec4(inPosition, 0.0, 1.0);
-  gl_Position = ubo.ortho * ubo.model * vec4(inPosition, 0.0, 1.0);
+  gl_Position = ubo.ortho * push.model * vec4(
+    inPosition.x, inPosition.y, 0.0, 1.0);
+
   fragColor = inColor;
   fragTexCoord = inTexCoord;
 }
-
-/* 硬编码实现的三角形绘制。
-layout(location = 0) out vec3 fragColor;
-
-vec2 positions[3] = vec2[](
-    vec2(0.0, -0.5),
-    vec2(0.5, 0.5),
-    vec2(-0.5, 0.5)
-);
-
-vec3 colors[3] = vec3[](
-    vec3(1.0, 0.0, 0.0),
-    vec3(0.0, 1.0, 0.0),
-    vec3(0.0, 0.0, 1.0)
-);
-
-void main() {
-    gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
-    fragColor = colors[gl_VertexIndex];
-} 
-*/

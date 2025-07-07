@@ -1,8 +1,7 @@
 
 # Vunkan SDK 所在目录
-VULKAN_SDK_DIR=<.../vulkansdk-linux-x86_64-1.4.313.0/1.4.313.0/x86_64>
-
+VULKAN_SDK_DIR=/Users/libo/application/VulkanSDK/1.3.261.1/macOS
 
 # Python SDK 所在目录
-PYTHON_INC_DIR=/usr/include/python3.12
-PYTHON_LIB_DIR=/usr/lib/python3.12/config-3.12-x86_64-linux-gnu
+PYTHON_INC_DIR=/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/include/python3.9
+PYTHON_LIB_DIR=/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib

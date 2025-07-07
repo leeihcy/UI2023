@@ -3,11 +3,11 @@
 
 #include "gpu/include/interface.h"
 #include "sdk/include/util/rect.h"
-#include <wayland-client-core.h>
 
 #if defined(OS_LINUX)
 struct wl_display;
 struct wl_surface;
+#elif defined(OS_MAC)
 #endif
 
 namespace ui {
@@ -28,19 +28,18 @@ enum GpuCompositorWindowType {
 };
 struct IGpuCompositorWindow {
   virtual GpuCompositorWindowType GetType() = 0;
-  virtual void GetWindowSize(int* w, int* h) = 0;
 };
 
 #if defined(OS_WIN)
 struct IGpuCompositorWindowHWND : public IGpuCompositorWindow {
   GpuCompositorWindowType GetType() { return GpuCompositorWindowType::WindowsHWND; }
   virtual HWND GetHWND() = 0;
-}
+};
 #elif defined(OS_MAC)
 struct IGpuCompositorWindowNSView : public IGpuCompositorWindow {
   GpuCompositorWindowType GetType() { return GpuCompositorWindowType::MacOSNSView; }
-  virtual NSView* GetNSWindowRootView() = 0;
-}
+  virtual void* GetNSWindowRootView() = 0; // NSView*
+};
 #elif defined(OS_LINUX)
 struct IGpuCompositorWindowWayland : public IGpuCompositorWindow {
   GpuCompositorWindowType GetType() { return GpuCompositorWindowType::LinuxWayland; }

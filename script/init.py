@@ -40,7 +40,10 @@ def init_local_env():
 
 def init_git_third_party():
     print("# 初始化git submodule")
+    run(["git", "submodule", "sync"])
     run(["git", "submodule", "update", "--init", "--force"])
+
+    skia_version = "0529fe306200807c77eec8ac250d7ae6631711cf"
 
 def init_gn_ninja():
     print("# 更新编译工具")

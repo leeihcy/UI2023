@@ -4,7 +4,6 @@
 #include "src/layout/desktop_layout.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
-#include "src/window/linux/display_wayland.h"
 #include "window_meta.h"
 
 #include <SkColorSpace.h>
@@ -17,6 +16,7 @@
 #elif defined(OS_LINUX)
 #include "window_linux_wayland.h"
 #include "window_linux_x11.h"
+#include "src/window/linux/display_wayland.h"
 #endif
 
 namespace ui {

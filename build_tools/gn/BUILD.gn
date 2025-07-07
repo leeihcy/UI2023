@@ -40,10 +40,18 @@ config("compiler_defaults") {
 }
 
 config("executable_ldconfig") {
-  if (!is_mac) {
+  if (is_linux) {
+    # 将程序所在路径，设置为动态库文件的加载路径。
     ldflags = [
       "-Wl,-rpath=\$ORIGIN/",
       "-Wl,-rpath-link=",
+    ]
+  } else if (is_mac) {
+    # 将程序所在目录，添加到rpath中。
+    # 各个dylib 还需要指定 -install_name @rpath/xxxx.dylib 
+    # 使用 otool -L xxx 命令，查看程序或dylib的依赖库和路径。
+    ldflags = [
+     "-Wl,-rpath,@executable_path/."
     ]
   }
 }

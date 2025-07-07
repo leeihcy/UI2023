@@ -123,11 +123,10 @@ void D3D10GpuLayer::Resize(int nWidth, int nHeight) {
     return;
   }
 
-  int col = (int)ceil((float)nWidth / TILE_SIZE);
-  int row = (int)ceil((float)nHeight / TILE_SIZE);
-
-  doCreateTile(row, col);
-
+  doCreateTile(nWidth, nHeight);
+  int row = m_arrayTile.GetRow();
+  int col = m_arrayTile.GetCol();
+  
   m_width = nWidth;
   m_height = nHeight;
 

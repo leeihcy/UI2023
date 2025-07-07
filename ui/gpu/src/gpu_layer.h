@@ -19,7 +19,7 @@ struct SOURCE_BITMAP_DATA;
 // 大量的显存。绘制和上传一张巨大的纹理会花费相当长的时间。
 //
 // 解决纹理过大这个问题的一种解决方案是只绘制和上传可见部分。也就是纹理绝不
-// 可能不显示窗口还大，这样可以规避纹理过大的纹理。但是这又引起新的问题，每
+// 可能比显示窗口还大，这样可以规避纹理过大的纹理。但是这又引起新的问题，每
 // 次显示窗口发生变化我们都必须重新绘制和上传纹理。这将导致速度非常慢。
 //
 // 通过分块可以完美解决这个问题。每一个层会被切割为几个256*256的小块。我们
@@ -97,9 +97,7 @@ struct SOURCE_BITMAP_DATA;
 
 //////////////////////////////////////////////////////////////////////////
 //
-//   注： [[ 关键点 ]] 困扰了1年才实现的
-//
-//       如何实现一个对象按屏幕坐标进行透视旋转???
+//   注： 如何实现一个对象按屏幕坐标进行透视旋转???
 //
 //  1).
 //  必须实现正交投影。透视投影只会导致物体越远越小。D3DXMatrixOrthoOffCenterLH
@@ -116,6 +114,16 @@ struct SOURCE_BITMAP_DATA;
 //////////////////////////////////////////////////////////////////////////
 
 namespace ui {
+
+// 分块策略(TODO:)
+enum GpuLayerTilePolicy {
+  // 严格拆分成TILE_SIZE大小
+  Restrict,
+
+  // 当layer面积超过阈值时才按TILE_SIZE拆分。
+  // 边缘部分不足TILE_SIZE时，按实际大小拆分。
+  Area
+};
 
 class GpuLayer : public IGpuLayer {
 public:
@@ -135,7 +143,7 @@ public:
   void SetGpuCompositor(IGpuCompositor *p);
 
 protected:
-  void doCreateTile(int row, int col);
+  void doCreateTile(int width, int height);
 
   void upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &);
 
@@ -152,7 +160,8 @@ protected:
   int m_width = 0;
   int m_height = 0;
 
-  // 分块
+  // 分块(TODO:)
+  GpuLayerTilePolicy m_tile_pocicy = GpuLayerTilePolicy::Area;
   std::list<TextureTile *> m_listTile; // 分块列表，分散创建的
   TextureTile2DArray m_arrayTile; // 将分块指针排成一个二维数组，便于定位
 

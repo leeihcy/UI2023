@@ -58,7 +58,11 @@ piet-gpu仓库已过期，找到 skia/src/DEPS文件，替换"third_party/extern
 
 2. gn gen 报错： gn.py: Could not find gn executable at
 
-deps中没有添加gn的依赖，可以直接拷贝一个gn文件到 skia/src/buildtools/linux64/gn 位置即可。
+deps中没有添加gn的依赖，可以直接拷贝一个gn文件到 skia/src/buildtools/linux64/gn 或者 skia/src/buildtools/mac/gn 位置即可。
+
+```sh
+cp build_tools/mac/gn third_party/skia/src/buildtools/mac/gn
+```
 
 各平台对应的args.gn配置：
 
@@ -118,6 +122,8 @@ $ ninja skia
 
 ### 编译swiftshader
 
+TODO: skia external中自带了swiftshader，可以考虑直接复用。
+
 ```sh
 cd third_party/swiftshader
 
@@ -175,9 +181,9 @@ $ git submodule update --init --force
 $ git checkout -b m108 origin/chrome/m108
 ```
 
-### swifter shader
-
-CPU实现的Vulkan
+~~### swifter shader~~
+~~CPU实现的Vulkan~~
+TODO: Skia中自带了swiftshader.
 
 ```sh
 # 需要翻墙

@@ -130,7 +130,7 @@ void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {
   }
 }
 
-void VkTextureTile::Compositor(long xOffset, long yOffset, long vertexStartIndex,
+void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext)
 {
   vulkan::CommandBuffer *command_buffer =

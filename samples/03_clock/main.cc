@@ -29,7 +29,6 @@ public:
   };
   uia::E_ANIMATE_TICK_RESULT
   OnAnimateTick(uia::IStoryboard *storyboard) override {
-    printf("OnAnimateTick\n");
     ui::IWindow *window = (ui::IWindow *)storyboard->GetWParam();
     update_rotate(window);
     return uia::ANIMATE_TICK_RESULT_CONTINUE;
@@ -56,9 +55,12 @@ public:
     std::tm* local_time = std::localtime(&now);
 
     // 提取时、分、秒
-    //local_time->tm_hour;
-    //local_time->tm_min;
-    //local_time->tm_sec;
+    int h = local_time->tm_hour;
+    int m = local_time->tm_min;
+    int s = local_time->tm_sec;
+
+    hour_layer->RotateZTo(30*h + 0.5*m + 0.5*s/120);
+    min_layer->RotateZTo(6*m + 0.1*s);
     sec_layer->RotateZTo(local_time->tm_sec * 6);
   }
 };
@@ -68,9 +70,7 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
   uia::IAnimate *animate = app->GetAnimate();
   uia::IStoryboard *story = animate->CreateStoryboard(&g_clock_animate);
   story->SetWParam((ui::llong)window);
-
-  uia::IFromToTimeline *timeline1 = story->CreateTimeline(0);
-  timeline1->SetParam(0, 100, 3 * 1000);
+  story->CreateIdleTimeline(0);
   story->Begin();
 }
 
@@ -92,7 +92,8 @@ int main() {
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
-  // start_animate(app.get(), window.get());
+  g_clock_animate.update_rotate(window.get());
+  start_animate(app.get(), window.get());
   app->Run();
 
   return 0;

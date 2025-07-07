@@ -7,6 +7,7 @@
 // #include "stdafx.h"
 #include "texture_tile.h"
 #include <assert.h>
+#include <cmath>
 
 using namespace ui;
 
@@ -163,8 +164,14 @@ void GpuLayer::upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &source) {
 //      大小，而不是去匹配真实的窗口大小。
 //      这样做的好处是窗口改变大小时不用频繁的删除添加新分块。
 //
-void GpuLayer::doCreateTile(int row, int col) {
-  assert(row > 0 && col > 0);
+//  (TODO: 对于窗口的layer可以这么处理，但对于小部件layer，固定大小或用于动画
+//   的场景，应该可以限制大小)
+//
+void GpuLayer::doCreateTile(int width, int height) {
+  assert(width > 0 && height > 0);
+
+  int col = (int)ceil((float)width / TILE_SIZE);
+  int row = (int)ceil((float)height / TILE_SIZE);
 
   if (m_arrayTile.GetCol() == col && m_arrayTile.GetRow() == row) {
     return;

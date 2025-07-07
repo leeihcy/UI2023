@@ -1,9 +1,6 @@
 #ifndef _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_MAC_H_
 #define _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_MAC_H_
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
-#include "../window/linux/display.h"
 #include "include/interface/ianimate.h"
 #include "message_loop.h"
 

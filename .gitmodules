@@ -10,7 +10,7 @@
 	path = third_party/depot_tools
 	url = https://chromium.googlesource.com/chromium/tools/depot_tools
 
-[submodule "third_party/swiftshader"]
-	path = third_party/swiftshader
-	url = https://swiftshader.googlesource.com/SwiftShader
+# [submodule "third_party/swiftshader"]
+# 	path = third_party/swiftshader
+# 	url = https://swiftshader.googlesource.com/SwiftShader
 

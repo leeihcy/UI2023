@@ -3,19 +3,35 @@
 #   source script/env.sh
 # 
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+if [ "$(uname)" = "Darwin" ]; then
+  OS="mac"
+else
+  OS="linux"
+fi
+
+if [[ -n "$BASH_SOURCE" ]]; then
+    # Bash
+    SCRIPT_PATH="${BASH_SOURCE[0]}"
+elif [[ -n "$ZSH_SCRIPT" ]]; then
+    # Zsh ≥5.3
+    SCRIPT_PATH="$ZSH_SCRIPT"
+else
+    # Fallback for older Zsh
+    SCRIPT_PATH="${(%):-%x}"
+fi
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 ROOT_DIR=$(dirname "$SCRIPT_DIR")
 
-source "$ROOT_DIR/script/local/env.linux.sh"
+source "${ROOT_DIR}/script/local/env.${OS}.sh"
 
 # depot tools 目前仅编译skia需要
-DEPOT_TOOLS_DIR=$ROOT_DIR/third_party/depot_tools
+DEPOT_TOOLS_DIR=${ROOT_DIR}/third_party/depot_tools
 
 # 编译工具
-GN_NINJA_DIR=$ROOT_DIR/build_tools/linux
+GN_NINJA_DIR=${ROOT_DIR}/build_tools/${OS}
 
 # vulkan
-VULKAN_SDK_BIN_DIR=$VULKAN_SDK_DIR/bin
+VULKAN_SDK_BIN_DIR=${VULKAN_SDK_DIR}/bin
 export VULKAN_SDK_DIR
 
 # python

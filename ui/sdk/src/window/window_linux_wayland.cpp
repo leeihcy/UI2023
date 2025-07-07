@@ -374,14 +374,6 @@ void WindowPlatformLinuxWayland::on_pointer_button(uint32_t serial, uint32_t tim
 }
 
   // IGpuCompositorWindowWayland
-void WindowPlatformLinuxWayland::GetWindowSize(int* w, int* h) {
-  if (w) {
-    *w = m_width;
-  }
-  if (h) {
-    *h = m_height;
-  }
-}
 struct wl_display* WindowPlatformLinuxWayland::GetWaylandDisplay() {
   return m_display.get_display();
 }
