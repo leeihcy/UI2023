@@ -112,7 +112,7 @@ void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   m_gpu_composition->EndCommit(&context);
 
   int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  UI_LOG_INFO("hardware commit cost %d 微秒", ms);
+  // UI_LOG_INFO("hardware commit cost %d 微秒", ms);
 }
 
 void HardwareCompositor::commit_recursion(Layer *p,

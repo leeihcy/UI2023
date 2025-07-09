@@ -310,8 +310,12 @@ bool Pipeline::create_texture_sampler() {
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
   samplerInfo.magFilter = VK_FILTER_LINEAR;
   samplerInfo.minFilter = VK_FILTER_LINEAR;
-  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+  
+  // 解决layer分块后，将其进行旋转后，在tile边缘处没衔接上的问题。
+  // 对应于d3d中的 SamplerState AddressU = MIRROR;
+  samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+  samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+
   samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
   // samplerInfo.anisotropyEnable = VK_TRUE;
   // samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
