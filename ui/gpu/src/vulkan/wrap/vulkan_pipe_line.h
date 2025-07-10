@@ -3,7 +3,6 @@
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_buffer.h"
 #include "vulkan/vulkan_core.h"
-#include <_types/_uint32_t.h>
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
@@ -126,7 +125,7 @@ private:
   // 只需要一份，作为DescriptorSets的模板。
   VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
 
-  VkDescriptorPool m_descriptorPool = VK_NULL_HANDLE;
+  VkDescriptorPool m_descriptor_pool = VK_NULL_HANDLE;
 
   // 和swapchain size保持一致。
   std::vector<VkDescriptorSet> m_arr_descriptor_sets;

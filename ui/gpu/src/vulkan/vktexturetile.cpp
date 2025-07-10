@@ -91,17 +91,13 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
-
-  update_texture_descriptorset();
 }
 
+// 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
+// 所以三缓冲理论上都可以共用一个DescriptorSet。
 void VkTextureTile::update_texture_descriptorset() {
-  if (m_bind_pool != m_bridge.GetPipeline().texture_descriptor_pool()) {
-    m_texture_descriptorset = nullptr;
-  }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
     m_texture_descriptorset = m_bridge.GetPipeline().AllocatateTextureDescriptorSets();
-    m_bind_pool = m_bridge.GetPipeline().texture_descriptor_pool();
   }
 
   VkDescriptorImageInfo imageInfo = {};
@@ -124,15 +120,16 @@ void VkTextureTile::update_texture_descriptorset() {
 }
 
 void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {
-  if (m_bind_pool != m_bridge.GetPipeline().texture_descriptor_pool()) {
-    m_texture_descriptorset = nullptr;
-    update_texture_descriptorset();
-  }
+
 }
 
 void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext)
 {
+  if (m_texture_descriptorset == VK_NULL_HANDLE) {
+    update_texture_descriptorset();
+  }
+
   vulkan::CommandBuffer *command_buffer =
       (vulkan::CommandBuffer *)pContext->m_data;
   VkCommandBuffer buffer = command_buffer->handle();

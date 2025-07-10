@@ -44,6 +44,7 @@ def init_git_third_party():
     run(["git", "submodule", "update", "--init", "--force"])
 
     skia_version = "0529fe306200807c77eec8ac250d7ae6631711cf"
+    depot_tools_version = "abc51098824678cbce29d7913c4951a857033c49"
 
 def init_gn_ninja():
     print("# 更新编译工具")

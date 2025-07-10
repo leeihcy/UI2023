@@ -47,9 +47,9 @@ private:
   VkDeviceMemory m_texture_image_memory = VK_NULL_HANDLE;
 
   VkImageView m_texture_imageview = VK_NULL_HANDLE;
+
   // 每个纹理对应一个descriptorset
   VkDescriptorSet m_texture_descriptorset = VK_NULL_HANDLE;
-  VkDescriptorPool m_bind_pool = VK_NULL_HANDLE;
 };
 
 } // namespace ui

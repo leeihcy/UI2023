@@ -57,7 +57,12 @@ bool DeviceQueue::WaitIdle() {
   return true;
 }
 
-
+// 
+// 设备名称： llvmpipe (LLVM 19.1.1, 256 bits)
+//  driver:  /usr/lib/x86_64-linux-gnu/libvulkan_lvp.so
+// 设备名称：Intel(R) Iris(R) Pro Graphics P5200 (HSW GT3)
+//  driver:  /usr/lib/x86_64-linux-gnu/libvulkan_intel_hasvk.so
+//
 bool DeviceQueue::pick_physical_device() {
   auto &app = application();
   uint32_t count = 0;
@@ -87,6 +92,7 @@ bool DeviceQueue::pick_physical_device() {
 
     VkPhysicalDeviceProperties deviceProperties = {0};
     vkGetPhysicalDeviceProperties(device, &deviceProperties);
+    printf("found graphics device: %s\n", deviceProperties.deviceName);
 
     VkPhysicalDeviceFeatures deviceFeatures = {0};
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
@@ -108,6 +114,13 @@ bool DeviceQueue::pick_physical_device() {
 
     // Maximum possible size of textures affects graphics quality
     score += deviceProperties.limits.maxImageDimension2D;
+
+#if defined(OS_LINUX)
+    // llvmpipie是Mesa模拟的软件渲染器，为CPU实现，降低分数。
+    if (strstr(deviceProperties.deviceName, "llvmpipe") != nullptr) {
+      score = score >> 2;
+    }
+#endif
 
     if (score > highest_score) {
       found = true;

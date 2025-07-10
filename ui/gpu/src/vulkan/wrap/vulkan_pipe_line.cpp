@@ -9,7 +9,6 @@
 #include "src/vulkan/wrap/vulkan_util.h"
 #include "vulkan_device_queue.h"
 
-#include <_types/_uint32_t.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -60,9 +59,9 @@ void Pipeline::Destroy() {
     m_texture_descriptor_set_layout = VK_NULL_HANDLE;
   }
 
-  if (m_descriptorPool != VK_NULL_HANDLE) {
+  if (m_descriptor_pool != VK_NULL_HANDLE) {
     if (!m_arr_descriptor_sets.empty()) {
-      vkFreeDescriptorSets(m_bridge.GetVkDevice(), m_descriptorPool,
+      vkFreeDescriptorSets(m_bridge.GetVkDevice(), m_descriptor_pool,
                            m_arr_descriptor_sets.size(),
                            m_arr_descriptor_sets.data());
       m_arr_descriptor_sets.clear();
@@ -72,8 +71,8 @@ void Pipeline::Destroy() {
 
     // VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
     // 释放pool时会自动释放descriptor set
-    vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_descriptorPool, nullptr);
-    m_descriptorPool = VK_NULL_HANDLE;
+    vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_descriptor_pool, nullptr);
+    m_descriptor_pool = VK_NULL_HANDLE;
   }
 
   if (m_texture_descriptor_pool != VK_NULL_HANDLE) {
@@ -345,8 +344,8 @@ void Pipeline::build_descriptor_set_layout() {
       // 只有1个ubo binding
       {
           .binding = 0,         // binding的索引
-          .descriptorCount = 1, // 只有一个ubo
           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+          .descriptorCount = 1, // 只有一个ubo
           .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 哪此着色器阶段可以访问。
       }};
 
@@ -367,8 +366,8 @@ void Pipeline::build_descriptor_set_layout() {
 void Pipeline::build_texture_descriptor_set_layout() {
   VkDescriptorSetLayoutBinding textureBindings[] = {{
       .binding = 0,         // binding索引
-      .descriptorCount = 1, // 目前只有一个纹理，没用数组。
       .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+      .descriptorCount = 1, // 目前只有一个纹理，没用数组。
       .stageFlags =
           VK_SHADER_STAGE_FRAGMENT_BIT, // 指定在frag shader中使用sampler
   }};
@@ -399,7 +398,7 @@ void Pipeline::create_descriptor_pool() {
   poolInfo.maxSets = static_cast<uint32_t>(swapchain.Size());
 
   if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
-                             &m_descriptorPool) != VK_SUCCESS) {
+                             &m_descriptor_pool) != VK_SUCCESS) {
     throw std::runtime_error("failed to create descriptor pool!");
   }
 }
@@ -431,7 +430,7 @@ void Pipeline::create_descriptor_sets() {
 
   VkDescriptorSetAllocateInfo allocInfo{
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-      .descriptorPool = m_descriptorPool,
+      .descriptorPool = m_descriptor_pool,
 
       // vkAllocateDescriptorSets一次性创建count个
       .descriptorSetCount = count,
