@@ -46,9 +46,9 @@ CustomListItem*  ListCtrlBase::InsertCustomItem(
 	Object* p = nullptr;
 	while (p = pRootPanel->EnumAllChildObject(p))
 	{
-		UISendMessage(p, UI_MSG_INITIALIZE);
+		p->RouteMessage(UI_MSG_INITIALIZE);
 		Object::ForwardInitializeMessageToDecendant(p);
-		UISendMessage(p, UI_MSG_INITIALIZE2);
+		p->RouteMessage(UI_MSG_INITIALIZE2);
 	}
     return pImpl;
 }

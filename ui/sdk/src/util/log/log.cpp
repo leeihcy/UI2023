@@ -89,14 +89,14 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
 
   // file name, line function
   char buffer[1024] = {0};
-  snprintf(buffer, 1024, "\t%s(%d) : %s\r\n", szFile, lLine, szFunction);
+  snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
 
   output.append(buffer);
 
 #if 0 // defined(OS_WIN)
   OutputDebugString(output.c_str());
 #else
-  printf(output.c_str());
+  printf("%s", output.c_str());
 #endif
 }
 
@@ -145,7 +145,7 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
 #if 0 // defined(OS_WIN)
   OutputDebugStringA(output.c_str());
 #else
-  printf(output.c_str());
+  printf("%s", output.c_str());
 #endif
 }
 

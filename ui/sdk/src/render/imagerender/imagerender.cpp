@@ -277,8 +277,10 @@ void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 
     m_rcSrc.Set(pt.x, pt.y, pt.x + s.width, pt.y + s.height);
   }
-
+  assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
   SetMsgHandled(false);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

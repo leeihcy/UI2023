@@ -28,7 +28,9 @@ public:
   // UI_END_MSG_MAP()
 
   void Serialize(AttributeSerializer *ps);
+#if 0 // 废弃，使用RouteMessage代替。
   void OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo);
+#endif
   Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
 
 public:

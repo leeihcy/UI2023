@@ -1,4 +1,5 @@
 #include "include/interface/ilayout.h"
+#include "include/macro/msg.h"
 #include "object.h"
 #include "src/layout/canvaslayout.h"
 #include "src/window/window.h"
@@ -8,6 +9,7 @@
 #include "object_layer.h"
 #include "src/layer/layer.h"
 #include "src/util/DPI/dpihelper.h"
+#include <cassert>
 
 namespace ui {
 
@@ -192,10 +194,13 @@ bool Object::GetScrollOffset(int *pxOffset, int *pyOffset) {
   *pyOffset = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    this->SendMessage(UI_MSG_GETSCROLLOFFSET, (llong)pxOffset, (llong)pyOffset);
+    GetScrollOffsetMessage msg;
+    RouteMessage(&msg);
+
+    *pxOffset = msg.x_offset;
+    *pyOffset = msg.x_offset;
     return true;
   }
-
   return false;
 }
 
@@ -207,10 +212,13 @@ bool Object::GetScrollRange(int *pxRange, int *pyRange) {
   *pyRange = 0;
 
   if (m_objStyle.hscroll || m_objStyle.vscroll) {
-    SendMessage(UI_MSG_GETSCROLLRANGE, (llong)pxRange, (llong)pyRange);
+    GetScrollRangeMessage msg;
+    RouteMessage(&msg);
+    
+    *pxRange = msg.x_range;
+    *pyRange = msg.y_range;
     return true;
   }
-
   return false;
 }
 
@@ -489,8 +497,11 @@ void Object::GetClientRectInWindow(Rect *prc) {
 void Object::notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
                             unsigned int nHeight) {
   this->virtualOnSize(nType, nWidth, nHeight);
-
-  m_pIObject->SendMessage(WM_SIZE, 0, MAKELPARAM(nWidth, nHeight));
+  
+  SizeMessage msg;
+  msg.width = nWidth;
+  msg.height = nHeight;
+  RouteMessage(&msg);
 }
 
 void Object::virtualOnSize(unsigned int nType, unsigned int nWidth,
@@ -499,7 +510,11 @@ void Object::virtualOnSize(unsigned int nType, unsigned int nWidth,
 }
 void Object::notify_WM_MOVE(int x, int y) {
   this->virtualOnMove();
-  SendMessage(WM_MOVE, 0, MAKELPARAM(m_rcParent.left, m_rcParent.top));
+
+  MoveMessage msg;
+  msg.x = m_rcParent.left;
+  msg.y = m_rcParent.top;
+  RouteMessage(&msg);
 }
 
 void Object::virtualOnMove() {
@@ -727,8 +742,12 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags) 
       notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
     }
 
-    WINDOWPOS wndpos2 = {0, 0, x, y, cx, cy, 0};
-    SendMessage(WM_WINDOWPOSCHANGED, 0, (ui::llong)&wndpos2);
+    PosChangedMessageMessage message;
+    message.x = x;
+    message.y = y;
+    message.width = cx;
+    message.height = cy;
+    RouteMessage(&message);
   }
 
   if (bMove || bSize) {
@@ -788,6 +807,8 @@ int Object::GetHeightWithMargins() {
 // 遍历自己的nc object来更新自己的non client region
 //
 void Object::UpdateObjectNonClientRegion() {
+  assert(false);
+#if 0 // TODO:
   Rect rcNonClient = {0, 0, 0, 0};
 
   UIMSG msg;
@@ -802,6 +823,7 @@ void Object::UpdateObjectNonClientRegion() {
   }
 
   this->SetExtNonClientRegion(&rcNonClient);
+#endif 
 }
 
 void Object::GetParentRect(Rect *prc) {

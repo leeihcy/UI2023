@@ -22,7 +22,7 @@ public:
   MainWindow(ui::IResource *res) : m_window(res) {
     create_ui();
 
-    ui::Rect rc = {100, 100, 500, 400};
+    ui::Rect rc = {0, 0, 500, 400};
     m_window->Create(nullptr, &rc);
 
     load_next();

@@ -32,6 +32,11 @@ struct WindowPlatform {
   virtual float GetScaleFactor() = 0;
   virtual void GetClientRect(Rect *prect) = 0;
   virtual void GetWindowRect(Rect *prect) = 0;
+
+  // 返回非客户区的区域位置。
+  virtual void UpdateNonClientRegion(Rect* region) = 0;
+  // 获取当前窗口所有屏幕的工作区域范围
+  virtual void GetMonitorWorkArea(Rect* rect) = 0;
   virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
   virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
@@ -44,12 +49,12 @@ public:
   Window(IWindow *p);
   ~Window();
 
-  UI_BEGIN_MSG_MAP()
+  // UI_BEGIN_MSG_MAP()
   // UIMSG_DM_GETDEFID( OnGetDefId )
   // UIMSG_DM_SETDEFID( OnSetDefId )
   // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
   // UIMSG_PRECREATEWINDOW( PreCreateWindow )
-  UI_END_MSG_MAP_CHAIN_PARENT( Panel )
+  // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
 
   void onRouteMessage(ui::Msg *msg);
 
@@ -92,6 +97,9 @@ public:
   void enterResize(bool);
 
 private:
+  // prop
+
+private:
   // void on_paint(SkCanvas &canvas);
   // void on_erase_bkgnd(SkCanvas &canvas);
   // void swap_buffer();
@@ -103,6 +111,7 @@ protected:
   long FinalConstruct();
   // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
   void onSerialize(SerializeParam *pData);
+  void onGetDesiredSize(Size *pSize);
   // void OnSetDefId(IObject *pButton);
   // IObject *OnGetDefId();
   void onEraseBkgnd(IRenderTarget *);
@@ -134,7 +143,7 @@ private:
 private:
   // 属性 ------------------------
   // 皮肤中配置的窗口标题
-  std::string  m_strConfigWindowText;   
+  std::string  m_strConfigWindowText;  
 };
 
 } // namespace ui

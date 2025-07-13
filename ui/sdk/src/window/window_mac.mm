@@ -41,9 +41,23 @@ bool WindowPlatformMac::Create(CreateWindowParam& param) {
     content_rect.Set(param.x, param.y, param.x+param.w, param.y+param.h);
   }
 
-  NSRect ns_content_rect = NSMakeRect(
-    content_rect.left / scale, content_rect.top / scale, 
-    content_rect.Width() / scale, content_rect.Height() / scale);
+  NSRect ns_content_rect;
+  if (param.is_pixel_unit) {
+    ns_content_rect = NSMakeRect(
+      content_rect.left / scale, content_rect.top / scale, 
+      content_rect.Width() / scale, content_rect.Height() / scale);
+  } else {
+    ns_content_rect = NSMakeRect(
+          content_rect.left, content_rect.top, 
+          content_rect.Width(), content_rect.Height());
+  }
+
+  if (!param.is_client_size) {
+    // 指定的是窗口（包含标题栏）的大小，转换成客户区大小。
+    ns_content_rect = [NSWindow contentRectForFrameRect:ns_content_rect 
+      styleMask:windowStyle];
+  }
+
   m_window = [[NSWindow alloc] initWithContentRect:ns_content_rect
                                          styleMask:windowStyle
                                            backing:NSBackingStoreBuffered
@@ -127,6 +141,16 @@ void SetWindowRect(Rect *prect) {
   // return true;
 }
 
+void WindowPlatformMac::UpdateNonClientRegion(Rect* pregion) {
+  NSRect client_rect = NSMakeRect(100, 100, 100, 100);
+  NSRect frame_rect = [m_window frameRectForContentRect:client_rect];
+
+  pregion->left = client_rect.origin.x - frame_rect.origin.x;
+  pregion->top = client_rect.origin.y - frame_rect.origin.y;
+  pregion->right = (frame_rect.origin.x + frame_rect.size.width - (client_rect.origin.x + client_rect.size.width));
+  pregion->bottom = (frame_rect.origin.y + frame_rect.size.height - (client_rect.origin.y + client_rect.size.height));
+}
+
 // xywh 乘以了缩放系数
 void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
   // printf("SetWindowPos %d,%d  %d,%d \n", x,y,w,h);
@@ -141,7 +165,13 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlag
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
        NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
 
-  NSRect frame_rect = [m_window frameRectForContentRect:rect];
+  NSRect frame_rect;
+  if (flags.is_window_client_size) {
+    frame_rect = [m_window frameRectForContentRect:rect];
+  } else {
+    frame_rect = rect;
+  }
+
   // printf("SetWindowPos rect2 %f,%f  %f,%f \n",
   //   frame_rect.origin.x, frame_rect.origin.y, 
   //   frame_rect.size.width, frame_rect.size.height);
@@ -163,6 +193,24 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlag
   }
 }
 
+void WindowPlatformMac::GetMonitorWorkArea(Rect* rect) {
+  if (!rect) {
+    return;
+  }
+
+  NSScreen* screen = [m_window screen];
+  if (!screen) {
+    return;
+  }
+  NSRect rc_workarea = [screen visibleFrame];
+  CGFloat factor = m_window.backingScaleFactor;
+
+  *rect = Rect::MakeXYWH(
+    rc_workarea.origin.x * factor, 
+    rc_workarea.origin.y * factor, 
+    rc_workarea.size.width * factor, 
+    rc_workarea.size.height * factor);
+}
 
 void WindowPlatformMac::Invalidate(const Rect *prect) {
   if (!prect) {
@@ -225,9 +273,7 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
         NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
 
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Little;
-    // bitmapInfo = kCGBitmapByteOrder32Big | kCGImageAlphaNoneSkipFirst;
-    // bitmapInfo = kCGBitmapByteOrder32Little /*| kCGImageAlphaNoneSkipFirst*/;
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst;
 
     CGImageRef image = CGImageCreate(
         pm.width(), pm.height(), 8, 32, pm.width() * 4, colorspace, bitmapInfo,

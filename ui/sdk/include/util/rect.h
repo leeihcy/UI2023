@@ -38,6 +38,10 @@ struct SetPositionFlags {
   bool activate = false;
   bool redraw = false;
   bool force_send_size_message = false;
+  
+  // 针对windows类型，size变量是指content/client区域，
+  // 还是窗口（包含边框、标题栏）大小
+  bool is_window_client_size = false;
 };
 
 struct RectXYWH {

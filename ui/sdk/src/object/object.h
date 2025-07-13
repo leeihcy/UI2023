@@ -23,11 +23,11 @@ public:
   Object(IObject *);
   virtual ~Object();
 
-  UI_BEGIN_MSG_MAP()
+  // UI_BEGIN_MSG_MAP()
   // UIMSG_ERASEBKGND(OnEraseBkgnd)
   // UIMSG_HITTEST(OnHitTest)
   // UIMSG_VISIBLE_CHANGED(OnVisibleChanged)
-  UI_END_MSG_MAP()
+  // UI_END_MSG_MAP()
   
   void onRouteMessage(ui::Msg *msg);
 
@@ -358,7 +358,7 @@ public:
   virtual void virtualOnLoad();
 
 public:
-  static void ForwardMessageToChildObject(Object *pParent, UIMSG *pMsg);
+  static void ForwardMessageToChildObject(Object *pParent, ui::Msg *pMsg);
   static void ForwardInitializeMessageToDecendant(Object *pParent);
 
 protected:
@@ -374,8 +374,11 @@ protected:
 #pragma region //坐标相关数据
 // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
   Rect m_rcParent; 
+
   // 扩展的非客户区，与border、padding共同做为对象的非客户区。
+  // 对于窗口类型，这个值会动态计算，带上边框、标题栏范围。
   Rect m_rcExtNonClient; 
+
   Rect m_rcMargin;
   Rect m_rcPadding;
   Rect m_rcBorder;

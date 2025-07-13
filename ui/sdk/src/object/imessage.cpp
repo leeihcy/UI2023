@@ -24,9 +24,14 @@ void IMessage::connect(const char *event, slot<void(Event *)> &&s) {
 
 IMeta *IMessage::GetMeta() { return m_pImpl->GetMeta(); }
 
+void IMessage::RouteMessage(int message) {
+  m_pImpl->RouteMessage(message);
+}
 void IMessage::RouteMessage(Msg* msg) {
   m_pImpl->RouteMessage(msg);
 }
+
+#if 0 // 废弃，使用RouteMessage代替。
 
 bool IMessage::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   // ui::UIMSG *pOldMsg = nullptr;
@@ -100,6 +105,7 @@ llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode
 
   return msg.lRet;
 }
+#endif
 
 // llong IMessage::SendMessage(uint message, llong wParam, llong lParam) {
 //   return SendMessage(message, wParam, lParam, 0,
@@ -146,6 +152,7 @@ llong IMessage::SendMessage(uint message, llong wParam, llong lParam, uint nCode
 
 // void IMessage::Release() { this->virtual_delete_this(); }
 
+#if 0 // 废弃，使用RouteMessage代替。
 bool IMessage::IsMsgHandled() const { return m_pImpl->IsMsgHandled(); }
 void IMessage::SetMsgHandled(bool b) { m_pImpl->SetMsgHandled(b); }
 UIMSG *IMessage::GetCurMsg() { return m_pImpl->GetCurMsg(); }
@@ -153,7 +160,6 @@ void IMessage::SetCurMsg(UIMSG *p) { m_pImpl->SetCurMsg(p); }
 bool IMessage::DoHook(UIMSG *pMsg, int nMsgMapID) {
   return m_pImpl->DoHook(pMsg, nMsgMapID);
 }
-
 bool IMessage::virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   return false;
 }
@@ -213,7 +219,7 @@ void IMessage::ClearHook() { return m_pImpl->ClearHook(); }
 //   if (m_pImpl)
 //     m_pImpl->RemoveDelayRef(pp);
 // }
-
+#endif
 void *IMessage::QueryInterface(const Uuid &iid) {
   void* result = nullptr;
   QueryInterfaceMessage msg;
@@ -226,7 +232,7 @@ void *IMessage::QueryInterface(const Uuid &iid) {
 
 MessageProxy::MessageProxy(IMessage *p) : m_pImpl(p->GetImpl()) {}
 MessageProxy::~MessageProxy() {}
-
+#if 0 // 废弃，使用RouteMessage代替。
 bool MessageProxy::IsMsgHandled() const { return m_pImpl->IsMsgHandled(); }
 void MessageProxy::SetMsgHandled(bool b) { return m_pImpl->SetMsgHandled(b); }
 UIMSG *MessageProxy::GetCurMsg() { return m_pImpl->GetCurMsg(); }
@@ -234,5 +240,5 @@ void MessageProxy::SetCurMsg(UIMSG *p) { m_pImpl->SetCurMsg(p); }
 bool MessageProxy::DoHook(UIMSG *pMsg, int nMsgMapID) {
   return m_pImpl->DoHook(pMsg, nMsgMapID);
 }
-
+#endif
 } // namespace ui

@@ -808,7 +808,7 @@ IObject *IObject::AddNcChild(IObject *p) {
 }
 void IObject::RemoveMeInTheTree() { __pImpl->RemoveMeInTheTree(); }
 
-void IObject::ForwardMessageToChildObject(UIMSG *pMsg) {
+void IObject::ForwardMessageToChildObject(ui::Msg *pMsg) {
   Object::ForwardMessageToChildObject(__pImpl, pMsg);
 }
 void IObject::ForwardInitializeMessageToDecendant() {

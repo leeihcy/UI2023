@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <skin>
   <layout>
-    <Window id="clock" width="660" height="660" back.render.type="color" back.render.color="gray" >
+    <Window id="clock" back.render.type="color" back.render.color="gray" >
+      <Panel width="660" height="660">
       <RoundPanel id="panel_clock" width="600" height="600" corner="80" fore.render.type="color" fore.render.color="white" 
         layout.left="30" layout.top="30" border-radius="50%">
           <Svg file="clock.svg" layout.left="20" layout.top="20" layout.right="20" layout.bottom="20"/>
@@ -10,6 +11,7 @@
           <Control zorder="2" id="min"  style="hand" back.render.image="clock_min"/>
           <Control zorder="3" id="sec" style="hand" back.render.image="clock_sec"/> 
       </RoundPanel>
+      </Panel>
     </Window>
   </layout>
   <style>

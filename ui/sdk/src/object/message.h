@@ -45,18 +45,20 @@ public:
 
   IMessage *GetIMessage();
 
-  bool IsMsgHandled() const;
-  void SetMsgHandled(bool);
-  UIMSG *GetCurMsg() { return m_pCurMsg; }
-  void SetCurMsg(UIMSG *p) { m_pCurMsg = p; }
+  // bool IsMsgHandled() const;
+  // void SetMsgHandled(bool);
+  // UIMSG *GetCurMsg() { return m_pCurMsg; }
+  // void SetCurMsg(UIMSG *p) { m_pCurMsg = p; }
 
   void connect(const char* event_name, slot<void(Event*)>&& s);
   void emit(const char* event_name, Event* event);
   void clear_events();
 
   IMeta *GetMeta();
+  void RouteMessage(int message);
   void RouteMessage(Msg* msg);
 
+#if 0 // 废弃，使用RouteMessage代替。
   void ClearNotify();
   void SetNotify(IMessage *pObj, int nMsgMapID = 0);
   void CopyNotifyTo(IMessage *pObjCopyTo);
@@ -80,6 +82,7 @@ public:
   // void AddDelayRef(void** pp);
   // void RemoveDelayRef(void** pp);
   // void ResetDelayRef();
+#endif
 
 protected:
   // 例如ComboBox要hook Combobox中的下拉按钮的事件
@@ -98,7 +101,8 @@ protected:
   // tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低
   // std::list<void**>  m_lDelayRefs;     
 
-  UIMSG *m_pCurMsg; // 记录当前正在处理的消息
+  // UIMSG *m_pCurMsg; // 记录当前正在处理的消息
+
   IMessage *m_pIMessage;
   bool m_bCreateIMessage;
 };

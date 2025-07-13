@@ -65,10 +65,10 @@ void IRenderBase::DrawState(IRenderTarget *p, const Rect *prc, int nState) {
 
 Size IRenderBase::GetDesiredSize() {
   GetDesiredSizeMessage msg;
-  static_cast<IMessage *>(this)->RouteMessage(&msg);
+  RouteMessage(&msg);
   return msg.size;
 }
 void IRenderBase::Init() {
-  static_cast<IMessage *>(this)->SendMessage(UI_MSG_INITIALIZE);
+    RouteMessage(UI_MSG_INITIALIZE);
 }
 } // namespace ui

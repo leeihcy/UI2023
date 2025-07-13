@@ -47,7 +47,10 @@ ImageRes *RenderBase::GetSkinImageRes() {
 
 void RenderBase::CheckThemeChanged() {
   if (this->IsThemeRender()) {
+    assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
     static_cast<IMessage *>(m_pIRenderBase)->SendMessage(WM_THEMECHANGED);
+#endif
   }
 }
 

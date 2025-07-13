@@ -207,6 +207,8 @@ bool TopWindowManager::UpdateAllWindow() {
 //	向所有的顶层窗口发送消息
 //
 void TopWindowManager::SendMessage2AllWnd(UIMSG *pMsg) {
+  assert(false);
+#if 0 // TODO:
   _MyIter iter = m_lTopWindowObject.begin();
   _MyIter iterEnd = m_lTopWindowObject.end();
   for (; iter != iterEnd; iter++) {
@@ -216,6 +218,7 @@ void TopWindowManager::SendMessage2AllWnd(UIMSG *pMsg) {
 
     pObj->GetIMessage()->SendMessage(pMsg);
   }
+#endif
 }
 // void  TopWindowManager::PostMessage2AllWnd(UIMSG* pMsg)
 // {
@@ -231,6 +234,8 @@ void TopWindowManager::SendMessage2AllWnd(UIMSG *pMsg) {
 //     }
 // }
 void TopWindowManager::ForwardMessage2AllObj(UIMSG *pMsg) {
+  assert(false);
+#if 0 // TODO:
   _MyIter iter = m_lTopWindowObject.begin();
   for (; iter != m_lTopWindowObject.end(); iter++) {
     Window *pObj = *iter;
@@ -242,6 +247,7 @@ void TopWindowManager::ForwardMessage2AllObj(UIMSG *pMsg) {
 
     pObj->ForwardMessageToChildObject(pObj, pMsg);
   }
+#endif
 }
 
 //

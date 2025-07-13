@@ -107,21 +107,20 @@ shared_library("uigpu") {
 
       VULKAN_SDK_DIR = exec_script("//script/get_env.py", ["VULKAN_SDK_DIR"], "string")
       include_dirs += [
-        VULKAN_SDK_DIR + "\\include"
+        VULKAN_SDK_DIR + "/include"
       ]
 
       if (is_win) {
-        lib_dirs += [
-          VULKAN_SDK_DIR + "\\Lib"
-        ]
-        libs += [
-          "vulkan-1.lib"
-        ]
+        include_dirs += [ VULKAN_SDK_DIR + "\\include" ]
+        lib_dirs += [ VULKAN_SDK_DIR + "\\Lib" ]
+        libs += [ "vulkan-1.lib" ]
       }
       else if (is_mac) {
+        include_dirs += [ VULKAN_SDK_DIR + "/include" ]
         libs += ["vulkan.1.3.261"]
       }
       else if (is_linux) {
+        include_dirs += [ VULKAN_SDK_DIR + "/include" ]
         libs += ["vulkan"]
       }
     }

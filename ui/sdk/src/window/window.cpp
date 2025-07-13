@@ -1,7 +1,8 @@
 #include "window.h"
+#include "include/interface/iattribute.h"
 #include "src/application/uiapplication.h"
-#include "src/attribute/attribute.h"
 #include "src/layout/desktop_layout.h"
+#include "src/panel/panel.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
 #include "window_meta.h"
@@ -14,9 +15,9 @@
 #elif defined(OS_MAC)
 #include "window_mac.h"
 #elif defined(OS_LINUX)
+#include "src/window/linux/display_wayland.h"
 #include "window_linux_wayland.h"
 #include "window_linux_x11.h"
-#include "src/window/linux/display_wayland.h"
 #endif
 
 namespace ui {
@@ -56,6 +57,10 @@ void Window::onRouteMessage(ui::Msg *msg) {
     onSerialize(m->param);
     return;
   }
+  if (msg->message == UI_MSG_GETDESIREDSIZE) {
+    onGetDesiredSize(&static_cast<GetDesiredSizeMessage*>(msg)->size);
+    return;
+  }
   Panel::onRouteMessage(msg);
 }
 
@@ -67,21 +72,6 @@ long Window::FinalConstruct() {
   m_window_style.hard_composite = GetUIApplication()->IsGpuCompositeEnable();
 
   return 0;
-}
-
-void Window::onSerialize(SerializeParam *pData) {
-  // 放在最前面，设置好Graphics Render Library
-  m_window_render.OnSerialize(pData);
-
-  Panel::onSerialize(pData);
-  AttributeSerializer s(pData, "Window");
-#if 0
-  s.AddString(XML_FONT, this,
-              memfun_cast<pfnStringSetter>(&Window::SetDefaultRenderFont),
-              memfun_cast<pfnStringGetter>(&Window::GetDefaultRenderFontId))
-      ->SetDefault(nullptr);
-#endif
-  s.AddString(XML_TEXT, m_strConfigWindowText);
 }
 
 void Window::Create(const char *szId, const Rect *rect) {
@@ -103,19 +93,20 @@ void Window::Create(const char *szId, const Rect *rect) {
 
   m_platform->Initialize();
 
-  CreateWindowParam param = {0};
+  PreCreateWindowMessage message;
   if (rect) {
     // 外部指定了窗口大小
-    param.position = true;
-    param.x = rect->left;
-    param.y = rect->top;
-    param.w = rect->Width();
-    param.h = rect->Height();
+    message.param.position = true;
+    message.param.x = rect->left;
+    message.param.y = rect->top;
+    message.param.w = rect->Width();
+    message.param.h = rect->Height();
   }
-  SendMessage(UI_MSG_PRECREATEWINDOW, (llong)&param);
-  m_platform->Create(param);
+  RouteMessage(&message);
 
-  onCreate(param);
+  m_platform->Create(message.param);
+
+  onCreate(message.param);
   m_objLayer.CreateLayer();
 }
 
@@ -361,9 +352,11 @@ void Window::onCreate(CreateWindowParam &param) {
     this->virtualInnerInitWindow();
 
     m_objStyle.initialized = 1;
-    SendMessage(UI_MSG_INITIALIZE);
+
+    RouteMessage(UI_MSG_INITIALIZE);
     ForwardInitializeMessageToDecendant(this);
-    SendMessage(UI_MSG_INITIALIZE2);
+    RouteMessage(UI_MSG_INITIALIZE2);
+
   }
 #if 0
   if (m_pCallbackProxy) {
@@ -444,6 +437,20 @@ void Window::onEraseBkgnd(IRenderTarget *pRenderTarget) {
   emit(WINDOW_PAINT_EVENT, &event);
 
   // SetMsgHandled(false);
+}
+
+// 为了解决在<window>结点上配置 width/height 属性后，窗口实际大小存在歧义的问题：
+// . 将 width/height 作为窗口整体大小；
+// . 将 width/height 作为客户区域大小，窗口大小还需要再加上边框和标题栏尺寸； 
+// 现做如下规定：
+// 1. <window>的width/height属性，如同layout.left等，都是做为窗口整体的布局属性，
+//    不是指客户区域的大小。
+// 2. 如果需要指定客户区的大小，需要创建一个root panel，设置它的width/height，
+//    窗口最终大小将动态计算，最终加上边框和标题栏的范围。
+// 3. Window响应GetDesiredSize消息，填充m_rcExtNonClient。
+void Window::onGetDesiredSize(Size *size) {
+  m_platform->UpdateNonClientRegion(&m_rcExtNonClient);
+  Panel::onGetDesiredSize(size);
 }
 
 #if 0

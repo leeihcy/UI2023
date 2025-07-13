@@ -1,4 +1,5 @@
 #include "object.h"
+#include "include/interface/imessage.h"
 #include "include/interface/imeta.h"
 #include "object_layer.h"
 
@@ -805,7 +806,10 @@ void Object::SetFocus(bool b, bool bNoitfy) {
 
   m_objState.focus = b;
   if (bNoitfy) {
+    assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
     GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_FOCUS);
+#endif
   }
 }
 
@@ -894,19 +898,17 @@ void Object::virtualSetVisibleEx(VISIBILITY_TYPE eType) {}
 //	[static]
 //   给pParent的子孙对象递归转发消息
 //
-void Object::ForwardMessageToChildObject(Object *pParent, UIMSG *pMsg) {
+void Object::ForwardMessageToChildObject(Object *pParent, ui::Msg *message) {
   Object *pChild = nullptr;
   while ((pChild = pParent->EnumChildObject(pChild))) {
-    pMsg->pMsgTo = pChild->GetIMessage();
-    pMsg->pMsgTo->SendMessage(pMsg);
-    Object::ForwardMessageToChildObject(pChild, pMsg);
+    pChild->RouteMessage(message);
+    Object::ForwardMessageToChildObject(pChild, message);
   }
 
   Object *pNcChild = nullptr;
   while ((pNcChild = pParent->EnumNcChildObject(pNcChild))) {
-    pMsg->pMsgTo = pNcChild->GetIMessage();
-    pMsg->pMsgTo->SendMessage(pMsg);
-    Object::ForwardMessageToChildObject(pNcChild, pMsg);
+    pNcChild->RouteMessage(message);
+    Object::ForwardMessageToChildObject(pNcChild, message);
   }
 }
 
@@ -915,13 +917,8 @@ void Object::ForwardMessageToChildObject(Object *pParent, UIMSG *pMsg) {
 // 注：如果已经初始化过了的控件，不再发送消息，如换肤（换布局）过程中有些控件不重新创建，
 //    但是还会发送一个bindind通知，用于重新绑定新的子控件，例如重新绑定滚动条
 void Object::ForwardInitializeMessageToDecendant(Object *pObj) {
-  UIMSG msg;
-  UIMSG msg2;
-  UIMSG msg3;
-  msg.message = UI_MSG_INITIALIZE;
-  msg2.message = UI_MSG_INITIALIZE2;
-  msg3.message = UI_MSG_DOBINDPLZ;
-  msg3.wParam = 1;
+  DoBindPlzMessage bind_message;
+  bind_message.bind = true;
 
   Object *pChild = nullptr;
   while ((pChild = pObj->EnumAllChildObject(pChild))) {
@@ -933,19 +930,15 @@ void Object::ForwardInitializeMessageToDecendant(Object *pObj) {
 
       pChild->virtualOnLoad();
 
-      msg.pMsgTo = pChild->GetIMessage();
-      msg.pMsgTo->SendMessage(&msg);
-
+      pChild->RouteMessage(UI_MSG_INITIALIZE);
       Object::ForwardInitializeMessageToDecendant(pChild);
-
-      msg2.pMsgTo = pChild->GetIMessage();
-      msg2.pMsgTo->SendMessage(&msg2);
+      pChild->RouteMessage(UI_MSG_INITIALIZE2);
     }
 
-    msg3.pMsgTo = pChild->GetIMessage();
-    msg3.pMsgTo->SendMessage(&msg3);
+    pChild->RouteMessage(&bind_message);
   }
 }
+
 void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   if (m_objState.visibility_ == eType)
     return;
@@ -955,16 +948,15 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
 
   m_objState.visibility_ = eType;
   virtualSetVisibleEx(eType);
+    assert(false);
+
+  VisibleChangedMessage message;
+  message.visible = bVisibleCompatible;
+  message.obj_trigger = m_pIObject;
 
   // 通知子对象
-  SendMessage(UI_MSG_VISIBLE_CHANGED, bVisibleCompatible ? true : false,
-              (llong)this);
-
-  UIMSG msg;
-  msg.message = UI_MSG_VISIBLE_CHANGED;
-  msg.wParam = bVisibleCompatible ? true : false;
-  msg.lParam = (llong)this;
-  Object::ForwardMessageToChildObject(this, &msg);
+  RouteMessage(&message);
+  Object::ForwardMessageToChildObject(this, &message);
 
   if (m_pParent) {
     GetLayoutMessage msg;
@@ -1006,8 +998,11 @@ void Object::SetEnable(bool b, bool bNoitfy) {
 
   virtualSetEnable(b);
 
-  if (bNoitfy && b != bOld)
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, (int)OSB_DISABLE);
+  if (bNoitfy && b != bOld) {
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_DISABLE;
+    RouteMessage(&message);
+  }
 
   if (b != bOld) {
     // [注] 如果没有指定刷新，则需要外部显示调用UpdateObject，因为该控件所在层
@@ -1047,7 +1042,9 @@ void Object::SetDefault(bool b, bool bNotify) {
 
   m_objState.default_ = b;
   if (bNotify) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_DEFAULT);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_DEFAULT;
+    RouteMessage(&message);
   }
 }
 
@@ -1057,7 +1054,9 @@ void Object::SetSelected(bool b, bool bNotify) {
 
   m_objState.selected = b;
   if (bNotify) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_SELECTED);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_SELECTED;
+    RouteMessage(&message);
   }
 }
 
@@ -1069,7 +1068,9 @@ void Object::SetForceHover(bool b, bool bNotify) {
 
   m_objState.force_hover = b;
   if (bNotify && IsHover() != bOldHover) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_HOVER);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_HOVER;
+    RouteMessage(&message);
   }
 }
 
@@ -1081,7 +1082,9 @@ void Object::SetForcePress(bool b, bool bNotify) {
 
   m_objState.force_press = b;
   if (bNotify && IsPress() != bOldPress) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_PRESS);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_PRESS;
+    RouteMessage(&message);    
   }
 }
 
@@ -1091,7 +1094,9 @@ void Object::SetHover(bool b, bool bNotify) {
 
   m_objState.hover = b;
   if (bNotify) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_HOVER);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_HOVER;
+    RouteMessage(&message);  
   }
 }
 
@@ -1101,7 +1106,9 @@ void Object::SetPress(bool b, bool bNotify) {
 
   m_objState.press = b;
   if (bNotify) {
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_PRESS);
+    StateChangedMessage message;
+    message.state_changed_mask = OSB_PRESS;
+    RouteMessage(&message);  
   }
 }
 

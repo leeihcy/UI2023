@@ -182,7 +182,7 @@ struct UIAPI IObject : public IMessage {
   ILayer *GetLayer();
   ILayer *GetSelfLayer();
 
-  void ForwardMessageToChildObject(UIMSG *pMsg);
+  void ForwardMessageToChildObject(ui::Msg *pMsg);
   void ForwardInitializeMessageToDecendant();
   // 动画属性
   unsigned char GetOpacity() const;

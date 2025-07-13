@@ -9,16 +9,19 @@
 namespace ui {
 
 Message::Message(IMessage *pIMessage) {
-  m_pCurMsg = nullptr;
+  // m_pCurMsg = nullptr;
   m_pIMessage = pIMessage;
   m_bCreateIMessage = false;
 }
 Message::~Message() {
-  m_pCurMsg = nullptr;
+  // m_pCurMsg = nullptr;
 
+
+#if 0 // 废弃，使用RouteMessage代替。
   this->ClearNotify();
   this->ClearHook();
   // this->ResetDelayRef();
+#endif
 
   if (m_bCreateIMessage) {
     m_pIMessage->m_pImpl = nullptr;
@@ -47,6 +50,10 @@ IMessage *Message::GetIMessage() {
 
 IMeta *Message::GetMeta() { return m_meta; }
 
+void Message::RouteMessage(int message) {
+  ui::Msg msg = { .message = message };
+  RouteMessage(&msg);
+}
 void Message::RouteMessage(Msg* msg) {
   m_meta->RouteMessage(m_pIMessage, msg);
 }
@@ -74,6 +81,7 @@ void Message::clear_events() {
   m_events.clear();
 }
 
+#if 0 // 废弃，使用RouteMessage代替。
 llong Message::SendMessage(uint message, llong wParam, llong lParam)
 {
   return m_pIMessage->SendMessage(message, wParam, lParam);
@@ -118,6 +126,7 @@ void Message::CopyNotifyTo(IMessage *pObjCopyTo) {
 
   pObjCopyTo->SetNotify(m_objNotify.pObj, m_objNotify.nMsgMapIDToNotify);
 }
+
 
 // 发送Notify消息到注册过Notify的对象.(修改为只通知给一个人.通知多个人太乱了)
 // 当bPost为true时，才需要pUIApp参数
@@ -236,28 +245,28 @@ void Message::ClearHook() {
   this->m_lHookMsgMap.clear();
 }
 
-// void Message::AddDelayRef(void **pp) {
-//   std::list<void **>::iterator iter =
-//       std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
-//   if (iter == m_lDelayRefs.end()) {
-//     m_lDelayRefs.push_back(pp);
-//   }
-// }
-// void Message::RemoveDelayRef(void **pp) {
-//   std::list<void **>::iterator iter =
-//       std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
-//   if (iter != m_lDelayRefs.end()) {
-//     m_lDelayRefs.erase(iter);
-//   }
-// }
-// void Message::ResetDelayRef() {
-//   std::list<void **>::iterator iter = m_lDelayRefs.begin();
-//   for (; iter != m_lDelayRefs.end(); iter++) {
-//     void **pp = *iter;
-//     *pp = nullptr;
-//   }
-//   m_lDelayRefs.clear();
-// }
+void Message::AddDelayRef(void **pp) {
+  std::list<void **>::iterator iter =
+      std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+  if (iter == m_lDelayRefs.end()) {
+    m_lDelayRefs.push_back(pp);
+  }
+}
+void Message::RemoveDelayRef(void **pp) {
+  std::list<void **>::iterator iter =
+      std::find(m_lDelayRefs.begin(), m_lDelayRefs.end(), pp);
+  if (iter != m_lDelayRefs.end()) {
+    m_lDelayRefs.erase(iter);
+  }
+}
+void Message::ResetDelayRef() {
+  std::list<void **>::iterator iter = m_lDelayRefs.begin();
+  for (; iter != m_lDelayRefs.end(); iter++) {
+    void **pp = *iter;
+    *pp = nullptr;
+  }
+  m_lDelayRefs.clear();
+}
 
 bool Message::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   ui::UIMSG *pOldMsg = this->GetCurMsg();
@@ -268,5 +277,6 @@ bool Message::ProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
 bool Message::virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) {
   return false;
 }
+#endif
 
 } // namespace ui

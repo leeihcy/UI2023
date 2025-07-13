@@ -68,9 +68,9 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
   // 这里只实现了给第一个对象发送通知，因此插件也只能有一个根结点）
   Object *p = pFirstChild;
   {
-    p->SendMessage(UI_MSG_INITIALIZE);
+    p->RouteMessage(UI_MSG_INITIALIZE);
     Object::ForwardInitializeMessageToDecendant(p);
-    p->SendMessage(UI_MSG_INITIALIZE2);
+    p->RouteMessage(UI_MSG_INITIALIZE2);
   }
 
   pNewParent->Invalidate();
@@ -342,6 +342,7 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
     }
   }
 
+#if 0 // 废弃，使用RouteMessage代替。 
   // 默认将该控件添加一个notify object为窗口对象，并将msgmapid设置为0
   if (pNotifyTarget == NOTIFY_TARGET_ROOT) {
     Window *pWindowBase = pObj->GetWindow();
@@ -353,6 +354,7 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
   } else {
     pObj->SetNotify(pNotifyTarget, 0);
   }
+#endif
 
   return pObj;
 }

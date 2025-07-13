@@ -3,7 +3,6 @@
 #include "sdk/include/interface.h"
 
 namespace ui {
-struct UIMSG;
 
 // 特殊含义常量
 enum {
@@ -261,17 +260,6 @@ public:                                                                        \
     return s;                                                                  \
   }
 
-
-struct CreateWindowParam {
-  bool position;
-  int x;
-  int y;
-  int w;
-  int h;
-  
-  bool transparent;
-  bool topmost;
-};
 
 } // namespace ui
 

@@ -23,9 +23,6 @@ public:
   RenderBase(IRenderBase *p);
   virtual ~RenderBase(){};
 
-  UI_BEGIN_MSG_MAP()
-  UI_END_MSG_MAP()
-
   //
   //	由于Render可以被用在很多地方，如背景、图标等等。为了区分设置的是哪个部分的Render属性，
   //	会在Render属性前面添加一个前缀，如bkgnd.render.type  icon.render.type

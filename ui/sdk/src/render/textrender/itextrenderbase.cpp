@@ -6,6 +6,7 @@
 #include "src/object/object.h"
 #include "src/render/render_meta.h"
 #include "src/render/textrender/textrender.h"
+#include <cstddef>
 #include <memory>
 
 namespace ui {
@@ -56,8 +57,12 @@ TEXTRENDER_TYPE ITextRenderBase::GetType() {
 }
 
 IRenderFont *ITextRenderBase::GetRenderFont() {
+    assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
   return (IRenderFont *)(static_cast<IMessage *>(this)->SendMessage(
       UI_MSG_GETRENDERFONT));
+#endif
+    return nullptr;
 }
 
 void ITextRenderBase::Serialize(SerializeParam *pData) {
@@ -107,11 +112,15 @@ void ITextRenderBase::DrawState(IRenderTarget *pRenderTarget, const Rect *prc,
   drawstate.szText = szText;
   drawstate.nDrawTextFlag = nDrawTextFlag;
 
+      assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
   static_cast<IMessage *>(this)->SendMessage(UI_MSG_RENDERBASE_DRAWSTATE,
                                              (ui::llong)&drawstate, 0);
+#endif
 }
 void ITextRenderBase::Init() {
-  static_cast<IMessage *>(this)->SendMessage(UI_MSG_INITIALIZE);
+    ui::Msg msg = { .message = UI_MSG_INITIALIZE };
+    RouteMessage(&msg);
 }
 void ITextRenderBase::CheckSkinTextureChanged() {
   return __pImpl->CheckSkinTextureChanged();

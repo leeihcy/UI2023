@@ -12,6 +12,11 @@ class NSWindow;
 #endif
 
 namespace ui {
+
+//
+// 1. macOS中，(0,0)坐标对应于屏幕左下角。
+//
+
 class WindowPlatformMac : public WindowPlatform, public IGpuCompositorWindowNSView {
 public:
   WindowPlatformMac(ui::Window& w);
@@ -30,6 +35,8 @@ public:
   void SetTitle(const char* title) override;
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
+  void UpdateNonClientRegion(Rect* pregion) override;
+  void GetMonitorWorkArea(Rect* rect) override;
   void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) override;
   void SetWindowRect(Rect *prect);
   void Invalidate(const Rect* prect) override;

@@ -434,6 +434,58 @@ void WindowPlatformWin::GetWindowRect(Rect *prect) {
   RECT2Rect(rc, prect);
 }
 
+void WindowPlatformWin::UpdateNonClientRegion(Rect* pregion) {
+  assert(false);
+  // TODO: 
+}
+void WindowPlatformWin::GetMonitorWorkArea(Rect* rect) {
+  assert(false);
+#if 0 // TODO:
+  Rect rcParent;
+  Rect rcLimit;
+  rcParent.SetEmpty();
+  rcLimit.SetEmpty();
+
+  // 计算出屏幕工作区域的大小(不使用整个屏幕的大小)
+  // nCXScreen = ::GetSystemMetrics( SM_CXSCREEN );
+  // nCYScreen = ::GetSystemMetrics( SM_CYSCREEN );
+
+  if (GetWindowLong(window->m_hWnd, GWL_STYLE) & WS_CHILD) {
+    HWND hWndParent = GetParent(window->m_hWnd);
+    if (hWndParent) {
+      ::GetClientRect(hWndParent, &rcParent);
+      rcLimit = rcParent;
+    }
+  } else {
+    HWND hWndParent = GetParent(window->m_hWnd);
+    if (hWndParent) {
+      if (IsIconic(hWndParent)) {
+        GetWindowNormalRect(hWndParent, &rcParent);
+      } else {
+        GetWindowRect(hWndParent, &rcParent);
+      }
+      MONITORINFO mi = {sizeof(mi), 0};
+      if (GetMonitorInfo(MonitorFromRect(rcParent, MONITOR_DEFAULTTOPRIMARY),
+                         &mi)) {
+        rcLimit = mi.rcWork;
+      } else {
+        SystemParametersInfo(SPI_GETWORKAREA, 0, &rcLimit, 0);
+      }
+    } else {
+      Point pt = {0};
+      GetCursorPos(&pt);
+
+      MONITORINFO mi = {sizeof(mi), 0};
+      if (GetMonitorInfo(MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY), &mi)) {
+        rcParent = mi.rcWork;
+      } else {
+        SystemParametersInfo(SPI_GETWORKAREA, 0, &rcParent, 0);
+      }
+      rcLimit = rcParent;
+    }
+#endif
+}
+
 void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
   int windows_flags = 0;
   if (flags.move == false) {

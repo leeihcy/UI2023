@@ -182,9 +182,11 @@ const char *TextRenderBase::_SaveColor(Color *&pColor) {
   return nullptr;
 }
 
+#if 0 // 废弃，使用RouteMessage代替。
 void TextRenderBase::OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo) {
   *pSize = GetDesiredSize(pInfo->szText, pInfo->nLimitWidth);
 }
+#endif
 
 Size TextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
   Size s = {0, 0};
@@ -227,8 +229,11 @@ bool TextRenderBase::IsThemeRender() {
 void TextRenderBase::CheckSkinTextureChanged() {
   if (m_nTextRenderType > TEXTRENDER_TYPE_CONTRAST_FIRST &&
       m_nTextRenderType < TEXTRENDER_TYPE_CONTRAST_LAST) {
+    assert(false);
+#if 0 // 废弃，使用RouteMessage代替。
     static_cast<IMessage *>(m_pITextRenderBase)
         ->SendMessage(UI_MSG_SKINTEXTURECHANGED);
+#endif
   }
 }
 

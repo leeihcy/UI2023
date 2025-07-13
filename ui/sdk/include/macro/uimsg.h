@@ -1,4 +1,4 @@
-#ifndef _UI_MSG_H_
+#if 0 // ndef _UI_MSG_H_  // 废弃，使用msg.h
 #define _UI_MSG_H_
  
 
@@ -206,75 +206,6 @@ public:                                                                        \
       return true;                                                             \
   }
 
-//	祖、父对象中的可见状态发生了改变（主要是用于在父对象隐藏时，能自动将HwndObj对象也隐藏）
-//		message: UI_WM_PARENT_VISIBLE_CHANGED
-//		code:
-//		wparam:  bool bVisible, (保持与WM_SHOWWINDOW一致)
-//		lparam:  Object*
-#define UI_MSG_VISIBLE_CHANGED 168261620
-
-// void  OnVisibleChanged(bool bVisible, IObject* pObjChanged)
-#define UIMSG_VISIBLE_CHANGED(func)                                            \
-  if (uMsg == UI_MSG_VISIBLE_CHANGED) {                                        \
-    SetMsgHandled(true);                                                       \
-    func(wParam ? true : false, (ui::IObject *)lParam);                        \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-//
-//	MouseManager通知一个对象，它的当前状态发生改变(hover,press...)
-//  专门用于刷新处理，不要在这个消息中添加其它逻辑处理，因为可能会被HOOK掉，导致状态不正确
-//
-//    UI_WM_STATECHANGED,
-
-// wParam: nChangeMask
-#define UI_MSG_STATECHANGED 168261626
-// void  OnStateChanged(unsigned int nMask);
-#define UIMSG_STATECHANGED(func)                                               \
-  if (uMsg == UI_MSG_STATECHANGED) {                                           \
-    SetMsgHandled(true);                                                       \
-    func((unsigned int)wParam);                                                \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-
-//
-//	获取当前绘制的偏移量，用于OnDraw
-//
-//		wparam:  [out] int* xOffset
-//		lparam:  [out] int* yOffset
-//
-//	Return
-//
-#define UI_MSG_GETSCROLLOFFSET 168261657
-// void  OnGetScrollOffset(int* pxOffset, int* pyOffset);
-#define UIMSG_GETSCROLLOFFSET(func)                                            \
-  if (uMsg == UI_MSG_GETSCROLLOFFSET) {                                        \
-    SetMsgHandled(true);                                                       \
-    func((int *)wParam, (int *)lParam);                                        \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-//
-//	获取当前滚动范围
-//
-//		wparam:  [out] int* xRange
-//		lparam:  [out] int* yRange
-//
-//	Return
-//
-#define UI_MSG_GETSCROLLRANGE 168261658
-// void  OnGetScrollRange(int* pxRange, int* pyRange);
-#define UIMSG_GETSCROLLRANGE(func)                                             \
-  if (uMsg == UI_MSG_GETSCROLLRANGE) {                                         \
-    SetMsgHandled(true);                                                       \
-    func((int *)wParam, (int *)lParam);                                        \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 //
 //  父对象需要计算它的non client region(不包括padding,border)区域时，给
@@ -355,21 +286,6 @@ struct GETDESIREDSIZEINFO {
       return true;                                                             \
   }
 
-//
-//  修改创建窗口数据
-//
-//  message: CREATESTRUCT*
-//
-#define UI_MSG_PRECREATEWINDOW 168270752
-
-// bool  PreCreateWindow(CreateWindowParam* pcs);
-#define UIMSG_PRECREATEWINDOW(func)                                            \
-  if (uMsg == UI_MSG_PRECREATEWINDOW) {                                        \
-    SetMsgHandled(true);                                                       \
-    lResult = func((CreateWindowParam *)wParam);                                    \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 //  获取窗口的透明类型，用于判断当前窗口是分层的，还是aero
 //  wparam:
@@ -388,47 +304,6 @@ struct GETDESIREDSIZEINFO {
       return true;                                                             \
   }
 
-//
-//  加载完所有控件后，由窗口发起的初始化
-//
-//  初始化顺序：
-//    1. 初始化自己UI_WM_INITIALIZE，
-//    2. 初始化自己的子对象
-//    3. 给自己再发送一个UI_WM_INITIALIZE2消息表示子对象初始化完成
-//    4. 给自己再发送一个UI_MSG_BINDPLZ消息,表示可以去绑定子控件了
-//    每次换布局（换肤）后，会再发送一次UI_MSG_BINDPLZ通知，但init消息不会再发送了
-//    换肤前会给每个控件发送一个UI_MSG_UNBINDPLZ通知，用于取消各种绑定
-//
-#define UI_MSG_INITIALIZE 155051209
-#define UI_MSG_INITIALIZE2 155051210
-#define UI_MSG_DOBINDPLZ 174191106 // wParam: true绑定， false取消绑定
-
-// void  OnInitialize();
-#define UIMSG_INITIALIZE(func)                                                 \
-  if (uMsg == UI_MSG_INITIALIZE) {                                             \
-    SetMsgHandled(true);                                                       \
-    func();                                                                    \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-// void  OnInitialize2();
-#define UIMSG_INITIALIZE2(func)                                                \
-  if (uMsg == UI_MSG_INITIALIZE2) {                                            \
-    SetMsgHandled(true);                                                       \
-    func();                                                                    \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-// void  DoBindPlz(bool bind);
-#define UIMSG_DOBINDPLZ(func)                                                  \
-  if (uMsg == UI_MSG_DOBINDPLZ) {                                              \
-    SetMsgHandled(true);                                                       \
-    func(wParam ? true : false);                                               \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
 
 #define UI_MSG_GETRENDERFONT 168271806
 //
