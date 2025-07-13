@@ -1,4 +1,5 @@
 #include "vulkan_swap_chain_image.h"
+#include "vulkan/vulkan_core.h"
 
 
 
@@ -14,8 +15,8 @@ SwapChainImage::~SwapChainImage() {
     vkDestroyFramebuffer(device, m_frame_buffer, nullptr);
     m_frame_buffer = VK_NULL_HANDLE;
   }
-  
 }
+
 SwapChainImage::SwapChainImage(SwapChainImage &&o)
     : m_bridge(o.m_bridge), m_image(o.m_image) {
   this->m_image_view.reset(o.m_image_view.release());

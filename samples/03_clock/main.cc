@@ -1,13 +1,11 @@
 #include "sdk/include/interface/ianimate.h"
 #include "sdk/include/interface/iobject.h"
+#include "sdk/include/interface/irenderlayer.h"
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
+#include "svg/include/inc.h"
 #include <cstdio>
 #include <ctime>
-
-#include "svg/include/inc.h"
-#include "sdk/include/interface/irenderlayer.h"
-
 
 // https://cssanimation.rocks/clocks/
 
@@ -50,18 +48,18 @@ public:
     ui::ILayer *min_layer = min->GetLayer();
     ui::ILayer *sec_layer = sec->GetLayer();
 
-     std::time_t now = std::time(nullptr);
+    std::time_t now = std::time(nullptr);
     // 转换为本地时间
-    std::tm* local_time = std::localtime(&now);
+    std::tm *local_time = std::localtime(&now);
 
     // 提取时、分、秒
     int h = local_time->tm_hour;
     int m = local_time->tm_min;
     int s = local_time->tm_sec;
 
-    hour_layer->RotateZTo(30*h + 0.5*m + 0.5*s/120);
-    min_layer->RotateZTo(6*m + 0.1*s);
-    sec_layer->RotateZTo(local_time->tm_sec * 6);
+    hour_layer->RotateZTo(30 * h + 0.5f * m + 0.5f * s / 120);
+    min_layer->RotateZTo(6 * m + 0.1f * s);
+    sec_layer->RotateZTo(local_time->tm_sec * 6.0f);
   }
 };
 ClockAnimate g_clock_animate;
@@ -78,15 +76,19 @@ int main() {
   bool use_gpu = true;
 
   ui::ApplicationPtr app;
-  if (use_gpu) { app->EnableGpuComposite(); }
+  if (use_gpu) {
+    app->EnableGpuComposite();
+  }
   ui::SvgRegisterObjects(app.get());
   ui::IResource *resource = app->LoadResource("sample/clock");
 
   ui::WindowPtr window(resource);
-  if (use_gpu) { window->EnableGpuComposite(true); }
+  if (use_gpu) {
+    window->EnableGpuComposite(true);
+  }
 
-  window->Create("clock",nullptr);
-  window->SetTitle("clock demo");
+  window->Create("clock", nullptr);
+  window->SetTitle("clock demo -- vulkan硬件合成");
   window->Show();
 
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));

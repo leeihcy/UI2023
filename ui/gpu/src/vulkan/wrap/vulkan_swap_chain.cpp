@@ -1,6 +1,8 @@
 #include "vulkan_swap_chain.h"
 #include "src/vulkan/vkapp.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
+#include "src/vulkan/wrap/vulkan_sync.h"
+#include <cstdint>
 #include <vulkan/vulkan.h>
 #include <assert.h>
 #include <cstring>
@@ -32,24 +34,25 @@ bool SwapChain::Initialize(VkSurfaceKHR surface, int width, int height) {
 
 // 创建顺序依赖于render pass
 bool SwapChain::CreateFrameBuffer() {
-  for (auto& i : m_images) {
-    i->CreateFrameBuffer(Extent2D().width, Extent2D().height);
+  for (auto& image : m_images) {
+    image->CreateFrameBuffer(Extent2D().width, Extent2D().height);
   }
   return true;
 }
 
-// 创建顺序依赖于command pool
-bool SwapChain::CreateCommandBuffer() {
-  for (auto& i : m_sync_items) {
-    i->CreateCommandBuffer();
+void SwapChain::DestroyForResize() {
+  m_images.clear();
+  if (m_swapchain != VK_NULL_HANDLE) {
+    vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
+    m_swapchain = VK_NULL_HANDLE;
   }
-  return true;
 }
 
 void SwapChain::Destroy() {
   m_sync_items.clear();
-  m_images.clear();
+  m_gpu_semaphores.clear();
 
+  m_images.clear();
   if (m_swapchain != VK_NULL_HANDLE) {
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
     m_swapchain = VK_NULL_HANDLE;
@@ -201,6 +204,8 @@ bool SwapChain::query_present_mode(VkSurfaceKHR surface) {
 }
 
 bool SwapChain::init_swap_images() {
+  assert (m_images.empty());
+
   // 获取swap chain中的image列表
   uint32_t image_count = 0;
   VkResult result = vkGetSwapchainImagesKHR(m_bridge.GetVkDevice(), m_swapchain,
@@ -233,39 +238,54 @@ bool SwapChain::init_swap_images() {
 }
 
 bool SwapChain::init_sync() {
-  for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    std::unique_ptr<SyncItem> item = std::make_unique<SyncItem>(m_bridge);
-    item->Initialize();
-    m_sync_items.push_back(std::move(item));
+  if (m_sync_items.empty()) {
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      std::unique_ptr<InFlightFrame> item = std::make_unique<InFlightFrame>(m_bridge);
+      item->Initialize();
+      item->CreateCommandBuffer();
+      m_sync_items.push_back(std::move(item));
+    }
+  }
+
+  if (m_gpu_semaphores.empty()) {
+    uint32_t size = m_images.size();
+    for (int i = 0; i < size; i++) {
+      auto item = std::make_unique<GpuSemaphores>(m_bridge);
+      item->Initialize();
+      m_gpu_semaphores.push_back(std::move(item));
+    }
   }
   return true;
 }
-
-// bool SwapChain::AcquireNextImage() {
-//   uint32_t imageIndex = 0;
-
-//   // 当gpu能获取到image（使用完）的时候会激活acquire_semaphore
-//   vkAcquireNextImageKHR(m_bridge.GetVkDevice(), m_swapchain, UINT64_MAX,
-//                         m_images[m_current_image_index]->m_acquire_submit_semaphore,
-//                         VK_NULL_HANDLE, &imageIndex);
-
-//   return true;
-// }
 
 SwapChainImage* SwapChain::GetCurrentImage() {
   assert(m_current_image_index < m_images.size());
 
   return m_images[m_current_image_index].get();
 }
-SyncItem* SwapChain::GetCurrentSync() {
+InFlightFrame* SwapChain::GetCurrentSync() {
   assert(m_current_frame_index < m_sync_items.size());
 
   return m_sync_items[m_current_frame_index].get();
+}
+GpuSemaphores* SwapChain::GetCurrentSemaphores() {
+  assert (m_current_semaphore_index < m_images.size());
+
+  return  m_gpu_semaphores[m_current_semaphore_index].get();
 }
 
 void SwapChain::IncCurrentFrame() {
   m_current_frame_index = (m_current_frame_index + 1) % MAX_FRAMES_IN_FLIGHT;
 }
+void SwapChain::IncCurrentSemaphores() {
+  uint32_t size = m_gpu_semaphores.size();
+  if (0 == size) { 
+    return; 
+  }
+
+  m_current_semaphore_index = (m_current_semaphore_index + 1) % size;
+}
+
 void SwapChain::SetCurrentImageIndex(uint32_t i) {
   m_current_image_index = i;
 }

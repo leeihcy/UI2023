@@ -14,7 +14,7 @@
 
 namespace ui {
 class Window;
-class CreateWindowParam;
+struct CreateWindowParam;
 struct IGpuCompositorWindow;
 
 struct WindowPlatform {

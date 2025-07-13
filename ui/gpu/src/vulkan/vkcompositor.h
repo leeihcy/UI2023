@@ -8,6 +8,11 @@
 #include "src/vulkan/wrap/vulkan_device_queue.h"
 #include "src/vulkan/wrap/vulkan_pipe_line.h"
 #include "src/vulkan/wrap/vulkan_swap_chain.h"
+
+#if defined(OS_WIN)
+#include <Windows.h>
+#endif
+
 #include <vector>
 #include <vulkan/vulkan.h>
 
@@ -56,8 +61,7 @@ public:
 
 private:
   void destory();
-  void destroy_swapchain();
-
+  
   bool create_vulkan_surface(IGpuCompositorWindow* window);
 
   void draw_frame_wait_for_previous_frame_to_finish();

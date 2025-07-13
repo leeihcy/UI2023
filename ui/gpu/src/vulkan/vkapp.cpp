@@ -99,6 +99,7 @@ bool VulkanApplication::is_extension_support(
     }
 
     if (!layerFound) {
+      printf("vulkan extension %s not found.\n", extension_name);
       return false;
     }
   }
@@ -175,6 +176,8 @@ void VulkanApplication::get_required_extensions(
   if (m_enable_validation_layers) {
     // 启用了该extension才能获取到 vkCreateDebugUtilsMessengerEXT 函数
     required_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    
+    // required_extensions.push_back(VK_EXT_DEVICE_ADDRESS_BINDING_REPORT_EXTENSION_NAME);  // windows上没有
   }
 }
 
@@ -197,13 +200,13 @@ bool VulkanApplication::create_vulkan_instance() {
   std::vector<const char *> required_extensions;
   get_required_extensions(required_extensions);
   if (!is_extension_support(required_extensions)) {
-    printf("is_extension_support failed");
+    printf("is_extension_support failed\n");
     return false;
   }
 
-  create_info.enabledLayerCount = required_layers.size();
+  create_info.enabledLayerCount = (uint32_t)required_layers.size();
   create_info.ppEnabledLayerNames = required_layers.data();
-  create_info.enabledExtensionCount = required_extensions.size();
+  create_info.enabledExtensionCount = (uint32_t)required_extensions.size();
   create_info.ppEnabledExtensionNames = required_extensions.data();
 
   VkDebugUtilsMessengerCreateInfoEXT debug_create_info = {};
@@ -218,8 +221,9 @@ bool VulkanApplication::create_vulkan_instance() {
     debug_create_info.messageType =
         VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
-        VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT;
+        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
+        // | VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT // windows上没有
+        ;
     debug_create_info.pfnUserCallback = vulkanLogCallback;
     debug_create_info.pUserData = nullptr;
 

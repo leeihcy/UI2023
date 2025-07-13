@@ -35,7 +35,7 @@ int main() {
 
   ui::Rect rc = ui::Rect::MakeXYWH(0, 0, 500, 400);
   window->Create(nullptr, &rc);
-  window->SetTitle("1.你好Hello!");
+  window->SetTitle("1.你好Hello! -- 窗口创建");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));

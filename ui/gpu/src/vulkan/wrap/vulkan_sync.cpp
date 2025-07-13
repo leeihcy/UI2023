@@ -1,72 +1,74 @@
 #include "vulkan_sync.h"
 #include "src/vulkan/wrap/vulkan_command_pool.h"
+#include "vulkan/vulkan_core.h"
 #include <memory>
+#include <assert.h>
 
 namespace vulkan {
 
+InFlightFrame::InFlightFrame(IVulkanBridge &bridge) : m_bridge(bridge) {}
 
-SyncItem::SyncItem(IVulkanBridge& bridge) : m_bridge(bridge) {
+InFlightFrame::~InFlightFrame() { Destroy(); }
 
-}
-
-SyncItem::~SyncItem() {
-  Destroy();
-}
-
-void SyncItem::Initialize() {
-  VkSemaphoreCreateInfo semaphoreInfo{};
-  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-  vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
-                    &m_acquire_submit_semaphore);
-  vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
-                    &m_submit_present_semaphore);
-
-  VkFenceCreateInfo fenceInfo{};
-  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
+void InFlightFrame::Initialize() {
+  VkFenceCreateInfo fenceInfo = {.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                                 .flags = VK_FENCE_CREATE_SIGNALED_BIT};
   vkCreateFence(m_bridge.GetVkDevice(), &fenceInfo, nullptr, &m_fence);
 }
 
-void SyncItem::Destroy() {
+void InFlightFrame::Destroy() {
   VkDevice device = m_bridge.GetVkDevice();
 
-  // Destroy Semaphores.
-  if (VK_NULL_HANDLE != m_submit_present_semaphore) {
-    vkDestroySemaphore(device, m_submit_present_semaphore, nullptr);
-    m_submit_present_semaphore = VK_NULL_HANDLE;
-  }
-  if (VK_NULL_HANDLE != m_acquire_submit_semaphore) {
-    vkDestroySemaphore(device, m_acquire_submit_semaphore, nullptr);
-    m_acquire_submit_semaphore = VK_NULL_HANDLE;
-  }
   if (VK_NULL_HANDLE != m_fence) {
     vkDestroyFence(device, m_fence, nullptr);
     m_fence = VK_NULL_HANDLE;
   }
 }
 
-bool SyncItem::CreateCommandBuffer() {
-   m_command_buffer = m_bridge.GetCommandPool().CreateBuffer();
-   return true;
+bool InFlightFrame::CreateCommandBuffer() {
+  assert (m_command_buffer == VK_NULL_HANDLE);
+  m_command_buffer = m_bridge.GetCommandPool().CreateBuffer();
+  return true;
 }
 
-// Sync::Sync(IVulkanBridge& bridge) : m_bridge(bridge) {}
 
-// Sync::~Sync() {
-//   Destroy();
-// }
+GpuSemaphores::GpuSemaphores(IVulkanBridge &bridge) : m_bridge(bridge) {
 
-// bool Sync::Initialize() {
-//   for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-//     std::unique_ptr<SyncItem> item = std::make_unique<SyncItem>(m_bridge);
-//     m_items.push_back(item);
-//   }
-//   return true;
-// }
- 
-// void Sync::Destroy() {
-//   m_items.clear();
-// }
+}
+GpuSemaphores::~GpuSemaphores() {
+  Destroy();
+}
+
+GpuSemaphores::GpuSemaphores(GpuSemaphores&& o) : m_bridge(o.m_bridge) {
+  this->m_semaphore_on_image_available = o.m_semaphore_on_image_available;
+  this->m_semaphore_on_queue_submit_finish = o.m_semaphore_on_queue_submit_finish;
+  o.m_semaphore_on_image_available = VK_NULL_HANDLE;
+  o.m_semaphore_on_queue_submit_finish = VK_NULL_HANDLE;
+}
+
+void GpuSemaphores::Initialize() {
+  VkDevice device = m_bridge.GetVkDevice();
+
+  VkSemaphoreCreateInfo semaphoreInfo = {
+      .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+  vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
+                    &m_semaphore_on_image_available);
+  vkCreateSemaphore(m_bridge.GetVkDevice(), &semaphoreInfo, nullptr,
+                    &m_semaphore_on_queue_submit_finish);
+}
+
+void GpuSemaphores::Destroy() {
+    VkDevice device = m_bridge.GetVkDevice();
+
+  // Destroy Semaphores.
+  if (VK_NULL_HANDLE != m_semaphore_on_queue_submit_finish) {
+    vkDestroySemaphore(device, m_semaphore_on_queue_submit_finish, nullptr);
+    m_semaphore_on_queue_submit_finish = VK_NULL_HANDLE;
+  }
+  if (VK_NULL_HANDLE != m_semaphore_on_image_available) {
+    vkDestroySemaphore(device, m_semaphore_on_image_available, nullptr);
+    m_semaphore_on_image_available = VK_NULL_HANDLE;
+  }
+}
 
 } // namespace vulkan

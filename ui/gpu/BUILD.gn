@@ -26,7 +26,7 @@ shared_library("uigpu") {
         "-DENABLE_D3D10"
       ]
     }
-    else if (enable_vulkan) {
+    else if (enable_vulkan && (is_linux || is_mac)) {
       cflags += [
         "-Wno-deprecated-volatile"
       ]
@@ -89,8 +89,10 @@ shared_library("uigpu") {
         "src/vulkan/vkcompositor.cpp",
         "src/vulkan/vkcompositor_draw_frame.cpp",
         "src/vulkan/vklayer.cpp",
+        "src/vulkan/vktexturetile.h",
         "src/vulkan/vktexturetile.cpp",
 
+        "src/vulkan/wrap/vulkan_command_buffer.h",
         "src/vulkan/wrap/vulkan_command_buffer.cpp",
         "src/vulkan/wrap/vulkan_command_pool.cpp",
         "src/vulkan/wrap/vulkan_device_queue.cpp",
@@ -105,12 +107,12 @@ shared_library("uigpu") {
 
       VULKAN_SDK_DIR = exec_script("//script/get_env.py", ["VULKAN_SDK_DIR"], "string")
       include_dirs += [
-        VULKAN_SDK_DIR + "/include"
+        VULKAN_SDK_DIR + "\\include"
       ]
 
       if (is_win) {
         lib_dirs += [
-          "C:\VulkanSDK\1.3.268.0\Lib"
+          VULKAN_SDK_DIR + "\\Lib"
         ]
         libs += [
           "vulkan-1.lib"

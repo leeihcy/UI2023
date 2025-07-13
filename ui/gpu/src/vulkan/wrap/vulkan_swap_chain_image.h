@@ -28,8 +28,6 @@ public:
   std::unique_ptr<ImageView> m_image_view;
 
   VkFramebuffer m_frame_buffer = VK_NULL_HANDLE;
-
-  
 };
 
 } // namespace vulkan

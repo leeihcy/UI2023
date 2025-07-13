@@ -52,12 +52,19 @@ ResourceManager &Application::GetResourceManager() {
 
 // 切换当前目录为程序所在目录，避免使用相对目录加载皮肤时失败。
 static void FixWorkDir() {
-  char exe_path[PATH_MAX] = {0};
-  char *dir_path;
+
 
 #if defined(OS_WIN)
-  GetModuleFileNameA(NULL, exe_path, PATH_MAX);
+  char exe_dir[MAX_PATH] = {0};
+  GetModuleFileNameA(NULL, exe_dir, MAX_PATH);
+  char *p = strrchr(exe_dir, '\\');
+  if (p) {
+    *(p + 1) = 0;
+  }
+  ::SetCurrentDirectoryA(exe_dir);
 #elif defined(OS_LINUX)
+  char exe_path[PATH_MAX] = {0};
+  char *dir_path;
   if (readlink("/proc/self/exe", exe_path, PATH_MAX) == -1) {
     return;
   }

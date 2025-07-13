@@ -21,8 +21,6 @@ void GetNSWindowActureSize(void *window, int *width, int *height);
 #include <vulkan/vulkan_wayland.h>
 #endif
 
-#define MAX_FRAMES_IN_FLIGHT 2
-
 namespace ui {
 
 static VulkanApplication &application() { return VulkanApplication::Get(); }
@@ -42,18 +40,15 @@ void VulkanCompositor::destory() {
   VkPhysicalDevice pysical_device = m_device_queue.PhysicalDevice();
   vkDeviceWaitIdle(m_device_queue.Device());
 
-  destroy_swapchain();
+  m_pipeline.Destroy();
+  m_swapchain.Destroy();
+
   auto &app = application();
 
   m_command_pool.Destroy();
   m_device_queue.Destroy();
 
   vkDestroySurfaceKHR(app.GetVkInstance(), m_surface, nullptr);
-}
-
-void VulkanCompositor::destroy_swapchain() {
-  m_pipeline.Destroy();
-  m_swapchain.Destroy();
 }
 
 GpuLayer *VulkanCompositor::GetRootLayerTexture() { return m_pRootTexture; }
@@ -66,53 +61,6 @@ IGpuLayer *VulkanCompositor::CreateLayerTexture() {
 
 void VulkanCompositor::SetRootLayerTexture(IGpuLayer *p) {
   m_pRootTexture = static_cast<GpuLayer *>(p);
-}
-
-//
-// 1. Wait for the previous frame to finish
-// 2. Acquire an image from the swap chain
-// 3. Record a command buffer which draws the scene onto that image
-// 使用command_buffer进行绘制。
-// 4. Submit the recorded command buffer
-// 5. Present the swap chain image
-//
-bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
-  assert(nullptr == m_current_command_buffer);
-
-  // StopWatch stop_watch;
-
-  // 给每个tile一次更新descriptor set机会
-  if (m_pRootTexture) {
-    m_pRootTexture->OnBeginCommit(ctx);
-  }
-
-  draw_frame_wait_for_previous_frame_to_finish();
-  draw_frame_acquire_image_from_swap_chain();
-  m_current_command_buffer = draw_frame_begin_record_command_buffer();
-
-  ctx->m_data = m_current_command_buffer;
-  // vkCmdDraw(m_current_command_buffer->handle(), 3, 1, 0, 0);
-
-  // int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  // printf("gpu begin commit cost %d ms\n", ms);
-
-  return true;
-}
-void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
-
-  // StopWatch stop_watch;
-
-  if (!m_current_command_buffer) {
-    return;
-  }
-  draw_frame_end_record_command_buffer(m_current_command_buffer);
-  m_current_command_buffer = nullptr;
-
-  draw_frame_submit_command_buffer();
-  draw_frame_present_swap_chain();
-
-  // int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  // printf("gpu end commit cost %d 微秒\n", ms);
 }
 
 bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
@@ -138,8 +86,10 @@ void VulkanCompositor::Resize(int width, int height) {
   m_width = width;
   m_height = height;
 
+  // 等待设备空闲
   vkDeviceWaitIdle(GetVkDevice());
-  destroy_swapchain();
+  
+  m_swapchain.DestroyForResize();
 
   if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
     printf("create_swapchain failed\n");
@@ -148,7 +98,8 @@ void VulkanCompositor::Resize(int width, int height) {
 
   VkFormat image_format = m_swapchain.ImageFormat();
 
-  // ~~pipe line应该只需要创建一次就够了。~~
+  // pipe line应该只需要创建一次就够了。
+  // 和窗口大小相关的viewport/scissor在每次commit时进行设置，参见UpdateViewportScissor
   if (m_pipeline.handle() == VK_NULL_HANDLE) {
     if (!m_pipeline.Initialize(m_swapchain.Extent2D().width,
                                m_swapchain.Extent2D().height, image_format)) {
@@ -161,11 +112,6 @@ void VulkanCompositor::Resize(int width, int height) {
     printf("m_swapchain CreateFramebuffer failed\n");
     return /*false*/;
   }
-
-  if (!m_swapchain.CreateCommandBuffer()) {
-    printf("CreateCommandBuffer failed\n");
-    return /*false*/;
-  }
 }
 
 bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
@@ -176,7 +122,7 @@ bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
 
   VkWin32SurfaceCreateInfoKHR createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-  createInfo.hwnd = ((IGpuCompositorWindowHWND)window)->GetHWND();
+  createInfo.hwnd = (HWND)(((IGpuCompositorWindowHWND*)window)->GetHWND());
   createInfo.hinstance = GetModuleHandle(nullptr);
 
   vkCreateWin32SurfaceKHR(app.GetVkInstance(), &createInfo, nullptr,
@@ -301,13 +247,13 @@ bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
 void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                                         VkDeviceSize size) {
   std::unique_ptr<vulkan::CommandBuffer> cb = m_command_pool.CreateBuffer();
-  cb->Begin();
+  cb->BeginRecordCommand();
   {
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
   }
-  cb->End();
+  cb->EndRecordCommand();
 
   m_device_queue.Submit(cb.get());
   m_device_queue.WaitIdle();

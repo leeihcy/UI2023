@@ -29,6 +29,16 @@ bool Pipeline::Initialize(uint32_t w, uint32_t h, VkFormat format) {
   return true;
 }
 
+void Pipeline::UpdateViewportScissor(uint32_t w, uint32_t h, VkCommandBuffer command_buffer) {
+  Context context;
+  build_viewport_scissor(context, w, h);
+
+  vkCmdSetViewport(command_buffer, 0, 1, &context.viewport);
+  vkCmdSetScissor(command_buffer, 0, 1, &context.scissor);
+
+  destroy_context(context);
+}
+
 void Pipeline::Destroy() {
   if (m_renderpass != VK_NULL_HANDLE) {
     vkDestroyRenderPass(m_bridge.GetVkDevice(), m_renderpass, nullptr);
@@ -61,16 +71,16 @@ void Pipeline::Destroy() {
 
   if (m_descriptor_pool != VK_NULL_HANDLE) {
     if (!m_arr_descriptor_sets.empty()) {
+      // 创建pool时，我们使用了 CREATE_FREE_DESCRIPTOR_SET_BIT，
+      // 这里我们自己释放资源。
       vkFreeDescriptorSets(m_bridge.GetVkDevice(), m_descriptor_pool,
-                           m_arr_descriptor_sets.size(),
+                           (uint32_t)m_arr_descriptor_sets.size(),
                            m_arr_descriptor_sets.data());
       m_arr_descriptor_sets.clear();
     }
 
     m_arr_uniform_buffers.clear();
 
-    // VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
-    // 释放pool时会自动释放descriptor set
     vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_descriptor_pool, nullptr);
     m_descriptor_pool = VK_NULL_HANDLE;
   }
@@ -260,7 +270,8 @@ bool Pipeline::build_fragment_shader(Context &ctx) {
   if (!read_spv_file("shaders/frag.spv", fragShaderCode)) {
     return false;
   }
-  if (!create_shader_module(fragShaderCode.data(), fragShaderCode.size(),
+  if (!create_shader_module(fragShaderCode.data(),
+                            (uint32_t)fragShaderCode.size(),
                             &ctx.fragment_shader.module)) {
     return false;
   }
@@ -309,7 +320,7 @@ bool Pipeline::create_texture_sampler() {
   samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
   samplerInfo.magFilter = VK_FILTER_LINEAR;
   samplerInfo.minFilter = VK_FILTER_LINEAR;
-  
+
   // 解决layer分块后，将其进行旋转后，在tile边缘处没衔接上的问题。
   // 对应于d3d中的 SamplerState AddressU = MIRROR;
   samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
@@ -343,9 +354,9 @@ void Pipeline::build_descriptor_set_layout() {
   VkDescriptorSetLayoutBinding bindings[] = {
       // 只有1个ubo binding
       {
-          .binding = 0,         // binding的索引
+          .binding = 0, // binding的索引
           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-          .descriptorCount = 1, // 只有一个ubo
+          .descriptorCount = 1,                     // 只有一个ubo
           .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 哪此着色器阶段可以访问。
       }};
 
@@ -365,7 +376,7 @@ void Pipeline::build_descriptor_set_layout() {
 //
 void Pipeline::build_texture_descriptor_set_layout() {
   VkDescriptorSetLayoutBinding textureBindings[] = {{
-      .binding = 0,         // binding索引
+      .binding = 0, // binding索引
       .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
       .descriptorCount = 1, // 目前只有一个纹理，没用数组。
       .stageFlags =
@@ -391,11 +402,23 @@ void Pipeline::create_descriptor_pool() {
       {.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
        .descriptorCount = static_cast<uint32_t>(swapchain.Size())}};
 
-  VkDescriptorPoolCreateInfo poolInfo{};
-  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  poolInfo.poolSizeCount = std::size(poolSizes);
-  poolInfo.pPoolSizes = poolSizes;
-  poolInfo.maxSets = static_cast<uint32_t>(swapchain.Size());
+  VkDescriptorPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+
+      // * 当设置 VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT 标志时：
+      // 允许显式释放单个描述符集：
+      // 你可以调用 vkFreeDescriptorSets() 主动释放池中的
+      // 特定描述符集，而无需重置或销毁整个池。
+      //
+      // * 未设置时：
+      // 描述符集只能通过 vkResetDescriptorPool()
+      // 批量释放（所有集合一起释放），或随池销毁时自动释放。
+      //
+      .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+
+      .maxSets = static_cast<uint32_t>(swapchain.Size()),
+      .poolSizeCount = std::size(poolSizes),
+      .pPoolSizes = poolSizes};
 
   if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
                              &m_descriptor_pool) != VK_SUCCESS) {
@@ -437,7 +460,7 @@ void Pipeline::create_descriptor_sets() {
       .pSetLayouts = layouts.data(),
   };
 
-  m_arr_descriptor_sets.reserve(count);
+  m_arr_descriptor_sets.resize(count);
   if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo,
                                &m_arr_descriptor_sets[0]) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate descriptor sets!");
@@ -537,6 +560,19 @@ bool Pipeline::create_pipeline(Context &ctx) {
   ctx.pipeline_info.subpass = 0;
   ctx.pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
+  // 将和窗口大小相关的属性，设置为Dynamic，这样窗口大小改变时，
+  // 不需要重新创建pipe line，只需要更新对应属性即可。
+  std::vector<VkDynamicState> dynamicStates = {
+    VK_DYNAMIC_STATE_VIEWPORT,   // 视口动态
+    VK_DYNAMIC_STATE_SCISSOR     // 裁剪矩形动态
+  };
+  VkPipelineDynamicStateCreateInfo dynamicStateInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+    .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
+    .pDynamicStates = dynamicStates.data()
+  };
+  ctx.pipeline_info.pDynamicState = &dynamicStateInfo;
+
   if (vkCreateGraphicsPipelines(m_bridge.GetVkDevice(), VK_NULL_HANDLE, 1,
                                 &ctx.pipeline_info, nullptr,
                                 &m_graphics_pipeline) != VK_SUCCESS) {
@@ -582,10 +618,10 @@ void Pipeline::create_uniform_buffers() {
 
   for (size_t i = 0; i < size; i++) {
     m_arr_uniform_buffers.push_back(vulkan::Buffer(m_bridge));
-    m_arr_uniform_buffers[i].CreateBuffer(bufferSize,
-                                      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    m_arr_uniform_buffers[i].CreateBuffer(
+        bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
   }
 }
 
@@ -612,15 +648,17 @@ void Pipeline::UpdateUniformBuffer(uint32_t currentImage,
   // ubo.proj[1][1] *= -1;
 
   // ubo.ortho = glm::mat4(1.0);
-  ubo.ortho = glm::orthoLH<float>(0, swapchain.Extent2D().width, 0,
-                                  swapchain.Extent2D().height, -2000.f, 2000.f);
+  ubo.ortho =
+      glm::orthoLH<float>(0, (float)swapchain.Extent2D().width, 0,
+                          (float)swapchain.Extent2D().height, -2000.f, 2000.f);
   // ubo.orth = PrepareOrthographicProjectionMatrix(0,
   // swapchain.Extent2D().width, swapchain.Extent2D().height, 0, -2000.f,
   // 2000.f);
 
   void *data;
-  vkMapMemory(m_bridge.GetVkDevice(), m_arr_uniform_buffers[currentImage].memory(),
-              0, sizeof(ubo), 0, &data);
+  vkMapMemory(m_bridge.GetVkDevice(),
+              m_arr_uniform_buffers[currentImage].memory(), 0, sizeof(ubo), 0,
+              &data);
   memcpy(data, &ubo, sizeof(ubo));
   vkUnmapMemory(m_bridge.GetVkDevice(),
                 m_arr_uniform_buffers[currentImage].memory());
@@ -651,12 +689,12 @@ void Pipeline::UpdatePushData(VkCommandBuffer &command_buffer,
   position.model = mat4;
 
   vkCmdPushConstants(
-      command_buffer,    // 当前命令缓冲区
-      m_pipeline_layout, // 管线布局（需包含 Push Constants 范围）
+      command_buffer,             // 当前命令缓冲区
+      m_pipeline_layout,          // 管线布局（需包含 Push Constants 范围）
       VK_SHADER_STAGE_VERTEX_BIT, // 生效的着色器阶段（这里是顶点着色器）
-      0, // 偏移量（如果 Push Constants 块有多个变量）
-      sizeof(PushData), // 数据大小
-      &position         // 数据指针
+      0,                          // 偏移量（如果 Push Constants 块有多个变量）
+      sizeof(PushData),           // 数据大小
+      &position                   // 数据指针
   );
 }
 

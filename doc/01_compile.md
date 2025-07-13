@@ -5,15 +5,21 @@
 注意：可能需要搭梯子。
 
 1. 安装python sdk
-   
+
+   https://www.python.org/downloads/windows/
+
 2. 安装vulkan sdk
-https://vulkan.lunarg.com/sdk/home
-例如：https://sdk.lunarg.com/sdk/download/1.4.313.0/linux/vulkansdk-linux-x86_64-1.4.313.0.tar.xz
+  https://vulkan.lunarg.com/sdk/home
+  例如：https://sdk.lunarg.com/sdk/download/1.4.313.0/linux/vulkansdk-linux-x86_64-1.4.313.0.tar.xz
 
 
 ```sh
 $ python3 script/init.py
 ```
+
+
+
+
 
 ## 编译 
 
@@ -26,7 +32,6 @@ linux:
   # vulkan
   # sudo apt install glslc
   sudo apt install libglm-dev
-
   
   # skia 编译依赖
   sudo apt install libfreetype6-dev
@@ -34,13 +39,24 @@ linux:
   sudo apt install libgl1-mesa-dev  # 包含 OpenGL 和 GLX 头文件
 ```
 
+设置PATH环境变量
 
-设置PATH环境变量（linux）：
+windows:
+
+```sh
+> call script/ent.bat
+```
+
+linux/mac：
+
 ```sh
 $ source script/ent.sh
 ```
 
+
+
 ### 编译skia
+
 https://skia.org/docs/user/build/
 
 ```sh
@@ -61,16 +77,36 @@ piet-gpu仓库已过期，找到 skia/src/DEPS文件，替换"third_party/extern
 deps中没有添加gn的依赖，可以直接拷贝一个gn文件到 skia/src/buildtools/linux64/gn 或者 skia/src/buildtools/mac/gn 位置即可。
 
 ```sh
+#windows
+copy build_tools\windows\gn.exe third_party\skia\src\buildtools\win\gn.exe
+#linux
+cp build_tools/linux/gn third_party/skia/src/buildtools/linux/gn
+#mac
 cp build_tools/mac/gn third_party/skia/src/buildtools/mac/gn
 ```
 
+
+
 各平台对应的args.gn配置：
 
-* windows:
+* windows static lib debug:
 
 ```sh
 skia_use_system_libjpeg = false
+is_debug = true
+symbol_level = 2
 ```
+
+* windows shared lib debug:
+
+```sh
+skia_use_system_libjpeg = false
+is_component_build = true
+is_debug = true
+symbol_level = 2
+```
+
+
 
 * mac dylib debug:
 
@@ -107,10 +143,8 @@ skia_use_system_zlib = false
 skia_enable_tools = true
 ```
 
-linux:
+* linux debug： 
 
-
-编译命令： 
 ```sh
 $ cd third_party/skia/src
 $ mkdir -p out/debug
@@ -119,6 +153,8 @@ $ vi args.gn
 $ gn gen .
 $ ninja skia
 ```
+
+
 
 ### 编译swiftshader
 
@@ -136,7 +172,9 @@ cmake --build . --parallel
 ```
 
 
+
 ### ui
+
 下载GNU gcc g++: https://github.com/niXman/mingw-builds-binaries/releases
 找到 x86_64-win32-seh 链接下载到7z包，解压开，将bin配置到系统PATH即可。
 
@@ -145,6 +183,7 @@ $ cd out/debug
 $ gn gen . --args="is_debug=true"
 $ ninja
 ```
+
 
 
 ## submodule
@@ -199,7 +238,7 @@ $ git submodule add https://swiftshader.googlesource.com/SwiftShader third_party
 ## 开发环境配置
 
 1. VSCode
-2. 扩展：clangd 
+2. 语法扩展：clangd 
    用于实现语法提示
    Clangd: Fallback Flags添加：
   ```
@@ -207,6 +246,10 @@ $ git submodule add https://swiftshader.googlesource.com/SwiftShader third_party
   -I/<替换为本地的工程目录>/ui
   ```
   重启vscode
+
+3. 调试扩展：lldb
+
+
 
 
 ## 调试
@@ -226,7 +269,7 @@ $ git submodule add https://swiftshader.googlesource.com/SwiftShader third_party
       }
     ]
   }
-   ```
+  ```
 2. Windows下直接使用Visual Studio加载对应的.exe进行调试即可。
 3. 不推荐使用VSCode c/c++扩展，经常出现cpu占满的情况。
 

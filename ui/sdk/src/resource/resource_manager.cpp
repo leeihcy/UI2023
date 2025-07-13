@@ -279,7 +279,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
   if (!szPath)
     return nullptr;
 
-  UI_LOG_INFO(L"\n\n------------  LoadResource: %s ----------------\n",
+  UI_LOG_INFO("\n\n------------  LoadResource: %s ----------------\n",
               szPath);
 
   char szSkinName[MAX_PATH] = {0};

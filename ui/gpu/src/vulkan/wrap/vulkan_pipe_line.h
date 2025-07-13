@@ -75,7 +75,7 @@ public:
     VkPipelineColorBlendStateCreateInfo color_blending{};
     VkPipelineColorBlendAttachmentState color_blend_attachment{};
 
-    VkGraphicsPipelineCreateInfo pipeline_info{
+    VkGraphicsPipelineCreateInfo pipeline_info {
         .pVertexInputState = &vertex_input,
         .pInputAssemblyState = &input_assembly,
         .pViewportState = &viewport_state,
@@ -111,6 +111,7 @@ private:
   void create_uniform_buffers();
 
 public:
+  void UpdateViewportScissor(uint32_t w, uint32_t h, VkCommandBuffer command_buffer);
   void UpdateUniformBuffer(uint32_t currentImage, VkCommandBuffer command_buffer);
   void UpdatePushData(VkCommandBuffer &command_buffer, glm::mat4 &mat4);
 

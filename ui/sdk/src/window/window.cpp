@@ -105,8 +105,6 @@ void Window::Create(const char *szId, const Rect *rect) {
 
   CreateWindowParam param = {0};
   if (rect) {
-    // m_window_style.setcreaterect = true;
-
     // 外部指定了窗口大小
     param.position = true;
     param.x = rect->left;

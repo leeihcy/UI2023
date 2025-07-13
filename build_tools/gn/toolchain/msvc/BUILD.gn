@@ -168,10 +168,8 @@ toolchain("msvc") {
     description = "STAMP {{output}}"
   }
   tool("copy") {
-    #command = "copyaaa /Y {{source}} {{output}}"
-    #description = "COPY {{source}} {{output}}"
-
-    command = "cp -af {{source}} {{output}}"
-    description = "COPY {{source}} {{output}}"
+    cp_py = rebase_path("../../cp.py")
+    command = "python3 \"$cp_py\" {{source}} {{output}}"
+    description = "copy {{source}} {{output}}"
   }
 }

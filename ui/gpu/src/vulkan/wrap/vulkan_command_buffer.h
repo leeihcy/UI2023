@@ -37,11 +37,11 @@ public:
   VkCommandBuffer handle() { return m_command_buffer; }
   
   void Reset();
-  void Begin();
-  void End();
+  void BeginRecordCommand();
+  void EndRecordCommand();
   
   void BeginRenderPass(VkFramebuffer framebuffer);
-  void BindPipeline();
+  void BindPipeline(VkPipeline pipe_line);
   void EndRenderPass();
 
 protected:

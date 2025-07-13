@@ -4,6 +4,7 @@
 #include <string>
 #include "include/util/rect.h"
 #include "src/util/windows.h"
+#include "gpu/include/api.h"
 
 namespace ui {
 
@@ -25,7 +26,7 @@ private:
   _AtlCreateWndData *m_pCreateWndList;
 };
 
-class WindowPlatformWin : public WindowPlatform {
+class WindowPlatformWin : public WindowPlatform, public IGpuCompositorWindowHWND {
 public:
   WindowPlatformWin(ui::Window &w);
   ~WindowPlatformWin();
@@ -34,6 +35,10 @@ public:
   bool Create(CreateWindowParam& param) override;
   bool CreateTransparent(const Rect &rect);
   void Destroy();
+
+  IGpuCompositorWindow *GetGpuCompositorWindow(void) override {
+    return static_cast<IGpuCompositorWindow*>(this);
+  }
 
   WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;
@@ -65,6 +70,9 @@ public:
   int RestoreByDpi(int x);
   int RestoreByDpi_if_gt0(int x);
   float GetDpiScale();
+
+  // IGpuCompositorWindow
+  void* GetHWND() override { return (void*)m_hWnd; }
 
 public:
   // WndProc的原始消息处理   // 经过virtual扩展了

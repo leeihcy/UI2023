@@ -4,7 +4,8 @@
 #include "gpu/include/interface.h"
 #include "sdk/include/util/rect.h"
 
-#if defined(OS_LINUX)
+#if defined(WS_WIN)
+#elif defined(OS_LINUX)
 struct wl_display;
 struct wl_surface;
 #elif defined(OS_MAC)
@@ -32,24 +33,24 @@ struct IGpuCompositorWindow {
 
 #if defined(OS_WIN)
 struct IGpuCompositorWindowHWND : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() { return GpuCompositorWindowType::WindowsHWND; }
-  virtual HWND GetHWND() = 0;
+  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::WindowsHWND; }
+  virtual void* GetHWND() = 0; // HWND
 };
 #elif defined(OS_MAC)
 struct IGpuCompositorWindowNSView : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() { return GpuCompositorWindowType::MacOSNSView; }
+  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::MacOSNSView; }
   virtual void* GetNSWindowRootView() = 0; // NSView*
 };
 #elif defined(OS_LINUX)
 struct IGpuCompositorWindowWayland : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() { return GpuCompositorWindowType::LinuxWayland; }
+  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::LinuxWayland; }
 
   virtual wl_display* GetWaylandDisplay() = 0;
   virtual wl_surface* GetWaylandSurface() = 0;
 };
 
 struct IGpuCompositorWindowX11 : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() { return GpuCompositorWindowType::LinuxWayland; }
+  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::LinuxWayland; }
 };
 #endif
 

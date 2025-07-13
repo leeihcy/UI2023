@@ -56,10 +56,17 @@ shared_library("uisdk") {
       else if (is_win) {
         include_dirs += [ PYTHON_INC_DIR ]
         lib_dirs += [ PYTHON_LIB_DIR ]
-        libs += [
-          "python311.lib",
-          "python3.lib"
-        ]
+        if (is_debug) {
+          libs += [
+            "python38_d.lib",
+            "python3_d.lib"
+          ]
+        } else {
+            libs += [
+            "python38.lib",
+            "python3.lib"
+          ]
+        }
       }
       else if (is_linux) {
         include_dirs += [ PYTHON_INC_DIR ]
@@ -309,10 +316,17 @@ copy("copy_skia") {
         sources = ["//third_party/skia/src/out/release/libskia.dylib"]
     }
   } else if (is_win) {
-    sources = [
-      "//third_party/skia/src/out/Shared/skia.dll",
-      "//third_party/skia/src/out/Shared/skia.dll.lib"
-    ]
+    if (is_debug) {
+      sources = [
+          "//third_party\skia\src\out\debug\skia.dll",
+          "//third_party\skia\src\out\debug\skia.dll.lib"
+      ]
+    } else {
+      sources = [
+        "//third_party/skia/src/out/release/skia.dll",
+        "//third_party/skia/src/out/release/skia.dll.lib"
+      ]
+    }
   } else if (is_linux) {
     if (is_debug) {
       sources = [ "//third_party/skia/src/out/debug/libskia.so" ]

@@ -5,6 +5,10 @@
 // 整个UISDK中的单元测试用例入口
 // test_main.exe，将加载uisdk.dll中的UIUnitTest API
 
+//
+// https://vulkan-tutorial.com/en/Development_environment
+//
+
 void tutorial_01();
 void tutorial_02();
 

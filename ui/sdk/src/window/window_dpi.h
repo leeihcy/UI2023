@@ -2,7 +2,7 @@
 #define _UI_SDK_SRC_WINDOW_WINDOW_DPI_H_
 
 namespace ui {
-class Rect;
+struct Rect;
 
 enum WindowScalePolicy { Raw, System, Force };
 

@@ -100,13 +100,13 @@ void Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
   vulkan::CommandPool &command_pool = m_bridge.GetCommandPool();
 
   std::unique_ptr<vulkan::CommandBuffer> cb = command_pool.CreateBuffer();
-  cb->Begin();
+  cb->BeginRecordCommand();
   {
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
     vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
   }
-  cb->End();
+  cb->EndRecordCommand();
 
   vulkan::DeviceQueue &device_queue = m_bridge.GetDeviceQueue();
   device_queue.Submit(cb.get());
