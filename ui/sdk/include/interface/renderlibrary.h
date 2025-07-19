@@ -1,6 +1,7 @@
 #ifndef _UI_RENDERLIBRARY_H_
 #define _UI_RENDERLIBRARY_H_
 #include "sdk/include/util/color.h"
+#include "sdk/include/util/rect.h"
 #include "sdk/include/macro/xmldefine.h"
 
 namespace ui {
@@ -66,29 +67,34 @@ typedef struct tagDRAWBITMAPPARAM {
 
 } DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
-typedef struct tagDRAWTEXTPARAM {
-  tagDRAWTEXTPARAM() {
-    nFormatFlag = 0;
-    nEffectFlag = 0;
+struct DrawTextFlags {
+
+};
+struct DrawTextEffects {
+
+};
+struct DrawTextParam {
+  DrawTextParam() {
+    flags = 0;
+    effects = 0;
     color.a = 255;
-    szText = nullptr;
-    prc = nullptr;
-    bkcolor.a = 255;
-    wParam = lParam = 0;
+    text = nullptr;
+    bound.SetEmpty();
+    // bkcolor.a = 255;
+    // wParam = lParam = 0;
   }
-
-  int nFormatFlag; // 对齐标志，同DrawText flag
-  int nEffectFlag; // 特效标志
-
+  
+  const char *text;
+  Rect bound;  // 绘制范围
+  int flags; // 绘制标志
+  int effects; // 特效标志
   ui::Color color;
-  const char *szText;
-  const Rect *prc;
-
+  
   // 特效中可能会使用到的参数
-  Color bkcolor;
-  long wParam;
-  long lParam;
-} DRAWTEXTPARAM, *LPDRAWTEXTPARAM;
+  // Color bkcolor;
+  // long wParam;
+  // long lParam;
+};
 
 enum TEXT_EFFECT {
   TEXT_EFFECT_NONE = 0,
@@ -282,7 +288,7 @@ struct IRenderTarget {
   virtual void ImageList_Draw(IRenderBitmap *, int x, int y, int col, int row,
                               int cx, int cy) = 0;
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
-  virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam) = 0;
+  virtual void DrawString(IRenderFont *pFont, DrawTextParam *pParam) = 0;
 
   virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) = 0;
 };

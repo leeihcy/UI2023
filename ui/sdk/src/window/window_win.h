@@ -62,7 +62,7 @@ public:
   void Hide();
   float GetScaleFactor() override;
 
-  void Invalidate(const Rect *prect) override;
+  // void Invalidate(const Rect *prect) override;
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
 
   // dpi...

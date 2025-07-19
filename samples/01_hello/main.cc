@@ -8,11 +8,12 @@ void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
 void on_window_paint(ui::IWindow* window, ui::Event *e) {
   ui::IRenderTarget *pRT = static_cast<ui::WindowPaintEvent *>(e)->rt;
 
-  ui::Rect rcwindow;
-  window->GetObjectClientRect(&rcwindow);
+#if 1
+  ui::Rect rc_client;
+  window->GetClientRect(&rc_client);
   ui::Color color_background = ui::Color::white();
-  pRT->DrawRect(&rcwindow, &color_background);
-
+  pRT->DrawRect(&rc_client, &color_background);
+#endif
   ui::Color colors[3] = {ui::Color::MakeRGB(255, 0, 0),
                          ui::Color::MakeRGB(0, 255, 0),
                          ui::Color::MakeRGB(0, 0, 255)};
@@ -35,11 +36,13 @@ int main() {
 
   ui::Rect rc = ui::Rect::MakeXYWH(0, 0, 500, 400);
   window->Create(nullptr, &rc);
+
   window->SetTitle("1.你好Hello! -- 窗口创建");
-  window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
 
+  window->Show();
+  
   app->Run();
 
   return 0;

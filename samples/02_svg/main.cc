@@ -41,7 +41,7 @@ public:
     svg->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
     svg->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
     svg->InitDefaultAttrib();
-    m_svg = static_cast<ui::ISvg *>(m_window->AddChild(svg.release()));
+    m_svg = static_cast<ui::ISvg *>(m_window->GetRootObject()->AddChild(svg.release()));
   }
 
   void load_svg_from_file(const char *path) {

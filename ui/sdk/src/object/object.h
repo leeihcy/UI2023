@@ -45,6 +45,7 @@ public:
   Resource *GetResource();
   IResource *GetIResource();
   Window *GetWindow();
+  Object* GetRootObject();
 #if 0 // defined(OS_WIN)
   HWND GetHWND();
 #endif
@@ -364,7 +365,7 @@ public:
 protected:
   IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
-  Resource *m_pSkinRes; 
+  Resource *m_resource; 
 
   std::string m_strId; // 该对象在XML中的标识
 #ifdef EDITOR_MODE

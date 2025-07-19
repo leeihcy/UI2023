@@ -1,5 +1,6 @@
 #include "desktop_layout.h"
 #include "canvaslayout.h"
+#include "src/panel/root_object.h"
 #include "sdk/src/window/window.h"
 #include "sdk/include/macro/uidefine.h"
 
@@ -24,14 +25,14 @@ void DesktopLayout::Arrange(Window *window) {
   }
 #endif
 
-
   // 读取其他属性值来设置rectW
   int x = 0, y = 0;                     // 最终在屏幕中的坐标
   int nCXScreen = 800, nCYScreen = 600; // 屏幕大小
   int left = NDEF, top = NDEF, right = NDEF, bottom = NDEF;
 
+  auto& root_object = window->GetRootObject();
   CanvasLayout canvas_layout;
-  CanvasLayoutParam *pParam = canvas_layout.GetObjectLayoutParam(window);
+  CanvasLayoutParam *pParam = canvas_layout.GetObjectLayoutParam(&root_object);
   if (!pParam) {
     return;
   }
@@ -68,6 +69,7 @@ void DesktopLayout::Arrange(Window *window) {
     size_window.height = rc_parent.Height() - top - bottom;
   }
 
+#if 0
   // 再次确认最小最大尺寸
   int min_width = window->GetMinWidth();
   int min_height = window->GetMinHeight();
@@ -81,15 +83,16 @@ void DesktopLayout::Arrange(Window *window) {
     size_window.width = max_width;
   if (max_height > 0 && size_window.height > max_height)
     size_window.height = max_height;
+#endif
 
   // 计算出坐标
   if (left != NDEF) {
     x = rc_parent.left + left;
-    x += window->GetMarginL();
+    x += root_object.GetMarginL();
   } else {
     if (right != NDEF) {
       x = rc_parent.right - right - size_window.width; // right是指窗口右侧距离屏幕右侧的距离
-      x -= window->GetMarginR();
+      x -= root_object.GetMarginR();
     } else {
       // 居中
       x = rc_parent.left + (rc_parent.Width() - size_window.width) / 2;
@@ -97,11 +100,11 @@ void DesktopLayout::Arrange(Window *window) {
   }
   if (top != NDEF) {
     y = rc_parent.top + top;
-    y += window->GetMarginT();
+    y += root_object.GetMarginT();
   } else {
     if (bottom != NDEF) {
       y = rc_parent.bottom - bottom - size_window.height; // 同right
-      y -= window->GetMarginB();
+      y -= root_object.GetMarginB();
     } else {
       // 居中
       y = rc_parent.top + (rc_parent.Height() - size_window.height) / 2;
@@ -124,13 +127,13 @@ void DesktopLayout::Arrange(Window *window) {
 
   SetPositionFlags flags;
   flags.redraw = false;
-  window->SetObjectPos(x, y, size_window.width, size_window.height, flags);
+  window->m_platform->SetWindowPos(x, y, size_window.width, size_window.height, flags);
 
   // 解决如果窗口大小没有发生改变，改变窗口没有收到WM_SIZE时，手动布局一次
   window->m_platform->GetClientRect(&rc_client_new);
   if (rc_client_new.Width() == rc_client_old.Width() &&
       rc_client_new.Height() == rc_client_old.Height()) {
-    window->notify_WM_SIZE(0, rc_client_new.Width(), rc_client_new.Height());
+    root_object.notify_WM_SIZE(0, rc_client_new.Width(), rc_client_new.Height());
   }
 }
 

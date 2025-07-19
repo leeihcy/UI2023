@@ -32,7 +32,7 @@ void SoftwareCompositor::UpdateDirty(RectRegion* outArrDirtyInWindow) {
   // 	}
 
   int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  UI_LOG_DEBUG("software update dirty cost %d 微秒", ms);
+  // UI_LOG_DEBUG("software update dirty cost %d 微秒", ms);
 }
 
 void SoftwareCompositor::update_dirty_recursion(Layer *p) {
@@ -56,18 +56,18 @@ void SoftwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
     // UI_LOG_WARN(L"commit but no dirty area");
     return;
   }
-
+#if 0
   // 给分层窗口提交的机会。
   if (m_pWindowRender->m_window.virtualCommitReq())
     return;
-
+#endif
   m_pWindowRender->m_window.Commit(
     m_pRootLayer->GetRenderTarget(), 
     arrDirtyInWindow.GetArrayPtr2(), 
     nCount);
 
   // for debug
-  // m_pRootLayer->GetRenderTarget()->Save("/home/libo/Desktop/image/1.png");
+  // m_pRootLayer->GetRenderTarget()->Save("/Users/libo/Desktop/image/1.png");
 }
 
 void SoftwareCompositor::commit_recursion(Layer *p) {

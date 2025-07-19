@@ -500,9 +500,9 @@ void WindowPlatformLinuxX11::OnXEvent(const XEvent &event) {
 #endif
 }
 
-void WindowPlatformLinuxX11::Invalidate(const Rect *prect) {
-  // TODO:
-}
+// void WindowPlatformLinuxX11::Invalidate(const Rect *prect) {
+//   // TODO:
+// }
 bool WindowPlatformLinuxX11::IsChildWindow() {
   // TODO:
   return false;

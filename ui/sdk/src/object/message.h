@@ -3,52 +3,18 @@
 
 #include "include/interface/imessage.h"
 #include "include/common/signalslot/signal.h"
-#include <list>
 #include <map>
 #include <string>
 
 namespace ui {
-//
-// 用于其它对象拦截我的消息
-//
-class MsgHook {
-public:
-  MsgHook() {
-    pObj = nullptr;
-    nMsgMapIDToHook = 0;
-    nMsgMapIDToNotify = 0;
-  }
 
-  IMessage *pObj;        // 记录谁要拦截我的消息
-  int nMsgMapIDToHook;   // pObj要HOOK该map id的消息
-  int nMsgMapIDToNotify; // HOOK到的消息，pObj使用该map id去响应
-};
-
-class MsgNotify {
-public:
-  MsgNotify() {
-    pObj = nullptr;
-    nMsgMapIDToNotify = 0;
-  }
-
-  IMessage *pObj;
-  int nMsgMapIDToNotify; // 当有消息通知pObj时，pObj使用该id去响应
-};
-
-// 消息基类,object从该类继承从而拥有了消息功能
+// 消息能力基类
 class Message {
 public:
   Message(IMessage *);
   virtual ~Message();
 
-  void onRouteMessage(ui::Msg *msg);
-
   IMessage *GetIMessage();
-
-  // bool IsMsgHandled() const;
-  // void SetMsgHandled(bool);
-  // UIMSG *GetCurMsg() { return m_pCurMsg; }
-  // void SetCurMsg(UIMSG *p) { m_pCurMsg = p; }
 
   void connect(const char* event_name, slot<void(Event*)>&& s);
   void emit(const char* event_name, Event* event);
@@ -57,54 +23,16 @@ public:
   IMeta *GetMeta();
   void RouteMessage(int message);
   void RouteMessage(Msg* msg);
-
-#if 0 // 废弃，使用RouteMessage代替。
-  void ClearNotify();
-  void SetNotify(IMessage *pObj, int nMsgMapID = 0);
-  void CopyNotifyTo(IMessage *pObjCopyTo);
-  IMessage *GetNotifyObj() { return m_objNotify.pObj; }
-
-  void AddHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-  void RemoveHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-  void RemoveHook(IMessage *pObj);
-  void ClearHook();
-
-  llong SendMessage(uint message, llong wParam = 0, llong lParam = 0);
-
-  // 返回TRUE，表示该消息已被处理，FALSE表示该消息没被处理
-  bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
-  virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID = 0,
-                                     bool bDoHook = false);
-
-  bool DoHook(UIMSG *pMsg, int nMsgMapID);
-  llong DoNotify(UIMSG *pMsg);
-
-  // void AddDelayRef(void** pp);
-  // void RemoveDelayRef(void** pp);
-  // void ResetDelayRef();
-#endif
+  void onRouteMessage(ui::Msg *msg);
 
 protected:
-  // 例如ComboBox要hook Combobox中的下拉按钮的事件
-  std::list<MsgHook *> m_lHookMsgMap; 
-      
-  // 产生事件时，需要通知的对象
-  MsgNotify m_objNotify; 
-  
   // 事件定义
   std::map<std::string, signal<void(Event*)>> m_events;
 
   // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
   IMeta *m_meta; 
 
-  // 需要延迟调用自己的一些引用，避免自己被销毁之后还调用IMessage的一些函数，如uipostmessage,
-  // tooltip timer. 取代原UIApplication中的AddUIObject功能（效率太低
-  // std::list<void**>  m_lDelayRefs;     
-
-  // UIMSG *m_pCurMsg; // 记录当前正在处理的消息
-
-  IMessage *m_pIMessage;
-  bool m_bCreateIMessage;
+  IMessage *m_imessage;
 };
 
 } // namespace ui

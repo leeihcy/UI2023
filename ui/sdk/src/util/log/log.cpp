@@ -1,5 +1,6 @@
 #include "include/util/log.h"
 #include "include/inc.h"
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -59,29 +60,23 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
   // content
   va_list argList;
   va_start(argList, szFormat);
+  {
+    // 只接受256长度，不再动态分配内存。如果有需要，再调大这个值
+    const int buffer_size = 256;
+    static wchar_t buffer[buffer_size];
+    static char utf8_buffer[buffer_size*4];
 
-  const int max_size = 10240;
-  for (int size = 64; size < max_size; size <<= 2) {
     // 直接在栈上分配
-    wchar_t *buffer = nullptr;
-    buffer = (wchar_t *)/*alloca*/ malloc(size * sizeof(wchar_t));
-    int ret = vswprintf(buffer, size, szFormat, argList);
-    if (ret < 0 || ret >= size) {
-      free(buffer);
-      continue;
+    int ret = vswprintf(buffer, buffer_size, szFormat, argList);
+    if (ret < 0 || ret >= buffer_size) {
+      assert(false && "Log format too long, please increase max_size");
     }
 
     // linux不支持同时输出宽窄字符（printf/wprintf）,谁先调用谁抢得输出。
     // 因此统一转换成utf8字符输出。
-    int wide_size = wcstombs(nullptr, buffer, 0);
-    char *utf8_buffer = nullptr;
-    utf8_buffer = (char*) malloc(size+1);
-    wcstombs(utf8_buffer, buffer, wide_size);
+    wcstombs(utf8_buffer, buffer, buffer_size*4);
 
     output.append(utf8_buffer);
-    free(buffer);
-    free(utf8_buffer);
-    break;
   }
 
   va_end(argList);
@@ -114,26 +109,20 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
   output.append(LevelToStringA(lLevel));
 
   // content
+  // va_list 只能用一次，循环里要用 va_copy，否则多次 vsnprintf 结果不可靠。
   va_list argList;
   va_start(argList, szFormat);
+  {
+    // 只接受256长度，不再动态分配内存。如果有需要，再调大这个值
+    const int buffer_size = 256;
+    static char buffer[buffer_size];
 
-  const int max_size = 10240;
-  for (int size = 64; size < max_size; size <<= 2) {
-    // 直接在栈上分配
-    char *buffer = nullptr;
-    buffer = (char*)/*alloca*/ malloc(size);
-    int ret = vsnprintf(buffer, size, szFormat, argList);
-    if (ret < 0 || ret >= size) {
-      free(buffer);
-      continue;
+    int ret = vsnprintf(buffer, buffer_size, szFormat, argList);
+    if (ret < 0 || ret >= buffer_size) {
+      assert(false && "Log format too long, please increase max_size");
     }
-
     output.append(buffer);
-
-    free(buffer);
-    break;
   }
-
   va_end(argList);
   output.append("\r\n");
 

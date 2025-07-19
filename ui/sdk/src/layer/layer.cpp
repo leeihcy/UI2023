@@ -144,8 +144,8 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
 
     m_pParent->Invalidate(&rcDirty);
   } else {
-    if (m_pCompositor)
-      m_pCompositor->RequestInvalidate();
+    // if (m_pCompositor)
+    //   m_pCompositor->RequestInvalidate();
   }
 }
 
@@ -236,7 +236,7 @@ Layer *Layer::GetFirstChild() { return m_pFirstChild; }
 void Layer::OnSize(uint nWidth, uint nHeight) {
   m_size.width = nWidth;
   m_size.height = nHeight;
-  Invalidate(nullptr);
+  // Invalidate(nullptr);
 
   if (!m_pRenderTarget) {
     GetRenderTarget();

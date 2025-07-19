@@ -6,6 +6,7 @@ group("ui") {
         "01_hello:hello",
         "02_svg:svg",
         "03_clock:clock",
+        "04_dpi:dpi"
     ]
 }
 

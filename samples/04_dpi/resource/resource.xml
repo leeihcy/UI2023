@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<skin>
+	<layout>
+	</layout>
+  <include>dpi.xml</include>
+	<font>
+		<font id="default" face="微软雅黑" size="10" />
+	</font>
+	<image>
+  </image>
+	<i18n>
+	</i18n>
+	<style>
+	</style>
+	<color />
+</skin>

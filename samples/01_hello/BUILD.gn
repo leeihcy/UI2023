@@ -11,12 +11,36 @@ executable("hello") {
         "//ui",
     ]
     sources = [
-        "main.cc",
-        # "macos.mm"
+      "main.cc",
     ]
 
     cflags = []
     if (is_debug) {
       cflags += ["-g"]
     }
+}
+
+if (is_mac) {
+  executable("hello_mac") {
+      output_dir = "$root_out_dir/bin"
+      output_name = "sample_hello_mac"
+
+      sources = [
+          "macos.mm"
+      ]
+
+      cflags = []
+      if (is_debug) {
+        cflags += ["-g"]
+      }
+
+      ldflags = [
+        "-framework", "CoreFoundation",
+        "-framework", "CoreGraphics",
+        "-framework", "CoreText",
+        "-framework", "CoreServices",
+        "-framework", "Cocoa",
+        "-framework", "QuartzCore",  # Core Animation
+      ]
+  }
 }

@@ -35,6 +35,7 @@ bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
   UIDocument *pUIDocument = nullptr;
   CreateXmlDocument(XML_ENGINE_DEFAULT, &pUIDocument);
   if (!pDataSource->Load_UIDocument(pUIDocument, szXmlFile)) {
+    UI_LOG_ERROR("load file failed: %s", szXmlFile);
     SAFE_RELEASE(pUIDocument);
     return false;
   }

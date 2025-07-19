@@ -4,6 +4,7 @@
 
 namespace ui {
 class Application;
+struct IAnimate;
 }
 
 namespace uia {

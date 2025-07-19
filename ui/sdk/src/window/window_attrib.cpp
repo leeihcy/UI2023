@@ -1,3 +1,4 @@
+#include "include/interface/imessage.h"
 #include "src/attribute/attribute.h"
 #include "window.h"
 
@@ -8,8 +9,6 @@ void Window::onSerialize(SerializeParam *pData) {
   m_window_render.OnSerialize(pData);
 
   AttributeSerializer s(pData, "Window");
-
-  Panel::onSerialize(pData);
 
 #if 0
   s.AddString(XML_FONT, this,

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<skin>
+  <layout>
+    <Window id="dpi" width="500" height="500" back.render.type="color" back.render.color="white" >
+    </Window>
+  </layout>
+</skin>

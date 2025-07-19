@@ -10,6 +10,9 @@
 
 namespace ui {
 struct IRenderTarget;
+struct IRootObject;
+struct IResource;
+
 #if 0
 struct IWindowMouseMgr;
 struct IWindowKeyboardMgr;
@@ -199,7 +202,7 @@ typedef struct tagWindowStyle {
 class Window;
 
 
-struct UIAPI IWindow : public IPanel {
+struct UIAPI IWindow : public IMessage {
   friend struct WindowMeta;
 
   void Create(const char *szId, const Rect* rect);
@@ -209,9 +212,25 @@ struct UIAPI IWindow : public IPanel {
   void EnableGpuComposite(bool b);
   bool IsGpuComposite();
 
+  // helper
+  IRootObject* GetRootObject();
+  IObject *FindObject(const char *szObjId);
+  IResource* GetResource();
+
+  void GetClientRect(ui::Rect* rc);
+  void DpiScaleRect(ui::Rect* rc);
+  void DpiRestoreRect(ui::Rect* rc);
+
   UI_DECLARE_INTERFACE(Window)
 };
 UI_DEFINE_PTR(Window)
+
+
+class RootObject;
+struct UIAPI IRootObject : public IPanel {
+  UI_DECLARE_INTERFACE(RootObject);
+};
+UI_DEFINE_PTR(RootObject);
 
 
 // 辅助类
@@ -226,6 +245,7 @@ struct WindowDestroyEvent : public Event {
 struct WindowPaintEvent : public Event {
   IWindow *window;
   IRenderTarget *rt;
+  bool handled = false;
 };
 
 #define LBUTTON_DOWN_EVENT "lbutton_down"

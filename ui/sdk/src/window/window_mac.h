@@ -15,7 +15,9 @@ namespace ui {
 
 //
 // 1. macOS中，(0,0)坐标对应于屏幕左下角。
-//
+// 2. macOS 使用 Points（逻辑坐标）而非 Pixels（物理像素）布局 UI：
+//    1 Point = 1 Pixel（非 Retina）
+//    1 Point = 2×2 Pixels（Retina）
 
 class WindowPlatformMac : public WindowPlatform, public IGpuCompositorWindowNSView {
 public:
@@ -28,6 +30,8 @@ public:
   void Initialize() override;
 
   bool Create(CreateWindowParam& param) override;
+  void PostCreate() override;
+
   void Destroy();
   WINDOW_HANDLE GetWindowHandle() override;
   WINDOW_HANDLE GetRootViewHandle();
@@ -39,7 +43,7 @@ public:
   void GetMonitorWorkArea(Rect* rect) override;
   void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) override;
   void SetWindowRect(Rect *prect);
-  void Invalidate(const Rect* prect) override;
+  // void Invalidate(const Rect* prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   void Show() override;

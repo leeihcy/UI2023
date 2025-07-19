@@ -1,0 +1,42 @@
+
+
+executable("dpi") {
+    output_dir = "$root_out_dir/bin"
+    output_name = "sample_dpi"
+
+    deps = [
+        "//ui/sdk:sdk"
+    ]
+    include_dirs = [
+        "//ui",
+    ]
+    sources = [
+        "main.cc",
+    ]
+
+    cflags = []
+    if (is_debug) {
+      cflags += ["-g"]
+    }
+
+    ldflags = []
+    if (is_mac) {
+      # 集成配置文件。验证方法：
+      # otool -s __TEXT __info_plist <YourApp> | xxd -r
+      ldflags += [
+        "-sectcreate", "__TEXT", "__info_plist",
+        rebase_path("resource/Info.plist", root_build_dir)
+      ]
+    }
+}
+
+
+copy("copy_dpi_resource") {
+  sources = [
+    "resource/resource.xml", 
+    "resource/dpi.xml", 
+  ]
+  outputs = [
+    "$root_build_dir/bin/sample/dpi/{{source_file_part}}"
+  ]
+}

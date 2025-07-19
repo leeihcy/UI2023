@@ -310,8 +310,9 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
     return;
 
   if (m_pRenderFont && strlen(pDrawStruct->szText) > 0) {
-    DRAWTEXTPARAM param;
-
+    DrawTextParam param;
+assert(false);
+#if 0 // TODO:
     // if (m_pColorText)
     //   param.color = m_pColorText->m_col;
     param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
@@ -326,6 +327,7 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
     param.wParam = m_wparamDrawText;
     param.lParam = m_lparamDrawText;
     pRenderTarget->DrawString(m_pRenderFont.get(), &param);
+#endif
   }
 }
 
@@ -811,6 +813,8 @@ void FontColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
   if (nRealState >= m_nCount)
     nRealState = 0;
 
+    assert(0);
+#if 0 // TODO:
   DRAWTEXTPARAM param;
   if (m_vTextColor[nRealState])
     param.color = *m_vTextColor[nRealState];
@@ -822,6 +826,7 @@ void FontColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
   param.prc = &(pDrawStruct->ds_renderbase.rc);
   pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_vTextFont[nRealState].get(),
                                                        &param);
+#endif
 }
 IRenderFont *FontColorListTextRender::GetRenderFont() {
   if (m_vTextFont.size() > 0)

@@ -300,7 +300,7 @@ void Object::WindowRect2ObjectRect(const Rect *rcWindow, Rect *rcObj) {
 
 // 获取一个对象在窗口上的可视区域。例如用于绘制该对象时的裁剪
 bool Object::GetRectInWindow(Rect *prc, bool bOnlyVisiblePart) {
-  return CalcRectInAncestor(GetWindow(), nullptr, bOnlyVisiblePart, prc);
+  return CalcRectInAncestor(GetRootObject(), nullptr, bOnlyVisiblePart, prc);
 }
 
 // 计算对象在层中的位置（不是层缓存中的位置，缓存也可能有偏移）

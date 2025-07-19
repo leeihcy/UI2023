@@ -52,7 +52,7 @@ public:
   void GetWindowRect(Rect *prect) override;
   void SetWindowPos(int x, int y, int w, int h,
                     SetPositionFlags flags) override;
-  void Invalidate(const Rect *prect) override;
+  // void Invalidate(const Rect *prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;

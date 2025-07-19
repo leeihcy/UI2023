@@ -18,6 +18,14 @@ executable("clock") {
     if (is_debug) {
       cflags += ["-g", "-O0"]
     }
+    
+    ldflags = []
+    if (is_mac) {
+      ldflags += [
+        "-sectcreate", "__TEXT", "__info_plist",
+        rebase_path("resource/Info.plist", root_build_dir)
+      ]
+    }
 }
 
 copy("copy_clock_resource") {

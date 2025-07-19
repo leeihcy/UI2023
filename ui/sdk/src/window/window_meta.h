@@ -76,6 +76,23 @@ struct WindowMeta : public MetaImpl<IWindow> {
 //   }
 // };
 
+struct RootObjectMeta : public MetaImpl<IRootObject> {
+  static RootObjectMeta& Get() {
+    static RootObjectMeta s;
+    return s;
+  }
+
+  Uuid UUID() override { return {0xA9E5EAE8, 0x6496, 0x11F0, {0x97, 0x7D, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
+  const char* Name() override { return "RootObject"; }
+
+  MetaDetail Detail() override {
+    MetaDetail param = {0};
+    param.major_type = OBJ_ROOT;
+    return param;
+  }
+};
+
+
 #if 0
 class CustomWindowDescription : public IMeta
 {

@@ -1,7 +1,12 @@
 #include "window.h"
 #include "include/interface/iattribute.h"
+#include "include/interface/imessage.h"
+#include "include/interface/iobject.h"
+#include "include/macro/msg.h"
+#include "include/util/rect.h"
 #include "src/application/uiapplication.h"
 #include "src/layout/desktop_layout.h"
+#include "src/panel/root_object.h"
 #include "src/panel/panel.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
@@ -23,7 +28,8 @@
 namespace ui {
 
 Window::Window(IWindow *p)
-    : Panel(p), m_window_render(*this), m_mouse_key(*this), m_pIWindow(p) {
+    : Message(p), m_window_render(*this), m_mouse_key(*this), m_pIWindow(p),
+      m_root(nullptr, nullptr) {
   memset(&m_window_style, 0, sizeof(m_window_style));
   UI_LOG_DEBUG("Window");
 }
@@ -34,17 +40,15 @@ Window::~Window() {
   UI_LOG_DEBUG("~Window");
 }
 
+RootObject &Window::GetRootObject() { return *m_root->GetImpl(); }
+
 void Window::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
-    Panel::onRouteMessage(msg);
-    FinalConstruct();
+    Message::onRouteMessage(msg);
+    FinalConstruct(static_cast<FinalConstructMessage *>(msg));
     return;
   }
-  if (msg->message == UI_MSG_ERASEBKGND) {
-    Panel::onRouteMessage(msg);
-    onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
-    return;
-  }
+
   if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == WindowMeta::Get().UUID()) {
@@ -57,24 +61,38 @@ void Window::onRouteMessage(ui::Msg *msg) {
     onSerialize(m->param);
     return;
   }
-  if (msg->message == UI_MSG_GETDESIREDSIZE) {
-    onGetDesiredSize(&static_cast<GetDesiredSizeMessage*>(msg)->size);
-    return;
-  }
-  Panel::onRouteMessage(msg);
+  // if (msg->message == UI_MSG_GETDESIREDSIZE) {
+  //   onGetDesiredSize(&static_cast<GetDesiredSizeMessage *>(msg)->size);
+  //   return;
+  // }
+  Message::onRouteMessage(msg);
+  m_root->onRouteMessage(msg);
 }
 
-long Window::FinalConstruct() {
+void Window::FinalConstruct(FinalConstructMessage *message) {
+  if (!message->resource) {
+    message->success = false;
+    return;
+  }
+  m_resource = message->resource->GetImpl();
+
 #if 0
     this->m_oMouseManager.SetUIApplication(p->GetUIApplication()->GetImpl());
     this->m_oDragDropManager.SetWindowBase(this);
 #endif
-  m_window_style.hard_composite = GetUIApplication()->IsGpuCompositeEnable();
 
-  return 0;
+  m_window_style.hard_composite =
+      m_resource->GetUIApplication()->IsGpuCompositeEnable();
+
+  m_root = IRootObject::create(message->resource);
+  if (!m_root) {
+    message->success = false;
+    return;
+  }
+  GetRootObject().BindWindow(this);
 }
 
-void Window::Create(const char *szId, const Rect *rect) {
+void Window::Create(const char *layout_id, const Rect *rect) {
 #if defined(OS_WIN)
   m_platform.reset(new WindowPlatformWin(*this));
 #elif defined(OS_MAC)
@@ -88,10 +106,9 @@ void Window::Create(const char *szId, const Rect *rect) {
 #else
   assert(false);
 #endif
-
-  CreateUI(szId);
-
   m_platform->Initialize();
+
+  m_window_render.SetCanCommit(false);
 
   PreCreateWindowMessage message;
   if (rect) {
@@ -104,10 +121,10 @@ void Window::Create(const char *szId, const Rect *rect) {
   }
   RouteMessage(&message);
 
+  GetRootObject().LoadLayout(layout_id);
   m_platform->Create(message.param);
 
-  onCreate(message.param);
-  m_objLayer.CreateLayer();
+  postCreate(message.param);
 }
 
 WINDOW_HANDLE Window::GetWindowHandle() {
@@ -127,13 +144,45 @@ void Window::Show() {
 void Window::enterResize(bool b) { m_window_style.enter_resize = b; }
 
 // width height是乘以了缩放系统的值。
-void Window::onSize(int width, int height) {
-  if (m_width == width && m_height == height) {
+void Window::onSize(int window_width, int window_height) {
+  if (m_window_width == window_width && m_window_height == window_height) {
     return;
   }
-  m_width = width;
-  m_height = height;
+  m_window_width = window_width;
+  m_window_height = window_height;
 
+  Rect rc_client;
+  m_platform->GetClientRect(&rc_client);
+
+  Rect rc_client_old;
+  GetRootObject().GetParentRect(&rc_client_old);
+
+  if (rc_client.Width() == rc_client_old.Width() &&
+      rc_client.Height() == rc_client_old.Height()) {
+    return;
+  }
+
+  int old_client_width = rc_client_old.Width();
+  int old_client_height = rc_client_old.Height();
+  int new_client_width = rc_client.Width();
+  int new_client_height = rc_client.Height();
+
+  // 计算无效区域
+  ui::Rect rc_invalid_right = ui::Rect::MakeLTRB(
+      old_client_width, 0, new_client_width, new_client_height);
+  ui::Rect rc_invalid_bottom = ui::Rect::MakeLTRB(
+      0, old_client_height, old_client_width, new_client_height);
+
+  m_window_render.AddInvalidateRect(&rc_invalid_right);
+  m_window_render.AddInvalidateRect(&rc_invalid_bottom);
+
+  GetRootObject().OnWindowSize(new_client_width, new_client_height);
+  m_window_render.OnWindowSize(new_client_width, new_client_height);
+
+  // TBD:
+  // m_window_render.Paint();
+
+#if 0
   // if (SIZE_MINIMIZED == wParam)
   //       return 0;
 
@@ -179,13 +228,14 @@ void Window::onSize(int width, int height) {
       // 最后导致将自己的空缓存提交上去了，然后再延时刷新，界面又正常。
       // 因此这里不能延时刷新
       // TODO:if (m_objStyle.initialized && IsWindowVisible()) {
-      // m_window_render.InvalidateNow();
+      m_window_render.RequestUpdate();
       // TODO:}
       //  m_platform->ValidateRect(nullptr);
     } else {
-      m_platform->Invalidate(nullptr);
+      // m_platform->Invalidate(nullptr);
     }
   }
+#endif
 }
 
 void Window::onClose() {}
@@ -195,12 +245,12 @@ void Window::onDestroy() {
   emit(WINDOW_DESTROY_EVENT, &event);
 
   // 释放资源
-  DestroyChildObject();
+  m_root->GetImpl()->DestroyChildObject();
   // events中slot可能绑定了一些参数对象，需要释放掉。
   clear_events();
 }
 
-void Window::onPaint(const Rect *dirty) {
+void Window::onPaint(const Rect *commit_rect) {
   // if (dirty) {
   //   UI_LOG_DEBUG(L"Window onPaint {%d,%d, %d,%d}", dirty->x, dirty->y,
   //                dirty->width, dirty->height);
@@ -208,84 +258,28 @@ void Window::onPaint(const Rect *dirty) {
   //   UI_LOG_DEBUG(L"Window onPaint full");
   // }
 
-  if (dirty) {
-    Rect rc;
-    rc.CopyFrom(*dirty);
-    m_objLayer.GetLayer()->Invalidate(&rc);
-  } else {
-    m_objLayer.GetLayer()->Invalidate(nullptr);
-  }
+  // m_window_render.AddInvalidateRect(dirty);
+  m_window_render.Paint(commit_rect);
+  m_window_render.Commit(commit_rect);
 
-  if (dirty) {
-    m_window_render.OnWindowPaint(*dirty);
-  } else {
-    Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
-    m_window_render.OnWindowPaint(rc);
-  }
+  // if (dirty) {
+  //   m_window_render.OnWindowPaint(*dirty);
+  // } else {
+  //   Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
+  //   m_window_render.OnWindowPaint(rc);
+  // }
 
   // m_window_render.InvalidateNow();
 }
-
-void Window::Invalidate(const Rect *prc) { m_platform->Invalidate(prc); }
 
 // void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
 // void Window::on_erase_bkgnd(SkCanvas &canvas) {}
 // void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
 
-bool Window::CreateUI(const char *szId) {
-  if (!m_pSkinRes) {
-    UI_LOG_ERROR(TEXT("未初始化皮肤"));
-    return false;
-  }
-
-  if (szId && strlen(szId) > 0) {
-    LayoutManager &layoutmanager = m_pSkinRes->GetLayoutManager();
-    //	加载子控件
-    const char *szName = "";
-    if (GetMeta())
-      szName = GetMeta()->Name();
-
-    UIElementProxy pUIElement = layoutmanager.FindWindowElement(szName, szId);
-    if (pUIElement) {
-      // 自己的属性
-      this->LoadAttributeFromXml(pUIElement.get(), false);
-
-      // 遍历子对象
-      layoutmanager.ParseChildElement(pUIElement.get(), this);
-    } else {
-      UI_LOG_FATAL("获取窗口对应的xml结点失败：name=%s, id=%s", szName, szId);
-
-      return false;
-    }
-
-    m_strId = szId; // 提前给id赋值，便于日志输出
-  } else {
-    InitDefaultAttrib();
-  }
-  //
-  //	为了解决xp、win7上面的一个特性：只有在按了ALT键，或者TAB键之后，才会显示控件的focus
-  // rect 	在初始化后，主动将该特性清除。
-  //
-  // ::PostMessage(m_hWnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR,
-  // UISF_HIDEACCEL|UISF_HIDEFOCUS), 0);
-
-  // 为了实现列表框，树控件的theme绘制，否则画出来的效果不正确，就是一个黑边
-  // http://msdn.microsoft.com/zh-cn/library/windows/desktop/bb759827(v=vs.85).aspx
-  // http://www.codeproject.com/Articles/18858/Fully-themed-Windows-Vista-Controls
-  // http://stackoverflow.com/questions/14039984/which-class-part-and-state-is-used-to-draw-selection
-
-  // The following example code gives a list-view control the appearance of a
-  // Windows Explorer list: SetWindowTheme(m_hWnd, L"explorer", nullptr);
-
-  // 窗口作为根结点，一定会创建一个缓存
-  m_objStyle.layer = 1;
-
-  return true;
-}
-
-void Window::onCreate(CreateWindowParam &param) {
+void Window::postCreate(CreateWindowParam &param) {
 
   m_window_render.OnWindowCreate();
+
 #if 0
   	//
 	//  有可能m_strID为空（不加载资源，例如临时的popupconotrolwindow）
@@ -321,13 +315,9 @@ void Window::onCreate(CreateWindowParam &param) {
     if (param.position) {
       // 避免此时调用GetDesiredSize又去测量窗口大小了，
       // 导致窗口被修改为自适应大小
-      Rect rcWindow;
-      m_platform->GetWindowRect(&rcWindow);
-      SetConfigWidth(rcWindow.Width());
-      SetConfigHeight(rcWindow.Height());
-
-      m_platform->GetClientRect(&m_rcParent);
-      this->UpdateLayout();
+      auto &root = GetRootObject();
+      root.syncWindowSize();
+      root.UpdateLayout();
     } else {
       // 不能放在 OnInitialize 后面。
       // 因为有可能OnInitialize中已经调用过 SetWindowPos
@@ -345,18 +335,12 @@ void Window::onCreate(CreateWindowParam &param) {
 #endif
   // 防止在实现显示动画时，先显示了一些初始化中刷新的内容。
   // 注：不能只限制一个layer
-  m_window_render.SetCanCommit(false);
+  
   {
-    // 给子类一个初始化的机会 (virtual)，
-    // 例如设置最大化/还原按钮的状态
-    this->virtualInnerInitWindow();
+    m_window_style.initialized = 1;
 
-    m_objStyle.initialized = 1;
-
-    RouteMessage(UI_MSG_INITIALIZE);
-    ForwardInitializeMessageToDecendant(this);
-    RouteMessage(UI_MSG_INITIALIZE2);
-
+    GetRootObject().onWindowCreate();
+    m_platform->PostCreate();
   }
 #if 0
   if (m_pCallbackProxy) {
@@ -368,6 +352,12 @@ void Window::onCreate(CreateWindowParam &param) {
 #endif
 
   m_window_render.SetCanCommit(true);
+
+  // 将窗口所有区域设置为无效
+  ui::Rect rc_client;
+  m_platform->GetClientRect(&rc_client);
+  m_window_render.AddInvalidateRect(&rc_client);
+
 #if 0
   // 设置默认对象
   m_oMouseManager.SetDefaultObject(m_oMouseManager.GetOriginDefaultObject(),
@@ -385,36 +375,14 @@ void Window::onCreate(CreateWindowParam &param) {
 #endif
 }
 
-// 递归通知子对象加载完成
-void Window::recursion_on_load_notify(Object *pParent) {
-  pParent->virtualOnLoad();
-
-  Object *pChild = pParent->GetChildObject();
-  while (pChild) {
-    recursion_on_load_notify(pChild);
-    pChild = pChild->GetNextObject();
-  }
-  pChild = pParent->GetNcChildObject();
-  while (pChild) {
-    recursion_on_load_notify(pChild);
-    pChild = pChild->GetNextObject();
-  }
-}
-
-void Window::virtualInnerInitWindow() {
-  m_window_style.initialized = 1;
-
-  // 窗口加载即将完成，在内部调用所有
-  recursion_on_load_notify(this);
-}
-
 void Window::SetGpuComposite(bool b) {
 #if 0 // defined(OS_WIN)
   UIASSERT(!m_hWnd && TEXT("该函数目前需要在窗口创建之前调用"));
 #endif
 
+  auto *app = m_resource->GetUIApplication();
   if (b) {
-    if (!GetUIApplication()->IsGpuCompositeEnable())
+    if (!app->IsGpuCompositeEnable())
       b = false;
   }
 
@@ -427,30 +395,22 @@ void Window::SetGpuComposite(bool b) {
   // UI_LOG_DEBUG(TEXT("hard composite enable, window=0x%08x"), this);
 }
 
-void Window::onEraseBkgnd(IRenderTarget *pRenderTarget) {
-  if (nullptr == pRenderTarget)
-    return;
 
-  WindowPaintEvent event;
-  event.window = m_pIWindow;
-  event.rt = pRenderTarget;
-  emit(WINDOW_PAINT_EVENT, &event);
-
-  // SetMsgHandled(false);
-}
-
-// 为了解决在<window>结点上配置 width/height 属性后，窗口实际大小存在歧义的问题：
-// . 将 width/height 作为窗口整体大小；
-// . 将 width/height 作为客户区域大小，窗口大小还需要再加上边框和标题栏尺寸； 
+// 为了解决在<window>结点上配置 width/height
+// 属性后，窗口实际大小存在歧义的问题： . 将 width/height 作为窗口整体大小； .
+// 将 width/height 作为客户区域大小，窗口大小还需要再加上边框和标题栏尺寸；
 // 现做如下规定：
-// 1. <window>的width/height属性，如同layout.left等，都是做为窗口整体的布局属性，
+// 1.
+// <window>的width/height属性，如同layout.left等，都是做为窗口整体的布局属性，
 //    不是指客户区域的大小。
 // 2. 如果需要指定客户区的大小，需要创建一个root panel，设置它的width/height，
 //    窗口最终大小将动态计算，最终加上边框和标题栏的范围。
-// 3. Window响应GetDesiredSize消息，填充m_rcExtNonClient。
-void Window::onGetDesiredSize(Size *size) {
-  m_platform->UpdateNonClientRegion(&m_rcExtNonClient);
-  Panel::onGetDesiredSize(size);
+// 3. Window响应GetDesiredSize消息，填充non client rect。
+Size Window::GetDesiredSize() {
+  Size size = GetRootObject().GetDesiredSize();
+  ui::Rect rc_client = ui::Rect::MakeXYWH(0, 0, size.width, size.height);
+  m_platform->UpdateNonClientRegion(&rc_client);
+  return Size{rc_client.Width(), rc_client.Height()};
 }
 
 #if 0
@@ -494,10 +454,10 @@ void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
 
 float Window::GetScaleFactor() { return m_platform->GetScaleFactor(); }
 
-void Window::SetObjectPos(int x, int y, int cx, int cy,
+void Window::SetWindowPos(int x, int y, int cx, int cy,
                           SetPositionFlags flags) {
-  m_platform->SetWindowPos(x, y, cx, cy, flags);
-  m_platform->GetClientRect(&m_rcParent);
+  // m_platform->SetWindowPos(x, y, cx, cy, flags);
+  // m_platform->GetClientRect(&m_rcParent);
 }
 
 } // namespace ui

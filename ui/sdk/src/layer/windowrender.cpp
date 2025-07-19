@@ -4,7 +4,9 @@
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/object/object.h"
+#include "src/panel/root_object.h"
 #include "src/window/window.h"
+#include "src/application/uiapplication.h"
 // #include "include/interface/iwndtransmode.h"
 // #include "include/interface/irenderlayer.h"
 #include "src/layer/hardware_compositor.h"
@@ -40,14 +42,53 @@ void WindowRender::OnSerialize(SerializeParam *pData) {
       ->SetDefault(true);
 }
 
+void WindowRender::AddInvalidateRect(const Rect *dirty) {
+  // 不接受空的dirty，调用者必须明确指定无效区域，
+  // 以减少全局刷新效率低的问题。
+  if (!dirty) {
+    return;
+  }
+  if (dirty->IsEmpty()) {
+    return;
+  }
+
+  Layer *layer = m_window.GetRootObject().GetLayer();
+  if (!layer) {
+    return;
+  }
+  layer->Invalidate(dirty);
+}
+
+void WindowRender::Paint(const Rect *commit_rect) {
+  if (!CanCommit()) {
+    UI_LOG_WARN(L"can not commit now");
+    return;
+  }
+  if (!m_compositor) {
+    return;
+  }
+
+  RectRegion arrDirtyInWindow;
+  m_compositor->UpdateDirty(&arrDirtyInWindow);
+  
+  // if (commit_rect) {
+  //   arrDirtyInWindow.Union(*commit_rect);
+  // }
+  m_compositor->Commit(arrDirtyInWindow);
+}
+
+void WindowRender::RequestUpdate() {
+
+}
+
 // IRenderTarget* 没有引用计数机制
 // 但仍然采用Release进行释放（delete）
 bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
   if (!pp)
     return false;
 
-  *pp = UICreateRenderTarget(m_window.GetIUIApplication(), m_grl_type,
-                             m_need_alpha_channel);
+  auto *app = m_window.GetResource().GetUIApplication();
+  *pp = UICreateRenderTarget(app->GetIUIApplication(), m_grl_type, m_need_alpha_channel);
   return true;
 }
 
@@ -183,7 +224,8 @@ Compositor *WindowRender::get_create_compositor() {
     } else {
       m_compositor.reset(new SoftwareCompositor());
     }
-    m_compositor->SetUIApplication(m_window.GetUIApplication());
+    auto *app = m_window.GetResource().GetUIApplication();
+    m_compositor->SetUIApplication(app);
     m_compositor->SetWindowRender(this);
 
     m_compositor->BindWindow(&m_window);

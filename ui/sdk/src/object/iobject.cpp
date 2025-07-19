@@ -2,6 +2,7 @@
 #include "include/interface/ixmlwrap.h"
 #include "include/util/rect.h"
 #include "src/object/object.h"
+#include "src/panel/root_object.h"
 #include "src/window/window.h"
 // #include "..\..\Layer\layer.h"
 #include "src/application/uiapplication.h"
@@ -11,6 +12,7 @@
 using namespace ui;
 
 UI_IMPLEMENT_INTERFACE(Object, Message)
+
 
 //////////////////////////////////////////////////////////////////////////
 //

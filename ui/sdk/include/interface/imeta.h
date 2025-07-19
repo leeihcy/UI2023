@@ -11,8 +11,9 @@ enum OBJ_TYPE {
   OBJ_CONTROL = 1,
   OBJ_HWNDHOST = 2,
   OBJ_PANEL = 3,
-  OBJ_WINDOW = 4,
-  RENDER_BASE = 5,
+  OBJ_ROOT = 4,
+  OBJ_WINDOW = 5,
+  RENDER_BASE = 6,
 };
 enum CONTROL_TYPE {
   // Extent Type
@@ -140,6 +141,8 @@ struct MetaImpl : public IMeta {
   }
 
   static void destroy(Ixx* p) {
+    if (!p) return;
+  
     FinalReleaseMessage msg;
     p->onRouteMessage(&msg);
 

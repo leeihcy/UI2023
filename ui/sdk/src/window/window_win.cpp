@@ -350,6 +350,23 @@ bool WindowPlatformWin::Create(CreateWindowParam& param) {
                        cs.y, cs.cx, cs.cy, cs.hwndParent, 0, nullptr, nullptr);
 
   Attach(hWnd);
+
+
+  //
+  //	为了解决xp、win7上面的一个特性：只有在按了ALT键，或者TAB键之后，才会显示控件的focus
+  // rect 	在初始化后，主动将该特性清除。
+  //
+  // ::PostMessage(m_hWnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR,
+  // UISF_HIDEACCEL|UISF_HIDEFOCUS), 0);
+
+  // 为了实现列表框，树控件的theme绘制，否则画出来的效果不正确，就是一个黑边
+  // http://msdn.microsoft.com/zh-cn/library/windows/desktop/bb759827(v=vs.85).aspx
+  // http://www.codeproject.com/Articles/18858/Fully-themed-Windows-Vista-Controls
+  // http://stackoverflow.com/questions/14039984/which-class-part-and-state-is-used-to-draw-selection
+
+  // The following example code gives a list-view control the appearance of a
+  // Windows Explorer list: SetWindowTheme(m_hWnd, L"explorer", nullptr);
+
   return true;
 }
 

@@ -35,7 +35,7 @@ public:
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
   void CenterWindow();
-  void Invalidate(const Rect *prect) override;
+  // void Invalidate(const Rect *prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   ::Window GetParentWindow();

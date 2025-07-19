@@ -9,6 +9,10 @@
 #include "SkStream.h"
 #include "gpu/include/api.h"
 #include <cassert>
+
+#include "third_party/skia/src/include/core/SkBitmap.h"
+#include "third_party/skia/src/include/core/SkFont.h"
+
 #if defined(OS_WIN)
 #include "src/util/windows.h"
 #endif
@@ -237,17 +241,55 @@ void SkiaRenderTarget::EndDraw() {
 }
 
 void SkiaRenderTarget::Clear(Rect *prc) {
-  if (!m_sksurface) {
+  if (!m_sksurface || !prc) {
     UI_LOG_WARN(L"no sksurface");
     return;
   }
   SkCanvas *canvas = m_sksurface->getCanvas();
-  canvas->clear(SK_ColorTRANSPARENT);
+  // canvas->clear(SK_ColorTRANSPARENT);  // <<-- 全量刷新非常影响性能
+
+  // SkRect skrect;
+  // skrect.fLeft = (SkScalar)prc->left;
+  // skrect.fTop = (SkScalar)prc->top;
+  // skrect.fRight = (SkScalar)prc->right;
+  // skrect.fBottom = (SkScalar)prc->bottom;
+
+  // SkPaint paint;
+  // paint.setColor(SK_ColorYELLOW);
+  // canvas->drawRect(skrect, paint);
 }
 
 void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,
-                                  DRAWTEXTPARAM *pParam) {
-  UIASSERT(false);
+                                  DrawTextParam *param) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  // Draw a message with a nice black paint
+  SkFont font(SkTypeface::MakeFromName("monospace", SkFontStyle()), 10);
+  // font.setSubpixel(true);
+  // font.setSize(100);
+
+  SkPaint paint;
+  paint.setColor(SK_ColorBLACK);
+
+  SkRect textBounds;
+  font.measureText(param->text, strlen(param->text), SkTextEncoding::kUTF8,
+  &textBounds, &paint);
+  
+  SkScalar padding = 2.0f;
+  SkRect bg_rect = SkRect::MakeXYWH(
+    param->bound.left + textBounds.fLeft - padding,
+    param->bound.top + textBounds.fTop - padding,
+    textBounds.width() + 2*padding,
+    textBounds.height() + 2*padding
+  );
+
+  SkPaint bg_paint;
+  bg_paint.setColor(SK_ColorYELLOW);
+  canvas->drawRect(bg_rect, bg_paint);
+  canvas->drawString(param->text, param->bound.left, param->bound.top, font, paint);
+  // canvas->drawSimpleText(param->text, strlen(param->text),
+  //                        SkTextEncoding::kUTF8, param->bound.left,
+  //                        param->bound.top, font, paint);
 }
 
 void SkiaRenderTarget::FillRgn(/*HRGN*/ llong hRgn, ui::Color *pColor) {
@@ -732,7 +774,8 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   SkSamplingOptions options;
   SkPaint paint;
   target_canvas->drawImageRect(
-      source_image, SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc, pParam->wSrc, pParam->hSrc),
+      source_image,
+      SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc, pParam->wSrc, pParam->hSrc),
       SkRect::MakeXYWH(pParam->xDst, pParam->yDst, pParam->wDst, pParam->hDst),
       options, &paint, SkCanvas::kFast_SrcRectConstraint);
 }

@@ -317,11 +317,11 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
     if (!szExt[0]) {
       strPath.append("." XML_SKIN_PACKET_EXT);
       if (!util::Path_FileExists(strPath.c_str())) {
-        UI_LOG_ERROR(TEXT("Skin File not exist: %s"), strPath.c_str());
+        UI_LOG_ERROR("Skin File not exist: %s", strPath.c_str());
         return nullptr;
       }
     } else if (0 != strcmp(szExt, XML_SKIN_PACKET_EXT)) {
-      UI_LOG_ERROR(TEXT("Skin File Format Error: %s"), szExt);
+      UI_LOG_ERROR("Skin File Format Error: %s", szExt);
       return nullptr;
     } else {
       nExtLength = (int)strlen(XML_SKIN_PACKET_EXT) + 1;

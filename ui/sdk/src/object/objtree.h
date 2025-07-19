@@ -67,7 +67,6 @@ public:
   void MoveToAsLastChild();
   bool SwapObject(Object *pObj1, Object *pObj2);
 
-protected:
   void DestroyChildObject();
 
 protected:

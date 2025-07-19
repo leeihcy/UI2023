@@ -1,19 +1,25 @@
 #ifndef _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 #define _UI_SDK_SRC_OBJECT_WINDOW_WINDOW_H_
 
+#include "include/interface/iobject.h"
+#include "include/macro/msg.h"
 #include "include/macro/uimsg.h"
 #include "include/common/signalslot/signal.h"
 #include "include/interface/iwindow.h"
+#include "src/object/message.h"
 #include "src/object/object.h"
 #include "src/panel/panel.h"
 #include "src/layer/windowrender.h"
 
 #include "window_mouse_key.h"
 #include "window_dpi.h"
+#include <cstddef>
+#include <memory>
 
 
 namespace ui {
 class Window;
+class Resource;
 struct CreateWindowParam;
 struct IGpuCompositorWindow;
 
@@ -26,6 +32,8 @@ struct WindowPlatform {
   virtual void Initialize() {};
   virtual void Release() {};
   virtual bool Create(CreateWindowParam& param) = 0;
+  virtual void PostCreate() { }
+
   virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
@@ -38,29 +46,25 @@ struct WindowPlatform {
   // 获取当前窗口所有屏幕的工作区域范围
   virtual void GetMonitorWorkArea(Rect* rect) = 0;
   virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
-  virtual void Invalidate(const Rect* prect) = 0;
+  // virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
   virtual bool IsWindowVisible() = 0;
   virtual void Commit(IRenderTarget* pRT, const Rect* prect, int count) = 0;
 };
 
-class Window : public Panel {
+// Window不再继承自控件
+class Window : public Message {
 public:
   Window(IWindow *p);
   ~Window();
-
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_DM_GETDEFID( OnGetDefId )
-  // UIMSG_DM_SETDEFID( OnSetDefId )
-  // UIMSG_GETDESIREDSIZE( OnGetDesiredSize )
-  // UIMSG_PRECREATEWINDOW( PreCreateWindow )
-  // UI_END_MSG_MAP_CHAIN_PARENT( Panel )
 
   void onRouteMessage(ui::Msg *msg);
 
   IWindow*   GetIWindow() { return m_pIWindow; }
   WindowRender&  GetWindowRender() { return m_window_render; }
   WindowPlatform* GetWindowPlatform() { return m_platform.get(); }
+  RootObject& GetRootObject();
+  Resource& GetResource() { return *m_resource; }
 
 public:
   void OnMessage();
@@ -69,30 +73,28 @@ public:
   void SetTitle(const char *title);
   void Show();
   float GetScaleFactor();
-
-  bool CreateUI(const char *szId);
+  Size GetDesiredSize();
 
 	void  SetGpuComposite(bool b);
 	bool  IsGpuComposite();
 	void  DirectComposite();
 
-  void  Invalidate(const Rect*);
 	bool  IsChildWindow();
 	bool  IsWindowVisible();
 
-  virtual bool virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
-  virtual void virtualInnerInitWindow();
+  // virtual bool virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
+  // virtual void virtualInnerInitWindow();
 
   void Commit(IRenderTarget* pRT, const Rect* prect, int count);
   
   // Object
-  void SetObjectPos( int x, int y, int cx, int cy, SetPositionFlags flags) override;
+  void SetWindowPos(int x, int y, int cx, int cy, SetPositionFlags flags);
 
 public:
   // platform回调
   void onClose();
   void onDestroy();
-  void onPaint(const Rect *dirty);
+  void onPaint(const Rect *commit_rect);
   void onSize(int width, int height);
   void enterResize(bool);
 
@@ -100,21 +102,13 @@ private:
   // prop
 
 private:
-  // void on_paint(SkCanvas &canvas);
-  // void on_erase_bkgnd(SkCanvas &canvas);
-  // void swap_buffer();
   void  recursion_on_load_notify(Object* pParent);
 
-  void onCreate(CreateWindowParam& param);
+  void postCreate(CreateWindowParam& param);
 
 protected:
-  long FinalConstruct();
-  // BOOL PreCreateWindow(CREATESTRUCT *pcs) { return TRUE; }
+  void FinalConstruct(FinalConstructMessage *msg);
   void onSerialize(SerializeParam *pData);
-  void onGetDesiredSize(Size *pSize);
-  // void OnSetDefId(IObject *pButton);
-  // IObject *OnGetDefId();
-  void onEraseBkgnd(IRenderTarget *);
 
 public:
   WindowStyle& GetWindowStyle() { return m_window_style; }
@@ -130,15 +124,19 @@ public:
   std::unique_ptr<WindowPlatform> m_platform;
 
 private:
-  IWindow*  m_pIWindow;
+  IWindow*  m_pIWindow;  // not null
+  Resource* m_resource = nullptr;  // not null
+
+  // 作为window <--> object的桥梁
+  IRootObjectPtr m_root;
 
   // 窗口的渲染放在这个对象里面，windowbase不负责渲染
   WindowRender m_window_render;
 
 	WindowStyle m_window_style;
     
-  int m_width = 0;
-  int m_height = 0;
+  int m_window_width = 0;
+  int m_window_height = 0;
 
 private:
   // 属性 ------------------------

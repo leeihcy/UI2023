@@ -166,10 +166,12 @@ void WindowPlatformLinuxWayland::SetWindowPos(int x, int y, int w, int h,
   if (m_xdg_toplevel && m_xdg_surface) {
     xdg_surface_set_window_geometry(m_xdg_surface, 0, 0, m_width, m_height);
   }
-                                              }
-void WindowPlatformLinuxWayland::Invalidate(const Rect *prect) {
-  m_ui_window.onPaint(prect);
 }
+
+// void WindowPlatformLinuxWayland::Invalidate(const Rect *prect) {
+//   m_ui_window.onPaint(prect);
+// }
+
 bool WindowPlatformLinuxWayland::IsChildWindow() { return false; }
 bool WindowPlatformLinuxWayland::IsWindowVisible() { return m_visible >= WaylandVisibleState::Visible; }
 void WindowPlatformLinuxWayland::Commit(IRenderTarget *pRT, const Rect *prect,

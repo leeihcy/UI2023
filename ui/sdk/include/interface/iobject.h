@@ -208,6 +208,6 @@ struct UIAPI IObject : public IMessage {
 
   UI_DECLARE_INTERFACE(Object);
 };
-} // namespace ui
 
+}
 #endif // _UI_IOBJECT_H_

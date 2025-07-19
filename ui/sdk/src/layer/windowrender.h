@@ -36,6 +36,12 @@ public:
   IWindowRender *GetIWindowRender();
 
 public:
+  void AddInvalidateRect(const Rect*);
+  void Paint(const Rect *commit_rect = nullptr);
+  void Commit(const Rect *commit_rect){}
+  void RequestUpdate();
+   
+public:
   void OnWindowCreate();
 
   void OnSerialize(SerializeParam *pData);

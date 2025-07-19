@@ -17,6 +17,12 @@
 #include <wchar.h>
 #endif
 
+#if defined (OS_WIN)
+#define OS_SEPARATOR '\\'
+#else 
+#define OS_SEPARATOR '/'
+#endif
+
 namespace ui {
 namespace util {
 
@@ -455,7 +461,7 @@ bool GetPathFileName(const char *szPath, char *szOutDir) {
   if (nullptr == szPath || nullptr == szOutDir)
     return false;
 
-  const char *p = strrchr(szPath, '\\');
+  const char *p = strrchr(szPath, OS_SEPARATOR);
   if (nullptr == p)
     return false;
 
@@ -471,7 +477,7 @@ bool GetPathFileExt(const char *szPath, char *szOutExt) {
   if (nullptr == p)
     return false;
 
-  const char *p2 = strrchr(szPath, '\\');
+  const char *p2 = strrchr(szPath, OS_SEPARATOR);
   if (p2 && p < p2)
     return false;
 

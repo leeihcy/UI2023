@@ -17,65 +17,18 @@ struct IMeta;
 class Message;
 struct UIAPI IMessage {
   IMessage(E_BOOL_CREATE_IMPL);
+  Message *GetImpl();
 
-#if 0 // 废弃，使用RouteMessage代替。 
-  bool ProcessMessage(UIMSG *pMsg, int nMsgMapID = 0, bool bDoHook = false);
-#endif
-  // void Release();
-
-  void connect(const char* event, slot<void(Event*)>&&);
-
+  void *QueryInterface(const Uuid &iid);
   IMeta *GetMeta(); // 返回值不会为空
   void RouteMessage(int message);
   void RouteMessage(Msg* msg);
 
-#if 0 // 废弃，使用RouteMessage代替。
-  // llong UIPostMessage(IApplication *pUIApp, UIMSG *pMsg, int nMsgMapID = 0);
-  static llong SendMessage(UIMSG *pMsg, int nMsgMapID = 0,
-                          bool *pbHandled = nullptr);
-  llong SendMessage(unsigned int message, llong wParam = 0, llong lParam = 0,
-                   unsigned int nCode = 0, IMessage *pMsgFrom = nullptr,
-                   int nMsgMapID = 0, bool *pbHandled = nullptr);
-
-
-  bool IsMsgHandled() const;
-  void SetMsgHandled(bool b);
-  UIMSG *GetCurMsg();
-  void SetCurMsg(UIMSG *p);
-  bool DoHook(UIMSG *pMsg, int nMsgMapID);
-#endif
+  void connect(const char* event, slot<void(Event*)>&&);
 
 protected:
   friend class Message;
   virtual ~IMessage(); // 虚函数1. 保证正确释放整个对象
-private:
-
-#if 0 // 废弃，使用RouteMessage代替。
-  virtual bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID,
-                                     bool bDoHook); // 虚函数2. 消息处理
-  // virtual void virtual_delete_this(); // 由UIObjCreator负责实现
-#endif
-
-public:
-  Message *GetImpl();
-
-#if 0 // 废弃，使用RouteMessage代替。  
-  void ClearNotify();
-  void SetNotify(IMessage *pObj, int nMsgMapID);
-  llong DoNotify(UIMSG *pMsg);
-  IMessage *GetNotifyObj();
-  void CopyNotifyTo(IMessage *pObjCopyTo);
-
-  void AddHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-  void RemoveHook(IMessage *pObj, int nMsgMapIDToHook, int nMsgMapIDToNotify);
-  void RemoveHook(IMessage *pObj);
-  void ClearHook();
-#endif
-  // void AddDelayRef(void **pp);
-  // void RemoveDelayRef(void **pp);
-
-  void *QueryInterface(const Uuid &iid);
-
 protected:
   Message *m_pImpl;
 };
@@ -85,19 +38,6 @@ class UIAPI MessageProxy {
 public:
   MessageProxy(IMessage *p);
   virtual ~MessageProxy();
-
-#if 0 // 废弃，使用RouteMessage代替。  
-  bool IsMsgHandled() const;
-  void SetMsgHandled(bool b);
-  UIMSG *GetCurMsg();
-  void SetCurMsg(UIMSG *p);
-  bool DoHook(UIMSG *pMsg, int nMsgMapID);
-
-  virtual bool virtualProcessMessage(ui::UIMSG *pMsg, int nMsgMapID = 0,
-                                     bool bDoHook = false) {
-    return false;
-  }
-#endif
 
 protected:
   Message *m_pImpl;

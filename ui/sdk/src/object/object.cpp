@@ -1,8 +1,8 @@
 #include "object.h"
 #include "include/interface/imessage.h"
 #include "include/interface/imeta.h"
+#include "include/interface/iobject.h"
 #include "object_layer.h"
-
 #include "include/interface/ilayout.h"
 #include "include/interface/iwindow.h"
 // #include "include/interface/ipanel.h"
@@ -18,6 +18,7 @@
 #include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
 #include "src/window/window.h"
+#include "src/panel/root_object.h"
 #include "src/resource/colorres.h"
 #include "src/resource/cursorres.h"
 #include "src/resource/res_bundle.h"
@@ -41,7 +42,7 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
   m_rcBorder.SetEmpty();
 
   // m_lCanRedrawRef = 0;
-  m_pSkinRes = nullptr;
+  m_resource = nullptr;
   m_ppOutRef = nullptr;
   m_lzOrder = 0;
 
@@ -95,7 +96,7 @@ void Object::onRouteMessage(ui::Msg *msg) {
 }
 
 int Object::FinalConstruct(IResource *pSkinRes) {
-  m_pSkinRes = pSkinRes->GetImpl();
+  m_resource = pSkinRes->GetImpl();
   return 0;
 }
 
@@ -168,23 +169,25 @@ Layer *Object::GetLayerForAnimate() {
 }
 
 // 获取一个控件所在窗口句炳
-Window *Object::GetWindow() {
+Object* Object::GetRootObject() {
   Object *pParent = this;
-  do {
-    if (!pParent->m_pParent)
-      break;
+  while (pParent->m_pParent) {
     pParent = pParent->m_pParent;
-  } while (1);
+  }
+  return pParent;
+}
 
-  if (!pParent->m_meta) {
+Window *Object::GetWindow() {
+  Object* root = GetRootObject();
+  if (!root || !root->m_meta) {
     return nullptr;
   }
   
   // query interface有点慢，直接换meta major type来判断。
-  if (pParent->m_meta->Detail().major_type != OBJ_WINDOW) {
+  if (root->m_meta->Detail().major_type != OBJ_ROOT) {
     return nullptr;
   }
-  return static_cast<Window*>(pParent);
+  return &static_cast<RootObject*>(root)->GetWindow();
 
   // IWindow *pWindow =
   //     (IWindow *)pParent->GetIObject()->QueryInterface(IWindow::UUID());
@@ -361,12 +364,12 @@ void Object::LoadAttributes(bool bReload) {
   if (szText)
     strId = szText;
 
-  StyleRes &styleRes = m_pSkinRes->GetStyleRes();
+  StyleRes &styleRes = m_resource->GetStyleRes();
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
                      strId.c_str(), m_pIMapAttributeRemain.get());
 
   SerializeParam data = {0};
-  data.pSkinRes = m_pSkinRes->GetIResource();
+  data.pSkinRes = m_resource->GetIResource();
   data.pMapAttrib = m_pIMapAttributeRemain.get();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
@@ -1136,9 +1139,9 @@ void Object::InitDefaultAttrib() {
   // pMapAttrib->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
 
   // 解析样式
-  UIASSERT(m_pSkinRes);
+  UIASSERT(m_resource);
 
-  StyleRes &styleRes = m_pSkinRes->GetStyleRes();
+  StyleRes &styleRes = m_resource->GetStyleRes();
 
   const char *szStyle = pMapAttrib->GetAttr(nullptr, XML_STYLE, true);
   std::string strStyle;
@@ -1149,7 +1152,7 @@ void Object::InitDefaultAttrib() {
                      pMapAttrib.get());
 
   SerializeParam data = {0};
-  data.pSkinRes = m_pSkinRes->GetIResource();
+  data.pSkinRes = m_resource->GetIResource();
   data.pMapAttrib = pMapAttrib.get();
   data.nFlags = SERIALIZEFLAG_LOAD;
 
@@ -1178,27 +1181,27 @@ void Object::InitDefaultAttrib() {
 
 void Object::SetOutRef(void **ppOutRef) { m_ppOutRef = ppOutRef; }
 
-Resource *Object::GetResource() { return m_pSkinRes; }
+Resource *Object::GetResource() { return m_resource; }
 
 IResource *Object::GetIResource() {
-  if (!m_pSkinRes)
+  if (!m_resource)
     return nullptr;
 
-  return m_pSkinRes->GetIResource();
+  return m_resource->GetIResource();
 }
 
 Application *Object::GetUIApplication() {
-  UIASSERT(m_pSkinRes);
-  UIASSERT(m_pSkinRes->GetUIApplication());
+  UIASSERT(m_resource);
+  UIASSERT(m_resource->GetUIApplication());
 
-  return m_pSkinRes->GetUIApplication();
+  return m_resource->GetUIApplication();
 }
 
 IApplication *Object::GetIUIApplication() {
-  UIASSERT(m_pSkinRes);
-  UIASSERT(m_pSkinRes->GetUIApplication());
+  UIASSERT(m_resource);
+  UIASSERT(m_resource->GetUIApplication());
 
-  return m_pSkinRes->GetUIApplication()->GetIUIApplication();
+  return m_resource->GetUIApplication()->GetIUIApplication();
 }
 
 int Object::GetZorder() { return m_lzOrder; }
@@ -1322,7 +1325,7 @@ void Object::load_renderbase(const char *szName, IRenderBase *&pRender) {
 //   if (szName) {
 // #if 0 // defined(OS_WIN)
 //     GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
-//         m_pSkinRes->GetIResource(), szName, m_pIObject, &pRender);
+//         m_resource->GetIResource(), szName, m_pIObject, &pRender);
 // #else
 //     UIASSERT(false);
 // #endif
@@ -1336,7 +1339,7 @@ void Object::load_textrender(const char *szName,
 //   if (szName) {
 // #if 0 // defined(OS_WIN)
 //     GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
-//         m_pSkinRes->GetIResource(), szName, m_pIObject, &pTextRender);
+//         m_resource->GetIResource(), szName, m_pIObject, &pTextRender);
 // #endif
 //   }
 }

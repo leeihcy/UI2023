@@ -39,9 +39,6 @@ long TopWindowManager::AddTopWindowObject(Window *pObj) {
   }
 
   this->m_lTopWindowObject.push_back(pObj);
-
-  UI_LOG_DEBUG("TopWindowManager::AddTopWindowObject, ID=%s",
-               pObj->GetId());
   return 0;
 }
 
@@ -54,9 +51,6 @@ long TopWindowManager::RemoveTopWindowObject(Window *pObj) {
   for (; iter != iterEnd; iter++) {
     if (pObj == *iter) {
       m_lTopWindowObject.erase(iter);
-
-      UI_LOG_DEBUG("TopWindowManager::RemoveTopWindowObject, ID=%s",
-                   pObj->GetId());
       return 0;
     }
   }
@@ -189,6 +183,8 @@ void TopWindowManager::ChangeSkin(Resource* pNewSkinRes)
 //	改变当前皮肤的色调
 //
 bool TopWindowManager::UpdateAllWindow() {
+  assert(0);
+#if 0
   _MyIter iter = m_lTopWindowObject.begin();
   _MyIter iterEnd = m_lTopWindowObject.end();
 
@@ -200,6 +196,7 @@ bool TopWindowManager::UpdateAllWindow() {
 
     pWindow->Invalidate(nullptr);
   }
+#endif
   return true;
 }
 

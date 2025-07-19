@@ -1,15 +1,19 @@
 #include "include/interface/iwindow.h"
+#include "include/interface/iobject.h"
 #include "include/macro/uidefine.h"
 #include "include/uiapi.h"
+#include "src/panel/root_object.h"
 #include "src/window/window.h"
 #include "src/window/window_meta.h"
+#include "src/resource/res_bundle.h"
 
 #if 0
 #include "src/resource/res_bundle.h"
 #endif
 
 namespace ui {
-UI_IMPLEMENT_INTERFACE(Window, Panel)
+UI_IMPLEMENT_INTERFACE(Window, Message)
+UI_IMPLEMENT_INTERFACE(RootObject, Panel)
 
 void IWindow::Create(const char *szId, const Rect *rect) {
   __pImpl->Create(szId, rect);
@@ -18,6 +22,16 @@ void IWindow::SetTitle(const char *title_utf8) {
   __pImpl->SetTitle(title_utf8);
 }
 void IWindow::Show() { __pImpl->Show(); }
+
+void IWindow::GetClientRect(ui::Rect* rc) {
+  __pImpl->m_platform->GetClientRect(rc);
+}
+void IWindow::DpiScaleRect(ui::Rect* rc) {
+  __pImpl->m_dpi.ScaleRect(rc);
+}
+void IWindow::DpiRestoreRect(ui::Rect* rc) {
+  __pImpl->m_dpi.RestoreRect(rc);
+}
 
 #if 0
 UI_IMPLEMENT_INTERFACE(WindowBase, Panel)
@@ -183,6 +197,20 @@ long  IWindowBase::SetDroppable(bool b)
 	return __pImpl->SetCanDrop(b);
 }
 #endif
+
+IObject *IWindow::FindObject(const char *obj_id) {
+  ui::Object* obj = __pImpl->GetRootObject().FindObject(obj_id);
+  if (!obj) {
+    return nullptr;
+  }
+  return obj->GetIObject();
+} 
+IResource* IWindow::GetResource() {
+  return __pImpl->GetResource().GetIResource();
+}
+IRootObject* IWindow::GetRootObject() {
+  return __pImpl->GetRootObject().GetIRootObject();
+}
 
 void IWindow::EnableGpuComposite(bool b) { return __pImpl->SetGpuComposite(b); }
 bool IWindow::IsGpuComposite() { return __pImpl->IsGpuComposite(); }
