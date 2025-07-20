@@ -87,6 +87,7 @@ shared_library("uigpu") {
       sources += [
         "src/vulkan/vkapp.cpp",
         "src/vulkan/vkcompositor.cpp",
+        "src/vulkan/vkcompositor.h",
         "src/vulkan/vkcompositor_draw_frame.cpp",
         "src/vulkan/vklayer.cpp",
         "src/vulkan/vktexturetile.h",
@@ -97,6 +98,7 @@ shared_library("uigpu") {
         "src/vulkan/wrap/vulkan_command_pool.cpp",
         "src/vulkan/wrap/vulkan_device_queue.cpp",
         "src/vulkan/wrap/vulkan_swap_chain.cpp",
+        "src/vulkan/wrap/vulkan_swap_chain.h",
         "src/vulkan/wrap/vulkan_swap_chain_image.cpp",
         "src/vulkan/wrap/vulkan_image_view.cpp",
         "src/vulkan/wrap/vulkan_pipe_line.cpp",

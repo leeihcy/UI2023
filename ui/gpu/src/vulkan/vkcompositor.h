@@ -72,8 +72,6 @@ private:
   void draw_frame_present_swap_chain();
 
 private:
-  void *m_hWnd;
-
   int m_width = 0;
   int m_height = 0;
   GpuLayer *m_pRootTexture;

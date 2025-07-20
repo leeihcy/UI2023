@@ -185,6 +185,33 @@ $ ninja
 ```
 
 
+### Windows下头文件依赖问题
+在windows下，有时修改头文件或者某个cpp时，不能很好的触发编译。
+
+1. 添加/showIncludes参数：
+
+gn/ninja使用msvc工具链编译时，为了获取每个cpp文件依赖的头文件，会给cl.exe命令添加参数：/showIncludes
+在编译过程中会输出这个文件依赖的所有头文件：
+
+```log
+注意： 包含文件：include file path
+```
+
+ninja会拦截这个输出进行过滤，得到依赖项。
+
+2. 资源替换
+
+目前的ninja只支持过滤英文的输出，即：
+```log
+Note: including file:%s%s\n
+```
+所以在编译时拦截失败，导致输出了大量的 "注意： 包含文件："。
+目前没有较好的办法强制输出英文，当前采用的方法是直接替换原始文件：
+将
+`C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\bin\Hostx64\x64\1033\clui.dll`
+替换到
+`C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\bin\Hostx64\x64\2052\clui.dll`
+
 
 ## submodule
 

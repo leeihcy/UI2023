@@ -1,6 +1,7 @@
 #include "windowrender.h"
 #include "compositor.h"
 #include "include/inc.h"
+#include "include/util/log.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/object/object.h"
@@ -51,6 +52,9 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
   if (dirty->IsEmpty()) {
     return;
   }
+
+  UI_LOG_INFO("WindowRender::AddInvalidateRect: (%d,%d)-(%d,%d)", 
+    dirty->left, dirty->top, dirty->right, dirty->bottom);
 
   Layer *layer = m_window.GetRootObject().GetLayer();
   if (!layer) {

@@ -1,5 +1,6 @@
 #include "window_win.h"
 #include "include/util/math.h"
+#include <Windows.h>
 #include <atlconv.h>
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
@@ -143,23 +144,7 @@ bool WindowPlatformWin::PreTranslateMessage(unsigned int uMsg, WPARAM wParam,
 LRESULT WindowPlatformWin::WndProc(unsigned int uMsg, WPARAM wParam,
                                    LPARAM lParam) {
 
-  LRESULT lRes;
-#if 0
-  UIMSG*  pOldMsg = m_pCurMsg;
-#else
-  UIMSG *pOldMsg = nullptr;
-#endif
-  // // 外部预处理
-  // if (m_pCallbackProxy)
-  // {
-  // 	long lRes = 0;
-  // 	BOOL bHandled = m_pCallbackProxy->OnWindowMessage(uMsg, wParam, lParam,
-  // lRes); 	if (bHandled)
-  // 	{
-  // 		return WndProc_GetRetValue(uMsg, wParam, lParam, bHandled,
-  // lRes);
-  // 	}
-  // }
+  LRESULT lRes = 0;
 
   // // 内部处理
   BOOL bHandled = this->ProcessWindowMessage(
@@ -168,27 +153,20 @@ LRESULT WindowPlatformWin::WndProc(unsigned int uMsg, WPARAM wParam,
     return WndProc_GetRetValue(uMsg, wParam, lParam, bHandled, lRes);
   }
 
-  //   // 直接发给当前窗口处理
-  UIMSG msg;
-  msg.message = uMsg;
-  // msg.pMsgTo = this->GetIMessage();
-  msg.wParam = wParam;
-  msg.lParam = lParam;
-
   // // 如果这个消息被处理过了，直接返回，不用再调用旧的窗口过程了
   // //if (static_cast<IMessage*>(this)->ProcessMessage(&msg, 0))
   //   UISendMessage(&msg);
-  lRes = WndProc_GetRetValue(uMsg, wParam, lParam, msg.bHandled, msg.lRet);
- 
+  lRes = WndProc_GetRetValue(uMsg, wParam, lParam, bHandled, lRes);
+
   if (uMsg == WM_NCDESTROY) {
     // 注：为什么不在这里直接调用OnFinalMessage，却还要再加一个状态位？
     // 因为WM_NCDESTROY函数由DestroyWindow api触发，而DestroyWindow api
     // 可能位于任何一个当前窗口的消息响应中，因此当pOldMsg==nullptr时，即表示
     // 没有消息嵌套了，在检查一次WINDOW_STYLE_DESTROYED标志即可。
     m_ui_window.GetWindowStyle().destroyed = 1;
-    m_ui_window.m_objStyle.initialized = 0;
+    // m_ui_window.m_objStyle.initialized = 0;
   }
-  if (m_ui_window.GetWindowStyle().destroyed && pOldMsg == nullptr) {
+  if (m_ui_window.GetWindowStyle().destroyed) {
     m_ui_window.GetWindowStyle().destroyed = 0;
   }
 
@@ -296,7 +274,6 @@ void RegisterWndClass() {
   wcex.lpfnWndProc = ::DefWindowProc;
   RegisterClassEx(&wcex);
 
-
   // 由程序自己实现DPI缩放，不用系统帮忙。
   HMODULE hModule = GetModuleHandle(L"User32.dll");
   if (hModule) {
@@ -307,7 +284,7 @@ void RegisterWndClass() {
   }
 }
 
-bool WindowPlatformWin::Create(CreateWindowParam& param) {
+bool WindowPlatformWin::Create(CreateWindowParam &param) {
   RegisterWndClass();
 
   //	创建窗口句柄
@@ -350,7 +327,6 @@ bool WindowPlatformWin::Create(CreateWindowParam& param) {
                        cs.y, cs.cx, cs.cy, cs.hwndParent, 0, nullptr, nullptr);
 
   Attach(hWnd);
-
 
   //
   //	为了解决xp、win7上面的一个特性：只有在按了ALT键，或者TAB键之后，才会显示控件的focus
@@ -401,15 +377,13 @@ void WindowPlatformWin::Show() { ::ShowWindow(m_hWnd, SW_SHOW); }
 
 void WindowPlatformWin::Hide() { ::ShowWindow(m_hWnd, SW_HIDE); }
 
-float WindowPlatformWin::GetScaleFactor() {
-  return 1.0f;
-}
+float WindowPlatformWin::GetScaleFactor() { return 1.0f; }
 
 void WindowPlatformWin::SetBorderless(bool no_border) {}
 
-void WindowPlatformWin::Invalidate(const Rect *prect) {
-  ::InvalidateRect(m_hWnd, nullptr, TRUE);
-}
+// void WindowPlatformWin::Invalidate(const Rect *prect) {
+//   ::InvalidateRect(m_hWnd, nullptr, TRUE);
+// }
 
 std::string WindowPlatformWin::GetTitle() {
   char text[256] = {0};
@@ -451,59 +425,79 @@ void WindowPlatformWin::GetWindowRect(Rect *prect) {
   RECT2Rect(rc, prect);
 }
 
-void WindowPlatformWin::UpdateNonClientRegion(Rect* pregion) {
-  assert(false);
-  // TODO: 
+void WindowPlatformWin::UpdateNonClientRegion(Rect *pregion) {
+  DWORD dwStyle = GetWindowLong(m_hWnd, GWL_STYLE);
+  DWORD dwExStyle = GetWindowLong(m_hWnd, GWL_EXSTYLE);
+  BOOL bMenu = FALSE;
+
+  AdjustWindowRectEx((LPRECT)pregion, dwStyle, bMenu, dwExStyle);
 }
-void WindowPlatformWin::GetMonitorWorkArea(Rect* rect) {
-  assert(false);
-#if 0 // TODO:
-  Rect rcParent;
-  Rect rcLimit;
-  rcParent.SetEmpty();
-  rcLimit.SetEmpty();
+
+extern "C" 
+void GetWindowNormalRect(HWND hWnd, RECT *prc) {
+  UIASSERT(hWnd);
+  if (!hWnd)
+    return;
+
+  UIASSERT(prc);
+  if (IsIconic(hWnd) || IsZoomed(hWnd)) {
+    WINDOWPLACEMENT wndplacement = {0};
+    wndplacement.length = sizeof(wndplacement);
+    GetWindowPlacement(hWnd, &wndplacement);
+
+    CopyRect((LPRECT)prc, &wndplacement.rcNormalPosition);
+  } else {
+    ::GetWindowRect(hWnd, (LPRECT)prc);
+  }
+}
+
+void WindowPlatformWin::GetMonitorWorkArea(Rect *rect) {
+  RECT rcParent = { 0 };
+  RECT rcLimit = { 0 };
 
   // 计算出屏幕工作区域的大小(不使用整个屏幕的大小)
   // nCXScreen = ::GetSystemMetrics( SM_CXSCREEN );
   // nCYScreen = ::GetSystemMetrics( SM_CYSCREEN );
 
-  if (GetWindowLong(window->m_hWnd, GWL_STYLE) & WS_CHILD) {
-    HWND hWndParent = GetParent(window->m_hWnd);
+  if (GetWindowLong(m_hWnd, GWL_STYLE) & WS_CHILD) {
+    HWND hWndParent = GetParent(m_hWnd);
     if (hWndParent) {
-      ::GetClientRect(hWndParent, &rcParent);
+      ::GetClientRect(hWndParent, (LPRECT)&rcParent);
       rcLimit = rcParent;
     }
   } else {
-    HWND hWndParent = GetParent(window->m_hWnd);
+    HWND hWndParent = GetParent(m_hWnd);
     if (hWndParent) {
       if (IsIconic(hWndParent)) {
         GetWindowNormalRect(hWndParent, &rcParent);
       } else {
-        GetWindowRect(hWndParent, &rcParent);
+        ::GetWindowRect(hWndParent, (LPRECT)&rcParent);
       }
       MONITORINFO mi = {sizeof(mi), 0};
-      if (GetMonitorInfo(MonitorFromRect(rcParent, MONITOR_DEFAULTTOPRIMARY),
+      if (GetMonitorInfo(MonitorFromRect((LPRECT)&rcParent, MONITOR_DEFAULTTOPRIMARY),
                          &mi)) {
         rcLimit = mi.rcWork;
       } else {
-        SystemParametersInfo(SPI_GETWORKAREA, 0, &rcLimit, 0);
+        SystemParametersInfo(SPI_GETWORKAREA, 0, (LPRECT)&rcLimit, 0);
       }
     } else {
-      Point pt = {0};
+      POINT pt = {0};
       GetCursorPos(&pt);
 
       MONITORINFO mi = {sizeof(mi), 0};
       if (GetMonitorInfo(MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY), &mi)) {
         rcParent = mi.rcWork;
       } else {
-        SystemParametersInfo(SPI_GETWORKAREA, 0, &rcParent, 0);
+        SystemParametersInfo(SPI_GETWORKAREA, 0, (LPRECT)&rcParent, 0);
       }
       rcLimit = rcParent;
     }
-#endif
+  }
+  rect->Set(rcLimit.left, rcLimit.top, rcLimit.right, rcLimit.bottom);
 }
 
-void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
+void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h,
+                                     SetPositionFlags flags) {
   int windows_flags = 0;
   if (flags.move == false) {
     windows_flags |= SWP_NOMOVE;
@@ -758,8 +752,9 @@ LRESULT WindowPlatformWin::_OnSize(unsigned int uMsg, WPARAM wParam,
   return 0;
 }
 
-LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg,
+                                                 WPARAM wParam, LPARAM lParam,
+                                                 BOOL &bHandled) {
   int x = GET_X_LPARAM(lParam);
   int y = GET_Y_LPARAM(lParam);
 
@@ -787,10 +782,10 @@ LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg, WPARAM wPara
 // 		bHandled = TRUE;
 // 	}
 #endif
-	return 0;
+  return 0;
 }
 
-#define DEFAULT_SCREEN_DPI  96   // USER_DEFAULT_SCREEN_DPI
+#define DEFAULT_SCREEN_DPI 96 // USER_DEFAULT_SCREEN_DPI
 
 int WindowPlatformWin::GetDpi() {
   if (0 == m_dpi) {
@@ -836,7 +831,6 @@ int WindowPlatformWin::GetDpi() {
   return m_dpi;
 }
 
-
 float WindowPlatformWin::GetDpiScale() {
   float fScale = (float)GetDpi() / DEFAULT_SCREEN_DPI;
   return fScale;
@@ -875,6 +869,5 @@ int WindowPlatformWin::RestoreByDpi_if_gt0(int x) {
 
   return RestoreByDpi(x);
 }
-
 
 } // namespace ui

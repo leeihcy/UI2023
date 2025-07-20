@@ -243,28 +243,5 @@ void IWindowBase::SetWindowNormalRect(const Rect *prc) {
 
 void IWindowBase::UpdateDesktopLayout() { __pImpl->UpdateDesktopLayout(); }
 #endif
-#if 0
-	extern "C"
-		void GetWindowNormalRect(HWND hWnd, Rect* prc)
-	{
-		UIASSERT(hWnd);
-		if (!hWnd)
-			return;
-
-		UIASSERT(prc);
-		if (IsIconic(hWnd) || IsZoomed(hWnd))
-		{
-			WINDOWPLACEMENT wndplacement = { 0 };
-			wndplacement.length = sizeof(wndplacement);
-			GetWindowPlacement(hWnd, &wndplacement);
-
-			CopyRect(prc, &wndplacement.rcNormalPosition);
-		}
-		else
-		{
-			::GetWindowRect(hWnd, prc);
-		}
-	}
-#endif
 
 } // namespace ui

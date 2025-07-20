@@ -248,15 +248,16 @@ void SkiaRenderTarget::Clear(Rect *prc) {
   SkCanvas *canvas = m_sksurface->getCanvas();
   // canvas->clear(SK_ColorTRANSPARENT);  // <<-- 全量刷新非常影响性能
 
-  // SkRect skrect;
-  // skrect.fLeft = (SkScalar)prc->left;
-  // skrect.fTop = (SkScalar)prc->top;
-  // skrect.fRight = (SkScalar)prc->right;
-  // skrect.fBottom = (SkScalar)prc->bottom;
+  SkRect skrect;
+  skrect.fLeft = (SkScalar)prc->left;
+  skrect.fTop = (SkScalar)prc->top;
+  skrect.fRight = (SkScalar)prc->right;
+  skrect.fBottom = (SkScalar)prc->bottom;
 
-  // SkPaint paint;
-  // paint.setColor(SK_ColorYELLOW);
-  // canvas->drawRect(skrect, paint);
+  SkPaint paint;
+  paint.setColor(SK_ColorTRANSPARENT);
+  paint.setBlendMode(SkBlendMode::kSrc);
+  canvas->drawRect(skrect, paint);
 }
 
 void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,

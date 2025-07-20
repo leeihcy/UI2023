@@ -29,7 +29,8 @@ bool Pipeline::Initialize(uint32_t w, uint32_t h, VkFormat format) {
   return true;
 }
 
-void Pipeline::UpdateViewportScissor(uint32_t w, uint32_t h, VkCommandBuffer command_buffer) {
+void Pipeline::UpdateViewportScissor(uint32_t w, uint32_t h,
+                                     VkCommandBuffer command_buffer) {
   Context context;
   build_viewport_scissor(context, w, h);
 
@@ -427,15 +428,27 @@ void Pipeline::create_descriptor_pool() {
 }
 
 void Pipeline::create_texture_descriptor_pool() {
-  VkDescriptorPoolSize texturePoolSizes[1] = {};
-  texturePoolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  texturePoolSizes[0].descriptorCount = 999999; // TBD
+  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
 
-  VkDescriptorPoolCreateInfo poolInfo = {};
-  poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  poolInfo.poolSizeCount = std::size(texturePoolSizes);
-  poolInfo.pPoolSizes = texturePoolSizes;
-  poolInfo.maxSets = 999999; // TBD
+  // TODO:
+  // 分配太多，会直接占用太多内存。
+  // 分配太少，可能会导致pool资源耗尽。
+  // 因此还需要动态管理多个pool
+  const int max_count = 200;
+
+  VkDescriptorPoolSize texturePoolSizes[] = {
+      {.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+       .descriptorCount = max_count
+      }
+  };
+
+  VkDescriptorPoolCreateInfo poolInfo = {
+    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+    .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+    .maxSets = max_count,
+    .poolSizeCount = std::size(texturePoolSizes),
+    .pPoolSizes = texturePoolSizes,
+  };
 
   if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
                              &m_texture_descriptor_pool) != VK_SUCCESS) {
@@ -563,14 +576,13 @@ bool Pipeline::create_pipeline(Context &ctx) {
   // 将和窗口大小相关的属性，设置为Dynamic，这样窗口大小改变时，
   // 不需要重新创建pipe line，只需要更新对应属性即可。
   std::vector<VkDynamicState> dynamicStates = {
-    VK_DYNAMIC_STATE_VIEWPORT,   // 视口动态
-    VK_DYNAMIC_STATE_SCISSOR     // 裁剪矩形动态
+      VK_DYNAMIC_STATE_VIEWPORT, // 视口动态
+      VK_DYNAMIC_STATE_SCISSOR   // 裁剪矩形动态
   };
   VkPipelineDynamicStateCreateInfo dynamicStateInfo = {
-    .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-    .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
-    .pDynamicStates = dynamicStates.data()
-  };
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+      .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
+      .pDynamicStates = dynamicStates.data()};
   ctx.pipeline_info.pDynamicState = &dynamicStateInfo;
 
   if (vkCreateGraphicsPipelines(m_bridge.GetVkDevice(), VK_NULL_HANDLE, 1,

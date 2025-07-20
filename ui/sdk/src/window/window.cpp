@@ -173,8 +173,9 @@ void Window::onSize(int window_width, int window_height) {
   ui::Rect rc_invalid_bottom = ui::Rect::MakeLTRB(
       0, old_client_height, old_client_width, new_client_height);
 
-  m_window_render.AddInvalidateRect(&rc_invalid_right);
-  m_window_render.AddInvalidateRect(&rc_invalid_bottom);
+  // m_window_render.AddInvalidateRect(&rc_invalid_right);
+  // m_window_render.AddInvalidateRect(&rc_invalid_bottom);
+  m_window_render.AddInvalidateRect(&rc_client);
 
   GetRootObject().OnWindowSize(new_client_width, new_client_height);
   m_window_render.OnWindowSize(new_client_width, new_client_height);

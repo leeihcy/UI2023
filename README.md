@@ -12,6 +12,7 @@ an ui framework can cross platform
 ## vulkan
 1. 引入 chromium swiftshader进行调试
 2. gpu layer tile policy
+3. 内存占用为什么这么大？
 
 # Done
 
