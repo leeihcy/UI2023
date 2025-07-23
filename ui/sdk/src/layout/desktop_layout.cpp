@@ -1,9 +1,8 @@
 #include "desktop_layout.h"
 #include "canvaslayout.h"
-#include "src/panel/root_object.h"
-#include "sdk/src/window/window.h"
 #include "sdk/include/macro/uidefine.h"
-
+#include "sdk/src/window/window.h"
+#include "src/panel/root_object.h"
 
 namespace ui {
 
@@ -30,7 +29,7 @@ void DesktopLayout::Arrange(Window *window) {
   int nCXScreen = 800, nCYScreen = 600; // 屏幕大小
   int left = NDEF, top = NDEF, right = NDEF, bottom = NDEF;
 
-  auto& root_object = window->GetRootObject();
+  auto &root_object = window->GetRootObject();
   CanvasLayout canvas_layout;
   CanvasLayoutParam *pParam = canvas_layout.GetObjectLayoutParam(&root_object);
   if (!pParam) {
@@ -45,6 +44,8 @@ void DesktopLayout::Arrange(Window *window) {
   // 获得的SIZE包括了MARGIN的大小
   // size_window.width=margin.left+width+margin.right
   Size size_window = window->GetDesiredSize();
+  window->m_dpi.ScaleSize(&size_window);
+
 #ifdef _DEBUG
   if (size_window.width == 0 && size_window.height == 0) {
     UI_LOG_WARN(
@@ -55,10 +56,9 @@ void DesktopLayout::Arrange(Window *window) {
   ui::Rect rc_workarea;
   window->m_platform->GetMonitorWorkArea(&rc_workarea);
 
-  ui::Rect rc_parent;  // TODO: 如果当前窗口是子窗口，获取对应父窗口区域。
+  ui::Rect rc_parent; // TODO: 如果当前窗口是子窗口，获取对应父窗口区域。
   // 这里先只做没有父窗口的场景
   rc_parent = rc_workarea;
-
 
   // 如果同时指定了left/right,则忽略width属性
   if (left != NDEF && right != NDEF) {
@@ -91,7 +91,8 @@ void DesktopLayout::Arrange(Window *window) {
     x += root_object.GetMarginL();
   } else {
     if (right != NDEF) {
-      x = rc_parent.right - right - size_window.width; // right是指窗口右侧距离屏幕右侧的距离
+      x = rc_parent.right - right -
+          size_window.width; // right是指窗口右侧距离屏幕右侧的距离
       x -= root_object.GetMarginR();
     } else {
       // 居中
@@ -127,14 +128,16 @@ void DesktopLayout::Arrange(Window *window) {
 
   SetPositionFlags flags;
   flags.redraw = false;
-  window->m_platform->SetWindowPos(x, y, size_window.width, size_window.height, flags);
+  window->m_platform->SetWindowPos(x, y, size_window.width, size_window.height,
+                                   flags);
 
   // 解决如果窗口大小没有发生改变，改变窗口没有收到WM_SIZE时，手动布局一次
   window->m_platform->GetClientRect(&rc_client_new);
   if (rc_client_new.Width() == rc_client_old.Width() &&
       rc_client_new.Height() == rc_client_old.Height()) {
-    root_object.notify_WM_SIZE(0, rc_client_new.Width(), rc_client_new.Height());
+    root_object.notify_WM_SIZE(0, rc_client_new.Width(), rc_client_new.Height(),
+                               window->m_dpi.GetScaleFactor());
   }
 }
 
-}
+} // namespace ui

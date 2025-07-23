@@ -1,8 +1,8 @@
 
 
-executable("dpi") {
+executable("dpi_layout") {
     output_dir = "$root_out_dir/bin"
-    output_name = "sample_dpi"
+    output_name = "sample_dpi_layout"
 
     deps = [
         "//ui/sdk:sdk"
@@ -34,9 +34,9 @@ executable("dpi") {
 copy("copy_dpi_resource") {
   sources = [
     "resource/resource.xml", 
-    "resource/dpi.xml", 
+    "resource/dpi_layout.xml", 
   ]
   outputs = [
-    "$root_build_dir/bin/sample/dpi/{{source_file_part}}"
+    "$root_build_dir/bin/sample/dpi_layout/{{source_file_part}}"
   ]
 }

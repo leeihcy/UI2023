@@ -134,15 +134,19 @@ struct UIAPI IObject : public IMessage {
   void ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove);
   bool TestObjectStyle(const OBJSTYLE &test);
   void RemoveMeInTheTree();
+
+#if 0
   void SetZorderDirect(int lz);
   int GetZOrder();
   void SortChildByZorder();
+#endif
 
   void GetParentRect(Rect *prc);
   void GetWindowRect(Rect *prc);
   Size GetDesiredSize();
   int GetWidth();
   int GetHeight();
+#if 0
   int GetMaxWidth();
   int GetMaxHeight();
   void SetMaxWidth(int);
@@ -151,8 +155,12 @@ struct UIAPI IObject : public IMessage {
   int GetMinHeight();
   void SetMinWidth(int);
   void SetMinHeight(int);
+#endif
+
+#if 0
   ILayoutParam *GetSafeLayoutParam();
   ILayoutParam *GetLayoutParam();
+#endif
   void SetLayoutParam(ILayoutParam *);
   void SetPaddingRegion(REGION4 *prc);
   void GetPaddingRegion(REGION4 *prc);

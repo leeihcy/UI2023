@@ -20,7 +20,7 @@ public:
   ~AverageLayout();
 
   virtual Size Measure() override;
-  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void DoArrange(ArrangeParam& param) override;
   virtual void Serialize(SerializeParam *) override;
   // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 

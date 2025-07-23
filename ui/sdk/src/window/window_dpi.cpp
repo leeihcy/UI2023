@@ -7,6 +7,9 @@ WindowDPI::WindowDPI() {
   m_policy = WindowScalePolicy::System;
   m_scale = 1.0f;
 }
+float WindowDPI::GetScaleFactor() {
+  return m_scale;
+}
 
 void WindowDPI::ScaleRect(ui::Rect *rc) {
   if (m_policy == WindowScalePolicy::Raw) {
@@ -32,6 +35,17 @@ void WindowDPI::RestoreRect(ui::Rect *rc) {
   rc->top /= m_scale;
   rc->right /= m_scale;
   rc->bottom /= m_scale;
+}
+
+void WindowDPI::ScaleSize(ui::Size* size) {
+  if (m_policy == WindowScalePolicy::Raw) {
+    return;
+  }
+  if (!size) {
+    return;
+  }
+  size->width *= m_scale;
+  size->height *= m_scale;
 }
 
 void WindowDPI::SetSystemDpi(float dpi) { m_scale = dpi; }

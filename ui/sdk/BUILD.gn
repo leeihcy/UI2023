@@ -82,6 +82,7 @@ shared_library("uisdk") {
     if (is_win) {
       libs += [
         "atls.lib",  # ATL
+        "Shcore.lib", 
         "skia.dll.lib",
       ]
     }
@@ -154,6 +155,8 @@ shared_library("uisdk") {
         "src/layout/layout.cpp",
         "src/layout/layout_factory.cpp",
         "src/message_loop/message_loop.cpp",
+        "src/object/layout/layout_object.cpp",
+        "src/object/layout/layout_object.h",
         "src/object/message.cpp",
         "src/object/imessage.cpp",
         "src/object/iobject.cpp",

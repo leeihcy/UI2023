@@ -40,6 +40,8 @@ SvgLayoutParam *GetObjectLayoutParam(IObject *pObj) {
   if (!pObj)
     return nullptr;
 
+  assert(false);
+#if 0 // TODO:
   ILayoutParam *pParam = pObj->GetLayoutParam();
   if (pParam && pParam->UUID() == SvgLayout::UUID()) {
     return static_cast<SvgLayoutParam *>(pParam);
@@ -50,12 +52,14 @@ SvgLayoutParam *GetObjectLayoutParam(IObject *pObj) {
   pObj->SetLayoutParam(param);
 
   return static_cast<SvgLayoutParam *>(param);
+#endif
+  return nullptr;
 }
 
-void SvgLayout::Arrange(ArrangeParam *param) {
+void SvgLayout::Arrange(ArrangeParam& param) {
   m_dirty = false;
 
-  IObject *obj_to_arrange = param ? param->obj_to_arrange : nullptr;
+  IObject *obj_to_arrange = param.obj_to_arrange;
 
   ui::IObject *child = nullptr;
   while ((child = m_bind_object->EnumChildObject(child))) {

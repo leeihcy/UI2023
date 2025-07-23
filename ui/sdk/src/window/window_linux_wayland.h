@@ -47,7 +47,6 @@ public:
   WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;
   void Show() override;
-  float GetScaleFactor() override;
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
   void SetWindowPos(int x, int y, int w, int h,

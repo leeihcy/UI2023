@@ -343,7 +343,7 @@ Size GridLayout::Measure() {
 
   return size;
 }
-void GridLayout::DoArrange(ArrangeParam *param) {
+void GridLayout::DoArrange(ArrangeParam& param) {
   // 调用该函数时，自己的大小已经被求出来了
 
   // 先求出GRID的宽度和高度，后面对各个子对象的布局都是先基于GRID的

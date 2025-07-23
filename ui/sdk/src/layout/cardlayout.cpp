@@ -20,8 +20,8 @@ Size CardLayout::Measure() {
   }
   return size;
 }
-void CardLayout::DoArrange(ArrangeParam *param) {
-  IObject *pIObjToArrage = param ? param->obj_to_arrange : nullptr;
+void CardLayout::DoArrange(ArrangeParam& param) {
+  IObject *pIObjToArrage = param.obj_to_arrange;
 
   // 调用该函数时，自己的大小已经被求出来了
   Rect rcClient;

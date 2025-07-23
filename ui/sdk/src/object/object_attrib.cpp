@@ -16,7 +16,6 @@ namespace ui {
 void Object::onSerialize(SerializeParam *pData) {
   IMapAttribute *pMapAttrib = pData->pMapAttrib;
   if (pData->IsReload()) {
-    SAFE_RELEASE(m_pLayoutParam);
     if (m_pBkgndRender) {
       m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
       m_pBkgndRender = nullptr;
@@ -83,23 +82,6 @@ void Object::onSerialize(SerializeParam *pData) {
     s.AddBool(XML_BACKGND_IS_TRANSPARENT, Slot(&Object::SetTransparent, this),
               Slot(&Object::IsTransparent, this))
         ->SetDefault(m_objStyle.default_transparent);
-
-    s.AddInt(
-        XML_ZORDER,
-        *(int *)&m_lzOrder); // z序
-                             // (注：默认在从xml加载之后，AddChild之前会先解析一次)
-    s.AddInt(XML_MAXWIDTH, *(int *)&m_nMaxWidth)
-        ->SetDefault(NDEF)
-        ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-    s.AddInt(XML_MAXHEIGHT, *(int *)&m_nMaxHeight)
-        ->SetDefault(NDEF)
-        ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-    s.AddInt(XML_MINWIDTH, m_lMinWidth)
-        ->SetDefault(NDEF)
-        ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-    s.AddInt(XML_MINHEIGHT, m_lMinHeight)
-        ->SetDefault(NDEF)
-        ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
 
     s.AddBool(XML_NO_CLIP_DRAW, Slot(&Object::SetNoClip, this),
               Slot(&Object::IsNoClip, this));
@@ -169,12 +151,7 @@ void Object::onSerialize(SerializeParam *pData) {
     // 	   }
   }
 
-  // 布局属性
-  if (m_pLayoutParam) {
-    m_pLayoutParam->Serialize(pData);
-  } else if (pData->IsReload()) {
-    CreateLayoutParam();
-  }
+  layout.onSerialize(pData);
 }
 
 void Object::virtualOnLoad() {

@@ -3,6 +3,7 @@
 #include "object_layer.h"
 #include "objtree.h"
 #include "src/private_inc.h"
+#include "src/object/layout/layout_object.h"
 
 namespace ui {
 class Resource;
@@ -116,8 +117,6 @@ public:
   bool IsRejectMouseMsgSelf();
   void SetRejectMouseMsgAll(bool b);
   void SetRejectMouseMsgSelf(bool b);
-  virtual int GetZorder() override;
-  void SetZorderDirect(int z);
   void SortChildByZorder();
 
   void ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove);
@@ -154,6 +153,7 @@ public:
   const char *SaveForegndRender();
   const char *SaveTextRender();
 
+  LayoutObject* GetLayoutObject();
   Size GetDesiredSize();
   void UpdateLayout();
   // void  UpdateMyLayout();
@@ -172,29 +172,6 @@ public:
                           bool bCalcVisible, Rect *prcOut);
   bool GetScrollOffset(int *pxOffset, int *pyOffset);
   bool GetScrollRange(int *pxRange, int *pyRange);
-
-  ILayoutParam *GetLayoutParam();
-  ILayoutParam *GetSafeLayoutParam();
-  ILayout *GetLayout();
-  void DestroyLayoutParam();
-  void CreateLayoutParam();
-  void SetLayoutParam(ILayoutParam *p);
-
-  // Canvas布局专用接口
-  int GetConfigWidth();
-  int GetConfigHeight();
-  int GetConfigLayoutFlags();
-  int GetConfigLeft();
-  int GetConfigRight();
-  int GetConfigTop();
-  int GetConfigBottom();
-  void SetConfigWidth(int n);
-  void SetConfigHeight(int n);
-  void SetConfigLayoutFlags(int n);
-  void SetConfigLeft(int n);
-  void SetConfigRight(int n);
-  void SetConfigTop(int n);
-  void SetConfigBottom(int n);
 
   int GetParentRectL() { return m_rcParent.left; }
   int GetParentRectT() { return m_rcParent.top; }
@@ -242,14 +219,7 @@ public:
   int GetHeight();
   int GetWidthWithMargins();
   int GetHeightWithMargins();
-  int GetMaxWidth();
-  int GetMaxHeight();
-  void SetMaxWidth(int);
-  void SetMaxHeight(int);
-  int GetMinWidth();
-  int GetMinHeight();
-  void SetMinWidth(int);
-  void SetMinHeight(int);
+  
 
   bool IntersectWindowRect(const Rect *prcWindow, Rect *prcIntersectWnd,
                            Rect *prcIntersectObj);
@@ -326,8 +296,6 @@ protected:
   void onSerialize(SerializeParam *pData);
   void OnEraseBkgnd(IRenderTarget *pRenderTarget);
 
-  void position_in_tree_changed();
-
 protected:
   Object *find_child_object(const char *szobjId, bool bFindDecendant);
   Object *find_child_object(Uuid uuid, bool bFindDecendant);
@@ -341,7 +309,7 @@ protected:
 
 public:
   void notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
-                      unsigned int nHeight);
+                      unsigned int nHeight, float scale);
   void notify_WM_MOVE(int x, int y);
 
   IMKMgr *GetIMKMgr();
@@ -351,7 +319,7 @@ protected: // virtual
   virtual void virtualSetVisibleEx(VISIBILITY_TYPE eType);
   virtual void virtualSetEnable(bool b);
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
-                             unsigned int nHeight);
+                             unsigned int nHeight, float scale);
   virtual void virtualOnMove();
   virtual void virtualOnPostDrawObjectErasebkgnd(){};
 
@@ -362,6 +330,9 @@ public:
   static void ForwardMessageToChildObject(Object *pParent, ui::Msg *pMsg);
   static void ForwardInitializeMessageToDecendant(Object *pParent);
 
+public:
+  LayoutObject layout;
+
 protected:
   IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
@@ -371,6 +342,8 @@ protected:
 #ifdef EDITOR_MODE
   std::string m_strStyle; // 控件样式
 #endif
+
+  ObjectLayer m_objLayer;
 
 #pragma region //坐标相关数据
 // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
@@ -386,22 +359,13 @@ protected:
   // HRGN     m_hRgn;                  //
   // （未使用）如果该对象是一个不规则区域，必须设置该值，该值对window类型对象无效.
   // rgn是相对于窗口左上角的。
-  // ui::unique_ptr<ILayoutParam> m_pLayoutParam; // 布局参数。由Object负责释放
-  ILayoutParam* m_pLayoutParam = nullptr;
 #pragma endregion
 
 public: // TODO:
   OBJSTYLE m_objStyle;
   OBJSTATE m_objState;
 protected:
-  ObjectLayer m_objLayer;
-  int m_lzOrder; // 控件z序，用于实现控件重叠时的刷新判断依据
 
-  // 控件的最大尺寸限制
-  int m_nMaxWidth;
-  int m_nMaxHeight;
-  int m_lMinWidth;
-  int m_lMinHeight;
 
   std::shared_ptr<IMapAttribute> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
   IRenderBase *m_pBkgndRender;           // 背景渲染

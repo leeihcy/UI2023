@@ -8,7 +8,7 @@
           <Svg file="clock.svg" layout.left="20" layout.top="20" layout.right="20" layout.bottom="20"/>
           
           <Control zorder="1" id="hour" style="hand" back.render.image="clock_hour"/>
-          <Control zorder="2" id="min"  style="hand" back.render.image="clock_min"/>
+          <Control zorder="2" id="min" style="hand" back.render.image="clock_min"/>
           <Control zorder="3" id="sec" style="hand" back.render.image="clock_sec"/> 
       </RoundPanel>
       </Panel>

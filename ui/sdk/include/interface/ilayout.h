@@ -96,13 +96,17 @@ enum class ArrangeReason {
 struct ArrangeParam {
   IObject * obj_to_arrange = nullptr;
   ArrangeReason reason = ArrangeReason::NoReason;
+
+  float scale = 1.0f;
 };
 
 struct ILayout {
   virtual void Release() = 0;
 
+  // 返回的是逻辑大小，不包含scale
   virtual Size Measure() = 0;
-  virtual void Arrange(ArrangeParam* param = nullptr) = 0;
+  // Arrage时需要计算scale
+  virtual void Arrange(ArrangeParam& param) = 0;
   virtual void Serialize(SerializeParam *param) = 0;
   virtual ILayoutParam *CreateLayoutParam(IObject *obj) = 0;
 

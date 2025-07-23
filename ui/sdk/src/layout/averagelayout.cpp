@@ -68,7 +68,7 @@ Size AverageLayout::Measure() {
   return size;
 }
 
-void AverageLayout::DoArrange(ArrangeParam* param) {
+void AverageLayout::DoArrange(ArrangeParam& param) {
   int nConsume1 = 0; // 当前已消耗的高度或宽度（从left/top开始计数）
   int nChildCount = 0;
   int nAverageSize = 0;

@@ -52,7 +52,7 @@ public:
   ~HorzLayout();
 
   virtual Size Measure() override;
-  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void DoArrange(ArrangeParam& param) override;
   virtual void Serialize(SerializeParam *pData) override;
   // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 

@@ -209,9 +209,12 @@ void IObject::SetForcePress(bool b, bool bNotify) {
 // {
 // 	__pImpl->SetRejectMouseMsgSelf(b);
 // }
+
+#if 0
 void IObject::SetZorderDirect(int lz) { return __pImpl->SetZorderDirect(lz); }
 int IObject::GetZOrder() { return __pImpl->GetZorder(); }
 void IObject::SortChildByZorder() { __pImpl->SortChildByZorder(); }
+#endif
 
 IObject *IObject::FindObject(const char *szObjId) {
   Object *p = __pImpl->FindObject(szObjId);
@@ -638,6 +641,8 @@ void IObject::ClientRect2WindowRect(const Rect *rcClient, Rect *rcWnd) {
 
 int IObject::GetWidth() { return __pImpl->GetWidth(); }
 int IObject::GetHeight() { return __pImpl->GetHeight(); }
+
+#if 0
 int IObject::GetMaxWidth() { return __pImpl->GetMaxWidth(); }
 int IObject::GetMaxHeight() { return __pImpl->GetMaxHeight(); }
 void IObject::SetMaxWidth(int n) { __pImpl->SetMaxWidth(n); }
@@ -647,6 +652,8 @@ int IObject::GetMinWidth() { return __pImpl->GetMinWidth(); }
 int IObject::GetMinHeight() { return __pImpl->GetMaxHeight(); }
 void IObject::SetMinWidth(int n) { __pImpl->SetMinWidth(n); }
 void IObject::SetMinHeight(int n) { __pImpl->SetMinHeight(n); }
+#endif
+
 // int  IObject::GetWidthWithMargins()
 // {
 // 	return __pImpl->GetWidthWithMargins();
@@ -656,11 +663,13 @@ void IObject::SetMinHeight(int n) { __pImpl->SetMinHeight(n); }
 // 	return __pImpl->GetHeightWithMargins();
 // }
 
+#if 0
 ILayoutParam *IObject::GetSafeLayoutParam() {
   return __pImpl->GetSafeLayoutParam();
 }
 ILayoutParam *IObject::GetLayoutParam() { return __pImpl->GetLayoutParam(); }
 void IObject::SetLayoutParam(ILayoutParam *p) { __pImpl->SetLayoutParam(p); }
+#endif
 // void  IObject::CreateLayoutParam()
 // {
 // 	__pImpl->CreateLayoutParam();

@@ -511,7 +511,5 @@ bool WindowPlatformLinuxX11::IsWindowVisible() {
   // TODO:
   return true;
 }
-float WindowPlatformLinuxX11::GetScaleFactor() { return 2.0f; }
-
 
 } // namespace ui

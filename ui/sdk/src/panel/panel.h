@@ -28,7 +28,7 @@ public:
 
 protected:
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
-                             unsigned int nHeight) override;
+                             unsigned int nHeight, float scale) override;
 
   void onEraseBkgnd(IRenderTarget *);
   void onPaint(IRenderTarget *pRenderTarget);

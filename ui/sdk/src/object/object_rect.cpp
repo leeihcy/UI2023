@@ -1,7 +1,6 @@
 #include "include/interface/ilayout.h"
 #include "include/macro/msg.h"
 #include "object.h"
-#include "src/layout/canvaslayout.h"
 #include "src/window/window.h"
 #include "src/util/windows.h"
 // #include "src/UIObject\HwndHost\HwndHost.h"
@@ -495,8 +494,8 @@ void Object::GetClientRectInWindow(Rect *prc) {
 // Panel/Object需要响应WM_SIZE，但有可能控件拦截了WM_SIZE导致内部无法处理到
 // 因此再增加一个虚函数，专门让内部处理size改变事件
 void Object::notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
-                            unsigned int nHeight) {
-  this->virtualOnSize(nType, nWidth, nHeight);
+                            unsigned int nHeight, float scale) {
+  this->virtualOnSize(nType, nWidth, nHeight, scale);
   
   SizeMessage msg;
   msg.width = nWidth;
@@ -505,9 +504,10 @@ void Object::notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
 }
 
 void Object::virtualOnSize(unsigned int nType, unsigned int nWidth,
-                           unsigned int nHeight) {
+                           unsigned int nHeight, float scale) {
   m_objLayer.OnSize(nWidth, nHeight);
 }
+
 void Object::notify_WM_MOVE(int x, int y) {
   this->virtualOnMove();
 
@@ -618,9 +618,8 @@ void Object::UpdateLayout() {
   }
 #else
   // TODO: 恢复上面的逻辑
-  ILayout* layout = GetLayout();
-  if (layout) {
-    layout->SetDirty(true);
+  if (layout.GetLayout()) {
+    layout.GetLayout()->SetDirty(true);
   }
 #endif
 }
@@ -645,17 +644,7 @@ void Object::UpdateLayout() {
 //	获取对象自己期望的大小
 //
 Size Object::GetDesiredSize() {
-  if (!m_pLayoutParam) {
-    CreateLayoutParam();
-
-    if (!m_pLayoutParam) // 还是创建不成功，例如Combobox中的Button，它没有父Panel-Layout
-    {
-      CanvasLayout layout;
-      m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
-    }
-  }
-
-  return m_pLayoutParam->CalcDesiredSize();
+  return layout.GetDesiredSize();
 }
 
 void Object::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags) {
@@ -739,7 +728,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags) 
       notify_WM_MOVE(m_rcParent.left, m_rcParent.top);
     }
     if (bSize) {
-      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height());
+      notify_WM_SIZE(0, m_rcParent.Width(), m_rcParent.Height(), pWindow->m_dpi.GetScaleFactor());
     }
 
     PosChangedMessageMessage message;
@@ -786,9 +775,10 @@ void Object::SetObjectPos(const Rect *prc, SetPositionFlags flags) {
 // 根据m_rcParent更新
 // m_nConfigLeft/m_nConfigRight/m_nConfigTop/m_nConfigBottom/m_nConfigLayoutFlags
 void Object::UpdateLayoutPos() {
-  if (m_pLayoutParam) {
-    m_pLayoutParam->UpdateByRect();
-  }
+  layout.UpdateLayoutPos();
+}
+LayoutObject* Object::GetLayoutObject() { 
+  return &layout; 
 }
 
 int Object::GetWidth() { return m_rcParent.width(); }
@@ -831,62 +821,6 @@ void Object::GetParentRect(Rect *prc) {
     return;
 
   prc->CopyFrom(m_rcParent);
-}
-
-ILayoutParam *Object::GetLayoutParam() { return m_pLayoutParam; }
-
-ILayout *Object::GetLayout() {
-  Object *obj = m_pParent;
-  while (obj) {
-    GetLayoutMessage msg;
-    obj->RouteMessage(&msg);
-    if (msg.layout)
-      return msg.layout;
-    obj = obj->m_pParent;
-  }
-  return nullptr;
-}
-
-// 如果没有，则创建一个canvas布局
-ILayoutParam *Object::GetSafeLayoutParam() {
-  if (m_pLayoutParam)
-    return m_pLayoutParam;
-
-  CreateLayoutParam();
-  if (m_pLayoutParam)
-    return m_pLayoutParam;
-
-  CanvasLayout layout;
-  m_pLayoutParam = layout.CreateLayoutParam(m_pIObject);
-
-  SerializeParam data = {0};
-  data.pMapAttrib = m_pIMapAttributeRemain.get();
-  data.pSkinRes = GetIResource();
-  data.nFlags = SERIALIZEFLAG_LOAD;
-  m_pLayoutParam->Serialize(&data);
-
-  return m_pLayoutParam;
-}
-
-void Object::CreateLayoutParam() {
-  if (m_pLayoutParam)
-    return;
-
-  if (!m_pParent)
-    return;
-
-  ILayout *pLayout = GetLayout();
-  if (!pLayout)
-    return;
-
-  m_pLayoutParam = pLayout->CreateLayoutParam(m_pIObject);
-}
-
-void Object::DestroyLayoutParam() { SAFE_RELEASE(m_pLayoutParam); }
-
-void Object::SetLayoutParam(ILayoutParam *p) {
-  SAFE_RELEASE(m_pLayoutParam);
-  m_pLayoutParam = p;
 }
 
 void Object::LoadBorder(REGION4 *prc) {

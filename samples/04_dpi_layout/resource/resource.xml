@@ -2,7 +2,7 @@
 <skin>
 	<layout>
 	</layout>
-  <include>dpi.xml</include>
+  <include>dpi_layout.xml</include>
 	<font>
 		<font id="default" face="微软雅黑" size="10" />
 	</font>

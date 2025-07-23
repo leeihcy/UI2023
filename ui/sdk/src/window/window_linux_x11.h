@@ -39,7 +39,6 @@ public:
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
   ::Window GetParentWindow();
-  float GetScaleFactor() override;
 
   void Attach(::Window window);
   ::Window Detach();

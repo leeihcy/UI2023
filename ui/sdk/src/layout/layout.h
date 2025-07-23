@@ -44,8 +44,9 @@ public:
   virtual ~LayoutImpl() {
     if (m_pPanel) {
       Object *pChild = nullptr;
+
       while ((pChild = this->m_pPanel->EnumChildObject(pChild))) {
-        pChild->SetLayoutParam(nullptr);
+        pChild->layout.SetLayoutParam(nullptr);
       }
     }
   }
@@ -66,8 +67,8 @@ public:
   void SetDirty(bool b) override { m_bDirty = b; }
 
   // Arrage由基类统管，子类实现DoArrage
-  virtual void DoArrange(ArrangeParam* param) = 0;
-  virtual void Arrange(ArrangeParam* param) override {
+  virtual void DoArrange(ArrangeParam& param) = 0;
+  virtual void Arrange(ArrangeParam& param) override {
     m_bDirty = false;
     DoArrange(param);
   }
@@ -99,13 +100,13 @@ public:
     if (!pObj)
       return nullptr;
 
-    ILayoutParam *pParam = pObj->GetLayoutParam();
+    ILayoutParam *pParam = pObj->layout.GetLayoutParam();
     if (pParam && pParam->UUID() == T::UUID()) {
       return static_cast<TParam *>(pParam);
     }
 
     pParam = CreateLayoutParam(pObj->GetIObject());
-    pObj->SetLayoutParam(pParam);
+    pObj->layout.SetLayoutParam(pParam);
     return static_cast<TParam *>(pParam);
   }
 

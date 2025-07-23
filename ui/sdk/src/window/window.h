@@ -37,7 +37,6 @@ struct WindowPlatform {
   virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
   virtual void Show() = 0;
-  virtual float GetScaleFactor() = 0;
   virtual void GetClientRect(Rect *prect) = 0;
   virtual void GetWindowRect(Rect *prect) = 0;
 

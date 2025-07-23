@@ -453,7 +453,9 @@ void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
   m_platform->Commit(pRT, prect, count);
 }
 
-float Window::GetScaleFactor() { return m_platform->GetScaleFactor(); }
+float Window::GetScaleFactor() { 
+  return m_dpi.GetScaleFactor(); 
+}
 
 void Window::SetWindowPos(int x, int y, int cx, int cy,
                           SetPositionFlags flags) {

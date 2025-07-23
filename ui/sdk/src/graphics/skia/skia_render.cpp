@@ -394,22 +394,22 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
     int dest_height = pParam->hDest;
 
     // 处理DPI缩放
-    if (pParam->scale_factor == 0 || pParam->scale_factor == 1.0) {
-      src_width = dest_width = std::min(pParam->wDest, src_width);
-      src_height = dest_height = std::min(pParam->hDest, src_height);
-    } else {
-      int scaled_src_width = pParam->wSrc * pParam->scale_factor;
-      int scaled_src_height = pParam->hSrc * pParam->scale_factor;
-      dest_width = std::min(pParam->wDest, scaled_src_width);
-      dest_height = std::min(pParam->hDest, scaled_src_height);
-
-      if (dest_width < scaled_src_width) {
-        src_width = dest_width / pParam->scale_factor;
-      }
-      if (dest_height < scaled_src_height) {
-        src_height = dest_height / pParam->scale_factor;
-      }
-    }
+    //if (pParam->scale_factor == 0 || pParam->scale_factor == 1.0) {
+    //  src_width = dest_width = std::min(pParam->wDest, src_width);
+    //  src_height = dest_height = std::min(pParam->hDest, src_height);
+    //} else {
+    //  int scaled_src_width = pParam->wSrc/* * pParam->scale_factor */;
+    //  int scaled_src_height = pParam->hSrc/* * pParam->scale_factor */;
+    //  dest_width = std::min(pParam->wDest, scaled_src_width);
+    //  dest_height = std::min(pParam->hDest, scaled_src_height);
+    //
+    //  if (dest_width < scaled_src_width) {
+    //    src_width = dest_width / pParam->scale_factor;
+    //  }
+    //  if (dest_height < scaled_src_height) {
+    //    src_height = dest_height / pParam->scale_factor;
+    //  }
+    //}
 
     SkSamplingOptions options;
     SkPaint paint;

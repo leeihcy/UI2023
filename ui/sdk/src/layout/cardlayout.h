@@ -21,7 +21,7 @@ public:
 
     void  Serialize(SerializeParam*) override{};
     Size  Measure() override;
-    void  DoArrange(ArrangeParam* param) override;
+    void  DoArrange(ArrangeParam& param) override;
     // void  ChildObjectVisibleChanged(IObject* pObj) override;
 };
 

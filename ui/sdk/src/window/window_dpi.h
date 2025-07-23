@@ -3,15 +3,18 @@
 
 namespace ui {
 struct Rect;
+struct Size;
 
 enum WindowScalePolicy { Raw, System, Force };
 
 class WindowDPI {
 public:
   WindowDPI();
-
+  float GetScaleFactor();
+  
   void ScaleRect(ui::Rect* rc);
   void RestoreRect(ui::Rect* rc);
+  void ScaleSize(ui::Size* size);
 
   void SetSystemDpi(float dpi);
   

@@ -73,7 +73,7 @@ void Control::onSerialize(SerializeParam *pData) {
     // 			->FillTextRenderBaseTypeData()
     // 			->ReloadOnChanged();
     //
-    // 		// 字体
+    // 		// 瀛椾綋
     // 		if (m_pTextRender)
     // 		{
     // 			SerializeParam data(*pData);
@@ -115,7 +115,7 @@ bool Control::TestControlStyle(ControlStyle *test) {
 bool Control::IsGroup() { return m_controlStyle.group; }
 void Control::SetGroup(bool b) { m_controlStyle.group = b; }
 
-// 获取字体，如果没有，则使用默认的
+// 鑾峰彇瀛椾綋锛屽鏋滄病鏈夛紝鍒欎娇鐢ㄩ粯璁ょ殑
 ITextRenderBase *Control::GetTextRenderDefault() {
   if (!m_pTextRender)
     CreateDefaultTextRender();
@@ -123,7 +123,7 @@ ITextRenderBase *Control::GetTextRenderDefault() {
   return m_pTextRender;
 }
 
-// 如果没有在皮肤中配置字体，则外部可调用该函数在Paint时创建一个默认的字体
+// 濡傛灉娌℃湁鍦ㄧ毊鑲や腑閰嶇疆瀛椾綋锛屽垯澶栭儴鍙皟鐢ㄨ鍑芥暟鍦≒aint鏃跺垱寤轰竴涓粯璁ょ殑瀛椾綋
 ITextRenderBase *Control::CreateDefaultTextRender() {
   // if (!m_pTextRender) {
   //   GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
@@ -177,8 +177,10 @@ void Control::SetToolTipText(const char *szText) {
 //   return 1;
 // }
 
-// 当控件内容改变时，检查一下是否需要更新布局，如label.text, button.text
+// 褰撴帶浠跺唴瀹规敼鍙樻椂锛屾鏌ヤ竴涓嬫槸鍚﹂渶瑕佹洿鏂板竷灞�锛屽label.text, button.text
 void Control::TryUpdateLayoutOnContentChanged() {
+  assert(false);
+#if 0
   Object *pObj = this;
   while (pObj) {
     ILayoutParam *param = pObj->GetSafeLayoutParam();
@@ -199,6 +201,7 @@ void Control::TryUpdateLayoutOnContentChanged() {
     parent->Invalidate();
     pObj = parent;
   }
+#endif
 }
 
 void Control::onEraseBkgnd(IRenderTarget *pRenderTarget) {
@@ -211,7 +214,8 @@ void Control::onEraseBkgnd(IRenderTarget *pRenderTarget) {
 void Control::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
   if (m_pBkgndRender) {
-    *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
+    // *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
+    *pSize = m_pBkgndRender->GetDesiredSize();
   }
 }
 

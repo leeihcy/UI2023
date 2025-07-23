@@ -45,7 +45,7 @@ public:
   void Release() override { delete this; }
 
   Size Measure() override { Size s = {0, 0}; return s; }
-  void Arrange(ArrangeParam* param) override;
+  void Arrange(ArrangeParam& param) override;
   void Serialize(SerializeParam *pData) override { }
   ILayoutParam *CreateLayoutParam(IObject *pObj) override;
 

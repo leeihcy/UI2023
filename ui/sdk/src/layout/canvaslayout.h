@@ -84,12 +84,12 @@ class CanvasLayout : public LayoutImpl<CanvasLayout, ICanvasLayout, CanvasLayout
 public:
   virtual void Serialize(SerializeParam *) override{};
   virtual Size Measure() override;
-  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void DoArrange(ArrangeParam& param) override;
   // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
 public:
   void ArrangeObject(Object *pChild, const int &nWidth,
-                            const int &nHeight);
+                            const int &nHeight, float scale);
 };
 
 } // namespace ui

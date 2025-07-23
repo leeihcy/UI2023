@@ -196,7 +196,7 @@ void ObjTree::InsertChild(Object *pObj, Object *pInsertAfter) {
   pObj->SetAsNcObject(false);
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-  pObj->position_in_tree_changed();
+    pObj->layout.position_in_tree_changed();
 }
 
 void ObjTree::AddNcChild(Object *pObj) {
@@ -235,14 +235,15 @@ void ObjTree::InsertAfter(Object *pInsertAfter) {
   this->m_pPrev = pInsertAfter;
   this->m_pNext = pNextSave;
 
-  pInsertAfter->m_pNext = static_cast<Object *>(this);
+  Object* obj = static_cast<Object *>(this);
+  pInsertAfter->m_pNext = obj;
   if (pNextSave)
-    pNextSave->m_pPrev = static_cast<Object *>(this);
+    pNextSave->m_pPrev = obj;
 
   this->SetAsNcObject(pInsertAfter->IsNcObject());
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-  static_cast<Object *>(this)->position_in_tree_changed();
+  obj->layout.position_in_tree_changed();
 }
 
 void ObjTree::InsertBefore(Object *pInsertBefore) {
@@ -255,21 +256,22 @@ void ObjTree::InsertBefore(Object *pInsertBefore) {
   this->m_pNext = pInsertBefore;
   this->m_pPrev = pPrev;
 
-  pInsertBefore->m_pPrev = static_cast<Object *>(this);
+  Object* obj = static_cast<Object *>(this);
+  pInsertBefore->m_pPrev = obj;
 
   bool bNcObj = pInsertBefore->IsNcObject();
   if (pPrev) {
-    pPrev->m_pNext = static_cast<Object *>(this);
+    pPrev->m_pNext = obj;
   } else if (this->m_pParent) {
     if (bNcObj)
-      this->m_pParent->m_pNcChild = static_cast<Object *>(this);
+      this->m_pParent->m_pNcChild = obj;
     else
-      this->m_pParent->m_pChild = static_cast<Object *>(this);
+      this->m_pParent->m_pChild = obj;
   }
   this->SetAsNcObject(bNcObj);
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-  static_cast<Object *>(this)->position_in_tree_changed();
+  obj->layout.position_in_tree_changed();
 }
 
 bool ObjTree::SwapObject(Object *pObj1, Object *pObj2) {

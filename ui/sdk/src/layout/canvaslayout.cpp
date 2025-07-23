@@ -46,8 +46,8 @@ Size CanvasLayout::Measure() {
   }
   return size;
 }
-void CanvasLayout::DoArrange(ArrangeParam* param) {
-  IObject* pIObjToArrage = param ? param->obj_to_arrange : nullptr;
+void CanvasLayout::DoArrange(ArrangeParam& param) {
+  IObject* pIObjToArrage = param.obj_to_arrange;
   
   Object *pObjToArrage = nullptr;
   if (pIObjToArrage)
@@ -72,7 +72,7 @@ void CanvasLayout::DoArrange(ArrangeParam* param) {
       continue;
     }
 
-    this->ArrangeObject(pChild, nWidth, nHeight);
+    this->ArrangeObject(pChild, nWidth, nHeight, param.scale);
 
     if (pObjToArrage && pObjToArrage == pChild)
       break;
@@ -80,7 +80,7 @@ void CanvasLayout::DoArrange(ArrangeParam* param) {
 }
 
 void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
-                                 const int &nHeight) {
+                                 const int &nHeight, float scale) {
   int x = 0, y = 0; // pChild最终在parent中的坐标
 
   CanvasLayoutParam *pParam = GetObjectLayoutParam(pChild);
@@ -102,10 +102,17 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   // int nConfigHeight = pParam->GetConfigHeight();
   int nConfigFlag = pParam->GetConfigLayoutFlags();
 
+  if (left > 0) left = int(left*scale);
+  if (top > 0) top = int(top*scale);
+  if (right > 0) right = int(right*scale);
+  if (bottom > 0) bottom = int(bottom*scale);
+  s.width = int(s.width*scale);
+  s.height = int(s.height*scale);
+
   // 如果同时指定了left/right,则忽略width属性
   if (0 == (nConfigFlag & LAYOUT_ITEM_ALIGN_CENTER)) {
     if (left != NDEF && right != NDEF) {
-      s.width = nWidth - left - right;
+      s.width = nWidth - left + right;
     }
   }
   // 如果同时指定了top/bottom，则忽略height属性
@@ -341,62 +348,68 @@ void CanvasLayoutParam::Serialize(SerializeParam *pData) {
 
 int CanvasLayoutParam::GetConfigLeft() { return m_nConfigLeft; }
 void CanvasLayoutParam::LoadConfigLeft(int n) {
-  // m_nConfigLeft = n;
-  m_nConfigLeft = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
+  m_nConfigLeft = n;
+  // m_nConfigLeft = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigLeft() {
-  return RestoreByDpi_if_gt0(m_nConfigLeft);
-  // return m_nConfigLeft;
+  // return RestoreByDpi_if_gt0(m_nConfigLeft);
+  return m_nConfigLeft;
 }
 void CanvasLayoutParam::SetConfigLeft(int n) { m_nConfigLeft = n; }
 
 int CanvasLayoutParam::GetConfigTop() { return m_nConfigTop; }
 void CanvasLayoutParam::LoadConfigTop(int n) {
-  m_nConfigTop = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
-  // m_nConfigTop = n;
+  // m_nConfigTop = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
+  m_nConfigTop = n;
 }
 int CanvasLayoutParam::SaveConfigTop() {
-  // return m_nConfigTop;
-  return RestoreByDpi_if_gt0(m_nConfigTop);
+  return m_nConfigTop;
+  // return RestoreByDpi_if_gt0(m_nConfigTop);
 }
 void CanvasLayoutParam::SetConfigTop(int n) { m_nConfigTop = n; }
 
 int CanvasLayoutParam::GetConfigRight() { return m_nConfigRight; }
 void CanvasLayoutParam::LoadConfigRight(int n) {
-  // m_nConfigRight = n;
-  m_nConfigRight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
+  m_nConfigRight = n;
+  // m_nConfigRight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
 }
 int CanvasLayoutParam::SaveConfigRight() {
-  return RestoreByDpi_if_gt0(m_nConfigRight);
-  // return m_nConfigRight;
+  // return RestoreByDpi_if_gt0(m_nConfigRight);
+  return m_nConfigRight;
 }
 void CanvasLayoutParam::SetConfigRight(int n) { m_nConfigRight = n; }
 
 int CanvasLayoutParam::GetConfigBottom() { return m_nConfigBottom; }
 void CanvasLayoutParam::LoadConfigBottom(int n) {
-  m_nConfigBottom = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);;
+  // m_nConfigBottom = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
+  m_nConfigBottom = n;
 }
 int CanvasLayoutParam::SaveConfigBottom() {
-  return RestoreByDpi_if_gt0(m_nConfigBottom);
+  // return RestoreByDpi_if_gt0(m_nConfigBottom);
+  return m_nConfigBottom;
 }
 void CanvasLayoutParam::SetConfigBottom(int n) { m_nConfigBottom = n; }
 
 int CanvasLayoutParam::GetConfigWidth() { return m_nConfigWidth; }
 void CanvasLayoutParam::SetConfigWidth(int n) { m_nConfigWidth = n; }
 void CanvasLayoutParam::LoadConfigWidth(int n) {
-  m_nConfigWidth = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
+  // m_nConfigWidth = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
+  m_nConfigWidth = n;
 }
 int CanvasLayoutParam::SaveConfigWidth() {
-  return RestoreByDpi_if_gt0(m_nConfigWidth);
+  // return RestoreByDpi_if_gt0(m_nConfigWidth);
+  return m_nConfigWidth;
 }
 
 int CanvasLayoutParam::GetConfigHeight() { return m_nConfigHeight; }
 void CanvasLayoutParam::SetConfigHeight(int n) { m_nConfigHeight = n; }
 void CanvasLayoutParam::LoadConfigHeight(int n) {
-  m_nConfigHeight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
+  // m_nConfigHeight = ScaleFactorHelper::ScaleIfGt0(n, m_pObj);
+  m_nConfigHeight = n;
 }
 int CanvasLayoutParam::SaveConfigHeight() {
-  return RestoreByDpi_if_gt0(m_nConfigHeight);
+  // return RestoreByDpi_if_gt0(m_nConfigHeight);
+  return m_nConfigHeight;
 }
 
 void CanvasLayoutParam::SetConfigLayoutFlags(int n) {

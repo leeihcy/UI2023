@@ -48,7 +48,6 @@ public:
   bool IsWindowVisible() override;
   void Show() override;
   void Hide();
-  float GetScaleFactor() override;
   void Commit(IRenderTarget* pRT, const Rect* prect, int count) override;
 
 protected:

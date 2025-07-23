@@ -72,7 +72,7 @@ struct ObjLayoutInfo {
   int height; // 不包含margin
 };
 
-void VertLayout::DoArrange(ArrangeParam* param) {
+void VertLayout::DoArrange(ArrangeParam& param) {
   // 计算每个子控件需要的宽度及其布局顺序
   int nChildCount = m_pPanel->GetChildCount();
   if (nChildCount <= 0)

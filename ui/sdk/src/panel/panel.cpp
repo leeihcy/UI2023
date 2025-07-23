@@ -10,6 +10,7 @@
 #include "src/attribute/stringselect_attribute.h"
 #include "src/helper/scale/scale_factor.h"
 #include "src/layout/layout.h"
+#include "src/object/layout/layout_object.h"
 #include "src/window/window.h"
 
 
@@ -112,16 +113,26 @@ void Panel::SetLayout(ILayout *p) {
   // 子结点的布局类型全部跟着变
   Object *pChild = nullptr;
   while ((pChild = EnumChildObject(pChild))) {
-    pChild->DestroyLayoutParam();
-    pChild->GetSafeLayoutParam();
+    LayoutObject* layout_object = pChild->GetLayoutObject();
+    if (!layout_object) {
+      continue;
+    }
+    layout_object->DestroyLayoutParam();
+    layout_object->GetSafeLayoutParam();
   }
 }
 
 void Panel::virtualOnSize(unsigned int nType, unsigned int cx,
-                          unsigned int cy) {
-  Object::virtualOnSize(nType, cx, cy);
-  if (m_pLayout)
-    m_pLayout->Arrange(nullptr);
+                          unsigned int cy, float scale) {
+  Object::virtualOnSize(nType, cx, cy, scale);
+  if (m_pLayout) {
+    ArrangeParam param = {
+      .obj_to_arrange = nullptr,
+      .reason = ArrangeReason::NoReason,
+      .scale = scale,
+    };
+    m_pLayout->Arrange(param);
+  }
 }
 
 void Panel::onGetDesiredSize(Size *pSize) {
@@ -192,7 +203,18 @@ void Panel::onSerialize(SerializeParam *pData) {
 
 void Panel::onEraseBkgnd(IRenderTarget *pRenderTarget) {
   if (m_pLayout && m_pLayout->IsDirty()) {
-    m_pLayout->Arrange(nullptr);
+    float scale = 1.0f;
+    auto* window = GetWindow();
+    if (window) {
+      scale = window->m_dpi.GetScaleFactor();
+    }
+    ArrangeParam param = {
+      .obj_to_arrange = nullptr,
+      .reason = ArrangeReason::NoReason,
+      .scale = scale,
+    };
+
+    m_pLayout->Arrange(param);
   }
 
   Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};

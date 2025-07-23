@@ -150,7 +150,6 @@ void WindowPlatformLinuxWayland::on_visible_state_changed(
   }
 }
 
-float WindowPlatformLinuxWayland::GetScaleFactor() { return 1.0f; }
 void WindowPlatformLinuxWayland::GetClientRect(Rect *prect) {
   prect->Set(0, 0, m_width, m_height);
 }

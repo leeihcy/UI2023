@@ -60,8 +60,17 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
   if (pLayout) {
     pLayout->SetDirty(true);
 
-    ArrangeParam param = {pFirstChild->GetIObject(), ArrangeReason::VisibleChanged};
-    pLayout->Arrange(&param);
+    float scale = 1.0f;
+    auto* window = pNewParent->GetWindow();
+    if (window) {
+      scale = window->m_dpi.GetScaleFactor();
+    }
+    ArrangeParam param = {
+      pFirstChild->GetIObject(), 
+      ArrangeReason::VisibleChanged,
+      scale
+    };
+    pLayout->Arrange(param);
   }
 
   // 发送初始化通知( TBD:

@@ -252,9 +252,9 @@ void WindowPlatformMac::Show() {
 }
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 
-float WindowPlatformMac::GetScaleFactor() {
-  return m_window.backingScaleFactor;
-}
+// float WindowPlatformMac::GetScaleFactor() {
+//   return m_window.backingScaleFactor;
+// }
 
 //
 // CGContextDrawImage 属于 Core Graphics (Quartz)，

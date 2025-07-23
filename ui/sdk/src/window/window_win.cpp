@@ -1,7 +1,11 @@
 #include "window_win.h"
 #include "include/util/math.h"
+#include "include/util/rect.h"
 #include <Windows.h>
 #include <atlconv.h>
+
+#include <ShellScalingApi.h> // 需要 Windows 8.1+ SDK
+// #pragma comment(lib, "Shcore.lib") // 链接 Shcore.lib
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
   prect->left = r.left;
@@ -309,11 +313,27 @@ bool WindowPlatformWin::Create(CreateWindowParam &param) {
 
   cs.lpszClass = WND_CLASS_NAME;
   cs.lpszName = _T("");
+
+  // 获取DPI
+  HMONITOR monitor = nullptr;
   if (param.position) {
-    cs.x = ScaleByDpi(param.x);
-    cs.y = ScaleByDpi(param.y);
-    cs.cx = ScaleByDpi(param.w);
-    cs.cy = ScaleByDpi(param.h);
+    RECT rc = {param.x, param.y, param.x+param.w, param.y+param.h};
+    monitor = ::MonitorFromRect(&rc, MONITOR_DEFAULTTONEAREST);
+  } else {
+    monitor = ::MonitorFromPoint({0,0}, MONITOR_DEFAULTTOPRIMARY);
+  }
+  UINT dpiX = 0, dpiY = 0;
+  GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
+  m_ui_window.m_dpi.SetSystemDpi(dpiX*1.0f/96);
+
+  if (param.position) {
+    Rect rc = ui::Rect::MakeXYWH(param.x, param.y, param.w, param.h);
+    m_ui_window.m_dpi.ScaleRect(&rc);
+
+    cs.x = rc.left;
+    cs.y = rc.top;
+    cs.cx = rc.Width();
+    cs.cy = rc.Height();
     // m_ui_window.GetWindowStyle().setcreaterect = 1;
   } else {
     cs.x = cs.y = 0;
@@ -376,8 +396,6 @@ WINDOW_HANDLE WindowPlatformWin::GetWindowHandle() {
 void WindowPlatformWin::Show() { ::ShowWindow(m_hWnd, SW_SHOW); }
 
 void WindowPlatformWin::Hide() { ::ShowWindow(m_hWnd, SW_HIDE); }
-
-float WindowPlatformWin::GetScaleFactor() { return 1.0f; }
 
 void WindowPlatformWin::SetBorderless(bool no_border) {}
 

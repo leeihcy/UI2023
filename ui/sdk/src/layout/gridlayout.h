@@ -67,7 +67,7 @@ public:
 
   virtual void Serialize(SerializeParam *) override;
   virtual Size Measure() override;
-  virtual void DoArrange(ArrangeParam* param) override;
+  virtual void DoArrange(ArrangeParam& param) override;
   // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
 
   int getColPos(unsigned int nCol);

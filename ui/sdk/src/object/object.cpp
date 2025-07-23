@@ -7,6 +7,7 @@
 #include "include/interface/iwindow.h"
 // #include "include/interface/ipanel.h"
 #include "src/layout/canvaslayout.h"
+#include "src/object/layout/layout_object.h"
 #include "src/resource/uiresource.h"
 // #include "src/Renderbase\renderbase\renderbase.h"
 // #include "src/Renderbase\textrenderbase\textrender.h"
@@ -33,7 +34,7 @@
 
 using namespace ui;
 
-Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
+Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
   m_pIObject = p;
   m_rcParent.SetEmpty();
   m_rcExtNonClient.SetEmpty();
@@ -44,18 +45,12 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this) {
   // m_lCanRedrawRef = 0;
   m_resource = nullptr;
   m_ppOutRef = nullptr;
-  m_lzOrder = 0;
-
-  m_nMaxWidth = NDEF;
-  m_nMaxHeight = NDEF;
-  m_lMinWidth = m_lMinHeight = NDEF;
 
   m_pBkgndRender = nullptr;
   m_pForegndRender = nullptr;
   m_pTextRender = nullptr;
 
   m_pIMapAttributeRemain = nullptr;
-  m_pLayoutParam = nullptr;
 #if 0 // defined(OS_WIN)
   m_pAccessible = nullptr;
 #endif
@@ -72,7 +67,6 @@ Object::~Object(void) {
   if (m_ppOutRef)
     *m_ppOutRef = nullptr;
 
-  SAFE_RELEASE(m_pLayoutParam);
 #if 0 // defined(OS_WIN)
   if (m_pAccessible)
     SAFE_RELEASE(m_pAccessible);
@@ -966,8 +960,17 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
     m_pParent->RouteMessage(&msg);
 
     if (msg.layout) {
-      ArrangeParam param = {m_pIObject, ArrangeReason::VisibleChanged};
-      msg.layout->Arrange(&param);
+      float scale = 1.0f;
+      auto* window = GetWindow();
+      if (window) {
+        scale = window->m_dpi.GetScaleFactor();
+      }
+      ArrangeParam param = {
+        m_pIObject, 
+        ArrangeReason::VisibleChanged,
+        scale
+      };
+      msg.layout->Arrange(param);
     }
   }
 
@@ -1202,40 +1205,6 @@ IApplication *Object::GetIUIApplication() {
   UIASSERT(m_resource->GetUIApplication());
 
   return m_resource->GetUIApplication()->GetIUIApplication();
-}
-
-int Object::GetZorder() { return m_lzOrder; }
-
-void Object::SetZorderDirect(int z) {
-  m_lzOrder = z;
-
-  // bool bOldHasLayer = GetSelfLayer()?true:false;
-  bool bPosChanged = false;
-
-  // 更新了zorder，修改自己在parent中的位置
-  if (m_pParent) {
-    if ((m_pPrev && m_pPrev->m_lzOrder > m_lzOrder) ||
-        (m_pNext && m_pNext->m_lzOrder < m_lzOrder)) {
-      RemoveMeInTheTree();
-      if (IsNcObject())
-        m_pParent->AddNcChild(this);
-      else
-        m_pParent->AddChild(this);
-
-      bPosChanged = true;
-    }
-  }
-
-#if 0 // defined(OS_WIN)
-  //     update_layer_ptr();
-  //
-  //     bool bNowHasLayer = GetSelfLayer() ? true : false;
-  if (/*bOldHasLayer && bNowHasLayer && */ bPosChanged) {
-    m_objLayer.OnObjPosInTreeChanged();
-  }
-#else
-  UIASSERT(false);
-#endif
 }
 
 bool SortByZorder(Object *p1, Object *p2) {
@@ -1726,45 +1695,3 @@ bool Object::CreateAccesible(IAccessible **pp) {
   return true;
 }
 #endif
-
-// 自己在树中的位置改变。如在编辑器中，拖拽控件到另一个panel下面
-void Object::position_in_tree_changed() {
-  if (!m_pLayoutParam)
-    return;
-
-  // 根据父对象，重新生成布局参数
-  SAFE_RELEASE(m_pLayoutParam);
-  GetSafeLayoutParam();
-}
-
-int Object::GetMaxWidth() { return m_nMaxWidth; }
-
-int Object::GetMaxHeight() { return m_nMaxHeight; }
-
-void Object::SetMaxWidth(int n) { m_nMaxWidth = n; }
-void Object::SetMaxHeight(int n) { m_nMaxHeight = n; }
-
-int Object::GetMinWidth() { return m_lMinWidth; }
-int Object::GetMinHeight() { return m_lMinHeight; }
-void Object::SetMinWidth(int n) { m_lMinWidth = n; }
-void Object::SetMinHeight(int n) { m_lMinHeight = n; }
-
-
-void Object::SetConfigWidth(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->UUID() == ICanvasLayout::UUID())
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigWidth(n);
-  } else {
-    // TODO:
-    // CanvasLayout::GetObjectLayoutParam(this)->SetConfigWidth(n);
-  }
-}
-void Object::SetConfigHeight(int n) {
-  if (m_pLayoutParam) {
-    if (m_pLayoutParam->UUID() == ICanvasLayout::UUID())
-      static_cast<CanvasLayoutParam *>(m_pLayoutParam)->SetConfigHeight(n);
-  } else {
-    // TODO:
-    // CanvasLayout::s_GetObjectLayoutParam(this)->SetConfigHeight(n);
-  }
-}
