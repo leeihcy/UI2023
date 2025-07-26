@@ -2,8 +2,12 @@
 #include "src/control/control.h"
 #include "src/control/control_meta.h"
 
+#include "src/control/text/label.h"
+#include "src/control/text/text_meta.h"
+
 namespace ui {
 UI_IMPLEMENT_INTERFACE(Control, Object)
+UI_IMPLEMENT_INTERFACE(Label, Control)
 
 void IControl::ModifyControlStyle(ControlStyle *add, ControlStyle *remove) {
   __pImpl->ModifyControlStyle(add, remove);

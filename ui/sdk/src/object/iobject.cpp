@@ -578,8 +578,8 @@ void IObject::GetMarginRegion(REGION4 *prc) { __pImpl->GetMarginRegion(prc); }
 void IObject::GetClientRectInObject(Rect *prc) {
   __pImpl->GetClientRectInObject(prc);
 }
-void IObject::GetObjectClientRect(Rect *prc) {
-  __pImpl->GetObjectClientRect(prc);
+void IObject::GetClientRectWithZeroOffset(Rect *prc) {
+  __pImpl->GetClientRectWithZeroOffset(prc);
 }
 void IObject::GetClientRectInWindow(Rect *prc) {
   __pImpl->GetClientRectInWindow(prc);

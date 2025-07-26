@@ -14,10 +14,10 @@ namespace ui {
 UI_IMPLEMENT_INTERFACE(TextRenderBase, Message)
 // UI_IMPLEMENT_INTERFACE(ThemeTextRenderBase, TextRenderBase)
 UI_IMPLEMENT_INTERFACE(SimpleTextRender, TextRenderBase)
-UI_IMPLEMENT_INTERFACE(ContrastColorTextRender, TextRenderBase)
-UI_IMPLEMENT_INTERFACE(ContrastColorListTextRender, TextRenderBase)
-UI_IMPLEMENT_INTERFACE(ColorListTextRender, TextRenderBase)
-UI_IMPLEMENT_INTERFACE(FontColorListTextRender, TextRenderBase)
+// UI_IMPLEMENT_INTERFACE(ContrastColorTextRender, TextRenderBase)
+// UI_IMPLEMENT_INTERFACE(ContrastColorListTextRender, TextRenderBase)
+// UI_IMPLEMENT_INTERFACE(ColorListTextRender, TextRenderBase)
+// UI_IMPLEMENT_INTERFACE(FontColorListTextRender, TextRenderBase)
 
 ITextRenderBase::ITextRenderBase() : IMessage(CREATE_IMPL_FALSE) {
   m_pImpl = new TextRenderBase(this);
@@ -40,15 +40,15 @@ void ITextRenderBase::SetTextAlignment(int nDrawFlag) {
   return __pImpl->SetTextAlignment(nDrawFlag);
 }
 int ITextRenderBase::GetTextAlignment() { return __pImpl->GetTextAlignment(); }
-void ITextRenderBase::SetTextEffect(TEXT_EFFECT e) {
-  __pImpl->SetTextEffect(e);
-}
-TEXT_EFFECT ITextRenderBase::GetTextEffect() {
-  return __pImpl->GetTextEffect();
-}
-void ITextRenderBase::SetDrawTextParam(long w, long l) {
-  __pImpl->SetDrawTextParam(w, l);
-}
+// void ITextRenderBase::SetTextEffect(TEXT_EFFECT e) {
+//   __pImpl->SetTextEffect(e);
+// }
+// TEXT_EFFECT ITextRenderBase::GetTextEffect() {
+//   return __pImpl->GetTextEffect();
+// }
+// void ITextRenderBase::SetDrawTextParam(long w, long l) {
+//   __pImpl->SetDrawTextParam(w, l);
+// }
 void ITextRenderBase::SetType(const TEXTRENDER_TYPE &nType) {
   __pImpl->SetTextRenderType(nType);
 }
@@ -71,21 +71,21 @@ void ITextRenderBase::Serialize(SerializeParam *pData) {
   static_cast<IMessage*>(this)->RouteMessage(&msg);
 }
 
-std::shared_ptr<IRenderFont> ITextRenderBase::_LoadFont(const char *szFontId) {
-  return __pImpl->_LoadFont(szFontId);
-}
-const char *ITextRenderBase::_SaveFont(IRenderFont *&pRenderFont) {
-  return __pImpl->_SaveFont(pRenderFont);
-}
-std::shared_ptr<IRenderFont> ITextRenderBase::_LoadDefalutFont() {
-  return __pImpl->_LoadDefalutFont();
-}
-void ITextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
-  __pImpl->_LoadColor(szColorId, pColor);
-}
-const char *ITextRenderBase::_SaveColor(Color *&pColor) {
-  return __pImpl->_SaveColor(pColor);
-}
+// std::shared_ptr<IRenderFont> ITextRenderBase::_LoadFont(const char *szFontId) {
+//   return __pImpl->_LoadFont(szFontId);
+// }
+// const char *ITextRenderBase::_SaveFont(IRenderFont *&pRenderFont) {
+//   return __pImpl->_SaveFont(pRenderFont);
+// }
+// std::shared_ptr<IRenderFont> ITextRenderBase::_LoadDefalutFont() {
+//   return __pImpl->_LoadDefalutFont();
+// }
+// void ITextRenderBase::_LoadColor(const char *szColorId, Color *&pColor) {
+//   __pImpl->_LoadColor(szColorId, pColor);
+// }
+// const char *ITextRenderBase::_SaveColor(Color *&pColor) {
+//   return __pImpl->_SaveColor(pColor);
+// }
 Size ITextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
   //     Size s = {0,0};
   //
@@ -102,22 +102,18 @@ Size ITextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
 void ITextRenderBase::DrawState(IRenderTarget *pRenderTarget, const Rect *prc,
                                 int nState, const char *szText,
                                 int nDrawTextFlag) {
-  TEXTRENDERBASE_DRAWSTATE drawstate = {0};
-  drawstate.ds_renderbase.pRenderTarget = pRenderTarget;
+  TextRenderDrawStateMessage msg;
+  msg.draw_state.ds_renderbase.pRenderTarget = pRenderTarget;
   if (prc) {
-    memcpy(&drawstate.ds_renderbase.rc, prc, sizeof(Rect));
+    memcpy(&msg.draw_state.ds_renderbase.rc, prc, sizeof(Rect));
   }
-  drawstate.ds_renderbase.nState = nState;
+  msg.draw_state.ds_renderbase.nState = nState;
 
-  drawstate.szText = szText;
-  drawstate.nDrawTextFlag = nDrawTextFlag;
-
-      assert(false);
-#if 0 // 废弃，使用RouteMessage代替。
-  static_cast<IMessage *>(this)->SendMessage(UI_MSG_RENDERBASE_DRAWSTATE,
-                                             (ui::llong)&drawstate, 0);
-#endif
+  msg.draw_state.szText = szText;
+  msg.draw_state.nDrawTextFlag = nDrawTextFlag;
+  static_cast<IMessage*>(this)->RouteMessage(&msg);
 }
+
 void ITextRenderBase::Init() {
     ui::Msg msg = { .message = UI_MSG_INITIALIZE };
     RouteMessage(&msg);
@@ -157,7 +153,7 @@ void ITextRenderBase::CheckSkinTextureChanged() {
 // }
 
 //////////////////////////////////////////////////////////////////////////
-
+#if 0
 void IColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> p) {
   __pImpl->SetRenderFont(p);
 }
@@ -177,5 +173,5 @@ void IFontColorListTextRender::SetColor(int nIndex, unsigned int color) {
 void IFontColorListTextRender::SetFont(int nIndex, std::shared_ptr<IRenderFont> p) {
   return __pImpl->SetFont(nIndex, p);
 }
-
+#endif
 } // namespace ui

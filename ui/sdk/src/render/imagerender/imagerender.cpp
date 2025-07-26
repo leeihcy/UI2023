@@ -21,7 +21,7 @@ namespace ui {
 
 ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
   m_pIImageRender = p;
-
+  
   m_pColorBk = nullptr;
   m_nImageDrawType = DRAW_BITMAP_BITBLT;
   m_nAlpha = 255;

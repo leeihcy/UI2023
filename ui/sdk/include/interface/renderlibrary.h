@@ -9,12 +9,12 @@ struct IRenderFont;
 struct IRenderPen;
 struct IRenderTarget;
 class ImageData;
-struct IRenderFont;
 struct IGpuLayer;
 struct Rect;
 struct Point;
 struct Size;
 struct LOGFONT;
+struct FontDesc;
 
 struct C9Region;
 
@@ -250,7 +250,7 @@ struct IRenderTarget {
   // 获取原生指针进行绘制。如HDC, SkCanvas
   virtual void* GetHandle() = 0;
 
-  virtual bool BeginDraw() = 0;
+  virtual bool BeginDraw(float scale) = 0;
   virtual void EndDraw() = 0;
   virtual void Clear(Rect *prc) = 0;
   virtual void Save(const char *szPath) = 0;
@@ -288,7 +288,7 @@ struct IRenderTarget {
   virtual void ImageList_Draw(IRenderBitmap *, int x, int y, int col, int row,
                               int cx, int cy) = 0;
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
-  virtual void DrawString(IRenderFont *pFont, DrawTextParam *pParam) = 0;
+  virtual void DrawString(FontDesc& font_desc, DrawTextParam *pParam) = 0;
 
   virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) = 0;
 };

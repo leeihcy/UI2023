@@ -54,7 +54,6 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
 #if 0 // defined(OS_WIN)
   m_pAccessible = nullptr;
 #endif
-  m_meta = &ObjectMeta::Get();
 
   memset(&m_objStyle, 0, sizeof(m_objStyle));
   memset(&m_objState, 0, sizeof(m_objState));
@@ -672,12 +671,9 @@ void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
     __REMOVE(clip_client);
     __REMOVE(tabstop);
 
-#if 0 // defined(OS_WIN)
-    if (remove->layer)
+    if (remove->layer) {
       m_objLayer.TryDestroyLayer();
-#else
-    UIASSERT(false);
-#endif
+    }
 
     if (remove->default_ncobject) {
       m_objStyle.default_ncobject = 0;

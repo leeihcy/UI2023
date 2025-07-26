@@ -89,13 +89,12 @@ public:
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
 
-  bool RegisterUITextRenderBaseCreateData(const char *szName, int nType,
-                                          pfnUICreateTextRenderBasePtr pfunc);
+  bool RegisterUITextRender(IMeta &meta);
   bool CreateTextRenderBaseByName(const char *szName, IObject *pObject,
                                   ITextRenderBase **ppOut);
   bool CreateTextRenderBase(int nType, IObject *pObject,
                             ITextRenderBase **ppOut);
-  void EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback,
+  void EnumTextRenderBaseName(pfnEnumTextRenderNameCallback callback,
                               llong wParam, llong lParam);
 
   bool CreateLayoutByName(const char *szName, IObject *pObject,

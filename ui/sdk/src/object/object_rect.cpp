@@ -452,8 +452,8 @@ void Object::GetClientRectInObject(Rect *prc) {
 }
 
 // 这里的clientrect 是0,0起点的
-void Object::GetObjectClientRect(Rect *prc) {
-  if (nullptr == prc)
+void Object::GetClientRectWithZeroOffset(Rect *prc) {
+  if (!prc)
     return;
 
   Rect rcNonClient = {0};

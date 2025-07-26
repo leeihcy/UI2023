@@ -27,21 +27,21 @@ struct IApplication;
 
 // UI对象创建函数
 // typedef  int(*pfnUICreateRenderBasePtr)(IResource* pSkinRes, void** ppOut);
-// typedef  int(*pfnUICreateTextRenderBasePtr)(IResource* pSkinRes, void**
+// typedef  int(*pfnUICreateTextRenderPtr)(IResource* pSkinRes, void**
 // ppOut);
 typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 // typedef  int(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 // UI对象创建函数
 typedef void (*pfnUICreateRenderBasePtr)(IResource *pSkinRes, void **ppOut);
-typedef void (*pfnUICreateTextRenderBasePtr)(IResource *pSkinRes,
+typedef void (*pfnUICreateTextRenderPtr)(IResource *pSkinRes,
                                              void **ppOut);
 typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
 
 // uiapplication中的枚举回调
 typedef bool (*pfnEnumLayoutTypeCallback)(const char *, llong, llong);
 typedef void (*pfnEnumRenderBaseNameCallback)(const char *, llong, llong);
-typedef void (*pfnEnumTextRenderBaseNameCallback)(const char *, llong, llong);
+typedef void (*pfnEnumTextRenderNameCallback)(const char *, llong, llong);
 
 // 返回值:
 enum PARSE_CONTROL_RETURN {

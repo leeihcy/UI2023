@@ -6,7 +6,7 @@ void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
 }
 void on_window_paint(ui::IWindow* window, ui::Event *e) {
   ui::IRenderTarget *pRT = static_cast<ui::WindowPaintEvent *>(e)->rt;
-#if 1
+#if 0
   // 测量一个200x200 point 区域的真实显示大小。
   // 在macos高清屏上，用截屏测量应该是200x200，像素大小为400x400
   ui::Rect rc_fill = ui::Rect::MakeXYWH(5, 5, 200, 200);

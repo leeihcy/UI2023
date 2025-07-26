@@ -1,4 +1,5 @@
 #include "fontmanager.h"
+#if 0
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
@@ -303,3 +304,4 @@ void  FontManager::OnNewChild(UIElement* pElem, HDC hDC)
 #endif
 }
 }
+#endif

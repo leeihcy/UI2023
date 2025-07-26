@@ -242,7 +242,7 @@ StyleResItem *StyleRes::Insert(STYLE_SELECTOR_TYPE type, const char *szId,
     return nullptr;
 
   if (this->GetItem(type, szId)) {
-    UI_LOG_WARN(TEXT("StyleRes::Insert type=%d, id=%s Failed."), type, szId);
+    UI_LOG_WARN("StyleRes::Insert type=%d, id=%s Failed.", type, szId);
     return nullptr;
   }
 

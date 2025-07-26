@@ -63,6 +63,8 @@ struct ILayerContent {
 
   // 如果不可见，则不进行合成操作
   virtual bool IsVisible() = 0;
+  // 获取当前缩放比例
+  virtual float GetLayerScale() = 0;
 
   // 内容绘制
   virtual void Draw(ui::IRenderTarget *) = 0;

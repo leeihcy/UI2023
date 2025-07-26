@@ -44,7 +44,7 @@ public:
   virtual void OffsetOrigin(int x, int y) override;
   virtual void GetOrigin(int *px, int *py) override;
 
-  virtual bool BeginDraw() override;
+  virtual bool BeginDraw(float scale) override;
   virtual void EndDraw() override;
   virtual void Clear(Rect *prc) override;
   virtual void Save(const char *szPath) override;
@@ -70,7 +70,7 @@ public:
   virtual void DrawBitmap(IRenderBitmap *hBitmap, DRAWBITMAPPARAM *pParam) override;
   //	virtual void  DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree,
   //DRAWBITMAPPARAM* pParam);
-  virtual void DrawString(IRenderFont *pFont, DrawTextParam *pParam) override;
+  virtual void DrawString(FontDesc& font_desc, DrawTextParam *pParam) override;
 
   virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) override;
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) override;
@@ -111,6 +111,8 @@ protected:
   // SkBitmap m_bitmap;
 
   sk_sp<SkSurface> m_sksurface;
+
+  float m_scale = 1.0f;
 
   // HDC m_hBindDC;
   // RenderBuffer *m_pRenderBuffer;

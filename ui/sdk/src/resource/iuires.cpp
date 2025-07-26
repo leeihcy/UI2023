@@ -94,7 +94,7 @@ bool IImageManager::ModifyImageItemAlpha(const char *szID, byte nAlphaPercent) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-
+#if 0
 IFontManager::IFontManager(FontManager *p) { m_pImpl = p; }
 FontManager *IFontManager::GetImpl() { return m_pImpl; }
 
@@ -102,6 +102,7 @@ IFontRes &IFontManager::GetFontRes() {
   return m_pImpl->GetFontRes().GetIFontRes();
 }
 
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 IStyleManager::IStyleManager(StyleManager *p) { m_pImpl = p; }
@@ -278,12 +279,11 @@ ICursorResItem::ICursorResItem(CursorResItem* p) { m_pImpl = p; }
 CursorResItem*  ICursorResItem::GetImpl()  { return m_pImpl; }
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+#if 0
 IFontResItem::IFontResItem(FontResItem *p) { m_pImpl = p; }
 FontResItem *IFontResItem::GetImpl() { return m_pImpl; }
 
 const char *IFontResItem::GetId() { return m_pImpl->GetId(); }
-#if 0 // defined(OS_WIN)
 LOGFONT*  IFontResItem::GetLogFont() { return m_pImpl->GetLogFont(); }
 #endif
 //////////////////////////////////////////////////////////////////////////
@@ -305,7 +305,7 @@ IGifResItem::IGifResItem(GifResItem* p) { m_pImpl = p; }
 GifResItem*  IGifResItem::GetImpl()  { return m_pImpl; }
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+#if 0
 IFontRes::IFontRes(FontRes *p) { m_pImpl = p; }
 FontRes *IFontRes::GetImpl() { return m_pImpl; }
 
@@ -326,7 +326,7 @@ const char *IFontRes::GetDefaultFontId() { return m_pImpl->GetDefaultFontId(); }
 const char *IFontRes::GetRenderFontId(IRenderFont *pFont) {
   return m_pImpl->GetRenderFontId(pFont);
 }
-
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 IStyleResItem::IStyleResItem(StyleResItem *p) { m_pImpl = p; }
@@ -504,9 +504,9 @@ IImageManager &IResource::GetImageManager() {
 IColorManager &IResource::GetColorManager() {
   return m_pImpl->GetColorManager().GetIColorManager();
 }
-IFontManager &IResource::GetFontManager() {
-  return m_pImpl->GetFontManager().GetIFontManager();
-}
+// IFontManager &IResource::GetFontManager() {
+//   return m_pImpl->GetFontManager().GetIFontManager();
+// }
 IStyleManager &IResource::GetStyleManager() {
   return m_pImpl->GetStyleManager().GetIStyleManager();
 }
@@ -517,9 +517,9 @@ ILayoutManager &IResource::GetLayoutManager() {
 IImageRes &IResource::GetImageRes() {
   return m_pImpl->GetImageRes().GetIImageRes();
 }
-IFontRes &IResource::GetFontRes() {
-  return m_pImpl->GetFontRes().GetIFontRes();
-}
+// IFontRes &IResource::GetFontRes() {
+//   return m_pImpl->GetFontRes().GetIFontRes();
+// }
 IColorRes &IResource::GetColorRes() {
   return m_pImpl->GetColorRes().GetIColorRes();
 }

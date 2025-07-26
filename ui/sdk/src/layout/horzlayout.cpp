@@ -90,7 +90,7 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
   m_pPanel->GetPaddingRegion(&rcPadding);
 
   Rect rcParent;
-  m_pPanel->GetObjectClientRect(&rcParent);
+  m_pPanel->GetClientRectWithZeroOffset(&rcParent);
 
   // 计算每个子控件需要的宽度及其布局顺序
   std::vector<ObjLayoutInfo> vecInfo(nChildCount);

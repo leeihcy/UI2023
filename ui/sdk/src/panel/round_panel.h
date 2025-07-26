@@ -20,7 +20,7 @@ public:
 
 protected:
   void onSerialize(SerializeParam *pData);
-  void onEraseBkgnd(IRenderTarget *pRenderTarget);
+  void onPaintBkgnd(IRenderTarget *pRenderTarget);
   void onPaint(IRenderTarget *pRenderTarget);
   void onPostPaint(IRenderTarget *pRenderTarget);
 

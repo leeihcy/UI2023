@@ -51,7 +51,7 @@ void HardwareLayer::UpdateDirty() {
   for (uint i = 0; i < nCount; i++)
     pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
 
-  pRenderTarget->BeginDraw();
+  pRenderTarget->BeginDraw(m_pLayerContent->GetLayerScale());
 
   pRenderTarget->SetMetaClipRegion(m_dirtyRectangles.GetArrayPtr(),
                                    m_dirtyRectangles.GetCount());

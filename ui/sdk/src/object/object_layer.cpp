@@ -100,6 +100,15 @@ bool ObjectLayer::IsChildOf(ILayerContent *pParentLayer) {
 
 bool ObjectLayer::IsVisible() { return m_obj.IsVisible(); }
 
+float ObjectLayer::GetLayerScale() {
+  float scale = 1.0f;
+  Window *window = m_obj.GetWindow();
+  if (window) {
+    scale = window->m_dpi.GetScaleFactor();
+  }
+  return scale;
+}
+
 // object在对象树中的位置改变了，同步到分层树上面
 void ObjectLayer::OnObjPosInTreeChanged() {
   UIASSERT(m_pLayer);

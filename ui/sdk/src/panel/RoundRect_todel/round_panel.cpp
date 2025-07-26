@@ -25,7 +25,6 @@ RoundPanel::RoundPanel(IRoundPanel *p) : Panel(p) {
   m_pIRoundPanel = p;
 
   m_objStyle.post_paint = 1;
-  m_meta = &RoundPanelMeta::Get();
   s_parentBuf.AddRef();
 }
 RoundPanel::~RoundPanel() { 
@@ -36,8 +35,8 @@ void RoundPanel::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_PAINT) {
     onPaint(static_cast<PaintMessage *>(msg)->rt);
     return;
-  } else if (msg->message == UI_MSG_ERASEBKGND) {
-    onEraseBkgnd(static_cast<PaintMessage *>(msg)->rt);
+  } else if (msg->message == UI_MSG_PAINTBKGND) {
+    onPaintBkgnd(static_cast<PaintMessage *>(msg)->rt);
     return;
   } else if (msg->message == UI_MSG_POSTPAINT) {
     Panel::onRouteMessage(msg);
@@ -77,9 +76,9 @@ void RoundPanel::onSerialize(SerializeParam *pData) {
   // s.AddInt(XML_ROUNDPANEL_CORNER_RIGHTBOTTOM, *(int *)&m_rightbottom);
 }
 
-void RoundPanel::onEraseBkgnd(IRenderTarget *pRenderTarget) {
+void RoundPanel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
   // 背景不进行剪裁。
-  Panel::onEraseBkgnd(pRenderTarget);
+  Panel::onPaintBkgnd(pRenderTarget);
 }
 void RoundPanel::onPaint(IRenderTarget *pRenderTarget) {
   prePaint(pRenderTarget, GetWidth(), GetHeight());

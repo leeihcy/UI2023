@@ -1,4 +1,5 @@
 #pragma once
+#include "src/graphics/font/font.h"
 #include <memory>
 #if 0 // defined(OS_WIN)
 #include "Vsstyle.h"
@@ -23,14 +24,9 @@ public:
   TextRenderBase(ITextRenderBase *p);
   ~TextRenderBase();
 
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_GETDESIREDSIZE2(OnGetDesiredSize)
-  // UI_END_MSG_MAP()
+  void onRouteMessage(ui::Msg* msg);
 
   void Serialize(AttributeSerializer *ps);
-#if 0 // 废弃，使用RouteMessage代替。
-  void OnGetDesiredSize(Size *pSize, GETDESIREDSIZEINFO *pInfo);
-#endif
   Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
 
 public:
@@ -38,12 +34,12 @@ public:
 
   void SetTextAlignment(int nDrawFlag);
   int GetTextAlignment() { return m_nDrawTextFlag; }
-  void SetTextEffect(TEXT_EFFECT e) { m_eDrawTextEffect = e; }
-  TEXT_EFFECT GetTextEffect() { return m_eDrawTextEffect; }
-  void SetDrawTextParam(int w, int l) {
-    m_wparamDrawText = w;
-    m_lparamDrawText = l;
-  }
+  // void SetTextEffect(TEXT_EFFECT e) { m_eDrawTextEffect = e; }
+  // TEXT_EFFECT GetTextEffect() { return m_eDrawTextEffect; }
+  // void SetDrawTextParam(int w, int l) {
+  //   m_wparamDrawText = w;
+  //   m_lparamDrawText = l;
+  // }
 
   void SetObject(Object *pObject) { m_pObject = pObject; }
   Object *GetObject() { return m_pObject; }
@@ -54,32 +50,33 @@ public:
   TEXTRENDER_TYPE GetTextRenderType() { return m_nTextRenderType; }
 
   IColorRes *GetSkinColorRes();
-  IFontRes *GetSkinFontRes();
+  // IFontRes *GetSkinFontRes();
   Resource *GetResource();
 
   bool IsThemeRender();
   void CheckSkinTextureChanged();
 
-  std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
-  const char *_SaveFont(IRenderFont *pRenderFont);
-  std::shared_ptr<IRenderFont> _LoadDefalutFont();
+  // std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
+  // const char *_SaveFont(IRenderFont *pRenderFont);
+  // std::shared_ptr<IRenderFont> _LoadDefalutFont();
   void _LoadColor(const char *szColorId, Color *&pColor);
   const char *_SaveColor(Color *&pColor);
 
-  void LoadHaloColor(const char *szColorId);
-  const char *GetHaloColorId();
+  // void LoadHaloColor(const char *szColorId);
+  // const char *GetHaloColorId();
 
 protected:
   ITextRenderBase *m_pITextRenderBase;
+  TEXTRENDER_TYPE m_nTextRenderType; // 自己的类型
 
   Object *m_pObject;                 // 绑定的对象，要绘制谁的文字
-  TEXTRENDER_TYPE m_nTextRenderType; // 自己的类型
-  int m_nDrawTextFlag;              // DrawText的flag标识
+  int m_nDrawTextFlag;               // DrawText的flag标识
 
-  TEXT_EFFECT m_eDrawTextEffect;
-  Color *m_pColorTextBkgnd;
-  int m_wparamDrawText;
-  int m_lparamDrawText;
+  // TEXT_EFFECT m_eDrawTextEffect;
+  // Color *m_pColorTextBkgnd;
+  // int m_wparamDrawText;
+  // int m_lparamDrawText;
+
 };
 
 class SimpleTextRender : public TextRenderBase {
@@ -87,37 +84,26 @@ public:
   SimpleTextRender(ISimpleTextRender *p);
   ~SimpleTextRender();
 
-  UI_DECLARE_TEXTRENDERBASE(SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE,
-                            TEXTRENDER_TYPE_SIMPLE)
+  // UI_DECLARE_TEXTRENDERBASE(SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE,
+  //                           TEXTRENDER_TYPE_SIMPLE)
 
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  // UIMSG_GETRENDERFONT(GetRenderFont)
-  // UIMSG_QUERYINTERFACE(SimpleTextRender)
-  // UIMSG_SERIALIZE(OnSerialize)
-  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+  void onRouteMessage(ui::Msg *msg);
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
-
-  void SetRenderFont(std::shared_ptr<IRenderFont>);
-  void SetColor(Color *pColText);
-  bool GetColor(Color &color);
-
-  void LoadFont(const char *szFontId);
-  const char *GetFontId();
+  // IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
+  // void SetRenderFont(std::shared_ptr<IRenderFont>);
+  // void SetColor(Color *pColText);
+  // bool GetColor(Color &color);
+  // void LoadFont(const char *szFontId);
+  // const char *GetFontId();
 
 protected:
   ISimpleTextRender *m_pISimpleTextRender;
-  Color *m_pColorText;
-  std::shared_ptr<IRenderFont> m_pRenderFont;
-
-#ifdef EDITOR_MODE
-  std::string m_strFontId;
-#endif
+  FontDesc m_font_desc;
+  Color m_color;
 };
-
+#if 0
 // 根据皮肤颜色，自适应设置文本的颜色是白还是黑
 class ContrastColorTextRender : public TextRenderBase {
 public:
@@ -145,11 +131,11 @@ protected:
   IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
   int OnSkinTextureChanged(unsigned int, int, int);
 
-  void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
-  const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
-  void LoadColor(const char *szColorId) {
-    _LoadColor(szColorId, m_pColorText);
-  }
+  // void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
+  // const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
+  // void LoadColor(const char *szColorId) {
+  //   _LoadColor(szColorId, m_pColorText);
+  // }
   const char *GetColorId() { return _SaveColor(m_pColorText); }
 
 private:
@@ -188,8 +174,8 @@ public:
   void SetCount(int nCount);
   int GetCount();
 
-  void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
-  const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
+  // void LoadFont(const char *szFontId) { m_pRenderFont = _LoadFont(szFontId); }
+  // const char *GetFontId() { return _SaveFont(m_pRenderFont.get()); }
 
 protected:
   void Clear();
@@ -286,8 +272,8 @@ public:
 
   void LoadColor(const char *szText);
   const char *GetColor();
-  void LoadFont(const char *szText);
-  const char *GetFont();
+  // void LoadFont(const char *szText);
+  // const char *GetFont();
 
   void SetColor(int nIndex, unsigned int color);
   void SetFont(int nIndex, std::shared_ptr<IRenderFont>);
@@ -304,7 +290,7 @@ private:
   int m_nCount;
 };
 
-#if 0
+
 //
 //	主题背景按钮
 //

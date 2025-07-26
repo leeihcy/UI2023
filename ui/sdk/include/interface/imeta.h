@@ -13,7 +13,8 @@ enum OBJ_TYPE {
   OBJ_PANEL = 3,
   OBJ_ROOT = 4,
   OBJ_WINDOW = 5,
-  RENDER_BASE = 6,
+  RENDER = 6,
+  TEXT_RENDER = 7,
 };
 enum CONTROL_TYPE {
   // Extent Type
@@ -137,6 +138,10 @@ struct MetaImpl : public IMeta {
       delete p;
       return IxxPtr(nullptr, This::destroy);
     }
+
+    // 确保FinalConstructMessage消息传递到了Message中。
+    assert(p->GetMeta() == static_cast<IMeta*>(this));
+    
     return IxxPtr(p, This::destroy);
   }
 

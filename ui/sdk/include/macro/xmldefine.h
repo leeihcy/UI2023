@@ -85,11 +85,11 @@ enum ALIGN_TYPE
 };
 
 
-#define XML_FONT_FACENAME    "face"
-#define XML_FONT_FACENAME2   "face2"  // 当facename字体不存在时，尝试facename2
-#define XML_FONT_HEIGHT      "size"
+#define XML_FONT_FACENAME    "face"   // 以逗号分隔多个字体，依次进行尝试
+#define XML_FONT_SIZE        "size"
+#define XML_FONT_WEIGHT      "weight"
 #define XML_FONT_ORIENTATION "orientation" 
-#define XML_FONT_BOLD        "bold"
+
 #define XML_FONT_ITALIC      "italic"
 #define XML_FONT_UNDERLINE   "underline"
 #define XML_FONT_STRIKEOUT   "strikeout"  
@@ -253,6 +253,7 @@ enum IMAGELIST_LAYOUT_TYPE
 #define XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST "contrastcolorlist"   // 
 
 #define XML_TEXTRENDER_COLOR                "text.render.color"      // 字体颜色
+#define XML_TEXTRENDER_FONT_PREFIX          "text.render.font."      // 字体
 #define XML_TEXTRENDER_FONT                 "text.render.font"       // 字体
 #define XML_TEXTRENDER_COLORLIST_COUNT      "text.render.colorlist.count"
 #define XML_TEXTRENDER_FONTCOLORLIST_COUNT  "text.render.fontcolorlist.count"  // 字体、颜色数量

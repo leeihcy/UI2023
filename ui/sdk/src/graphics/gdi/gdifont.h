@@ -40,6 +40,6 @@ protected:
 
 private:
 	HFONT   m_hFont;
-	FontType   m_eFontType; // 标明该m_hFont的来源，用于区分如何释放
+	FontType   m_eFontType; // 鏍囨槑璇_hFont鐨勬潵婧愶紝鐢ㄤ簬鍖哄垎濡備綍閲婃斁
 };
 }

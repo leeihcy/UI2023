@@ -25,6 +25,7 @@ protected:
 
   bool IsChildOf(ILayerContent *) override;
   bool IsVisible() override;
+  float GetLayerScale() override;
   void Draw(ui::IRenderTarget *) override;
   void GetWindowRect(Rect *prcOut) override;
   void GetParentWindowRect(Rect *prcOut) override;

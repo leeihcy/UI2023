@@ -143,10 +143,8 @@ void IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback,
   m_pImpl->GetRenderBaseFactory().EnumRenderBaseName(callback, wParam, lParam);
 }
 
-bool IApplication::RegisterUITextRenderBaseCreateData(
-    const char *szName, int nType, pfnUICreateTextRenderBasePtr pfunc) {
-  return m_pImpl->GetTextRenderFactroy().RegisterUITextRenderBaseCreateData(
-      szName, nType, pfunc);
+bool IApplication::RegisterUITextRender(IMeta &meta) {
+  return m_pImpl->GetTextRenderFactroy().RegisterUITextRender(meta);
 }
 bool IApplication::CreateTextRenderBaseByName(const char *szName,
                                               IObject *pObject,
@@ -170,7 +168,7 @@ bool IApplication::CreateTextRenderBase(int nType, IObject *pObject,
                                                           pObject, ppOut);
 }
 void IApplication::EnumTextRenderBaseName(
-    pfnEnumTextRenderBaseNameCallback callback, llong wParam, llong lParam) {
+    pfnEnumTextRenderNameCallback callback, llong wParam, llong lParam) {
   m_pImpl->GetTextRenderFactroy().EnumTextRenderBaseName(callback, wParam,
                                                          lParam);
 }

@@ -30,9 +30,9 @@ protected:
   std::map<std::string, signal<void(Event*)>> m_events;
 
   // 对象的一些静态属性，仅保存指针，通常这是一个static对象地址。
-  IMeta *m_meta; 
+  IMeta *m_meta = nullptr; 
 
-  IMessage *m_imessage;
+  IMessage *m_imessage = nullptr;
 };
 
 } // namespace ui

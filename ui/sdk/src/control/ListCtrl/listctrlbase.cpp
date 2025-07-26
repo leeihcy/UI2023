@@ -1578,7 +1578,7 @@ void ListCtrlBase::CalcFirstLastDrawItem() {
   m_pLastDrawItem = nullptr;
 
   CRect rcClient;
-  m_pIListCtrlBase->GetObjectClientRect(&rcClient);
+  m_pIListCtrlBase->GetClientRectWithZeroOffset(&rcClient);
 
   int xOffset = 0, yOffset = 0;
   m_mgrScrollBar.GetScrollPos(&xOffset, &yOffset);

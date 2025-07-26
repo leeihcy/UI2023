@@ -30,7 +30,7 @@ protected:
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
                              unsigned int nHeight, float scale) override;
 
-  void onEraseBkgnd(IRenderTarget *);
+  void onPaintBkgnd(IRenderTarget *);
   void onPaint(IRenderTarget *pRenderTarget);
   void onPostPaint(IRenderTarget *pRenderTarget);
   void onSerialize(SerializeParam *pData);

@@ -28,12 +28,14 @@ struct FinalReleaseMessage : public Msg {
   FinalReleaseMessage() { message = UI_MSG_FINALRELEASE; }
 };
 
-#define UI_MSG_ERASEBKGND 238261617
-struct EraseBkgndMessage : public Msg {
-  EraseBkgndMessage() { message = UI_MSG_ERASEBKGND; }
+// 绘制包含非客户区，不受padding scroll影响
+#define UI_MSG_PAINTBKGND 238261617
+struct PaintBkgndMessage : public Msg {
+  PaintBkgndMessage() { message = UI_MSG_PAINTBKGND; }
   IRenderTarget* rt;
 };
 
+// 绘制客户区，已踢除padding，并且scroll
 #define UI_MSG_PAINT 238261716
 struct PaintMessage : public Msg {
   PaintMessage() { message = UI_MSG_PAINT; }
@@ -123,6 +125,11 @@ struct TEXTRENDERBASE_DRAWSTATE {
 struct RenderBaseDrawStateMessage : public Msg {
   RenderBaseDrawStateMessage() { message = UI_MSG_RENDERBASE_DRAWSTATE; };
   RENDERBASE_DRAWSTATE draw_state;
+};
+
+struct TextRenderDrawStateMessage : public Msg {
+  TextRenderDrawStateMessage() { message = UI_MSG_RENDERBASE_DRAWSTATE; };
+  TEXTRENDERBASE_DRAWSTATE draw_state;
 };
 
 

@@ -25,7 +25,7 @@ public:
 private:
   void FinalConstruct();
   // void recursion_on_load_notify(Object *pParent);
-  void onEraseBkgnd(IRenderTarget *);
+  void onPaintBkgnd(IRenderTarget *);
   
 private:
   Window *m_window = nullptr; // not null

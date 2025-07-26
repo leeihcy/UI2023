@@ -1,50 +1,50 @@
 #pragma once
+#if 0 // 废弃， 2025.7.26。统一使用样式
 #include "fontres.h"
 #include "src/util/DataStruct/list.h"
 
-namespace ui
-{
-	struct IFontManager;
-	struct UIElement;
-	struct IUIElement;
+namespace ui {
+struct IFontManager;
+struct UIElement;
+struct IUIElement;
 
-class  FontTagElementInfo
-{
+class FontTagElementInfo {
 public:
-	std::string  strId;  // 模块名
-	UIElement*  pXmlElement;  // xml结点
+  std::string strId;      // 模块名
+  UIElement *pXmlElement; // xml结点
 };
 
-class FontManager
-{
+class FontManager {
 public:
-	FontManager(Resource* p);
-	~FontManager(void);
-   
-    IFontManager&  GetIFontManager();
-	FontRes&  GetFontRes();
+  FontManager(Resource *p);
+  ~FontManager(void);
+
+  IFontManager &GetIFontManager();
+  FontRes &GetFontRes();
 
 public:
-	void       Clear();
-	int        GetFontCount();
-	IFontResItem*  GetFontItemInfo(int nIndex);
-	
-    static int  UIParseFontTagCallback(IUIElement*, IResource* pSkinRes);
-private:
-    int  ParseNewElement(UIElement* pElem);
-    void  OnNewChild(UIElement* pElem, HDC);
+  void Clear();
+  int GetFontCount();
+  IFontResItem *GetFontItemInfo(int nIndex);
+
+  static int UIParseFontTagCallback(IUIElement *, IResource *pSkinRes);
 
 private:
-	// 数据持久层
-    IFontManager*  m_pIFontManager;
-   
-	typedef  UIList<FontTagElementInfo>  _MyList;
-	typedef  UIListItem<FontTagElementInfo>  _MyListItem;
-	_MyList  m_listUIElement;
+  int ParseNewElement(UIElement *pElem);
+  void OnNewChild(UIElement *pElem, HDC);
 
-	// 对象属性
-	FontRes   m_resFont;
-	Resource*  m_pSkinRes;
+private:
+  // 数据持久层
+  IFontManager *m_pIFontManager;
+
+  typedef UIList<FontTagElementInfo> _MyList;
+  typedef UIListItem<FontTagElementInfo> _MyListItem;
+  _MyList m_listUIElement;
+
+  // 对象属性
+  FontRes m_resFont;
+  Resource *m_pSkinRes;
 };
 
-}
+} // namespace ui
+#endif

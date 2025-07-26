@@ -34,6 +34,12 @@ struct UIAPI IControl : public IObject
    UI_DECLARE_INTERFACE(Control);
 };
 
+class Label;
+struct UIAPI ILabel : public IControl {
+   
+   UI_DECLARE_INTERFACE(Label);
+};
+
 }
 
 #endif  // _UI_ICONTROL_H_

@@ -83,7 +83,7 @@ void VertLayout::DoArrange(ArrangeParam& param) {
   m_pPanel->GetPaddingRegion(&rcPadding);
 
   Rect rcParent;
-  m_pPanel->GetObjectClientRect(&rcParent);
+  m_pPanel->GetClientRectWithZeroOffset(&rcParent);
 
   std::vector<ObjLayoutInfo> vecInfo(nChildCount);
   memset(&vecInfo[0], 0, sizeof(ObjLayoutInfo) * nChildCount);

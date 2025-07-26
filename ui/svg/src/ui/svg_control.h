@@ -23,7 +23,7 @@ public:
 protected:
   void onFinalConstruct();
   void onSerialize(SerializeParam *pData);
-  // void onEraseBkgnd(ui::IRenderTarget* pRenderTarget);
+  // void onPaintBkgnd(ui::IRenderTarget* pRenderTarget);
   void onPaint(ui::IRenderTarget *rt);
   ui::Size onGetDesiredSize();
   

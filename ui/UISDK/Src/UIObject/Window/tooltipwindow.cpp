@@ -21,14 +21,14 @@ BOOL TooltipWindow::PreCreateWindow(CREATESTRUCT* pcs)
     if (FALSE == GetCurMsg()->lRet)
         return FALSE;
 
-	pcs->lpszClass = WND_POPUP_CONTROL_SHADOW_NAME;  // ´øÒõÓ°
+	pcs->lpszClass = WND_POPUP_CONTROL_SHADOW_NAME;  // ï¿½ï¿½ï¿½ï¿½Ó°
 	pcs->dwExStyle |= WS_EX_TOPMOST|WS_EX_NOACTIVATE;
 	return TRUE;
 }
 
 void  TooltipWindow::OnSerialize(SerializeParam* pData)
 {
-	this->EnableWindowLayered(true);  // ÏÈÓÚ__super::SetAttribute£¬Ö¸¶¨´´½¨GdiplusÀàÐÍ×ÊÔ´
+	this->EnableWindowLayered(true);  // ï¿½ï¿½ï¿½ï¿½__super::SetAttributeï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Gdiplusï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´
 
 	CustomWindow::OnSerialize(pData);
 	if (NULL == m_pBkgndRender)
@@ -42,9 +42,9 @@ void  TooltipWindow::OnSerialize(SerializeParam* pData)
 	CRegion4 b(1,1,1,1);
 	this->SetBorderRegion(&b);
 	CRegion4 r(4,3,4,3);
-	this->SetPaddingRegion(&r);      // ÎÄ×ÖÓë±ßÔµµÄ¼ä¾à
+	this->SetPaddingRegion(&r);      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ä¼ï¿½ï¿½
 
-	this->SetResizeCapability(WRSB_NONE);  // ½ûÖ¹ÍÏ×§
+	this->SetResizeCapability(WRSB_NONE);  // ï¿½ï¿½Ö¹ï¿½ï¿½×§
 
 	::SetWindowPos(m_hWnd,HWND_TOPMOST,0,0,0,0,SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOMOVE|SWP_FRAMECHANGED);
 }
@@ -52,13 +52,13 @@ void  TooltipWindow::OnSerialize(SerializeParam* pData)
 void TooltipWindow::OnPaint(IRenderTarget* pRenderTarget)
 {
 	CRect rc;
-	this->GetObjectClientRect(&rc);
+	this->GetClientRectWithZeroOffset(&rc);
 
     DRAWTEXTPARAM  param;
 	param.color.ReplaceRGB(GetSysColor(COLOR_INFOTEXT));
 	if (IsThemeActive())
 	{
-		param.color.ReplaceRGB(RGB(87,87,87));  // TODO: GetSysColor(COLOR_INFOTEXT)ÄÃ²»µ½WIN7Ö÷ÌâÏÂÃæÌáÊ¾Ìõ×ÖÌåÑÕÉ«
+		param.color.ReplaceRGB(RGB(87,87,87));  // TODO: GetSysColor(COLOR_INFOTEXT)ï¿½Ã²ï¿½ï¿½ï¿½WIN7ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 	}
     param.szText = m_strText.c_str();
     param.prc = &rc;
@@ -75,14 +75,14 @@ bool TooltipWindow::Create()
 // 	this->SetWindowLayered(true);
 // 
 // 	ATTRMAP map;
-// 	this->SetAttribute(map, false);  // ´´½¨Ò»Ð©Ä¬ÈÏÊôÐÔ
+// 	this->SetAttribute(map, false);  // ï¿½ï¿½ï¿½ï¿½Ò»Ð©Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 // 
 // 	CRegion4 b(1,1,1,1);
 // 	this->SetBorderRegion(&b);
 // 	CRegion4 r(4,3,4,3);
-// 	this->SetPaddingRegion(&r);      // ÎÄ×ÖÓë±ßÔµµÄ¼ä¾à
+// 	this->SetPaddingRegion(&r);      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½Ä¼ï¿½ï¿½
 // 
-// 	this->SetResizeCapability(WRSB_NONE);  // ½ûÖ¹ÍÏ×§
+// 	this->SetResizeCapability(WRSB_NONE);  // ï¿½ï¿½Ö¹ï¿½ï¿½×§
 // 
 // 	::SetWindowPos(m_hWnd,HWND_TOPMOST,0,0,0,0,SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOMOVE|SWP_FRAMECHANGED);
 	return true;
@@ -109,7 +109,7 @@ bool TooltipWindow::SetText(const String& strText)
 	}
 	m_strText = strText;
 
-	// ¼ÆËã´°¿ÚµÄÐÂ´óÐ¡
+	// ï¿½ï¿½ï¿½ã´°ï¿½Úµï¿½ï¿½Â´ï¿½Ð¡
 	SIZE s = {0,0};
 	IRenderFont* pFont = this->GetRenderFont();
 	if (pFont)

@@ -1,8 +1,12 @@
 #pragma once
-#include "src/util/windows.h"
+#include <vector>
+#include "include/uiapi.h"
 
 namespace ui {
 class Application;
+struct IResource;
+struct IObject;
+struct IMeta;
 struct ITextRenderBase;
 
 class TextRenderFactory {
@@ -12,9 +16,7 @@ public:
 
   void Init();
   void Clear();
-
-  bool RegisterUITextRenderBaseCreateData(const char *szName, int nType,
-                                          pfnUICreateTextRenderBasePtr pfunc);
+  bool RegisterUITextRender(IMeta &meta);
 
   bool CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName,
                                   IObject *pObject, ITextRenderBase **ppOut);
@@ -24,21 +26,11 @@ public:
 
   const char *GetTextRenderBaseName(int nType);
 
-  void EnumTextRenderBaseName(pfnEnumTextRenderBaseNameCallback callback,
+  void EnumTextRenderBaseName(pfnEnumTextRenderNameCallback callback,
                               long wParam, long lParam);
 
 private:
   Application &m_app;
-
-  struct UITEXTRENDERBASE_CREATE_INFO {
-    std::string m_strName;
-    int m_nRenderType;
-    pfnUICreateTextRenderBasePtr m_func;
-  };
-
-  typedef std::vector<UITEXTRENDERBASE_CREATE_INFO *>
-      UITEXTRENDERBASE_CREATE_DATA;
-  UITEXTRENDERBASE_CREATE_DATA
-      m_vecUITextRenderBaseCreateData; // 用于从字符串创建TextRenderBase
+  std::vector<IMeta *> m_vecTextRenderCreator;
 };
 } // namespace ui

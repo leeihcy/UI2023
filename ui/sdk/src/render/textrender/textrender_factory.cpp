@@ -1,30 +1,24 @@
-#include "include/inc.h"
-#include "src/private_inc.h"
 #include "textrender_factory.h"
-#include "src/render/textrender/textrender.h"
+#include "include/inc.h"
 #include "src/application/uiapplication.h"
+#include "src/private_inc.h"
+#include "src/render/render_meta.h"
+#include "src/render/textrender/textrender.h"
 
 namespace ui {
-TextRenderFactory::TextRenderFactory(Application& app):m_app(app)
-{
+TextRenderFactory::TextRenderFactory(Application &app) : m_app(app) {}
+TextRenderFactory::~TextRenderFactory() { Clear(); }
 
-}
-TextRenderFactory::~TextRenderFactory()
-{
-	Clear();
-}
+void TextRenderFactory::Init() {
 
-void  TextRenderFactory::Init()
-{
-	
-#define REGISTER_UI_TEXTRENDERBASE2(classname) \
-        this->RegisterUITextRenderBaseCreateData( \
-                classname::GetXmlName(),          \
-                classname::GetType(),             \
-				(ui::pfnUICreateTextRenderBasePtr)ObjectCreator<I##classname>::CreateInstance2);
+  // #define REGISTER_UI_TEXTRENDERBASE2(classname) \
+//         this->RegisterUITextRenderCreateData( \
+//                 classname::GetXmlName(),          \
+//                 classname::GetType(),             \
+// 				(ui::pfnUICreateTextRenderPtr)ObjectCreator<I##classname>::CreateInstance2);
 
+  this->RegisterUITextRender(SimpleTextRenderMeta::Get());
 #if 0 // TODO
-	REGISTER_UI_TEXTRENDERBASE2(SimpleTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(FontColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorTextRender)
@@ -32,140 +26,119 @@ void  TextRenderFactory::Init()
 #endif
 }
 
-void  TextRenderFactory::Clear()
-{
-	UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
-	for ( ; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)
-	{
-		SAFE_DELETE(*iter);               
-	}
-	m_vecUITextRenderBaseCreateData.clear();     
+void TextRenderFactory::Clear() { m_vecTextRenderCreator.clear(); }
+
+// bool  TextRenderFactory::RegisterUITextRenderCreateData(
+//         const char* szName,
+//         int nType,
+//         pfnUICreateTextRenderPtr pfunc)
+// {
+// 	if (nullptr == szName || nullptr == pfunc)
+// 		return false;
+
+// 	std::string strName(szName);
+
+// 	UITEXTRENDERBASE_CREATE_INFO* pInfo = new UITEXTRENDERBASE_CREATE_INFO;
+// 	pInfo->m_func = pfunc;
+// 	pInfo->m_nRenderType = nType;
+// 	pInfo->m_strName = strName;
+// 	m_vecTextRenderCreator.push_back(pInfo);
+
+// 	//UI_LOG_DEBUG("%s   @ 0x%08X", szName,  pfunc);
+// 	return true;
+// }
+
+bool TextRenderFactory::RegisterUITextRender(IMeta &meta) {
+  m_vecTextRenderCreator.push_back(&meta);
+  return true;
 }
 
+bool TextRenderFactory::CreateTextRenderBaseByName(IResource *resource,
+                                                   const char *name,
+                                                   IObject *obj,
+                                                   ITextRenderBase **ppOut) {
+  if (!resource || !name || !obj || !ppOut)
+    return false;
 
-bool  TextRenderFactory::RegisterUITextRenderBaseCreateData(
-        const char* szName, 
-        int nType, 
-        pfnUICreateTextRenderBasePtr pfunc)
-{
-	if (nullptr == szName || nullptr == pfunc)
-		return false;
+  auto iter = m_vecTextRenderCreator.begin();
+  for (; iter != m_vecTextRenderCreator.end(); ++iter) {
+    IMeta *meta = *iter;
+    if (!meta || !meta->Name())
+      continue;
 
-	std::string strName(szName);
+    if (strcmp(name, meta->Name()) != 0)
+      continue;
 
-	UITEXTRENDERBASE_CREATE_INFO* pInfo = new UITEXTRENDERBASE_CREATE_INFO;
-	pInfo->m_func = pfunc;
-	pInfo->m_nRenderType = nType;
-	pInfo->m_strName = strName;
-	m_vecUITextRenderBaseCreateData.push_back(pInfo);
+    meta->Create(resource, (void **)ppOut);
+    if (*ppOut) {
+      (*ppOut)->SetObject(obj);
+      (*ppOut)->Init();
+      (*ppOut)->SetType((TEXTRENDER_TYPE)meta->Detail().minor_type);
+      return true;
+    }
 
-	//UI_LOG_DEBUG("%s   @ 0x%08X", szName,  pfunc);
-	return true;
+    return false;
+  }
+
+  UI_LOG_WARN("Create Failed. Name=%s", name);
+  return false;
+}
+bool TextRenderFactory::CreateTextRender(IResource *resource, int type,
+                                         IObject *object,
+                                         ITextRenderBase **ppOut) {
+  if (nullptr == object || nullptr == ppOut)
+    return false;
+
+  auto iter = m_vecTextRenderCreator.begin();
+  for (; iter != m_vecTextRenderCreator.end(); iter++) {
+    IMeta *meta = *iter;
+    if (!meta)
+      continue;
+
+    if (meta->Detail().minor_type != type)
+      continue;
+
+    meta->Create(resource, (void **)ppOut);
+    if (*ppOut) {
+      (*ppOut)->SetObject(object);
+      (*ppOut)->Init();
+      (*ppOut)->SetType((TEXTRENDER_TYPE)type);
+      return true;
+    }
+
+    return false;
+  }
+
+  UI_LOG_WARN("Create Failed. Type=%d", type);
+  return false;
 }
 
-bool  TextRenderFactory::CreateTextRenderBaseByName(
-        IResource* pSkinRes, 
-        const char* bstrName, 
-        IObject* pObject, 
-        ITextRenderBase** ppOut)
-{
-    UIASSERT(pObject);
-	if (!bstrName || !bstrName[0] || !pObject || !ppOut)
-		return false;
+const char *TextRenderFactory::GetTextRenderBaseName(int nType) {
+  auto iter = m_vecTextRenderCreator.begin();
+  for (; iter != m_vecTextRenderCreator.end(); ++iter) {
+    IMeta *meta = *iter;
+    if (!meta || !meta->Name())
+      continue;
 
-	UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
-	for (; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)
-	{
-		UITEXTRENDERBASE_CREATE_INFO* pData = *iter;
-		if (nullptr == pData)
-			continue;
+    if (meta->Detail().minor_type != nType)
+      continue;
 
-		if (pData->m_strName != bstrName)
-			continue;
+    return meta->Name();
+  }
 
-		pData->m_func(pSkinRes, (void**)ppOut);
-		if (*ppOut)
-		{
-			(*ppOut)->SetObject(pObject);
-			(*ppOut)->Init();
-			(*ppOut)->SetType((TEXTRENDER_TYPE)pData->m_nRenderType);
-			return true;
-		}
-
-		return false;
-	}
-
-	UI_LOG_WARN("Create Failed. Name=%s", bstrName);
-	return false;
-}
-bool  TextRenderFactory::CreateTextRender(
-        IResource* pSkinRes, 
-        int nType, 
-        IObject* pObject, 
-        ITextRenderBase** ppOut)
-{
-    UIASSERT(pObject);
-	if (nullptr == pObject || nullptr == ppOut)
-		return false;
-
-	UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
-	for (; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)
-	{
-		UITEXTRENDERBASE_CREATE_INFO* pData = *iter;
-		if (nullptr == pData)
-			continue;
-
-		if (pData->m_nRenderType != nType)
-			continue;
-
-		pData->m_func(pSkinRes, (void**)ppOut);
-		if (*ppOut)
-		{
-			(*ppOut)->SetObject(pObject);
-			(*ppOut)->Init();
-			(*ppOut)->SetType((TEXTRENDER_TYPE)nType);
-			return true;
-		}
-
-		return false;
-	}
-
-	UI_LOG_WARN("Create Failed. Type=%d", nType);
-	return false;
+  return nullptr;
 }
 
-const char*  TextRenderFactory::GetTextRenderBaseName(int nType)
-{
-    UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
-	for (; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)
-	{
-		UITEXTRENDERBASE_CREATE_INFO* pData = *iter;
-		if (nullptr == pData)
-			continue;
+void TextRenderFactory::EnumTextRenderBaseName(
+    pfnEnumTextRenderNameCallback callback, long wParam, long lParam) {
+  auto iter = m_vecTextRenderCreator.begin();
+  for (; iter != m_vecTextRenderCreator.end(); ++iter) {
+    IMeta *meta = *iter;
+    if (!meta || !meta->Name())
+      continue;
 
-		if (pData->m_nRenderType != nType)
-			continue;
-
-		return pData->m_strName.c_str();
-	}
-
-	return nullptr;
+    callback(meta->Name(), wParam, lParam);
+  }
 }
 
-void  TextRenderFactory::EnumTextRenderBaseName(
-        pfnEnumTextRenderBaseNameCallback callback,
-        long wParam, 
-        long lParam)
-{
-	UITEXTRENDERBASE_CREATE_DATA::iterator iter = m_vecUITextRenderBaseCreateData.begin();
-	for (; iter != m_vecUITextRenderBaseCreateData.end(); ++iter)
-	{
-		UITEXTRENDERBASE_CREATE_INFO* pData = *iter;
-		if (nullptr == pData)
-			continue;
-
-		callback(pData->m_strName.c_str(), wParam, lParam);
-	}
-}
-
-}
+} // namespace ui

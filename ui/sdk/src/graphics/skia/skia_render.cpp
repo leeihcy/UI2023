@@ -10,6 +10,7 @@
 #include "gpu/include/api.h"
 #include <cassert>
 
+#include "src/graphics/font/font.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include "third_party/skia/src/include/core/SkFont.h"
 
@@ -208,7 +209,7 @@ void SkiaRenderTarget::GetRenderBufferData(ImageData *pData) {
   // m_pRenderBuffer->GetImageData(pData);
 }
 
-bool SkiaRenderTarget::BeginDraw() {
+bool SkiaRenderTarget::BeginDraw(float scale) {
   if (!m_sksurface) {
     return false;
   }
@@ -218,6 +219,8 @@ bool SkiaRenderTarget::BeginDraw() {
     return false;
   }
   canvas->save();
+  
+  m_scale = scale;
   return true;
 }
 
@@ -260,33 +263,30 @@ void SkiaRenderTarget::Clear(Rect *prc) {
   canvas->drawRect(skrect, paint);
 }
 
-void SkiaRenderTarget::DrawString(IRenderFont *pRenderFont,
+void SkiaRenderTarget::DrawString(FontDesc& font_desc,
                                   DrawTextParam *param) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  // Draw a message with a nice black paint
-  SkFont font(SkTypeface::MakeFromName("monospace", SkFontStyle()), 10);
-  // font.setSubpixel(true);
-  // font.setSize(100);
+  SkFont& font = FontPool::GetInstance().GetSkiaFont(font_desc, m_scale);
 
   SkPaint paint;
   paint.setColor(SK_ColorBLACK);
 
-  SkRect textBounds;
-  font.measureText(param->text, strlen(param->text), SkTextEncoding::kUTF8,
-  &textBounds, &paint);
+  // SkRect textBounds;
+  // font.measureText(param->text, strlen(param->text), SkTextEncoding::kUTF8,
+  // &textBounds, &paint);
   
-  SkScalar padding = 2.0f;
-  SkRect bg_rect = SkRect::MakeXYWH(
-    param->bound.left + textBounds.fLeft - padding,
-    param->bound.top + textBounds.fTop - padding,
-    textBounds.width() + 2*padding,
-    textBounds.height() + 2*padding
-  );
+  // SkScalar padding = 2.0f;
+  // SkRect bg_rect = SkRect::MakeXYWH(
+  //   param->bound.left + textBounds.fLeft - padding,
+  //   param->bound.top + textBounds.fTop - padding,
+  //   textBounds.width() + 2*padding,
+  //   textBounds.height() + 2*padding
+  // );
 
-  SkPaint bg_paint;
-  bg_paint.setColor(SK_ColorYELLOW);
-  canvas->drawRect(bg_rect, bg_paint);
+  // SkPaint bg_paint;
+  // bg_paint.setColor(SK_ColorYELLOW);
+  // canvas->drawRect(bg_rect, bg_paint);
   canvas->drawString(param->text, param->bound.left, param->bound.top, font, paint);
   // canvas->drawSimpleText(param->text, strlen(param->text),
   //                        SkTextEncoding::kUTF8, param->bound.left,

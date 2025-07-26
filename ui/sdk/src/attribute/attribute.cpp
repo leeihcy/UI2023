@@ -440,7 +440,7 @@ AttributeSerializer::AddTextRenderBase(const char *szPrefix, Object *pObj,
 AttributeBase *AttributeSerializer::Add(int eType, const char *szKey) {
   AttributeBase *pAttribute = GetAttributeClassFactory().CreateInstance(eType);
   if (!pAttribute) {
-    UI_LOG_ERROR(TEXT("Create Attribute Class Factory Failed. Type=%d"), eType);
+    UI_LOG_ERROR("Create Attribute Class Factory Failed. Type=%d", eType);
     return nullptr;
   }
 
@@ -464,7 +464,7 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
                                         void *pBindValue) {
   AttributeBase *pAttribute = GetAttributeClassFactory().CreateInstance(eType);
   if (!pAttribute) {
-    UI_LOG_ERROR(TEXT("Create Attribute Class Factory Failed. Type=%d"), eType);
+    UI_LOG_ERROR("Create Attribute Class Factory Failed. Type=%d", eType);
     return nullptr;
   }
 

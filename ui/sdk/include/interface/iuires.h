@@ -172,6 +172,7 @@ private:
   GifResItem *m_pImpl;
 };
 
+#if 0
 class FontRes;
 struct UIAPI IFontRes : public IRootInterface {
   IFontRes(FontRes *p);
@@ -190,6 +191,7 @@ struct UIAPI IFontRes : public IRootInterface {
 private:
   FontRes *m_pImpl;
 };
+#endif
 
 class StyleResItem;
 struct UIAPI IStyleResItem : public IRootInterface {
@@ -277,6 +279,7 @@ private:
   ImageManager *m_pImpl;
 };
 
+#if 0
 class FontManager;
 struct UIAPI IFontManager {
   IFontManager(FontManager *p);
@@ -287,6 +290,7 @@ struct UIAPI IFontManager {
 private:
   FontManager *m_pImpl;
 };
+#endif
 
 class StyleManager;
 struct UIAPI IStyleManager {

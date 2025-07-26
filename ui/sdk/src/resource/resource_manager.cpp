@@ -278,6 +278,8 @@ void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 Resource *ResourceManager::LoadResource(const char *szPath) {
   if (!szPath)
     return nullptr;
+  
+  const int MAX_PATH = 256;
 
   UI_LOG_INFO("\n\n------------  LoadResource: %s ----------------\n",
               szPath);
@@ -331,7 +333,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
     szSkinName[strlen(szSkinName) - nExtLength] = 0;
     Resource *pTest = GetResourceByName(szSkinName);
     if (pTest) {
-      UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
+      UI_LOG_WARN("Skin Exist: name=%s", szSkinName);
       return pTest;
     }
 
@@ -344,7 +346,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
   pSkin->SetPath(strPath.c_str());
 
   if (!pSkin->Load()) {
-    UI_LOG_ERROR(TEXT("Skin load failed: %s"), strPath.c_str());
+    UI_LOG_ERROR("Skin load failed: %s", strPath.c_str());
     SAFE_DELETE(pSkin);
     return nullptr;
   }

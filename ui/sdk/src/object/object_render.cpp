@@ -180,7 +180,7 @@ void Object::Invalidate(Rect *prcObjArray, int nCount) {
 
 void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   // 1. 非客户区，不受padding scroll影响
-  EraseBkgndMessage message;
+  PaintBkgndMessage message;
   message.rt = pRenderTarget;
   m_pIObject->RouteMessage(&message);
   

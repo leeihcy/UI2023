@@ -60,7 +60,7 @@ public:
   ResourceManager &GetSkinMgr() { return m_mgrSkinRef; } //  内部调用
   ImageManager &GetImageManager() { return m_mgrImage; }
   ColorManager &GetColorManager() { return m_mgrColor; }
-  FontManager &GetFontManager() { return m_mgrFont; }
+  // FontManager &GetFontManager() { return m_mgrFont; }
   StyleManager &GetStyleManager() { return m_mgrStyle; }
   LayoutManager &GetLayoutManager() { return m_mgrLayout; }
   SKIN_HLS_INFO *GetHLSInfo() { return m_pHLSInfo; }
@@ -69,7 +69,7 @@ public:
 
   ImageRes &GetImageRes();
   ColorRes &GetColorRes();
-  FontRes &GetFontRes();
+  // FontRes &GetFontRes();
   StyleRes &GetStyleRes();
   I18nRes &GetI18nRes();
 
@@ -94,7 +94,7 @@ private:
   SkinDataSource *m_pDataSource;
   ColorManager m_mgrColor;
   ImageManager m_mgrImage;
-  FontManager m_mgrFont;
+  // FontManager m_mgrFont;
   StyleManager m_mgrStyle;
   LayoutManager m_mgrLayout;
   I18nManager m_mgrI18n;

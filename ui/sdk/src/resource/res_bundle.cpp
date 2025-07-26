@@ -10,7 +10,7 @@
 namespace ui {
 
 Resource::Resource(ResourceManager &o)
-    : m_mgrSkinRef(o), m_mgrLayout(this), m_mgrStyle(this), m_mgrFont(this),
+    : m_mgrSkinRef(o), m_mgrLayout(this), m_mgrStyle(this), /*m_mgrFont(this),*/
       m_mgrColor(this), m_mgrImage(this), m_mgrI18n(this)
 
 {
@@ -195,7 +195,7 @@ IResourceManager &Resource::GetIResourceManager() {
 
 ImageRes &Resource::GetImageRes() { return m_mgrImage.GetImageRes(); }
 ColorRes &Resource::GetColorRes() { return m_mgrColor.GetColorRes(); }
-FontRes &Resource::GetFontRes() { return m_mgrFont.GetFontRes(); }
+// FontRes &Resource::GetFontRes() { return m_mgrFont.GetFontRes(); }
 
 StyleRes &Resource::GetStyleRes() { return m_mgrStyle.GetStyleRes(); }
 

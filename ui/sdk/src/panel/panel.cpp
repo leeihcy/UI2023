@@ -29,8 +29,6 @@ Panel::Panel(IPanel *p) : Object(p) {
   m_rcBkgndRenderRegion.SetEmpty();
   m_rcForegndRenderRegion.SetEmpty();
 
-  m_meta = &PanelMeta::Get();
-
   OBJSTYLE s = {0};
   s.default_transparent = 1;
   s.default_reject_self_mouse_msg = 1;
@@ -50,12 +48,12 @@ Panel::~Panel() {
 }
 
 void Panel::onRouteMessage(ui::Msg *msg) {
-  if (msg->message == UI_MSG_ERASEBKGND) {
-    onEraseBkgnd(static_cast<EraseBkgndMessage*>(msg)->rt);
+  if (msg->message == UI_MSG_PAINTBKGND) {
+    onPaintBkgnd(static_cast<PaintBkgndMessage*>(msg)->rt);
     return;
   }
   else if (msg->message == UI_MSG_PAINT) {
-    onPaint(static_cast<EraseBkgndMessage*>(msg)->rt);
+    onPaint(static_cast<PaintBkgndMessage*>(msg)->rt);
     return;
   }
   else if (msg->message == UI_MSG_POSTPAINT) {
@@ -201,7 +199,7 @@ void Panel::onSerialize(SerializeParam *pData) {
   }
 }
 
-void Panel::onEraseBkgnd(IRenderTarget *pRenderTarget) {
+void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
   if (m_pLayout && m_pLayout->IsDirty()) {
     float scale = 1.0f;
     auto* window = GetWindow();

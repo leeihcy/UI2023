@@ -12,6 +12,9 @@
 #include "src/render/textrender/textrender_factory.h"
 #include <map>
 #include <vector>
+#if defined(OS_WIN)
+#include "src/util/windows.h"
+#endif
 // #include "src/helper/tooltip/tooltipmanager.h"
 // #include "ui/UISDK/Src/Animate/wrap/animate.h
 

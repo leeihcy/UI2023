@@ -171,7 +171,7 @@ struct UIAPI IObject : public IMessage {
   void SetExtNonClientRegion(REGION4 *prc);
   void GetExtNonClientRegion(REGION4 *prc);
   void GetClientRectInObject(Rect *prc);
-  void GetObjectClientRect(Rect *prc);
+  void GetClientRectWithZeroOffset(Rect *prc);
   void GetClientRectInWindow(Rect *prc);
   void ClientRect2ObjectRect(const Rect *rcClient, Rect *rcObj);
   void ClientRect2WindowRect(const Rect *rcClient, Rect *rcWnd);

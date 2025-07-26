@@ -509,7 +509,7 @@ void ListCtrlItemVariableHeightFlowLayout::CurrentLineItems::CommitLine()
 void  ListCtrlItemVariableHeightFlowLayout::Arrange(IListItemBase* pStartToArrange, SIZE* pSizeContent)
 {
     CRect  rcClient;
-    m_pIListCtrlBase->GetObjectClientRect(&rcClient);
+    m_pIListCtrlBase->GetClientRectWithZeroOffset(&rcClient);
     int  nItemSpace = (int)UISendMessage(m_pIListCtrlBase, UI_LCM_LAYOUT_GET_ITEMSPACE, 0,0,0,0,UI_MSGMAPID_LC_LAYOUT);
     int  nLineSpace = (int)UISendMessage(m_pIListCtrlBase, UI_LCM_LAYOUT_GET_LINESPACE, 0,0,0,0,UI_MSGMAPID_LC_LAYOUT);
 

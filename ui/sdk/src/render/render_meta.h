@@ -4,6 +4,7 @@
 #include "include/interface/irenderbase.h"
 #include "include/interface/icolorrender.h"
 #include "include/interface/iimagerender.h"
+#include "include/interface/itextrenderbase.h"
 #include "include/macro/xmldefine.h"
 
 namespace ui {
@@ -34,7 +35,7 @@ struct ColorRenderMeta : public MetaImpl<IColorRender> {
   const char* Name() override { return XML_RENDER_TYPE_COLOR; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_COLOR;
     return param;
   }
@@ -47,7 +48,7 @@ struct ColorListRenderMeta : public MetaImpl<IColorListRender> {
   const char* Name() override { return XML_RENDER_TYPE_COLORLIST; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_COLORLIST;
     return param;
   }
@@ -60,7 +61,7 @@ struct SysColorRenderMeta : public MetaImpl<ISysColorRender> {
   const char* Name() override { return XML_RENDER_TYPE_SYSCOLOR; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_THEME_SYSCOLOR;
     return param;
   }
@@ -73,7 +74,7 @@ struct GradientRenderMeta : public MetaImpl<IGradientRender> {
   const char* Name() override { return XML_RENDER_TYPE_GRADIENT; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_GRADIENT;
     return param;
   }
@@ -88,7 +89,7 @@ struct ImageRenderMeta : public MetaImpl<IImageRender> {
   const char* Name() override { return XML_RENDER_TYPE_IMAGE; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_IMAGE;
     return param;
   }
@@ -102,7 +103,7 @@ struct ImageListRenderMeta : public MetaImpl<IImageListRender> {
   const char* Name() override { return XML_RENDER_TYPE_IMAGELIST; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_IMAGELIST;
     return param;
   }
@@ -116,7 +117,7 @@ struct ImageListItemRenderMeta : public MetaImpl<IImageListItemRender> {
   const char* Name() override { return XML_RENDER_TYPE_IMAGELISTITEM; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
-    param.major_type = RENDER_BASE;
+    param.major_type = RENDER;
     param.minor_type = RENDER_TYPE_IMAGELISTITEM;
     return param;
   }
@@ -140,10 +141,13 @@ struct SimpleTextRenderMeta : public MetaImpl<ISimpleTextRender> {
   const char* Name() override { return nullptr; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_SIMPLE;
     return param;
   }
 };
 
+#if 0
 struct ContrastColorTextRenderMeta : public MetaImpl<IContrastColorTextRender> {
   static ContrastColorTextRenderMeta& Get() {static ContrastColorTextRenderMeta s; return s; }
 
@@ -151,6 +155,8 @@ struct ContrastColorTextRenderMeta : public MetaImpl<IContrastColorTextRender> {
   const char* Name() override { return nullptr; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_COLORLIST;
     return param;
   }
 };
@@ -162,6 +168,8 @@ struct ContrastColorListTextRenderMeta : public MetaImpl<IContrastColorListTextR
   const char* Name() override { return nullptr; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_CONTRASTCOLORLIST;
     return param;
   }
 };
@@ -174,6 +182,8 @@ struct FontColorListTextRenderMeta : public MetaImpl<IFontColorListTextRender> {
   const char* Name() override { return nullptr; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_FONTCOLORLIST;
     return param;
   }
 };
@@ -185,10 +195,12 @@ struct ColorListTextRenderMeta : public MetaImpl<IColorListTextRender> {
   const char* Name() override { return nullptr; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_COLORLIST;
     return param;
   }
 };
-
+#endif
 
 }
 

@@ -6,7 +6,6 @@
 
 namespace ui {
 RootObject::RootObject(IRootObject *p) : m_irootobject(p), Panel(p) {
-  m_meta = &RootObjectMeta::Get();
 }
 
 void RootObject::onRouteMessage(ui::Msg *msg) {
@@ -15,8 +14,8 @@ void RootObject::onRouteMessage(ui::Msg *msg) {
     FinalConstruct();
     return;
   }
-  if (msg->message == UI_MSG_ERASEBKGND) {
-    onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
+  if (msg->message == UI_MSG_PAINTBKGND) {
+    onPaintBkgnd(static_cast<PaintBkgndMessage *>(msg)->rt);
     return;
   }
   Panel::onRouteMessage(msg);
@@ -84,7 +83,7 @@ void RootObject::OnWindowSize(unsigned int new_client_width, unsigned int new_cl
   notify_WM_SIZE(0, new_client_width, new_client_height, m_window->m_dpi.GetScaleFactor());
 }
 
-void RootObject::onEraseBkgnd(IRenderTarget *pRenderTarget) {
+void RootObject::onPaintBkgnd(IRenderTarget *pRenderTarget) {
   if (nullptr == pRenderTarget)
     return;
 
@@ -94,7 +93,7 @@ void RootObject::onEraseBkgnd(IRenderTarget *pRenderTarget) {
   m_window->emit(WINDOW_PAINT_EVENT, &event);
 
   if (!event.handled) {
-    Panel::onEraseBkgnd(pRenderTarget);
+    Panel::onPaintBkgnd(pRenderTarget);
   }
 }
 

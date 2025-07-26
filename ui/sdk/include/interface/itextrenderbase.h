@@ -41,9 +41,9 @@ struct UIAPI ITextRenderBase : public IMessage {
   TEXTRENDER_TYPE GetType();
   void SetTextAlignment(int nDrawFlag);
   int GetTextAlignment();
-  void SetTextEffect(TEXT_EFFECT);
-  TEXT_EFFECT GetTextEffect();
-  void SetDrawTextParam(long w, long l);
+  // void SetTextEffect(TEXT_EFFECT);
+  // TEXT_EFFECT GetTextEffect();
+  // void SetDrawTextParam(long w, long l);
 
   Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
   void DrawState(IRenderTarget *pRenderTarget, const Rect *prc, int nState,
@@ -54,11 +54,11 @@ struct UIAPI ITextRenderBase : public IMessage {
   void Serialize(SerializeParam *pData);
 
 protected:
-  std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
-  const char *_SaveFont(IRenderFont *&pRenderFont);
-  std::shared_ptr<IRenderFont> _LoadDefalutFont();
-  void _LoadColor(const char *szColorId, Color *&pColor);
-  const char *_SaveColor(Color *&pColor);
+  // std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
+  // const char *_SaveFont(IRenderFont *&pRenderFont);
+  // std::shared_ptr<IRenderFont> _LoadDefalutFont();
+  // void _LoadColor(const char *szColorId, Color *&pColor);
+  // const char *_SaveColor(Color *&pColor);
 
   ITextRenderBase();
   UI_DECLARE_INTERFACE(TextRenderBase);
@@ -86,7 +86,7 @@ struct UIAPI ISimpleTextRender : public ITextRenderBase {
 
   UI_DECLARE_INTERFACE(SimpleTextRender);
 };
-
+#if 0
 class ContrastColorTextRender;
 struct UIAPI IContrastColorTextRender : public ITextRenderBase {
   UI_DECLARE_INTERFACE(ContrastColorTextRender)
@@ -115,8 +115,7 @@ struct UIAPI IFontColorListTextRender : public ITextRenderBase {
 
   UI_DECLARE_INTERFACE(FontColorListTextRender);
 };
-
-
+#endif
 
 } // namespace ui
 

@@ -1,4 +1,5 @@
 #include "fontres.h"
+#if 0 // 废弃
 // #include "src/Renderlibrary/gdi/gdifont.h"
 #include "include/interface/iuires.h"
 #include "src/resource/res_bundle.h"
@@ -302,3 +303,4 @@ void FontRes::Clear() {
 }
 
 } // namespace ui
+#endif

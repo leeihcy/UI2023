@@ -200,24 +200,6 @@ namespace ui {
 
 #endif
 
-
-
-struct FontDesc {
-  long lfHeight;
-  long lfWidth;
-  long lfEscapement;
-  long lfOrientation;
-  long lfWeight;
-  unsigned char lfItalic;
-  unsigned char lfUnderline;
-  unsigned char lfStrikeOut;
-  unsigned char lfCharSet;
-  unsigned char lfOutPrecision;
-  unsigned char lfClipPrecision;
-  unsigned char lfQuality;
-  unsigned char lfPitchAndFamily;
-  char lfFaceName[LF_FACESIZE];
-};
 }
 
 #endif

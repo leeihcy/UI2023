@@ -132,6 +132,8 @@ shared_library("uisdk") {
         "src/graphics/renderlibrary.cpp",
         "src/graphics/skia/skia_render.cpp",
         "src/graphics/skia/skia_bitmap.cpp",
+        "src/graphics/font/font.h",
+        "src/graphics/font/font.cpp",
         "src/helper/iuiinterface.cpp",
         "src/helper/topwindow/topwindowmanager.cpp",
         "src/helper/version/versionhelper.cpp",
@@ -189,8 +191,6 @@ shared_library("uisdk") {
         "src/render/textrender/textrender_factory.cpp",
         "src/resource/colormanager.cpp",
         "src/resource/colorres.cpp",
-        "src/resource/fontmanager.cpp",
-        "src/resource/fontres.cpp",
         # "src/resource/gifres.cpp",
         "src/resource/i18nres.cpp",
         "src/resource/imagemanager.cpp",
@@ -226,6 +226,12 @@ shared_library("uisdk") {
         "src/window/window_mouse_key.cpp",
         "src/window/window_dpi.h",
         "src/window/window_dpi.cpp",
+    ]
+
+    # common controls
+    sources += [
+      "src/control/text/label.h",
+      "src/control/text/label.cpp",
     ]
 
     if (is_linux) {

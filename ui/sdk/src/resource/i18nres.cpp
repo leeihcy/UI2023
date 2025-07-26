@@ -50,7 +50,7 @@ const char *I18nRes::MapConfigValue(const char *szConfigText) {
   if (szRet)
     return szRet;
 
-  UI_LOG_WARN(TEXT("i18n string not found, key=%s"), szConfigText);
+  UI_LOG_WARN("i18n string not found, key=%s", szConfigText);
   return "";
 }
 

@@ -20,9 +20,9 @@ Svg::Svg(ISvg *p) : ui::MessageProxy(p) {
 }
 
 void Svg::onRouteMessage(Msg *msg) {
-  // if (msg->message == UI_MSG_ERASEBKGND) {
+  // if (msg->message == UI_MSG_PAINTBKGND) {
   //   static_cast<IPanel *>(m_pISvg)->onRouteMessage(msg);
-  //   onEraseBkgnd(static_cast<EraseBkgndMessage *>(msg)->rt);
+  //   onPaintBkgnd(static_cast<PaintBkgndMessage *>(msg)->rt);
   //   return;
   // }
   if (msg->message == UI_MSG_PAINT) {

@@ -1,4 +1,5 @@
 #pragma once
+#if 0 // 废弃。 2025.7.26
 #include "include/inc.h"
 #include "src/private_inc.h"
 #include "src/util/windows.h"
@@ -124,3 +125,4 @@ private:
   std::vector<FontResItem *> m_vFonts;
 };
 } // namespace ui
+#endif

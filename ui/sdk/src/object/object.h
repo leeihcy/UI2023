@@ -167,7 +167,7 @@ public:
   void GetWindowRect(Rect *lprc);
   bool GetRectInWindow(Rect *prc, bool bOnlyVisiblePart);
   void GetClientRectInObject(Rect *prc);
-  void GetObjectClientRect(Rect *prc);
+  void GetClientRectWithZeroOffset(Rect *prc);
   bool CalcRectInAncestor(Object *pObjAncestor, const Rect *prcObjPart,
                           bool bCalcVisible, Rect *prcOut);
   bool GetScrollOffset(int *pxOffset, int *pyOffset);

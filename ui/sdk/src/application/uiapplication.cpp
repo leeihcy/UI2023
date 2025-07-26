@@ -5,6 +5,7 @@
 #include "include/interface/iuiautotest.h"
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
+#include "src/control/text/text_meta.h"
 #include "src/panel/panel_meta.h"
 #include "src/private_inc.h"
 #include "src/resource/colormanager.h"
@@ -352,6 +353,7 @@ void Application::RegisterDefaultUIObject() {
   RegisterUIObject(&PanelMeta::Get());
   RegisterUIObject(&ControlMeta::Get());
   RegisterUIObject(&RoundPanelMeta::Get());
+  RegisterUIObject(&LabelMeta::Get());
 #if 0
   RegisterUIObject(ScrollPanelMeta::Get());
   RegisterUIObject(CustomWindowMeta::Get());
@@ -361,7 +363,7 @@ void Application::RegisterDefaultUIObject() {
 
   m_mapSkinTagParseData[XML_IMG] = ImageManager::UIParseImageTagCallback;
   m_mapSkinTagParseData[XML_COLOR] = ColorManager::UIParseColorTagCallback;
-  m_mapSkinTagParseData[XML_FONT] = FontManager::UIParseFontTagCallback;
+  // m_mapSkinTagParseData[XML_FONT] = FontManager::UIParseFontTagCallback;
   m_mapSkinTagParseData[XML_STYLE] = StyleManager::UIParseStyleTagCallback;
   m_mapSkinTagParseData[XML_LAYOUT] = LayoutManager::UIParseLayoutTagCallback;
   m_mapSkinTagParseData[XML_LAYOUTCONFIG] =
