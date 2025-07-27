@@ -100,8 +100,7 @@ public:
 
 protected:
   ISimpleTextRender *m_pISimpleTextRender;
-  FontDesc m_font_desc;
-  Color m_color;
+  DrawTextParam m_draw_text_param;
 };
 #if 0
 // 根据皮肤颜色，自适应设置文本的颜色是白还是黑

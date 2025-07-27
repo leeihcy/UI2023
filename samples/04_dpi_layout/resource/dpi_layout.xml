@@ -2,8 +2,19 @@
 <skin>
   <layout>
     <Window id="dpi_layout" width="500" height="500" back.render.type="color" back.render.color="white" >
-      <Label text="DPI Layout Example" layout.left="10" 
-      layout.top="10" width="100" height="20"/>
+      <Panel id="render_text_panel">
+        <prop key="layout" left="0" right="0" top="0" bottom="0"/>
+        <Label text="文本测试" >
+           <prop key="layout" left="0" right="0" top="0" height="100"/>
+           <prop key="text.render" color="red" align="center|vcenter"/>
+           <prop key="text.render.font" size="32" weight="bold"/>
+        </Label>
+
+        <Label text="0123456780ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,./;'~!@#$%^*()_+" layout.left="0" 
+          layout.top="120" width="200" height="20"/>
+        <Label text="好好学习，天天向上" layout.left="0" 
+          layout.top="140" width="200" height="20" text.render.align="right"/>
+      </Panel>
     </Window>
   </layout>
 </skin>

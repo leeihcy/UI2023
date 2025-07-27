@@ -6,7 +6,6 @@
 #include "src/attribute/int_attribute.h"
 #include "src/object/object.h"
 #include "src/helper/scale/scale_factor.h"
-#include "src/util/DPI/dpihelper.h"
 
 namespace ui {
 

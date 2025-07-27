@@ -3,6 +3,7 @@
 #include "sdk/include/util/color.h"
 #include "sdk/include/util/rect.h"
 #include "sdk/include/macro/xmldefine.h"
+#include <string>
 
 namespace ui {
 struct IRenderFont;
@@ -67,33 +68,72 @@ typedef struct tagDRAWBITMAPPARAM {
 
 } DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
-struct DrawTextFlags {
 
-};
+
 struct DrawTextEffects {
 
 };
+
+struct FontDesc {
+  std::string face;
+  int size = 0;
+  int weight = 0;
+  int orientation = 0;
+  union {
+    uint32_t style = 0;
+    struct {
+      bool italic : 1;
+      bool underline : 1;
+      bool strikeout : 1;
+      bool cleartype : 1;
+      bool subpixel : 1;
+    };
+  };
+  bool operator==(const FontDesc& o) const {
+    return face == o.face && size == o.size && weight == o.weight &&
+      orientation == o.orientation && style == o.style;
+  }
+
+  size_t hash() const {
+    size_t seed = 0;
+    seed ^=
+        std::hash<std::string>()(face) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    seed ^= std::hash<unsigned short>()(size) + 0x9e3779b9 + (seed << 6) +
+            (seed >> 2);
+    seed ^= std::hash<unsigned short>()(weight) + 0x9e3779b9 + (seed << 6) +
+            (seed >> 2);
+    seed ^= std::hash<unsigned short>()(orientation) + 0x9e3779b9 +
+            (seed << 6) + (seed >> 2);
+    seed ^= std::hash<uint32_t>()(style);
+    return seed;
+  }
+};
+
 struct DrawTextParam {
   DrawTextParam() {
-    flags = 0;
     effects = 0;
-    color.a = 255;
+    color.value = 0xff000000;
     text = nullptr;
     bound.SetEmpty();
-    // bkcolor.a = 255;
-    // wParam = lParam = 0;
+    multiline = false;
+    align = 0;
+
+    // bkcolor.a = 0xff000000;
   }
   
+  FontDesc font_desc;
+
   const char *text;
   Rect bound;  // 绘制范围
-  int flags; // 绘制标志
-  int effects; // 特效标志
   ui::Color color;
-  
+
+  int align;   // ALIGN_TYPE
+  bool multiline;
+
+  int effects; // 特效标志
+
   // 特效中可能会使用到的参数
   // Color bkcolor;
-  // long wParam;
-  // long lParam;
 };
 
 enum TEXT_EFFECT {
@@ -288,7 +328,7 @@ struct IRenderTarget {
   virtual void ImageList_Draw(IRenderBitmap *, int x, int y, int col, int row,
                               int cx, int cy) = 0;
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
-  virtual void DrawString(FontDesc& font_desc, DrawTextParam *pParam) = 0;
+  virtual void DrawString(const DrawTextParam& param) = 0;
 
   virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) = 0;
 };

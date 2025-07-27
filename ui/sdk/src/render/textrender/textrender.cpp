@@ -241,20 +241,23 @@ void TextRenderBase::CheckSkinTextureChanged() {
 }
 
 // helper function
-void SerializeFont(AttributeSerializer &serialize, std::string attr_prefix,
-                   FontDesc &font_desc) {
+void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
   serialize
-      .AddString((attr_prefix + XML_FONT_FACENAME).c_str(), font_desc.face)
+      .AddString(XML_TEXTRENDER "." XML_FONT "." XML_FONT_FACENAME,
+                 font_desc.face)
 #if defined(OS_WIN)
       ->SetDefault("Microsoft YaHei")
 #elif defined(OS_MAC)
       ->SetDefault("monospace")
 #endif
       ;
-  serialize.AddInt((attr_prefix + XML_FONT_SIZE).c_str(), font_desc.size)
-    ->SetDefault(12);
+  serialize
+      .AddInt(XML_TEXTRENDER "." XML_FONT "." XML_FONT_SIZE, font_desc.size)
+      ->SetDefault(14);
 
-  serialize.AddEnum((attr_prefix + XML_FONT_WEIGHT).c_str(), font_desc.weight)
+  serialize
+      .AddEnum(XML_TEXTRENDER "." XML_FONT "." XML_FONT_WEIGHT,
+               font_desc.weight)
       ->AddOption(SkFontStyle::kInvisible_Weight, "invisible")
       ->AddOption(SkFontStyle::kThin_Weight, "thin")
       ->AddOption(SkFontStyle::kExtraLight_Weight, "extralight")
@@ -270,6 +273,24 @@ void SerializeFont(AttributeSerializer &serialize, std::string attr_prefix,
 
   // serialize.AddBool((attr_prefix + XML_FONT_ITALIC).c_str(),
   // font_desc.italic);
+  
+}
+void SerializeDrawTextParam(AttributeSerializer &serialize,
+                            DrawTextParam &draw_ext_param) {
+  serialize.AddColor(XML_TEXTRENDER "." XML_COLOR, draw_ext_param.color);
+  serialize.AddFlags(XML_TEXTRENDER_ALIGN, draw_ext_param.align)
+      ->AddFlag(ALIGN_RIGHT, XML_TEXTRENDER_ALIGN_RIGHT)
+      ->AddFlag(ALIGN_CENTER, XML_TEXTRENDER_ALIGN_CENTER)
+      ->AddFlag(ALIGN_BOTTOM, XML_TEXTRENDER_ALIGN_BOTTOM)
+      ->AddFlag(ALIGN_VCENTER, XML_TEXTRENDER_ALIGN_VCENTER)
+      // ->AddFlag(DT_SINGLELINE, XML_TEXTRENDER_ALIGN_SINGLELINE)
+      // ->AddFlag(DT_WORDBREAK | DT_EDITCONTROL, XML_TEXTRENDER_ALIGN_MULTILINE)
+      // ->AddFlag(DT_END_ELLIPSIS, XML_TEXTRENDER_ALIGN_END_ELLIPSIS)
+      // ->AddFlag(DT_NOPREFIX, XML_TEXTRENDER_ALIGN_NO_PREFIX)
+      ;
+
+
+  SerializeFont(serialize, draw_ext_param.font_desc);
 }
 
 SimpleTextRender::SimpleTextRender(ISimpleTextRender *p) : TextRenderBase(p) {
@@ -294,8 +315,7 @@ void SimpleTextRender::OnSerialize(SerializeParam *pData) {
     AttributeSerializer s(pData, "SimpleTextRender");
     TextRenderBase::Serialize(&s);
 
-    SerializeFont(s, XML_TEXTRENDER_FONT_PREFIX, m_font_desc);
-    s.AddColor(XML_TEXTRENDER_COLOR, m_color);
+    SerializeDrawTextParam(s, m_draw_text_param);
   }
 
   // if (!m_pRenderFont && pData->IsLoad()) {
@@ -352,21 +372,18 @@ void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
     return;
 
   if (strlen(pDrawStruct->szText) > 0) {
-    DrawTextParam param;
-    // if (m_pColorText)
-    //   param.color = m_pColorText->m_col;
     // param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
     //                         ? m_nDrawTextFlag
     //                         : pDrawStruct->nDrawTextFlag;
-    // param.prc = &pDrawStruct->ds_renderbase.rc;
-    param.text = pDrawStruct->szText;
+    m_draw_text_param.bound = pDrawStruct->ds_renderbase.rc;
+    m_draw_text_param.text = pDrawStruct->szText;
 
     // param.nEffectFlag = m_eDrawTextEffect;
     // if (m_pColorTextBkgnd)
     //   param.bkcolor = *m_pColorTextBkgnd;
     // param.wParam = m_wparamDrawText;
     // param.lParam = m_lparamDrawText;
-    pRenderTarget->DrawString(m_font_desc, &param);
+    pRenderTarget->DrawString(m_draw_text_param);
   }
 }
 

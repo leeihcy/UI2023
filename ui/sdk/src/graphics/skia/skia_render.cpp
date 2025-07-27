@@ -1,6 +1,7 @@
 #include "skia_render.h"
 #include "include/core/SkBitmap.h"
 #include "include/core/SkRect.h"
+#include "include/core/SkScalar.h"
 #include "include/inc.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
@@ -9,10 +10,16 @@
 #include "SkStream.h"
 #include "gpu/include/api.h"
 #include <cassert>
+#include <string>
 
 #include "src/graphics/font/font.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
+#include "third_party/skia/src/include/core/SkCanvas.h"
 #include "third_party/skia/src/include/core/SkFont.h"
+#include "third_party/skia/src/include/core/SkFontMetrics.h"
+#include "third_party/skia/src/include/core/SkPaint.h"
+#include "third_party/skia/src/include/core/SkRect.h"
+#include "third_party/skia/src/include/core/SkTextBlob.h"
 
 #if defined(OS_WIN)
 #include "src/util/windows.h"
@@ -219,7 +226,7 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
     return false;
   }
   canvas->save();
-  
+
   m_scale = scale;
   return true;
 }
@@ -263,34 +270,171 @@ void SkiaRenderTarget::Clear(Rect *prc) {
   canvas->drawRect(skrect, paint);
 }
 
-void SkiaRenderTarget::DrawString(FontDesc& font_desc,
-                                  DrawTextParam *param) {
+static std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
+                                         const SkFont &font,
+                                         const SkPaint &paint,
+                                         /*out*/ int& measure_width) {
+  if (!text) {
+    return std::string();
+  }
+  float textWidth = font.measureText(text, strlen(text), SkTextEncoding::kUTF8);
+  if (textWidth <= bounds.width()) {
+    measure_width = textWidth;
+    return std::string(text);
+  }
+
+  const char *ellipsis = "...";
+  const size_t ellipsisLen = strlen(ellipsis);
+  float ellipsisWidth =
+      font.measureText(ellipsis, ellipsisLen, SkTextEncoding::kUTF8);
+
+  float availableWidth = bounds.width() - ellipsisWidth;
+  if (availableWidth <= 0) {
+    measure_width = availableWidth;
+
+    // 如果连省略号都显示不下，只显示省略号
+    return std::string(ellipsis);
+  }
+
+  // 查找适合的文本截断位置
+  size_t byteLength = strlen(text);
+  float width = 0;
+  while (byteLength > 0) {
+    width = font.measureText(text, byteLength, SkTextEncoding::kUTF8);
+    if (width <= availableWidth) {
+      break;
+    }
+    byteLength--;
+  }
+
+  measure_width = ellipsisWidth + width;
+  return std::string(text, byteLength) + ellipsis;
+}
+
+#if 0
+static void drawMultilineText(SkCanvas* canvas, const SkString& text, const SkRect& bounds, const SkPaint& paint) {
+    std::vector<SkString> lines;
+    SkPaint::FontMetrics metrics;
+    paint.getFontMetrics(&metrics);
+    
+    float lineHeight = metrics.fDescent - metrics.fAscent + metrics.fLeading;
+    float y = bounds.top() - metrics.fAscent;
+    
+    // 简单的换行算法
+    const char* start = text.c_str();
+    const char* end = start + text.size();
+    const char* lineEnd = start;
+    const char* space = nullptr;
+    
+    while (start < end) {
+        // 查找下一个空格或行尾
+        space = nullptr;
+        lineEnd = start;
+        
+        while (lineEnd < end) {
+            float lineWidth = paint.measureText(start, lineEnd - start + 1);
+            if (lineWidth > bounds.width()) {
+                if (space) {
+                    // 在最后一个空格处换行
+                    lineEnd = space;
+                }
+                break;
+            }
+            
+            if (*lineEnd == ' ' || *lineEnd == '\n') {
+                space = lineEnd;
+                if (*lineEnd == '\n') {
+                    break;
+                }
+            }
+            
+            lineEnd++;
+        }
+        
+        // 添加行
+        lines.emplace_back(start, lineEnd - start);
+        
+        // 移动到下一行
+        start = lineEnd;
+        while (start < end && (*start == ' ' || *start == '\n')) {
+            start++;
+        }
+        
+        y += lineHeight;
+        if (y + metrics.fDescent > bounds.bottom()) {
+            break; // 超出边界停止绘制
+        }
+    }
+    
+    // 绘制所有行
+    y = bounds.top() - metrics.fAscent;
+    for (const auto& line : lines) {
+        if (y + metrics.fDescent > bounds.bottom()) {
+            break;
+        }
+        
+        canvas->drawString(line, bounds.left(), y, paint);
+        y += lineHeight;
+    }
+}
+#endif
+
+// Text baseline offset types.
+// Figure of font metrics:
+//   +--------+--------+------------------------+-------------+
+//   |        |        | internal leading       | SUPERSCRIPT |
+//   |        |        +------------+-----------|             |
+//   |        | ascent |            | SUPERIOR  |-------------+
+//   | height |        | cap height |-----------|
+//   |        |        |            | INFERIOR  |-------------+
+//   |        |--------+------------+-----------|             |
+//   |        | descent                         | SUBSCRIPT   |
+//   +--------+---------------------------------+-------------+
+//
+void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  SkFont& font = FontPool::GetInstance().GetSkiaFont(font_desc, m_scale);
+  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc, m_scale);
 
   SkPaint paint;
-  paint.setColor(SK_ColorBLACK);
+  paint.setColor(param.color.value);
 
-  // SkRect textBounds;
-  // font.measureText(param->text, strlen(param->text), SkTextEncoding::kUTF8,
-  // &textBounds, &paint);
-  
-  // SkScalar padding = 2.0f;
-  // SkRect bg_rect = SkRect::MakeXYWH(
-  //   param->bound.left + textBounds.fLeft - padding,
-  //   param->bound.top + textBounds.fTop - padding,
-  //   textBounds.width() + 2*padding,
-  //   textBounds.height() + 2*padding
-  // );
+  SkRect sk_rect = SkRect::MakeXYWH(
+      (SkScalar)param.bound.left, (SkScalar)param.bound.top,
+      (SkScalar)param.bound.Width(), (SkScalar)param.bound.Height());
 
-  // SkPaint bg_paint;
-  // bg_paint.setColor(SK_ColorYELLOW);
-  // canvas->drawRect(bg_rect, bg_paint);
-  canvas->drawString(param->text, param->bound.left, param->bound.top, font, paint);
-  // canvas->drawSimpleText(param->text, strlen(param->text),
-  //                        SkTextEncoding::kUTF8, param->bound.left,
-  //                        param->bound.top, font, paint);
+  int measure_width = 0;
+  std::string elide_text =
+      elideTextWithEllipsis(param.text, sk_rect, font, paint, measure_width);
+
+
+  // drawSimpleString纵坐标参数表示文本基线的位置，而不是文本的顶部或底部
+  SkFontMetrics metrics;
+  font.getMetrics(&metrics);
+  float totalHeight = metrics.fDescent - metrics.fAscent + metrics.fLeading;
+
+  SkScalar x = param.bound.left;
+  SkScalar y = param.bound.top;
+
+  // 基线位置 += 字体的上升高度（ascent是负值，需取反）
+  y = y - metrics.fAscent;
+
+  if (!param.multiline) {
+    if (param.align & ALIGN_CENTER) {
+      x += (param.bound.width() - measure_width) / 2;
+    } else if (param.align & ALIGN_RIGHT) {
+      x += param.bound.width() - measure_width;
+    } 
+    if (param.align & ALIGN_VCENTER) {
+      y += (param.bound.height() - totalHeight) / 2;
+    } else if (param.align & ALIGN_BOTTOM) {
+      y += param.bound.height() - totalHeight;
+    }
+  }
+
+  canvas->drawSimpleText(elide_text.c_str(), elide_text.length(),
+                         SkTextEncoding::kUTF8, x, y, font, paint);
+  return;
 }
 
 void SkiaRenderTarget::FillRgn(/*HRGN*/ llong hRgn, ui::Color *pColor) {
@@ -394,7 +538,7 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
     int dest_height = pParam->hDest;
 
     // 处理DPI缩放
-    //if (pParam->scale_factor == 0 || pParam->scale_factor == 1.0) {
+    // if (pParam->scale_factor == 0 || pParam->scale_factor == 1.0) {
     //  src_width = dest_width = std::min(pParam->wDest, src_width);
     //  src_height = dest_height = std::min(pParam->hDest, src_height);
     //} else {
@@ -415,8 +559,10 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
     SkPaint paint;
     canvas->drawImageRect(
         skia_bitmap->m_bitmap.asImage(),
-        SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc, src_width, src_height),
-        SkRect::MakeXYWH(pParam->xDest, pParam->yDest, dest_width, dest_height),
+        SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
+                         (SkScalar)src_width, (SkScalar)src_height),
+        SkRect::MakeXYWH((SkScalar)pParam->xDest, (SkScalar)pParam->yDest,
+                         (SkScalar)dest_width, (SkScalar)dest_height),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
 
     if (pParam->prcRealDraw) {
@@ -427,12 +573,13 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   } else if (pParam->nFlag & DRAW_BITMAP_STRETCH) {
     SkSamplingOptions options;
     SkPaint paint;
-    canvas->drawImageRect(skia_bitmap->m_bitmap.asImage(),
-                          SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc,
-                                           pParam->wSrc, pParam->hSrc),
-                          SkRect::MakeXYWH(pParam->xDest, pParam->yDest,
-                                           pParam->wDest, pParam->hDest),
-                          options, &paint, SkCanvas::kFast_SrcRectConstraint);
+    canvas->drawImageRect(
+        skia_bitmap->m_bitmap.asImage(),
+        SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
+                         (SkScalar)pParam->wSrc, (SkScalar)pParam->hSrc),
+        SkRect::MakeXYWH((SkScalar)pParam->xDest, (SkScalar)pParam->yDest,
+                         (SkScalar)pParam->wDest, (SkScalar)pParam->hDest),
+        options, &paint, SkCanvas::kFast_SrcRectConstraint);
 
     if (pParam->prcRealDraw) {
       pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
@@ -776,8 +923,10 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   SkPaint paint;
   target_canvas->drawImageRect(
       source_image,
-      SkRect::MakeXYWH(pParam->xSrc, pParam->ySrc, pParam->wSrc, pParam->hSrc),
-      SkRect::MakeXYWH(pParam->xDst, pParam->yDst, pParam->wDst, pParam->hDst),
+      SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
+                       (SkScalar)pParam->wSrc, (SkScalar)pParam->hSrc),
+      SkRect::MakeXYWH((SkScalar)pParam->xDst, (SkScalar)pParam->yDst,
+                       (SkScalar)pParam->wDst, (SkScalar)pParam->hDst),
       options, &paint, SkCanvas::kFast_SrcRectConstraint);
 }
 

@@ -20,17 +20,21 @@ SkFont &FontCache::LoadSkia(FontDesc &key) {
   sk_sp<SkTypeface> typeface =
       SkTypeface::MakeFromName(key.face.c_str(), style);
   m_skia_font = std::make_unique<SkFont>(typeface, key.size);
+  m_skia_font->setEdging(SkFont::Edging::kSubpixelAntiAlias);
+
   return *m_skia_font;
 }
 
-SkFont &FontPool::GetSkiaFont(FontDesc &desc, float scale) {
-  FontDesc desc_copy = desc;
+SkFont &FontPool::GetSkiaFont(const FontDesc &desc, float scale) {
+  FontDesc desc_copy = desc; // TODO: 能否减少这一步拷贝
+
   desc_copy.size = desc_copy.size*scale;
   FontCache &cache = GetFont(desc_copy);
+
   return cache.LoadSkia(desc_copy);
 }
 
-FontCache &FontPool::GetFont(FontDesc &key) {
+FontCache &FontPool::GetFont(const FontDesc &key) {
   auto iter = m_caches.find(key);
   if (iter != m_caches.end()) {
     return iter->second;

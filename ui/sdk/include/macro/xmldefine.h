@@ -253,7 +253,6 @@ enum IMAGELIST_LAYOUT_TYPE
 #define XML_TEXTRENDER_TYPE_CONTRASTCOLORLIST "contrastcolorlist"   // 
 
 #define XML_TEXTRENDER_COLOR                "text.render.color"      // 字体颜色
-#define XML_TEXTRENDER_FONT_PREFIX          "text.render.font."      // 字体
 #define XML_TEXTRENDER_FONT                 "text.render.font"       // 字体
 #define XML_TEXTRENDER_COLORLIST_COUNT      "text.render.colorlist.count"
 #define XML_TEXTRENDER_FONTCOLORLIST_COUNT  "text.render.fontcolorlist.count"  // 字体、颜色数量
