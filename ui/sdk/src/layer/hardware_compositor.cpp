@@ -49,15 +49,21 @@ void HardwareCompositor::onBindWindow(Window* w) {
   if (!m_gpu_composition) {
     return;
   }
+  // 像素大小
   ui::Rect rc;
   w->GetWindowPlatform()->GetClientRect(&rc);
   m_gpu_composition->Resize(rc.Width(), rc.Height());
 }
 
 void HardwareCompositor::Resize(uint nWidth, uint nSize) {
-  if (m_gpu_composition) {
-    m_gpu_composition->Resize(nWidth, nSize);
+  if (!m_gpu_composition) {
+    return;
   }
+  // 像素大小
+  ui::Rect rc;
+  m_window_render->m_window.GetWindowPlatform()->GetClientRect(&rc);
+  m_gpu_composition->Resize(rc.Width(), rc.Height());
+
 }
 
 Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }
@@ -92,12 +98,10 @@ void HardwareCompositor::update_dirty_recursion(Layer *p) {
 void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   // FillRect(hDC, prcInWindow, (HBRUSH)GetStockObject(GRAY_BRUSH));
 
-  if (!m_gpu_composition)
-    return;
-  if (!m_pRootLayer)
+  if (!m_gpu_composition || !m_pRootLayer || !m_window_render)
     return;
 
-  StopWatch stop_watch;
+  // StopWatch stop_watch;
 
   GpuLayerCommitContext context;
   if (!m_gpu_composition->BeginCommit(&context))
@@ -111,7 +115,7 @@ void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
 
   m_gpu_composition->EndCommit(&context);
 
-  int ms = stop_watch.ElapseMicrosecondsSinceLast();
+  // int ms = stop_watch.ElapseMicrosecondsSinceLast();
   // UI_LOG_INFO("hardware commit cost %d 微秒", ms);
 }
 

@@ -529,7 +529,6 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
       return HTCLIENT;
     }
   } else
-#endif
   {
     bIn = m_rcParent.PtIn(*ptInParent);
     if (bIn) {
@@ -543,6 +542,8 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
   }
 
   return HTNOWHERE;
+#endif
+  return 0;
 }
 
 // void Object::OnThemeChanged()

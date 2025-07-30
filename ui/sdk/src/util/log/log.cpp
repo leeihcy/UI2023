@@ -9,6 +9,9 @@
 #endif
 #include "src/util/windows.h"
 
+// 是否输出文件路径和函数名
+static bool g_output_file_function = false;
+
 namespace ui {
 
 const wchar_t *LevelToString(const ui::LOG_LEVEL &l) {
@@ -48,9 +51,9 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const wchar_t *szFormat,
                  ...) {
   if (lLevel == ui::LOG_LEVEL_DEBUG) {
-// #if !defined(_DEBUG)
+#if !defined(_DEBUG)
     return;
-// #endif
+#endif
   }
 
   // level
@@ -82,11 +85,12 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
   va_end(argList);
   output.append("\r\n");
 
-  // file name, line function
-  char buffer[1024] = {0};
-  snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
-
-  output.append(buffer);
+  if (g_output_file_function) {
+    // file name, line function
+    char buffer[1024] = {0};
+    snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
+    output.append(buffer);
+  }
 
 #if 0 // defined(OS_WIN)
   OutputDebugString(output.c_str());
@@ -99,9 +103,9 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
                  const char *szFunction, long lLine, const char *szFormat,
                  ...) {
   if (lLevel == ui::LOG_LEVEL_DEBUG) {
-// #if !defined(_DEBUG)
+#if !defined(_DEBUG)
     return;
-// #endif
+#endif
   }
 
   // level
@@ -126,10 +130,12 @@ void CDECL Log(ui::LOG_LEVEL lLevel, const char *szFile,
   va_end(argList);
   output.append("\r\n");
 
-  // file name, line function
-  char buffer[1024] = {0};
-  snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
-  output.append(buffer);
+  if (g_output_file_function) {
+    // file name, line function
+    char buffer[1024] = {0};
+    snprintf(buffer, 1024, "\t%s(%ld) : %s\r\n", szFile, lLine, szFunction);
+    output.append(buffer);
+  }
 
 #if 0 // defined(OS_WIN)
   OutputDebugStringA(output.c_str());

@@ -54,7 +54,7 @@ public:
 
   // 全局共享矩阵，一帧更新一次。
   struct UniformBufferObject {
-    // glm::mat4 view;
+    glm::mat4 view;
     // glm::mat4 proj;
     glm::mat4 ortho;
   };

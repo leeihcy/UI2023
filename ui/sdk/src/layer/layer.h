@@ -1,5 +1,6 @@
 #pragma once
 #include "include/interface/irenderlayer.h"
+#include "include/macro/uidefine.h"
 #include "src/util/rectregion/rectregion.h"
 #include "transform3d.h"
 
@@ -104,6 +105,8 @@ public:
   bool CanDestroy();
   void TryDestroy();
 
+  void Serialize(SerializeParam* param);
+
   ILayer *GetILayer();
   void SetCompositorPtr(Compositor *);
 
@@ -126,7 +129,7 @@ public:
   Layer *GetParent() { return m_pParent; }
   Layer *GetFirstChild();
 
-  void OnSize(uint nWidth, uint nHeight);
+  void OnSize(uint width, uint height, float scale);
 
   // 	void  SetColor(color);
   // 	void  SetTransform(matrix);
@@ -134,6 +137,9 @@ public:
   // property
   byte GetOpacity();
   void SetOpacity(byte, LayerAnimateParam *param = nullptr);
+  void SetNeedClearBackground(bool b) {
+    m_need_clear_background = b;
+  }
 
   void RotateXTo(float, LayerAnimateParam *param = nullptr);
   void RotateXBy(float, LayerAnimateParam *param = nullptr);
@@ -198,6 +204,9 @@ protected:
   // 属性
   byte m_nOpacity;        // 设置的值
   byte m_nOpacity_Render; // 动画过程中的值
+
+  // 默认不清空背景，提升效率。
+  bool  m_need_clear_background = false;
 
   Transform3D m_transfrom3d; // 动画过程中的值
   float m_fxRotate;          // 设置的值

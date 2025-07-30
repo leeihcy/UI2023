@@ -1,12 +1,12 @@
 #include "window_mac.h"
+#import "Cocoa/Cocoa.h"
+#import "QuartzCore/CAMetalLayer.h"
 #include "include/util/rect.h"
+#include "src/graphics/skia/skia_render.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include "third_party/skia/src/include/utils/mac/SkCGUtils.h"
 #include "third_party/skia/src/src/utils/mac/SkUniqueCFRef.h"
-#import "Cocoa/Cocoa.h"
 #include <cassert>
-#import "QuartzCore/CAMetalLayer.h"
-#include "src/graphics/skia/skia_render.h"
 #include <string.h>
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
@@ -30,7 +30,7 @@ void WindowPlatformMac::Initialize() {}
 WindowPlatformMac::~WindowPlatformMac() {}
 
 // rect乘以了缩放系数。
-bool WindowPlatformMac::Create(CreateWindowParam& param) {
+bool WindowPlatformMac::Create(CreateWindowParam &param) {
   NSUInteger windowStyle =
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
        NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable);
@@ -40,24 +40,23 @@ bool WindowPlatformMac::Create(CreateWindowParam& param) {
 
   ui::Rect content_rect = ui::Rect::MakeXYWH(0, 0, 400, 400);
   if (param.position) {
-    content_rect.Set(param.x, param.y, param.x+param.w, param.y+param.h);
+    content_rect.Set(param.x, param.y, param.x + param.w, param.y + param.h);
   }
 
   NSRect ns_content_rect;
   if (param.is_pixel_unit) {
-    ns_content_rect = NSMakeRect(
-      content_rect.left / scale, content_rect.top / scale, 
-      content_rect.Width() / scale, content_rect.Height() / scale);
+    ns_content_rect =
+        NSMakeRect(content_rect.left / scale, content_rect.top / scale,
+                   content_rect.Width() / scale, content_rect.Height() / scale);
   } else {
-    ns_content_rect = NSMakeRect(
-          content_rect.left, content_rect.top, 
-          content_rect.Width(), content_rect.Height());
+    ns_content_rect = NSMakeRect(content_rect.left, content_rect.top,
+                                 content_rect.Width(), content_rect.Height());
   }
 
   if (!param.is_client_size) {
     // 指定的是窗口（包含标题栏）的大小，转换成客户区大小。
-    ns_content_rect = [NSWindow contentRectForFrameRect:ns_content_rect 
-      styleMask:windowStyle];
+    ns_content_rect = [NSWindow contentRectForFrameRect:ns_content_rect
+                                              styleMask:windowStyle];
   }
 
   // content rect，不带scale。
@@ -98,16 +97,14 @@ bool WindowPlatformMac::Create(CreateWindowParam& param) {
 
   return true;
 }
-void WindowPlatformMac::PostCreate() { 
+void WindowPlatformMac::PostCreate() {
   // 主动触发一次，初始化相关render target/invalidate rect
   notifySize();
 }
 
 void WindowPlatformMac::Destroy() {}
 
-WINDOW_HANDLE WindowPlatformMac::GetWindowHandle() {
-  return m_window;
-}
+WINDOW_HANDLE WindowPlatformMac::GetWindowHandle() { return m_window; }
 WINDOW_HANDLE WindowPlatformMac::GetRootViewHandle() {
   return m_window.contentView;
 }
@@ -149,30 +146,33 @@ void SetWindowRect(Rect *prect) {
   // return true;
 }
 
-void WindowPlatformMac::UpdateNonClientRegion(Rect* pregion) {
+void WindowPlatformMac::UpdateNonClientRegion(Rect *pregion) {
   NSRect client_rect = NSMakeRect(100, 100, 100, 100);
   NSRect frame_rect = [m_window frameRectForContentRect:client_rect];
 
   int left = client_rect.origin.x - frame_rect.origin.x;
-  int right = (frame_rect.origin.x + frame_rect.size.width - (client_rect.origin.x + client_rect.size.width));
+  int right = (frame_rect.origin.x + frame_rect.size.width -
+               (client_rect.origin.x + client_rect.size.width));
   int top = client_rect.origin.y - frame_rect.origin.y;
-  int bottom = (frame_rect.origin.y + frame_rect.size.height - (client_rect.origin.y + client_rect.size.height));
+  int bottom = (frame_rect.origin.y + frame_rect.size.height -
+                (client_rect.origin.y + client_rect.size.height));
 
   pregion->left -= left * m_window.backingScaleFactor;
   pregion->top -= top * m_window.backingScaleFactor;
   pregion->right += right * m_window.backingScaleFactor;
-  pregion->bottom += bottom * m_window.backingScaleFactor; 
+  pregion->bottom += bottom * m_window.backingScaleFactor;
 }
 
 // xywh 乘以了缩放系数
-void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) {
+void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h,
+                                     SetPositionFlags flags) {
   // printf("SetWindowPos %d,%d  %d,%d \n", x,y,w,h);
   if (!flags.move && !flags.size) {
     return;
   }
 
   CGFloat factor = m_window.backingScaleFactor;
-  NSRect rect = NSMakeRect(0, 0, w/factor, h/factor);
+  NSRect rect = NSMakeRect(0, 0, w / factor, h / factor);
 
   NSUInteger windowStyle =
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
@@ -186,32 +186,36 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h, SetPositionFlag
   }
 
   // printf("SetWindowPos rect2 %f,%f  %f,%f \n",
-  //   frame_rect.origin.x, frame_rect.origin.y, 
+  //   frame_rect.origin.x, frame_rect.origin.y,
   //   frame_rect.size.width, frame_rect.size.height);
 
   if (flags.size && flags.move) {
-    //[m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor) display:(true)];
-    [m_window setFrame:NSMakeRect(x/factor, y/factor, frame_rect.size.width, frame_rect.size.height) display:(true)];
+    //[m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor)
+    //display:(true)];
+    [m_window setFrame:NSMakeRect(x / factor, y / factor, frame_rect.size.width,
+                                  frame_rect.size.height)
+               display:(true)];
     return;
   }
 
   if (flags.size) {
     // [m_window setContentSize:NSMakeSize(w/factor, h/factor)];
-    [m_window setContentSize:NSMakeSize(frame_rect.size.width, frame_rect.size.height)];
+    [m_window setContentSize:NSMakeSize(frame_rect.size.width,
+                                        frame_rect.size.height)];
     return;
   }
   if (flags.move) {
-    [m_window setFrameOrigin:NSMakePoint(x/factor, y/factor)];
+    [m_window setFrameOrigin:NSMakePoint(x / factor, y / factor)];
     return;
   }
 }
 
-void WindowPlatformMac::GetMonitorWorkArea(Rect* rect) {
+void WindowPlatformMac::GetMonitorWorkArea(Rect *rect) {
   if (!rect) {
     return;
   }
 
-  NSScreen* screen = [m_window screen];
+  NSScreen *screen = [m_window screen];
   if (!screen) {
     return;
   }
@@ -219,10 +223,8 @@ void WindowPlatformMac::GetMonitorWorkArea(Rect* rect) {
   CGFloat factor = m_window.backingScaleFactor;
 
   *rect = Rect::MakeXYWH(
-    rc_workarea.origin.x * factor, 
-    rc_workarea.origin.y * factor, 
-    rc_workarea.size.width * factor, 
-    rc_workarea.size.height * factor);
+      rc_workarea.origin.x * factor, rc_workarea.origin.y * factor,
+      rc_workarea.size.width * factor, rc_workarea.size.height * factor);
 }
 
 #if 0
@@ -263,54 +265,51 @@ void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
                                int count) {
 
-{
-  SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
-    SkSurface *surface = skiaRT->GetSkiaSurface();
-    if (!surface) {
-      return;
-    }
+  // {
+  //   SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
+  //   SkSurface *surface = skiaRT->GetSkiaSurface();
+  //   if (!surface) {
+  //     return;
+  //   }
 
-    SkPixmap pm;
-    if (!surface->peekPixels(&pm)) {
-      return;
-    }
-   CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
-        NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
+  //   SkPixmap pm;
+  //   if (!surface->peekPixels(&pm)) {
+  //     return;
+  //   }
+  //   CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
+  //       NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
 
-    int client_width = m_window.contentView.bounds.size.width;
-    int client_height = m_window.contentView.bounds.size.height;
-    CGImageRef image = CGImageCreate(
-        // pm.width(), pm.height(), 
-        client_width,
-        client_height,
-        8, 32, pm.rowBytes(), 
-        // colorspace
-        CGColorSpaceCreateWithName(kCGColorSpaceSRGB),  
-        // CGBitmapInfo
-        kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
-        data_provider_ref, 
-        nullptr,  // decode 
-        false,    // shouldInterpolate
-        kCGRenderingIntentDefault);
-    [m_window.contentView.layer setContents:(__bridge id)image];
-}   
-return;
+  //   int client_width = m_window.contentView.bounds.size.width;
+  //   int client_height = m_window.contentView.bounds.size.height;
+  //   CGImageRef image = CGImageCreate(
+  //       // pm.width(), pm.height(),
+  //       client_width, client_height, 8, 32, pm.rowBytes(),
+  //       // colorspace
+  //       CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
+  //       // CGBitmapInfo
+  //       kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
+  //       data_provider_ref,
+  //       nullptr, // decode
+  //       false,   // shouldInterpolate
+  //       kCGRenderingIntentDefault);
+  //   [m_window.contentView.layer setContents:(__bridge id)image];
+  // }
+  // return;
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
   if (!context) {
     for (int i = 0; i < count; i++) {
-      NSRect rect = NSMakeRect(
-        prect->left / m_window.backingScaleFactor, 
-        prect->top / m_window.backingScaleFactor, 
-        prect->width() / m_window.backingScaleFactor, 
-        prect->height() / m_window.backingScaleFactor);
+      NSRect rect = NSMakeRect(prect->left,
+                               prect->top,
+                               prect->width(),
+                               prect->height());
       [m_window.contentView displayRect:rect];
     }
     return;
   }
 
   // CGContextSaveGState(context);
-  // CGContextTranslateCTM(context, 0, m_window.contentView.bounds.size.height); // 移动到顶部
-  // CGContextScaleCTM(context, 1.0, -1.0); // Y 轴翻转
+  // CGContextTranslateCTM(context, 0, m_window.contentView.bounds.size.height);
+  // // 移动到顶部 CGContextScaleCTM(context, 1.0, -1.0); // Y 轴翻转
 
   if (pRT->GetGraphicsRenderLibraryType() ==
       GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
@@ -331,34 +330,35 @@ return;
     int client_width = m_window.contentView.bounds.size.width;
     int client_height = m_window.contentView.bounds.size.height;
     CGImageRef image = CGImageCreate(
-        // pm.width(), pm.height(), 
-        client_width,
-        client_height,
-        8, 32, pm.rowBytes(), 
+        pm.width(), pm.height(),
+        // client_width, client_height, 
+        8, 32, pm.rowBytes(),
         // colorspace
-        CGColorSpaceCreateWithName(kCGColorSpaceSRGB),  
+        CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
         // CGBitmapInfo
         kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
-        data_provider_ref, 
-        nullptr,  // decode 
-        false,    // shouldInterpolate
+        data_provider_ref,
+        nullptr, // decode
+        false,   // shouldInterpolate
         kCGRenderingIntentDefault);
     assert(image);
 
     for (int i = 0; i < count; i++) {
-      const Rect &rc = prect[i];
+      const ui::Rect &rc_dirty = prect[i];
+      Rect rc = prect[i];
+      m_ui_window.m_dpi.ScaleRect(&rc);
       // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 600);
 
-#if 0
+#if 1
       // 效率比使用clip低，废弃
       // 使用子图片实现脏区域提交
       NSRect nsrect = CGRectMake(rc.left, rc.top, rc.width(), rc.height());
       CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
-      NSRect dirty = CGRectMake(rc.left / m_window.backingScaleFactor,
-                                rc.top / m_window.backingScaleFactor,
-                                rc.width() / m_window.backingScaleFactor,
-                                rc.height() / m_window.backingScaleFactor);
+      NSRect dirty = CGRectMake(rc_dirty.left, // * m_window.backingScaleFactor,
+                                rc_dirty.top, // * m_window.backingScaleFactor,
+                                rc_dirty.width(), // * m_window.backingScaleFactor,
+                                rc_dirty.height()); // * m_window.backingScaleFactor);
 
       CGContextDrawImage(context, dirty, part_image);
       CGImageRelease(part_image);
@@ -369,26 +369,28 @@ return;
       //                           rc.width(),
       //                           rc.height());
       int content_height = m_window.contentView.bounds.size.height;
-      NSRect dirty = CGRectMake(rc.left / m_window.backingScaleFactor,
-                                content_height - (rc.bottom / m_window.backingScaleFactor),
-                                rc.width() / m_window.backingScaleFactor,
-                                rc.height() / m_window.backingScaleFactor);
+      NSRect dirty =
+          CGRectMake(rc.left / m_window.backingScaleFactor,
+                     content_height - (rc.bottom / m_window.backingScaleFactor),
+                     rc.width() / m_window.backingScaleFactor,
+                     rc.height() / m_window.backingScaleFactor);
       CGContextClipToRect(context, dirty);
 
       printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
-        dirty.origin.x, dirty.origin.y, dirty.size.width, dirty.size.height);
+             dirty.origin.x, dirty.origin.y, dirty.size.width,
+             dirty.size.height);
 
       // 注：左下角为原点，图片也是从左下角开始绘制的。
       // 但缓存的尺寸是2指数倍，与窗口大小不一致。
       // 因此这里调整纵坐标，减去缓存底部的空闲区域
-      // int image_bottom_offset = m_window.contentView.bounds.size.height - pm.height()/2;
-      // NSRect target_rect = NSMakeRect(
-      //   0, 
-      //   image_bottom_offset, 
+      // int image_bottom_offset = m_window.contentView.bounds.size.height -
+      // pm.height()/2; NSRect target_rect = NSMakeRect(
+      //   0,
+      //   image_bottom_offset,
       //   pm.width()/2, pm.height()/2);
-      NSRect target_rect = NSMakeRect(0, 0, 
-      m_window.contentView.bounds.size.width,
-      m_window.contentView.bounds.size.height);
+      NSRect target_rect =
+          NSMakeRect(0, 0, m_window.contentView.bounds.size.width,
+                     m_window.contentView.bounds.size.height);
 
       CGContextDrawImage(context, target_rect, image);
       CGContextResetClip(context);
@@ -404,25 +406,26 @@ return;
 }
 
 void WindowPlatformMac::notifySize() {
-  m_ui_window.onSize(
-    m_window.frame.size.width * m_window.backingScaleFactor,
-    m_window.frame.size.height * m_window.backingScaleFactor
-    );
+  m_ui_window.onSize(m_window.frame.size.width * m_window.backingScaleFactor,
+                     m_window.frame.size.height * m_window.backingScaleFactor);
 }
 
 void WindowPlatformMac::onPaint(const Rect &dirty) {
-  Rect rect = {(int)(dirty.left * m_window.backingScaleFactor),
-               (int)(dirty.top * m_window.backingScaleFactor),
-               (int)(dirty.right * m_window.backingScaleFactor),
-               (int)(dirty.bottom * m_window.backingScaleFactor)};
+  Rect rect = {(int)(dirty.left),
+               (int)(dirty.top),
+               (int)(dirty.right),
+               (int)(dirty.bottom)};
   m_ui_window.onPaint(&rect);
 }
 
-void* WindowPlatformMac::GetNSWindowRootView() {
-  NSView* view = m_window.contentView;
+// Vulkan调用vkCreateMacOSSurfaceMVK时使用。
+void *WindowPlatformMac::GetNSWindowRootView() {
+  NSView *view = m_window.contentView;
   [view setWantsLayer:YES];
   view.layer = [CAMetalLayer layer];
-  return (void*)(view);
+
+  // CAMetalLayer *metalLayer = (CAMetalLayer *)view.layer;
+  return (void *)(view);
 };
 
 } // namespace ui
@@ -432,22 +435,23 @@ void* WindowPlatformMac::GetNSWindowRootView() {
 }
 - (WindowDelegate *)initWithWindow:(ui::WindowPlatformMac *)initWindow {
   m_window = initWindow;
-  NSWindow* window = m_window->window();
+  NSWindow *window = m_window->window();
 
   // 监听窗口DPI
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                         selector:@selector(windowDidChangeBackingProperties:)
-                                             name:NSWindowDidChangeBackingPropertiesNotification
-                                           object:window];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(windowDidChangeBackingProperties:)
+             name:NSWindowDidChangeBackingPropertiesNotification
+           object:window];
   m_window->m_ui_window.m_dpi.SetSystemDpi([window screen].backingScaleFactor);
 
   return self;
 }
 
 - (void)windowDidChangeBackingProperties:(NSNotification *)notification {
-    NSWindow *window = notification.object;
-    CGFloat newScaleFactor = window.backingScaleFactor;
-    m_window->m_ui_window.m_dpi.SetSystemDpi(newScaleFactor);
+  NSWindow *window = notification.object;
+  CGFloat newScaleFactor = window.backingScaleFactor;
+  m_window->m_ui_window.m_dpi.SetSystemDpi(newScaleFactor);
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
@@ -455,8 +459,7 @@ void* WindowPlatformMac::GetNSWindowRootView() {
   // CGFloat scale = skwindow::GetBackingScaleFactor(view);
   // m_window->m_ui_window.onSize(view.bounds.size.width /* * scale*/,
   //                              view.bounds.size.height /* * scale*/);
-  
-  
+
   m_window->notifySize();
 }
 
@@ -508,7 +511,7 @@ void* WindowPlatformMac::GetNSWindowRootView() {
 
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-  
+
   ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
                 (int)rect.size.height};
   m_window->onPaint(r);
@@ -521,35 +524,29 @@ void* WindowPlatformMac::GetNSWindowRootView() {
   printf("keyUp\n");
 }
 - (void)mouseDown:(NSEvent *)event {
-  CGFloat backingScaleFactor = self.window.backingScaleFactor;
-
   const NSPoint pos = [event locationInWindow];
   const NSRect rect = [self frame];
 
-  int x = pos.x * backingScaleFactor;
-  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  int x = pos.x;
+  int y = (rect.size.height - pos.y);
   m_window->m_ui_window.m_mouse_key.OnLButtonDown(x, y);
 }
 
 - (void)mouseUp:(NSEvent *)event {
-  CGFloat backingScaleFactor = self.window.backingScaleFactor;
-
   const NSPoint pos = [event locationInWindow];
   const NSRect rect = [self frame];
 
-  int x = pos.x * backingScaleFactor;
-  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  int x = pos.x;
+  int y = (rect.size.height - pos.y);
   m_window->m_ui_window.m_mouse_key.OnLButtonUp(x, y);
 }
 
 - (void)mouseMoved:(NSEvent *)event {
-  CGFloat backingScaleFactor = self.window.backingScaleFactor;
-
   const NSPoint pos = [event locationInWindow];
   const NSRect rect = [self frame];
 
-  int x = pos.x * backingScaleFactor;
-  int y = (rect.size.height - pos.y) * backingScaleFactor;
+  int x = pos.x;
+  int y = (rect.size.height - pos.y);
   m_window->m_ui_window.m_mouse_key.OnMouseMove(x, y);
 }
 

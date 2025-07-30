@@ -169,7 +169,7 @@ struct IGpuLayer {
   virtual void Compositor(GpuLayerCommitContext *pContext,
                           float *pMatrixTransform) = 0;
 
-  virtual void UploadHBITMAP(UploadGpuBitmapInfo &info) = 0;
+  virtual void UploadBitmap(UploadGpuBitmapInfo &info) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
 

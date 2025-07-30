@@ -58,10 +58,10 @@ void SoftwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
   }
 #if 0
   // 给分层窗口提交的机会。
-  if (m_pWindowRender->m_window.virtualCommitReq())
+  if (m_window_render->m_window.virtualCommitReq())
     return;
 #endif
-  m_pWindowRender->m_window.Commit(
+  m_window_render->m_window.Commit(
     m_pRootLayer->GetRenderTarget(), 
     arrDirtyInWindow.GetArrayPtr2(), 
     nCount);

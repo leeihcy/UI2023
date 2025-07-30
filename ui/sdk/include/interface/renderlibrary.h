@@ -330,7 +330,7 @@ struct IRenderTarget {
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(const DrawTextParam& param) = 0;
 
-  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) = 0;
+  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount, float scale) = 0;
 };
 
 struct IUICursor {

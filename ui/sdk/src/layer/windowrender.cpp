@@ -2,18 +2,15 @@
 #include "compositor.h"
 #include "include/inc.h"
 #include "include/util/log.h"
+#include "src/application/config/config.h"
+#include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
+#include "src/layer/hardware_compositor.h"
+#include "src/layer/software_compositor.h"
 #include "src/object/object.h"
 #include "src/panel/root_object.h"
 #include "src/window/window.h"
-#include "src/application/uiapplication.h"
-// #include "include/interface/iwndtransmode.h"
-// #include "include/interface/irenderlayer.h"
-#include "src/layer/hardware_compositor.h"
-#include "src/layer/software_compositor.h"
-// #include "..\Util\Stopwatch\stopwatch.h"
-// #include "..\UIObject\ListCtrl\ListItemBase\listitembase.h"
 
 namespace ui {
 WindowRender::WindowRender(Window &w) : m_window(w) {
@@ -53,8 +50,10 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
     return;
   }
 
-  UI_LOG_INFO("WindowRender::AddInvalidateRect: (%d,%d)-(%d,%d)", 
-    dirty->left, dirty->top, dirty->right, dirty->bottom);
+  if (Config::GetInstance().debug.log_window_onpaint) {
+    UI_LOG_DEBUG("WindowRender::AddInvalidateRect: (%d,%d)-(%d,%d)",
+                 dirty->left, dirty->top, dirty->right, dirty->bottom);
+  }
 
   Layer *layer = m_window.GetRootObject().GetLayer();
   if (!layer) {
@@ -74,16 +73,14 @@ void WindowRender::Paint(const Rect *commit_rect) {
 
   RectRegion arrDirtyInWindow;
   m_compositor->UpdateDirty(&arrDirtyInWindow);
-  
-  // if (commit_rect) {
-  //   arrDirtyInWindow.Union(*commit_rect);
-  // }
+
+  if (commit_rect) {
+    arrDirtyInWindow.Union(*commit_rect);
+  }
   m_compositor->Commit(arrDirtyInWindow);
 }
 
-void WindowRender::RequestUpdate() {
-
-}
+void WindowRender::RequestUpdate() {}
 
 // IRenderTarget* 没有引用计数机制
 // 但仍然采用Release进行释放（delete）
@@ -92,13 +89,16 @@ bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
     return false;
 
   auto *app = m_window.GetResource().GetUIApplication();
-  *pp = UICreateRenderTarget(app->GetIUIApplication(), m_grl_type, m_need_alpha_channel);
+  *pp = UICreateRenderTarget(app->GetIUIApplication(), m_grl_type,
+                             m_need_alpha_channel);
   return true;
 }
 
-void WindowRender::OnWindowSize(unsigned int nWidth, unsigned int nHeight) {
-  if (m_compositor)
+// 逻辑单位
+void WindowRender::OnClientSize(unsigned int nWidth, unsigned int nHeight) {
+  if (m_compositor) {
     m_compositor->Resize(nWidth, nHeight);
+  }
 }
 void WindowRender::OnWindowPaint(const Rect &dirty) {
   // 由窗口自动触发的更新，只要直接提交缓存到窗口即可。

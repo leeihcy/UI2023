@@ -76,7 +76,7 @@ public:
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) override;
   virtual IRenderBrush *CreateSolidBrush(Color *pColor) override;
 
-  virtual void Upload2Gpu(IGpuLayer *p, Rect* prcArray, int nCount) override;
+  virtual void Upload2Gpu(IGpuLayer *p, Rect* prcArray, int nCount, float scale) override;
 
 public:
   SkSurface* GetSkiaSurface() { return m_sksurface.get(); }

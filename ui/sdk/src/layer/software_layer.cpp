@@ -15,11 +15,16 @@ void SoftwareLayer::UpdateDirty() {
     return;
 
   IRenderTarget *pRenderTarget = GetRenderTarget();
-  uint nCount = m_dirtyRectangles.GetCount();
-  for (uint i = 0; i < nCount; i++)
-    pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
 
-  pRenderTarget->BeginDraw(m_pLayerContent->GetLayerScale());
+  float scale = m_pLayerContent->GetLayerScale();
+  pRenderTarget->BeginDraw(scale);
+
+  // 先begin draw，设置好缩放比例，再clear，否则clear区域不正确。
+  if (m_need_clear_background) {
+    uint nCount = m_dirtyRectangles.GetCount();
+    for (uint i = 0; i < nCount; i++)
+      pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
+  }
 
   pRenderTarget->SetMetaClipRegion(m_dirtyRectangles.GetArrayPtr(),
                                    m_dirtyRectangles.GetCount());

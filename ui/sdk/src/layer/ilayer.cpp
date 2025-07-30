@@ -47,6 +47,9 @@ IWindowCommitListener*  IWindowRender::GetCommitListener()
 
 ILayer::ILayer(Layer *p) { m_pImpl = p; }
 
+void ILayer::SetNeedClearBackground(bool b) {
+  m_pImpl->SetNeedClearBackground(b);
+}
 void ILayer::PostCompositorRequest() { m_pImpl->PostCompositorRequest(); }
 IRenderTarget *ILayer::GetRenderTarget() { return m_pImpl->GetRenderTarget(); }
 void ILayer::ScaleTo(float x, float y, LayerAnimateParam *param) {

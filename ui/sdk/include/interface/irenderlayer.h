@@ -87,6 +87,8 @@ struct UIAPI ILayer {
   IRenderTarget *GetRenderTarget();
   void PostCompositorRequest();
 
+  void SetNeedClearBackground(bool b);
+
   void ScaleTo(float x, float y, LayerAnimateParam *param = nullptr);
   void RotateZTo(float, LayerAnimateParam *param = nullptr);
 

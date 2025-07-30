@@ -101,17 +101,10 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   // int nConfigHeight = pParam->GetConfigHeight();
   int nConfigFlag = pParam->GetConfigLayoutFlags();
 
-  if (left > 0) left = int(left*scale);
-  if (top > 0) top = int(top*scale);
-  if (right > 0) right = int(right*scale);
-  if (bottom > 0) bottom = int(bottom*scale);
-  s.width = int(s.width*scale);
-  s.height = int(s.height*scale);
-
   // 如果同时指定了left/right,则忽略width属性
   if (0 == (nConfigFlag & LAYOUT_ITEM_ALIGN_CENTER)) {
     if (left != NDEF && right != NDEF) {
-      s.width = nWidth - left + right;
+      s.width = nWidth - left - right;
     }
   }
   // 如果同时指定了top/bottom，则忽略height属性

@@ -140,7 +140,8 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
     m_info.imageExtent = capabilities.currentExtent;
   }
 
-  // transform
+  // 用于控制交换链图像（Swapchain Images）在呈现（Present）
+  // 到屏幕之前的 几何变换，比如旋转、镜像或缩放。
   m_info.preTransform = capabilities.currentTransform;
 
   return true;

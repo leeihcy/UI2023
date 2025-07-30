@@ -45,7 +45,7 @@ public:
   void OnWindowCreate();
 
   void OnSerialize(SerializeParam *pData);
-  void OnWindowSize(unsigned int nWidth, unsigned int nHeight);
+  void OnClientSize(unsigned int nWidth, unsigned int nHeight);
   void OnWindowPaint(const Rect& dirty);
 
   bool CreateRenderTarget(IRenderTarget **pp);

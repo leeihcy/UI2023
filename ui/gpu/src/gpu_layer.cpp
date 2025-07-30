@@ -99,7 +99,7 @@ void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
 //---------------------------------------------------------------------------------------
 //
 
-void GpuLayer::UploadHBITMAP(UploadGpuBitmapInfo &info) {
+void GpuLayer::UploadBitmap(UploadGpuBitmapInfo &info) {
   int nCount = info.nCount;
   ui::Rect *prcArray = (ui::Rect *)info.prcArray;
 

@@ -1,8 +1,8 @@
-#include "include/macro/helper.h"
-#include "gpu/include/api.h"
 #include "hardware_layer.h"
+#include "gpu/include/api.h"
 #include "hardware_compositor.h"
 #include "include/interface/renderlibrary.h"
+#include "include/macro/helper.h"
 
 #if defined(OS_WIN)
 #include "src/util/windows.h"
@@ -47,11 +47,14 @@ void HardwareLayer::UpdateDirty() {
     return;
 
   IRenderTarget *pRenderTarget = GetRenderTarget();
-  uint nCount = m_dirtyRectangles.GetCount();
-  for (uint i = 0; i < nCount; i++)
-    pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
+  if (m_need_clear_background) {
+    uint nCount = m_dirtyRectangles.GetCount();
+    for (uint i = 0; i < nCount; i++)
+      pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
+  }
 
-  pRenderTarget->BeginDraw(m_pLayerContent->GetLayerScale());
+  float scale = m_pLayerContent->GetLayerScale();
+  pRenderTarget->BeginDraw(scale);
 
   pRenderTarget->SetMetaClipRegion(m_dirtyRectangles.GetArrayPtr(),
                                    m_dirtyRectangles.GetCount());
@@ -100,23 +103,33 @@ void HardwareLayer::upload_2_gpu() {
   if (!m_pRenderTarget)
     return;
 
+  float scale = 1.0f;
+  if (m_pLayerContent) {
+    scale = m_pLayerContent->GetLayerScale();
+  }
+
   if (!m_pGpuTexture) {
     m_pGpuTexture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
                         ->CreateGpuLayerTexture();
     if (m_pGpuTexture) {
-      m_pGpuTexture->Resize(m_size.width, m_size.height);
+      m_pGpuTexture->Resize(m_size.width*scale, m_size.height*scale);
     }
   }
 
   Rect rc = {0, 0, (int)m_size.width, (int)m_size.height};
-  m_pRenderTarget->Upload2Gpu(m_pGpuTexture, &rc, 1);
+  m_pRenderTarget->Upload2Gpu(m_pGpuTexture, &rc, 1, scale);
 }
 
 void HardwareLayer::virtualOnSize(uint nWidth, uint nHeight) {
-  if (m_pGpuTexture) {
-    m_pGpuTexture->Resize(nWidth, nHeight);
+  float scale = 1.0f;
+  if (m_pLayerContent) {
+    scale = m_pLayerContent->GetLayerScale();
   }
-  m_transfrom3d.set_size(nWidth, nHeight);
+
+  if (m_pGpuTexture) {
+    m_pGpuTexture->Resize(nWidth*scale, nHeight*scale);
+  }
+  m_transfrom3d.set_size(nWidth*scale, nHeight*scale);
 }
 
 void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
@@ -125,11 +138,16 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
   if (!m_pLayerContent)
     return;
 
-
   Rect rcWnd;
   m_pLayerContent->GetWindowRect(&rcWnd);
   if (rcWnd.IsEmpty())
     return;
+
+  float scale = 1.0f;
+  if (m_pLayerContent) {
+    scale = m_pLayerContent->GetLayerScale();
+    rcWnd.Scale(scale);
+  }
 
   pContext->SetOffset(rcWnd.left, rcWnd.top);
 
@@ -138,8 +156,9 @@ void HardwareLayer::Commit(GpuLayerCommitContext *pContext) {
     m_pLayerContent->GetParentWindowRect(&rcParentWnd);
   } else {
     m_pCompositor->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
-    // ::GetClientRect((HWND)m_pCompositor->GetHWND(), (RECT*)&rcParentWnd);
   }
+
+  rcParentWnd.Scale(scale);
   pContext->SetClipRect(&rcParentWnd);
 
   if (m_nOpacity_Render != 255) {

@@ -3,6 +3,7 @@
 using namespace std;
 
 #include "sdk/include/inc.h"
+#include "sdk/include/interface/irenderlayer.h"
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
 #include "sdk/include/util/path.h"
@@ -24,6 +25,8 @@ public:
 
     ui::Rect rc = {0, 0, 500, 400};
     m_window->Create(nullptr, &rc);
+    // 透明背景。
+    m_window->GetRootObject()->GetLayer()->SetNeedClearBackground(true);
 
     load_next();
 
@@ -41,7 +44,8 @@ public:
     svg->AddAttribute(XML_LAYOUT_ITEM_RIGHT, "0");
     svg->AddAttribute(XML_LAYOUT_ITEM_BOTTOM, "0");
     svg->InitDefaultAttrib();
-    m_svg = static_cast<ui::ISvg *>(m_window->GetRootObject()->AddChild(svg.release()));
+    m_svg = static_cast<ui::ISvg *>(
+        m_window->GetRootObject()->AddChild(svg.release()));
   }
 
   void load_svg_from_file(const char *path) {

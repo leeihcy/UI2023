@@ -9,7 +9,7 @@ namespace ui {
 Compositor::Compositor() {
   m_pRootLayer = nullptr;
   m_pUIApp = nullptr;
-  m_pWindowRender = nullptr;
+  m_window_render = nullptr;
   m_request_invalidate_ref = 0;
 }
 
@@ -74,7 +74,7 @@ void Compositor::UpdateAndCommit() {
   RectRegion arrDirtyInWindow;
   this->UpdateDirty(&arrDirtyInWindow);
 
-  if (!m_pWindowRender->CanCommit()) {
+  if (!m_window_render->CanCommit()) {
     UI_LOG_WARN(L"can not commit now");
     return;
   }
@@ -98,7 +98,7 @@ void Compositor::Commit(const RectRegion &arrDirtyInWindow) {
 }
 
 bool Compositor::CreateRenderTarget(IRenderTarget **pp) {
-  return m_pWindowRender->CreateRenderTarget(pp);
+  return m_window_render->CreateRenderTarget(pp);
 }
 
 void Compositor::SetCommitListener(IWindowCommitListener *p) {
@@ -108,5 +108,5 @@ IWindowCommitListener *Compositor::GetCommitListener() {
   return m_commit_listener;
 }
 
-void Compositor::SetWindowRender(WindowRender *p) { m_pWindowRender = p; }
+void Compositor::SetWindowRender(WindowRender *p) { m_window_render = p; }
 } // namespace ui

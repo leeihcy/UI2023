@@ -126,11 +126,6 @@ shared_library("uigpu") {
         libs += ["vulkan"]
       }
     }
-    if (is_mac) {
-      sources += [
-        "src/vulkan/vkcompositor_mac.mm"
-      ]
-    }
 
     # 单元测试
     if (is_debug) {

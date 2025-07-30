@@ -1,4 +1,5 @@
 #include "object_layer.h"
+#include "include/macro/msg.h"
 #include "object.h"
 // #include "src/layer/windowrender.h"
 #include "src/window/window.h"
@@ -26,8 +27,16 @@ void ObjectLayer::CreateLayer() {
 
     Rect rcParent;
     m_obj.GetParentRect(&rcParent);
-    if (!rcParent.IsEmpty())
-      OnSize(rcParent.Width(), rcParent.Height());
+    if (!rcParent.IsEmpty()) {
+      m_pLayer->OnSize(rcParent.Width(), rcParent.Height(), pWindow->m_dpi.GetScaleFactor());
+    }
+
+    SerializeParam data = {0};
+    data.pSkinRes = m_obj.GetIResource();
+    data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
+    data.pMapAttrib = m_obj.GetMapAttribute().get();
+
+    m_pLayer->Serialize(&data);
 
     m_obj.OnLayerCreate();
   } else {
@@ -66,9 +75,9 @@ void ObjectLayer::GetParentWindowRect(Rect *prcOut) {
         prcOut); // TODO: -->> visible part only
 }
 
-void ObjectLayer::OnSize(uint nWidth, uint nHeight) {
+void ObjectLayer::OnSize(uint width, uint height, float scale) {
   if (m_pLayer) {
-    m_pLayer->OnSize(nWidth, nHeight);
+    m_pLayer->OnSize(width, height, scale);
   }
 }
 

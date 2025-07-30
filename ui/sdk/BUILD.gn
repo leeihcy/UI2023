@@ -107,6 +107,8 @@ shared_library("uisdk") {
         "src/animate/ianimate.cpp",
         "src/animate/storyboard.cpp",
         "src/animate/timeline.cpp",
+        "src/application/config/config.h",
+        "src/application/config/config.cpp",
         "src/application/uiapplication.cpp",
         "src/application/iuiapplication.cpp",
         "src/attribute/9region_attribute.cpp",

@@ -5,12 +5,15 @@
 #include "include/inc.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
+#include "include/util/rect.h"
 #include "skia_bitmap.h"
+#include "src/application/config/config.h"
 
 #include "SkStream.h"
 #include "gpu/include/api.h"
 #include <cassert>
 #include <string>
+#include <vector>
 
 #include "src/graphics/font/font.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
@@ -227,6 +230,7 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
   }
   canvas->save();
 
+  canvas->scale(scale, scale);
   m_scale = scale;
   return true;
 }
@@ -256,7 +260,6 @@ void SkiaRenderTarget::Clear(Rect *prc) {
     return;
   }
   SkCanvas *canvas = m_sksurface->getCanvas();
-  // canvas->clear(SK_ColorTRANSPARENT);  // <<-- 全量刷新非常影响性能
 
   SkRect skrect;
   skrect.fLeft = (SkScalar)prc->left;
@@ -273,7 +276,7 @@ void SkiaRenderTarget::Clear(Rect *prc) {
 static std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
                                          const SkFont &font,
                                          const SkPaint &paint,
-                                         /*out*/ int& measure_width) {
+                                         /*out*/ int &measure_width) {
   if (!text) {
     return std::string();
   }
@@ -296,7 +299,7 @@ static std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
     return std::string(ellipsis);
   }
 
-  // 查找适合的文本截断位置
+  // 查找适合的文本截断位置（按UTF-8字符截断）
   size_t byteLength = strlen(text);
   float width = 0;
   while (byteLength > 0) {
@@ -304,7 +307,10 @@ static std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
     if (width <= availableWidth) {
       break;
     }
-    byteLength--;
+    // 向前找到上一个UTF-8字符的起始位置
+    do {
+      --byteLength;
+    } while (byteLength > 0 && ((text[byteLength] & 0xC0) == 0x80));
   }
 
   measure_width = ellipsisWidth + width;
@@ -407,7 +413,6 @@ void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   std::string elide_text =
       elideTextWithEllipsis(param.text, sk_rect, font, paint, measure_width);
 
-
   // drawSimpleString纵坐标参数表示文本基线的位置，而不是文本的顶部或底部
   SkFontMetrics metrics;
   font.getMetrics(&metrics);
@@ -424,7 +429,7 @@ void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
       x += (param.bound.width() - measure_width) / 2;
     } else if (param.align & ALIGN_RIGHT) {
       x += param.bound.width() - measure_width;
-    } 
+    }
     if (param.align & ALIGN_VCENTER) {
       y += (param.bound.height() - totalHeight) / 2;
     } else if (param.align & ALIGN_BOTTOM) {
@@ -914,6 +919,8 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   }
 
   SkCanvas *target_canvas = target->m_sksurface->getCanvas();
+  SkCanvas *source_canvas = m_sksurface->getCanvas();
+
   sk_sp<SkImage> source_image(m_sksurface->makeImageSnapshot());
   if (!source_image) {
     return;
@@ -921,13 +928,19 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
 
   SkSamplingOptions options;
   SkPaint paint;
-  target_canvas->drawImageRect(
-      source_image,
-      SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
-                       (SkScalar)pParam->wSrc, (SkScalar)pParam->hSrc),
-      SkRect::MakeXYWH((SkScalar)pParam->xDst, (SkScalar)pParam->yDst,
-                       (SkScalar)pParam->wDst, (SkScalar)pParam->hDst),
-      options, &paint, SkCanvas::kFast_SrcRectConstraint);
+
+  // 两个canvas都被scale了，需要将将源canvas等比例提交到target上，而不被再次放大。
+  {
+    target_canvas->drawImageRect(
+        source_image,
+        SkRect::MakeXYWH((SkScalar)pParam->xSrc * m_scale,
+                         (SkScalar)pParam->ySrc * m_scale,
+                         (SkScalar)pParam->wSrc * m_scale,
+                         (SkScalar)pParam->hSrc * m_scale),
+        SkRect::MakeXYWH((SkScalar)pParam->xDst, (SkScalar)pParam->yDst,
+                         (SkScalar)pParam->wDst, (SkScalar)pParam->hDst),
+        options, &paint, SkCanvas::kFast_SrcRectConstraint);
+  }
 }
 
 void SkiaRenderTarget::Save(const char *path) {
@@ -948,7 +961,7 @@ void SkiaRenderTarget::Save(const char *path) {
   (void)out.write(png->data(), png->size());
 }
 
-void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) {
+void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount, float scale) {
 
   SkPixmap pm;
   if (!m_sksurface || !m_sksurface->peekPixels(&pm)) {
@@ -963,10 +976,26 @@ void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount) {
   source.height = pm.height();
   source.bpp = 32;
 
-  source.prcArray = prcArray;
+  std::vector<Rect> rects;
+  rects.reserve(nCount);
+  for (int i = 0; i < nCount; ++i) {
+    Rect rc = prcArray[i];
+    rc.Scale(scale);
+    rects.push_back(rc);
+  }
+  source.prcArray = rects.data();
   source.nCount = nCount;
 
-  p->UploadHBITMAP(source);
+  p->UploadBitmap(source);
+
+  if (Config::GetInstance().debug.log_gpu) {
+    for (int i = 0; i < nCount; ++i) {
+      Rect *prc = &prcArray[i];
+      UI_LOG_DEBUG("Upload2Gpu: rt=0x%08x source=(%d, %d), rect[%d] = (%d, %d, %d, %d)", 
+          this, source.width, source.height, i,
+          prc->left, prc->top, prc->right, prc->bottom);
+    }
+  }
 }
 
 } // namespace ui

@@ -17,7 +17,7 @@ public:
 
   void onRouteMessage(ui::Msg *msg);
   void onWindowCreate();
-  void OnWindowSize(unsigned int nWidth, unsigned int nHeight);
+  void OnClientSize(unsigned int nWidth, unsigned int nHeight);
   void syncWindowSize();
 
   bool LoadLayout(const char *layout_id);

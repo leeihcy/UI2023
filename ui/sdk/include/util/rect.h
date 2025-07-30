@@ -142,6 +142,12 @@ struct Rect : public RectLTRB {
     right -= rc.right;
     bottom -= rc.bottom;
   }
+  void Scale(float scale, int truncate_type = 0) {
+    left = (int)(left * scale);
+    right = (int)(right * scale);
+    top = (int)(top * scale);
+    bottom = (int)(bottom * scale);
+  }
 
   int width() const { return right - left; }
   int Width() const { return width(); }

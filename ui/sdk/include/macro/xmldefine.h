@@ -415,6 +415,8 @@ enum ROUND_CORNER_TYPE
 #define XML_ISNCCHILD                        "ncchild"         // 是一个ncchild，例如滚动条
 
 #define XML_LAYER                            "layer"           // 为该对象建立一个renderlayer（带缓存）
+#define XML_LAYER_OPACITY                    "layer.opacity"   // layer的透明度，0-255
+#define XML_LAYER_NEED_CLEAR                 "layer.needclear" // layer刷新时是否需要先清除缓存，默认为false
 
 // window
 // #define  XML_WINDOW_BK_TYPE                    "bktype"     // 窗口背景绘制类型

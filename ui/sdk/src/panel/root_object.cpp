@@ -72,13 +72,17 @@ void RootObject::onWindowCreate() {
 void RootObject::syncWindowSize() {
   Rect rc_client;
   m_window->m_platform->GetClientRect(&rc_client);
+  m_window->m_dpi.RestoreRect(&rc_client);
+  
 #if 0 // TODO:
   SetConfigWidth(rc_client.Width());
   SetConfigHeight(rc_client.Height());
 #endif
   m_rcParent.CopyFrom(rc_client);
 }
-void RootObject::OnWindowSize(unsigned int new_client_width, unsigned int new_client_height) {
+
+// 逻辑单位
+void RootObject::OnClientSize(unsigned int new_client_width, unsigned int new_client_height) {
   m_rcParent.Set(0, 0, new_client_width, new_client_height);
   notify_WM_SIZE(0, new_client_width, new_client_height, m_window->m_dpi.GetScaleFactor());
 }

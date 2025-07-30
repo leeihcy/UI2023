@@ -72,10 +72,10 @@ void  IGpuLayer::Release()
     m_pImpl->Release();
 }
 
-void  IGpuLayer::UploadHBITMAP(HBITMAP hBitmap, LPRECT prcArray, UINT
+void  IGpuLayer::UploadBitmap(HBITMAP hBitmap, LPRECT prcArray, UINT
 nCount, bool bTopdown, bool bHasAlphaChannel)
 {
-    m_pImpl->UploadHBITMAP(hBitmap, prcArray, nCount, bTopdown,
+    m_pImpl->UploadBitmap(hBitmap, prcArray, nCount, bTopdown,
 bHasAlphaChannel);
 }
 

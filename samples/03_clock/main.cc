@@ -94,8 +94,10 @@ int main() {
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
-  g_clock_animate.update_rotate(window.get());
-  start_animate(app.get(), window.get());
+  if (use_gpu) {
+    // g_clock_animate.update_rotate(window.get());
+    // start_animate(app.get(), window.get());
+  }
   app->Run();
 
   return 0;

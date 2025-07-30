@@ -248,7 +248,7 @@ void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
 #if defined(OS_WIN)
       ->SetDefault("Microsoft YaHei")
 #elif defined(OS_MAC)
-      ->SetDefault("monospace")
+      ->SetDefault("PingFang SC") // monospace, Songti
 #endif
       ;
   serialize

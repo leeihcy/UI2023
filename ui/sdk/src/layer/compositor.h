@@ -44,8 +44,7 @@ protected:
   Application *m_pUIApp;
 
   Layer *m_pRootLayer;
-  Window* m_window = nullptr;
-  WindowRender *m_pWindowRender;
+  WindowRender *m_window_render;
 
 private:
   IWindowCommitListener *m_commit_listener = nullptr;

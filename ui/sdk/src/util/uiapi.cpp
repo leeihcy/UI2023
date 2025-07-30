@@ -76,10 +76,9 @@ void UI_ExtendPath(std::string &strPath) {
   UIASSERT(false);
 #endif
 }
-
+#if 0 // defined(OS_WIN)
 void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
                    GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
-#if 0 // defined(OS_WIN)
   if (nullptr == hFont || nullptr == pOut)
     return;
 
@@ -95,9 +94,8 @@ void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
   }
 
   return;
-#endif
 }
-
+#endif
 //
 // 字符串拆分
 //
@@ -165,9 +163,8 @@ std::wstring &GetTempBufferStringW() {
   g_strGlobalTempBufferW.clear();
   return g_strGlobalTempBufferW;
 }
-
-HBITMAP CreateMemBitmap(int nWidth, int nHeight, int *pnPitch, byte **ppBits) {
 #if 0 // defined(OS_WIN)
+HBITMAP CreateMemBitmap(int nWidth, int nHeight, int *pnPitch, byte **ppBits) {
   Image image;
   image.Create(nWidth, nHeight, 32, Image::createAlphaChannel);
 
@@ -178,10 +175,8 @@ HBITMAP CreateMemBitmap(int nWidth, int nHeight, int *pnPitch, byte **ppBits) {
     *pnPitch = image.GetPitch();
 
   return image.Detach();
-#else
   UIASSERT(0);
   return 0;
-#endif
 }
-
+#endif
 } // namespace ui

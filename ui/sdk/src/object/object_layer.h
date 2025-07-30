@@ -17,7 +17,7 @@ public:
   Layer *GetLayer() const { return m_pLayer; }
   Object &GetObject() { return m_obj; }
 
-  void OnSize(uint nWidth, uint nHeight);
+  void OnSize(uint width, uint height, float scale);
   void OnObjPosInTreeChanged();
 
 protected:

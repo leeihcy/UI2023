@@ -153,5 +153,5 @@ void  RenderBuffer::Upload2Gpu(IGpuLayer* p, LPRECT prcArray, int nCount)
 	source.prcArray = prcArray;
 	source.nCount = nCount;
 
-	p->UploadHBITMAP(source);
+	p->UploadBitmap(source);
 }

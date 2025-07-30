@@ -41,10 +41,7 @@ void DesktopLayout::Arrange(Window *window) {
   right = pParam->GetConfigRight();
   bottom = pParam->GetConfigBottom();
 
-  // 获得的SIZE包括了MARGIN的大小
-  // size_window.width=margin.left+width+margin.right
   Size size_window = window->GetDesiredSize();
-  window->m_dpi.ScaleSize(&size_window);
 
 #ifdef _DEBUG
   if (size_window.width == 0 && size_window.height == 0) {
@@ -133,6 +130,8 @@ void DesktopLayout::Arrange(Window *window) {
 
   // 解决如果窗口大小没有发生改变，改变窗口没有收到WM_SIZE时，手动布局一次
   window->m_platform->GetClientRect(&rc_client_new);
+  window->m_dpi.RestoreRect(&rc_client_new);
+
   if (rc_client_new.Width() == rc_client_old.Width() &&
       rc_client_new.Height() == rc_client_old.Height()) {
     root_object.notify_WM_SIZE(0, rc_client_new.Width(), rc_client_new.Height(),

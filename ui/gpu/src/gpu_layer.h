@@ -133,7 +133,7 @@ public:
   IGpuLayer *GetIGpuLayerTexture();
   void Release();
 
-  void UploadHBITMAP(UploadGpuBitmapInfo &info);
+  void UploadBitmap(UploadGpuBitmapInfo &info);
   
   virtual void Compositor(GpuLayerCommitContext *pContext, float *pMatrixTransform) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;

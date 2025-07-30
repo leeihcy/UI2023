@@ -12,7 +12,7 @@
 
 // 每帧更新一次。
 layout(binding = 0) uniform UniformBufferObject {
-   // mat4 view;
+   mat4 view;
    // mat4 proj;
    mat4 ortho;
 } ubo;
@@ -32,7 +32,7 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 
 void main() {
-  gl_Position = ubo.ortho * push.model * vec4(
+  gl_Position = ubo.ortho * ubo.view * push.model * vec4(
     inPosition.x, inPosition.y, 0.0, 1.0);
 
   fragColor = inColor;

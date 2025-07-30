@@ -3,7 +3,9 @@
 #include "include/interface/imessage.h"
 #include "include/interface/iobject.h"
 #include "include/macro/msg.h"
+#include "include/util/log.h"
 #include "include/util/rect.h"
+#include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
 #include "src/layout/desktop_layout.h"
 #include "src/panel/root_object.h"
@@ -153,7 +155,8 @@ void Window::onSize(int window_width, int window_height) {
 
   Rect rc_client;
   m_platform->GetClientRect(&rc_client);
-
+  m_dpi.RestoreRect(&rc_client);
+  
   Rect rc_client_old;
   GetRootObject().GetParentRect(&rc_client_old);
 
@@ -177,8 +180,8 @@ void Window::onSize(int window_width, int window_height) {
   // m_window_render.AddInvalidateRect(&rc_invalid_bottom);
   m_window_render.AddInvalidateRect(&rc_client);
 
-  GetRootObject().OnWindowSize(new_client_width, new_client_height);
-  m_window_render.OnWindowSize(new_client_width, new_client_height);
+  GetRootObject().OnClientSize(new_client_width, new_client_height);
+  m_window_render.OnClientSize(new_client_width, new_client_height);
 
   // TBD:
   // m_window_render.Paint();
@@ -251,26 +254,21 @@ void Window::onDestroy() {
   clear_events();
 }
 
+// commit_rect是逻辑坐标，不是像素坐标。
 void Window::onPaint(const Rect *commit_rect) {
-  // if (dirty) {
-  //   UI_LOG_DEBUG(L"Window onPaint {%d,%d, %d,%d}", dirty->x, dirty->y,
-  //                dirty->width, dirty->height);
-  // } else {
-  //   UI_LOG_DEBUG(L"Window onPaint full");
-  // }
+  if (Config::GetInstance().debug.log_window_onpaint) {
+    UI_LOG_DEBUG("Window::onPaint commit_rect={%d,%d, %d,%d}",
+                (int)(commit_rect->left),
+                (int)(commit_rect->top),
+                (int)(commit_rect->right),
+                (int)(commit_rect->bottom));
+  }
 
-  // m_window_render.AddInvalidateRect(dirty);
+  // 从窗口主动触发的paint消息，不额外增加invalidate区域，而是由我们自己
+  // 来控制需要提交的区域。
+  // m_window_render.AddInvalidateRect(commit_rect);
   m_window_render.Paint(commit_rect);
   m_window_render.Commit(commit_rect);
-
-  // if (dirty) {
-  //   m_window_render.OnWindowPaint(*dirty);
-  // } else {
-  //   Rect rc = {0, 0, m_rcParent.width(), m_rcParent.height()};
-  //   m_window_render.OnWindowPaint(rc);
-  // }
-
-  // m_window_render.InvalidateNow();
 }
 
 // void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
@@ -354,9 +352,9 @@ void Window::postCreate(CreateWindowParam &param) {
 
   m_window_render.SetCanCommit(true);
 
-  // 将窗口所有区域设置为无效
+  // 首次刷新，将窗口所有区域设置为无效
   ui::Rect rc_client;
-  m_platform->GetClientRect(&rc_client);
+  m_root->GetClientRectWithZeroOffset(&rc_client);
   m_window_render.AddInvalidateRect(&rc_client);
 
 #if 0
@@ -410,6 +408,8 @@ void Window::SetGpuComposite(bool b) {
 Size Window::GetDesiredSize() {
   Size size = GetRootObject().GetDesiredSize();
   ui::Rect rc_client = ui::Rect::MakeXYWH(0, 0, size.width, size.height);
+  m_dpi.ScaleRect(&rc_client);
+  
   m_platform->UpdateNonClientRegion(&rc_client);
   return Size{rc_client.Width(), rc_client.Height()};
 }

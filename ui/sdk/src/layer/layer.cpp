@@ -3,6 +3,7 @@
 #include "include/common/math/math.h"
 #include "include/inc.h"
 #include "src/application/uiapplication.h"
+#include "src/attribute/attribute.h"
 #include "src/object/object.h"
 #include "src/object/object_layer.h"
 #include <memory>
@@ -91,6 +92,14 @@ Layer::~Layer() {
 }
 
 ILayer *Layer::GetILayer() { return &m_iLayer; }
+
+void Layer::Serialize(SerializeParam* param) {
+  AttributeSerializer s(param, "Layer");
+  // s.AddInt(XML_LAYER_OPACITY, m_nOpacity)->AsData();
+  s.AddBool(XML_LAYER_NEED_CLEAR, m_need_clear_background)
+    ->SetDefault(false)
+    ->AsData();
+}
 
 void Layer::SetCompositorPtr(Compositor *p) { m_pCompositor = p; }
 
@@ -233,19 +242,21 @@ Layer *Layer::GetNext() { return m_pNext; }
 
 Layer *Layer::GetFirstChild() { return m_pFirstChild; }
 
-void Layer::OnSize(uint nWidth, uint nHeight) {
-  m_size.width = nWidth;
-  m_size.height = nHeight;
+// width/height是逻辑单位
+// scale是缩放比例
+void Layer::OnSize(uint width, uint height, float scale) {
+  m_size.width = width;
+  m_size.height = height;
   
-  ui::Rect rc_dirty = ui::Rect::MakeXYWH(0, 0, nWidth, nHeight);
+  ui::Rect rc_dirty = ui::Rect::MakeXYWH(0, 0, width, height);
   Invalidate(&rc_dirty);
 
   if (!m_pRenderTarget) {
     GetRenderTarget();
   }
-  m_pRenderTarget->ResizeRenderBuffer(nWidth, nHeight);
+  m_pRenderTarget->ResizeRenderBuffer(width*scale, height*scale);
 
-  virtualOnSize(nWidth, nHeight);
+  virtualOnSize(width, height);
 }
 
 void Layer::PostCompositorRequest() { m_pCompositor->RequestInvalidate(); }
