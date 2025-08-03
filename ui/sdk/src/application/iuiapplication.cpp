@@ -2,13 +2,6 @@
 #include "include/interface/iobject.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/res_bundle.h"
-// #include "src/Atl\image.h"
-// #include "src/Helper\timer\timermanager.h"
-// #include "src/Util\dwm\dwmhelper.h"
-// #include "src/UIEffect\CacheBitmap\cachebitmap.h"
-// #include "src/UIEffect\blur\webkit\shadowblur.h"
-// #include "src/layout/layout_factory.h"
-// #include "src/Renderbase\renderbase\renderbase_factory.h"
 
 namespace ui {
 
@@ -206,10 +199,14 @@ bool IApplication::RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn) {
 //     m_pImpl->HideToolTip();
 // }
 
-// unsigned int*  IApplication::SetTimer(int nElapse, IMessage* pNotify)
-// {
-//     return TimerHelper::GetInstance()->SetTimer(nElapse, pNotify);
-// }
+unsigned int IApplication::SetTimer(int elapse,
+                                    slot<bool(unsigned int)>&& timer_callback) {
+  return m_pImpl->GetTimerHelper().SetTimer(elapse, std::move(timer_callback));
+}
+void IApplication::KillTimer(unsigned int timer_id) {
+   m_pImpl->GetTimerHelper().KillTimer(timer_id);
+}
+
 // unsigned int*  IApplication::SetTimer(
 // 	int nElapse, std::function<bool(unsigned int*, TimerItem*)> func)
 // {
@@ -223,10 +220,6 @@ bool IApplication::RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn) {
 // 	int nElapse, unsigned int* nId, IMessage* pNotify)
 // {
 //     return  TimerHelper::GetInstance()->SetTimerById(nElapse, nId, pNotify);
-// }
-// void  IApplication::KillTimer(unsigned int*& nTimerID)
-// {
-//     TimerHelper::GetInstance()->KillTimer(nTimerID);
 // }
 // void  IApplication::KillTimerById(int nId, IMessage* pNotify)
 // {

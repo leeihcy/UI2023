@@ -36,7 +36,7 @@ namespace ui {
 Application::Application(IApplication *p)
     : m_pUIApplication(p), m_TopWindowMgr(this), m_renderBaseFactory(*this),
       m_textRenderFactroy(*this), m_resource_manager(*this),
-      m_message_loop(*this) {
+      m_message_loop(*this), m_timer_helper(*this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif

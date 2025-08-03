@@ -207,7 +207,10 @@ struct UIAPI IWindow : public IMessage {
 
   void Create(const char *szId, const Rect* rect);
   void SetTitle(const char *title);
+
+  bool IsVisible();
   void Show();
+  void Hide();
 
   void EnableGpuComposite(bool b);
   bool IsGpuComposite();

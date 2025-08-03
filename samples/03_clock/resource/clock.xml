@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <skin>
   <layout>
-    <Window id="clock" back.render.type="color" back.render.color="gray" >
+    <Window id="clock" back.render.type="color" back.render.color="gray" layout.left="0" layout.top="0">
       <Panel width="360" height="360">
       <RoundPanel id="panel_clock" width="300" height="300" corner="50" 
         fore.render.type="color" fore.render.color="white" 

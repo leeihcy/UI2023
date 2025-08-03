@@ -59,32 +59,6 @@ struct TOOLTIPITEM {
   int nToolTipFlag;
 };
 
-class TimerItem;
-typedef void (*UITimerProc)(unsigned int *nTimerID, TimerItem *pTimerItem);
-
-struct IMessage;
-class TimerItem {
-public:
-  int nRepeatCount; // 响应次数,-1表示无限
-
-  IMessage *pNotify; // 响应WM_TIMER的对象
-  UITimerProc pProc;
-  // TODO: std::function<bool(unsigned int *, TimerItem *)> func;
-
-  unsigned int *nId;
-  long wParam;
-  long lParam;
-
-  TimerItem() {
-    nRepeatCount = -1;
-    pNotify = nullptr;
-    pProc = nullptr;
-    wParam = 0;
-    lParam = 0;
-    nId = 0;
-  }
-};
-
 // UI_WM_DROPTARGETEVENT 消息参数
 enum DROPTARGETEVENT_TYPE {
   _DragEnter,

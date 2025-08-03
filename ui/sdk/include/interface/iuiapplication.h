@@ -4,6 +4,7 @@
 #include "sdk/include/interface/ilayout.h"
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/uiapi.h"
+#include "sdk/include/common/signalslot/slot.h"
 // #include <functional>
 
 namespace uia {
@@ -111,12 +112,13 @@ public:
 
   bool ShowToolTip(TOOLTIPITEM *pItem);
   void HideToolTip();
-  unsigned int SetTimer(int nElapse, IMessage *pNotify);
-  unsigned int SetTimerById(int nElapse, unsigned int nId, IMessage *pNotify);
-  unsigned int SetTimer(int nElapse, TimerItem *pTimerItem);
-  void KillTimer(unsigned int &nTimerID);
-  void KillTimerById(int nId, IMessage *pNotify);
-  void KillTimerByNotify(IMessage *pNotify);
+
+  unsigned int SetTimer(int elapse, slot<bool(unsigned int)>&& timer_callback);
+  void KillTimer(unsigned int timer_id);
+  // unsigned int SetTimerById(int nElapse, unsigned int nId, IMessage *pNotify);
+  // unsigned int SetTimer(int nElapse, TimerItem *pTimerItem);
+  // void KillTimerById(int nId, IMessage *pNotify);
+  // void KillTimerByNotify(IMessage *pNotify);
 
 #if 0
     HDC   GetCacheDC();

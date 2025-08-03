@@ -17,9 +17,16 @@ public:
 
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
+
+  int CreateTimer(int interval) override;
+  void DestroyTimer(int timer_fd) override;
+
   void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;
 
+private:
+  int create_timer(long long interval_ns);
+  
 private:
   MessageLoop* m_message_loop = nullptr;
   bool m_running = true;

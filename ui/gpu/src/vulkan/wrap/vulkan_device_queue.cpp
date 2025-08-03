@@ -116,7 +116,8 @@ bool DeviceQueue::pick_physical_device() {
     score += deviceProperties.limits.maxImageDimension2D;
 
 #if defined(OS_LINUX)
-    // llvmpipie是Mesa模拟的软件渲染器，为CPU实现，降低分数。
+    // llvmpipie是Mesa模拟的软件渲染器，是CPU模拟实现的，会消耗大量CPU。
+    // 在这里降低它的分数权重。
     if (strstr(deviceProperties.deviceName, "llvmpipe") != nullptr) {
       score = score >> 2;
     }

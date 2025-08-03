@@ -143,6 +143,18 @@ void Window::Show() {
   }
 }
 
+void Window::Hide() {
+  if (m_platform) {
+    m_platform->Hide();
+  }
+}
+bool Window::IsVisible() {
+  if (m_platform) {
+    return m_platform->IsWindowVisible();
+  }
+  return false;
+}
+
 void Window::enterResize(bool b) { m_window_style.enter_resize = b; }
 
 // width height是乘以了缩放系统的值。

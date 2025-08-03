@@ -46,9 +46,13 @@ public:
   bool Create(CreateWindowParam &param) override;
   WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;
-  void Show() override;
+  void Show(bool active=true) override;
+  void Hide() override;
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
+
+  void UpdateNonClientRegion(Rect* region) override;
+  void GetMonitorWorkArea(Rect* rect) override;
   void SetWindowPos(int x, int y, int w, int h,
                     SetPositionFlags flags) override;
   // void Invalidate(const Rect *prect) override;
@@ -58,6 +62,7 @@ public:
 
 public:
   void Destroy();
+  void Activate();
 
 public:
   void on_xdg_surface_configure(struct xdg_surface *xdg_surface);
@@ -97,6 +102,7 @@ private:
   struct xdg_surface *m_xdg_surface = nullptr;
   struct xdg_toplevel *m_xdg_toplevel = nullptr;
 
+  // 窗口图像缓存
   WaylandSurfaceSharedMemory m_shm;
 
   // window state:

@@ -22,6 +22,8 @@ void IWindow::SetTitle(const char *title_utf8) {
   __pImpl->SetTitle(title_utf8);
 }
 void IWindow::Show() { __pImpl->Show(); }
+bool IWindow::IsVisible() { return __pImpl->IsVisible(); }
+void IWindow::Hide() { __pImpl->Hide(); }
 
 void IWindow::GetClientRect(ui::Rect* rc) {
   __pImpl->m_platform->GetClientRect(rc);

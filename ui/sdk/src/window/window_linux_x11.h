@@ -34,6 +34,9 @@ public:
                     SetPositionFlags flags) override;
   void GetClientRect(Rect *prect) override;
   void GetWindowRect(Rect *prect) override;
+
+  void UpdateNonClientRegion(Rect* region) override { assert(false); }
+  void GetMonitorWorkArea(Rect* rect) override { assert(false); }
   void CenterWindow();
   // void Invalidate(const Rect *prect) override;
   bool IsChildWindow() override;
@@ -43,8 +46,8 @@ public:
   void Attach(::Window window);
   ::Window Detach();
 
-  void Show() override;
-  void Hide();
+  void Show(bool active=true) override;
+  void Hide() override;
 
   void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
 

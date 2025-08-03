@@ -140,6 +140,8 @@ shared_library("uisdk") {
         "src/helper/topwindow/topwindowmanager.cpp",
         "src/helper/version/versionhelper.cpp",
         "src/helper/scale/scale_factor.cpp",
+        "src/helper/timer/timer.h",
+        "src/helper/timer/timer.cpp",
         "src/layer/compositor.cpp",
         "src/layer/layer.cpp",
         "src/layer/ilayer.cpp",
@@ -271,6 +273,16 @@ shared_library("uisdk") {
             # wayland-scanner private-code /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml xdg-shell-protocol.c
             "src/window/linux/xdg-shell-client-protocol.h",
             "src/window/linux/xdg-shell-protocol.c",
+
+            # wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml xdg-output-unstable-v1-client-protocol.h
+            # wayland-scanner private-code /usr/share/wayland-protocols/unstable/xdg-output/xdg-output-unstable-v1.xml xdg-output-unstable-v1-protocol.c
+            "src/window/linux/xdg-output-unstable-v1-client-protocol.h",
+            "src/window/linux/xdg-output-unstable-v1-protocol.c",
+
+            # wayland-scanner client-header /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml xdg-activation-v1-client-protocol.h
+            # wayland-scanner private-code /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml xdg-activation-v1-protocol.c
+            "src/window/linux/xdg-activation-v1-client-protocol.h",
+            "src/window/linux/xdg-activation-v1-protocol.c",
         ]
         libs += [
             "glib-2.0",

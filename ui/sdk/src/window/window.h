@@ -36,7 +36,11 @@ struct WindowPlatform {
 
   virtual WINDOW_HANDLE GetWindowHandle() = 0;
   virtual void SetTitle(const char *title) = 0;
-  virtual void Show() = 0;
+
+  virtual bool IsWindowVisible() = 0;
+  virtual void Show(bool active=true) = 0;
+  virtual void Hide() = 0;
+  
   // 返回窗口像素大小。
   virtual void GetClientRect(Rect *prect) = 0;
   virtual void GetWindowRect(Rect *prect) = 0;
@@ -48,7 +52,6 @@ struct WindowPlatform {
   virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
   // virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
-  virtual bool IsWindowVisible() = 0;
   virtual void Commit(IRenderTarget* pRT, const Rect* prect, int count) = 0;
 };
 
@@ -72,6 +75,9 @@ public:
   WINDOW_HANDLE GetWindowHandle();
   void SetTitle(const char *title);
   void Show();
+  void Hide();
+  bool IsVisible();
+
   float GetScaleFactor();
   Size GetDesiredSize();
 

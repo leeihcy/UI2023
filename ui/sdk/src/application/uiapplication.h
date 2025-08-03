@@ -7,6 +7,7 @@
 #include "src/resource/resource_manager.h"
 #include "src/animate/wrap/animate_wrap.h"
 #include "src/helper/topwindow/topwindowmanager.h"
+#include "src/helper/timer/timer.h"
 #include "src/layout/layout_factory.h"
 #include "src/render/renderbase_factory.h"
 #include "src/render/textrender/textrender_factory.h"
@@ -15,24 +16,10 @@
 #if defined(OS_WIN)
 #include "src/util/windows.h"
 #endif
-// #include "src/helper/tooltip/tooltipmanager.h"
-// #include "ui/UISDK/Src/Animate/wrap/animate.h
 
 namespace ui {
 
 class GifTimerManager;
-// struct IMeta;
-// class ImageManager;
-// class ImageRes;
-// class CursorRes;
-// class GifRes;
-// class FontManager;
-// class FontRes;
-// class ColorManager;
-// class ColorRes;
-// class StyleManager;
-// class StyleRes;
-// class LayoutManager;
 struct IUIAutoTest;
 
 class Application {
@@ -72,6 +59,7 @@ public:
   RenderBaseFactory &GetRenderBaseFactory() { return m_renderBaseFactory; }
   TextRenderFactory &GetTextRenderFactroy() { return m_textRenderFactroy; }
   LayoutFactory &GetLayoutFactory() { return m_layoutFactory; }
+  TimerHelper &GetTimerHelper() { return m_timer_helper; }
 
   const char *GetRenderBaseName(int nType);
   bool CreateRenderBaseByName(const char *szName, IObject *pObject,
@@ -129,6 +117,7 @@ private:
   LayoutFactory m_layoutFactory;
 
   TopWindowManager m_TopWindowMgr;
+  TimerHelper m_timer_helper;
 
 #if 0 // defined(OS_WIN)
   GifTimerManager *m_pGifTimerMgr;

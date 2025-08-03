@@ -136,7 +136,7 @@ void WindowPlatformLinuxX11::initEvent() {
                   sizeof(protocols) / sizeof(Atom));
 }
 
-void WindowPlatformLinuxX11::Show() {
+void WindowPlatformLinuxX11::Show(bool active) {
   XMapWindow(m_display, m_window);
   //   XFlush(m_display);
 }

@@ -215,6 +215,11 @@ Note: including file:%s%s\n
 
 ## submodule
 
+配置git pull时，默认不更新submodule:
+```sh
+git config --global submodule.update none
+```
+
 ### depot_tools
 
 depot_tools 用于编译skia

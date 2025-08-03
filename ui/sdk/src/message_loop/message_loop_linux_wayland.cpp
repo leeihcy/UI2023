@@ -9,7 +9,7 @@
 
 namespace ui {
 
-void MessageLoopPlatformLinuxWayland::Initialize(MessageLoop * message_loop) { 
+void MessageLoopPlatformLinuxWayland::Initialize(MessageLoop *message_loop) {
   m_message_loop = message_loop;
   m_epoll_fd = epoll_create1(0);
 }
@@ -37,17 +37,21 @@ void MessageLoopPlatformLinuxWayland::Run() {
       if (events[i].data.fd == fd_wayland) {
         // Wayland 事件就绪，调用 dispatch
         if (wl_display_dispatch(display) == -1) {
-          printf("wl_display_dispatch failed");
+          printf("MessageLoopPlatformLinuxWayland::Run, wl_display_dispatch failed");
           m_running = false;
           break;
         }
-      }
-      else if (events[i].data.fd == m_animate_timer_fd) {
-          // 定时器触发
-          // 必须读取以清除事件
-          uint64_t exp;
-          read(m_animate_timer_fd, &exp, sizeof(exp));  
-          m_message_loop->OnAnimateTimer();
+      } else if (events[i].data.fd == m_animate_timer_fd) {
+        // 定时器触发
+        // 必须读取以清除事件
+        uint64_t exp;
+        read(m_animate_timer_fd, &exp, sizeof(exp));
+        m_message_loop->OnAnimateTimer();
+      } else {
+        int fd = events[i].data.fd;
+        uint64_t exp;
+        read(fd, &exp, sizeof(exp));
+        m_message_loop->OnTimer(fd);
       }
     }
   }
@@ -85,6 +89,42 @@ int MessageLoopPlatformLinuxWayland::ScheduleTask(ScheduleTaskType &&task,
                                                   int delay_ms) {
   return 0;
 }
+
+
+int MessageLoopPlatformLinuxWayland::CreateTimer(int interval_ms) {
+  long long period = ((long long)interval_ms)* 1000 * 1000; // 转换为纳秒
+  return create_timer(period);
+}
+
+int MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
+  long long period = interval_ns;
+  int sec = period / 1000000000;
+  long long ns = period % 1000000000;
+
+  int timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
+  struct itimerspec its = {.it_interval = {.tv_sec = sec, .tv_nsec = ns},
+                           .it_value = {.tv_sec = sec, .tv_nsec = ns}};
+  timerfd_settime(timer_fd, 0, &its, NULL);
+
+  struct epoll_event ev;
+  ev.events = EPOLLIN;
+  ev.data.fd = timer_fd;
+  epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, timer_fd, &ev);
+  return timer_fd;
+}
+
+void MessageLoopPlatformLinuxWayland::DestroyTimer(int timer_fd) {
+  if (timer_fd <= -1) {
+    return;
+  }
+  struct epoll_event ev;
+  ev.events = EPOLLIN;
+  ev.data.fd = m_animate_timer_fd;
+  epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, m_animate_timer_fd, &ev);
+
+  close(timer_fd);
+}
+
 void MessageLoopPlatformLinuxWayland::CreateAnimateTimer(int fps) {
   if (fps == 0) {
     fps = 60;
@@ -94,28 +134,13 @@ void MessageLoopPlatformLinuxWayland::CreateAnimateTimer(int fps) {
   }
   assert(m_epoll_fd > -1);
 
-  long long period = 1000 * 1000 * 1000 / fps;
-
-  m_animate_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);
-  struct itimerspec its = {
-      .it_interval = {.tv_sec = 0, .tv_nsec =  period},
-      .it_value = {.tv_sec = 0, .tv_nsec = period}};
-  timerfd_settime(m_animate_timer_fd, 0, &its, NULL);
-
-  struct epoll_event ev;
-  ev.events = EPOLLIN;
-  ev.data.fd = m_animate_timer_fd;
-  epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_animate_timer_fd, &ev);
+  long long period = 1000*1000*1000 / fps;
+  m_animate_timer_fd = create_timer(period);
 }
 
 void MessageLoopPlatformLinuxWayland::DestroyAnimateTimer() {
   if (m_animate_timer_fd > -1) {
-    struct epoll_event ev;
-    ev.events = EPOLLIN;
-    ev.data.fd = m_animate_timer_fd;
-    epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, m_animate_timer_fd, &ev);
-
-    close(m_animate_timer_fd);
+    DestroyTimer(m_animate_timer_fd);
     m_animate_timer_fd = -1;
   }
 }

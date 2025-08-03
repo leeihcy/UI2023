@@ -3,6 +3,7 @@
 #if defined(OS_LINUX)
 #include "message_loop_linux_wayland.h"
 #include "message_loop_linux.h"
+
 #elif defined(OS_MAC)
 #include "message_loop_mac.h"
 #elif defined(OS_WIN)
@@ -55,6 +56,21 @@ void MessageLoop::DestroyAnimateTimer() {
 }
 void MessageLoop::OnAnimateTimer() {
   m_app.OnAnimateTimer();
+}
+
+int MessageLoop::CreateTimer(int interval) {
+  assert(m_platform);
+  return m_platform->CreateTimer(interval);
+}
+void MessageLoop::DestroyTimer(int timer_fd) {
+  if (!m_platform) {
+    return;
+  }
+  m_platform->DestroyTimer(timer_fd);
+}
+
+void MessageLoop::OnTimer(int timer_fd) {
+  m_app.GetTimerHelper().onTimer(timer_fd);
 }
 
 void MessageLoop::Run() { m_platform->Run(); }

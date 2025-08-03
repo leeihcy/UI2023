@@ -72,8 +72,21 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
   story->Begin();
 }
 
+bool on_test_timer(ui::IWindow *window, unsigned int timer_id) {
+
+  if (window->IsVisible()) {
+    printf("on timer to hide\n");
+    window->Hide();
+  } else {
+    printf("on timer to show\n");
+    window->Show();
+  }
+
+  return true;
+}
+
 int main() {
-  bool use_gpu = true;
+  bool use_gpu = false;
 
   ui::ApplicationPtr app;
   if (use_gpu) {
@@ -98,7 +111,11 @@ int main() {
     // g_clock_animate.update_rotate(window.get());
     // start_animate(app.get(), window.get());
   }
+
+  unsigned int timer_id =
+      app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
+  app->KillTimer(timer_id);
 
   return 0;
 }

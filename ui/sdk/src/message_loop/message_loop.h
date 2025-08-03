@@ -22,6 +22,8 @@ struct MessageLoopPlatform {
   virtual void Quit() = 0;
   virtual void PostTask(PostTaskType &&task) = 0;
   virtual int ScheduleTask(ScheduleTaskType &&task, int delay_ms) = 0;
+  virtual int CreateTimer(int interval) = 0;
+  virtual void DestroyTimer(int timer_fd) = 0;
   virtual void CreateAnimateTimer(int fps) = 0;
   virtual void DestroyAnimateTimer() = 0;
 };
@@ -40,6 +42,10 @@ public:
   void CreateAnimateTimer(int fps);
   void DestroyAnimateTimer();
   void OnAnimateTimer();
+  
+  int CreateTimer(int interval);
+  void DestroyTimer(int timer_fd);
+  void OnTimer(int timer_fd);
 
   Application& GetApplication() { return m_app; }
 
