@@ -88,10 +88,11 @@ protected:
 
 private:
   struct wl_buffer *create_shm_buffer(int width, int height, uint32_t format);
-  void create_surface();
+  void create_surface(int scale);
   void destroy_surface();
   void create_toplevel();
   void destroy_toplevel();
+  void update_decoration();
 
 private:
   ui::Window &m_ui_window;
@@ -101,6 +102,7 @@ private:
   struct wl_surface *m_surface = nullptr;
   struct xdg_surface *m_xdg_surface = nullptr;
   struct xdg_toplevel *m_xdg_toplevel = nullptr;
+  struct zxdg_toplevel_decoration_v1 *m_decoration = nullptr;
 
   // 窗口图像缓存
   WaylandSurfaceSharedMemory m_shm;
@@ -108,8 +110,12 @@ private:
   // window state:
   WaylandVisibleState m_visible = WaylandVisibleState::Hidden;
   std::string m_title_utf8;
-  unsigned short m_width = 0;
-  unsigned short m_height = 0;
+
+  // 系统边框类型
+  bool m_use_native_frame = true;
+
+  Rect m_bound_dip;  // 逻辑坐标
+  Rect m_bound_px;   // 物理坐标
 };
 
 } // namespace ui

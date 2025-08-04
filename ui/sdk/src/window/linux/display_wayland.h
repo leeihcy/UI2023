@@ -4,6 +4,7 @@
 #include "xdg-shell-client-protocol.h"
 #include "xdg-output-unstable-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
+#include "xdg-decoration-client-protocol.h"
 #include <map>
 #include <memory>
 #include <wayland-client.h>
@@ -40,6 +41,8 @@ public:
 
   void on_wl_output_mode(struct wl_output *wl_output, uint32_t flags, int32_t width,
                          int32_t height, int32_t refresh);
+  void on_wl_output_scale(struct wl_output *wl_output, int32_t factor);
+
 protected:
   struct wl_display *m_display = nullptr;
   struct wl_compositor *m_compositor = nullptr;
@@ -51,12 +54,10 @@ protected:
   struct wl_pointer *m_wl_pointer = nullptr;
   struct wl_output *m_wl_output = nullptr;
   struct xdg_activation_v1* m_xdg_activation_v1 = nullptr;
-
-#if 0
   struct zxdg_output_manager_v1* m_zxdg_output_manager_v1 = nullptr;
-#endif
-  friend class WaylandDisplay;
+  struct zxdg_decoration_manager_v1 *m_zxdg_decoration_manager_v1 = nullptr;
 
+  friend class WaylandDisplay;
 private:
   std::map<wl_surface *, ISurfacePointerCallback *> m_map_window;
   // 记录当前鼠标下的窗口。因为鼠标移动和点击时没有返回窗口参数。
@@ -67,6 +68,7 @@ private:
 public:
   int m_output_width = 0;
   int m_output_height = 0;
+  float m_scale;
 };
 
 class WaylandDisplay {
@@ -81,11 +83,14 @@ public:
   struct xdg_wm_base *get_xdg_wm_base();
   struct wl_seat *get_wl_seat();
   struct xdg_activation_v1* get_xdg_activation_v1();
+  struct zxdg_output_manager_v1* get_zxdg_output_manager_v1();
+  struct zxdg_decoration_manager_v1* get_zxdg_decoration_manager_v1();
 
   void BindSurface(struct wl_surface *, ISurfacePointerCallback *);
   void UnbindSurface(struct wl_surface *);
 
   void GetOutputSize(int* width, int* height) const;
+  float GetOutputScale() const;
 };
 
 } // namespace ui

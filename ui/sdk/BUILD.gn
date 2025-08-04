@@ -283,6 +283,12 @@ shared_library("uisdk") {
             # wayland-scanner private-code /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml xdg-activation-v1-protocol.c
             "src/window/linux/xdg-activation-v1-client-protocol.h",
             "src/window/linux/xdg-activation-v1-protocol.c",
+
+            # wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-client-protocol.h
+            # wayland-scanner private-code /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-protocol.c
+            "src/window/linux/xdg-decoration-client-protocol.h",
+            "src/window/linux/xdg-decoration-protocol.c",
+
         ]
         libs += [
             "glib-2.0",

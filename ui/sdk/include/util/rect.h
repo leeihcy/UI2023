@@ -32,6 +32,8 @@ struct SizeF {
 struct SetPositionFlags {
   bool move = true;
   bool size = true;
+  bool is_pixel_unit = false;  // 默认是逻辑坐标
+  
   bool update_layout_pos = true;
   bool send_noitfy = true;
 

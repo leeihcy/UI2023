@@ -158,12 +158,12 @@ bool Window::IsVisible() {
 void Window::enterResize(bool b) { m_window_style.enter_resize = b; }
 
 // width height是乘以了缩放系统的值。
-void Window::onSize(int window_width, int window_height) {
-  if (m_window_width == window_width && m_window_height == window_height) {
+void Window::onSize(int window_width_px, int window_height_px) {
+  if (m_window_width_px == window_width_px && m_window_height_px == window_height_px) {
     return;
   }
-  m_window_width = window_width;
-  m_window_height = window_height;
+  m_window_width_px = window_width_px;
+  m_window_height_px = window_height_px;
 
   Rect rc_client;
   m_platform->GetClientRect(&rc_client);

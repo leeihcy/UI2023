@@ -74,6 +74,7 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
 
 bool on_test_timer(ui::IWindow *window, unsigned int timer_id) {
 
+#if 0 // for show/hide test
   if (window->IsVisible()) {
     printf("on timer to hide\n");
     window->Hide();
@@ -81,7 +82,7 @@ bool on_test_timer(ui::IWindow *window, unsigned int timer_id) {
     printf("on timer to show\n");
     window->Show();
   }
-
+#endif
   return true;
 }
 

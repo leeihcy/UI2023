@@ -125,6 +125,7 @@ void DesktopLayout::Arrange(Window *window) {
 
   SetPositionFlags flags;
   flags.redraw = false;
+  flags.is_pixel_unit = true;
   window->m_platform->SetWindowPos(x, y, size_window.width, size_window.height,
                                    flags);
 

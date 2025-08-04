@@ -100,8 +100,8 @@ public:
   // platform回调
   void onClose();
   void onDestroy();
-  void onPaint(const Rect *commit_rect);
-  void onSize(int width, int height);
+  void onPaint(const Rect *commit_rect_dip);
+  void onSize(int width_px, int height_px);
   void enterResize(bool);
 
 private:
@@ -141,8 +141,8 @@ private:
 
 	WindowStyle m_window_style;
     
-  int m_window_width = 0;
-  int m_window_height = 0;
+  int m_window_width_px = 0;
+  int m_window_height_px = 0;
 
 private:
   // 属性 ------------------------

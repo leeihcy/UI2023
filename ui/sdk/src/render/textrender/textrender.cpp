@@ -247,6 +247,8 @@ void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
                  font_desc.face)
 #if defined(OS_WIN)
       ->SetDefault("Microsoft YaHei")
+#elif defined (OS_LINUX)
+      ->SetDefault("Noto Sans CJK SC")
 #elif defined(OS_MAC)
       ->SetDefault("PingFang SC") // monospace, Songti
 #endif
