@@ -5,19 +5,17 @@
 
 namespace ui {
 class Application;
-
+typedef void* TimerID;
 
 //
 //  计时器辅助类，在时间到达之后，将给该对象发送WM_TIMER消息
 //
 class TimerHelper {
 public:
-  typedef unsigned int TimerId;
-
   TimerHelper(Application& app);
 
-  unsigned int SetTimer(int elapse, slot<bool(unsigned int)>&& timer_callback);
-  void KillTimer(unsigned int timer_id);
+  TimerID SetTimer(int elapse, slot<bool(TimerID)>&& timer_callback);
+  void KillTimer(TimerID timer_id);
 
   // TimerId  SetTimer(int nElapse, IMessage* pNotify);
   // TimerId  SetTimer(int nElapse, std::function<bool(TimerId,TimerItem*)>
@@ -32,13 +30,12 @@ public:
   // idEvent,	unsigned int dwTime ); void  OnTimer(TimerId idEvent);
 
 protected:
-  void onTimer(unsigned int timer_id);
+  void onTimer(TimerID timer_id);
   friend class MessageLoop;
 
 private:
   Application& m_app;
-  std::map<TimerId, signal<bool(unsigned int)>> m_mapTimerItem;
-  
+  std::map<TimerID, signal<bool(TimerID)>> m_mapTimerItem;
 };
 
 } // namespace ui

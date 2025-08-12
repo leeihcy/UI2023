@@ -18,8 +18,8 @@ public:
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
 
-  int CreateTimer(int interval) override;
-  void DestroyTimer(int timer_fd) override;
+  TimerID CreateTimer(int interval) override;
+  void DestroyTimer(TimerID timer_fd) override;
 
   void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;

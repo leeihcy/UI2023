@@ -1,9 +1,9 @@
 #include "message_loop_mac.h"
 #include "../application/application_mac.h"
 #import <AppKit/AppKit.h>
-#include <cstdio>
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
+#include <cstdio>
 
 // 对于 event loop 的具体实现有两个：
 // 1. Foundation 框架中的 NSRunLoop
@@ -108,7 +108,7 @@ struct TimerDataMac {
   ScheduleTaskType timeout_slot;
 };
 
-static void onTimerEntry(__CFRunLoopTimer *timer, void *info) {
+static void onScheduleTaskTimer(__CFRunLoopTimer *timer, void *info) {
   TimerDataMac *data = static_cast<TimerDataMac *>(info);
 
   bool continue_run = data->timeout_slot.emit();
@@ -132,32 +132,53 @@ void MessageLoopPlatformMac::PostTask(PostTaskType &&task) {
   CFRunLoopSourceSignal(m_idle_source);
   CFRunLoopWakeUp(CFRunLoopGetCurrent());
 }
+
 int MessageLoopPlatformMac::ScheduleTask(ScheduleTaskType &&task,
                                          int delay_ms) {
   CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
 
   timer_context.info =
       new TimerDataMac(this, std::forward<ScheduleTaskType>(task));
-  CFRunLoopTimerRef timer = CFRunLoopTimerCreate(NULL, // allocator
-                                                 CFAbsoluteTimeGetCurrent(),
-                                                 delay_ms / 1000, // interval
-                                                 0,               // flags
-                                                 0,               // priority
-                                                 onTimerEntry, &timer_context);
+  CFRunLoopTimerRef timer =
+      CFRunLoopTimerCreate(NULL, // allocator
+                           CFAbsoluteTimeGetCurrent(),
+                           (double)delay_ms / 1000, // interval
+                           0,                       // flags
+                           0,                       // priority
+                           onScheduleTaskTimer, &timer_context);
   CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopCommonModes);
 
   return 0;
 }
 
-
 static void onAnimateTimer(__CFRunLoopTimer *timer, void *info) {
-  MessageLoopPlatformMac* pthis = (MessageLoopPlatformMac*)info;
+  MessageLoopPlatformMac *pthis = (MessageLoopPlatformMac *)info;
   // 触发这个回调时，应该可以认为MessageLoopPlatformMac还活着。
   pthis->OnAnimateTimer();
 }
 
 void MessageLoopPlatformMac::OnAnimateTimer() {
   m_message_loop->OnAnimateTimer();
+}
+
+void onTimer(__CFRunLoopTimer *timer, void *info) {
+  ((MessageLoop*)info)->OnTimer((TimerID)timer);
+}
+
+TimerID MessageLoopPlatformMac::CreateTimer(int interval_ms) {
+  CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
+  timer_context.info = m_message_loop;
+  CFRunLoopTimerRef timer = CFRunLoopTimerCreate(
+      NULL, CFAbsoluteTimeGetCurrent(), (double)interval_ms / 1000, 0, 0,
+      onTimer, &timer_context);
+  CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopCommonModes);
+  return (TimerID)timer;
+}
+
+void MessageLoopPlatformMac::DestroyTimer(TimerID timer_id) {
+  CFRunLoopTimerRef timer = (CFRunLoopTimerRef)timer_id;
+  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), timer,
+                       kCFRunLoopCommonModes);
 }
 
 void MessageLoopPlatformMac::CreateAnimateTimer(int fps) {
@@ -174,18 +195,20 @@ void MessageLoopPlatformMac::CreateAnimateTimer(int fps) {
   // mac的timer能支持高精度的定时
   // 60fps
   m_animate_timer = CFRunLoopTimerCreate(NULL, // allocator
-                                                 CFAbsoluteTimeGetCurrent(),
-                                                 1/(double)fps,       // interval
-                                                 0,               // flags
-                                                 0,               // priority
-                                                 onAnimateTimer, &timer_context);
-  CFRunLoopAddTimer(CFRunLoopGetCurrent(), m_animate_timer, kCFRunLoopCommonModes);
+                                         CFAbsoluteTimeGetCurrent(),
+                                         1 / (double)fps, // interval
+                                         0,               // flags
+                                         0,               // priority
+                                         onAnimateTimer, &timer_context);
+  CFRunLoopAddTimer(CFRunLoopGetCurrent(), m_animate_timer,
+                    kCFRunLoopCommonModes);
 }
 void MessageLoopPlatformMac::DestroyAnimateTimer() {
   if (!m_animate_timer) {
     return;
   }
-  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), m_animate_timer, kCFRunLoopCommonModes);
+  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), m_animate_timer,
+                       kCFRunLoopCommonModes);
   m_animate_timer = nullptr;
 }
 

@@ -12,6 +12,8 @@ public:
     bool log_window_onpaint = true;
     // 记录和gpu相关的动作
     bool log_gpu = true;
+    // 保护rendertarget到本地
+    bool dump_render_target = false;
   };
 
 public:

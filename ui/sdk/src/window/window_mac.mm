@@ -246,10 +246,12 @@ void WindowPlatformMac::Invalidate(const Rect *prect) {
 bool WindowPlatformMac::IsChildWindow() { return m_window.parentWindow != nil; }
 bool WindowPlatformMac::IsWindowVisible() { return !!m_window.visible; }
 
-void WindowPlatformMac::Show() {
+void WindowPlatformMac::Show(bool activate) {
   [m_window orderFront:nil];
 
-  [NSApp activateIgnoringOtherApps:YES];
+  if (activate) {
+    [NSApp activateIgnoringOtherApps:YES];
+  }
   [m_window makeKeyAndOrderFront:NSApp];
 }
 void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
@@ -264,6 +266,14 @@ void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 //
 void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
                                int count) {
+// static int i = 0; 
+// i++;
+// if (i >2) {
+//   return;
+// }
+
+    int client_width = m_window.contentView.bounds.size.width;
+    int client_height = m_window.contentView.bounds.size.height;
 
   // {
   //   SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
@@ -279,8 +289,6 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
   //   CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
   //       NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
 
-  //   int client_width = m_window.contentView.bounds.size.width;
-  //   int client_height = m_window.contentView.bounds.size.height;
   //   CGImageRef image = CGImageCreate(
   //       // pm.width(), pm.height(),
   //       client_width, client_height, 8, 32, pm.rowBytes(),
@@ -299,7 +307,8 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
   if (!context) {
     for (int i = 0; i < count; i++) {
       NSRect rect = NSMakeRect(prect->left,
-                               prect->top,
+      // 转换成左下角原点
+                               client_height - prect->top - prect->height(),
                                prect->width(),
                                prect->height());
       [m_window.contentView displayRect:rect];
@@ -347,7 +356,7 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
       const ui::Rect &rc_dirty = prect[i];
       Rect rc = prect[i];
       m_ui_window.m_dpi.ScaleRect(&rc);
-      // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 600);
+      // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 300);
 
 #if 1
       // 效率比使用clip低，废弃
@@ -356,7 +365,8 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
       CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
       NSRect dirty = CGRectMake(rc_dirty.left, // * m_window.backingScaleFactor,
-                                rc_dirty.top, // * m_window.backingScaleFactor,
+      // 转换成左下角原点
+                                client_height - rc_dirty.top - rc_dirty.height(), // * m_window.backingScaleFactor,
                                 rc_dirty.width(), // * m_window.backingScaleFactor,
                                 rc_dirty.height()); // * m_window.backingScaleFactor);
 
@@ -512,7 +522,10 @@ void *WindowPlatformMac::GetNSWindowRootView() {
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 
-  ui::Rect r = {(int)rect.origin.x, (int)rect.origin.y, (int)rect.size.width,
+  // 转换成左上角坐标
+  ui::Rect r = {(int)rect.origin.x, 
+    (int)(self.bounds.size.height - rect.origin.y - rect.size.height), 
+    (int)rect.size.width,
                 (int)rect.size.height};
   m_window->onPaint(r);
 }

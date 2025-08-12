@@ -909,6 +909,7 @@ void SkiaRenderTarget::Render2DC(/*HDC*/ llong _hDC,
 // software，将子layer画到父layer上面。
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
                                      Render2TargetParam *pParam) {
+
   if (!m_sksurface) {
     return;
   }

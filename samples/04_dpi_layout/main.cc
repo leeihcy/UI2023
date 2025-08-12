@@ -30,6 +30,13 @@ void on_window_paint(ui::IWindow* window, ui::Event *e) {
 #endif
 }
 
+
+bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
+  window->FindObject("title")->Invalidate();
+  printf("invalidate title\n");
+  return true;
+}
+
 int main() {
   char version[32] = {0};
   ui::SDKVersion::GetVersionText(version, 32);
@@ -39,14 +46,18 @@ int main() {
 
   ui::WindowPtr window(resource);
 
-  ui::Rect rc = ui::Rect::MakeXYWH(0, 0, 500, 400);
+  auto rc = ui::Rect::MakeXYWH(100, 100, 600, 600);
   window->Create("dpi_layout", &rc);
   window->SetTitle("Dpi & Layout Demo");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
 
+  
+  ui::TimerID timer_id =
+      app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
+  app->KillTimer(timer_id);
 
   return 0;
 }

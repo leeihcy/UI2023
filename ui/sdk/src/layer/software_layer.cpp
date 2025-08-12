@@ -1,6 +1,7 @@
 #include "software_layer.h"
 #include "compositor.h"
 #include "include/interface/renderlibrary.h"
+#include "src/application/config/config.h"
 
 namespace ui {
 SoftwareLayer::SoftwareLayer() {}
@@ -36,12 +37,16 @@ void SoftwareLayer::UpdateDirty() {
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
 
-#ifdef _DEBUGx
-  static int i = 0;
-  wchar_t szPath[100];
-  wprintf(szPath, L"D:\\test\\%d.png", i++);
-  pRenderTarget->Save(szPath);
+  if (Config::GetInstance().debug.dump_render_target) {
+    static int i = 0;
+    char path[64];
+#if defined(OS_WIN)
+    sprintf(path, "D:\\images\\%p_%d.png", pRenderTarget, i++);
+#else
+    sprintf(path, "/tmp/images/%p_%d.png", pRenderTarget, i++);
 #endif
+    pRenderTarget->Save(path);
+  }
 }
 
 } // namespace ui

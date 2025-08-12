@@ -141,21 +141,21 @@ void TimerHelper::OnTimer(UINT_PTR idEvent) {
 }
 #endif
 
-unsigned int TimerHelper::SetTimer(int elapse,
-                                   slot<bool(unsigned int)> &&timer_callback) {
-  int timer_id = m_app.GetMessageLoop().CreateTimer(elapse);
+TimerID TimerHelper::SetTimer(int elapse,
+                                   slot<bool(TimerID)> &&timer_callback) {
+  TimerID timer_id = m_app.GetMessageLoop().CreateTimer(elapse);
   m_mapTimerItem[timer_id].connect(
-      std::forward<slot<bool(unsigned int)>>(timer_callback));
+      std::forward<slot<bool(TimerID)>>(timer_callback));
   return timer_id;
 }
-void TimerHelper::KillTimer(unsigned int timer_id) {
+void TimerHelper::KillTimer(TimerID timer_id) {
   auto iter = m_mapTimerItem.find(timer_id);
   if (iter != m_mapTimerItem.end()) {
     m_app.GetMessageLoop().DestroyTimer(timer_id);
     m_mapTimerItem.erase(iter);
   }
 }
-void TimerHelper::onTimer(unsigned int timer_id) {
+void TimerHelper::onTimer(TimerID timer_id) {
   auto iter = m_mapTimerItem.find(timer_id);
   if (iter != m_mapTimerItem.end()) {
     bool continue_timer = iter->second.emit(timer_id);

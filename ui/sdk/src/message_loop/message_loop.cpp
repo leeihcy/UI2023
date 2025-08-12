@@ -1,4 +1,4 @@
-#include "message_loop.h"
+#include "src/message_loop/message_loop.h"
 #include "src/application/uiapplication.h"
 #if defined(OS_LINUX)
 #include "message_loop_linux_wayland.h"
@@ -58,18 +58,18 @@ void MessageLoop::OnAnimateTimer() {
   m_app.OnAnimateTimer();
 }
 
-int MessageLoop::CreateTimer(int interval) {
+TimerID MessageLoop::CreateTimer(int interval) {
   assert(m_platform);
   return m_platform->CreateTimer(interval);
 }
-void MessageLoop::DestroyTimer(int timer_fd) {
+void MessageLoop::DestroyTimer(TimerID timer_fd) {
   if (!m_platform) {
     return;
   }
   m_platform->DestroyTimer(timer_fd);
 }
 
-void MessageLoop::OnTimer(int timer_fd) {
+void MessageLoop::OnTimer(TimerID timer_fd) {
   m_app.GetTimerHelper().onTimer(timer_fd);
 }
 

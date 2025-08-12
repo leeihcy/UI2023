@@ -72,7 +72,7 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
   story->Begin();
 }
 
-bool on_test_timer(ui::IWindow *window, unsigned int timer_id) {
+bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
 
 #if 0 // for show/hide test
   if (window->IsVisible()) {
@@ -113,7 +113,7 @@ int main() {
     // start_animate(app.get(), window.get());
   }
 
-  unsigned int timer_id =
+  ui::TimerID timer_id =
       app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
   app->KillTimer(timer_id);

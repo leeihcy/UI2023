@@ -26,8 +26,11 @@ public:
 
   void Run() override;
   void Quit() override;
+  
   void PostTask(PostTaskType &&task) override;
   int ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
+  TimerID CreateTimer(int interval) override;
+  void DestroyTimer(TimerID timer_fd) override;
   void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;
 

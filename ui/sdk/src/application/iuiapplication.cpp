@@ -199,11 +199,11 @@ bool IApplication::RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn) {
 //     m_pImpl->HideToolTip();
 // }
 
-unsigned int IApplication::SetTimer(int elapse,
-                                    slot<bool(unsigned int)>&& timer_callback) {
+TimerID IApplication::SetTimer(int elapse,
+                                    slot<bool(TimerID)>&& timer_callback) {
   return m_pImpl->GetTimerHelper().SetTimer(elapse, std::move(timer_callback));
 }
-void IApplication::KillTimer(unsigned int timer_id) {
+void IApplication::KillTimer(TimerID timer_id) {
    m_pImpl->GetTimerHelper().KillTimer(timer_id);
 }
 

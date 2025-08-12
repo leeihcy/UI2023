@@ -36,6 +36,7 @@ struct ITextRenderBase;
 struct IMessageFilterMgr;
 struct TOOLTIPITEM;
 class TimerItem;
+typedef void* TimerID;
 
 using IApplicationPtr =
     std::unique_ptr<ui::IApplication, void (*)(IApplication *)>;
@@ -113,8 +114,8 @@ public:
   bool ShowToolTip(TOOLTIPITEM *pItem);
   void HideToolTip();
 
-  unsigned int SetTimer(int elapse, slot<bool(unsigned int)>&& timer_callback);
-  void KillTimer(unsigned int timer_id);
+  TimerID SetTimer(int elapse, slot<bool(TimerID)>&& timer_callback);
+  void KillTimer(TimerID timer_id);
   // unsigned int SetTimerById(int nElapse, unsigned int nId, IMessage *pNotify);
   // unsigned int SetTimer(int nElapse, TimerItem *pTimerItem);
   // void KillTimerById(int nId, IMessage *pNotify);

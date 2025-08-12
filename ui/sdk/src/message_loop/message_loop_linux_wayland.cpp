@@ -91,12 +91,12 @@ int MessageLoopPlatformLinuxWayland::ScheduleTask(ScheduleTaskType &&task,
 }
 
 
-int MessageLoopPlatformLinuxWayland::CreateTimer(int interval_ms) {
+TimerID MessageLoopPlatformLinuxWayland::CreateTimer(int interval_ms) {
   long long period = ((long long)interval_ms)* 1000 * 1000; // 转换为纳秒
   return create_timer(period);
 }
 
-int MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
+TimerID MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
   long long period = interval_ns;
   int sec = period / 1000000000;
   long long ns = period % 1000000000;
@@ -113,7 +113,7 @@ int MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
   return timer_fd;
 }
 
-void MessageLoopPlatformLinuxWayland::DestroyTimer(int timer_fd) {
+void MessageLoopPlatformLinuxWayland::DestroyTimer(TimerID timer_fd) {
   if (timer_fd <= -1) {
     return;
   }

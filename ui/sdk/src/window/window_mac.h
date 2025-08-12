@@ -46,8 +46,8 @@ public:
   // void Invalidate(const Rect* prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
-  void Show() override;
-  void Hide();
+  void Show(bool activate) override;
+  void Hide() override;
   void Commit(IRenderTarget* pRT, const Rect* prect, int count) override;
 
 protected:
