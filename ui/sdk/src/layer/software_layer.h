@@ -9,7 +9,7 @@ public:
   ~SoftwareLayer();
 
   virtual LayerType GetType() override { return Layer_Software; }
-  virtual void UpdateDirty() override;
+  virtual bool UpdateDirty() override;
 };
 
 } // namespace ui

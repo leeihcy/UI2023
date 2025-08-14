@@ -1,7 +1,7 @@
 #pragma once
 #include "include/interface/irenderlayer.h"
 #include "include/macro/uidefine.h"
-#include "src/util/rectregion/rectregion.h"
+#include "include/util/rect_region.h"
 #include "transform3d.h"
 
 namespace ui {
@@ -161,7 +161,7 @@ public:
   float GetYTranslate();
   float GetZTranslate();
 
-  virtual void UpdateDirty() {}
+  virtual bool UpdateDirty() { return false; }
   virtual void MapView2Layer(Point *pPoint){};
   virtual LayerType GetType() = 0;
 
@@ -191,7 +191,7 @@ protected:
 
   //
   Size m_size;
-  RectRegion m_dirtyRectangles;
+  DirtyRegion m_dirty_region;
 
   ILayerContent *m_pLayerContent;
 

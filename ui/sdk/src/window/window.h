@@ -52,7 +52,7 @@ struct WindowPlatform {
   virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
   // virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
-  virtual void Commit(IRenderTarget* pRT, const Rect* prect, int count) = 0;
+  virtual void Commit2(const FrameBuffer& fb, const Rect* prect, int count) = 0;
 };
 
 // Window不再继承自控件
@@ -68,6 +68,7 @@ public:
   WindowPlatform* GetWindowPlatform() { return m_platform.get(); }
   RootObject& GetRootObject();
   Resource& GetResource() { return *m_resource; }
+  Application& GetApplication();
 
 public:
   void OnMessage();
@@ -91,8 +92,6 @@ public:
   // virtual bool virtualCommitReq() { return false; }  // 主要是分层窗口的实现与普通窗口不一致
   // virtual void virtualInnerInitWindow();
 
-  void Commit(IRenderTarget* pRT, const Rect* prect, int count);
-  
   // Object
   void SetWindowPos(int x, int y, int cx, int cy, SetPositionFlags flags);
 

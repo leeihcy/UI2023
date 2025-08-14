@@ -108,11 +108,11 @@ void Layer::InvalidateForLayerAnimate(bool bUpdateNow) {
   if (GetType() == Layer_Software) {
     this->Invalidate(nullptr);
     if (bUpdateNow) {
-      m_pCompositor->UpdateAndCommit();
+      m_pCompositor->InvalidateNow();
     }
   } else {
     if (bUpdateNow) {
-      m_pCompositor->UpdateAndCommit();
+      m_pCompositor->InvalidateNow();
     } else {
       m_pCompositor->RequestInvalidate();
     }
@@ -128,16 +128,16 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
   Rect rcDirty = {0};
 
   if (!prcDirtyInLayer) {
-    m_dirtyRectangles.Destroy();
+    m_dirty_region.Destroy();
 
     rcDirty.Set(0, 0, m_size.width, m_size.height);
-    m_dirtyRectangles.AddRect(rcDirty);
+    m_dirty_region.AddRect(rcDirty);
   } else {
     if (prcDirtyInLayer->IsEmpty())
       return;
 
     rcDirty.CopyFrom(*prcDirtyInLayer);
-    m_dirtyRectangles.Union(*prcDirtyInLayer);
+    m_dirty_region.Union(*prcDirtyInLayer);
   }
 
   // 如果是软件渲染，向上冒泡
@@ -254,12 +254,14 @@ void Layer::OnSize(uint width, uint height, float scale) {
   if (!m_pRenderTarget) {
     GetRenderTarget();
   }
-  m_pRenderTarget->ResizeRenderBuffer(width*scale, height*scale);
+  m_pRenderTarget->Resize(width*scale, height*scale);
 
   virtualOnSize(width, height);
 }
 
-void Layer::PostCompositorRequest() { m_pCompositor->RequestInvalidate(); }
+void Layer::PostCompositorRequest() { 
+  m_pCompositor->RequestInvalidate(); 
+}
 
 void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
   if (pParam == DefaultLayerAnimateParam)
@@ -687,7 +689,7 @@ void Layer::CopyDirtyRect(RectRegion *arr) {
   if (!arr) {
     return;
   }
-  *arr = m_dirtyRectangles;
+  *arr = m_dirty_region;
 }
 
 IRenderTarget *Layer::GetRenderTarget() {
@@ -696,10 +698,6 @@ IRenderTarget *Layer::GetRenderTarget() {
       return nullptr;
 
     m_pCompositor->CreateRenderTarget(&m_pRenderTarget);
-    if (!m_pRenderTarget)
-      return nullptr;
-
-    m_pRenderTarget->CreateRenderBuffer(nullptr);
   }
 
   return m_pRenderTarget;

@@ -162,7 +162,7 @@ void MessageLoopPlatformMac::OnAnimateTimer() {
 }
 
 void onTimer(__CFRunLoopTimer *timer, void *info) {
-  ((MessageLoop*)info)->OnTimer((TimerID)timer);
+  ((MessageLoop *)info)->OnTimer((TimerID)timer);
 }
 
 TimerID MessageLoopPlatformMac::CreateTimer(int interval_ms) {
@@ -177,8 +177,7 @@ TimerID MessageLoopPlatformMac::CreateTimer(int interval_ms) {
 
 void MessageLoopPlatformMac::DestroyTimer(TimerID timer_id) {
   CFRunLoopTimerRef timer = (CFRunLoopTimerRef)timer_id;
-  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), timer,
-                       kCFRunLoopCommonModes);
+  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopCommonModes);
 }
 
 void MessageLoopPlatformMac::CreateAnimateTimer(int fps) {
@@ -210,6 +209,16 @@ void MessageLoopPlatformMac::DestroyAnimateTimer() {
   CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), m_animate_timer,
                        kCFRunLoopCommonModes);
   m_animate_timer = nullptr;
+}
+
+static void onPostTaskToUIThread(void *p) {
+  PostTaskType *task = (PostTaskType *)p;
+  task->emit();
+  delete task;
+}
+void PostTaskToUIThread(PostTaskType &&task) {
+  PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
+  dispatch_async_f(dispatch_get_main_queue(), (void *)p, onPostTaskToUIThread);
 }
 
 } // namespace ui

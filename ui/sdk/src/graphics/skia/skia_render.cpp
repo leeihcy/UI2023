@@ -3,6 +3,7 @@
 #include "include/core/SkRect.h"
 #include "include/core/SkScalar.h"
 #include "include/inc.h"
+#include "include/interface/renderlibrary.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
 #include "include/util/rect.h"
@@ -11,6 +12,7 @@
 
 #include "SkStream.h"
 #include "gpu/include/api.h"
+#include <algorithm>
 #include <cassert>
 #include <string>
 #include <vector>
@@ -21,6 +23,8 @@
 #include "third_party/skia/src/include/core/SkFont.h"
 #include "third_party/skia/src/include/core/SkFontMetrics.h"
 #include "third_party/skia/src/include/core/SkPaint.h"
+#include "third_party/skia/src/include/core/SkPath.h"
+#include "third_party/skia/src/include/core/SkRRect.h"
 #include "third_party/skia/src/include/core/SkRect.h"
 #include "third_party/skia/src/include/core/SkTextBlob.h"
 
@@ -37,10 +41,7 @@ void toSkRect(Rect &rc, SkRect *skrect) {
   skrect->fBottom = (SkScalar)rc.bottom;
 }
 
-SkiaRenderTarget::SkiaRenderTarget(bool bNeedAlphaChannel) {
-  m_bNeedAlphaChannel = bNeedAlphaChannel;
-  m_ptOffset.x = m_ptOffset.y = 0;
-}
+SkiaRenderTarget::SkiaRenderTarget() {}
 
 SkiaRenderTarget::~SkiaRenderTarget() {
   // SAFE_DELETE(m_pRenderBuffer);
@@ -55,9 +56,9 @@ void SkiaRenderTarget::update_clip_rgn() {
 #if 0
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  int count = m_arrayMetaClipRegion.GetCount();
+  int count = m_dirty_region.GetCount();
   for (int i = 0; i < count; i++) {
-    Rect *prc = m_arrayMetaClipRegion.GetRectPtrAt(i);
+    Rect *prc = m_dirty_region.GetRectPtrAt(i);
 
     SkRect skrc;
     toSkRect(*prc, &skrc);
@@ -82,101 +83,57 @@ void SkiaRenderTarget::update_clip_rgn() {
 #endif
 }
 
-void SkiaRenderTarget::SetMetaClipRegion(Rect *prc, uint nrcCount) {
-  // while (!m_stackClipRect.empty())
-  //   m_stackClipRect.pop();
-  m_stackClipRect.clear();
-
-  m_arrayMetaClipRegion.CopyFromArray(prc, nrcCount);
-
+void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion& dirty_region) {
+  m_clip_origin_impl.SetDirtyRegion(dirty_region);
   update_clip_rgn();
 }
+const DirtyRegion& SkiaRenderTarget::GetDirtyRegion() {
+  return m_clip_origin_impl.GetDirtyRegion();
+}
 
-void SkiaRenderTarget::PushRelativeClipRect(const Rect *prc) {
-  Rect rc = {0};
-  if (prc) {
-    rc.CopyFrom(*prc);
-    rc.Offset(m_ptOffset.x, m_ptOffset.y);
-  }
-
-  m_stackClipRect.push_back(rc);
-
+void SkiaRenderTarget::PushRelativeClipRect(const Rect &rc) {
+  m_clip_origin_impl.PushRelativeClipRect(rc);
   update_clip_rgn();
 }
 
 void SkiaRenderTarget::PopRelativeClipRect() {
-  assert(!m_stackClipRect.empty());
-  m_stackClipRect.pop_back();
-
+  m_clip_origin_impl.PopRelativeClipRect();
   update_clip_rgn();
 }
 
-bool SkiaRenderTarget::IsRelativeRectInClip(const Rect *prc) {
-  assert(prc);
-  if (!prc)
-    return false;
-
-  if (m_stackClipRect.empty() && m_arrayMetaClipRegion.GetCount() == 0)
-    return true;
-
-  Rect rcTest = *prc;
-  rcTest.Offset(m_ptOffset.x, m_ptOffset.y);
-
-  if (!m_arrayMetaClipRegion.IntersectRect(&rcTest, true))
-    return false;
-
-  if (m_stackClipRect.empty())
-    return true;
-
-  Rect rcIntersect = {0, 0, 1, 1};
-
-  auto iter = m_stackClipRect.begin();
-  rcIntersect.CopyFrom(*iter);
-  iter++;
-  for (; iter != m_stackClipRect.end(); ++iter) {
-    rcIntersect.Intersect((*iter), &rcIntersect);
-  }
-
-  if (!rcIntersect.Intersect(rcTest, &rcIntersect))
-    return false;
-
-  return true;
+bool SkiaRenderTarget::IsRelativeRectInClip(const Rect &rect) {
+  return m_clip_origin_impl.IsRelativeRectInClip(rect);
 }
 
 void SkiaRenderTarget::SetOrigin(int x, int y) {
-  if (m_ptOffset.x == x && m_ptOffset.y == y)
+  int old_offset_x = 0;
+  int old_offset_y = 0;
+  m_clip_origin_impl.GetOrigin(old_offset_x, old_offset_y);
+
+  if (old_offset_x == x && old_offset_y == y)
     return;
 
-  int offsetx = x - m_ptOffset.x;
-  int offsety = y - m_ptOffset.y;
-  m_ptOffset.x = x;
-  m_ptOffset.y = y;
+  int offsetx = x - old_offset_x;
+  int offsety = y - old_offset_y;
+
+  m_clip_origin_impl.SetOrigin(x, y);
 
   SkCanvas *canvas = m_sksurface->getCanvas();
   canvas->translate((SkScalar)offsetx, (SkScalar)offsety);
 }
 void SkiaRenderTarget::OffsetOrigin(int x, int y) {
-  m_ptOffset.x += x;
-  m_ptOffset.y += y;
+  m_clip_origin_impl.OffsetOrigin(x, y);
 
   SkCanvas *canvas = m_sksurface->getCanvas();
   canvas->translate((SkScalar)x, (SkScalar)y);
 }
-void SkiaRenderTarget::GetOrigin(int *px, int *py) {
-  if (px)
-    *px = m_ptOffset.x;
 
-  if (py)
-    *py = m_ptOffset.y;
-}
-
-bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {
-  return true;
-}
+// bool SkiaRenderTarget::CreateRenderBuffer(IRenderTarget *pSrcRT) {
+//   return true;
+// }
 
 // 为了加快鼠标拖拽窗口的Resize效率
-bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
-                                          unsigned int height) {
+bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   // 256的倍数，并且不减
   int fix_width = width;
   if ((fix_width & 0xFF) != 0) {
@@ -192,10 +149,14 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
         m_sksurface->height() >= fix_height) {
       return true;
     }
+
+    fix_width = std::max(m_sksurface->width(), fix_width);
+    fix_height = std::max(m_sksurface->height(), fix_height);
   }
 
-  UI_LOG_INFO("SkiaRenderTarget resize:%d,%d => %d,%d(0x%x, 0x%x)", width,
-              height, fix_width, fix_height, fix_width, fix_height);
+
+  UI_LOG_INFO("SkiaRenderTarget(%p) resize:%d,%d => %d,%d(0x%x, 0x%x)", this,
+              width, height, fix_width, fix_height, fix_width, fix_height);
 
   SkImageInfo info = SkImageInfo::Make(
       fix_width, fix_height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
@@ -213,11 +174,58 @@ bool SkiaRenderTarget::ResizeRenderBuffer(unsigned int width,
   return true;
 }
 
-void SkiaRenderTarget::GetRenderBufferData(ImageData *pData) {
-  // if (!m_pRenderBuffer)
-  // 	return;
-  // m_pRenderBuffer->GetImageData(pData);
+void *SkiaRenderTarget::GetHandle() {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  return canvas;
 }
+
+void SkiaRenderTarget::Save() {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  canvas->save();
+}
+void SkiaRenderTarget::Restore() {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  canvas->restore();
+}
+
+void SkiaRenderTarget::ClipRoundRect(const Rect &rect, int radius) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  SkScalar ul = (SkScalar)radius;
+  SkScalar ur = (SkScalar)radius;
+  SkScalar ll = (SkScalar)radius;
+  SkScalar lr = (SkScalar)radius;
+
+  SkRRect rr;
+  SkVector radii[4] = {
+      {ul, ul},
+      {ur, ur},
+      {lr, lr},
+      {ll, ll},
+  };
+  rr.setRectRadii(
+      SkRect::MakeXYWH(rect.left, rect.top, rect.Width(), rect.Height()),
+      radii);
+
+  SkPath path;
+  path.addRRect(rr);
+
+  canvas->clipPath(path, SkClipOp::kIntersect, true);
+}
+void SkiaRenderTarget::ClipRect(const Rect &rect) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  SkPath path;
+  path.addRect(
+      SkRect::MakeXYWH(rect.left, rect.top, rect.Width(), rect.Height()));
+  canvas->clipPath(path, SkClipOp::kIntersect, true);
+}
+
+// void SkiaRenderTarget::GetRenderBufferData(ImageData *pData) {
+//   // if (!m_pRenderBuffer)
+//   // 	return;
+//   // m_pRenderBuffer->GetImageData(pData);
+// }
 
 bool SkiaRenderTarget::BeginDraw(float scale) {
   if (!m_sksurface) {
@@ -254,18 +262,18 @@ void SkiaRenderTarget::EndDraw() {
   // swap_buffer();
 }
 
-void SkiaRenderTarget::Clear(Rect *prc) {
-  if (!m_sksurface || !prc) {
+void SkiaRenderTarget::Clear(const Rect &rect) {
+  if (!m_sksurface) {
     UI_LOG_WARN(L"no sksurface");
     return;
   }
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   SkRect skrect;
-  skrect.fLeft = (SkScalar)prc->left;
-  skrect.fTop = (SkScalar)prc->top;
-  skrect.fRight = (SkScalar)prc->right;
-  skrect.fBottom = (SkScalar)prc->bottom;
+  skrect.fLeft = (SkScalar)rect.left;
+  skrect.fTop = (SkScalar)rect.top;
+  skrect.fRight = (SkScalar)rect.right;
+  skrect.fBottom = (SkScalar)rect.bottom;
 
   SkPaint paint;
   paint.setColor(SK_ColorTRANSPARENT);
@@ -273,10 +281,9 @@ void SkiaRenderTarget::Clear(Rect *prc) {
   canvas->drawRect(skrect, paint);
 }
 
-static std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
-                                         const SkFont &font,
-                                         const SkPaint &paint,
-                                         /*out*/ int &measure_width) {
+std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
+                                  const SkFont &font, const SkPaint &paint,
+                                  /*out*/ int &measure_width) {
   if (!text) {
     return std::string();
   }
@@ -442,60 +449,71 @@ void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   return;
 }
 
-void SkiaRenderTarget::FillRgn(/*HRGN*/ llong hRgn, ui::Color *pColor) {
-  UIASSERT(false);
+void SkiaRenderTarget::_DrawString2(void *text_blob, const Color &color,
+                                    float x, float y) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  SkPaint paint;
+  paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+  canvas->drawTextBlob((SkTextBlob *)text_blob, x, y, paint);
 }
 
-void SkiaRenderTarget::DrawRect(Rect *lprc, ui::Color *pColor) {
+// void SkiaRenderTarget::FillRgn(/*HRGN*/ llong hRgn, ui::Color *pColor) {
+//   UIASSERT(false);
+// }
+
+void SkiaRenderTarget::DrawRect(const Rect &rect, const Color &color) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   SkRect skrect;
-  skrect.fLeft = (SkScalar)lprc->left;
-  skrect.fTop = (SkScalar)lprc->top;
-  skrect.fRight = (SkScalar)lprc->right;
-  skrect.fBottom = (SkScalar)lprc->bottom;
+  skrect.fLeft = (SkScalar)rect.left;
+  skrect.fTop = (SkScalar)rect.top;
+  skrect.fRight = (SkScalar)rect.right;
+  skrect.fBottom = (SkScalar)rect.bottom;
 
   SkPaint paint;
-  paint.setColor(SkColorSetARGB(pColor->a, pColor->r, pColor->g, pColor->b));
+  paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
   canvas->drawRect(skrect, paint);
 }
 
-void SkiaRenderTarget::TileRect(Rect *lprc, IRenderBitmap *pRenderBitmap) {
-  UIASSERT(false);
-}
+// void SkiaRenderTarget::TileRect(Rect *lprc, IRenderBitmap *pRenderBitmap) {
+//   UIASSERT(false);
+// }
 
-void SkiaRenderTarget::Rectangle(Rect *lprc, ui::Color *pColBorder,
-                                 ui::Color *pColBack, int nBorder,
-                                 bool bNullBack) {
-  UIASSERT(false);
-}
+// void SkiaRenderTarget::Rectangle(Rect *lprc, ui::Color *pColBorder,
+//                                  ui::Color *pColBack, int nBorder,
+//                                  bool bNullBack) {
+//   UIASSERT(false);
+// }
 
-void SkiaRenderTarget::DrawFocusRect(Rect *lprc) { UIASSERT(false); }
-void SkiaRenderTarget::DrawLine(int x1, int y1, int x2, int y2,
-                                IRenderPen *pPen) {
-  UIASSERT(false);
-}
-void SkiaRenderTarget::DrawPolyline(Point *lppt, int nCount, IRenderPen *pPen) {
-  UIASSERT(false);
-}
-
-void SkiaRenderTarget::GradientFillH(Rect *lprc, Color colFrom, Color colTo) {
-  //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
-}
-void SkiaRenderTarget::GradientFillV(Rect *lprc, Color colFrom, Color colTo) {
-  //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
-}
-
-void SkiaRenderTarget::BitBlt(int xDest, int yDest, int wDest, int hDest,
-                              IRenderTarget *pSrcHDC, int xSrc, int ySrc,
-                              unsigned int dwRop) {
-  UIASSERT(false);
-}
-
-void SkiaRenderTarget::ImageList_Draw(IRenderBitmap *hBitmap, int x, int y,
-                                      int col, int row, int cx, int cy) {
-  UIASSERT(false);
-}
+// void SkiaRenderTarget::DrawFocusRect(Rect *lprc) { UIASSERT(false); }
+// void SkiaRenderTarget::DrawLine(int x1, int y1, int x2, int y2,
+//                                 IRenderPen *pPen) {
+//   UIASSERT(false);
+// }
+// void SkiaRenderTarget::DrawPolyline(Point *lppt, int nCount, IRenderPen
+// *pPen) {
+//   UIASSERT(false);
+// }
+// void SkiaRenderTarget::GradientFillH(Rect *lprc, Color colFrom, Color colTo)
+// {
+//   //	util::GradientFillH(GetHDC(), lprc, colFrom, colTo );
+// }
+// void SkiaRenderTarget::GradientFillV(Rect *lprc, Color colFrom, Color colTo)
+// {
+//   //	util::GradientFillV(GetHDC(), lprc, colFrom, colTo );
+// }
+//
+// void SkiaRenderTarget::BitBlt(int xDest, int yDest, int wDest, int hDest,
+//                               IRenderTarget *pSrcHDC, int xSrc, int ySrc,
+//                               unsigned int dwRop) {
+//   UIASSERT(false);
+// }
+//
+// void SkiaRenderTarget::ImageList_Draw(IRenderBitmap *hBitmap, int x, int y,
+//                                       int col, int row, int cx, int cy) {
+//   UIASSERT(false);
+// }
 
 void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
                                   DRAWBITMAPPARAM *pParam) {
@@ -809,102 +827,42 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   //   }
 }
 
-IRenderPen *SkiaRenderTarget::CreateSolidPen(int nWidth, Color *pColor) {
-  // IRenderPen* p = nullptr;
-  // GdiPen::CreateInstance(&p);
+// IRenderPen *SkiaRenderTarget::CreateSolidPen(int nWidth, Color *pColor) {
+//   // IRenderPen* p = nullptr;
+//   // GdiPen::CreateInstance(&p);
 
-  // if (p)
-  // {
-  // 	p->CreateSolidPen(nWidth, pColor);
-  // }
-  // return p;
-  UIASSERT(false);
-  return nullptr;
-}
-IRenderPen *SkiaRenderTarget::CreateDotPen(int nWidth, Color *pColor) {
-  // IRenderPen* p = nullptr;
-  // GdiPen::CreateInstance(&p);
+//   // if (p)
+//   // {
+//   // 	p->CreateSolidPen(nWidth, pColor);
+//   // }
+//   // return p;
+//   UIASSERT(false);
+//   return nullptr;
+// }
+// IRenderPen *SkiaRenderTarget::CreateDotPen(int nWidth, Color *pColor) {
+//   // IRenderPen* p = nullptr;
+//   // GdiPen::CreateInstance(&p);
 
-  // if (p)
-  // {
-  // 	p->CreateDotPen(nWidth, pColor);
-  // }
-  // return p;
-  UIASSERT(false);
-  return nullptr;
-}
-IRenderBrush *SkiaRenderTarget::CreateSolidBrush(Color *pColor) {
-  // IRenderBrush* p = nullptr;
-  // GdiBrush::CreateInstance(&p);
+//   // if (p)
+//   // {
+//   // 	p->CreateDotPen(nWidth, pColor);
+//   // }
+//   // return p;
+//   UIASSERT(false);
+//   return nullptr;
+// }
+// IRenderBrush *SkiaRenderTarget::CreateSolidBrush(Color *pColor) {
+//   // IRenderBrush* p = nullptr;
+//   // GdiBrush::CreateInstance(&p);
 
-  // if (p)
-  // {
-  // 	p->CreateSolidBrush(pColor);
-  // }
-  // return p;
-  UIASSERT(false);
-  return nullptr;
-}
-
-#if defined(OS_WIN)
-void SkiaRenderTarget::Render2DC(/*HDC*/ llong _hDC,
-                                 Render2TargetParam *pParam) {
-  if (!m_sksurface) {
-    return;
-  }
-  HDC hDC = (HDC)_hDC;
-
-  int &xDst = pParam->xDst;
-  int &yDst = pParam->yDst;
-  int &wDst = pParam->wDst;
-  int &hDst = pParam->hDst;
-  int &xSrc = pParam->xSrc;
-  int &ySrc = pParam->ySrc;
-  int &wSrc = pParam->wSrc;
-  int &hSrc = pParam->hSrc;
-  bool &bAlphaBlend = pParam->bAlphaBlend;
-  byte &opacity = pParam->opacity;
-
-  //  HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
-  //  RECT rc = {xDst, yDst, xDst + wDst, yDst + hDst};
-  // ::FillRect(hDC, &rc, hBrush);
-
-  SkPixmap pm;
-  if (!m_sksurface->peekPixels(&pm)) {
-    return;
-  }
-
-  BITMAPINFO bmi;
-  memset(&bmi, 0, sizeof(bmi));
-  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth = pm.width();
-  bmi.bmiHeader.biHeight = -pm.height(); // top-down image
-  bmi.bmiHeader.biPlanes = 1;
-  bmi.bmiHeader.biBitCount = 32;
-  bmi.bmiHeader.biCompression = BI_RGB;
-  bmi.bmiHeader.biSizeImage = 0;
-
-  // if (wDst == wSrc && hDst == hSrc) {
-  //   SetDIBitsToDevice
-  // }
-  ::StretchDIBits(hDC, xDst, ySrc, wDst, hDst, xSrc, ySrc, wSrc, hSrc,
-                  pm.addr(), &bmi, DIB_RGB_COLORS, SRCCOPY);
-
-  // if (bAlphaBlend) {
-  //   BLENDFUNCTION bf = {AC_SRC_OVER, 0, opacity, AC_SRC_ALPHA};
-  //   ::AlphaBlend(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, wSrc, hSrc,
-  //                bf);
-  // } else {
-  //   if (wDst == wSrc && hDst == hSrc) {
-  //     ::BitBlt(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, SRCCOPY);
-  //   } else {
-  //     ::StretchBlt(hDstDC, xDst, ySrc, wDst, hDst, hDC, xSrc, ySrc, wSrc,
-  //     hSrc,
-  //                  SRCCOPY);
-  //   }
-  // }
-}
-#endif
+//   // if (p)
+//   // {
+//   // 	p->CreateSolidBrush(pColor);
+//   // }
+//   // return p;
+//   UIASSERT(false);
+//   return nullptr;
+// }
 
 // software，将子layer画到父layer上面。
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
@@ -934,17 +892,16 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   {
     target_canvas->drawImageRect(
         source_image,
-        SkRect::MakeXYWH((SkScalar)pParam->xSrc * m_scale,
-                         (SkScalar)pParam->ySrc * m_scale,
-                         (SkScalar)pParam->wSrc * m_scale,
-                         (SkScalar)pParam->hSrc * m_scale),
+        SkRect::MakeXYWH(
+            (SkScalar)pParam->xSrc * m_scale, (SkScalar)pParam->ySrc * m_scale,
+            (SkScalar)pParam->wSrc * m_scale, (SkScalar)pParam->hSrc * m_scale),
         SkRect::MakeXYWH((SkScalar)pParam->xDst, (SkScalar)pParam->yDst,
                          (SkScalar)pParam->wDst, (SkScalar)pParam->hDst),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
   }
 }
 
-void SkiaRenderTarget::Save(const char *path) {
+void SkiaRenderTarget::DumpToImage(const char *path) {
   if (!m_sksurface) {
     return;
   }
@@ -962,7 +919,8 @@ void SkiaRenderTarget::Save(const char *path) {
   (void)out.write(png->data(), png->size());
 }
 
-void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount, float scale) {
+void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+                                  float scale) {
 
   SkPixmap pm;
   if (!m_sksurface || !m_sksurface->peekPixels(&pm)) {
@@ -992,11 +950,30 @@ void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount, floa
   if (Config::GetInstance().debug.log_gpu) {
     for (int i = 0; i < nCount; ++i) {
       Rect *prc = &prcArray[i];
-      UI_LOG_DEBUG("Upload2Gpu: rt=0x%08x source=(%d, %d), rect[%d] = (%d, %d, %d, %d)", 
-          this, source.width, source.height, i,
-          prc->left, prc->top, prc->right, prc->bottom);
+      UI_LOG_DEBUG(
+          "Upload2Gpu: rt=0x%08x source=(%d, %d), rect[%d] = (%d, %d, %d, %d)",
+          this, source.width, source.height, i, prc->left, prc->top, prc->right,
+          prc->bottom);
     }
   }
+}
+
+void SkiaRenderTarget::GetFrameBuffer(FrameBuffer *fb) {
+  if (!m_sksurface || !fb) {
+    return;
+  }
+  SkPixmap pm;
+  if (!m_sksurface->peekPixels(&pm)) {
+    return;
+  }
+  fb->width = pm.width();
+  fb->height = pm.height();
+  fb->data = pm.addr();
+  fb->rowbytes = pm.rowBytes();
+}
+
+void SkiaRenderTarget::RenderOnThread(slot<void(IRenderTarget *)> &&callback) {
+  callback.emit(static_cast<IRenderTarget *>(this));
 }
 
 } // namespace ui

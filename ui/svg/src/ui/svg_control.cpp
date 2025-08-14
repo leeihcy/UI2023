@@ -63,7 +63,7 @@ void Svg::setImageResourceId(const char *id) {
   if (!data_source) {
     return;
   }
-  
+
   data_source->Load(
       id, ui::Slot<void(Svg *, const char *), Svg *>(
               [](Svg *pthis, const char *data) { pthis->Load(data); }, this));
@@ -73,12 +73,14 @@ const char *Svg::getImageResourceId() {
   return nullptr;
 }
 
-void Svg::onPaint(ui::IRenderTarget *rt) {
-
+// 为了解决svg需要尝试调用skia Canvas对象的方法，这里为它开个后门，
+// 直接在render thread中进行绘制。
+void onPaintOnRenderThread(std::shared_ptr<::svg::Svg> root, int width,
+                           int height, ui::IRenderTarget *rt) {
   // elements:
   RenderContext context;
   context.canvas = (SkCanvas *)rt->GetHandle();
-  context.canvas_size = {m_pISvg->GetWidth(), m_pISvg->GetHeight()};
+  context.canvas_size = {width, height};
 
   context.fill_paint.setStroke(false);
   context.stroke_paint.setStroke(true);
@@ -90,11 +92,24 @@ void Svg::onPaint(ui::IRenderTarget *rt) {
   // 默认黑色
   // context.paint.setColor(SkColorSetARGB(255, 0, 0, 0));
 
-  if (m_root) {
+  if (root) {
     context.canvas->save();
-    m_root->Render(context);
+    root->Render(context);
     context.canvas->restore();
   }
+}
+
+void Svg::onPaint(ui::IRenderTarget *rt) {
+  if (rt->Type() == GRAPHICS_RENDER_LIBRARY_TYPE_SKIA_RECORD) {
+    rt->RenderOnThread(Slot(onPaintOnRenderThread, m_root, m_pISvg->GetWidth(),
+                            m_pISvg->GetHeight()));
+    return;
+  }
+  if (rt->Type() != GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+    return;
+  }
+
+  onPaintOnRenderThread(m_root, m_pISvg->GetWidth(), m_pISvg->GetHeight(), rt);
 }
 
 ui::Size Svg::onGetDesiredSize() {

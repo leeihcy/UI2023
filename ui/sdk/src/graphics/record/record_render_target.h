@@ -1,32 +1,29 @@
-#pragma once
-#include <vector>
-
-#include "include/util/rect_region.h"
-#include "third_party/skia/src/include/core/SkCanvas.h"
-#include "third_party/skia/src/include/core/SkColorSpace.h"
-#include "third_party/skia/src/include/core/SkSurface.h"
-
+#ifndef _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
+#define _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
 #include "include/interface/renderlibrary.h"
+#include "include/util/color.h"
 #include "src/graphics/clip_origin.h"
 
 namespace ui {
-class RenderBuffer;
+class RenderThread;
+class PaintOp;
 
-class SkiaRenderTarget : public IRenderTarget {
+// 只记录渲染操作，将操作转换给RenderThread
+class RecordRenderTarget : public IRenderTarget {
 public:
-  SkiaRenderTarget();
-  ~SkiaRenderTarget();
+  RecordRenderTarget(RenderThread &render_thread);
+
+  ~RecordRenderTarget() override;
   void Release() override;
   GRAPHICS_RENDER_LIBRARY_TYPE Type() override {
-    return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+    return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA_RECORD;
   }
-
   bool BeginDraw(float scale) override;
   void EndDraw() override;
   void Clear(const Rect& rect) override;
   bool Resize(unsigned int nWidth, unsigned int nHeight) override;
   void* GetHandle() override;
-
+  
   void Save() override;
   void Restore() override;
   void ClipRoundRect(const Rect& rect, int radius) override;
@@ -34,37 +31,33 @@ public:
 
   void DumpToImage(const char *szPath) override;
   void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
-                          float scale) override;
+                  float scale) override;
   void GetFrameBuffer(FrameBuffer* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
+
   void SetDirtyRegion(const DirtyRegion& dirty_region) override;
-  const DirtyRegion& GetDirtyRegion();
-  void PushRelativeClipRect(const Rect&) override;
+  void PushRelativeClipRect(const Rect &rect) override;
   void PopRelativeClipRect() override;
   void SetOrigin(int x, int y) override;
   void OffsetOrigin(int x, int y) override;
+  bool IsRelativeRectInClip(const Rect &rect) override;
 
-  void Render2Target(IRenderTarget *pDst,
-                             Render2TargetParam *pParam) override;
+  void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
   void DrawRect(const Rect& rc, const Color& color) override;
-  void DrawBitmap(IRenderBitmap *hBitmap,
-                          DRAWBITMAPPARAM *pParam) override;
+  void DrawBitmap(IRenderBitmap *hBitmap, DRAWBITMAPPARAM *pParam) override;
   void DrawString(const DrawTextParam &param) override;
   void _DrawString2(void* text_blob, const Color& color, float x, float y) override;
 
-  bool IsRelativeRectInClip(const Rect& rect) override;
-public:
-  SkSurface *GetSkiaSurface() { return m_sksurface.get(); }
+private:
+  void addPaintOp(std::unique_ptr<PaintOp>&& paint_op);
 
-protected:
-  void update_clip_rgn();
+private:
+  RenderThread &m_render_thread;
 
-protected:
-  sk_sp<SkSurface> m_sksurface;
-
-  float m_scale = 1.0f;
-
+  float m_scale = 0.f;
   ClipOriginImpl m_clip_origin_impl;
 };
 
 } // namespace ui
+
+#endif // _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_

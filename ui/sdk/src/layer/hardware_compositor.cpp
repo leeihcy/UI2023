@@ -22,33 +22,12 @@ void HardwareCompositor::onBindWindow(Window* w) {
   UIASSERT(!m_gpu_composition);
 
   IGpuCompositorWindow* p = w->GetWindowPlatform()->GetGpuCompositorWindow();
-#if defined(OS_WIN)
-  HMODULE hModule = GetModuleHandle(L"uigpu.dll");
-  if (!hModule) {
-    hModule = ::LoadLibraryA("uigpu.dll");
-    if (!hModule) {
-      return;
-    }
-  }
-
-  typedef IGpuCompositor *(*pfnUICreateHardwareComposition)(IGpuCompositorWindow*);
-  pfnUICreateHardwareComposition fn =
-      (pfnUICreateHardwareComposition)::GetProcAddress(
-          hModule, "CreateGpuComposition");
-
-  if (!fn) {
-    UIASSERT(0);
-    return;
-  }
-
-  m_gpu_composition = fn(p);
-#else
   m_gpu_composition = ui::CreateGpuComposition(p);
-#endif
 
   if (!m_gpu_composition) {
     return;
   }
+
   // 像素大小
   ui::Rect rc;
   w->GetWindowPlatform()->GetClientRect(&rc);
@@ -63,7 +42,6 @@ void HardwareCompositor::Resize(uint nWidth, uint nSize) {
   ui::Rect rc;
   m_window_render->m_window.GetWindowPlatform()->GetClientRect(&rc);
   m_gpu_composition->Resize(rc.Width(), rc.Height());
-
 }
 
 Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }
@@ -71,17 +49,18 @@ Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }
 // 硬件合成只能是每个层分别去调用updatedirty，而不是像软件渲染一样由parent
 // object遍历child时去调用
 // updatedirty。因为硬件下父layer可能没有dirty，而子layer有dirty.
-void HardwareCompositor::UpdateDirty(RectRegion *outArrDirtyInWindow) {
-  if (!m_pRootLayer)
-    return;
+bool HardwareCompositor::UpdateDirty(RectRegion *outArrDirtyInWindow) {
+  if (!m_root_layer)
+    return false;
 
-  Layer *p = m_pRootLayer;
+  Layer *p = m_root_layer;
   // p->UpdateDirty();
 
   while (p) {
     update_dirty_recursion(p);
     p = p->GetNext();
   }
+  return true;
 }
 
 void HardwareCompositor::update_dirty_recursion(Layer *p) {
@@ -96,27 +75,20 @@ void HardwareCompositor::update_dirty_recursion(Layer *p) {
 }
 
 void HardwareCompositor::doCommit(const RectRegion &arrDirtyInWindow) {
-  // FillRect(hDC, prcInWindow, (HBRUSH)GetStockObject(GRAY_BRUSH));
-
-  if (!m_gpu_composition || !m_pRootLayer || !m_window_render)
+  if (!m_gpu_composition || !m_root_layer || !m_window_render)
     return;
-
-  // StopWatch stop_watch;
 
   GpuLayerCommitContext context;
   if (!m_gpu_composition->BeginCommit(&context))
     return;
 
-  Layer *p = m_pRootLayer;
+  Layer *p = m_root_layer;
   while (p) {
     commit_recursion(p, &context);
     p = p->GetNext();
   }
 
   m_gpu_composition->EndCommit(&context);
-
-  // int ms = stop_watch.ElapseMicrosecondsSinceLast();
-  // UI_LOG_INFO("hardware commit cost %d 微秒", ms);
 }
 
 void HardwareCompositor::commit_recursion(Layer *p,

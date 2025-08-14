@@ -32,8 +32,12 @@ void on_window_paint(ui::IWindow* window, ui::Event *e) {
 
 
 bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
-  window->FindObject("title")->Invalidate();
-  printf("invalidate title\n");
+  auto* label = window->TryFindObject("title");
+  if (label){ 
+    label->Invalidate(); 
+    printf("invalidate title\n");
+  };
+  
   return true;
 }
 

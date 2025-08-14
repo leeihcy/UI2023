@@ -87,7 +87,7 @@ bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
 }
 
 int main() {
-  bool use_gpu = false;
+  bool use_gpu = true;
 
   ui::ApplicationPtr app;
   if (use_gpu) {
@@ -109,8 +109,8 @@ int main() {
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
   if (use_gpu) {
-    // g_clock_animate.update_rotate(window.get());
-    // start_animate(app.get(), window.get());
+    g_clock_animate.update_rotate(window.get());
+    start_animate(app.get(), window.get());
   }
 
   ui::TimerID timer_id =

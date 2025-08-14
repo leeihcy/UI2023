@@ -1,5 +1,5 @@
 
-#include "rectregion.h"
+#include "include/util/rect_region.h"
 #include <assert.h>
 using namespace ui;
 
@@ -7,13 +7,13 @@ namespace {
 
 void test_union() {
   RectRegion region;
-  assert(region.GetCount() == 0);
+  assert(region.Count() == 0);
 
   // 单个区域
   {
     Rect r1 = { 10, 10, 20, 20};
     region.Union(r1);
-    assert(region.GetCount() == 1);
+    assert(region.Count() == 1);
   }
 
   // 两个分开的区域
@@ -27,13 +27,13 @@ void test_union() {
   //  +-------+  
   //       
   region.Destroy();
-  assert(region.GetCount() == 0);
+  assert(region.Count() == 0);
   {
     Rect r1 = { 10, 10, 20, 20};
     Rect r2 = { 10, 30, 20, 40};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 2);
+    assert(region.Count() == 2);
     assert(*region.GetRectPtrAt(0) == r1);
     assert(*region.GetRectPtrAt(1) == r2);
   }
@@ -52,7 +52,7 @@ void test_union() {
     Rect r2 = { 20, 10, 30, 20};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 1);
+    assert(region.Count() == 1);
     Rect r3 = {10, 10, 30, 20};
     assert(*region.GetRectPtrAt(0) == r3);
   }
@@ -71,7 +71,7 @@ void test_union() {
     Rect r2 = { 19, 10, 30, 20};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 1);
+    assert(region.Count() == 1);
     Rect r3 = {10, 10, 30, 20};
     assert(*region.GetRectPtrAt(0) == r3);
   }
@@ -90,7 +90,7 @@ void test_union() {
     Rect r2 = { 11, 11, 19, 19};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 1);
+    assert(region.Count() == 1);
     assert(*region.GetRectPtrAt(0) == r1);
   }
 
@@ -108,7 +108,7 @@ void test_union() {
     Rect r2 = { 19, 11, 30, 19};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 3);
+    assert(region.Count() == 3);
 
     Rect result1 = {10,10, 20, 11};
     Rect result2 = {10,11, 30, 19};
@@ -132,7 +132,7 @@ void test_union() {
     Rect r2 = { 15, 15, 30, 30};
     region.Union(r1);
     region.Union(r2);
-    assert(region.GetCount() == 3);
+    assert(region.Count() == 3);
 
     Rect result1 = {10,10, 20, 15};
     Rect result2 = {10,15, 30, 20};
@@ -160,7 +160,7 @@ void test_union() {
     region.Union(r1);
     region.Union(r2);
     region.Union(r3);
-    assert(region.GetCount() == 5);
+    assert(region.Count() == 5);
 
     Rect result1 = {30, 5, 50, 15};
     Rect result2 = {10, 10, 20, 15};

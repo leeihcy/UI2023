@@ -43,6 +43,7 @@ Window::~Window() {
 }
 
 RootObject &Window::GetRootObject() { return *m_root->GetImpl(); }
+Application& Window::GetApplication() { return *(m_resource->GetUIApplication());}
 
 void Window::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
@@ -125,7 +126,7 @@ void Window::Create(const char *layout_id, const Rect *rect) {
 
   GetRootObject().LoadLayout(layout_id);
   m_platform->Create(message.param);
-
+  
   postCreate(message.param);
 }
 
@@ -244,7 +245,6 @@ void Window::onSize(int window_width_px, int window_height_px) {
       // 最后导致将自己的空缓存提交上去了，然后再延时刷新，界面又正常。
       // 因此这里不能延时刷新
       // TODO:if (m_objStyle.initialized && IsWindowVisible()) {
-      m_window_render.RequestUpdate();
       // TODO:}
       //  m_platform->ValidateRect(nullptr);
     } else {
@@ -268,19 +268,9 @@ void Window::onDestroy() {
 
 // commit_rect是逻辑坐标，不是像素坐标。
 void Window::onPaint(const Rect *commit_rect) {
-  if (Config::GetInstance().debug.log_window_onpaint) {
-    UI_LOG_DEBUG("Window::onPaint commit_rect={%d,%d, %d,%d}",
-                (int)(commit_rect->left),
-                (int)(commit_rect->top),
-                (int)(commit_rect->right),
-                (int)(commit_rect->bottom));
-  }
-
   // 从窗口主动触发的paint消息，不额外增加invalidate区域，而是由我们自己
   // 来控制需要提交的区域。
-  // m_window_render.AddInvalidateRect(commit_rect);
   m_window_render.Paint(commit_rect);
-  m_window_render.Commit(commit_rect);
 }
 
 // void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }
@@ -288,8 +278,6 @@ void Window::onPaint(const Rect *commit_rect) {
 // void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
 
 void Window::postCreate(CreateWindowParam &param) {
-
-  m_window_render.OnWindowCreate();
 
 #if 0
   	//
@@ -362,13 +350,9 @@ void Window::postCreate(CreateWindowParam &param) {
   }
 #endif
 
+  m_window_render.onWindowCreated();
   m_window_render.SetCanCommit(true);
-
-  // 首次刷新，将窗口所有区域设置为无效
-  ui::Rect rc_client;
-  m_root->GetClientRectWithZeroOffset(&rc_client);
-  m_window_render.AddInvalidateRect(&rc_client);
-
+ 
 #if 0
   // 设置默认对象
   m_oMouseManager.SetDefaultObject(m_oMouseManager.GetOriginDefaultObject(),
@@ -460,10 +444,6 @@ void Window::DirectComposite() { assert(0 && "这个函数是否还需要继续�
 bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }
 
 bool Window::IsWindowVisible() { return m_platform->IsWindowVisible(); }
-
-void Window::Commit(IRenderTarget *pRT, const Rect *prect, int count) {
-  m_platform->Commit(pRT, prect, count);
-}
 
 float Window::GetScaleFactor() { 
   return m_dpi.GetScaleFactor(); 

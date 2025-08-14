@@ -1,29 +1,68 @@
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
+#include <cstdio>
 
 void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
   printf("%s", "on_window_destroy\n");
   uiapp->Quit();
 }
+
+void on_lbutton_down(ui::IWindow* window, ui::Event* e) {
+  ui::Rect rc;
+  window->GetRootObject()->GetClientRectWithZeroOffset(&rc);
+  window->GetRootObject()->Invalidate(&rc);
+}
+
 void on_window_paint(ui::IWindow* window, ui::Event *e) {
   ui::IRenderTarget *pRT = static_cast<ui::WindowPaintEvent *>(e)->rt;
 
 #if 1
   ui::Rect rc_client;
-  window->GetClientRect(&rc_client);
+  window->GetRootObject()->GetClientRectInObject(&rc_client);
   ui::Color color_background = ui::Color::white();
-  pRT->DrawRect(&rc_client, &color_background);
+  pRT->DrawRect(rc_client, color_background);
 #endif
-  ui::Color colors[3] = {ui::Color::MakeRGB(255, 0, 0),
+
+  // 渐变颜色
+  ui::Color colors[] = {ui::Color::MakeRGB(255, 0, 0),
                          ui::Color::MakeRGB(0, 255, 0),
-                         ui::Color::MakeRGB(0, 0, 255)};
-  static int i = 0;
-  i++;
-  if (i >= 3) {
-    i = 0;
+                         ui::Color::MakeRGB(0, 0, 255),
+                         ui::Color::MakeRGB(255, 0, 255),
+                        ui::Color::MakeRGB(255, 0, 0)};
+  static int counter = 0;
+  counter+=16;
+  ui::Color color;
+  int index = (counter & 0x300) >> 8;
+  ui::Color from = colors[index];
+  ui::Color to = colors[index+1];
+
+  color.a = 255;
+  float progress = (counter & 0xff) / 256.f;
+  color.r = (int)from.r + ((int)to.r-(int)from.r) * progress;
+  color.g = (int)from.g + ((int)to.g-(int)from.g) * progress;
+  color.b = (int)from.b + ((int)to.b-(int)from.b) * progress;
+
+
+  // 弹跳区域
+  static int x_direction = 1;
+  static int y_direction = 1;
+  static ui::Rect region = {100, 100, 200, 200};
+  constexpr int step = 5;
+  region.Offset(step * x_direction, step * y_direction);
+
+  if (rc_client.left >= region.left) {
+    x_direction = 1;
+  } 
+  else if (rc_client.right <= region.right) {
+    x_direction = -1;
   }
-  ui::Rect rc = {100, 100, 200, 200};
-  pRT->DrawRect(&rc, &colors[i]);
+  if (rc_client.top >= region.top) {
+    y_direction = 1;
+  } else if (rc_client.bottom <= region.bottom) {
+    y_direction = -1;
+  }
+
+  pRT->DrawRect(region, color);
 }
 
 int main() {
@@ -40,7 +79,7 @@ int main() {
   window->SetTitle("1.你好Hello! -- 窗口创建");
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
-
+  window->connect("lbutton_down", ui::Slot(&on_lbutton_down, window.get()));
   window->Show();
   
   app->Run();

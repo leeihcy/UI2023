@@ -29,7 +29,7 @@ public:
   virtual void BindHWND(HWND hWnd) { /*UIASSERT(0);*/ /*不支持*/
   }
 
-  virtual void SetMetaClipRegion(LPRECT prc, uint nrcCount) override;
+  virtual void SetDirtyRegion(LPRECT prc, uint nrcCount) override;
   virtual void PushRelativeClipRect(LPCRECT) override;
   virtual void PopRelativeClipRect() override;
   virtual bool IsRelativeRectInClip(LPCRECT) override;
@@ -104,7 +104,7 @@ protected:
   long m_lDrawingRef; // 标识外部调用了几次BeginDraw，解决嵌套调用出现的一些问题
 
   // 剪裁数据
-  RectArray m_arrayMetaClipRegion;
+  RectArray m_dirty_region;
   stack<RECT> m_stackClipRect;
 
   POINT m_ptOffset; // 用于调试时查看当前HDC偏移量

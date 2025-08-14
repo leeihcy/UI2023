@@ -28,6 +28,10 @@ struct MessageLoopPlatform {
   virtual void DestroyAnimateTimer() = 0;
 };
 
+// [线程安全] 用于任意线程向UI线程发起逻辑调用。
+// 每个平台的实现逻辑不一样，依赖于具体的message loop实现。
+void PostTaskToUIThread(PostTaskType &&task);
+
 class MessageLoop {
 public:
   MessageLoop(Application& app);

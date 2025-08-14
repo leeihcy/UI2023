@@ -5,13 +5,14 @@ executable("dpi_layout") {
     output_name = "sample_dpi_layout"
 
     deps = [
-        "//ui/sdk:sdk"
+      "//ui/sdk:sdk"
     ]
     include_dirs = [
-        "//ui",
+      "//",
+      "//ui",
     ]
     sources = [
-        "main.cc",
+      "main.cc",
     ]
 
     cflags = []

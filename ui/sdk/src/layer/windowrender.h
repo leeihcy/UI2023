@@ -4,6 +4,7 @@
 #include <memory>
 #include "include/interface/iwindow.h"
 #include "include/macro/xmldefine.h"
+#include "include/util/rect_region.h"
 //#pragma comment(lib, "UICompositor.lib")
 
 //
@@ -38,15 +39,13 @@ public:
 public:
   void AddInvalidateRect(const Rect*);
   void Paint(const Rect *commit_rect = nullptr);
-  void Commit(const Rect *commit_rect){}
-  void RequestUpdate();
+  void DirectCommit(const DirtyRegion& dirty_region);
    
 public:
-  void OnWindowCreate();
+  void onWindowCreated();
 
   void OnSerialize(SerializeParam *pData);
   void OnClientSize(unsigned int nWidth, unsigned int nHeight);
-  void OnWindowPaint(const Rect& dirty);
 
   bool CreateRenderTarget(IRenderTarget **pp);
 
@@ -56,10 +55,13 @@ public:
 
   void SetCanCommit(bool b);
   bool CanCommit();
-  void UpdateAndCommit();
-
+  void SoftwareCommit(IRenderTarget* pRT, const Rect* prect, int count);
+  
   Layer *CreateLayer(IObjectLayerContent *);
   Layer *CreateLayer(IListItemLayerContent *);
+
+  void RequestInvalidate();
+  void InvalidateNow();
 
 private:
   Compositor *get_create_compositor();
@@ -79,6 +81,11 @@ private:
   // 该窗口的渲染是否需要alpha通道。不再根据graphics render lib
   // type来决定。由用户自己设置
   bool m_need_alpha_channel = true;
+
+  // 限制刷新时postmessage的次数。如果已经post了一个，就不再post
+  long m_request_invalidate_ref = 0;
+  weakptr_factory<WindowRender> m_weakptr_factory = {this};
+
 };
 
 } // namespace ui

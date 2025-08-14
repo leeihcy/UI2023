@@ -5,12 +5,14 @@
 #include "include/interface/iuiapplication.h"
 #include "src/message_loop/message_loop.h"
 #include "src/resource/resource_manager.h"
+#include "src/animate/animate.h"
 #include "src/animate/wrap/animate_wrap.h"
 #include "src/helper/topwindow/topwindowmanager.h"
 #include "src/helper/timer/timer.h"
 #include "src/layout/layout_factory.h"
 #include "src/render/renderbase_factory.h"
 #include "src/render/textrender/textrender_factory.h"
+#include "src/thread/render_thread.h"
 #include <map>
 #include <vector>
 #if defined(OS_WIN)
@@ -33,6 +35,7 @@ public:
 
   MessageLoop& GetMessageLoop();
   ResourceManager &GetResourceManager();
+  RenderThread& GetRenderThread() { return m_render_thread; }
 
   void SetEditorMode(bool b) { m_bEditorMode = b; }
   bool IsEditorMode() { return m_bEditorMode; }
@@ -124,7 +127,10 @@ private:
   ToolTipManager m_ToolTipMgr;
 #endif
 
-  std::unique_ptr<uia::Animate> m_animate;
+  uia::Animate m_animate;
+
+  // 渲染线程
+  RenderThread m_render_thread; 
 
 private:
   IApplication *m_pUIApplication = nullptr; // 对外提供的接口

@@ -1,6 +1,7 @@
 #include "include/inc.h"
 #include "enum_attribute.h"
 #include "attribute.h"
+#include "include/macro/xmldefine.h"
 #include "src/application/uiapplication.h"
 
 
@@ -106,7 +107,7 @@ void EnumGraphicsRenderLibraryTypeCallback(int lType, const char* szName, llong 
 EnumAttribute*  EnumAttribute::FillGraphicsRenderLibraryData()
 {
 	// EnumGraphicsRenderLibraryType(EnumGraphicsRenderLibraryTypeCallback, (int)this, 0);
-	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_GDI, "gdi");
+	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_SKIA, "skia");
 	return this;
 }
 

@@ -8,31 +8,29 @@ SoftwareLayer::SoftwareLayer() {}
 
 SoftwareLayer::~SoftwareLayer() {}
 
-void SoftwareLayer::UpdateDirty() {
+bool SoftwareLayer::UpdateDirty() {
   if (!m_pLayerContent)
-    return;
+    return false;
 
-  if (!m_dirtyRectangles.GetCount())
-    return;
+  if (!m_dirty_region.Count())
+    return false;
 
   IRenderTarget *pRenderTarget = GetRenderTarget();
 
   float scale = m_pLayerContent->GetLayerScale();
   pRenderTarget->BeginDraw(scale);
+  pRenderTarget->SetDirtyRegion(m_dirty_region);
 
   // 先begin draw，设置好缩放比例，再clear，否则clear区域不正确。
   if (m_need_clear_background) {
-    uint nCount = m_dirtyRectangles.GetCount();
-    for (uint i = 0; i < nCount; i++)
-      pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
+    uint count = m_dirty_region.Count();
+    for (uint i = 0; i < count; i++)
+      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
   }
-
-  pRenderTarget->SetMetaClipRegion(m_dirtyRectangles.GetArrayPtr(),
-                                   m_dirtyRectangles.GetCount());
 
   // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
-  m_dirtyRectangles.Destroy();
+  m_dirty_region.Destroy();
 
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
@@ -45,8 +43,9 @@ void SoftwareLayer::UpdateDirty() {
 #else
     sprintf(path, "/tmp/images/%p_%d.png", pRenderTarget, i++);
 #endif
-    pRenderTarget->Save(path);
+    pRenderTarget->DumpToImage(path);
   }
+  return true;
 }
 
 } // namespace ui

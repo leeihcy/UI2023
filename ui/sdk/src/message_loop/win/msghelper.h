@@ -13,6 +13,8 @@ class ForwardPostMessageWindow{
 public:
   void Create(MessageLoopPlatformWin* p);
   void Post(slot<void()>&& callback);
+  
+  HWND GetHWnd() { return m_hWnd; }
 protected:
   MessageLoopPlatformWin *m_bind; // raw ptr
   HWND m_hWnd;

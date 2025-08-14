@@ -5,7 +5,6 @@
 #include "include/interface/isvg.h"
 #include "src/element/svg/svg.h"
 
-
 namespace ui { 
 struct SerializeParam;
 
@@ -32,7 +31,7 @@ protected:
 
 private:
   ISvg* m_pISvg;
-  std::unique_ptr<svg::Svg> m_root;
+  std::shared_ptr<svg::Svg> m_root;
 };
 
 }

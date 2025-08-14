@@ -35,38 +35,39 @@ HardwareLayer::~HardwareLayer() {
 //     m_pLayerContent->Draw(pRenderTarget);
 //     pRenderTarget->EndDraw();
 //
-// 	m_dirtyRectangles.Destroy();
+// 	m_dirty_region.Destroy();
 //     upload_2_gpu();
 // }
 
-void HardwareLayer::UpdateDirty() {
+bool HardwareLayer::UpdateDirty() {
   if (!m_pLayerContent)
-    return;
+    return false;
 
-  if (!m_dirtyRectangles.GetCount())
-    return;
+  if (!m_dirty_region.Count())
+    return false;
 
   IRenderTarget *pRenderTarget = GetRenderTarget();
   if (m_need_clear_background) {
-    uint nCount = m_dirtyRectangles.GetCount();
-    for (uint i = 0; i < nCount; i++)
-      pRenderTarget->Clear(m_dirtyRectangles.GetRectPtrAt(i));
+    uint count = m_dirty_region.Count();
+    for (uint i = 0; i < count; i++)
+      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
   }
 
   float scale = m_pLayerContent->GetLayerScale();
   pRenderTarget->BeginDraw(scale);
 
-  pRenderTarget->SetMetaClipRegion(m_dirtyRectangles.GetArrayPtr(),
-                                   m_dirtyRectangles.GetCount());
+  pRenderTarget->SetDirtyRegion(m_dirty_region);
 
   // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
-  m_dirtyRectangles.Destroy();
+  m_dirty_region.Destroy();
 
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
 
   upload_2_gpu();
+
+  return true;
 }
 
 // 硬件合成时，每一层的数据是独享的。
@@ -87,7 +88,7 @@ void HardwareLayer::UpdateDirty() {
 //
 // void  HardwareLayer::draw_layer()
 // {
-// 	if (m_dirtyRectangles.GetCount() == 0)
+// 	if (m_dirty_region.GetCount() == 0)
 // 		return;
 //
 // 	// 重新生成layer数据
@@ -96,7 +97,7 @@ void HardwareLayer::UpdateDirty() {
 // 	upload_2_gpu();
 //
 // 	// 清除脏区域
-// 	m_dirtyRectangles.Destroy();
+// 	m_dirty_region.Destroy();
 // }
 
 void HardwareLayer::upload_2_gpu() {

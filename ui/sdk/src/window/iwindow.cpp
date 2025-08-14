@@ -207,6 +207,15 @@ IObject *IWindow::FindObject(const char *obj_id) {
   }
   return obj->GetIObject();
 } 
+
+IObject *IWindow::TryFindObject(const char *obj_id) {
+  ui::Object* obj = __pImpl->GetRootObject().TryFindObject(obj_id);
+  if (!obj) {
+    return nullptr;
+  }
+  return obj->GetIObject();
+}
+
 IResource* IWindow::GetResource() {
   return __pImpl->GetResource().GetIResource();
 }

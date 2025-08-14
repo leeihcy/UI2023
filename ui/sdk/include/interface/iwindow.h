@@ -217,7 +217,8 @@ struct UIAPI IWindow : public IMessage {
 
   // helper
   IRootObject* GetRootObject();
-  IObject *FindObject(const char *szObjId);
+  IObject *FindObject(const char *obj_id);
+  IObject *TryFindObject(const char *obj_id);
   IResource* GetResource();
 
   void GetClientRect(ui::Rect* rc);

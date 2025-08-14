@@ -4,11 +4,12 @@ executable("clock") {
     output_name = "sample_clock"
 
     deps = [
-        "//ui/sdk:sdk",
-        "//ui/svg:svg"
+      "//ui/sdk:sdk",
+      "//ui/svg:svg"
     ]
     include_dirs = [
-        "//ui",
+      "//",
+      "//ui",
     ]
     sources = [
         "main.cc",

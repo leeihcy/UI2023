@@ -191,7 +191,7 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h,
 
   if (flags.size && flags.move) {
     //[m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor)
-    //display:(true)];
+    // display:(true)];
     [m_window setFrame:NSMakeRect(x / factor, y / factor, frame_rect.size.width,
                                   frame_rect.size.height)
                display:(true)];
@@ -260,57 +260,24 @@ void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 //   return m_window.backingScaleFactor;
 // }
 
+
 //
 // CGContextDrawImage 属于 Core Graphics (Quartz)，
 // 它不关心 NSView 的翻转状态，始终按照 左下角原点 绘制。
-//
-void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
-                               int count) {
-// static int i = 0; 
-// i++;
-// if (i >2) {
-//   return;
-// }
+// 
+void WindowPlatformMac::Commit2(const FrameBuffer& fb, const Rect* prect, int count) {
+int client_width = m_window.contentView.bounds.size.width;
+  int client_height = m_window.contentView.bounds.size.height;
 
-    int client_width = m_window.contentView.bounds.size.width;
-    int client_height = m_window.contentView.bounds.size.height;
-
-  // {
-  //   SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
-  //   SkSurface *surface = skiaRT->GetSkiaSurface();
-  //   if (!surface) {
-  //     return;
-  //   }
-
-  //   SkPixmap pm;
-  //   if (!surface->peekPixels(&pm)) {
-  //     return;
-  //   }
-  //   CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
-  //       NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
-
-  //   CGImageRef image = CGImageCreate(
-  //       // pm.width(), pm.height(),
-  //       client_width, client_height, 8, 32, pm.rowBytes(),
-  //       // colorspace
-  //       CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
-  //       // CGBitmapInfo
-  //       kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
-  //       data_provider_ref,
-  //       nullptr, // decode
-  //       false,   // shouldInterpolate
-  //       kCGRenderingIntentDefault);
-  //   [m_window.contentView.layer setContents:(__bridge id)image];
-  // }
-  // return;
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
+
+  // 目前不是处于drawRect调用中，调用displayRect触发窗口刷新。
   if (!context) {
     for (int i = 0; i < count; i++) {
       NSRect rect = NSMakeRect(prect->left,
-      // 转换成左下角原点
+                               // 转换成左下角原点
                                client_height - prect->top - prect->height(),
-                               prect->width(),
-                               prect->height());
+                               prect->width(), prect->height());
       [m_window.contentView displayRect:rect];
     }
     return;
@@ -320,98 +287,84 @@ void WindowPlatformMac::Commit(IRenderTarget *pRT, const Rect *prect,
   // CGContextTranslateCTM(context, 0, m_window.contentView.bounds.size.height);
   // // 移动到顶部 CGContextScaleCTM(context, 1.0, -1.0); // Y 轴翻转
 
-  if (pRT->GetGraphicsRenderLibraryType() ==
-      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
-    SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
-    SkSurface *surface = skiaRT->GetSkiaSurface();
-    if (!surface) {
-      return;
-    }
+  CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
+      NULL, (char *)fb.data, fb.rowbytes * fb.height, NULL);
 
-    SkPixmap pm;
-    if (!surface->peekPixels(&pm)) {
-      return;
-    }
+  CGImageRef image = CGImageCreate(
+      fb.width, fb.height,
+      // client_width, client_height,
+      8, 32, fb.rowbytes,
+      // colorspace
+      CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
+      // CGBitmapInfo
+      kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
+      data_provider_ref,
+      nullptr, // decode
+      false,   // shouldInterpolate
+      kCGRenderingIntentDefault);
+  assert(image);
 
-    CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
-        NULL, (char *)pm.addr(), pm.rowBytes() * pm.height(), NULL);
-
-    int client_width = m_window.contentView.bounds.size.width;
-    int client_height = m_window.contentView.bounds.size.height;
-    CGImageRef image = CGImageCreate(
-        pm.width(), pm.height(),
-        // client_width, client_height, 
-        8, 32, pm.rowBytes(),
-        // colorspace
-        CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
-        // CGBitmapInfo
-        kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
-        data_provider_ref,
-        nullptr, // decode
-        false,   // shouldInterpolate
-        kCGRenderingIntentDefault);
-    assert(image);
-
-    for (int i = 0; i < count; i++) {
-      const ui::Rect &rc_dirty = prect[i];
-      Rect rc = prect[i];
-      m_ui_window.m_dpi.ScaleRect(&rc);
-      // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 300);
+  for (int i = 0; i < count; i++) {
+    const ui::Rect &rc_dirty = prect[i];
+    Rect rc = prect[i];
+    m_ui_window.m_dpi.ScaleRect(&rc);
+    // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 300);
 
 #if 1
-      // 效率比使用clip低，废弃
-      // 使用子图片实现脏区域提交
-      NSRect nsrect = CGRectMake(rc.left, rc.top, rc.width(), rc.height());
-      CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
+    // 效率比使用clip低，废弃
+    // 使用子图片实现脏区域提交
+    NSRect nsrect = CGRectMake(rc.left, rc.top, rc.width(), rc.height());
+    CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
-      NSRect dirty = CGRectMake(rc_dirty.left, // * m_window.backingScaleFactor,
-      // 转换成左下角原点
-                                client_height - rc_dirty.top - rc_dirty.height(), // * m_window.backingScaleFactor,
-                                rc_dirty.width(), // * m_window.backingScaleFactor,
-                                rc_dirty.height()); // * m_window.backingScaleFactor);
+    NSRect dirty =
+        CGRectMake(rc_dirty.left, // * m_window.backingScaleFactor,
+                                  // 转换成左下角原点
+                   client_height - rc_dirty.top -
+                       rc_dirty.height(), // * m_window.backingScaleFactor,
+                   rc_dirty.width(),      // * m_window.backingScaleFactor,
+                   rc_dirty.height());    // * m_window.backingScaleFactor);
 
-      CGContextDrawImage(context, dirty, part_image);
-      CGImageRelease(part_image);
+    CGContextDrawImage(context, dirty, part_image);
+    CGImageRelease(part_image);
 #else
-      // 使用clip实现脏区域提交
-      // CGRect dirty = CGRectMake(rc.left,
-      //                           rc.top,
-      //                           rc.width(),
-      //                           rc.height());
-      int content_height = m_window.contentView.bounds.size.height;
-      NSRect dirty =
-          CGRectMake(rc.left / m_window.backingScaleFactor,
-                     content_height - (rc.bottom / m_window.backingScaleFactor),
-                     rc.width() / m_window.backingScaleFactor,
-                     rc.height() / m_window.backingScaleFactor);
-      CGContextClipToRect(context, dirty);
+    // 使用clip实现脏区域提交
+    // CGRect dirty = CGRectMake(rc.left,
+    //                           rc.top,
+    //                           rc.width(),
+    //                           rc.height());
+    int content_height = m_window.contentView.bounds.size.height;
+    NSRect dirty =
+        CGRectMake(rc.left / m_window.backingScaleFactor,
+                   content_height - (rc.bottom / m_window.backingScaleFactor),
+                   rc.width() / m_window.backingScaleFactor,
+                   rc.height() / m_window.backingScaleFactor);
+    CGContextClipToRect(context, dirty);
 
-      printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
-             dirty.origin.x, dirty.origin.y, dirty.size.width,
-             dirty.size.height);
+    printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
+           dirty.origin.x, dirty.origin.y, dirty.size.width, dirty.size.height);
 
-      // 注：左下角为原点，图片也是从左下角开始绘制的。
-      // 但缓存的尺寸是2指数倍，与窗口大小不一致。
-      // 因此这里调整纵坐标，减去缓存底部的空闲区域
-      // int image_bottom_offset = m_window.contentView.bounds.size.height -
-      // pm.height()/2; NSRect target_rect = NSMakeRect(
-      //   0,
-      //   image_bottom_offset,
-      //   pm.width()/2, pm.height()/2);
-      NSRect target_rect =
-          NSMakeRect(0, 0, m_window.contentView.bounds.size.width,
-                     m_window.contentView.bounds.size.height);
+    // 注：左下角为原点，图片也是从左下角开始绘制的。
+    // 但缓存的尺寸是2指数倍，与窗口大小不一致。
+    // 因此这里调整纵坐标，减去缓存底部的空闲区域
+    // int image_bottom_offset = m_window.contentView.bounds.size.height -
+    // pm.height()/2; NSRect target_rect = NSMakeRect(
+    //   0,
+    //   image_bottom_offset,
+    //   pm.width()/2, pm.height()/2);
+    NSRect target_rect =
+        NSMakeRect(0, 0, m_window.contentView.bounds.size.width,
+                   m_window.contentView.bounds.size.height);
 
-      CGContextDrawImage(context, target_rect, image);
-      CGContextResetClip(context);
+    CGContextDrawImage(context, target_rect, image);
+    CGContextResetClip(context);
 
-      // CGRect redRect = CGRectMake(50, 50, 200, 200);
-      // CGContextSetFillColorWithColor(context, [NSColor redColor].CGColor);
-      // CGContextFillRect(context, redRect);
+    // CGRect redRect = CGRectMake(50, 50, 200, 200);
+    // CGContextSetFillColorWithColor(context, [NSColor redColor].CGColor);
+    // CGContextFillRect(context, redRect);
 #endif
-    }
-    CGImageRelease(image);
   }
+  CGImageRelease(image);
+
   // CGContextRestoreGState(context);
 }
 
@@ -421,11 +374,7 @@ void WindowPlatformMac::notifySize() {
 }
 
 void WindowPlatformMac::onPaint(const Rect &dirty) {
-  Rect rect = {(int)(dirty.left),
-               (int)(dirty.top),
-               (int)(dirty.right),
-               (int)(dirty.bottom)};
-  m_ui_window.onPaint(&rect);
+  m_ui_window.onPaint(&dirty);
 }
 
 // Vulkan调用vkCreateMacOSSurfaceMVK时使用。
@@ -521,12 +470,12 @@ void *WindowPlatformMac::GetNSWindowRootView() {
 
   //  CGContextRef ctx =
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-
+  
   // 转换成左上角坐标
-  ui::Rect r = {(int)rect.origin.x, 
-    (int)(self.bounds.size.height - rect.origin.y - rect.size.height), 
-    (int)rect.size.width,
-                (int)rect.size.height};
+  ui::Rect r = {
+      (int)rect.origin.x,
+      (int)(self.bounds.size.height - rect.origin.y - rect.size.height),
+      (int)rect.size.width, (int)rect.size.height};
   m_window->onPaint(r);
 }
 

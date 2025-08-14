@@ -533,6 +533,65 @@ void WindowPlatformWin::CenterWindow() {
   // ::CenterWindow(m_hWnd);
 }
 
+#if 0 // TODO:
+void Render2DC(/*HDC*/ llong _hDC,
+                                 Render2TargetParam *pParam) {
+  if (!m_sksurface) {
+    return;
+  }
+  HDC hDC = (HDC)_hDC;
+
+  int &xDst = pParam->xDst;
+  int &yDst = pParam->yDst;
+  int &wDst = pParam->wDst;
+  int &hDst = pParam->hDst;
+  int &xSrc = pParam->xSrc;
+  int &ySrc = pParam->ySrc;
+  int &wSrc = pParam->wSrc;
+  int &hSrc = pParam->hSrc;
+  bool &bAlphaBlend = pParam->bAlphaBlend;
+  byte &opacity = pParam->opacity;
+
+  //  HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
+  //  RECT rc = {xDst, yDst, xDst + wDst, yDst + hDst};
+  // ::FillRect(hDC, &rc, hBrush);
+
+  SkPixmap pm;
+  if (!m_sksurface->peekPixels(&pm)) {
+    return;
+  }
+
+  BITMAPINFO bmi;
+  memset(&bmi, 0, sizeof(bmi));
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = pm.width();
+  bmi.bmiHeader.biHeight = -pm.height(); // top-down image
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 32;
+  bmi.bmiHeader.biCompression = BI_RGB;
+  bmi.bmiHeader.biSizeImage = 0;
+
+  // if (wDst == wSrc && hDst == hSrc) {
+  //   SetDIBitsToDevice
+  // }
+  ::StretchDIBits(hDC, xDst, ySrc, wDst, hDst, xSrc, ySrc, wSrc, hSrc,
+                  pm.addr(), &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+  // if (bAlphaBlend) {
+  //   BLENDFUNCTION bf = {AC_SRC_OVER, 0, opacity, AC_SRC_ALPHA};
+  //   ::AlphaBlend(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, wSrc, hSrc,
+  //                bf);
+  // } else {
+  //   if (wDst == wSrc && hDst == hSrc) {
+  //     ::BitBlt(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, SRCCOPY);
+  //   } else {
+  //     ::StretchBlt(hDstDC, xDst, ySrc, wDst, hDst, hDC, xSrc, ySrc, wSrc,
+  //     hSrc,
+  //                  SRCCOPY);
+  //   }
+  // }
+}
+#endif // TODO:
 void WindowPlatformWin::Commit(IRenderTarget *pRT, const Rect *prect,
                                int count) {
   HDC hDC = GetDC(m_hWnd);
@@ -544,7 +603,8 @@ void WindowPlatformWin::Commit(IRenderTarget *pRT, const Rect *prect,
     param.ySrc = param.yDst = rcInWindow.top;
     param.wSrc = param.wDst = rcInWindow.right - rcInWindow.left;
     param.hSrc = param.hDst = rcInWindow.bottom - rcInWindow.top;
-    pRT->Render2DC((llong)hDC, &param);
+    // pRT->Render2DC((llong)hDC, &param);
+    assert(false && "TODO: ");
   }
   ReleaseDC(m_hWnd, hDC);
 }

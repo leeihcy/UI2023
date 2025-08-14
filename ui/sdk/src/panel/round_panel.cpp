@@ -1,8 +1,8 @@
 #include "round_panel.h"
 
 #include <SkCanvas.h>
-#include <SkClipOp.h>
 #include <SkImage.h>
+#include <SkClipOp.h>
 #include <SkPath.h>
 #include <SkRRect.h>
 #include <SkRect.h>
@@ -90,26 +90,14 @@ void RoundPanel::prePaint(IRenderTarget *pRenderTarget, int width, int height) {
   if (m_corner.IsZero())
     return;
 
-  SkScalar ul = (SkScalar)m_corner.left;
-  SkScalar ur = (SkScalar)m_corner.top;
-  SkScalar ll = (SkScalar)m_corner.right;
-  SkScalar lr = (SkScalar)m_corner.bottom;
+  // TODO:
+  // SkScalar ul = (SkScalar)m_corner.left;
+  // SkScalar ur = (SkScalar)m_corner.top;
+  // SkScalar ll = (SkScalar)m_corner.right;
+  // SkScalar lr = (SkScalar)m_corner.bottom;
 
-  SkRRect rr;
-  SkVector radii[4] = {
-      {ul, ul},
-      {ur, ur},
-      {lr, lr},
-      {ll, ll},
-  };
-  rr.setRectRadii(SkRect::MakeXYWH(0, 0, width, height), radii);
-
-  SkPath path;
-  path.addRRect(rr);
-
-  SkCanvas *canvas = (SkCanvas *)pRenderTarget->GetHandle();
-  canvas->save();
-  canvas->clipPath(path, SkClipOp::kIntersect, true);
+  pRenderTarget->Save();
+  pRenderTarget->ClipRoundRect(ui::Rect::MakeXYWH(0, 0, width, height), m_corner.left);
 }
 
 void RoundPanel::postPaint(IRenderTarget *pRenderTarget, int width,
@@ -117,8 +105,7 @@ void RoundPanel::postPaint(IRenderTarget *pRenderTarget, int width,
   if (m_corner.IsZero())
     return;
 
-  SkCanvas *canvas = (SkCanvas *)pRenderTarget->GetHandle();
-  canvas->restore();
+  pRenderTarget->Restore();
 }
 
 } // namespace ui

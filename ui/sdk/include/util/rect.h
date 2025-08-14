@@ -107,7 +107,7 @@ struct Rect : public RectLTRB {
   bool PtIn(const Point &pt) {
     return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;
   }
-  bool Intersect(const Rect &rc, Rect *out) {
+  bool Intersect(const Rect &rc, Rect *out) const {
     if (!out) {
       return false;
     }

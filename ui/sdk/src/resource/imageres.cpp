@@ -86,19 +86,6 @@ ImageResItem::GetImage(Resource *pSkinRes,
   switch (eRenderType) {
   case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA:
     return GetSkiaImage(pSkinRes, pbFirstTimeCreate);
-
-  case GRAPHICS_RENDER_LIBRARY_TYPE_GDI:
-    //   return GetImage_gdi(pSkinRes, pbFirstTimeCreate);
-
-  case GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS:
-    //         return GetImage_gdiplus(pSkinRes, pbFirstTimeCreate);
-    //
-  case GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT2D:
-    //         return GetImage_d2d(pSkinRes, pbFirstTimeCreate);
-    //
-  case GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT3D:
-    //         return GetImage_d3d(pSkinRes, pbFirstTimeCreate);
-
   default:
     return nullptr;
   }
@@ -153,65 +140,6 @@ ImageResItem::GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate) {
 
   return m_render_bitmap;
 }
-
-// IRenderBitmap *ImageResItem::GetImage_gdi(Resource *pSkinRes,
-//                                           bool *pbFirstTimeCreate) {
-// #if 0 // defined(OS_WIN)
-//   SkinDataSource *pDataSource = pSkinRes->GetDataSource();
-//   if (nullptr == pDataSource)
-//     return nullptr;
-
-//   if (m_bNeedAntiAliasing) {
-//     // TODO:
-//     UIASSERT(0);
-//     // return GetImage_gdiplus(pSkinRes, pbFirstTimeCreate);
-//   }
-
-//   if (m_pGdiBitmap) {
-//     m_pGdiBitmap->AddRef();
-//     return (IRenderBitmap *)m_pGdiBitmap;
-//   }
-
-//   RenderBitmapFactory::CreateInstance(
-//       pSkinRes->GetUIApplication()->GetIUIApplication(),
-//       GRAPHICS_RENDER_LIBRARY_TYPE_GDI, m_eType,
-//       (IRenderBitmap **)&m_pGdiBitmap);
-
-//   if (!m_pGdiBitmap)
-//     return nullptr;
-
-//   m_pGdiBitmap->SetOutRef((IRenderResource **)&m_pGdiBitmap);
-//   SetRenderBitmapAttribute(m_pGdiBitmap);
-
-//   /*if (false == m_pGdiBitmap->LoadFromFile(m_strPath.c_str(),
-//    * m_bMustHasAlphaChannel))*/
-//   // 2015.2.11
-//   //
-//   gdi也可以用于透明窗口了。干脆将所有图片都加载为32位的，省的gdi的jpg图片无法在透明窗口中显示
-//   long flags = RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL;
-//   if (NeedDpiAdapt()) {
-//     flags |= RENDER_BITMAP_LOAD_DPI_ADAPT;
-//     flags |= (m_nFileDpiScale) << 24;
-//   }
-
-//   if (false == pDataSource->Load_RenderBitmap(m_pGdiBitmap,
-//   m_strPath.c_str(),
-//                                               (RENDER_BITMAP_LOAD_FLAG)flags))
-//                                               {
-//     SAFE_RELEASE(m_pGdiBitmap);
-//     UI_LOG_ERROR("Load gdi bitmap from file failed. path=%s",
-//                  m_strPath.c_str());
-//     return nullptr;
-//   }
-
-//   if (pbFirstTimeCreate)
-//     *pbFirstTimeCreate = true;
-
-//   return (IRenderBitmap *)m_pGdiBitmap;
-// #else
-//   return nullptr;
-// #endif
-// }
 
 bool ImageResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   if (false == m_bUseSkinHLS)

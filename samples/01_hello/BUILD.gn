@@ -8,6 +8,7 @@ executable("hello") {
         "//ui/sdk:sdk"
     ]
     include_dirs = [
+        "//",
         "//ui",
     ]
     sources = [

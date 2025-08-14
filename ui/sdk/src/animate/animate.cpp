@@ -1,4 +1,4 @@
-#include "animate.h"
+#include "src/animate/animate.h"
 #include "src/application/uiapplication.h"
 #include "storyboard.h"
 

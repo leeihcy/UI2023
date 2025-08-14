@@ -1,6 +1,7 @@
 #include "windowrender.h"
 #include "compositor.h"
 #include "include/inc.h"
+#include "include/interface/renderlibrary.h"
 #include "include/util/log.h"
 #include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
@@ -13,14 +14,9 @@
 #include "src/window/window.h"
 
 namespace ui {
-WindowRender::WindowRender(Window &w) : m_window(w) {
-  //	m_pHardwareComposition = nullptr;
-  //  m_bNeedRebuildGpuLayerTree = true;
-}
+WindowRender::WindowRender(Window &w) : m_window(w) {}
 
-WindowRender::~WindowRender() {
-  //	SAFE_RELEASE(m_pHardwareComposition);
-}
+WindowRender::~WindowRender() {}
 
 IWindowRender *WindowRender::GetIWindowRender() {
   if (!m_pIWindowRender)
@@ -62,26 +58,6 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
   layer->Invalidate(dirty);
 }
 
-void WindowRender::Paint(const Rect *commit_rect) {
-  if (!CanCommit()) {
-    UI_LOG_WARN(L"can not commit now");
-    return;
-  }
-  if (!m_compositor) {
-    return;
-  }
-
-  RectRegion arrDirtyInWindow;
-  m_compositor->UpdateDirty(&arrDirtyInWindow);
-
-  if (commit_rect) {
-    arrDirtyInWindow.Union(*commit_rect);
-  }
-  m_compositor->Commit(arrDirtyInWindow);
-}
-
-void WindowRender::RequestUpdate() {}
-
 // IRenderTarget* 没有引用计数机制
 // 但仍然采用Release进行释放（delete）
 bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
@@ -99,24 +75,6 @@ void WindowRender::OnClientSize(unsigned int nWidth, unsigned int nHeight) {
   if (m_compositor) {
     m_compositor->Resize(nWidth, nHeight);
   }
-}
-void WindowRender::OnWindowPaint(const Rect &dirty) {
-  // 由窗口自动触发的更新，只要直接提交缓存到窗口即可。
-  // 但如果有脏区域，还是要处理一下。
-
-  if (!CanCommit()) {
-    UI_LOG_WARN(L"can not commit now");
-    return;
-  }
-  if (!m_compositor) {
-    return;
-  }
-
-  RectRegion arrDirtyInWindow;
-  m_compositor->UpdateDirty(&arrDirtyInWindow);
-
-  arrDirtyInWindow.Union(dirty);
-  m_compositor->Commit(arrDirtyInWindow);
 }
 
 void WindowRender::SetCanCommit(bool b) {
@@ -238,201 +196,99 @@ Compositor *WindowRender::get_create_compositor() {
   return m_compositor.get();
 }
 
-void WindowRender::UpdateAndCommit() {
-  if (!m_compositor)
-    return;
+void WindowRender::onWindowCreated() {
+  if (Config::GetInstance().enable_render_thread) {
+    // 标记root layer对应的rendertarget需要创建双缓存用于提交数据。
+    // 其它layer的rendertarget不需要创建双缓存。
 
-  m_compositor->UpdateAndCommit();
+    auto *root_layer = m_window.GetRootObject().GetSelfLayer();
+    assert(root_layer);
+    assert(root_layer->GetRenderTarget());
+    m_window.GetApplication().GetRenderThread().main.CreateSwapChain(
+        root_layer->GetRenderTarget());
+  }
+
+  // 首次刷新，将窗口所有区域设置为无效
+  ui::Rect rc_client;
+  m_window.GetRootObject().GetClientRectWithZeroOffset(&rc_client);
+  AddInvalidateRect(&rc_client);
 }
 
-void WindowRender::OnWindowCreate() {
+void WindowRender::RequestInvalidate() {
+  if (m_request_invalidate_ref == 0) {
+    weak_ptr<WindowRender> ptr = m_weakptr_factory.get();
+    auto *app = m_window.GetResource().GetUIApplication();
+
+    app->GetMessageLoop().PostTask(Slot(&WindowRender::InvalidateNow, ptr));
+    m_request_invalidate_ref++;
+  }
+}
+
+void WindowRender::InvalidateNow() { Paint(nullptr); }
+
+void WindowRender::Paint(const Rect *commit_rect) {
+  m_request_invalidate_ref = 0;
+
+  if (Config::GetInstance().debug.log_window_onpaint && commit_rect) {
+    UI_LOG_DEBUG("Window::onPaint commit_rect={%d,%d, %d,%d}",
+                 (int)(commit_rect->left), (int)(commit_rect->top),
+                 (int)(commit_rect->right), (int)(commit_rect->bottom));
+  }
+
+  if (!CanCommit()) {
+    return;
+  }
   if (!m_compositor) {
     return;
   }
-  m_compositor->BindWindow(&m_window);
+
+  RectRegion dirty_region;
+  if (m_compositor->UpdateDirty(&dirty_region)) {
+    // 没有脏区域时，不需要swap chain
+    if (Config::GetInstance().enable_render_thread) {
+      auto *root_layer = m_window.GetRootObject().GetSelfLayer();
+      assert(root_layer);
+      assert(root_layer->GetRenderTarget());
+
+      m_window.GetApplication().GetRenderThread().main.SwapChain(
+          root_layer->GetRenderTarget(), &m_window, dirty_region);
+    }
+  }
+
+  // 窗口额外无效的区域，但不是我们的脏区域。只需要直接commit上去即可。
+  if (commit_rect) {
+    dirty_region.Union(*commit_rect);
+  }
+  m_compositor->Commit(dirty_region);
 }
 
-// void  WindowRender::UpdateWindow(HDC hDC, Rect* prcDamageArray, uint nCount)
-// {
-//     Rect rcClient;
-//     if (!prcDamageArray)
-//     {
-// 		::GetClientRect(m_pWindow->m_hWnd, &rcClient);
-// 		prcDamageArray = &rcClient;
-// 		nCount = 1;
-// 	}
-//
-// 	RenderLayer* pRenderLayer = m_pWindow->GetRenderLayer2();
-// 	if (!pRenderLayer)
-// 		return;
-//
-// 	pRenderLayer->UpdateLayer(prcDamageArray, nCount);
-// 	Commit(hDC, prcDamageArray, nCount);
-// }
+// 在swap chain之后，直接提交新的内容到窗口上
+void WindowRender::DirectCommit(const DirtyRegion &dirty_region) {
+  if (!CanCommit()) {
+    return;
+  }
+  if (!m_compositor) {
+    return;
+  }
+  m_compositor->Commit(dirty_region);
+}
 
-// IGpuLayer*  WindowRender::CreateGpuLayerTexture(RenderLayer* p)
-// {
-// 	if (nullptr == m_pHardwareComposition)
-// 	{
-// 		if (m_pWindow->IsGpuComposite())
-// 		{
-// 			m_pHardwareComposition =
-// CreateHardwareComposition(m_pWindow->m_hWnd);
-// 		}
-// 	}
-//
-// 	IGpuLayer* pGpuTexture = nullptr;
-// 	if (m_pHardwareComposition)
-// 	{
-// 		pGpuTexture = m_pHardwareComposition->CreateLayerTexture();
-// 		if (p->GetCreateObject() == m_pWindow)
-// 			m_pHardwareComposition->SetRootLayerSurface(pGpuTexture);
-//
-// 		m_bNeedRebuildGpuLayerTree = true;
-// 	}
-//
-// 	return pGpuTexture;
-// }
-//
-// void  WindowRender::OnRenderLayerDestroy(RenderLayer* p)
-// {
-//     if (m_pHardwareComposition)
-//     {
-//         m_bNeedRebuildGpuLayerTree = true;
-//     }
-// }
-// void  WindowRender::DrawIncrement()
-// {
-//     m_compositor->UpdateDirty(nullptr);
-//
-// }
-//
-// void  WindowRender::Commit(HDC hDC, Rect* prc, int nCount)
-// {
-//     if (!CanCommit())
-//         return;
-//
-//     if (m_pHardwareComposition)
-//     {
-//         HardComposite();
-//     }
-//     else
-//     {
-//         m_pWindow->CommitDoubleBuffet2Window(hDC, prc, prc?nCount:0);
-//     }
-// }
-//
-// void  WindowRender::HardComposite()
-// {
-//     if (m_pHardwareComposition)
-//     {
-//         if (m_bNeedRebuildGpuLayerTree)
-//             this->RebuildCompositingLayerTree();
-//
-//         if (m_pHardwareComposition->BeginCommit())
-//         {
-//             RenderLayer*  pRootLayer = m_pWindow->GetRenderLayer2();
-//
-// 			Rect rcClip;
-// 			::GetClientRect(m_pWindow->GetHWND(), &rcClip);
-//
-// 			GpuLayerCommitContext context;
-// 			context.SetClipRect(&rcClip);
-//             pRootLayer->Compositor2Gpu(context);
-//             m_pHardwareComposition->EndCommit();
-//         }
-//     }
-// }
-//
-// void  WindowRender::OnHardCompositeChanged(bool bEnable)
-// {
-// 	if (m_bNeedRebuildGpuLayerTree)
-// 		this->RebuildCompositingLayerTree();
-//
-// 	RenderLayer*  pRootLayer = m_pWindow->GetRenderLayer2();
-//     if (pRootLayer)
-//     {
-// 	    pRootLayer->OnHardCompositeChanged(bEnable);
-//     }
-// }
-//
-// void  WindowRender::SetNeedRebuildCompositingLayerTree()
-// {
-// 	m_bNeedRebuildGpuLayerTree = true;
-// }
-//
-// // 通过renderlayer树来构建gpulayer树
-// void  WindowRender::RebuildCompositingLayerTree()
-// {
-//     if (!m_bNeedRebuildGpuLayerTree)
-//         return;
-//
-//     RenderLayer*  pRootLayer = m_pWindow->GetRenderLayer2();
-//     if (!pRootLayer)
-//         return;
-//
-//     pRootLayer->ClearChildren();
-//     rebuildCompositingLayerTree(m_pWindow,pRootLayer);
-//
-//     m_bNeedRebuildGpuLayerTree = false;
-// }
-// void  WindowRender::rebuildCompositingLayerTree(
-//         Object* pParent,
-//         RenderLayer* pParentLayer)
-// {
-//     if (!pParent || !pParentLayer)
-//         return;
-//
-//     Object*  pChild = nullptr;
-//     RenderLayer*  pLayer = nullptr;
-//
-//     while (pChild = pParent->EnumAllChildObject(pChild))
-//     {
-//         pLayer = pChild->GetSelfRenderLayer2();
-//         if (pLayer)
-//         {
-// //             IGpuLayer*  pGpuLayerTexture = pLayer->GetGpuTexture();
-// //             UIASSERT(pGpuLayerTexture);
-//
-// //             pGpuLayerTexture->ClearChildren();
-// //             pParentLayer->AddChild(pGpuLayerTexture);
-// // #ifdef _DEBUG
-// //             Point pt = pChild->GetWindowPoint();
-// //             pGpuLayerTexture->SetWindowPos(pt.x, pt.y);
-// // #endif
-// //             rebuildCompositingLayerTree(pChild, pGpuLayerTexture);
-//
-//             pLayer->ClearChildren();
-//             pParentLayer->AddChild(pLayer);
-//             rebuildCompositingLayerTree(pChild, pLayer);
-//         }
-//         else
-//         {
-//             rebuildCompositingLayerTree(pChild, pParentLayer);
-//         }
-//     }
-// }
+void WindowRender::SoftwareCommit(IRenderTarget *pRT, const Rect *prect,
+                                  int count) {
+  if (Config::GetInstance().enable_render_thread) {
+    RenderThread &thread = m_window.GetApplication().GetRenderThread();
 
-// void WindowRender::Commit(Rect *prcInvalid) {
-//   if (!prcInvalid) {
-//     UIASSERT(0);
-//     return;
-//   }
-
-//   // 如果有脏区域，还是需要先刷新，再提交
-//   //
-//   例如SIZE变化，进行异步刷新时，重新创建了RenderTarget，然后就来了一个WM_PAINT消息，
-//   // 但此时还没有刷新layer，不能直接提交一个空的rendertarget缓存到窗口上！
-
-//   if (m_compositor) {
-//     RectRegion arr;
-
-//     Rect r;
-//     r.CopyFrom(*prcInvalid);
-//     arr.AddRect(r);
-
-//     m_compositor->Commit(arr);
-//   }
-// }
+    const RenderThread::FrameBufferWithReadLock &frame_buffer =
+        thread.main.GetFrameBuffer(pRT);
+    if (!frame_buffer.fb.data) {
+      return;
+    }
+    m_window.m_platform->Commit2(frame_buffer.fb, prect, count);
+  } else {
+    FrameBuffer fb = {0};
+    pRT->GetFrameBuffer(&fb);
+    m_window.m_platform->Commit2(fb, prect, count);
+  }
+}
 
 } // namespace ui

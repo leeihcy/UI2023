@@ -6,7 +6,7 @@
 WTL::CAppModule _Module;
 
 namespace ui {
-
+  
 MessageLoopPlatformWin::MessageLoopPlatformWin() {
   m_hTimer = nullptr;
   ::QueryPerformanceFrequency(&m_liPerFreq);
@@ -20,8 +20,13 @@ MessageLoopPlatformWin::~MessageLoopPlatformWin() {
   }
 }
 
+HWND MessageLoopPlatformWin::m_hwnd_forward_postmsg = nullptr;
+
 void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
   m_message_loop = p;
+
+  // ::CoInitialize(0);
+  OleInitialize(0); // 需要注册richedit的drag drop，因此用ole初始化
 
   // OleInitialize(0);
   // CoInitializeEx(0, 0);
@@ -29,6 +34,34 @@ void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
 
   // 创建一个用于转发消息的窗口，实现post ui message
   m_WndForwardPostMsg.Create(this);
+  s_hwnd_forward_postmsg = m_WndForwardPostMsg.GetHWnd();
+
+
+#if defined(OS_WIN)
+  // 获取操作系统版本信息
+  ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
+  m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  GetVersionEx((OSVERSIONINFO *)&m_osvi);
+
+  // 设置当前语言。主要是用于 strcoll
+  // 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？) libo
+  // 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
+  // _wsetlocale( LC_ALL, _T("chs") );
+#endif
+#if 0
+    // 初始化Gdiplus
+    // 注：gdiplus会创建一个背景线程：GdiPlus.dll!BackgroundThreadProc()  + 0x59 字节	
+    Image::InitGDIPlus();
+
+    /* INITIALIZE COMMON CONTROLS, tooltip support */
+    INITCOMMONCONTROLSEX iccex; 
+    iccex.dwICC = ICC_WIN95_CLASSES;
+    iccex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    InitCommonControlsEx(&iccex);
+
+    // 针对layer window防止无响应时窗口变黑
+    //DisableProcessWindowsGhosting();
+#endif
 }
 
 void MessageLoopPlatformWin::Release() { DestroyAnimateTimer(); }
@@ -287,6 +320,15 @@ void MessageLoopPlatformWin::DestroyAnimateTimer() {
   m_hTimer = nullptr;
 
   // restore_timer_resolution(m_hModuleWinmm);
+}
+
+
+void PostTaskToUIThread(PostTaskType &&task) {
+  HWND hwnd = MessageLoopPlatformWin::s_hwnd_forward_postmsg;
+  assert(hwnd);
+
+  PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
+  ::PostMessage(hwnd, UI_MSG_POSTMESSAGE, (WPARAM)p, 0);
 }
 
 #if 0 // defined(OS_WIN)

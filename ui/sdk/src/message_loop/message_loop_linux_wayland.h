@@ -26,13 +26,18 @@ public:
 
 private:
   int create_timer(long long interval_ns);
-  
+  void process_uithread_pipe_messasge();
+
 private:
   MessageLoop* m_message_loop = nullptr;
   bool m_running = true;
 
+  // epoll
   int m_epoll_fd = -1;
+  // 定时器
   int m_animate_timer_fd = -1;
+  // 其它线程向ui线程发送消息[0read, 1write]
+  static int s_uithread_pipe[2];
 
   WaylandDisplay m_display;
 };

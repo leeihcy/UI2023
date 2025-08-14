@@ -39,8 +39,7 @@ public:
   bool ModifyAlpha(byte nAlphaPercent);
   std::shared_ptr<IRenderBitmap>
   GetImage(Resource *pSkinRes,
-           GRAPHICS_RENDER_LIBRARY_TYPE eRenderType =
-               GRAPHICS_RENDER_LIBRARY_TYPE_GDI,
+           GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
            bool *pbFirstTimeCreate = nullptr);
   std::shared_ptr<IRenderBitmap>
   GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate = nullptr);

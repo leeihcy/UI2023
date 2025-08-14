@@ -57,6 +57,8 @@ void ForwardPostMessageWindow::Create(MessageLoopPlatformWin *p) {
   }
 }
 void ForwardPostMessageWindow::Post(slot<void()> &&callback) {
+  // 注：PostTaskToUIThread Windows平台复用了这段代码，修改时需要同步处理。
+
   PostData *data = new PostData(std::forward<slot<void()>>(callback));
   ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, (WPARAM)data, 0);
 }

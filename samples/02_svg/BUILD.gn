@@ -3,14 +3,15 @@ executable("svg") {
     output_name = "sample_svg"
 
     deps = [
-        "//ui/sdk:sdk",
-        "//ui/svg:svg"
+      "//ui/sdk:sdk",
+      "//ui/svg:svg"
     ]
     include_dirs = [
-        "//ui",
+      "//",
+      "//ui",
     ]
     sources = [
-        "main.cc",
+      "main.cc",
     ]
 
     cflags = []

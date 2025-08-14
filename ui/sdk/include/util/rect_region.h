@@ -1,21 +1,20 @@
-#ifndef _UI_SDK_SRC_UTIL_RECTREGION_RECTREGION_H_
-#define _UI_SDK_SRC_UTIL_RECTREGION_RECTREGION_H_
-#include "include/interface.h"
-#include "include/util/rect.h"
-#include <vector>
+#ifndef _UI_SDK_INCLUDE_UTIL_RECTREGION_H_
+#define _UI_SDK_INCLUDE_UTIL_RECTREGION_H_
+#include "ui/sdk/include/interface.h"
+#include "ui/sdk/include/util/rect.h"
 
 namespace ui {
-class RectRegion {
+class UIAPI RectRegion {
 public:
   RectRegion();
   ~RectRegion();
-  RectRegion(RectRegion &o);
+  RectRegion(const RectRegion &o);
   RectRegion &operator=(const RectRegion &o);
 
-  Rect *GetArrayPtr();
-  const Rect *GetArrayPtr2() const;
+  Rect *RectPtr();
+  const Rect *RectPtr2() const;
   Rect *GetRectPtrAt(unsigned int nIndex);
-  uint GetCount() const;
+  unsigned int Count() const;
   void AddRect(const Rect&);
 
   void Destroy();
@@ -29,11 +28,10 @@ public:
   void Union(const Rect& rc);
   void UnionSimple(const Rect& rc);
 
-  // 运行完之后，m_prcArray的大小与m_nCount可能不匹配
+  // 运行完之后，m_prcArray的大小与m_count可能不匹配
   bool IntersectRect(const Rect *prc, bool OnlyTest = false);
-#if 0 // defined(OS_WIN)
-  HRGN CreateRgn();
-#endif
+  bool Contains(const RectRegion& region) const;
+  bool Contains(const Rect& rect) const;
   void GetUnionRect(Rect *prc);
 
   enum { STACK_SIZE = 3 };
@@ -47,10 +45,13 @@ private:
   Rect m_stackArray[STACK_SIZE];
   Rect *m_heapArray;
 
-  // 注：m_nCount小于等于m_prcArray的实际大小，见IntersectRect
-  unsigned int m_nCount;
-  unsigned int m_nCapacity; // TODO
+  // 注：m_count小于等于m_prcArray的实际大小，见IntersectRect
+  unsigned int m_count;
+  unsigned int m_capacity; // TODO
 };
+
+typedef RectRegion DirtyRegion;
+
 } // namespace ui
 
 #endif

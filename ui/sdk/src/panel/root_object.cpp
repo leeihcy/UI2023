@@ -1,5 +1,6 @@
 #include "root_object.h"
 #include "include/interface/iobject.h"
+#include "src/application/config/config.h"
 #include "src/resource/res_bundle.h"
 #include "src/window/window.h"
 #include "src/window/window_meta.h"

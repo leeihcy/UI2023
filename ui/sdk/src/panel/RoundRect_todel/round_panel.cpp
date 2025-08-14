@@ -108,6 +108,9 @@ void RoundPanel::prePaint(IRenderTarget *pRenderTarget, int width, int height) {
     s_parentBuf.SaveRightBottom(pRenderTarget, m_rightbottom, width, height);
   }
 #endif
+
+  assert(false && "TODO:");
+#if 0 // TODO: 
   SkCanvas* canvas = (SkCanvas*)pRenderTarget->GetHandle();
   canvas->save();
 
@@ -119,6 +122,7 @@ void RoundPanel::prePaint(IRenderTarget *pRenderTarget, int width, int height) {
 
   path.addRRect(rr);
   canvas->clipPath(path, SkClipOp::kIntersect, true);
+#endif
 }
 
 

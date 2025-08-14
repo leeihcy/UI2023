@@ -47,22 +47,22 @@ void ColorBorderRender_DrawState(RENDERBASE_DRAWSTATE *pDrawStruct,
     Rect rcLeft = pDrawStruct->rc;
     rcLeft.right = rcLeft.left + rBorder.left;
 
-    pRenderTarget->DrawRect(&rcLeft, &c);
+    pRenderTarget->DrawRect(rcLeft, c);
   }
   if (0 != rBorder.top) {
     Rect rcTop = pDrawStruct->rc;
     rcTop.bottom = rcTop.top + rBorder.top;
-    pRenderTarget->DrawRect(&rcTop, &c);
+    pRenderTarget->DrawRect(rcTop, c);
   }
   if (0 != rBorder.right) {
     Rect rcRight = pDrawStruct->rc;
     rcRight.left = rcRight.right - rBorder.right;
-    pRenderTarget->DrawRect(&rcRight, &c);
+    pRenderTarget->DrawRect(rcRight, c);
   }
   if (0 != rBorder.bottom) {
     Rect rcBottom = pDrawStruct->rc;
     rcBottom.top = rcBottom.bottom - rBorder.bottom;
-    pRenderTarget->DrawRect(&rcBottom, &c);
+    pRenderTarget->DrawRect(rcBottom, c);
   }
 }
 
@@ -114,7 +114,7 @@ void ColorRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     return;
 
   if (!m_back_color.IsTransparnt()) {
-    pRenderTarget->DrawRect(&pDrawStruct->rc, &m_back_color);
+    pRenderTarget->DrawRect(pDrawStruct->rc, m_back_color);
   }
 
   if (!m_border_color.IsTransparnt()) {

@@ -1,8 +1,10 @@
 #ifndef _UI_RENDERLIBRARY_H_
 #define _UI_RENDERLIBRARY_H_
-#include "sdk/include/util/color.h"
-#include "sdk/include/util/rect.h"
-#include "sdk/include/macro/xmldefine.h"
+#include "ui/sdk/include/macro/xmldefine.h"
+#include "ui/sdk/include/util/color.h"
+#include "ui/sdk/include/util/rect.h"
+#include "ui/sdk/include/util/rect_region.h"
+#include "ui/sdk/include/common/signalslot/slot.h"
 #include <string>
 
 namespace ui {
@@ -68,11 +70,7 @@ typedef struct tagDRAWBITMAPPARAM {
 
 } DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
-
-
-struct DrawTextEffects {
-
-};
+struct DrawTextEffects {};
 
 struct FontDesc {
   std::string face;
@@ -89,9 +87,9 @@ struct FontDesc {
       bool subpixel : 1;
     };
   };
-  bool operator==(const FontDesc& o) const {
+  bool operator==(const FontDesc &o) const {
     return face == o.face && size == o.size && weight == o.weight &&
-      orientation == o.orientation && style == o.style;
+           orientation == o.orientation && style == o.style;
   }
 
   size_t hash() const {
@@ -120,14 +118,14 @@ struct DrawTextParam {
 
     // bkcolor.a = 0xff000000;
   }
-  
+
   FontDesc font_desc;
 
   const char *text;
-  Rect bound;  // 绘制范围
+  Rect bound; // 绘制范围
   ui::Color color;
 
-  int align;   // ALIGN_TYPE
+  int align; // ALIGN_TYPE
   bool multiline;
 
   int effects; // 特效标志
@@ -146,12 +144,12 @@ enum TEXT_EFFECT {
 struct Render2TargetParam {
   int xDst;
   int yDst;
-  int wDst;
-  int hDst;
+  unsigned int wDst;
+  unsigned int hDst;
   int xSrc;
   int ySrc;
-  int wSrc;
-  int hSrc;
+  unsigned int wSrc;
+  unsigned int hSrc;
   bool bAlphaBlend;
   unsigned char opacity;
 
@@ -163,9 +161,9 @@ struct Render2TargetParam {
 struct IRenderResource {
   virtual ~IRenderResource(){};
   virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
-//   virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
-//   virtual long AddRef() = 0;
-//   virtual long Release() = 0;
+  //   virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
+  //   virtual long AddRef() = 0;
+  //   virtual long Release() = 0;
 };
 
 enum RENDER_BITMAP_LOAD_FLAG {
@@ -177,8 +175,7 @@ enum RENDER_BITMAP_LOAD_FLAG {
   // (2 << 24) | DPI_ADAPT
 };
 struct IRenderBitmap : public IRenderResource {
-  virtual bool LoadFromFile(const char *szPath,
-                            RENDER_BITMAP_LOAD_FLAG e) = 0;
+  virtual bool LoadFromFile(const char *szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;
   virtual bool LoadFromData(unsigned char *pData, int nSize,
                             RENDER_BITMAP_LOAD_FLAG e) = 0;
 
@@ -265,72 +262,71 @@ public:
   virtual bool CreateSolidBrush(Color *pColor) = 0;
 };
 
+
+// 渲染好的帧缓存数据，可用于主线程窗口提交渲染。
+// 其实是对应于front render target的buffer数据。
+struct FrameBuffer {
+  int width;
+  int height;
+  const void *data;
+  int rowbytes;
+};
+
+struct IClipOrigin {
+  virtual void SetDirtyRegion(const DirtyRegion& dirty_region) = 0;
+  virtual void PushRelativeClipRect(const Rect& rect) = 0;
+  virtual void PopRelativeClipRect() = 0;
+
+  virtual void SetOrigin(int x, int y) = 0;
+  virtual void OffsetOrigin(int x, int y) = 0;
+
+  virtual bool IsRelativeRectInClip(const Rect& rect) = 0;
+};
+
 //
 // IRenderTarget的几种渲染方式：
 // 1. 调用BindHDC，将目标绘制在该HDC上面
 // 2. 调用CreateRenderBuffer，将目标绘制在自己的内部缓存当中
 //
-struct IRenderTarget {
+struct IRenderTarget : public IClipOrigin {
   virtual ~IRenderTarget(){};
   virtual void Release() = 0; // delete this;
 
-  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
-  virtual bool IsRenderAlphaChannel() = 0;
-
-  // virtual void BindHDC(HDC hDC) = 0;
-  // virtual HDC GetBindHDC() = 0;
-  virtual bool CreateRenderBuffer(IRenderTarget *pSrcRT) = 0;
-  virtual bool ResizeRenderBuffer(unsigned int nWidth,
-                                  unsigned int nHeight) = 0;
-  virtual void GetRenderBufferData(ImageData *pData) = 0;
-  // virtual HDC GetHDC() = 0;
-  // virtual void ReleaseHDC(HDC hDC) = 0;
-  // virtual void BindHWND(HWND hWnd) = 0; // 仅D2D有用
-
-  // 获取原生指针进行绘制。如HDC, SkCanvas
-  virtual void* GetHandle() = 0;
+  virtual GRAPHICS_RENDER_LIBRARY_TYPE Type() = 0;
 
   virtual bool BeginDraw(float scale) = 0;
   virtual void EndDraw() = 0;
-  virtual void Clear(Rect *prc) = 0;
-  virtual void Save(const char *szPath) = 0;
-#if defined(OS_WIN)  
-  virtual void Render2DC(llong hDC, Render2TargetParam *pParam) = 0;
-#endif
+  virtual void Clear(const Rect& rect) = 0;
+  virtual bool Resize(unsigned int nWidth, unsigned int nHeight) = 0;
+  virtual void* GetHandle() = 0;
+
+  virtual void Save() = 0;
+  virtual void Restore() = 0;
+  virtual void ClipRoundRect(const Rect& rect, int radius) = 0;
+  virtual void ClipRect(const Rect& rect) = 0;
+
+  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+                          float scale) = 0;
+  virtual void DumpToImage(const char *szPath) = 0;
+  virtual void GetFrameBuffer(FrameBuffer* fb) = 0;
+
+  virtual void RenderOnThread(slot<void(IRenderTarget*)>&& callback) = 0;
   virtual void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) = 0;
 
-  virtual void SetMetaClipRegion(Rect *prc, unsigned int nrcCount) = 0;
-  virtual void PushRelativeClipRect(const Rect *) = 0;
-  virtual void PopRelativeClipRect() = 0;
-  virtual bool IsRelativeRectInClip(const Rect *) = 0;
-  virtual void SetOrigin(int x, int y) = 0;
-  virtual void OffsetOrigin(int x, int y) = 0;
-  virtual void GetOrigin(int *px, int *py) = 0;
-
-  virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor) = 0;
-  virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor) = 0;
-  virtual IRenderBrush *CreateSolidBrush(Color *pColor) = 0;
-
-  virtual void FillRgn(llong/*HRGN*/ hRgn, ui::Color *pColor) = 0;
-  virtual void DrawRect(Rect *lprc, ui::Color *pColor) = 0;
-  virtual void TileRect(Rect *lprc, IRenderBitmap *) = 0;
-  virtual void Rectangle(Rect *lprc, ui::Color *pColBorder, ui::Color *pColBack,
-                         int nBorder, bool bNullBack) = 0;
-  virtual void DrawFocusRect(Rect *lprc) = 0;
-  virtual void DrawLine(int x1, int y1, int x2, int y2, IRenderPen *) = 0;
-  virtual void DrawPolyline(Point *lppt, int nCount, IRenderPen *) = 0;
-  virtual void GradientFillH(Rect *lprc, Color colFrom, Color colTo) = 0;
-  virtual void GradientFillV(Rect *lprc, Color colFrom, Color colTo) = 0;
-  virtual void BitBlt(int xDest, int yDest, int wDest, int hDest,
-                      IRenderTarget *pSrcHDC, int xSrc, int ySrc,
-                      unsigned int dwRop) = 0;
-  virtual void ImageList_Draw(IRenderBitmap *, int x, int y, int col, int row,
-                              int cx, int cy) = 0;
+  virtual void DrawRect(const Rect& rc, const Color& color) = 0;
   virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
-  virtual void DrawString(const DrawTextParam& param) = 0;
+  virtual void DrawString(const DrawTextParam &param) = 0;
 
-  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount, float scale) = 0;
+  virtual void _DrawString2(void* text_blob, const Color& color, float x, float y) = 0;
+
+#if 0
+  virtual bool CreateRenderBuffer(IRenderTarget *pSrcRT) = 0;
+  virtual void GetRenderBufferData(ImageData *pData) = 0;
+
+  // 获取原生指针进行绘制。如HDC, SkCanvas
+  virtual void* GetHandle() = 0;
+#endif
 };
 
 struct IUICursor {

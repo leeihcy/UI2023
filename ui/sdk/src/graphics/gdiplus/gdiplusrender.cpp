@@ -289,7 +289,7 @@ void  GdiplusRenderTarget::update_clip_rgn()
 {
     if (m_stackClipRect.empty())
     {
-        HRGN hRgn = m_arrayMetaClipRegion.CreateRgn();
+        HRGN hRgn = m_dirty_region.CreateRgn();
         ::SelectClipRgn(GetHDC(), hRgn);
         DeleteObject(hRgn);
         return;
@@ -306,13 +306,13 @@ void  GdiplusRenderTarget::update_clip_rgn()
     }
 
     HRGN hRgn = NULL;
-    if (!m_arrayMetaClipRegion.GetCount())
+    if (!m_dirty_region.GetCount())
     {
         hRgn = CreateRectRgnIndirect(&rcIntersect);        
     }
     else
     {
-        RectArray array = m_arrayMetaClipRegion;
+        RectArray array = m_dirty_region;
         if (!array.IntersectRect(&rcIntersect))
         {
             RECT rcIntersect = {0, 0, 1, 1};
@@ -328,12 +328,12 @@ void  GdiplusRenderTarget::update_clip_rgn()
     DeleteObject(hRgn);
 }
 
-void  GdiplusRenderTarget::SetMetaClipRegion(LPRECT prc, uint nrcCount)
+void  GdiplusRenderTarget::SetDirtyRegion(LPRECT prc, uint nrcCount)
 {
     while (!m_stackClipRect.empty())
         m_stackClipRect.pop();
 
-    m_arrayMetaClipRegion.CopyFromArray(prc, nrcCount);
+    m_dirty_region.CopyFromArray(prc, nrcCount);
 
     update_clip_rgn();
 }
@@ -363,13 +363,13 @@ bool  GdiplusRenderTarget::IsRelativeRectInClip(LPCRECT prc)
     if (!prc)
         return false;
 
-    if (m_stackClipRect.empty() && m_arrayMetaClipRegion.GetCount() == 0)
+    if (m_stackClipRect.empty() && m_dirty_region.GetCount() == 0)
         return true;
 
     CRect rcTest(prc);
     rcTest.OffsetRect(m_ptOffset.x, m_ptOffset.y);
 
-    if (!m_arrayMetaClipRegion.IntersectRect(&rcTest, true))
+    if (!m_dirty_region.IntersectRect(&rcTest, true))
         return false;
 
     if (m_stackClipRect.empty())
@@ -514,7 +514,7 @@ void GdiplusRenderTarget::EndDraw( )
 // 	    SAFE_DELETE(m_pGraphics);
 
 	    this->SetOrigin(0,0);
-	    this->SetMetaClipRegion(NULL, 0);
+	    this->SetDirtyRegion(NULL, 0);
 
 //	    SAFE_DELETE_GDIOBJECT(m_hRgnMeta);
     }

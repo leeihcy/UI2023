@@ -12,6 +12,8 @@ namespace ui {
 void MessageLoopPlatformLinuxWayland::Initialize(MessageLoop *message_loop) {
   m_message_loop = message_loop;
   m_epoll_fd = epoll_create1(0);
+  
+  pipe2(s_uithread_pipe, 0, O_NONBLOCK);
 }
 void MessageLoopPlatformLinuxWayland::Release() {}
 
@@ -23,15 +25,24 @@ void MessageLoopPlatformLinuxWayland::Run() {
 
   int fd_wayland = wl_display_get_fd(display);
 
-  struct epoll_event ev;
-  // 监听 Wayland 事件
-  ev.events = EPOLLIN | EPOLLERR | EPOLLHUP;
-  ev.data.fd = fd_wayland;
-  epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd_wayland, &ev);
-
+  {
+    // 监听 Wayland 事件
+    struct epoll_event ev;
+    ev.events = EPOLLIN | EPOLLERR | EPOLLHUP;
+    ev.data.fd = fd_wayland;
+    epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev);
+  }
+  {
+    // 监听其它线程向UI线程发送的调用
+    struct epoll_event ev;
+    ev.events = EPOLLIN | EPOLLET;
+    ev.data.fd = s_uithread_pipe[0];
+    epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev);
+  }
+  
   while (m_running) {
-    struct epoll_event events[2];
-    int n = epoll_wait(m_epoll_fd, events, 2, -1); // 阻塞等待事件
+    struct epoll_event events[3];
+    int n = epoll_wait(m_epoll_fd, events, 3, -1); // 阻塞等待事件
 
     for (int i = 0; i < n; i++) {
       if (events[i].data.fd == fd_wayland) {
@@ -47,6 +58,9 @@ void MessageLoopPlatformLinuxWayland::Run() {
         uint64_t exp;
         read(m_animate_timer_fd, &exp, sizeof(exp));
         m_message_loop->OnAnimateTimer();
+      } else if (events[i].data.fd == s_uithread_pipe[0]) {
+        // 其它线程发送的调用
+        process_uithread_pipe_messasge();
       } else {
         int fd = events[i].data.fd;
         uint64_t exp;
@@ -58,6 +72,12 @@ void MessageLoopPlatformLinuxWayland::Run() {
 
   close(m_epoll_fd);
   m_epoll_fd = -1;
+
+  for (int i = 0; i < 2; i++) {
+    close(s_uithread_pipe[i]);
+    s_uithread_pipe[i] = -1;
+  }
+  
 }
 void MessageLoopPlatformLinuxWayland::Quit() { m_running = false; }
 
@@ -143,6 +163,24 @@ void MessageLoopPlatformLinuxWayland::DestroyAnimateTimer() {
     DestroyTimer(m_animate_timer_fd);
     m_animate_timer_fd = -1;
   }
+}
+
+//static 
+int MessageLoopPlatformLinuxWayland::s_uithread_pipe = {-1, -1};
+
+void PostTaskToUIThread(PostTaskType &&task) {
+  PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
+  write(MessageLoopPlatformLinuxWayland::s_uithread_pipe[1], p, sizeof(p));
+}
+
+void MessageLoopPlatformLinuxWayland::process_uithread_pipe_messasge()
+{
+  PostTaskType * ptr = nullptr
+  while (read(s_uithread_pipe[0], &ptr, sizeof(ptr)) == sizeof(void*)) {
+    ptr->emit();
+    delete ptr;
+  }
+  
 }
 
 } // namespace ui

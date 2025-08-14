@@ -38,6 +38,7 @@ private:
   // WaitForHandlesMgr m_WaitForHandlesMgr;
   MessageFilterMgr m_MsgFilterMgr;
   ForwardPostMessageWindow m_WndForwardPostMsg;
+  static HWND s_hwnd_forward_postmsg;
 
 	LARGE_INTEGER     m_liPerFreq;     // 用于帧数计算
 	HANDLE m_hTimer;

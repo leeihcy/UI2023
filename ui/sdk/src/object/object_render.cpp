@@ -5,6 +5,7 @@
 #include "include/interface/irenderbase.h"
 #include "include/interface/renderlibrary.h"
 #include "object_layer.h"
+#include "src/application/config/config.h"
 // #include "src/layer/software_layer.h"
 
 // 2016.6.1 渲染逻辑改造
@@ -201,7 +202,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
     bNeedClip = false;
 
   if (bNeedClip)
-    pRenderTarget->PushRelativeClipRect(&rcClient);
+    pRenderTarget->PushRelativeClipRect(rcClient);
   {
     pRenderTarget->OffsetOrigin(xOffset, yOffset);
     {
@@ -228,12 +229,6 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
     msg.rt = pRenderTarget;
     m_pIObject->RouteMessage(&msg);
   }
-
-#ifdef _DEBUG
-  static bool bDebug = false;
-  if (bDebug)
-    pRenderTarget->Save(0);
-#endif
 }
 
 // 使用脏区域异步刷新方法，天然就支持z序绘制，只要有重叠区域就会被绘制
@@ -255,7 +250,7 @@ void Object::DrawChildObject__(IRenderTarget *pRenderTarget,
       }
     }
 
-    if (!pRenderTarget->IsRelativeRectInClip(&pChild->m_rcParent)) {
+    if (!pRenderTarget->IsRelativeRectInClip(pChild->m_rcParent)) {
       pChild = pChild->m_pNext;
       continue;
     }
@@ -264,7 +259,7 @@ void Object::DrawChildObject__(IRenderTarget *pRenderTarget,
     bool bChildNeedClip = pChild->NeedClip();
 
     if (bChildNeedClip)
-      pRenderTarget->PushRelativeClipRect(&pChild->m_rcParent);
+      pRenderTarget->PushRelativeClipRect(pChild->m_rcParent);
 
     // save,m_rcParent在绘制过程中可能被修改
     Point ptOffset = {pChild->m_rcParent.left, pChild->m_rcParent.top};

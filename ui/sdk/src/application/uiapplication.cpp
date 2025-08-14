@@ -3,6 +3,7 @@
 #include "include/interface/ianimate.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiautotest.h"
+#include "src/application/config/config.h"
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
 #include "src/control/text/text_meta.h"
@@ -27,8 +28,8 @@
 
 #if defined(OS_MAC)
 #include "application_mac.h"
-#include <mach-o/dyld.h>  // _NSGetExecutablePath
-#include <unistd.h>       // chdir
+#include <mach-o/dyld.h> // _NSGetExecutablePath
+#include <unistd.h>      // chdir
 #endif
 
 namespace ui {
@@ -36,15 +37,19 @@ namespace ui {
 Application::Application(IApplication *p)
     : m_pUIApplication(p), m_TopWindowMgr(this), m_renderBaseFactory(*this),
       m_textRenderFactroy(*this), m_resource_manager(*this),
-      m_message_loop(*this), m_timer_helper(*this) {
+      m_message_loop(*this), m_timer_helper(*this), m_animate(this),
+      m_render_thread(*this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif
 }
 void Application::Run() { m_message_loop.Run(); }
 void Application::Quit() {
-  // UI_LOG_INFO("Application::Quit");
   m_message_loop.Quit();
+
+  if (Config::GetInstance().enable_render_thread) {
+    m_render_thread.main.Stop();
+  }
 }
 
 ResourceManager &Application::GetResourceManager() {
@@ -53,8 +58,6 @@ ResourceManager &Application::GetResourceManager() {
 
 // 切换当前目录为程序所在目录，避免使用相对目录加载皮肤时失败。
 static void FixWorkDir() {
-
-
 #if defined(OS_WIN)
   char exe_dir[MAX_PATH] = {0};
   GetModuleFileNameA(NULL, exe_dir, MAX_PATH);
@@ -96,19 +99,15 @@ void Application::x_Init() {
   UI_LOG_INFO("Application Init: 0x%x", this);
   FixWorkDir();
 
-  m_animate = std::make_unique<uia::Animate>(this);
-
-#if 0 // defined(OS_WIN)
-  //	::CoInitialize(0);
-  HRESULT hr = OleInitialize(0); // 需要注册richedit的drag drop，因此用ole初始化
-  (hr);
-#endif
-
   m_bEditorMode = false;
   m_pUIEditor = nullptr;
 
-#if 0
+  if (Config::GetInstance().enable_render_thread) {
+    m_render_thread.main.Start();
+  }
 
+
+#if 0
 	m_pGifTimerMgr = nullptr;
 	m_pGifTimerMgr = new GifTimerManager();
 	m_pGifTimerMgr->Init(this);
@@ -116,33 +115,7 @@ void Application::x_Init() {
     m_ToolTipMgr.Init(this);
 #endif
 
-#if defined(OS_WIN)
-  // 获取操作系统版本信息
-  ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
-  m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-  GetVersionEx((OSVERSIONINFO *)&m_osvi);
-
-  // 设置当前语言。主要是用于 strcoll
-  // 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？) libo
-  // 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
-  // _wsetlocale( LC_ALL, _T("chs") );
-#endif
-#if 0
-    // 初始化Gdiplus
-    // 注：gdiplus会创建一个背景线程：GdiPlus.dll!BackgroundThreadProc()  + 0x59 字节	
-    Image::InitGDIPlus();
-
-    /* INITIALIZE COMMON CONTROLS, tooltip support */
-    INITCOMMONCONTROLSEX iccex; 
-    iccex.dwICC = ICC_WIN95_CLASSES;
-    iccex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-    InitCommonControlsEx(&iccex);
-
-    // 针对layer window防止无响应时窗口变黑
-    //DisableProcessWindowsGhosting();
-#endif
   m_bGpuEnable = false;
-
   // EnableGpuComposite();
 
   // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
@@ -225,14 +198,14 @@ ITopWindowManager *Application::GetITopWindowMgr() {
   return m_TopWindowMgr.GetITopWindowManager();
 }
 
-uia::IAnimate *Application::GetAnimate() { return m_animate->GetIAnimate(); }
+uia::IAnimate *Application::GetAnimate() { return m_animate.GetIAnimate(); }
 void Application::CreateAnimateTimer(int fps) {
   m_message_loop.CreateAnimateTimer(fps);
 }
 void Application::DestroyAnimateTimer() {
   m_message_loop.DestroyAnimateTimer();
 }
-void Application::OnAnimateTimer() { m_animate->OnTick(); }
+void Application::OnAnimateTimer() { m_animate.OnTick(); }
 
 #if 0 // defined(OS_WIN)
 //	一个空的窗口过程，因为UI这个窗口类的窗口过程最终要被修改成为一个类的成员函数，

@@ -100,7 +100,6 @@ namespace ui
         // 成员函数，将this作为第一个参数。
         using UnboundFunctor = typename make_unbound<bounds_count, Return, Class*, Args...>::Functor;
         using UnboundFunction = typename make_unbound<bounds_count, Return, Class*, Args...>::Function;
-
     };
 }
 
