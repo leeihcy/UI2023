@@ -67,6 +67,10 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
     rt->DumpToImage(static_cast<DumpToImageOp*>(op)->path.c_str());
     break;
   }
+  case PaintOpType::RenderOnThread: {
+    rt->RenderOnThread(std::move(static_cast<RenderOnThreadOp*>(op)->callback));
+    break;
+  }
   default: {
     assert(false && "TODO:");
   }

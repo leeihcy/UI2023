@@ -11,6 +11,7 @@
 #include <shared_mutex>
 #include <thread>
 #include <vector>
+#include <deque>
 
 namespace ui {
 class Window;
@@ -86,16 +87,28 @@ private:
   void create_swap_chain(void *key);
   void swap_chain(void *key, const DirtyRegion &dirty_region);
   void remove_key(void *key);
-  void frames_sync(Surface &layer);
+  void frames_sync_size(Surface &layer);
+  void frames_sync_dirty(Surface &layer);
+  void merge_and_optimize_operations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
 
 private:
   bool m_running = false;
   std::thread m_thread;
 
 private:
-  // read & write in render thread
+  // 主线程写，渲染线程读
   std::vector<std::unique_ptr<PaintOp>> m_paint_op_queue;
   std::mutex m_paint_op_queue_mutex;
+
+  // 在渲染线程读写
+  class PaintOpGroup {
+  public:
+    PaintOpGroup(void* _key, std::unique_ptr<PaintOp>&& op);
+
+    void* key;  // 同一个key划在同一个group下面。
+    std::vector<std::unique_ptr<PaintOp>> ops;
+  };
+  std::deque<std::unique_ptr<PaintOpGroup>> m_paint_op_group;
 
   std::condition_variable m_command_cv;
 

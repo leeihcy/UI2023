@@ -3,14 +3,17 @@
 #include "include/common/signalslot/slot.h"
 #include "include/interface/renderlibrary.h"
 #include "include/uiapi.h"
+#include "include/util/log.h"
 #include "include/util/rect.h"
 #include "include/util/rect_region.h"
+#include "src/application/config/config.h"
 #include "src/graphics/record/record_render_target.h"
 #include "src/graphics/skia/skia_render.h"
 #include "src/message_loop/message_loop.h"
 #include "src/thread/paint_op.h"
 #include <mutex>
 #include <type_traits>
+#include <vector>
 
 namespace ui {
 
@@ -55,6 +58,7 @@ void RenderThread::thread_proc() {
   set_thread_name("RenderThread");
 
   while (m_running) {
+    if (m_paint_op_group.empty())
     {
       std::unique_lock<std::mutex> lock(m_paint_op_queue_mutex);
       m_command_cv.wait(
@@ -63,13 +67,25 @@ void RenderThread::thread_proc() {
         break;
       }
     }
+
+    // 转移指令队列中的元素
     std::vector<std::unique_ptr<PaintOp>> local_queue;
     {
       std::lock_guard<std::mutex> lock(m_paint_op_queue_mutex);
       local_queue.swap(m_paint_op_queue);
+      // m_paint_op_queue_on_thread.insert(m_paint_op_queue_on_thread.end(),
+      //   std::make_move_iterator(m_paint_op_queue.begin()),
+      //   std::make_move_iterator(m_paint_op_queue.end()));
+      // m_paint_op_queue.clear();
+    }
+    // 指令优化
+    merge_and_optimize_operations(local_queue);
+    if (m_paint_op_group.empty()) {
+      continue;
     }
 
-    for (auto &cmd : local_queue) {
+    auto &op_group = m_paint_op_group.front();
+    for (auto &cmd : op_group->ops) {
       PaintOp *op = cmd.get();
       if (op->type > PaintOpType::PostCommandStart) {
         process_command(op);
@@ -77,8 +93,10 @@ void RenderThread::thread_proc() {
       }
 
       RenderThread::Surface &surface = get_layer_render_target(op->key);
-      if (op->type == PaintOpType::SetDirtyRegion && surface.front) {
-        frames_sync(surface);
+      if (op->type == PaintOpType::BeginDraw && surface.front) {
+        frames_sync_size(surface);
+      } else if (op->type == PaintOpType::SetDirtyRegion && surface.front) {
+        frames_sync_dirty(surface);
       } else if (op->type == PaintOpType::EndDraw) {
         surface.Reset();
       } else if (op->type == PaintOpType::Resize) {
@@ -88,20 +106,76 @@ void RenderThread::thread_proc() {
         surface.back_resized = true;
       }
       op->processOnRenderThread(surface.back.get());
+    }
+    m_paint_op_group.pop_front();
+  }
+}
 
-#if defined(_DEBUGx)
-      if (op->type == PaintOpType::DrawRect) {
-        auto param = static_cast<DrawRectOp *>(op);
-        if (surface.back.get() == surface.distinguish_rt_for_debug) {
-          // 再继续画一道
-          Rect deflat = ui::Rect::MakeLTRB(20, 20, 20, 20);
-          param->rect.Deflate(deflat);
-          surface.back->DrawRect(param->rect, ui::Color::black());
-        }
+RenderThread::PaintOpGroup::PaintOpGroup(void *_key,
+                                         std::unique_ptr<PaintOp> &&op)
+    : key(_key) {
+  ops.push_back(std::move(op));
+}
+
+// 指令集优化
+// 针对同一个surface，在begindraw,enddraw之间包围的命令作为一个整体（支持内嵌，如child
+// layer）
+//
+void RenderThread::merge_and_optimize_operations(
+    std::vector<std::unique_ptr<PaintOp>> &op_queue) {
+  // 1. 按照begindraw/enddraw进行分组，以组为单位，将队列中更早的分组移除掉。
+  for (auto &cmd : op_queue) {
+    void *key = cmd->key;
+
+    // 空队列，直接添加
+    if (m_paint_op_group.empty()) {
+      m_paint_op_group.push_back(
+          std::make_unique<PaintOpGroup>(key, std::move(cmd)));
+      continue;
+    }
+
+    // 对于root surface的新绘制起点，划到新group。
+    // sub surface仍然划在root surface下面。
+    PaintOpGroup *group = m_paint_op_group.back().get();
+    if (cmd->type == PaintOpType::BeginDraw) {
+      auto iter_surface = m_layer_map.find(cmd->key);
+      if (iter_surface != m_layer_map.end()) {
+        m_paint_op_group.push_back(
+            std::make_unique<PaintOpGroup>(key, std::move(cmd)));
+        continue;
       }
-#endif
+    }
+
+    group->ops.push_back(std::move(cmd));
+  }
+
+  // 将重复的绘制指令踢除掉
+  if (m_paint_op_group.size() <= 2) {
+    return;
+  }
+
+  std::vector<int> remove_index;
+
+  for (int i = 2; i < m_paint_op_group.size()-1; i++) {
+    auto& group = m_paint_op_group[i];
+
+    for (int j = i+1; j < m_paint_op_group.size(); j++) {
+      auto& group2 = m_paint_op_group[j];
+      if (group2->key != group->key) {
+        continue;
+      }
+      if (group2->ops[0]->type != PaintOpType::BeginDraw) {
+        continue;
+      }
+      remove_index.insert(remove_index.begin(), i);
+      break;
     }
   }
+  for (int i: remove_index) {
+    m_paint_op_group.erase(m_paint_op_group.begin()+i);
+    UI_LOG_DEBUG("merge paint op group.");
+  }
+  
 }
 
 void RenderThread::create_swap_chain(void *key) {
@@ -150,10 +224,21 @@ void RenderThread::swap_chain(void *key, const DirtyRegion &dirty_region) {
   // 切到主线程，通知主线程Commit
   PostTaskToUIThread(Slot(&on_swap_chain, m_weakptr_factory.get(), key,
                           surface.last_dirty_region));
+
+  if (Config::GetInstance().debug.dump_render_target) {
+    static int i = 0;
+    char path[64];
+#if defined(OS_WIN)
+    sprintf(path, "D:\\images\\%d_%p.png", i++, surface.front.get());
+#else
+    sprintf(path, "/tmp/images/%d_%p.png", i++, surface.front.get());
+#endif
+    surface.front->DumpToImage(path);
+  }
 }
 
-// 将front/back数据内容进行同步，避免使用完back后，再使用front时，丢了一帧内容的问题。
-void RenderThread::frames_sync(Surface &surface) {
+// 将front/back大小进行同步
+void RenderThread::frames_sync_size(Surface &surface) {
   if (!surface.back || !surface.front) {
     return;
   }
@@ -185,19 +270,30 @@ void RenderThread::frames_sync(Surface &surface) {
       full_dirty = true;
     }
   }
+  if (full_dirty) {
+    surface.last_dirty_region.Destroy();
+    surface.last_dirty_region.AddRect(ui::Rect::MakeXYWH(0, 0, surface.width, surface.height));
+  }
+}
+
+// 将front/back数据内容进行同步，避免使用完back后，再使用front时，丢了一帧内容的问题。
+void RenderThread::frames_sync_dirty(Surface &surface) {
+  if (!surface.back || !surface.front) {
+    return;
+  }
+
+  // 同步尺寸
+  SkiaRenderTarget *sk_back =
+      static_cast<SkiaRenderTarget *>(surface.back.get());
+  SkiaRenderTarget *sk_front =
+      static_cast<SkiaRenderTarget *>(surface.front.get());
+  if (!sk_front->GetSkiaSurface()) {
+    return;
+  }
 
   // 优化：如果本次的脏区域范围大于等于上一帧的变动范围，则不需要做帧同步
   const DirtyRegion &dirty_region_current_frame = sk_back->GetDirtyRegion();
-  DirtyRegion dirty_region_prev_frame = surface.last_dirty_region;
-
-  if (full_dirty) {
-    dirty_region_prev_frame.AddRect(
-        ui::Rect::MakeXYWH(0, 0, surface.width, surface.height));
-  } else {
-    dirty_region_prev_frame = surface.last_dirty_region;
-  }
-
-  if (dirty_region_current_frame.Contains(dirty_region_prev_frame)) {
+  if (dirty_region_current_frame.Contains(surface.last_dirty_region)) {
     return;
   }
 
@@ -205,8 +301,8 @@ void RenderThread::frames_sync(Surface &surface) {
   std::shared_lock lock(m_frame_buffer_rw_mutex);
 
   // TODO: 继续优化，不仅仅是Contains，更应该是Sub
-  for (int i = 0; i < dirty_region_prev_frame.Count(); i++) {
-    Rect *rect = dirty_region_prev_frame.GetRectPtrAt(i);
+  for (int i = 0; i < surface.last_dirty_region.Count(); i++) {
+    Rect *rect = surface.last_dirty_region.GetRectPtrAt(i);
     Render2TargetParam param = {0};
     param.xSrc = param.xDst = rect->left;
     param.ySrc = param.yDst = rect->top;
@@ -214,7 +310,8 @@ void RenderThread::frames_sync(Surface &surface) {
     param.hSrc = param.hDst = rect->Height();
     param.opacity = 255;
     sk_front->Render2Target(sk_back, &param);
+
+    // printf("frames sync dirty: %d,%d,  %d,%d\n", rect->left, rect->top, rect->Width(), rect->Height());
   }
 }
-
 } // namespace ui

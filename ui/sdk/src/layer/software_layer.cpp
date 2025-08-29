@@ -35,7 +35,8 @@ bool SoftwareLayer::UpdateDirty() {
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
 
-  if (Config::GetInstance().debug.dump_render_target) {
+  if (!Config::GetInstance().enable_render_thread && 
+      Config::GetInstance().debug.dump_render_target) {
     static int i = 0;
     char path[64];
 #if defined(OS_WIN)

@@ -30,6 +30,7 @@ enum class PaintOpType : unsigned char {
   DrawRect,
   DrawString,
   DumpToImage,
+  RenderOnThread,
   
   RenderOpEnd,
   
@@ -141,6 +142,15 @@ struct DumpToImageOp : public PaintOp {
       : PaintOp(PaintOpType::DumpToImage), path(_path) {}
   std::string path;
 };
+
+
+struct RenderOnThreadOp : public PaintOp {
+  RenderOnThreadOp(slot<void(IRenderTarget *)> &&_callback)
+      : PaintOp(PaintOpType::RenderOnThread), callback(std::move(_callback)) {}
+
+  slot<void(IRenderTarget *)> callback;
+};
+
 
 struct SwapChainOp : public PaintOp {
   SwapChainOp()

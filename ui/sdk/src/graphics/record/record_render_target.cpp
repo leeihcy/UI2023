@@ -75,7 +75,9 @@ void RecordRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
 }
 void RecordRenderTarget::GetFrameBuffer(FrameBuffer *fb) { assert(false); }
 void RecordRenderTarget::RenderOnThread(
-    slot<void(IRenderTarget *)> &&callback) {}
+    slot<void(IRenderTarget *)> &&callback) {
+  addPaintOp(std::move(std::make_unique<RenderOnThreadOp>(std::move(callback))));
+}
     
 void RecordRenderTarget::SetDirtyRegion(const DirtyRegion& dirty_region) {
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
