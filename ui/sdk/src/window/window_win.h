@@ -58,11 +58,12 @@ public:
   void Attach(HWND window);
   HWND Detach();
 
-  void Show() override;
-  void Hide();
+  void Show(bool active=true) override;
+  void Hide() override;
 
   // void Invalidate(const Rect *prect) override;
-  void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+  // void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) override;
 
   // dpi...
   int GetDpi();

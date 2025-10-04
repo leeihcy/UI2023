@@ -14,7 +14,12 @@ shared_library("uisdk") {
       cflags+= [
         "-Wno-deprecated-declarations"
       ]
+    } else {
+      cflags+= [
+        "/wd4244",  # conversion from 'int32_t' to 'SkScalar', possible loss of data
+      ]
     }
+
     if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g", "-O0"]
     }

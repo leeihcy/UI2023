@@ -278,9 +278,9 @@ void WindowRender::DirectCommit(const DirtyRegion &dirty_region) {
 void WindowRender::SoftwareCommit(IRenderTarget *pRT,
                                   const RectRegion &dirtyInWindow) {
   FrameBufferWithReadLock frame_buffer = {0};
-    if (!pRT->GetFrontFrameBuffer(&frame_buffer)) {
-      return;
-    }
+  if (!pRT->GetFrontFrameBuffer(&frame_buffer)) {
+    return;
+  }
   m_window.m_platform->Commit2(frame_buffer, dirtyInWindow);
 }
 

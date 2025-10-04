@@ -8,7 +8,7 @@
 
 namespace ui {
 class RenderThread;
-class PaintOp;
+struct PaintOp;
 
 // 只记录渲染操作，将操作转换给RenderThread
 class RecordRenderTarget : public IRenderTarget {
@@ -59,6 +59,11 @@ private:
 private:
   float m_scale = 0.f;
   ClipOriginImpl m_clip_origin_impl;
+
+  // 对应渲染线程上的rt对象
+  // 由record rt来维护该对象的生命周期
+  // 释放时，需要确保渲染线程不再使用，由rt线程释放。
+  std::unique_ptr<SkiaRenderTarget> m_rt_async;
 };
 
 } // namespace ui

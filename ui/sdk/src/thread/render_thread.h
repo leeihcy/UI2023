@@ -21,30 +21,6 @@ public:
   RenderThread();
   static RenderThread& GetIntance();
 
-  // 每个layer对应的Skia RenderTarget
-  // 对于root layer，需要有一个swapchain(front/back)。其它layer，只需要一个back即可。
-  // 在硬件合成时，只需要一个back即可。
-  struct Surface {
-    Surface() { }
-    Surface(Surface &&o)
-        : back(std::move(o.back))/*, front(std::move(o.front))*/,
-          last_dirty_region(o.last_dirty_region) {}
-    void Reset() { 
-      back_resized = false;
-    }
-    std::unique_ptr<IRenderTarget> back;
-    // std::unique_ptr<IRenderTarget> front;
-
-    DirtyRegion last_dirty_region;
-
-    // 调用ResizeOp时记录下来，用于同步所有缓存
-    unsigned int width = 0;
-    unsigned int height = 0;
-    // 记录back是否被调用了resize。
-    // 如果已经resized了，则不去同步front上一次的size
-    bool back_resized = false;
-  };
-
   // 在主线程(其实是UI线程)调用的函数放这里面
   class Main {
   public:
@@ -67,8 +43,6 @@ public:
   } main;
 
 private:
-  Surface &get_layer_render_target(void *key);
-
   void thread_proc();
   void process_command(PaintOp *op);
 
@@ -90,18 +64,17 @@ private:
   public:
     PaintOpGroup(void* _key, std::unique_ptr<PaintOp>&& op);
 
-    void* key;  // 同一个key划在同一个group下面。
+    // 同一个key划在同一个group下面。
+    void* key;
+    // 该key已调用了EndDraw完全绘制。在end之前，其它子rt的BeginDraw仍然划归该group下。
+    bool end_draw = false;
+
     std::vector<std::unique_ptr<PaintOp>> ops;
   };
   std::deque<std::unique_ptr<PaintOpGroup>> m_paint_op_group;
 
   std::condition_variable m_command_cv;
 
-  // 后台帧缓存
-  // 读写都在渲染线程中，不需要加锁
-  std::map<void *, Surface> m_surface_map;
-
-  // 
   std::map<void*, IRenderTarget*> m_surface_map_uithread;
 
   // 前台帧缓存，用于主线程提交到窗口上。

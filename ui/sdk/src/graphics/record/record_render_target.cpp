@@ -11,16 +11,20 @@
 namespace ui {
 
 RecordRenderTarget::RecordRenderTarget() {
-  // Constructor implementation
+  m_rt_async = std::make_unique<SkiaRenderTarget>();
 }
-RecordRenderTarget::~RecordRenderTarget() {}
+RecordRenderTarget::~RecordRenderTarget() {
+  SkiaRenderTarget* ptr = m_rt_async.release();
+
+  // 交由渲染线程进行安全释放。
+  RenderThread::GetIntance().main.RemoveKey(ptr);
+}
 
 void RecordRenderTarget::Release() {
-  // Release resources if needed
 }
 
 void RecordRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
-  paint_op->key = this;
+  paint_op->key = m_rt_async.get();
 
   // 仅在EndDraw时notify，便于优化合并指令
   bool notify = paint_op->type == PaintOpType::EndDraw ||
@@ -84,8 +88,7 @@ void RecordRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
 
 bool RecordRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
   // 在UI线程上触发的，需要同步获取缓存数据。这里带锁进行跨线程获取
-  FrameBufferWithReadLock frame_buffer;
-  return RenderThread::GetIntance().main.GetFrontFrameBuffer(this, &frame_buffer);
+  return RenderThread::GetIntance().main.GetFrontFrameBuffer(m_rt_async.get(), fb);
 }
 
 void RecordRenderTarget::RenderOnThread(

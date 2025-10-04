@@ -15,12 +15,16 @@
 #include <type_traits>
 #include <vector>
 
+#if defined(OS_WIN)
+#include <windows.h>
+#include <processthreadsapi.h>
+#endif
+
 namespace ui {
 
-RenderThread::RenderThread()
-    : m_running(false), main(*this) {}
+RenderThread::RenderThread() : m_running(false), main(*this) {}
 
-static RenderThread& GetIntance() {
+RenderThread &RenderThread::GetIntance() {
   static RenderThread s;
   return s;
 }
@@ -35,19 +39,6 @@ static void set_thread_name(const char *name) {
 #endif
 }
 
-RenderThread::Surface &RenderThread::get_layer_render_target(void *key) {
-  auto iter = m_surface_map.find(key);
-  if (iter != m_surface_map.end()) {
-    return iter->second;
-  }
-
-  Surface surface;
-  surface.back = std::make_unique<SkiaRenderTarget>();
-  surface.front = nullptr; // 只有调用了CreateSwapChain的才会创建。
-  m_surface_map.emplace(key, std::move(surface));
-  return m_surface_map[key];
-}
-
 void RenderThread::process_command(PaintOp *op) {
   if (op->type == PaintOpType::RemoveKey) {
     remove_key(op->key);
@@ -58,8 +49,7 @@ void RenderThread::thread_proc() {
   set_thread_name("RenderThread");
 
   while (m_running) {
-    if (m_paint_op_group.empty())
-    {
+    if (m_paint_op_group.empty()) {
       std::unique_lock<std::mutex> lock(m_paint_op_queue_mutex);
       m_command_cv.wait(
           lock, [this] { return !m_paint_op_queue.empty() || !m_running; });
@@ -91,23 +81,7 @@ void RenderThread::thread_proc() {
         process_command(op);
         continue;
       }
-
-      RenderThread::Surface &surface = get_layer_render_target(op->key);
-      // if (op->type == PaintOpType::BeginDraw && surface.front) {
-      //   frames_sync_size(surface);
-      // } else 
-      // if (op->type == PaintOpType::SetDirtyRegion && surface.front) {
-      //   frames_sync_dirty(surface);
-      // } else 
-      if (op->type == PaintOpType::EndDraw) {
-        surface.Reset();
-      } else if (op->type == PaintOpType::Resize) {
-        auto *resize_op = static_cast<ResizeOp *>(op);
-        surface.width = resize_op->width;
-        surface.height = resize_op->height;
-        surface.back_resized = true;
-      }
-      op->processOnRenderThread(surface.back.get());
+      op->processOnRenderThread((SkiaRenderTarget*)op->key);
     }
     m_paint_op_group.pop_front();
   }
@@ -140,14 +114,16 @@ void RenderThread::merge_and_optimize_operations(
     // sub surface仍然划在root surface下面。
     PaintOpGroup *group = m_paint_op_group.back().get();
     if (cmd->type == PaintOpType::BeginDraw) {
-      auto iter_surface = m_surface_map.find(cmd->key);
-      if (iter_surface != m_surface_map.end()) {
+      if (group->end_draw) {
         m_paint_op_group.push_back(
             std::make_unique<PaintOpGroup>(key, std::move(cmd)));
         continue;
       }
     }
 
+    if (cmd->type == PaintOpType::EndDraw && key == group->key) {
+      group->end_draw = true;
+    }
     group->ops.push_back(std::move(cmd));
   }
 
@@ -158,11 +134,11 @@ void RenderThread::merge_and_optimize_operations(
 
   std::vector<int> remove_index;
 
-  for (int i = 2; i < m_paint_op_group.size()-1; i++) {
-    auto& group = m_paint_op_group[i];
+  for (int i = 2; i < m_paint_op_group.size() - 1; i++) {
+    auto &group = m_paint_op_group[i];
 
-    for (int j = i+1; j < m_paint_op_group.size(); j++) {
-      auto& group2 = m_paint_op_group[j];
+    for (int j = i + 1; j < m_paint_op_group.size(); j++) {
+      auto &group2 = m_paint_op_group[j];
       if (group2->key != group->key) {
         continue;
       }
@@ -173,28 +149,31 @@ void RenderThread::merge_and_optimize_operations(
       break;
     }
   }
-  for (int i: remove_index) {
-    m_paint_op_group.erase(m_paint_op_group.begin()+i);
+  for (int i : remove_index) {
+    m_paint_op_group.erase(m_paint_op_group.begin() + i);
     UI_LOG_DEBUG("merge paint op group.");
   }
-  
 }
 
 void RenderThread::remove_key(void *key) {
-  auto iter = m_surface_map.find(key);
-  if (iter == m_surface_map.end()) {
-    return;
-  }
-  m_surface_map.erase(key);
+  // auto iter = m_surface_map.find(key);
+  // if (iter == m_surface_map.end()) {
+  //   return;
+  // }
+  // m_surface_map.erase(key);
 
-  // write lock
-  std::unique_lock lock(m_frame_buffer_rw_mutex);
-  m_frame_buffer_map.erase(key);
+  // // write lock
+  // std::unique_lock lock(m_frame_buffer_rw_mutex);
+  // m_frame_buffer_map.erase(key);
+
+  // 主线程已安全释放了record rt，继续在渲染线程安全释放rt.
+  delete (SkiaRenderTarget*)key;
 }
 
+#if 0
 void on_swap_chain(weak_ptr<RenderThread>, void *key, DirtyRegion dirty_region);
 
-#if 0
+
 void RenderThread::swap_chain(void *key, const DirtyRegion &dirty_region) {
   assert(false);
   auto &surface = m_surface_map[key];

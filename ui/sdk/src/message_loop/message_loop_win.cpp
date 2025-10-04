@@ -20,7 +20,7 @@ MessageLoopPlatformWin::~MessageLoopPlatformWin() {
   }
 }
 
-HWND MessageLoopPlatformWin::m_hwnd_forward_postmsg = nullptr;
+HWND MessageLoopPlatformWin::s_hwnd_forward_postmsg = nullptr;
 
 void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
   m_message_loop = p;
@@ -39,9 +39,9 @@ void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
 
 #if defined(OS_WIN)
   // 获取操作系统版本信息
-  ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
-  m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-  GetVersionEx((OSVERSIONINFO *)&m_osvi);
+  // ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
+  // m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  // GetVersionEx((OSVERSIONINFO *)&m_osvi);
 
   // 设置当前语言。主要是用于 strcoll
   // 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？) libo
@@ -257,6 +257,15 @@ void MessageLoopPlatformWin::Run(bool *quit_ref) {
 //     m_animate->OnTick();
 // }
 
+TimerID MessageLoopPlatformWin::CreateTimer(int interval) {
+  assert(false && _T("TODO"));
+  return (TimerID)nullptr;
+}
+
+void MessageLoopPlatformWin::DestroyTimer(TimerID timeri_id) {
+  assert(false && _T("TODO"));
+}
+
 void MessageLoopPlatformWin::OnAnimateTimer() {
   m_message_loop->OnAnimateTimer();
 }
@@ -328,6 +337,8 @@ void PostTaskToUIThread(PostTaskType &&task) {
   assert(hwnd);
 
   PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
+
+  #define UI_MSG_POSTMESSAGE (WM_USER + 1)
   ::PostMessage(hwnd, UI_MSG_POSTMESSAGE, (WPARAM)p, 0);
 }
 

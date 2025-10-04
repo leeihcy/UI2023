@@ -1,9 +1,8 @@
-#ifndef _UI_SDK_COMMON_H_
-#define _UI_SDK_COMMON_H_
+#ifndef _UI_SDK_INLUCDE_INTERFACE_H_
+#define _UI_SDK_INLUCDE_INTERFACE_H_
 
 // 这个文件里放所有 Ixxx 都依赖的内容。
 
-#include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/common/ptr/weak_ptr.h"
 #include "sdk/include/common/uuid/uuid.h"
 

@@ -22,6 +22,8 @@ struct ITextRenderBaseAttribute;
 struct IObject;
 struct IMeta;
 struct IUIElement;
+struct IResource;
+struct IApplication;
 
 struct EditorAddObjectResData {
   IApplication *pUIApp;

@@ -2,6 +2,7 @@
 #define _UI_SDK_INCLUDE_UTIL_RECTREGION_H_
 #include "ui/sdk/include/interface.h"
 #include "ui/sdk/include/util/rect.h"
+#include <vector>
 
 namespace ui {
 class UIAPI RectRegion {

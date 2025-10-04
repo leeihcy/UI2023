@@ -2,7 +2,6 @@
 #define _UI_SVG_INCLUDE_INTERFACE_ISVG_H_
 
 #include "svg/include/common.h"
-#include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/interface/ipanel.h"
 
 namespace ui {

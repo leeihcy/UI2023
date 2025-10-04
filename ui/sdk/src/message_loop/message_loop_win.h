@@ -20,7 +20,9 @@ public:
 
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
-
+  
+  TimerID CreateTimer(int interval) override;
+  void DestroyTimer(TimerID timeri_id) override;
   void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;
 
@@ -30,7 +32,10 @@ private:
 
   // void OnWaitForHandleObjectCallback(int, int);
   void OnAnimateTimer();
-  
+
+public:
+  static HWND s_hwnd_forward_postmsg;
+
 private:
   MessageLoop* m_message_loop = nullptr;
   bool quit_flag = false;
@@ -38,7 +43,6 @@ private:
   // WaitForHandlesMgr m_WaitForHandlesMgr;
   MessageFilterMgr m_MsgFilterMgr;
   ForwardPostMessageWindow m_WndForwardPostMsg;
-  static HWND s_hwnd_forward_postmsg;
 
 	LARGE_INTEGER     m_liPerFreq;     // 用于帧数计算
 	HANDLE m_hTimer;

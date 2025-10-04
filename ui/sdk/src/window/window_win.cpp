@@ -5,6 +5,7 @@
 #include <atlconv.h>
 
 #include <ShellScalingApi.h> // 需要 Windows 8.1+ SDK
+#include <winuser.h>
 // #pragma comment(lib, "Shcore.lib") // 链接 Shcore.lib
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
@@ -393,7 +394,13 @@ WINDOW_HANDLE WindowPlatformWin::GetWindowHandle() {
   return (WINDOW_HANDLE)m_hWnd;
 }
 
-void WindowPlatformWin::Show() { ::ShowWindow(m_hWnd, SW_SHOW); }
+void WindowPlatformWin::Show(bool active) { 
+  if (active) {
+    ::ShowWindow(m_hWnd, SW_SHOW);
+  } else {
+    ::ShowWindow(m_hWnd, SW_SHOWNOACTIVATE);
+  }
+}
 
 void WindowPlatformWin::Hide() { ::ShowWindow(m_hWnd, SW_HIDE); }
 
@@ -592,19 +599,29 @@ void Render2DC(/*HDC*/ llong _hDC,
   // }
 }
 #endif // TODO:
-void WindowPlatformWin::Commit(IRenderTarget *pRT, const Rect *prect,
-                               int count) {
-  HDC hDC = GetDC(m_hWnd);
-  for (int i = 0; i < count; i++) {
-    const Rect &rcInWindow = prect[i];
 
-    Render2TargetParam param = {0};
-    param.xSrc = param.xDst = rcInWindow.left;
-    param.ySrc = param.yDst = rcInWindow.top;
-    param.wSrc = param.wDst = rcInWindow.right - rcInWindow.left;
-    param.hSrc = param.hDst = rcInWindow.bottom - rcInWindow.top;
-    // pRT->Render2DC((llong)hDC, &param);
-    assert(false && "TODO: ");
+void WindowPlatformWin::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) {
+  HDC hDC = GetDC(m_hWnd);
+  for (unsigned int i = 0; i < dirty_region.Count(); i++) {
+    Rect rcInWindow = dirty_region.RectPtr2()[i];
+    m_ui_window.m_dpi.ScaleRect(&rcInWindow);
+
+    BITMAPINFO bmi;
+    memset(&bmi, 0, sizeof(bmi));
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = fb.width;
+    bmi.bmiHeader.biHeight = -fb.height; // top-down image
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+    bmi.bmiHeader.biSizeImage = 0;
+
+    ::StretchDIBits(hDC, rcInWindow.left, rcInWindow.top,
+                    rcInWindow.right - rcInWindow.left,
+                    rcInWindow.bottom - rcInWindow.top, rcInWindow.left,
+                    rcInWindow.top, rcInWindow.right - rcInWindow.left,
+                    rcInWindow.bottom - rcInWindow.top, fb.data, &bmi,
+                    DIB_RGB_COLORS, SRCCOPY);
   }
   ReleaseDC(m_hWnd, hDC);
 }

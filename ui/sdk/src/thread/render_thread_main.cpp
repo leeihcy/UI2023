@@ -27,19 +27,7 @@ void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
 void RenderThread::Main::Notify() { self.m_command_cv.notify_one(); }
 
 bool RenderThread::Main::GetFrontFrameBuffer(void *key, FrameBufferWithReadLock* frame_buffer) {
-  // read lock
-  assert(false);
-#if 0
-  std::shared_lock lock(self.m_frame_buffer_rw_mutex);
-  auto iter = self.m_frame_buffer_map.find(key);
-  if (iter == self.m_frame_buffer_map.end()) {
-    return false;
-  }
-
-  FrameBufferWithReadLock fb_with_lock = {
-      iter->second, std::move(lock)};
-#endif
-  return true;
+  return ((SkiaRenderTarget*)key)->GetFrontFrameBuffer(frame_buffer);
 }
 
 void RenderThread::Main::RemoveKey(void* key) {

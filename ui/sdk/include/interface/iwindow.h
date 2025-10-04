@@ -1,7 +1,6 @@
 #ifndef _INCLUDED_IWINDOW_
 #define _INCLUDED_IWINDOW_
 #include "ipanel.h"
-#include "sdk/include/common/ptr/unique_ptr.h"
 #include "sdk/include/common/signalslot/signal.h"
 #include "sdk/include/event.h"
 #include "sdk/include/macro/uidefine.h"
@@ -236,9 +235,6 @@ struct UIAPI IRootObject : public IPanel {
 };
 UI_DEFINE_PTR(RootObject);
 
-
-// 辅助类
-// using IWindowPtr = ui::unique_ptr<ui::IWindow>;
 
 #define WINDOW_DESTROY_EVENT "destroy"
 struct WindowDestroyEvent : public Event {

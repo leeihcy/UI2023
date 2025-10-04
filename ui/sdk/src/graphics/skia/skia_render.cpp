@@ -42,7 +42,9 @@ void toSkRect(Rect &rc, SkRect *skrect) {
   skrect->fBottom = (SkScalar)rc.bottom;
 }
 
-SkiaRenderTarget::SkiaRenderTarget() {}
+SkiaRenderTarget::SkiaRenderTarget() {
+  
+}
 
 SkiaRenderTarget::~SkiaRenderTarget() {
   // SAFE_DELETE(m_pRenderBuffer);
@@ -302,12 +304,12 @@ void SkiaRenderTarget::EndDraw() {
 
 // 将front/back大小进行同步
 void SkiaRenderTarget::frames_sync_size() {
-  if (!m_sksurface || !m_sksurface_front) {
+  if (!m_sksurface || !main.m_sksurface_front) {
     return;
   }
 
-  unsigned int front_width = m_sksurface_front->width();
-  unsigned int front_height = m_sksurface_front->height();
+  unsigned int front_width = main.m_sksurface_front->width();
+  unsigned int front_height = main.m_sksurface_front->height();
 
   bool full_dirty = false;
   if (!m_sksurface) {
@@ -1114,6 +1116,7 @@ void SkiaRenderTarget::CreateSwapChain(bool is_hardware) {
     m_enable_software_backend = true;
   }
 }
+
 bool SkiaRenderTarget::SwapChain(slot<void()> &&callback) {
   std::unique_lock lock(main.m_mutex);
 
@@ -1142,8 +1145,6 @@ void SkiaRenderTarget::frames_sync_dirty() {
   if (dirty_region_current_frame.Contains(m_last_dirty_region)) {
     return;
   }
-
-  
 
   // TODO: 继续优化，不仅仅是Contains，更应该是Sub
   for (int i = 0; i < m_last_dirty_region.Count(); i++) {
