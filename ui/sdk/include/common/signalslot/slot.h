@@ -23,7 +23,8 @@
 //
 // TODO: 1. 支持回调顺序
 // TODO: 2. class对象的生命周期处理，已释放的对象，怎么及时断开，weak_ptr?
-// TODO: 3. 引用类型、&&类型、const类型兼容
+// TODO: 3. 引用类型、&&类型、const类型兼容。目前绑定的参数还不支持 && 类型，
+//          例如绑定参数如果是一个 slot<void()>&& task的话，会报错。
 // TODO: 4. 支持lambda
 //
 namespace ui {

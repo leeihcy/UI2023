@@ -7,6 +7,7 @@
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
 #include "src/control/text/text_meta.h"
+#include "src/graphics/record/record_render_target.h"
 #include "src/panel/panel_meta.h"
 #include "src/private_inc.h"
 #include "src/resource/colormanager.h"
@@ -37,8 +38,7 @@ namespace ui {
 Application::Application(IApplication *p)
     : m_pUIApplication(p), m_TopWindowMgr(this), m_renderBaseFactory(*this),
       m_textRenderFactroy(*this), m_resource_manager(*this),
-      m_message_loop(*this), m_timer_helper(*this), m_animate(this),
-      m_render_thread(*this) {
+      m_message_loop(*this), m_timer_helper(*this), m_animate(this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
 #endif
@@ -48,7 +48,7 @@ void Application::Quit() {
   m_message_loop.Quit();
 
   if (Config::GetInstance().enable_render_thread) {
-    m_render_thread.main.Stop();
+    RenderThread::GetIntance().main.Stop();
   }
 }
 
@@ -103,7 +103,7 @@ void Application::x_Init() {
   m_pUIEditor = nullptr;
 
   if (Config::GetInstance().enable_render_thread) {
-    m_render_thread.main.Start();
+    RenderThread::GetIntance().main.Start();
   }
 
 

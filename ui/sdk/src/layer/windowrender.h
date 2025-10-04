@@ -55,7 +55,7 @@ public:
 
   void SetCanCommit(bool b);
   bool CanCommit();
-  void SoftwareCommit(IRenderTarget* pRT, const Rect* prect, int count);
+  void SoftwareCommit(IRenderTarget* pRT, const RectRegion &dirtyInWindow);
   
   Layer *CreateLayer(IObjectLayerContent *);
   Layer *CreateLayer(IListItemLayerContent *);
@@ -65,7 +65,8 @@ public:
 
 private:
   Compositor *get_create_compositor();
-
+  void on_swap_chain(DirtyRegion dirty_region);
+  
 public:
   Window& m_window;
 

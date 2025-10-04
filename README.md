@@ -1,5 +1,5 @@
 # UI2023
-an ui framework can cross platform 
+现代图形UI架构学习。
 
 # TODO:
 ## sdk
@@ -18,3 +18,4 @@ an ui framework can cross platform
 
 1. `<window width height>` 如何决定这两个属性是指带边框的窗口大小，还是窗口里的内容大小(panel)。
    见：Window::onGetDesiredSize
+   增加root panel。窗口层面使用像素大小，内部控件、渲染都使用设备无关坐标。

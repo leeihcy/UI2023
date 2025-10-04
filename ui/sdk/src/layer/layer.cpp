@@ -1,9 +1,13 @@
 #include "layer.h"
 #include "compositor.h"
+#include "gpu/include/api.h"
 #include "include/common/math/math.h"
 #include "include/inc.h"
+#include "include/interface/imeta.h"
+#include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
+#include "src/layer/hardware_compositor.h"
 #include "src/object/object.h"
 #include "src/object/object_layer.h"
 #include <memory>
@@ -21,7 +25,7 @@ enum LAYER_ANIMATE_TYPE {
   STORYBOARD_ID_SCALE,
 };
 
-Layer::Layer() : m_iLayer(this) {
+Layer::Layer(LayerType type) : m_iLayer(this), m_type(type) {
   m_pCompositor = nullptr;
   m_pRenderTarget = nullptr;
 
@@ -61,8 +65,7 @@ Layer::~Layer() {
     m_pLayerContent->OnLayerDestory();
   }
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
   if (pAni) {
     pAni->ClearStoryboardByNotify(
         static_cast<uia::IAnimateEventCallback *>(this));
@@ -85,6 +88,10 @@ Layer::~Layer() {
   }
 
   SAFE_RELEASE(m_pRenderTarget);
+  if (m_gpu_texture) {
+    m_gpu_texture->Release();
+    m_gpu_texture = nullptr;
+  }
 
 #ifdef _DEBUG
   UI_LOG_DEBUG(L"Layer Destroy, ptr=0x%08x", this);
@@ -93,12 +100,12 @@ Layer::~Layer() {
 
 ILayer *Layer::GetILayer() { return &m_iLayer; }
 
-void Layer::Serialize(SerializeParam* param) {
+void Layer::Serialize(SerializeParam *param) {
   AttributeSerializer s(param, "Layer");
   // s.AddInt(XML_LAYER_OPACITY, m_nOpacity)->AsData();
   s.AddBool(XML_LAYER_NEED_CLEAR, m_need_clear_background)
-    ->SetDefault(false)
-    ->AsData();
+      ->SetDefault(false)
+      ->AsData();
 }
 
 void Layer::SetCompositorPtr(Compositor *p) { m_pCompositor = p; }
@@ -153,8 +160,8 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
 
     m_pParent->Invalidate(&rcDirty);
   } else {
-     if (m_pCompositor)
-       m_pCompositor->RequestInvalidate();
+    if (m_pCompositor)
+      m_pCompositor->RequestInvalidate();
   }
 }
 
@@ -247,21 +254,26 @@ Layer *Layer::GetFirstChild() { return m_pFirstChild; }
 void Layer::OnSize(uint width, uint height, float scale) {
   m_size.width = width;
   m_size.height = height;
-  
+
   ui::Rect rc_dirty = ui::Rect::MakeXYWH(0, 0, width, height);
   Invalidate(&rc_dirty);
 
   if (!m_pRenderTarget) {
     GetRenderTarget();
   }
-  m_pRenderTarget->Resize(width*scale, height*scale);
 
+  int scaled_width = width * scale;
+  int scaled_height = height * scale;
+  m_pRenderTarget->Resize(scaled_width, scaled_height);
+  m_transfrom3d.set_size(scaled_width, scaled_height);
+
+  if (m_gpu_texture) {
+    m_gpu_texture->Resize(scaled_width, scaled_height);
+  }
   virtualOnSize(width, height);
 }
 
-void Layer::PostCompositorRequest() { 
-  m_pCompositor->RequestInvalidate(); 
-}
+void Layer::PostCompositorRequest() { m_pCompositor->RequestInvalidate(); }
 
 void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
   if (pParam == DefaultLayerAnimateParam)
@@ -280,8 +292,7 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
 
   // 开启隐式动画
   if (pParam) {
-    uia::IAnimate *pAni =
-        m_pCompositor->GetUIApplication()->GetAnimate();
+    uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
     pAni->RemoveStoryboardByNotityAndId(
         static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_OPACITY);
@@ -332,8 +343,7 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
 
   m_fyRotate = f;
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_YROTATE);
@@ -384,8 +394,7 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
 
   m_fxRotate = f;
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_XROTATE);
@@ -436,8 +445,7 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
 
   m_fzRotate = f;
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_ZROTATE);
@@ -487,8 +495,7 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
   m_fxScale = x;
   m_fyScale = y;
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_SCALE);
@@ -547,8 +554,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
   m_yTranslate = y;
   m_zTranslate = z;
 
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_TRANSLATE);
@@ -665,8 +671,7 @@ void Layer::OnAnimateEnd(uia::IStoryboard *pStoryboard,
       SetPositionFlags flags;
       flags.size = false;
       obj->SetObjectPos(rcParent.left + (int)m_xTranslate,
-                        rcParent.top + (int)m_yTranslate, 0, 0,
-                        flags);
+                        rcParent.top + (int)m_yTranslate, 0, 0, flags);
     }
 
     m_xTranslate = 0;
@@ -698,6 +703,10 @@ IRenderTarget *Layer::GetRenderTarget() {
       return nullptr;
 
     m_pCompositor->CreateRenderTarget(&m_pRenderTarget);
+    if (m_type == Layer_Hardware && !m_gpu_texture) {
+      m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
+                          ->CreateGpuLayerTexture();
+    }
   }
 
   return m_pRenderTarget;
@@ -762,14 +771,166 @@ Object *Layer::GetLayerContentObject() {
 
 // 本类中所有的创建动画都走这里，用于数量统计
 uia::IStoryboard *Layer::create_storyboard(int id) {
-  uia::IAnimate *pAni =
-      m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
 
   uia::IStoryboard *pStoryboard = pAni->CreateStoryboard(
       static_cast<uia::IAnimateEventCallback *>(this), id);
 
   m_nCurrentStoryboardCount++;
   return pStoryboard;
+}
+
+void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
+  if (!m_gpu_texture)
+    return;
+  if (!m_pLayerContent)
+    return;
+
+  Rect rcWnd;
+  m_pLayerContent->GetWindowRect(&rcWnd);
+  if (rcWnd.IsEmpty())
+    return;
+
+  float scale = 1.0f;
+  if (m_pLayerContent) {
+    scale = m_pLayerContent->GetLayerScale();
+    rcWnd.Scale(scale);
+  }
+
+  pContext->SetOffset(rcWnd.left, rcWnd.top);
+
+  Rect rcParentWnd = {0};
+  if (m_bClipLayerInParentObj && m_pCompositor->GetRootLayer() != this) {
+    m_pLayerContent->GetParentWindowRect(&rcParentWnd);
+  } else {
+    m_pCompositor->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
+  }
+
+  rcParentWnd.Scale(scale);
+  pContext->SetClipRect(&rcParentWnd);
+
+  if (m_nOpacity_Render != 255) {
+    pContext->MultiAlpha(m_nOpacity_Render);
+  }
+
+  // 绕自身中心旋转时，需要知道这个对象在屏幕中的位置，然后才能计算出真正的旋转矩阵。
+  // 因此每次使用前设置一次。
+  m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
+
+  if (!m_transfrom3d.is_identity()) {
+    MATRIX44 mat;
+    m_transfrom3d.get_matrix(&mat);
+    m_gpu_texture->Compositor(pContext, (float *)&mat);
+  } else {
+    m_gpu_texture->Compositor(pContext, nullptr);
+  }
+}
+
+void Layer::MapView2Layer(Point *pPoint) {
+  if (!m_transfrom3d.is_identity()) {
+    m_transfrom3d.mappoint_view_2_layer(pPoint);
+  }
+}
+
+bool Layer::UpdateDirty() {
+  if (m_type == Layer_Hardware) {
+    return hardwareUpdateDirty();
+  } else {
+    return softwareUpdateDirty();
+  }
+}
+
+bool Layer::softwareUpdateDirty() {
+  if (!m_pLayerContent)
+    return false;
+
+  if (!m_dirty_region.Count())
+    return false;
+
+  IRenderTarget *pRenderTarget = GetRenderTarget();
+
+  float scale = m_pLayerContent->GetLayerScale();
+  pRenderTarget->BeginDraw(scale);
+  pRenderTarget->SetDirtyRegion(m_dirty_region);
+
+  // 先begin draw，设置好缩放比例，再clear，否则clear区域不正确。
+  if (m_need_clear_background) {
+    uint count = m_dirty_region.Count();
+    for (uint i = 0; i < count; i++)
+      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
+  }
+
+  // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
+  // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
+  m_dirty_region.Destroy();
+
+  m_pLayerContent->Draw(pRenderTarget);
+  pRenderTarget->EndDraw();
+
+  if (!Config::GetInstance().enable_render_thread &&
+      Config::GetInstance().debug.dump_render_target) {
+    static int i = 0;
+    char path[64];
+#if defined(OS_WIN)
+    sprintf(path, "D:\\images\\%p_%d.png", pRenderTarget, i++);
+#else
+    sprintf(path, "/tmp/images/%p_%d.png", pRenderTarget, i++);
+#endif
+    pRenderTarget->DumpToImage(path);
+  }
+  return true;
+}
+
+bool Layer::hardwareUpdateDirty() {
+  if (!m_pLayerContent)
+    return false;
+
+  if (!m_dirty_region.Count())
+    return false;
+
+  IRenderTarget *pRenderTarget = GetRenderTarget();
+  if (m_need_clear_background) {
+    uint count = m_dirty_region.Count();
+    for (uint i = 0; i < count; i++)
+      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
+  }
+
+  float scale = m_pLayerContent->GetLayerScale();
+  pRenderTarget->BeginDraw(scale);
+
+  pRenderTarget->SetDirtyRegion(m_dirty_region);
+
+  // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
+  // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
+  m_dirty_region.Destroy();
+
+  m_pLayerContent->Draw(pRenderTarget);
+  pRenderTarget->EndDraw();
+
+  upload_2_gpu();
+
+  return true;
+}
+
+void Layer::upload_2_gpu() {
+  if (!m_pRenderTarget)
+    return;
+
+  float scale = 1.0f;
+  if (m_pLayerContent) {
+    scale = m_pLayerContent->GetLayerScale();
+  }
+
+  if (!m_gpu_texture) {
+    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
+                        ->CreateGpuLayerTexture();
+    if (m_gpu_texture) {
+      m_gpu_texture->Resize(m_size.width * scale, m_size.height * scale);
+    }
+  }
+
+  Rect rc = {0, 0, (int)m_size.width, (int)m_size.height};
+  m_pRenderTarget->Upload2Gpu(m_gpu_texture, &rc, 1, scale);
 }
 
 } // namespace ui

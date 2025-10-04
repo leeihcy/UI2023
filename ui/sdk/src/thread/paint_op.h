@@ -29,7 +29,10 @@ enum class PaintOpType : unsigned char {
   Clear,
   DrawRect,
   DrawString,
+  CreateSwapChain,
+  SwapChain,
   DumpToImage,
+  Upload2Gpu,
   RenderOnThread,
   
   RenderOpEnd,
@@ -38,11 +41,7 @@ enum class PaintOpType : unsigned char {
 
   // post command for thread
   PostCommandStart,
-
-  CreateSwapChain,
-  SwapChain,
   RemoveKey,
-
   PostCommandEnd,
 };
 
@@ -143,19 +142,30 @@ struct DumpToImageOp : public PaintOp {
   std::string path;
 };
 
+struct CreateSwapChainOp : public PaintOp {
+  CreateSwapChainOp(bool _is_hardware)
+      : PaintOp(PaintOpType::CreateSwapChain), is_hardware(_is_hardware){ }
+
+  bool is_hardware;
+};
+
+struct SwapChainOp : public PaintOp {
+  SwapChainOp(slot<void()> &&_callback)
+    : PaintOp(PaintOpType::SwapChain), callback(std::move(_callback)) {}
+
+  slot<void()> callback;
+};
+
+struct Upload2GpuOp : public PaintOp {
+  Upload2GpuOp()
+      : PaintOp(PaintOpType::Upload2Gpu) { }
+};
 
 struct RenderOnThreadOp : public PaintOp {
   RenderOnThreadOp(slot<void(IRenderTarget *)> &&_callback)
       : PaintOp(PaintOpType::RenderOnThread), callback(std::move(_callback)) {}
 
   slot<void(IRenderTarget *)> callback;
-};
-
-
-struct SwapChainOp : public PaintOp {
-  SwapChainOp()
-      : PaintOp(PaintOpType::SwapChain) {}
-  DirtyRegion dirty_region;
 };
 
 } // namespace ui

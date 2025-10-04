@@ -3,6 +3,7 @@
 #include "include/inc.h"
 #include "include/interface/renderlibrary.h"
 #include "include/util/log.h"
+#include "include/util/rect_region.h"
 #include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
@@ -204,8 +205,7 @@ void WindowRender::onWindowCreated() {
     auto *root_layer = m_window.GetRootObject().GetSelfLayer();
     assert(root_layer);
     assert(root_layer->GetRenderTarget());
-    m_window.GetApplication().GetRenderThread().main.CreateSwapChain(
-        root_layer->GetRenderTarget());
+    root_layer->GetRenderTarget()->CreateSwapChain(m_window.IsGpuComposite());
   }
 
   // 首次刷新，将窗口所有区域设置为无效
@@ -245,14 +245,12 @@ void WindowRender::Paint(const Rect *commit_rect) {
   RectRegion dirty_region;
   if (m_compositor->UpdateDirty(&dirty_region)) {
     // 没有脏区域时，不需要swap chain
-    if (Config::GetInstance().enable_render_thread) {
-      auto *root_layer = m_window.GetRootObject().GetSelfLayer();
-      assert(root_layer);
-      assert(root_layer->GetRenderTarget());
 
-      m_window.GetApplication().GetRenderThread().main.SwapChain(
-          root_layer->GetRenderTarget(), &m_window, dirty_region);
-    }
+    auto *root_layer = m_window.GetRootObject().GetSelfLayer();
+    assert(root_layer);
+    assert(root_layer->GetRenderTarget());
+    root_layer->GetRenderTarget()->SwapChain(Slot(
+        &WindowRender::on_swap_chain, m_weakptr_factory.get(), dirty_region));
   }
 
   // 窗口额外无效的区域，但不是我们的脏区域。只需要直接commit上去即可。
@@ -260,6 +258,10 @@ void WindowRender::Paint(const Rect *commit_rect) {
     dirty_region.Union(*commit_rect);
   }
   m_compositor->Commit(dirty_region);
+}
+
+void WindowRender::on_swap_chain(DirtyRegion dirty_region) {
+  DirectCommit(dirty_region);
 }
 
 // 在swap chain之后，直接提交新的内容到窗口上
@@ -273,22 +275,13 @@ void WindowRender::DirectCommit(const DirtyRegion &dirty_region) {
   m_compositor->Commit(dirty_region);
 }
 
-void WindowRender::SoftwareCommit(IRenderTarget *pRT, const Rect *prect,
-                                  int count) {
-  if (Config::GetInstance().enable_render_thread) {
-    RenderThread &thread = m_window.GetApplication().GetRenderThread();
-
-    const RenderThread::FrameBufferWithReadLock &frame_buffer =
-        thread.main.GetFrameBuffer(pRT);
-    if (!frame_buffer.fb.data) {
+void WindowRender::SoftwareCommit(IRenderTarget *pRT,
+                                  const RectRegion &dirtyInWindow) {
+  FrameBufferWithReadLock frame_buffer = {0};
+    if (!pRT->GetFrontFrameBuffer(&frame_buffer)) {
       return;
     }
-    m_window.m_platform->Commit2(frame_buffer.fb, prect, count);
-  } else {
-    FrameBuffer fb = {0};
-    pRT->GetFrameBuffer(&fb);
-    m_window.m_platform->Commit2(fb, prect, count);
-  }
+  m_window.m_platform->Commit2(frame_buffer, dirtyInWindow);
 }
 
 } // namespace ui

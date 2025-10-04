@@ -52,7 +52,7 @@ struct WindowPlatform {
   virtual void SetWindowPos(int x, int y, int w, int h, SetPositionFlags flags) = 0;
   // virtual void Invalidate(const Rect* prect) = 0;
   virtual bool IsChildWindow() = 0;
-  virtual void Commit2(const FrameBuffer& fb, const Rect* prect, int count) = 0;
+  virtual void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) = 0;
 };
 
 // Window不再继承自控件

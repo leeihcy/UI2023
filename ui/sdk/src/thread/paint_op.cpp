@@ -1,5 +1,6 @@
 #include "src/thread/paint_op.h"
 #include "include/interface/renderlibrary.h"
+#include "src/message_loop/message_loop.h"
 
 namespace ui {
 
@@ -61,6 +62,16 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   case PaintOpType::DrawString: {
     auto param = static_cast<DrawStringOp*>(op);
     rt->_DrawString2(param->blob.get(), param->color, param->x, param->y);
+    break;
+  }
+  case PaintOpType::CreateSwapChain: {
+    rt->CreateSwapChain(static_cast<CreateSwapChainOp*>(op)->is_hardware);
+    break;
+  }
+  case PaintOpType::SwapChain: {
+    if (rt->SwapChain(Slot<void()>([](){}))) {
+      PostTaskToUIThread(std::move(static_cast<SwapChainOp*>(op)->callback));
+    }
     break;
   }
   case PaintOpType::DumpToImage: {

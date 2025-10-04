@@ -2,6 +2,7 @@
 #include "include/core/SkBitmap.h"
 #include "include/core/SkRect.h"
 #include "include/core/SkScalar.h"
+#include "include/gpu/GrTypes.h"
 #include "include/inc.h"
 #include "include/interface/renderlibrary.h"
 #include "include/macro/xmldefine.h"
@@ -46,6 +47,11 @@ SkiaRenderTarget::SkiaRenderTarget() {}
 SkiaRenderTarget::~SkiaRenderTarget() {
   // SAFE_DELETE(m_pRenderBuffer);
   // m_hBindDC = nullptr;
+
+  if (m_gpu_texture) {
+    m_gpu_texture->Release();
+    m_gpu_texture = nullptr;
+  }
 }
 
 void SkiaRenderTarget::Release() { delete this; }
@@ -83,11 +89,15 @@ void SkiaRenderTarget::update_clip_rgn() {
 #endif
 }
 
-void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion& dirty_region) {
+void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
   update_clip_rgn();
+
+  if (m_enable_software_backend) {
+    frames_sync_dirty();
+  }
 }
-const DirtyRegion& SkiaRenderTarget::GetDirtyRegion() {
+const DirtyRegion &SkiaRenderTarget::GetDirtyRegion() {
   return m_clip_origin_impl.GetDirtyRegion();
 }
 
@@ -134,6 +144,12 @@ void SkiaRenderTarget::OffsetOrigin(int x, int y) {
 
 // 为了加快鼠标拖拽窗口的Resize效率
 bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
+  m_resized_flags = true;
+  m_width = width;
+  m_height = height;
+
+  resize_gpu_layer(width, height);
+
   // 256的倍数，并且不减
   int fix_width = width;
   if ((fix_width & 0xFF) != 0) {
@@ -154,15 +170,10 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
     fix_height = std::max(m_sksurface->height(), fix_height);
   }
 
-
   UI_LOG_INFO("SkiaRenderTarget(%p) resize:%d,%d => %d,%d(0x%x, 0x%x)", this,
               width, height, fix_width, fix_height, fix_width, fix_height);
 
-  SkImageInfo info = SkImageInfo::Make(
-      fix_width, fix_height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
-  SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
-
-  m_sksurface = SkSurface::MakeRaster(info, &surfaceProps);
+  m_sksurface = create_surface(fix_width, fix_height);
 
   // test，还没刷新界面，就直接commit的话，会出现全黄色。
   // #if defined(DEBUG)
@@ -172,6 +183,22 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
   return true;
+}
+
+sk_sp<SkSurface> SkiaRenderTarget::create_surface(unsigned int width,
+                                                  unsigned int height) {
+  SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+                                       kPremul_SkAlphaType);
+  SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
+
+  return SkSurface::MakeRaster(info, &surfaceProps);
+}
+
+void SkiaRenderTarget::resize_gpu_layer(unsigned int width,
+                                        unsigned int height) {
+  if (m_gpu_texture) {
+    m_gpu_texture->Resize(width * m_scale, height * m_scale);
+  }
 }
 
 void *SkiaRenderTarget::GetHandle() {
@@ -232,6 +259,10 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
     return false;
   }
 
+  if (m_enable_software_backend) {
+    frames_sync_size();
+  }
+
   SkCanvas *canvas = m_sksurface->getCanvas();
   if (!canvas) {
     return false;
@@ -240,10 +271,14 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
 
   canvas->scale(scale, scale);
   m_scale = scale;
+
   return true;
 }
 
 void SkiaRenderTarget::EndDraw() {
+  m_resized_flags = false;
+  m_last_dirty_region = m_clip_origin_impl.GetDirtyRegion();
+
   if (!m_sksurface) {
     return;
   }
@@ -260,6 +295,60 @@ void SkiaRenderTarget::EndDraw() {
 
   // m_sksurface->flushAndSubmit();
   // swap_buffer();
+  if (m_enable_hardware_backend) {
+    upload_2_gpu();
+  }
+}
+
+// 将front/back大小进行同步
+void SkiaRenderTarget::frames_sync_size() {
+  if (!m_sksurface || !m_sksurface_front) {
+    return;
+  }
+
+  unsigned int front_width = m_sksurface_front->width();
+  unsigned int front_height = m_sksurface_front->height();
+
+  bool full_dirty = false;
+  if (!m_sksurface) {
+    m_sksurface = create_surface(front_width, front_height);
+    full_dirty = true;
+  } else if (!m_resized_flags) {
+    // 只在本次外部没用调用Resize时，再同步上一轮的大小。
+    // 由于render target size的冗余特性，
+    // 出现front/back的最终大小不一致是可能的，
+    // 只要满足大于surface大小即可。
+    if (m_sksurface->width() != front_width ||
+        m_sksurface->height() != front_height) {
+      m_sksurface = create_surface(front_width, front_height);
+      full_dirty = true;
+    }
+  }
+  if (full_dirty) {
+    m_last_dirty_region.Destroy();
+    m_last_dirty_region.AddRect(ui::Rect::MakeXYWH(0, 0, m_width, m_height));
+  }
+}
+
+void SkiaRenderTarget::upload_2_gpu() {
+#if 0
+  if (!m_sksurface) {
+    return;
+  }
+  int width = m_sksurface->width();
+  int height = m_sksurface->height();
+
+  if (!m_gpu_texture) {
+    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
+                        ->CreateGpuLayerTexture();
+    if (m_gpu_texture) {
+      m_gpu_texture->Resize(width, height);
+    }
+  }
+
+  Rect rc = {0, 0, width, height};
+  this->Upload2Gpu(m_gpu_texture, &rc, 1, m_scale);
+#endif
 }
 
 void SkiaRenderTarget::Clear(const Rect &rect) {
@@ -866,7 +955,7 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
 
 // software，将子layer画到父layer上面。
 void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
-                                     Render2TargetParam *pParam) {
+                                     Render2TargetParam *param) {
 
   if (!m_sksurface) {
     return;
@@ -876,11 +965,15 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   if (!target->m_sksurface) {
     return;
   }
+  render_to_surface(m_sksurface.get(), target->m_sksurface.get(), param);
+}
 
-  SkCanvas *target_canvas = target->m_sksurface->getCanvas();
-  SkCanvas *source_canvas = m_sksurface->getCanvas();
+void SkiaRenderTarget::render_to_surface(SkSurface *source, SkSurface *target,
+                                         Render2TargetParam *param) {
+  SkCanvas *target_canvas = target->getCanvas();
+  SkCanvas *source_canvas = source->getCanvas();
 
-  sk_sp<SkImage> source_image(m_sksurface->makeImageSnapshot());
+  sk_sp<SkImage> source_image(source->makeImageSnapshot());
   if (!source_image) {
     return;
   }
@@ -893,10 +986,10 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
     target_canvas->drawImageRect(
         source_image,
         SkRect::MakeXYWH(
-            (SkScalar)pParam->xSrc * m_scale, (SkScalar)pParam->ySrc * m_scale,
-            (SkScalar)pParam->wSrc * m_scale, (SkScalar)pParam->hSrc * m_scale),
-        SkRect::MakeXYWH((SkScalar)pParam->xDst, (SkScalar)pParam->yDst,
-                         (SkScalar)pParam->wDst, (SkScalar)pParam->hDst),
+            (SkScalar)param->xSrc * m_scale, (SkScalar)param->ySrc * m_scale,
+            (SkScalar)param->wSrc * m_scale, (SkScalar)param->hSrc * m_scale),
+        SkRect::MakeXYWH((SkScalar)param->xDst, (SkScalar)param->yDst,
+                         (SkScalar)param->wDst, (SkScalar)param->hDst),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
   }
 }
@@ -958,22 +1051,113 @@ void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
   }
 }
 
-void SkiaRenderTarget::GetFrameBuffer(FrameBuffer *fb) {
-  if (!m_sksurface || !fb) {
-    return;
+bool SkiaRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
+  if (!fb) {
+    return false;
   }
+
   SkPixmap pm;
-  if (!m_sksurface->peekPixels(&pm)) {
-    return;
+  SkSurface *surface = m_sksurface.get();
+  if (m_enable_software_backend) {
+    std::shared_lock lock(main.m_mutex);
+    fb->read_lock = std::move(lock);
+
+    if (!main.m_sksurface_front) {
+      return false;
+    }
+    surface = main.m_sksurface_front.get();
   }
+  if (!surface) {
+    return false;
+  }
+
+  if (!surface->peekPixels(&pm)) {
+    return false;
+  }
+
   fb->width = pm.width();
   fb->height = pm.height();
   fb->data = pm.addr();
   fb->rowbytes = pm.rowBytes();
+
+  //   if (Config::GetInstance().debug.dump_render_target) {
+  //     static int i = 0;
+  //     char path[64];
+  // #if defined(OS_WIN)
+  //     sprintf(path, "D:\\images\\%d_%p.png", i++, surface.front.get());
+  // #else
+  //     sprintf(path, "/tmp/images/%d_%p.png", i++, surface.front.get());
+  // #endif
+  //     surface.front->DumpToImage(path);
+  //   }
+  return true;
 }
 
 void SkiaRenderTarget::RenderOnThread(slot<void(IRenderTarget *)> &&callback) {
   callback.emit(static_cast<IRenderTarget *>(this));
+}
+
+void SkiaRenderTarget::CreateSwapChain(bool is_hardware) {
+  if (is_hardware) {
+    assert(false && "TODO:");
+  } else {
+    if (!m_sksurface) {
+      return;
+    }
+    SkImageInfo info =
+        SkImageInfo::Make(m_sksurface->width(), m_sksurface->height(),
+                          kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+    SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
+
+    std::unique_lock lock(main.m_mutex);
+    main.m_sksurface_front = SkSurface::MakeRaster(info, &surfaceProps);
+    m_enable_software_backend = true;
+  }
+}
+bool SkiaRenderTarget::SwapChain(slot<void()> &&callback) {
+  std::unique_lock lock(main.m_mutex);
+
+  if (!main.m_sksurface_front) {
+    return false;
+  }
+
+  // 交换指针
+  std::swap(m_sksurface, main.m_sksurface_front);
+  callback.emit();
+  return true;
+}
+
+// 将front/back数据内容进行同步，避免使用完back后，再使用front时，丢了一帧内容的问题。
+void SkiaRenderTarget::frames_sync_dirty() {
+  // read lock
+  std::shared_lock lock(main.m_mutex);
+
+  if (!main.m_sksurface_front || !m_sksurface) {
+    return;
+  }
+
+  // 优化：如果本次的脏区域范围大于等于上一帧的变动范围，则不需要做帧同步
+  const DirtyRegion &dirty_region_current_frame =
+      m_clip_origin_impl.GetDirtyRegion();
+  if (dirty_region_current_frame.Contains(m_last_dirty_region)) {
+    return;
+  }
+
+  
+
+  // TODO: 继续优化，不仅仅是Contains，更应该是Sub
+  for (int i = 0; i < m_last_dirty_region.Count(); i++) {
+    Rect *rect = m_last_dirty_region.GetRectPtrAt(i);
+    Render2TargetParam param = {0};
+    param.xSrc = param.xDst = rect->left;
+    param.ySrc = param.yDst = rect->top;
+    param.wSrc = param.wDst = rect->Width();
+    param.hSrc = param.hDst = rect->Height();
+    param.opacity = 255;
+    render_to_surface(main.m_sksurface_front.get(), m_sksurface.get(), &param);
+    // printf("frames sync dirty: %d,%d,  %d,%d\n", rect->left, rect->top,
+    // rect->Width(), rect->Height());
+  }
 }
 
 } // namespace ui

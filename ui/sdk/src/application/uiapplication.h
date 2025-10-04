@@ -35,7 +35,6 @@ public:
 
   MessageLoop& GetMessageLoop();
   ResourceManager &GetResourceManager();
-  RenderThread& GetRenderThread() { return m_render_thread; }
 
   void SetEditorMode(bool b) { m_bEditorMode = b; }
   bool IsEditorMode() { return m_bEditorMode; }
@@ -128,9 +127,6 @@ private:
 #endif
 
   uia::Animate m_animate;
-
-  // 渲染线程
-  RenderThread m_render_thread; 
 
 private:
   IApplication *m_pUIApplication = nullptr; // 对外提供的接口

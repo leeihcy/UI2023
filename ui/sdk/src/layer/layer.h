@@ -7,6 +7,8 @@
 namespace ui {
 class Object;
 class Compositor;
+class GpuLayerCommitContext;
+struct IGpuLayer;
 } // namespace ui
 
 // 2016.6.4 重写渲染机制
@@ -96,11 +98,13 @@ enum LayerType {
 };
 
 class Layer : public uia::IAnimateEventCallback {
-protected:
-  Layer();
+public:
+  Layer(LayerType);
   virtual ~Layer();
 
 public:
+  LayerType GetType() { return m_type;}
+
   void Destroy();
   bool CanDestroy();
   void TryDestroy();
@@ -161,9 +165,11 @@ public:
   float GetYTranslate();
   float GetZTranslate();
 
-  virtual bool UpdateDirty() { return false; }
-  virtual void MapView2Layer(Point *pPoint){};
-  virtual LayerType GetType() = 0;
+  virtual bool UpdateDirty();
+  
+
+  void HardwareCommit(GpuLayerCommitContext *context);
+  void MapView2Layer(Point *pPoint);
 
 protected:
   virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard *) override;
@@ -173,6 +179,10 @@ protected:
 
   Object *GetLayerContentObject();
 
+  bool hardwareUpdateDirty();
+  bool softwareUpdateDirty();
+  void upload_2_gpu();
+  
 private:
   void on_layer_tree_changed();
   uia::IStoryboard *create_storyboard(int id);
@@ -180,6 +190,7 @@ private:
 protected:
   ILayer m_iLayer;
   Compositor *m_pCompositor;
+  LayerType m_type;
 
   IRenderTarget *m_pRenderTarget;
 
@@ -189,7 +200,6 @@ protected:
   Layer *m_pNext;
   Layer *m_pPrev;
 
-  //
   Size m_size;
   DirtyRegion m_dirty_region;
 
@@ -218,5 +228,8 @@ protected:
   float m_xTranslate;        // 设置的值
   float m_yTranslate;        // 设置的值
   float m_zTranslate;        // 设置的值
+
+   // 硬件合成
+  IGpuLayer *m_gpu_texture = nullptr;
 };
 } // namespace ui

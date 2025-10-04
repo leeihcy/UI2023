@@ -10,8 +10,7 @@
 
 namespace ui {
 
-RecordRenderTarget::RecordRenderTarget(RenderThread &render_thread)
-    : m_render_thread(render_thread) {
+RecordRenderTarget::RecordRenderTarget() {
   // Constructor implementation
 }
 RecordRenderTarget::~RecordRenderTarget() {}
@@ -27,9 +26,10 @@ void RecordRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
   bool notify = paint_op->type == PaintOpType::EndDraw ||
                 paint_op->type == PaintOpType::BeginDraw;
 
-  m_render_thread.main.AddPaintOp(std::move(paint_op));
+  auto& thread = RenderThread::GetIntance();
+  thread.main.AddPaintOp(std::move(paint_op));
   if (notify) {
-    m_render_thread.main.Notify();
+    thread.main.Notify();
   }
 }
 
@@ -66,20 +66,35 @@ void RecordRenderTarget::ClipRect(const Rect &rect) {
   addPaintOp(std::move(std::make_unique<ClipRectOp>(rect)));
 }
 
+void RecordRenderTarget::CreateSwapChain(bool is_hardware) {
+  addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware)));
+}
+bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
+  addPaintOp(std::move(std::make_unique<SwapChainOp>(std::move(callback))));
+  return true;
+}
+
 void RecordRenderTarget::DumpToImage(const char *path) {
   addPaintOp(std::move(std::make_unique<DumpToImageOp>(path)));
 }
 void RecordRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
                                     float scale) {
-  assert(false);
+  addPaintOp(std::move(std::make_unique<Upload2GpuOp>()));
 }
-void RecordRenderTarget::GetFrameBuffer(FrameBuffer *fb) { assert(false); }
+
+bool RecordRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
+  // 在UI线程上触发的，需要同步获取缓存数据。这里带锁进行跨线程获取
+  FrameBufferWithReadLock frame_buffer;
+  return RenderThread::GetIntance().main.GetFrontFrameBuffer(this, &frame_buffer);
+}
+
 void RecordRenderTarget::RenderOnThread(
     slot<void(IRenderTarget *)> &&callback) {
-  addPaintOp(std::move(std::make_unique<RenderOnThreadOp>(std::move(callback))));
+  addPaintOp(
+      std::move(std::make_unique<RenderOnThreadOp>(std::move(callback))));
 }
-    
-void RecordRenderTarget::SetDirtyRegion(const DirtyRegion& dirty_region) {
+
+void RecordRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
   addPaintOp(std::move(std::make_unique<SetDirtyRegionOp>(dirty_region)));
 }

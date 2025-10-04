@@ -154,8 +154,6 @@ shared_library("uisdk") {
         "src/layer/windowrender.cpp",
         "src/layer/hardware_compositor.cpp",
         "src/layer/software_compositor.cpp",
-        "src/layer/hardware_layer.cpp",
-        "src/layer/software_layer.cpp",
         "src/layout/averagelayout.cpp",
         "src/layout/canvaslayout.cpp",
         "src/layout/cardlayout.cpp",

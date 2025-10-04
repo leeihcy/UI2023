@@ -3,6 +3,8 @@
 #include "include/interface/renderlibrary.h"
 #include "include/util/color.h"
 #include "src/graphics/clip_origin.h"
+#include "src/graphics/skia/skia_render.h"
+#include <memory>
 
 namespace ui {
 class RenderThread;
@@ -11,7 +13,7 @@ class PaintOp;
 // 只记录渲染操作，将操作转换给RenderThread
 class RecordRenderTarget : public IRenderTarget {
 public:
-  RecordRenderTarget(RenderThread &render_thread);
+  RecordRenderTarget();
 
   ~RecordRenderTarget() override;
   void Release() override;
@@ -29,10 +31,13 @@ public:
   void ClipRoundRect(const Rect& rect, int radius) override;
   void ClipRect(const Rect& rect) override;
 
+  void CreateSwapChain(bool is_hardware) override;
+  bool SwapChain(slot<void()>&& callback) override;
+
   void DumpToImage(const char *szPath) override;
   void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
                   float scale) override;
-  void GetFrameBuffer(FrameBuffer* fb) override;
+  bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
 
   void SetDirtyRegion(const DirtyRegion& dirty_region) override;
@@ -52,8 +57,6 @@ private:
   void addPaintOp(std::unique_ptr<PaintOp>&& paint_op);
 
 private:
-  RenderThread &m_render_thread;
-
   float m_scale = 0.f;
   ClipOriginImpl m_clip_origin_impl;
 };

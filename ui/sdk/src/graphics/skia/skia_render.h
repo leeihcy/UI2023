@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <shared_mutex>
 
 #include "include/util/rect_region.h"
 #include "third_party/skia/src/include/core/SkCanvas.h"
@@ -32,10 +33,12 @@ public:
   void ClipRoundRect(const Rect& rect, int radius) override;
   void ClipRect(const Rect& rect) override;
 
+  void CreateSwapChain(bool is_hardware) override;
+  bool SwapChain(slot<void()>&& callback) override;
   void DumpToImage(const char *szPath) override;
   void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
                           float scale) override;
-  void GetFrameBuffer(FrameBuffer* fb) override;
+  bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
   void SetDirtyRegion(const DirtyRegion& dirty_region) override;
   const DirtyRegion& GetDirtyRegion();
@@ -57,14 +60,42 @@ public:
   SkSurface *GetSkiaSurface() { return m_sksurface.get(); }
 
 protected:
+  void frames_sync_size();
+  void frames_sync_dirty();
+
   void update_clip_rgn();
+  void upload_2_gpu();
+  void resize_gpu_layer(unsigned int width, unsigned int height);
+  void render_to_surface(SkSurface* source, SkSurface* target, Render2TargetParam *param);
+  
+  sk_sp<SkSurface> create_surface(unsigned int width, unsigned int height);
 
 protected:
-  sk_sp<SkSurface> m_sksurface;
-
+  sk_sp<SkSurface> m_sksurface; 
+  ClipOriginImpl m_clip_origin_impl;
   float m_scale = 1.0f;
 
-  ClipOriginImpl m_clip_origin_impl;
+  // 用于标记本轮begin/end draw期间，是否被调用了Resize
+  // 用于swap chain同步size
+  int m_width = 0;
+  int m_height = 0;
+  bool m_resized_flags = false;
+
+  // software backend
+  bool m_enable_software_backend = false;
+  DirtyRegion m_last_dirty_region;
+
+  // m_sksurface相当于back，用于绘制。front仅用于UI线程。
+  // 软件合成(ui线程读取)
+  struct Main {
+    sk_sp<SkSurface> m_sksurface_front; 
+    std::shared_mutex m_mutex;
+  } main;
+
+  // gpu backend
+  // 硬件合成
+  bool m_enable_hardware_backend = false;
+  IGpuLayer *m_gpu_texture = nullptr;
 };
 
 } // namespace ui

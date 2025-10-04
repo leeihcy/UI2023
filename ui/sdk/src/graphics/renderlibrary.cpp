@@ -45,7 +45,7 @@ IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
   switch (eType) {
   case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA: {
     if (Config::GetInstance().enable_render_thread) {
-      pRenderTarget = new RecordRenderTarget(pUIApp->GetImpl()->GetRenderThread());
+      pRenderTarget = new RecordRenderTarget();
     } else {
       pRenderTarget = new SkiaRenderTarget();
     }

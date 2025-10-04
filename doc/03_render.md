@@ -13,7 +13,10 @@
 2. 窗口触发的Paint/drawRect事件：
    UpdateDirty, swapchain前的Commit？, swapchain后的DirectCommit
    
+
 TODO:
-1. 指令合并，解决快速拖拽窗口大小时，RenderThread出现指令堆积的问题。
-2. 脏区域优化
-3. 其它接口指令转发
+skia backend，还有一种方法，是将指令直接转换成GPU API绘制指令。
+这种方式能更好的利用GPU强大计算能力，避免软件光栅化需要的大量内存，和上传到GPU时需要的内存带宽。同时能保留绘制的矢量效果。
+但在稳定性方面不如软件光栅化。
+
+需要将这两种方法进行结合。

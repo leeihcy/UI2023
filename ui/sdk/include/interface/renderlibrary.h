@@ -6,6 +6,7 @@
 #include "ui/sdk/include/util/rect_region.h"
 #include "ui/sdk/include/common/signalslot/slot.h"
 #include <string>
+#include <shared_mutex>
 
 namespace ui {
 struct IRenderFont;
@@ -272,6 +273,10 @@ struct FrameBuffer {
   int rowbytes;
 };
 
+struct FrameBufferWithReadLock : public FrameBuffer {
+  std::shared_lock<std::shared_mutex> read_lock;
+};
+
 struct IClipOrigin {
   virtual void SetDirtyRegion(const DirtyRegion& dirty_region) = 0;
   virtual void PushRelativeClipRect(const Rect& rect) = 0;
@@ -305,10 +310,12 @@ struct IRenderTarget : public IClipOrigin {
   virtual void ClipRoundRect(const Rect& rect, int radius) = 0;
   virtual void ClipRect(const Rect& rect) = 0;
 
+  virtual void CreateSwapChain(bool is_hardware) = 0;
+  virtual bool SwapChain(slot<void()>&& callback) = 0;
   virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
                           float scale) = 0;
   virtual void DumpToImage(const char *szPath) = 0;
-  virtual void GetFrameBuffer(FrameBuffer* fb) = 0;
+  virtual bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) = 0;
 
   virtual void RenderOnThread(slot<void(IRenderTarget*)>&& callback) = 0;
   virtual void Render2Target(IRenderTarget *pDst,

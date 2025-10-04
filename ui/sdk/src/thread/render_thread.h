@@ -18,25 +18,22 @@ class Window;
 
 class RenderThread {
 public:
-  RenderThread(ui::Application &app);
+  RenderThread();
+  static RenderThread& GetIntance();
 
   // 每个layer对应的Skia RenderTarget
-  // 对于root layer，需要有一个swapchain(front/back)。
-  // 其它layer，只需要一个back即可。
+  // 对于root layer，需要有一个swapchain(front/back)。其它layer，只需要一个back即可。
+  // 在硬件合成时，只需要一个back即可。
   struct Surface {
     Surface() { }
     Surface(Surface &&o)
-        : back(std::move(o.back)), front(std::move(o.front)),
+        : back(std::move(o.back))/*, front(std::move(o.front))*/,
           last_dirty_region(o.last_dirty_region) {}
     void Reset() { 
       back_resized = false;
     }
     std::unique_ptr<IRenderTarget> back;
-    std::unique_ptr<IRenderTarget> front;
-#if defined(_DEBUG) 
-    // 记录后创建的那个rt，用于区分back/front
-    IRenderTarget* distinguish_rt_for_debug = nullptr;
-#endif
+    // std::unique_ptr<IRenderTarget> front;
 
     DirtyRegion last_dirty_region;
 
@@ -46,11 +43,6 @@ public:
     // 记录back是否被调用了resize。
     // 如果已经resized了，则不去同步front上一次的size
     bool back_resized = false;
-  };
-
-  struct FrameBufferWithReadLock {
-    const FrameBuffer &fb;
-    std::shared_lock<std::shared_mutex> read_lock;
   };
 
   // 在主线程(其实是UI线程)调用的函数放这里面
@@ -64,18 +56,14 @@ public:
     void AddPaintOp(std::unique_ptr<PaintOp> &&op);
     void Notify();
 
-    void CreateSwapChain(void *key);
     void SwapChain(void *key, Window *window, DirtyRegion dirty_region);
     void on_swap_chain(void *key, const DirtyRegion& dirty_region);
 
-    const FrameBufferWithReadLock GetFrameBuffer(void *key);
+    bool GetFrontFrameBuffer(void *key, FrameBufferWithReadLock* fb);
     void RemoveKey(void *key);
 
   private:
     RenderThread &self;
-
-    // 用于关联rt <--> window，在swap chain之后切回主线程，通知窗口commit
-    std::map<void *, Window *> m_window_map;
   } main;
 
 private:
@@ -85,10 +73,7 @@ private:
   void process_command(PaintOp *op);
 
   void create_swap_chain(void *key);
-  void swap_chain(void *key, const DirtyRegion &dirty_region);
   void remove_key(void *key);
-  void frames_sync_size(Surface &layer);
-  void frames_sync_dirty(Surface &layer);
   void merge_and_optimize_operations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
 
 private:
@@ -114,12 +99,15 @@ private:
 
   // 后台帧缓存
   // 读写都在渲染线程中，不需要加锁
-  std::map<void *, Surface> m_layer_map;
+  std::map<void *, Surface> m_surface_map;
+
+  // 
+  std::map<void*, IRenderTarget*> m_surface_map_uithread;
 
   // 前台帧缓存，用于主线程提交到窗口上。
   // 主线程读，渲染线程读+写。使用共享读+写锁。
-  std::map<void *, FrameBuffer> m_frame_buffer_map;
-  std::shared_mutex m_frame_buffer_rw_mutex; // commit|swap chain
+  // std::map<void *, FrameBuffer> m_frame_buffer_map;
+  // std::shared_mutex m_frame_buffer_rw_mutex; // commit|swap chain
 
   // 跳线程使用
   weakptr_factory<RenderThread> m_weakptr_factory = {this};

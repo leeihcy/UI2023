@@ -1,5 +1,4 @@
 #include "hardware_compositor.h"
-#include "hardware_layer.h"
 #include "include/inc.h"
 #include "include/util/log.h"
 #include "base/stopwatch.h"
@@ -44,7 +43,7 @@ void HardwareCompositor::Resize(uint nWidth, uint nSize) {
   m_gpu_composition->Resize(rc.Width(), rc.Height());
 }
 
-Layer *HardwareCompositor::createLayerObject() { return new HardwareLayer(); }
+Layer *HardwareCompositor::createLayerObject() { return new Layer(Layer_Hardware); }
 
 // 硬件合成只能是每个层分别去调用updatedirty，而不是像软件渲染一样由parent
 // object遍历child时去调用
@@ -65,7 +64,7 @@ bool HardwareCompositor::UpdateDirty(RectRegion *outArrDirtyInWindow) {
 
 void HardwareCompositor::update_dirty_recursion(Layer *p) {
   UIASSERT(p);
-  static_cast<HardwareLayer *>(p)->UpdateDirty();
+  p->UpdateDirty();
 
   p = p->GetFirstChild();
   while (p) {
@@ -97,7 +96,7 @@ void HardwareCompositor::commit_recursion(Layer *p,
     return;
 
   GpuLayerCommitContext context(*pContext);
-  static_cast<HardwareLayer *>(p)->Commit(&context);
+  p->HardwareCommit(&context);
 
   p = p->GetFirstChild();
   while (p) {
