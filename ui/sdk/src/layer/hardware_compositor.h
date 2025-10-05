@@ -17,8 +17,6 @@ public:
     virtual bool  UpdateDirty(RectRegion* outArrDirtyInWindow) override;
     virtual void  Resize(uint nWidth, uint nSize) override;
 
-    IGpuLayer*  CreateGpuLayerTexture();
-
 private:
     void  draw_full_recursion(Layer* p);
     void  update_dirty_recursion(Layer* p);

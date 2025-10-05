@@ -30,7 +30,7 @@ private:
                            VkMemoryPropertyFlags properties);
 
   bool create_texture_imageview();
-  void update_texture_descriptorset();
+  bool update_texture_descriptorset();
 
   bool findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                       uint32_t *out);

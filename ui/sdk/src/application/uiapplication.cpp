@@ -106,6 +106,12 @@ void Application::x_Init() {
     RenderThread::GetIntance().main.Start();
   }
 
+#if defined(OS_WIN)
+  // 获取操作系统版本信息
+  ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
+  m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+  GetVersionEx((OSVERSIONINFO *)&m_osvi);
+#endif
 
 #if 0
 	m_pGifTimerMgr = nullptr;
@@ -221,7 +227,6 @@ long CALLBACK WndProc(HWND hWnd, unsigned int message, long wParam,
 
 bool Application::IsUnderXpOS() {
   bool bUnderXpOs = true;
-  ;
   if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId) {
     if (m_osvi.dwMajorVersion >= 6) {
       bUnderXpOs = false;
@@ -234,7 +239,6 @@ bool Application::IsUnderXpOS() {
 
 bool Application::IsVistaOrWin7etc() {
   bool bHighThanVista = true;
-  ;
   if (VER_PLATFORM_WIN32_NT == m_osvi.dwPlatformId) {
     if (m_osvi.dwMajorVersion < 6) {
       bHighThanVista = false;

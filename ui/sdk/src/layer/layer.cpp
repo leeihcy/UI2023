@@ -88,10 +88,6 @@ Layer::~Layer() {
   }
 
   SAFE_RELEASE(m_pRenderTarget);
-  if (m_gpu_texture) {
-    m_gpu_texture->Release();
-    m_gpu_texture = nullptr;
-  }
 
 #ifdef _DEBUG
   UI_LOG_DEBUG(L"Layer Destroy, ptr=0x%08x", this);
@@ -267,9 +263,6 @@ void Layer::OnSize(uint width, uint height, float scale) {
   m_pRenderTarget->Resize(scaled_width, scaled_height);
   m_transfrom3d.set_size(scaled_width, scaled_height);
 
-  if (m_gpu_texture) {
-    m_gpu_texture->Resize(scaled_width, scaled_height);
-  }
   virtualOnSize(width, height);
 }
 
@@ -703,12 +696,7 @@ IRenderTarget *Layer::GetRenderTarget() {
       return nullptr;
 
     m_pCompositor->CreateRenderTarget(&m_pRenderTarget);
-    if (m_type == Layer_Hardware && !m_gpu_texture) {
-      m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
-                          ->CreateGpuLayerTexture();
-    }
   }
-
   return m_pRenderTarget;
 }
 
@@ -781,8 +769,6 @@ uia::IStoryboard *Layer::create_storyboard(int id) {
 }
 
 void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
-  if (!m_gpu_texture)
-    return;
   if (!m_pLayerContent)
     return;
 
@@ -817,6 +803,8 @@ void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
   // 因此每次使用前设置一次。
   m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
 
+  assert(false && "TODO");
+#if 0 
   if (!m_transfrom3d.is_identity()) {
     MATRIX44 mat;
     m_transfrom3d.get_matrix(&mat);
@@ -824,6 +812,7 @@ void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
   } else {
     m_gpu_texture->Compositor(pContext, nullptr);
   }
+#endif
 }
 
 void Layer::MapView2Layer(Point *pPoint) {
@@ -921,16 +910,8 @@ void Layer::upload_2_gpu() {
     scale = m_pLayerContent->GetLayerScale();
   }
 
-  if (!m_gpu_texture) {
-    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
-                        ->CreateGpuLayerTexture();
-    if (m_gpu_texture) {
-      m_gpu_texture->Resize(m_size.width * scale, m_size.height * scale);
-    }
-  }
-
   Rect rc = {0, 0, (int)m_size.width, (int)m_size.height};
-  m_pRenderTarget->Upload2Gpu(m_gpu_texture, &rc, 1, scale);
+  m_pRenderTarget->Upload2Gpu(&rc, 1, scale);
 }
 
 } // namespace ui

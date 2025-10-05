@@ -4,7 +4,9 @@
 #include "ui/sdk/include/util/color.h"
 #include "ui/sdk/include/util/rect.h"
 #include "ui/sdk/include/util/rect_region.h"
+#include "ui/sdk/include/util/struct.h"
 #include "ui/sdk/include/common/signalslot/slot.h"
+
 #include <string>
 #include <shared_mutex>
 
@@ -19,8 +21,6 @@ struct Point;
 struct Size;
 struct LOGFONT;
 struct FontDesc;
-
-struct C9Region;
 
 // 绘制图片的统一参数，避免需要重写多个DrawBitmap函数
 enum DRAW_BITMAP_FLAG {
@@ -61,13 +61,13 @@ typedef struct tagDRAWBITMAPPARAM {
   int ySrc;
   int wSrc;
   int hSrc;
-  C9Region *pRegion; // 不需要拉伸时，不使用
+  C9Region nine_region; // 不需要拉伸时，不使用
   unsigned char nAlpha;
 
   float scale_factor;
 
-  // out param
-  Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
+  // out param (废弃。多线程渲染后已获取不到，外部调用者自己计算吧。)
+  // Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
 
 } DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
 
@@ -312,7 +312,7 @@ struct IRenderTarget : public IClipOrigin {
 
   virtual void CreateSwapChain(bool is_hardware) = 0;
   virtual bool SwapChain(slot<void()>&& callback) = 0;
-  virtual void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+  virtual void Upload2Gpu(Rect *prcArray, int nCount,
                           float scale) = 0;
   virtual void DumpToImage(const char *szPath) = 0;
   virtual bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) = 0;
@@ -322,7 +322,8 @@ struct IRenderTarget : public IClipOrigin {
                              Render2TargetParam *pParam) = 0;
 
   virtual void DrawRect(const Rect& rc, const Color& color) = 0;
-  virtual void DrawBitmap(IRenderBitmap *, DRAWBITMAPPARAM *pParam) = 0;
+  // 使用shared_ptr，用于多线程传递参数。
+  virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(const DrawTextParam &param) = 0;
 
   virtual void _DrawString2(void* text_blob, const Color& color, float x, float y) = 0;

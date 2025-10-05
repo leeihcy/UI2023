@@ -56,16 +56,12 @@ struct IGpuCompositorWindowX11 : public IGpuCompositorWindow {
 
 struct IGpuCompositor {
   virtual ~IGpuCompositor() {}
-  virtual bool Initialize(IGpuCompositorWindow*) = 0;
   virtual void Release() = 0;
   virtual IGpuLayer *CreateLayerTexture() = 0;
-  virtual void SetRootLayerTexture(IGpuLayer *p) = 0;
 
   virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
   virtual void EndCommit(GpuLayerCommitContext*) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
-  // virtual int GetWidth() = 0;
-  // virtual int GetHeight() = 0;
 };
 
 struct UploadGpuBitmapInfo {
@@ -100,8 +96,8 @@ public:
   Rect m_rcClip;
   float m_fAlpha;
 
-  bool m_bTransformValid;
-  float m_matrixTransform[4][4];
+  // bool m_bTransformValid;
+  // float m_matrixTransform[4][4];
 };
 
 inline GpuLayerCommitContext::GpuLayerCommitContext() {
@@ -111,10 +107,10 @@ inline GpuLayerCommitContext::GpuLayerCommitContext() {
   m_rcClip.SetEmpty();
 
   m_fAlpha = 1.0f;
-  m_bTransformValid = false;
-  memset(&m_matrixTransform, 0, sizeof(m_matrixTransform));
-  m_matrixTransform[0][0] = m_matrixTransform[1][1] = m_matrixTransform[2][2] =
-      m_matrixTransform[3][3] = 1;
+  // m_bTransformValid = false;
+  // memset(&m_matrixTransform, 0, sizeof(m_matrixTransform));
+  // m_matrixTransform[0][0] = m_matrixTransform[1][1] = m_matrixTransform[2][2] =
+  //     m_matrixTransform[3][3] = 1;
 }
 
 inline GpuLayerCommitContext::~GpuLayerCommitContext() {}
@@ -165,7 +161,7 @@ struct IGpuLayer {
     void  Rotate(float xRotate, float yRotate, float zRotate);
     void  RotateBy(float xRotate, float yRotate, float zRotate);
 #endif
-  virtual void OnBeginCommit(GpuLayerCommitContext *ctx) = 0;
+  // virtual void OnBeginCommit(GpuLayerCommitContext *ctx) = 0;
   virtual void Compositor(GpuLayerCommitContext *pContext,
                           float *pMatrixTransform) = 0;
 

@@ -30,7 +30,6 @@ VulkanCompositor::VulkanCompositor()
       m_command_pool(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_swapchain(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_pipeline(*static_cast<vulkan::IVulkanBridge *>(this)) {
-  m_pRootTexture = nullptr;
 }
 
 VulkanCompositor::~VulkanCompositor() { destory(); }
@@ -51,17 +50,17 @@ void VulkanCompositor::destory() {
   vkDestroySurfaceKHR(app.GetVkInstance(), m_surface, nullptr);
 }
 
-GpuLayer *VulkanCompositor::GetRootLayerTexture() { return m_pRootTexture; }
 
 IGpuLayer *VulkanCompositor::CreateLayerTexture() {
   GpuLayer *p = new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge *>(this));
-  p->SetGpuCompositor(this);
+  // p->SetGpuCompositor(this);
   return p;
 }
 
-void VulkanCompositor::SetRootLayerTexture(IGpuLayer *p) {
-  m_pRootTexture = static_cast<GpuLayer *>(p);
-}
+// GpuLayer *VulkanCompositor::GetRootLayerTexture() { return m_pRootTexture; }
+// void VulkanCompositor::SetRootLayerTexture(IGpuLayer *p) {
+//   m_pRootTexture = static_cast<GpuLayer *>(p);
+// }
 
 bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
   if (!create_vulkan_surface(window)) {

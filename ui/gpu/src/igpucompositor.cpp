@@ -129,15 +129,16 @@ void MultiMatrix(GpuLayerCommitContext &c, float *matrix16) {
 extern "C" {
 UIGPUAPI IGpuCompositor *CreateGpuComposition(IGpuCompositorWindow* window) {
   std::unique_ptr<IGpuCompositor> p;
-#if defined(ENABLE_D3D10)  
-  p.reset(new D3D10Compositor());
-#else
-  p.reset(new VulkanCompositor());
-#endif
 
-  if (!p->Initialize(window)) {
+#if defined(ENABLE_D3D10)  
+  auto* c = new D3D10Compositor();
+#else
+  auto* c = new VulkanCompositor();
+#endif
+  if (!c->Initialize(window)) {
     return nullptr;
   }
+  p.reset(c);
   return p.release();
 }
 

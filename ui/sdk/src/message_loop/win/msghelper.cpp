@@ -1,6 +1,6 @@
 #include "msghelper.h"
 #include "sdk/include/macro/helper.h"
-#include "src/object/message.h"
+#include "src/message_loop/message_loop_win.h"
 
 namespace ui {
 
@@ -38,29 +38,38 @@ LRESULT ForwardPostMessageWindowProc(HWND hWnd, UINT message, WPARAM wParam,
         delete data;
       }
     }
+  } else if (WM_TIMER == message) {
+   ForwardPostMessageWindow* pthis = (ForwardPostMessageWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+   pthis->onTimer(wParam);
   }
-
   return ::DefWindowProc(hWnd, message, wParam, lParam);
 }
 void ForwardPostMessageWindow::Create(MessageLoopPlatformWin *p) {
   m_bind = p;
 
-  const char *class_name = "ForwardMessageWindows";
-  WNDCLASSEXA wx = {};
+  const wchar_t *class_name = L"ForwardMessageWindows";
+  WNDCLASSEXW wx = {};
   wx.cbSize = sizeof(WNDCLASSEX);
   wx.lpfnWndProc = ForwardPostMessageWindowProc;
   wx.hInstance = 0;
   wx.lpszClassName = class_name;
-  if (RegisterClassExA(&wx)) {
-    m_hWnd = CreateWindowExA(0, class_name, "", 0, 0, 0, 0, 0, HWND_MESSAGE,
-                             NULL, NULL, NULL);
-  }
+  RegisterClassExW(&wx);
+
+  SetLastError(0); 
+  m_hWnd = ::CreateWindowExW(0, class_name, L"", 0, 0, 0, 0, 0, HWND_MESSAGE,
+                           NULL, NULL, NULL);
+  assert(m_hWnd);
+  DWORD dwError = GetLastError();
+  ::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 }
 void ForwardPostMessageWindow::Post(slot<void()> &&callback) {
   // 注：PostTaskToUIThread Windows平台复用了这段代码，修改时需要同步处理。
 
   PostData *data = new PostData(std::forward<slot<void()>>(callback));
   ::PostMessage(m_hWnd, UI_MSG_POSTMESSAGE, (WPARAM)data, 0);
+}
+void ForwardPostMessageWindow::onTimer(UINT_PTR id) {
+   m_bind->onTimer(id);
 }
 
 // WaitForHandle::WaitForHandle(HANDLE h, IWaitForHandleCallback *pCB, long l) {

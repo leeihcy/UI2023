@@ -30,7 +30,7 @@ public:
   VulkanCompositor();
   ~VulkanCompositor();
 
-  bool Initialize(IGpuCompositorWindow*) override;
+  bool Initialize(IGpuCompositorWindow*);
   void Release() override { delete this; }
 
   IGpuLayer *CreateLayerTexture() override;
@@ -38,7 +38,6 @@ public:
   void EndCommit(GpuLayerCommitContext *) override;
   void Resize(int nWidth, int nHeight) override;
 
-  void SetRootLayerTexture(IGpuLayer *p) override;
   GpuLayer *GetRootLayerTexture();
 
   VkSurfaceKHR Surface() { return m_surface; }
@@ -74,7 +73,7 @@ private:
 private:
   int m_width = 0;
   int m_height = 0;
-  GpuLayer *m_pRootTexture;
+  // GpuLayer *m_pRootTexture = nullptr;
 
   // 绑定到一个native窗口。
   VkSurfaceKHR m_surface;

@@ -105,17 +105,4 @@ void HardwareCompositor::commit_recursion(Layer *p,
   }
 }
 
-IGpuLayer *HardwareCompositor::CreateGpuLayerTexture() {
-  UIASSERT(m_gpu_composition);
-  if (!m_gpu_composition)
-    return nullptr;
-
-  IGpuLayer *pGpuTexture = nullptr;
-  if (m_gpu_composition) {
-    pGpuTexture = m_gpu_composition->CreateLayerTexture();
-  }
-
-  return pGpuTexture;
-}
-
 } // namespace ui

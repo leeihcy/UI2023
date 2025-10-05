@@ -16,9 +16,9 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
   assert(nullptr == m_current_command_buffer);
 
   // 给每个tile一次更新descriptor set机会
-  if (m_pRootTexture) {
-    m_pRootTexture->OnBeginCommit(ctx);
-  }
+  // if (m_pRootTexture) {
+  //   m_pRootTexture->OnBeginCommit(ctx);
+  // }
 
   draw_frame_wait_for_previous_frame_to_finish();
   draw_frame_acquire_image_from_swap_chain();

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _UI_SDK_SRC_MESSAGELOOP_WIN_MSGHELPER_H_
+#define _UI_SDK_SRC_MESSAGELOOP_WIN_MSGHELPER_H_
 #include "include/interface/iuiinterface.h"
 #include "src/util/DataStruct/list.h"
 #include "src/util/windows.h"
@@ -13,8 +14,10 @@ class ForwardPostMessageWindow{
 public:
   void Create(MessageLoopPlatformWin* p);
   void Post(slot<void()>&& callback);
-  
   HWND GetHWnd() { return m_hWnd; }
+
+public:
+  void onTimer(UINT_PTR id);
 protected:
   MessageLoopPlatformWin *m_bind; // raw ptr
   HWND m_hWnd;
@@ -80,3 +83,5 @@ struct IWaitForHandlesMgr {
 // };
 
 } // namespace ui
+
+#endif

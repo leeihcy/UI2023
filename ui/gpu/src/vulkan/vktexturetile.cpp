@@ -95,7 +95,10 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
 // 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
 // 所以三缓冲理论上都可以共用一个DescriptorSet。
-void VkTextureTile::update_texture_descriptorset() {
+bool VkTextureTile::update_texture_descriptorset() {
+  if (!m_texture_imageview) {
+    return false;
+  }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
     m_texture_descriptorset =
         m_bridge.GetPipeline().AllocatateTextureDescriptorSets();
@@ -119,6 +122,7 @@ void VkTextureTile::update_texture_descriptorset() {
 
   vkUpdateDescriptorSets(m_bridge.GetVkDevice(), 1, &texturedescriptorWrites, 0,
                          nullptr);
+  return true;
 }
 
 void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {}
@@ -126,7 +130,9 @@ void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {}
 void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                                ui::GpuLayerCommitContext *pContext) {
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
-    update_texture_descriptorset();
+    if (!update_texture_descriptorset()) {
+      return;
+    }
   }
 
   vulkan::CommandBuffer *command_buffer =

@@ -35,7 +35,7 @@ public:
   bool SwapChain(slot<void()>&& callback) override;
 
   void DumpToImage(const char *szPath) override;
-  void Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+  void Upload2Gpu(Rect *prcArray, int nCount,
                   float scale) override;
   bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
@@ -49,7 +49,7 @@ public:
 
   void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
   void DrawRect(const Rect& rc, const Color& color) override;
-  void DrawBitmap(IRenderBitmap *hBitmap, DRAWBITMAPPARAM *pParam) override;
+  void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap, DRAWBITMAPPARAM *param) override;
   void DrawString(const DrawTextParam &param) override;
   void _DrawString2(void* text_blob, const Color& color, float x, float y) override;
 

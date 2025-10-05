@@ -134,13 +134,14 @@ public:
   void Release();
 
   void UploadBitmap(UploadGpuBitmapInfo &info);
-  
-  virtual void Compositor(GpuLayerCommitContext *pContext, float *pMatrixTransform) = 0;
+
+  virtual void Compositor(GpuLayerCommitContext *pContext,
+                          float *pMatrixTransform) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
-  virtual TextureTile* newTile() = 0;
+  virtual TextureTile *newTile() = 0;
 
 public:
-  void SetGpuCompositor(IGpuCompositor *p);
+  // void SetGpuCompositor(IGpuCompositor *p);
 
 protected:
   void doCreateTile(int width, int height);
@@ -154,7 +155,7 @@ protected:
                         /*__out*/ RECTF *prcfOut);
 
 protected:
-  IGpuCompositor *m_pCompositor; 
+  // IGpuCompositor *m_pCompositor;
 
   // 纹理大小
   int m_width = 0;
@@ -163,7 +164,7 @@ protected:
   // 分块(TODO:)
   GpuLayerTilePolicy m_tile_pocicy = GpuLayerTilePolicy::Area;
   std::list<TextureTile *> m_listTile; // 分块列表，分散创建的
-  TextureTile2DArray m_arrayTile; // 将分块指针排成一个二维数组，便于定位
+  TextureTile2DArray m_arrayTile;      // 将分块指针排成一个二维数组，便于定位
 
   // 层链表
   GpuLayer *m_pParent;

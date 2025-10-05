@@ -32,12 +32,11 @@ public:
   D3D10Compositor();
   ~D3D10Compositor();
 
-  bool Initialize(IGpuCompositorWindow*) override;
+  bool Initialize(IGpuCompositorWindow*);
   void Release() override { delete this; }
   IGpuLayer *CreateLayerTexture() override;
   bool BeginCommit(GpuLayerCommitContext*) override;
   void EndCommit(GpuLayerCommitContext*) override;
-  void SetRootLayerTexture(IGpuLayer *p) override;
   GpuLayer *GetRootLayerTexture();
 
   void Resize(int nWidth, int nHeight) override;

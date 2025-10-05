@@ -2,7 +2,6 @@
 #include "src/vulkan/vkapp.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "src/vulkan/wrap/vulkan_sync.h"
-#include <cstdint>
 #include <vulkan/vulkan.h>
 #include <assert.h>
 #include <cstring>
@@ -265,6 +264,9 @@ SwapChainImage* SwapChain::GetCurrentImage() {
   return m_images[m_current_image_index].get();
 }
 InFlightFrame* SwapChain::GetCurrentSync() {
+    if (m_current_frame_index >= m_sync_items.size()) {
+        int a = 0;
+    }
   assert(m_current_frame_index < m_sync_items.size());
 
   return m_sync_items[m_current_frame_index].get();

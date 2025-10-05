@@ -184,6 +184,7 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   // #endif
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
+
   return true;
 }
 
@@ -332,26 +333,6 @@ void SkiaRenderTarget::frames_sync_size() {
   }
 }
 
-void SkiaRenderTarget::upload_2_gpu() {
-#if 0
-  if (!m_sksurface) {
-    return;
-  }
-  int width = m_sksurface->width();
-  int height = m_sksurface->height();
-
-  if (!m_gpu_texture) {
-    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
-                        ->CreateGpuLayerTexture();
-    if (m_gpu_texture) {
-      m_gpu_texture->Resize(width, height);
-    }
-  }
-
-  Rect rc = {0, 0, width, height};
-  this->Upload2Gpu(m_gpu_texture, &rc, 1, m_scale);
-#endif
-}
 
 void SkiaRenderTarget::Clear(const Rect &rect) {
   if (!m_sksurface) {
@@ -606,7 +587,7 @@ void SkiaRenderTarget::DrawRect(const Rect &rect, const Color &color) {
 //   UIASSERT(false);
 // }
 
-void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
+void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
                                   DRAWBITMAPPARAM *pParam) {
   if (NULL == pRenderBitmap || NULL == pParam)
     return;
@@ -617,7 +598,7 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
   }
 
   SkiaRenderBitmap *skia_bitmap =
-      static_cast<SkiaRenderBitmap *>(pRenderBitmap);
+      static_cast<SkiaRenderBitmap *>(pRenderBitmap.get());
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   if (pParam->nFlag & DRAW_BITMAP_DISABLE) {
@@ -679,11 +660,11 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
                          (SkScalar)dest_width, (SkScalar)dest_height),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
 
-    if (pParam->prcRealDraw) {
-      pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
-                               pParam->xDest + dest_width,
-                               pParam->yDest + dest_height);
-    }
+    // if (pParam->prcRealDraw) {
+    //   pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
+    //                            pParam->xDest + dest_width,
+    //                            pParam->yDest + dest_height);
+    // }
   } else if (pParam->nFlag & DRAW_BITMAP_STRETCH) {
     SkSamplingOptions options;
     SkPaint paint;
@@ -695,11 +676,11 @@ void SkiaRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
                          (SkScalar)pParam->wDest, (SkScalar)pParam->hDest),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
 
-    if (pParam->prcRealDraw) {
-      pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
-                               pParam->xDest + pParam->wDest,
-                               pParam->yDest + pParam->hDest);
-    }
+    // if (pParam->prcRealDraw) {
+    //   pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
+    //                            pParam->xDest + pParam->wDest,
+    //                            pParam->yDest + pParam->hDest);
+    // }
   }
   // else if (pParam->nFlag & DRAW_BITMAP_STRETCH_BORDER)
   // {
@@ -1014,9 +995,12 @@ void SkiaRenderTarget::DumpToImage(const char *path) {
   (void)out.write(png->data(), png->size());
 }
 
-void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+void SkiaRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
                                   float scale) {
-
+  if (!m_gpu_texture) {
+    assert(false);
+    return;
+  }
   SkPixmap pm;
   if (!m_sksurface || !m_sksurface->peekPixels(&pm)) {
     return;
@@ -1040,7 +1024,7 @@ void SkiaRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
   source.prcArray = rects.data();
   source.nCount = nCount;
 
-  p->UploadBitmap(source);
+  m_gpu_texture->UploadBitmap(source);
 
   if (Config::GetInstance().debug.log_gpu) {
     for (int i = 0; i < nCount; ++i) {
@@ -1080,7 +1064,7 @@ bool SkiaRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
   fb->width = pm.width();
   fb->height = pm.height();
   fb->data = pm.addr();
-  fb->rowbytes = pm.rowBytes();
+  fb->rowbytes = (int)pm.rowBytes();
 
   //   if (Config::GetInstance().debug.dump_render_target) {
   //     static int i = 0;
@@ -1099,9 +1083,40 @@ void SkiaRenderTarget::RenderOnThread(slot<void(IRenderTarget *)> &&callback) {
   callback.emit(static_cast<IRenderTarget *>(this));
 }
 
+
+void SkiaRenderTarget::upload_2_gpu() {
+#if 0
+  if (!m_sksurface) {
+    return;
+  }
+  int width = m_sksurface->width();
+  int height = m_sksurface->height();
+
+  if (!m_gpu_texture) {
+    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
+                        ->CreateGpuLayerTexture();
+    if (m_gpu_texture) {
+      m_gpu_texture->Resize(width, height);
+    }
+  }
+
+  Rect rc = {0, 0, width, height};
+  this->Upload2Gpu(m_gpu_texture, &rc, 1, m_scale);
+#endif
+}
+
 void SkiaRenderTarget::CreateSwapChain(bool is_hardware) {
   if (is_hardware) {
-    assert(false && "TODO:");
+    if (!m_gpu_texture) {
+      assert(false && "TODO");
+#if 0
+      m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
+                          ->CreateGpuLayerTexture();
+      if (m_gpu_texture) {
+        m_gpu_texture->Resize(m_sksurface->width(), m_sksurface->height());
+      }
+#endif
+    }
   } else {
     if (!m_sksurface) {
       return;
@@ -1147,7 +1162,7 @@ void SkiaRenderTarget::frames_sync_dirty() {
   }
 
   // TODO: 继续优化，不仅仅是Contains，更应该是Sub
-  for (int i = 0; i < m_last_dirty_region.Count(); i++) {
+  for (unsigned int i = 0; i < m_last_dirty_region.Count(); i++) {
     Rect *rect = m_last_dirty_region.GetRectPtrAt(i);
     Render2TargetParam param = {0};
     param.xSrc = param.xDst = rect->left;

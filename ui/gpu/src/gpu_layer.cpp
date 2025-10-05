@@ -16,7 +16,7 @@ using namespace ui;
 GpuLayer::GpuLayer() {
   m_pParent = m_pChild = m_pNext = nullptr;
 
-  m_pCompositor = nullptr;
+  // m_pCompositor = nullptr;
 
 #if 0
 	D3DXMatrixIdentity(&m_transform);
@@ -55,9 +55,9 @@ IGpuLayer *GpuLayer::GetIGpuLayerTexture() {
 
 void GpuLayer::Release() { delete this; }
 
-void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
-  m_pCompositor = p;
-}
+// void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
+//   m_pCompositor = p;
+// }
 
 //----------------------------------------------------------------------------------------
 //
@@ -119,6 +119,10 @@ void GpuLayer::UploadBitmap(UploadGpuBitmapInfo &info) {
 }
 
 void GpuLayer::upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &source) {
+  if (source.bpp != 32) {
+    assert(false && "Support 32 bpp only.");
+    return;
+  }
   // 分析受影响的 tile
   // -1: 例如(0~128)，受影响的就是一个区域0，不影响区域1(128/128=1)
   int xIndexFrom = rc.left / TILE_SIZE;
@@ -233,15 +237,15 @@ void GpuLayer::CalcDrawDestRect(/*__in*/ RECTF *prc, /*__out*/ RECTF *prcfOut) {
   prcfOut->top = 1.0f - prc->top * 2.0f / m_height;
   prcfOut->bottom = 1.0f - prc->bottom * 2.0f / m_height;
 }
-void GpuLayer::CalcDrawDestRect(int xDest, int yDest, int wDest,
-                                      int hDest, /*__out*/ RECTF *prcfOut) {
+void GpuLayer::CalcDrawDestRect(int xDest, int yDest, int wDest, int hDest,
+                                /*__out*/ RECTF *prcfOut) {
   prcfOut->left = xDest * 2.0f / m_width - 1.0f;
   prcfOut->right = (xDest + wDest) * 2.0f / m_width - 1.0f;
   prcfOut->top = 1.0f - yDest * 2.0f / m_height;
   prcfOut->bottom = 1.0f - (yDest + hDest) * 2.0f / m_height;
 }
 void GpuLayer::CalcDrawDestRect(float xDest, float yDest, float wDest,
-                                      float hDest, /*__out*/ RECTF *prcfOut) {
+                                float hDest, /*__out*/ RECTF *prcfOut) {
   prcfOut->left = xDest * 2.0f / m_width - 1.0f;
   prcfOut->right = (xDest + wDest) * 2.0f / m_width - 1.0f;
   prcfOut->top = 1.0f - yDest * 2.0f / m_height;

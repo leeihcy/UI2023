@@ -29,6 +29,7 @@ enum class PaintOpType : unsigned char {
   Clear,
   DrawRect,
   DrawString,
+  DrawBitmap,
   CreateSwapChain,
   SwapChain,
   DumpToImage,
@@ -134,6 +135,14 @@ struct DrawStringOp : public PaintOp {
   float x; // SkScalar
   float y;
   // PaintFlags flags;
+};
+
+struct DrawBitmapOp : public PaintOp {
+  DrawBitmapOp(std::shared_ptr<IRenderBitmap> _bitmap, DRAWBITMAPPARAM *_param)
+      : PaintOp(PaintOpType::DrawBitmap), bitmap(_bitmap), param(*_param) {}
+
+  std::shared_ptr<IRenderBitmap> bitmap;
+  DRAWBITMAPPARAM param;
 };
 
 struct DumpToImageOp : public PaintOp {

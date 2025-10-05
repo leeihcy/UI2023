@@ -81,7 +81,7 @@ bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
 void RecordRenderTarget::DumpToImage(const char *path) {
   addPaintOp(std::move(std::make_unique<DumpToImageOp>(path)));
 }
-void RecordRenderTarget::Upload2Gpu(IGpuLayer *p, Rect *prcArray, int nCount,
+void RecordRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
                                     float scale) {
   addPaintOp(std::move(std::make_unique<Upload2GpuOp>()));
 }
@@ -127,9 +127,10 @@ void RecordRenderTarget::Render2Target(IRenderTarget *pDst,
 void RecordRenderTarget::DrawRect(const Rect &rect, const Color &color) {
   addPaintOp(std::move(std::make_unique<DrawRectOp>(rect, color)));
 }
-void RecordRenderTarget::DrawBitmap(IRenderBitmap *hBitmap,
-                                    DRAWBITMAPPARAM *pParam) {
-  assert(false);
+void RecordRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
+                                    DRAWBITMAPPARAM *param) {
+  // TODO: 支持多线程！
+  addPaintOp(std::move(std::make_unique<DrawBitmapOp>(bitmap, param)));
 }
 
 std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,

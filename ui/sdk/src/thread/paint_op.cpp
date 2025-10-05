@@ -1,5 +1,6 @@
 #include "src/thread/paint_op.h"
 #include "include/interface/renderlibrary.h"
+#include "paint_op.h"
 #include "src/message_loop/message_loop.h"
 
 namespace ui {
@@ -64,6 +65,11 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
     rt->_DrawString2(param->blob.get(), param->color, param->x, param->y);
     break;
   }
+  case ui::PaintOpType::DrawBitmap: {
+    auto param = static_cast<DrawBitmapOp*>(op);
+    rt->DrawBitmap(param->bitmap, &param->param);
+    break;
+  };
   case PaintOpType::CreateSwapChain: {
     rt->CreateSwapChain(static_cast<CreateSwapChainOp*>(op)->is_hardware);
     break;

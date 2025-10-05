@@ -149,20 +149,21 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
       param.wSrc = m_render_bitmap->GetWidth();
       param.hSrc = m_render_bitmap->GetHeight();
     }
-    if (!m_Region.IsAll_0())
-      param.pRegion = &m_Region;
+    if (!m_Region.IsAll_0()) {
+      param.nine_region = m_Region;
+    }
     param.nAlpha = (byte)m_nAlpha;
 
     if (pDrawStruct->nState & RENDER_STATE_DISABLE) {
       param.nFlag |= DRAW_BITMAP_DISABLE;
     }
 
-    if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
-      param.prcRealDraw = &rcRealDraw;
-    }
+    // if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
+    //   param.prcRealDraw = &rcRealDraw;
+    // }
 
     param.scale_factor = ScaleFactorHelper::GetObjectScaleFactor(m_pObject);
-    pDrawStruct->pRenderTarget->DrawBitmap(m_render_bitmap.get(), &param);
+    pDrawStruct->pRenderTarget->DrawBitmap(m_render_bitmap, &param);
   }
 
   // if (m_pColorBk && m_eBkColorFillType == BKCOLOR_FILL_EMPTY) {
@@ -537,8 +538,9 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   param.hDest = prc->Height();
   param.wSrc = m_image_list->GetItemWidth();
   param.hSrc = m_image_list->GetItemHeight();
-  if (!m_9Region.IsAll_0())
-    param.pRegion = &m_9Region;
+  if (!m_9Region.IsAll_0()) {
+    param.nine_region = m_9Region;
+  }
   param.nAlpha = bAlpha;
 
   Point pt = {0, 0};
@@ -555,7 +557,7 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   // 		param.xSrc = 0;
   // 		param.ySrc = nIndex*m_nItemHeight;
   // 	}
-  pRenderTarget->DrawBitmap(m_image_list.get(), &param);
+  pRenderTarget->DrawBitmap(m_image_list, &param);
 }
 
 void ImageListRender::GetDesiredSize(Size *pSize) {

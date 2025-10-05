@@ -38,11 +38,6 @@ void MessageLoopPlatformWin::Initialize(MessageLoop *p) {
 
 
 #if defined(OS_WIN)
-  // 获取操作系统版本信息
-  // ZeroMemory(&m_osvi, sizeof(OSVERSIONINFOEX));
-  // m_osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-  // GetVersionEx((OSVERSIONINFO *)&m_osvi);
-
   // 设置当前语言。主要是用于 strcoll
   // 中文拼音排序(如：combobox排序)(TODO:这一个是不是需要作成一个配置项？) libo
   // 2017/1/20 在Win10上面调用这个函数会导致内容提交大小增加2M，原因未知。先屏蔽
@@ -257,13 +252,18 @@ void MessageLoopPlatformWin::Run(bool *quit_ref) {
 //     m_animate->OnTick();
 // }
 
+
+void MessageLoopPlatformWin::onTimer(UINT_PTR timer_id) {
+  m_message_loop->OnTimer((TimerID)timer_id);
+}
+
 TimerID MessageLoopPlatformWin::CreateTimer(int interval) {
-  assert(false && _T("TODO"));
-  return (TimerID)nullptr;
+  UINT_PTR timer_id = ::SetTimer(m_WndForwardPostMsg.GetHWnd(), -1, interval, NULL);
+  return (TimerID)timer_id;
 }
 
 void MessageLoopPlatformWin::DestroyTimer(TimerID timeri_id) {
-  assert(false && _T("TODO"));
+  ::KillTimer(m_WndForwardPostMsg.GetHWnd(), (UINT_PTR)timeri_id);
 }
 
 void MessageLoopPlatformWin::OnAnimateTimer() {

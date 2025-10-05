@@ -228,8 +228,5 @@ protected:
   float m_xTranslate;        // 设置的值
   float m_yTranslate;        // 设置的值
   float m_zTranslate;        // 设置的值
-
-   // 硬件合成
-  IGpuLayer *m_gpu_texture = nullptr;
 };
 } // namespace ui

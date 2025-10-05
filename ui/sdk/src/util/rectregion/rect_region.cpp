@@ -174,7 +174,7 @@ bool RectRegion::Contains(const RectRegion& region) const {
     return true;
   }
 
-  for (int i = 0; i < region.m_count; i++) {
+  for (unsigned int i = 0; i < region.m_count; i++) {
     const Rect& rect = region.RectPtr2()[i];
     if (!Contains(rect)) {
       return false;

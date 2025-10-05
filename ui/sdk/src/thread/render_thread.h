@@ -16,6 +16,10 @@
 namespace ui {
 class Window;
 
+//
+// 1. 对render target的渲染操作
+// 2. TODO: 图片文件资源的加载
+//
 class RenderThread {
 public:
   RenderThread();
