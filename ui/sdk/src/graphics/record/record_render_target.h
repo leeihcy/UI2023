@@ -31,7 +31,7 @@ public:
   void ClipRoundRect(const Rect& rect, int radius) override;
   void ClipRect(const Rect& rect) override;
 
-  void CreateSwapChain(bool is_hardware) override;
+  void CreateSwapChain(bool is_hardware, IGpuCompositor*) override;
   bool SwapChain(slot<void()>&& callback) override;
 
   void DumpToImage(const char *szPath) override;

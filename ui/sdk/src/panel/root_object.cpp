@@ -70,6 +70,7 @@ void RootObject::onWindowCreate() {
   // 窗口加载即将完成，在内部调用所有
   // recursion_on_load_notify(this);
 }
+
 void RootObject::syncWindowSize() {
   Rect rc_client;
   m_window->m_platform->GetClientRect(&rc_client);

@@ -37,11 +37,9 @@ public:
   END_MSG_MAP()
 
   LRESULT OnCreate(UINT, WPARAM, LPARAM, BOOL &) {
-    ui::IGpuCompositor *m_gpu_composition =
-        ui::CreateGpuComposition(static_cast<ui::IGpuCompositorWindow *>(this));
-
+    // this的生命周期如何控制？
     ::PostMessage(g_render_hwnd, WM_RENDER_CREATECOMPOSITOR, (WPARAM)m_hWnd,
-                  (LPARAM)m_gpu_composition);
+                  (LPARAM)static_cast<ui::IGpuCompositorWindow *>(this));
     return 0;
   }
   LRESULT OnDestroy(UINT, WPARAM, LPARAM, BOOL &) {
@@ -89,8 +87,9 @@ public:
     return 0;
   }
   LRESULT OnCreateCompositor(UINT, WPARAM, LPARAM lParam, BOOL &) {
-    m_gpu_composition = (ui::IGpuCompositor *)lParam;
-    m_gpu_composition->Resize(100, 100);  // default setting.
+    m_gpu_composition =
+        ui::CreateGpuComposition((ui::IGpuCompositorWindow *)lParam);
+    m_gpu_composition->Resize(100, 100); // default setting.
     BuildLayers();
 
     SetTimer(0, 16, 0);

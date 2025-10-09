@@ -174,6 +174,8 @@ struct IGpuLayer {
 extern "C" {
 UIGPUAPI bool GpuStartup();
 UIGPUAPI void GpuShutdown();
+UIGPUAPI bool IsGpuStartup();
+
 UIGPUAPI IGpuCompositor *CreateGpuComposition(IGpuCompositorWindow*);
 UIGPUAPI void GpuUnitTest();
 }

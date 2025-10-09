@@ -70,8 +70,8 @@ void RecordRenderTarget::ClipRect(const Rect &rect) {
   addPaintOp(std::move(std::make_unique<ClipRectOp>(rect)));
 }
 
-void RecordRenderTarget::CreateSwapChain(bool is_hardware) {
-  addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware)));
+void RecordRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) {
+  addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware, gpu_compositor)));
 }
 bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
   addPaintOp(std::move(std::make_unique<SwapChainOp>(std::move(callback))));

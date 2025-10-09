@@ -1,4 +1,5 @@
 #include "gpu/include/api.h"
+#include <atomic>
 #if defined(ENABLE_D3D10)
 #include "d3d10/d3d10_compositor.h"
 #include "d3d10/d3d10_app.h"
@@ -142,12 +143,15 @@ UIGPUAPI IGpuCompositor *CreateGpuComposition(IGpuCompositorWindow* window) {
   return p.release();
 }
 
+static std::atomic_bool g_startup = false;
+
 UIGPUAPI bool GpuStartup() {
 #if defined(ENABLE_D3D10)
-  return D3D10App::Startup();
+  g_startup = D3D10App::Startup();
 #else
-  return VulkanApplication::Get().Startup();
+  g_startup = VulkanApplication::Get().Startup();
 #endif
+  return g_startup;
 }
 
 UIGPUAPI void GpuShutdown() {
@@ -156,6 +160,10 @@ UIGPUAPI void GpuShutdown() {
 #else
   VulkanApplication::Get().Shutdown();
 #endif
+}
+
+UIGPUAPI bool IsGpuStartup() {
+  return g_startup;
 }
 
 #if defined(ENABLE_D3D10) // TODO:

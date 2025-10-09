@@ -48,7 +48,7 @@ public:
   bool IsWindowVisible() override;
   void Show(bool activate) override;
   void Hide() override;
-  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) override;
+  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) override;
 
 protected:
   // IGpuCompositorWindowNSView

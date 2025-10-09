@@ -42,6 +42,7 @@ enum class PaintOpType : unsigned char {
 
   // post command for thread
   PostCommandStart,
+  AsyncTask,
   RemoveKey,
   PostCommandEnd,
 };
@@ -54,6 +55,9 @@ struct PaintOp {
   PaintOpType type;
 };
 
+struct RenderCommand : public PaintOp {
+  RenderCommand(PaintOpType t) : PaintOp(t) {}
+};
 
 struct BeginDrawOp : public PaintOp {
 public:
@@ -152,10 +156,11 @@ struct DumpToImageOp : public PaintOp {
 };
 
 struct CreateSwapChainOp : public PaintOp {
-  CreateSwapChainOp(bool _is_hardware)
-      : PaintOp(PaintOpType::CreateSwapChain), is_hardware(_is_hardware){ }
+  CreateSwapChainOp(bool _is_hardware, IGpuCompositor* _compositor)
+      : PaintOp(PaintOpType::CreateSwapChain), is_hardware(_is_hardware), compositor(_compositor){ }
 
   bool is_hardware;
+  IGpuCompositor* compositor;
 };
 
 struct SwapChainOp : public PaintOp {
@@ -175,6 +180,13 @@ struct RenderOnThreadOp : public PaintOp {
       : PaintOp(PaintOpType::RenderOnThread), callback(std::move(_callback)) {}
 
   slot<void(IRenderTarget *)> callback;
+};
+
+struct AsyncTaskCommand : public PaintOp {
+  AsyncTaskCommand(slot<void()> &&_callback)
+    : PaintOp(PaintOpType::AsyncTask), callback(std::move(_callback)) {}
+
+  slot<void()> callback;
 };
 
 } // namespace ui

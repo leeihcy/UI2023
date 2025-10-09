@@ -71,7 +71,8 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
     break;
   };
   case PaintOpType::CreateSwapChain: {
-    rt->CreateSwapChain(static_cast<CreateSwapChainOp*>(op)->is_hardware);
+    rt->CreateSwapChain(static_cast<CreateSwapChainOp *>(op)->is_hardware,
+                        static_cast<CreateSwapChainOp *>(op)->compositor);
     break;
   }
   case PaintOpType::SwapChain: {

@@ -1,13 +1,11 @@
 #include "layer.h"
-#include "compositor.h"
+#include "windowrender.h"
 #include "gpu/include/api.h"
 #include "include/common/math/math.h"
-#include "include/inc.h"
-#include "include/interface/imeta.h"
+#include "layer_sync_op.h"
 #include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
-#include "src/layer/hardware_compositor.h"
 #include "src/object/object.h"
 #include "src/object/object_layer.h"
 #include <memory>
@@ -25,9 +23,13 @@ enum LAYER_ANIMATE_TYPE {
   STORYBOARD_ID_SCALE,
 };
 
+static LAYERID s_layerid = 0;
+
 Layer::Layer(LayerType type) : m_iLayer(this), m_type(type) {
   m_pCompositor = nullptr;
   m_pRenderTarget = nullptr;
+
+  m_layer_id = ++s_layerid;
 
   m_pParent = nullptr;
   m_pFirstChild = nullptr;
@@ -65,7 +67,7 @@ Layer::~Layer() {
     m_pLayerContent->OnLayerDestory();
   }
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
   if (pAni) {
     pAni->ClearStoryboardByNotify(
         static_cast<uia::IAnimateEventCallback *>(this));
@@ -80,12 +82,6 @@ Layer::~Layer() {
   //         m_pFirstChild = m_pFirstChild->m_pNext;
   //         delete p;
   //     }
-
-  if (m_pCompositor) {
-    if (m_pCompositor->GetRootLayer() == this) {
-      m_pCompositor->SetRootLayer(0);
-    }
-  }
 
   SAFE_RELEASE(m_pRenderTarget);
 
@@ -104,7 +100,7 @@ void Layer::Serialize(SerializeParam *param) {
       ->AsData();
 }
 
-void Layer::SetCompositorPtr(Compositor *p) { m_pCompositor = p; }
+void Layer::SetWindowRender(WindowRender *p) { m_pCompositor = p; }
 
 // bUpdateNow -- 场景：如果是阻塞型的动画，则要立即刷新
 void Layer::InvalidateForLayerAnimate(bool bUpdateNow) {
@@ -197,11 +193,27 @@ bool Layer::AddSubLayer(Layer *pLayer, Layer *pInsertBeforeChild) {
 
   pLayer->m_pParent = this;
 
-  on_layer_tree_changed();
+  LayerTreeSyncOperation op;
+  op.type = LayerTreeSyncOpType::Add;
+  op.id = pLayer->m_layer_id;
+  op.parent_id = m_layer_id;
+  if (pInsertBeforeChild) {
+    op.next_id = pInsertBeforeChild->m_layer_id;
+  }
+
+  on_layer_tree_changed(op);
+  
   return true;
 }
 
 void Layer::RemoveMeInTheTree() {
+  LayerTreeSyncOperation op;
+  op.type = LayerTreeSyncOpType::Remove;
+  op.id = m_layer_id;
+  if (m_pParent) {
+    op.parent_id = m_pParent->m_layer_id;
+  }
+  
   if (m_pPrev) {
     m_pPrev->m_pNext = m_pNext;
   } else {
@@ -215,6 +227,8 @@ void Layer::RemoveMeInTheTree() {
   m_pParent = nullptr;
   m_pPrev = nullptr;
   m_pNext = nullptr;
+  
+  on_layer_tree_changed(op);
 }
 
 void Layer::MoveLayer2NewParentEnd(Layer *pOldParent, Layer *pNewParent) {
@@ -227,18 +241,13 @@ void Layer::MoveLayer2NewParentEnd(Layer *pOldParent, Layer *pNewParent) {
 void Layer::SetContent(ILayerContent *p) { m_pLayerContent = p; }
 ILayerContent *Layer::GetContent() { return m_pLayerContent; }
 
-void Layer::on_layer_tree_changed() {
+void Layer::on_layer_tree_changed(LayerTreeSyncOperation &op) {
   UIASSERT(m_pCompositor);
-
-  Layer *pRootLayer = this;
-
-  while (pRootLayer && pRootLayer->m_pParent) {
-    pRootLayer = pRootLayer->m_pParent;
+  if (Config::GetInstance().enable_render_thread) {
+    RenderThread::GetIntance().main.AddTask(
+        ui::Slot(&WindowRenderRT::OnLayerTreeChanged,
+                 m_pCompositor->m_rt->m_factory.get(), op));
   }
-  while (pRootLayer && pRootLayer->m_pPrev) {
-    pRootLayer = pRootLayer->m_pPrev;
-  }
-  m_pCompositor->SetRootLayer(pRootLayer);
 }
 
 Layer *Layer::GetNext() { return m_pNext; }
@@ -285,7 +294,7 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
 
   // 开启隐式动画
   if (pParam) {
-    uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+    uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
     pAni->RemoveStoryboardByNotityAndId(
         static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_OPACITY);
@@ -336,7 +345,7 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
 
   m_fyRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_YROTATE);
@@ -387,7 +396,7 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
 
   m_fxRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_XROTATE);
@@ -438,7 +447,7 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
 
   m_fzRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_ZROTATE);
@@ -488,7 +497,7 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
   m_fxScale = x;
   m_fyScale = y;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_SCALE);
@@ -547,7 +556,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
   m_yTranslate = y;
   m_zTranslate = z;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_TRANSLATE);
@@ -759,7 +768,7 @@ Object *Layer::GetLayerContentObject() {
 
 // 本类中所有的创建动画都走这里，用于数量统计
 uia::IStoryboard *Layer::create_storyboard(int id) {
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication()->GetAnimate();
+  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
 
   uia::IStoryboard *pStoryboard = pAni->CreateStoryboard(
       static_cast<uia::IAnimateEventCallback *>(this), id);
@@ -802,9 +811,7 @@ void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
   // 绕自身中心旋转时，需要知道这个对象在屏幕中的位置，然后才能计算出真正的旋转矩阵。
   // 因此每次使用前设置一次。
   m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
-
-  assert(false && "TODO");
-#if 0 
+#if 0
   if (!m_transfrom3d.is_identity()) {
     MATRIX44 mat;
     m_transfrom3d.get_matrix(&mat);

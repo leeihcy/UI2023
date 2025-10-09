@@ -1,8 +1,8 @@
-#include "include/common/ptr/weak_ptr.h"
+#include "render_thread.h"
+#include "src/application/config/config.h"
 #include "src/thread/paint_op.h"
 #include "src/thread/render_thread.h"
-#include "include/util/rect_region.h"
-#include "src/window/window.h"
+#include <memory>
 
 namespace ui {
 
@@ -20,11 +20,31 @@ void RenderThread::Main::Stop() {
 }
 
 void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
+  bool is_command = paint_op->type >= PaintOpType::PostCommandStart;
+
   std::lock_guard<std::mutex> lock(self.m_paint_op_queue_mutex);
   self.m_paint_op_queue.push_back(std::move(paint_op));
+
+  if (is_command) {
+    Notify();
+  }
 }
 
-void RenderThread::Main::Notify() { self.m_command_cv.notify_one(); }
+void RenderThread::Main::AddTask(slot<void()> &&callback) {
+  AddPaintOp(std::make_unique<AsyncTaskCommand>(std::move(callback)));
+}
+
+// 如果启用子多线程渲染，则在render thread上执行。如果没启用，直接执行。
+// static 
+void RenderThread::Main::PostTask(slot<void()> &&callback) {
+  if (Config::GetInstance().enable_render_thread) {
+    RenderThread::GetIntance().main.AddTask(std::move(callback));
+  } else {
+    callback.emit();
+  }
+}
+
+void RenderThread::Main::Notify() { self.m_command_wait.notify_one(); }
 
 bool RenderThread::Main::GetFrontFrameBuffer(void *key, FrameBufferWithReadLock* frame_buffer) {
   return ((SkiaRenderTarget*)key)->GetFrontFrameBuffer(frame_buffer);

@@ -265,7 +265,7 @@ void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 // CGContextDrawImage 属于 Core Graphics (Quartz)，
 // 它不关心 NSView 的翻转状态，始终按照 左下角原点 绘制。
 // 
-void WindowPlatformMac::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) {
+void WindowPlatformMac::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
 int client_width = m_window.contentView.bounds.size.width;
   int client_height = m_window.contentView.bounds.size.height;
 
@@ -275,6 +275,7 @@ int client_width = m_window.contentView.bounds.size.width;
   if (!context) {
     for (int i = 0; i < dirty_region.Count(); i++) {
       const ui::Rect& recti = dirty_region.RectPtr2()[i];
+      m_ui_window.m_dpi.RestoreRect(&recti);
       NSRect rect = NSMakeRect(recti.left,
                                // 转换成左下角原点
                                client_height - recti.top - recti.height(),
@@ -308,7 +309,6 @@ int client_width = m_window.contentView.bounds.size.width;
   for (int i = 0; i < dirty_region.Count(); i++) {
     const ui::Rect &rc_dirty = dirty_region.RectPtr2()[i];
     Rect rc = rc_dirty;
-    m_ui_window.m_dpi.ScaleRect(&rc);
     // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 300);
 
 #if 1

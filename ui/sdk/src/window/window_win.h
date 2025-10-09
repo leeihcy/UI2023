@@ -63,7 +63,7 @@ public:
 
   // void Invalidate(const Rect *prect) override;
   // void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
-  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) override;
+  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) override;
 
   // dpi...
   int GetDpi();

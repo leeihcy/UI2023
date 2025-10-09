@@ -20,7 +20,7 @@ public:
   Debug debug;
 
   // 启用多线程渲染
-  bool enable_render_thread = true;
+  bool enable_render_thread = false;
 };
 
 }

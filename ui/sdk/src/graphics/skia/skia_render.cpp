@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "src/graphics/font/font.h"
+#include "src/layer/windowrender.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include "third_party/skia/src/include/core/SkCanvas.h"
 #include "third_party/skia/src/include/core/SkFont.h"
@@ -1105,18 +1106,15 @@ void SkiaRenderTarget::upload_2_gpu() {
 #endif
 }
 
-void SkiaRenderTarget::CreateSwapChain(bool is_hardware) {
+void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) {
   if (is_hardware) {
     if (!m_gpu_texture) {
-      assert(false && "TODO");
-#if 0
-      m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
-                          ->CreateGpuLayerTexture();
-      if (m_gpu_texture) {
+      m_gpu_texture = gpu_compositor->CreateLayerTexture();
+      if (m_gpu_texture && m_sksurface) {
         m_gpu_texture->Resize(m_sksurface->width(), m_sksurface->height());
       }
-#endif
     }
+    m_enable_hardware_backend = true;
   } else {
     if (!m_sksurface) {
       return;

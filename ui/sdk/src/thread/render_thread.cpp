@@ -1,18 +1,10 @@
 #include "src/thread/render_thread.h"
-#include "include/common/ptr/weak_ptr.h"
-#include "include/common/signalslot/slot.h"
-#include "include/interface/renderlibrary.h"
-#include "include/uiapi.h"
+#include "gpu/include/api.h"
 #include "include/util/log.h"
-#include "include/util/rect.h"
-#include "include/util/rect_region.h"
-#include "src/application/config/config.h"
 #include "src/graphics/record/record_render_target.h"
 #include "src/graphics/skia/skia_render.h"
-#include "src/message_loop/message_loop.h"
 #include "src/thread/paint_op.h"
 #include <mutex>
-#include <type_traits>
 #include <vector>
 
 #if defined(OS_WIN)
@@ -51,7 +43,7 @@ void RenderThread::thread_proc() {
   while (m_running) {
     if (m_paint_op_group.empty()) {
       std::unique_lock<std::mutex> lock(m_paint_op_queue_mutex);
-      m_command_cv.wait(
+      m_command_wait.wait(
           lock, [this] { return !m_paint_op_queue.empty() || !m_running; });
       if (!m_running) {
         break;

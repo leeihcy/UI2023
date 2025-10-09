@@ -2,6 +2,7 @@
 #define _UI_SDK_SRC_THREAD_RENDER_THREAD_H_
 
 #include "include/common/ptr/weak_ptr.h"
+#include "include/common/signalslot/signal.h"
 #include "include/interface/iuiapplication.h"
 #include "include/interface/renderlibrary.h"
 #include "src/thread/paint_op.h"
@@ -15,6 +16,7 @@
 
 namespace ui {
 class Window;
+class WindowRenderRT;
 
 //
 // 1. 对render target的渲染操作
@@ -35,6 +37,8 @@ public:
 
     void AddPaintOp(std::unique_ptr<PaintOp> &&op);
     void Notify();
+    void AddTask(slot<void()> &&callback);
+    static void PostTask(slot<void()> &&callback);
 
     void SwapChain(void *key, Window *window, DirtyRegion dirty_region);
     void on_swap_chain(void *key, const DirtyRegion& dirty_region);
@@ -59,6 +63,7 @@ private:
   std::thread m_thread;
 
 private:
+  // paint/render操作队列。
   // 主线程写，渲染线程读
   std::vector<std::unique_ptr<PaintOp>> m_paint_op_queue;
   std::mutex m_paint_op_queue_mutex;
@@ -76,15 +81,10 @@ private:
     std::vector<std::unique_ptr<PaintOp>> ops;
   };
   std::deque<std::unique_ptr<PaintOpGroup>> m_paint_op_group;
+  std::condition_variable m_command_wait;
 
-  std::condition_variable m_command_cv;
-
-  std::map<void*, IRenderTarget*> m_surface_map_uithread;
-
-  // 前台帧缓存，用于主线程提交到窗口上。
-  // 主线程读，渲染线程读+写。使用共享读+写锁。
-  // std::map<void *, FrameBuffer> m_frame_buffer_map;
-  // std::shared_mutex m_frame_buffer_rw_mutex; // commit|swap chain
+  // 窗口列表
+  std::map<void*, std::shared_ptr<WindowRenderRT>> m_map_window_render;
 
   // 跳线程使用
   weakptr_factory<RenderThread> m_weakptr_factory = {this};

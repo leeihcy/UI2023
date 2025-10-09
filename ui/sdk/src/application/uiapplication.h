@@ -103,9 +103,6 @@ public:
 
 public:
 private:
-  // gpu合成总开关
-  bool m_bGpuEnable = false;
-
   typedef std::map<std::string, pfnParseSkinTag> UISKINTAGPARSE_DATA;
   typedef std::map<std::string, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
 

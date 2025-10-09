@@ -7,6 +7,11 @@ struct Size;
 
 enum WindowScalePolicy { Raw, System, Force };
 
+enum class CoordUnit {
+ dip, // 逻辑坐标
+ px,  // 物理坐标
+};
+
 class WindowDPI {
 public:
   WindowDPI();

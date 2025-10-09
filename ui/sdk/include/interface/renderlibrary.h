@@ -21,6 +21,7 @@ struct Point;
 struct Size;
 struct LOGFONT;
 struct FontDesc;
+struct IGpuCompositor;
 
 // 绘制图片的统一参数，避免需要重写多个DrawBitmap函数
 enum DRAW_BITMAP_FLAG {
@@ -310,7 +311,7 @@ struct IRenderTarget : public IClipOrigin {
   virtual void ClipRoundRect(const Rect& rect, int radius) = 0;
   virtual void ClipRect(const Rect& rect) = 0;
 
-  virtual void CreateSwapChain(bool is_hardware) = 0;
+  virtual void CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) = 0;
   virtual bool SwapChain(slot<void()>&& callback) = 0;
   virtual void Upload2Gpu(Rect *prcArray, int nCount,
                           float scale) = 0;

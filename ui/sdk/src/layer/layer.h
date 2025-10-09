@@ -3,45 +3,15 @@
 #include "include/macro/uidefine.h"
 #include "include/util/rect_region.h"
 #include "transform3d.h"
+#include "layer_sync_op.h"
+#include "windowrender.h"
 
 namespace ui {
 class Object;
-class Compositor;
+class WindowRender;
 class GpuLayerCommitContext;
 struct IGpuLayer;
 } // namespace ui
-
-// 2016.6.4 重写渲染机制
-// 默认以支持硬件加载为基础，然后兼容软件渲染
-//
-// 每个layer将对应一个显存上的纹理，用于最后硬件合成
-//
-// layer不依赖于object，可以单独存在。object与渲染无直接关系，只是用于
-// 提供layer的数据以及鼠标键盘消息等
-
-// http://ariya.ofilabs.com/2013/06/optimizing-css3-for-gpu-compositing.html
-// To minimize the amount of texture uploads, you can only animate or
-// transition the following properties: opacity, transform, and filter.
-// Anything else may trigger a layer update.
-// 什么样的动画不需要上传数据到gpu: 修改透明度、变换、滤镜??
-// 变换背景颜色是不行的，需要重新上传背景图，例如http://codepen.io/ariya/full/xuwgy
-// 这种动画就会很卡。这种动画可以通过用两个颜色叠加来改善，并不断改变其中一个的透明度
-
-// https://wiki.mozilla.org/Gecko:Layers
-// Scrolling
-// What should we do to scroll?
-// Bas: Use a tile cache.
-//
-// 问题：layer也要受限于父object的区域限制，例如listitem的layer永远要在listctrl里面，
-//       但listctrl不一定开启了layer。所以将layer作为一级渲染会存在这个问题。
-// 在 Compositor 的时候，如果需要剪裁这个子layer，则需要用parent object
-// rect来调用clip
-//
-//
-//
-// 问题. root layer从哪里来？
-// 每创建一个layer时，都去遍历出整棵layer tree的第一个结点作为root layer
-//
 
 namespace ui {
 
@@ -112,7 +82,7 @@ public:
   void Serialize(SerializeParam* param);
 
   ILayer *GetILayer();
-  void SetCompositorPtr(Compositor *);
+  void SetWindowRender(WindowRender *);
 
   IRenderTarget *GetRenderTarget();
 
@@ -184,15 +154,17 @@ protected:
   void upload_2_gpu();
   
 private:
-  void on_layer_tree_changed();
+  void on_layer_tree_changed(LayerTreeSyncOperation& op);
   uia::IStoryboard *create_storyboard(int id);
 
 protected:
   ILayer m_iLayer;
-  Compositor *m_pCompositor;
+  WindowRender *m_pCompositor;
   LayerType m_type;
 
   IRenderTarget *m_pRenderTarget;
+  
+  LAYERID m_layer_id = 0;
 
   // Layer Tree
   Layer *m_pParent;

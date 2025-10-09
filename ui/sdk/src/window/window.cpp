@@ -334,23 +334,13 @@ void Window::postCreate(CreateWindowParam &param) {
 #endif
   // 防止在实现显示动画时，先显示了一些初始化中刷新的内容。
   // 注：不能只限制一个layer
-  
-  {
-    m_window_style.initialized = 1;
 
-    GetRootObject().onWindowCreate();
-    m_platform->PostCreate();
-  }
-#if 0
-  if (m_pCallbackProxy) {
-    m_pCallbackProxy->DoBindPlz(true);
-  }
-  if (m_pCallbackProxy) {
-    m_pCallbackProxy->OnWindowInit();
-  }
-#endif
+  m_window_style.initialized = 1;
 
   m_window_render.onWindowCreated();
+  GetRootObject().onWindowCreate();
+  m_platform->PostCreate();
+
   m_window_render.SetCanCommit(true);
  
 #if 0

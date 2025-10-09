@@ -9,9 +9,7 @@
 #include "src/control/text/text_meta.h"
 #include "src/graphics/record/record_render_target.h"
 #include "src/panel/panel_meta.h"
-#include "src/private_inc.h"
 #include "src/resource/colormanager.h"
-#include "src/resource/fontmanager.h"
 #include "src/resource/i18nmanager.h"
 #include "src/resource/imagemanager.h"
 #include "src/resource/layoutmanager.h"
@@ -21,7 +19,9 @@
 #include "src/window/window_meta.h"
 #include "ui/gpu/include/api.h"
 #include <cstddef>
-#include <memory>
+#include <cstdio>
+#include <cstdlib>
+#include <utility>
 
 #if !defined(OS_WIN)
 #include <libgen.h> // dirname
@@ -120,9 +120,6 @@ void Application::x_Init() {
 
     m_ToolTipMgr.Init(this);
 #endif
-
-  m_bGpuEnable = false;
-  // EnableGpuComposite();
 
   // 先初始化DPI设置，要不然在其它模块在初始化时，直接调用GetDC取到的DPI还是正常值96。
   GetDpi();
@@ -492,64 +489,27 @@ HMODULE  Application::GetUID3DModule()
 }
 #endif
 
-bool Application::IsGpuCompositeEnable() { return m_bGpuEnable; }
+bool Application::IsGpuCompositeEnable() { return ui::IsGpuStartup(); }
 bool Application::EnableGpuComposite() {
-  if (m_bGpuEnable)
+  if (ui::IsGpuStartup())
     return true;
-#if defined(OS_WIN)
-  if (!IsVistaOrWin7etc()) {
-    UI_LOG_ERROR(TEXT("EnableGpuComposite Failed. OS Version mistake"));
-    return false;
-  }
 
-  HMODULE hModule = LoadLibrary(L"uigpu.dll");
-  if (!hModule) {
-    UI_LOG_ERROR(TEXT("LoadLibrary UICompositor Failed. Error=%d"),
-                 GetLastError());
-    return false;
-  }
+  ui::Slot<void()> func([]() {
+    if (!ui::GpuStartup()) {
+      UI_LOG_ERROR("GpuStartup Failed");
+    }
+  });
+  RenderThread::Main::PostTask(std::move(func));
 
-  typedef bool (*pfnUIStartupGpuCompositor)();
-  pfnUIStartupGpuCompositor fn =
-      (pfnUIStartupGpuCompositor)::GetProcAddress(hModule, "GpuStartup");
-
-  if (!fn) {
-    UI_LOG_ERROR(TEXT("UIStartupGpuCompositor Failed"));
-    return false;
-  }
-
-  m_bGpuEnable = fn();
-  UI_LOG_INFO("GpuCompositor Enable.");
-#else
-  m_bGpuEnable = ui::GpuStartup();
-#endif
-  if (!m_bGpuEnable) {
-    UI_LOG_WARN("gpu startup failed!");
-  }
   return true;
 }
 
 void Application::ShutdownGpuCompositor() {
-  if (!m_bGpuEnable)
+  if (!ui::IsGpuStartup())
     return;
 
-#if defined(OS_WIN)
-  HMODULE hModule = GetModuleHandle(L"uigpu.dll");
-  if (!hModule)
-    return;
-
-  typedef long (*pfnUIShutdownGpuCompositor)();
-  pfnUIShutdownGpuCompositor fn =
-      (pfnUIShutdownGpuCompositor)::GetProcAddress(hModule, "GpuShutdown");
-
-  if (!fn)
-    return;
-
-  fn();
-#else
-  ui::GpuShutdown();
-#endif
-  m_bGpuEnable = false;
+  ui::Slot<void()> func(&ui::GpuShutdown);
+  RenderThread::Main::PostTask(std::move(func));
 }
 
 void Application::LoadUIObjectListToToolBox() {

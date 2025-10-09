@@ -600,11 +600,11 @@ void Render2DC(/*HDC*/ llong _hDC,
 }
 #endif // TODO:
 
-void WindowPlatformWin::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region) {
+// 脏区域已转换成了像素坐标。
+void WindowPlatformWin::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
   HDC hDC = GetDC(m_hWnd);
-  for (unsigned int i = 0; i < dirty_region.Count(); i++) {
-    Rect rcInWindow = dirty_region.RectPtr2()[i];
-    m_ui_window.m_dpi.ScaleRect(&rcInWindow);
+  for (unsigned int i = 0; i < dirty_region_px.Count(); i++) {
+    Rect rcInWindow = dirty_region_px.RectPtr2()[i];
 
     BITMAPINFO bmi;
     memset(&bmi, 0, sizeof(bmi));
@@ -762,6 +762,7 @@ LRESULT WindowPlatformWin::_OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
   if (0 == wParam) {
     hDC = ::BeginPaint(this->m_hWnd, &ps);
+    // 注：这是物理像素坐标！
     rcInvalid = ps.rcPaint;
 
     if (IsRectEmpty(&rcInvalid) &&
