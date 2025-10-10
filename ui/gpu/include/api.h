@@ -57,7 +57,6 @@ struct IGpuCompositorWindowX11 : public IGpuCompositorWindow {
 
 struct IGpuCompositor {
   virtual ~IGpuCompositor() {}
-  virtual void Release() = 0;
   virtual std::shared_ptr<IGpuLayer> CreateLayerTexture() = 0;
 
   virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
@@ -154,8 +153,6 @@ inline void GpuLayerCommitContext::MultiAlpha(unsigned char alpha) {
 }
 
 struct IGpuLayer {
-  virtual void Release() = 0;
-
 #if 0
 	void  Translation(float xPos, float yPos, float zPos);
 	void  TranslationBy(float xPos, float yPos, float zPos);
@@ -172,14 +169,21 @@ struct IGpuLayer {
 
 // extern "C" UICOMPOSITOR_API IRenderLayerTransform2*  CreateHard3DTransform();
 
+enum GPU_STARTUP_STATE {
+  NOT_START = -2,
+  STARTING = -1,
+  START_FAILED = 0,
+  STARTED = 1
+};
+
 extern "C" {
 UIGPUAPI bool GpuStartup();
 UIGPUAPI void GpuShutdown();
-UIGPUAPI bool IsGpuStartup();
-
-UIGPUAPI IGpuCompositor *CreateGpuComposition(IGpuCompositorWindow*);
+UIGPUAPI GPU_STARTUP_STATE GetGpuStartupState();
 UIGPUAPI void GpuUnitTest();
 }
+UIGPUAPI std::shared_ptr<IGpuCompositor> CreateGpuComposition(IGpuCompositorWindow*);
+
 
 } // namespace ui
 

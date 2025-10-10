@@ -84,8 +84,8 @@ public:
   void LoadUIObjectListToToolBox();
 
   // gpu
-  bool IsGpuCompositeEnable();
-  bool EnableGpuComposite();
+  bool IsHardwareCompositeEnable();
+  bool EnableHardwareComposite();
   void ShutdownGpuCompositor();
 
 #if 0

@@ -34,6 +34,9 @@ static void set_thread_name(const char *name) {
 void RenderThread::process_command(PaintOp *op) {
   if (op->type == PaintOpType::RemoveKey) {
     remove_key(op->key);
+  } else if (op->type == PaintOpType::AsyncTask) {
+    AsyncTaskCommand* command = static_cast<AsyncTaskCommand*>(op);
+    command->callback.emit();
   }
 }
 

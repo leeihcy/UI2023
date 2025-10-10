@@ -703,7 +703,7 @@ void Object::SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags) 
   Window *pWindow = this->GetWindow();
   bool bHardComposite = false;
   if (pWindow)
-    bHardComposite = pWindow->IsGpuComposite();
+    bHardComposite = pWindow->IsHardwareComposite();
 
   // Rect rcOldVisibleRect = {0};
   if (bMove || bSize) {

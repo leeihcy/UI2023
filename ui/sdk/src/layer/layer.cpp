@@ -1,4 +1,6 @@
 #include "layer.h"
+#include "include/interface/renderlibrary.h"
+#include "src/thread/render_thread.h"
 #include "windowrender.h"
 #include "gpu/include/api.h"
 #include "include/common/math/math.h"
@@ -243,7 +245,7 @@ ILayerContent *Layer::GetContent() { return m_pLayerContent; }
 
 void Layer::on_layer_tree_changed(LayerTreeSyncOperation &op) {
   UIASSERT(m_window_render);
-  if (Config::GetInstance().enable_render_thread) {
+  if (Config::GetInstance().enable_render_thread || m_type == Layer_Hardware) {
     RenderThread::GetIntance().main.AddTask(
         ui::Slot(&WindowRenderRT::OnLayerTreeChanged,
                  m_window_render->m_rt->m_factory.get(), op));
@@ -699,12 +701,30 @@ void Layer::CopyDirtyRect(RectRegion *arr) {
   *arr = m_dirty_region;
 }
 
+static void InitLayerOnRT(LAYERID layer_id,
+                          std::shared_ptr<WindowRenderRT> widnow_render,
+                          bool is_hardware, IRenderTarget *render_target) {
+
+  if (Config::GetInstance().enable_render_thread || is_hardware) {
+    render_target->CreateSwapChain(is_hardware,
+                                   widnow_render->m_gpu_composition.get());
+  }
+  if (is_hardware) {
+    FrameBufferWithReadLock fb;
+    render_target->GetFrontFrameBuffer(&fb);
+    widnow_render->BindLayer(layer_id, fb.gpu_layer);
+  }
+}
+
 IRenderTarget *Layer::GetRenderTarget() {
   if (!m_pRenderTarget) {
     if (!m_window_render)
       return nullptr;
 
     m_window_render->CreateRenderTarget(&m_pRenderTarget);
+
+    bool is_hardware = m_type == Layer_Hardware;
+    m_pRenderTarget->RenderOnThread(ui::Slot(&InitLayerOnRT, m_layer_id, m_window_render->m_rt, is_hardware));
   }
   return m_pRenderTarget;
 }
@@ -775,51 +795,6 @@ uia::IStoryboard *Layer::create_storyboard(int id) {
 
   m_nCurrentStoryboardCount++;
   return pStoryboard;
-}
-
-void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
-  if (!m_pLayerContent)
-    return;
-
-  Rect rcWnd;
-  m_pLayerContent->GetWindowRect(&rcWnd);
-  if (rcWnd.IsEmpty())
-    return;
-
-  float scale = 1.0f;
-  if (m_pLayerContent) {
-    scale = m_pLayerContent->GetLayerScale();
-    rcWnd.Scale(scale);
-  }
-
-  pContext->SetOffset(rcWnd.left, rcWnd.top);
-
-  Rect rcParentWnd = {0};
-  if (m_bClipLayerInParentObj && m_window_render->GetRootLayer() != this) {
-    m_pLayerContent->GetParentWindowRect(&rcParentWnd);
-  } else {
-    m_window_render->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
-  }
-
-  rcParentWnd.Scale(scale);
-  pContext->SetClipRect(&rcParentWnd);
-
-  if (m_nOpacity_Render != 255) {
-    pContext->MultiAlpha(m_nOpacity_Render);
-  }
-
-  // 绕自身中心旋转时，需要知道这个对象在屏幕中的位置，然后才能计算出真正的旋转矩阵。
-  // 因此每次使用前设置一次。
-  m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
-#if 0
-  if (!m_transfrom3d.is_identity()) {
-    MATRIX44 mat;
-    m_transfrom3d.get_matrix(&mat);
-    m_gpu_texture->Compositor(pContext, (float *)&mat);
-  } else {
-    m_gpu_texture->Compositor(pContext, nullptr);
-  }
-#endif
 }
 
 void Layer::MapView2Layer(Point *pPoint) {
@@ -903,22 +878,37 @@ bool Layer::hardwareUpdateDirty() {
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
 
-  upload_2_gpu();
-
+  hardwareSyncLayerProperties();
   return true;
 }
 
-void Layer::upload_2_gpu() {
-  if (!m_pRenderTarget)
-    return;
+// 与LayerRT同步属性。
+void Layer::hardwareSyncLayerProperties() {
+  LayerTreeProperties properties;
+  properties.visible = m_pLayerContent->IsVisible();
+  m_pLayerContent->GetWindowRect(&properties.rect_in_window);
+  properties.dpi_scale = m_pLayerContent->GetLayerScale();
+  properties.opacity = m_nOpacity;
+  properties.m_fxRotate = m_fxRotate;
+  properties.m_fyRotate = m_fyRotate;
+  properties.m_fzRotate = m_fzRotate;
+  properties.m_fxScale = m_fxScale;
+  properties.m_fyScale = m_fyScale;
+  properties.m_xTranslate = m_fyScale;
+  properties.m_yTranslate = m_yTranslate;
+  properties.m_zTranslate = m_zTranslate;
 
-  float scale = 1.0f;
-  if (m_pLayerContent) {
-    scale = m_pLayerContent->GetLayerScale();
+  if (m_bClipLayerInParentObj && m_window_render->GetRootLayer() != this) {
+    m_pLayerContent->GetParentWindowRect(&properties.clip_rect);
+  } else {
+    m_window_render->GetRootLayer()->GetContent()->GetWindowRect(&properties.clip_rect);
   }
 
-  Rect rc = {0, 0, (int)m_size.width, (int)m_size.height};
-  m_pRenderTarget->Upload2Gpu(&rc, 1, scale);
+  RenderThread::Main::PostTask(ui::Slot(
+    &WindowRenderRT::SyncLayerProperties, 
+    m_window_render->m_rt->m_factory.get(),
+    m_layer_id, properties
+  ));
 }
 
 } // namespace ui

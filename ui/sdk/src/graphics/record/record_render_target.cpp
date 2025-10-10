@@ -70,8 +70,9 @@ void RecordRenderTarget::ClipRect(const Rect &rect) {
   addPaintOp(std::move(std::make_unique<ClipRectOp>(rect)));
 }
 
-void RecordRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) {
-  addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware, gpu_compositor)));
+void RecordRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* key) {
+  assert(false && "Should not run by record");
+  // addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware, key)));
 }
 bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
   addPaintOp(std::move(std::make_unique<SwapChainOp>(std::move(callback))));
@@ -80,10 +81,6 @@ bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
 
 void RecordRenderTarget::DumpToImage(const char *path) {
   addPaintOp(std::move(std::make_unique<DumpToImageOp>(path)));
-}
-void RecordRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
-                                    float scale) {
-  addPaintOp(std::move(std::make_unique<Upload2GpuOp>()));
 }
 
 bool RecordRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {

@@ -48,13 +48,6 @@ SkiaRenderTarget::SkiaRenderTarget() {
 }
 
 SkiaRenderTarget::~SkiaRenderTarget() {
-  // SAFE_DELETE(m_pRenderBuffer);
-  // m_hBindDC = nullptr;
-
-  if (m_gpu_texture) {
-    m_gpu_texture->Release();
-    m_gpu_texture = nullptr;
-  }
 }
 
 void SkiaRenderTarget::Release() { delete this; }
@@ -293,12 +286,6 @@ void SkiaRenderTarget::EndDraw() {
   }
   canvas->restore();
 
-  // SkCanvas *canvas = m_sksurface->getCanvas();
-  // on_erase_bkgnd(*canvas);
-  // on_paint(*canvas);
-
-  // m_sksurface->flushAndSubmit();
-  // swap_buffer();
   if (m_enable_hardware_backend) {
     upload_2_gpu();
   }
@@ -1042,6 +1029,10 @@ bool SkiaRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
   if (!fb) {
     return false;
   }
+  if (m_enable_hardware_backend) {
+    fb->gpu_layer = m_gpu_texture;
+    return true;
+  }
 
   SkPixmap pm;
   SkSurface *surface = m_sksurface.get();
@@ -1084,43 +1075,36 @@ void SkiaRenderTarget::RenderOnThread(slot<void(IRenderTarget *)> &&callback) {
   callback.emit(static_cast<IRenderTarget *>(this));
 }
 
-
 void SkiaRenderTarget::upload_2_gpu() {
-#if 0
-  if (!m_sksurface) {
+  if (!m_sksurface || !m_gpu_texture) {
     return;
   }
   int width = m_sksurface->width();
   int height = m_sksurface->height();
 
-  if (!m_gpu_texture) {
-    m_gpu_texture = static_cast<ui::HardwareCompositor *>(m_pCompositor)
-                        ->CreateGpuLayerTexture();
-    if (m_gpu_texture) {
-      m_gpu_texture->Resize(width, height);
-    }
-  }
-
   Rect rc = {0, 0, width, height};
-  this->Upload2Gpu(m_gpu_texture, &rc, 1, m_scale);
-#endif
+  Upload2Gpu(&rc, 1, m_scale);
 }
 
-void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) {
+void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* compositor) {
   if (is_hardware) {
     if (!m_gpu_texture) {
-      m_gpu_texture = gpu_compositor->CreateLayerTexture();
+      m_gpu_texture = compositor->CreateLayerTexture();
       if (m_gpu_texture && m_sksurface) {
         m_gpu_texture->Resize(m_sksurface->width(), m_sksurface->height());
       }
     }
     m_enable_hardware_backend = true;
   } else {
-    if (!m_sksurface) {
-      return;
+    // 当还没有创建m_sksurface，也得创建m_sksurface_front。先给一个默认大小为1的尺寸。
+    int width = 1;
+    int height = 1;
+    if (m_sksurface) {
+      width = m_sksurface->width();
+      height = m_sksurface->height();
     }
     SkImageInfo info =
-        SkImageInfo::Make(m_sksurface->width(), m_sksurface->height(),
+        SkImageInfo::Make(width, height,
                           kBGRA_8888_SkColorType, kPremul_SkAlphaType);
     SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
 
@@ -1131,6 +1115,9 @@ void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_com
 }
 
 bool SkiaRenderTarget::SwapChain(slot<void()> &&callback) {
+  if (m_enable_hardware_backend) {
+    return false;
+  }
   std::unique_lock lock(main.m_mutex);
 
   if (!main.m_sksurface_front) {

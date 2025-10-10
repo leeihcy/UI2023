@@ -35,8 +35,6 @@ public:
   bool SwapChain(slot<void()>&& callback) override;
 
   void DumpToImage(const char *szPath) override;
-  void Upload2Gpu(Rect *prcArray, int nCount,
-                  float scale) override;
   bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
 

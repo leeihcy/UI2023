@@ -85,7 +85,7 @@ void Window::FinalConstruct(FinalConstructMessage *message) {
 #endif
 
   m_window_style.hard_composite =
-      m_resource->GetUIApplication()->IsGpuCompositeEnable();
+      m_resource->GetUIApplication()->IsHardwareCompositeEnable();
 
   m_root = IRootObject::create(message->resource);
   if (!m_root) {
@@ -360,14 +360,14 @@ void Window::postCreate(CreateWindowParam &param) {
 #endif
 }
 
-void Window::SetGpuComposite(bool b) {
+void Window::SetHardwareComposite(bool b) {
 #if 0 // defined(OS_WIN)
   UIASSERT(!m_hWnd && TEXT("该函数目前需要在窗口创建之前调用"));
 #endif
 
   auto *app = m_resource->GetUIApplication();
   if (b) {
-    if (!app->IsGpuCompositeEnable())
+    if (!app->IsHardwareCompositeEnable())
       b = false;
   }
 
@@ -428,7 +428,7 @@ Size Window::GetDesiredSize() {
 // }
 #endif
 
-bool Window::IsGpuComposite() { return m_window_style.hard_composite; }
+bool Window::IsHardwareComposite() { return m_window_style.hard_composite; }
 void Window::DirectComposite() { assert(0 && "这个函数是否还需要继续存在?"); }
 
 bool Window::IsChildWindow() { return m_platform->IsChildWindow(); }

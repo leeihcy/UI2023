@@ -54,7 +54,7 @@ void VulkanCompositor::destory() {
 
 static void ReleaseGpuLayer(IGpuLayer* p) {
   if (p) {
-    p->Release();
+    static_cast<VulkanGpuLayer*>(p)->Release();
   }
 }
 std::shared_ptr<IGpuLayer> VulkanCompositor::CreateLayerTexture() {

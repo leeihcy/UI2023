@@ -157,8 +157,8 @@ struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
   void AlphaBlendMemBitmap(HDC hDC, Rect *prc, int alpha);
   void BitBltMemBitmap(HDC hDC, Rect *prc);
   void EnableDwmTransition(bool b);
-  void EnableGpuComposite(bool b);
-  bool IsGpuComposite();
+  void EnableHardwareComposite(bool b);
+  bool IsHardwareComposite();
   void DirectComposite();
   void SetWindowMessageCallback(IWindowDelegate *);
 
@@ -211,8 +211,8 @@ struct UIAPI IWindow : public IMessage {
   void Show();
   void Hide();
 
-  void EnableGpuComposite(bool b);
-  bool IsGpuComposite();
+  void EnableHardwareComposite(bool b);
+  bool IsHardwareComposite();
 
   // helper
   IRootObject* GetRootObject();

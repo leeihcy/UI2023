@@ -1,10 +1,11 @@
 #include "windowrender.h"
 #include "gpu/include/api.h"
+#include "include/common/signalslot/slot.h"
 #include "include/interface/renderlibrary.h"
 #include "include/macro/helper.h"
 #include "include/util/log.h"
 #include "include/util/rect_region.h"
-#include "layer_sync.h"
+#include "layer_rt.h"
 #include "layer_sync_op.h"
 #include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
@@ -18,9 +19,17 @@
 
 namespace ui {
 WindowRender::WindowRender(Window &w)
-    : m_window(w), m_rt(std::make_shared<WindowRenderRT>(*this)) {}
+    : m_window(w), m_rt(std::make_shared<WindowRenderRT>(*this)) {
+  RenderThread::Main::PostTask(ui::Slot(&WindowRenderRTMap::Bind,
+                                        &WindowRenderRTMap::GetInstance(),
+                                        (void *)m_rt.get(), m_rt));
+}
 
-WindowRender::~WindowRender() {}
+WindowRender::~WindowRender() {
+  RenderThread::Main::PostTask(ui::Slot(&WindowRenderRTMap::Unbind,
+                                        &WindowRenderRTMap::GetInstance(),
+                                        (void *)m_rt.get()));
+}
 
 IWindowRender *WindowRender::GetIWindowRender() {
   if (!m_pIWindowRender)
@@ -41,6 +50,10 @@ void WindowRender::OnSerialize(SerializeParam *pData) {
 
   s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
       ->SetDefault(true);
+}
+
+bool WindowRender::IsHardwareComposite() { 
+  return m_window.IsHardwareComposite(); 
 }
 
 void WindowRender::AddInvalidateRect(const Rect *dirty) {
@@ -75,21 +88,12 @@ bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
   *pp = UICreateRenderTarget(app->GetIUIApplication(), m_grl_type,
                              m_need_alpha_channel);
 
-  if (Config::GetInstance().enable_render_thread || m_window.IsGpuComposite()) {
-    // 标记root layer对应的rendertarget需要创建双缓存用于提交数据。
-    // 其它layer的rendertarget不需要创建双缓存。
-
-    // auto *root_layer = m_window.GetRootObject().GetSelfLayer();
-    // assert(root_layer);
-    // assert(root_layer->GetRenderTarget());
-    (*pp)->CreateSwapChain(m_window.IsGpuComposite(), m_rt->m_gpu_composition);
-  }
   return true;
 }
 
 // 逻辑单位
 void WindowRender::OnClientSize(unsigned int nWidth, unsigned int nHeight) {
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     // 像素大小
     ui::Rect rc;
     m_window.GetWindowPlatform()->GetClientRect(&rc);
@@ -128,7 +132,7 @@ Layer *WindowRender::CreateLayer(IObjectLayerContent *pContent) {
 
   Object &obj = pContent->GetObj();
   Layer *pNewLayer = nullptr;
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     pNewLayer = new Layer(Layer_Hardware);
   } else {
     pNewLayer = new Layer(Layer_Software);
@@ -172,7 +176,7 @@ Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
 
   ListItemBase &item = pContent->GetListItem();
   Layer *pNewLayer = nullptr;
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     pNewLayer = new Layer(Layer_Hardware);
   } else {
     pNewLayer = new Layer(Layer_Software);
@@ -211,7 +215,7 @@ Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
 }
 
 void WindowRender::onWindowCreated() {
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     IGpuCompositorWindow *p = m_window.GetWindowPlatform()->GetGpuCompositorWindow();
 
     // 像素大小
@@ -283,7 +287,7 @@ bool WindowRender::update_dirty(RectRegion *outDirtyInWindow) {
   if (!root_layer)
     return false;
 
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     // 硬件合成只能是每个层分别去调用updatedirty，而不是像软件渲染一样由parent
     // object遍历child时去调用
     // updatedirty。因为硬件下父layer可能没有dirty，而子layer有dirty.
@@ -323,7 +327,7 @@ void WindowRender::commit(const RectRegion & dirty_region_px) {
   if (!root_layer)
     return;
 
-  if (m_window.IsGpuComposite()) {
+  if (IsHardwareComposite()) {
     RenderThread::Main::PostTask(
         ui::Slot(&WindowRenderRT::HardwareCommit, m_rt->m_factory.get()));
   } else {
@@ -337,21 +341,28 @@ void WindowRender::commit(const RectRegion & dirty_region_px) {
   }
 }
 
-void WindowRender::on_swap_chain(DirtyRegion dirty_region) {
-  DirectCommit(dirty_region);
+void WindowRender::on_swap_chain(DirtyRegion dirty_region_dip) {
+  DirectCommit(dirty_region_dip);
 }
 
 // 在swap chain之后，直接提交新的内容到窗口上
-void WindowRender::DirectCommit(const DirtyRegion &dirty_region) {
+void WindowRender::DirectCommit(DirtyRegion dirty_region_dip) {
   if (!CanCommit()) {
     return;
   }
-  commit(dirty_region);
+
+  DirtyRegion& dirty_region_px = dirty_region_dip;
+  for (unsigned int i = 0; i < dirty_region_px.Count(); i++) {
+    Rect* rect = dirty_region_px.GetRectPtrAt(i);
+    m_window.m_dpi.ScaleRect(rect);
+  }
+  
+  commit(dirty_region_px);
 }
 
 void WindowRender::SoftwareCommit(IRenderTarget *pRT,
                                   const RectRegion &dirty_region_px) {
-  FrameBufferWithReadLock frame_buffer = {0};
+  FrameBufferWithReadLock frame_buffer;
   if (!pRT->GetFrontFrameBuffer(&frame_buffer)) {
     return;
   }
@@ -361,9 +372,12 @@ void WindowRender::SoftwareCommit(IRenderTarget *pRT,
 WindowRenderRT::WindowRenderRT(WindowRender& w) : m_window_render(w) {}
 
 WindowRenderRT::~WindowRenderRT() {
+  m_layer_map.clear();
+  if (m_root_layer) {
+    m_root_layer.reset();
+  }
   if (m_gpu_composition) {
-    m_gpu_composition->Release();
-    m_gpu_composition = nullptr;
+    m_gpu_composition.reset();
   }
 }
 
@@ -391,31 +405,32 @@ void WindowRenderRT::HardwareCommit() {
   if (!m_gpu_composition->BeginCommit(&context))
     return;
 
-  Layer *p = m_window_render.GetRootLayer();
+  LayerRT *p = m_root_layer.get();
   while (p) {
     hardwareCommit2(p, &context);
-    p = p->GetNext();
+    p = p->m_pNext;
   }
 
   m_gpu_composition->EndCommit(&context);
 }
 
-void WindowRenderRT::hardwareCommit2(Layer *p,
+void WindowRenderRT::hardwareCommit2(LayerRT *p,
                                      GpuLayerCommitContext *pContext) {
-  if (!p->GetContent()->IsVisible())
+
+  if (!p->m_properties.visible)
     return;
 
   GpuLayerCommitContext context(*pContext);
   p->HardwareCommit(&context);
 
-  p = p->GetFirstChild();
+  p = p->m_pFirstChild;
   while (p) {
     hardwareCommit2(p, &context);
-    p = p->GetNext();
+    p = p->m_pNext;
   }
 }
 
-LayerRT *WindowRenderRT::find_layer(LAYERID layer_id) {
+std::shared_ptr<LayerRT> WindowRenderRT::find_layer(LAYERID layer_id) {
   if (layer_id == 0) {
     return nullptr;
   }
@@ -423,20 +438,32 @@ LayerRT *WindowRenderRT::find_layer(LAYERID layer_id) {
   if (iter == m_layer_map.end()) {
     return nullptr;
   }
-  return iter->second.get();
+  return iter->second;
+}
+
+void WindowRenderRT::SyncLayerProperties(LAYERID layer_id, LayerTreeProperties properties) {
+  std::shared_ptr<LayerRT> layer = find_layer(layer_id);
+  if (!layer) {
+    return;
+  }
+  layer->m_properties = properties;
 }
 
 void WindowRenderRT::OnLayerTreeChanged(LayerTreeSyncOperation op) {
   if (op.type == LayerTreeSyncOpType::Add) {
-    auto layer = std::make_shared<LayerRT>(op.id);
-    m_layer_map[op.id] = layer;
+    std::shared_ptr<LayerRT> layer = find_layer(op.id);
+    if (!layer) {
+      auto new_layer = std::make_shared<LayerRT>(op.id);
+      m_layer_map[op.id] = new_layer;
+      layer = new_layer;
+    }
 
-    LayerRT* parent = find_layer(op.parent_id);
-    LayerRT* next = find_layer(op.next_id);
+    std::shared_ptr<LayerRT> parent = find_layer(op.parent_id);
+    std::shared_ptr<LayerRT> next = find_layer(op.next_id);
     if (!parent) {
       m_root_layer = layer;
     } else {
-      parent->AddSubLayer(layer.get(), next);
+      parent->AddSubLayer(layer.get(), next.get());
     }
   } 
   else if (op.type == LayerTreeSyncOpType::Delete) {
@@ -446,7 +473,7 @@ void WindowRenderRT::OnLayerTreeChanged(LayerTreeSyncOperation op) {
     }
   }
   else if (op.type == LayerTreeSyncOpType::Remove) {
-    LayerRT* layer = find_layer(op.id);
+    std::shared_ptr<LayerRT> layer = find_layer(op.id);
     if (layer) {
       layer->RemoveMeInTheTree();
     }
@@ -454,4 +481,39 @@ void WindowRenderRT::OnLayerTreeChanged(LayerTreeSyncOperation op) {
     UIASSERT(false && "TODO:");
   }
 }
+
+void WindowRenderRT::BindLayer(LAYERID layer_id, std::shared_ptr<IGpuLayer> gpu_layer) {
+  std::shared_ptr<LayerRT> layer = find_layer(layer_id);
+  if (!layer) {
+    auto new_layer = std::make_shared<LayerRT>(layer_id);
+    m_layer_map[layer_id] = new_layer;
+    layer = new_layer;
+  }
+  layer->BindGpuLayer(gpu_layer);
+
+  // TBD: 将第一个layer作为root layer?
+  if (!m_root_layer) {
+    m_root_layer = layer;
+  }
+}
+
+//-------
+
+// static 
+WindowRenderRTMap &WindowRenderRTMap::GetInstance() {
+  static WindowRenderRTMap s;
+  return s;
+}
+void WindowRenderRTMap::Bind(void *key, std::shared_ptr<WindowRenderRT> rt) {
+  m_window_render_map[key] = rt;
+}
+void WindowRenderRTMap::Unbind(void *key) { m_window_render_map.erase(key); }
+std::shared_ptr<WindowRenderRT> WindowRenderRTMap::find(void *key) {
+  auto iter = m_window_render_map.find(key);
+  if (iter != m_window_render_map.end()) {
+    return iter->second;
+  }
+  return std::shared_ptr<WindowRenderRT>();
+}
+
 } // namespace ui

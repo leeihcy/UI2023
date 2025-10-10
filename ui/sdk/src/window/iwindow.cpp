@@ -223,8 +223,8 @@ IRootObject* IWindow::GetRootObject() {
   return __pImpl->GetRootObject().GetIRootObject();
 }
 
-void IWindow::EnableGpuComposite(bool b) { return __pImpl->SetGpuComposite(b); }
-bool IWindow::IsGpuComposite() { return __pImpl->IsGpuComposite(); }
+void IWindow::EnableHardwareComposite(bool b) { return __pImpl->SetHardwareComposite(b); }
+bool IWindow::IsHardwareComposite() { return __pImpl->IsHardwareComposite(); }
 
 # if 0 
 void IWindowBase::DirectComposite() { __pImpl->DirectComposite(); }

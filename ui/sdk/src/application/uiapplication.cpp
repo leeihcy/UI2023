@@ -489,9 +489,11 @@ HMODULE  Application::GetUID3DModule()
 }
 #endif
 
-bool Application::IsGpuCompositeEnable() { return ui::IsGpuStartup(); }
-bool Application::EnableGpuComposite() {
-  if (ui::IsGpuStartup())
+bool Application::IsHardwareCompositeEnable() { 
+  return ui::GetGpuStartupState() == GPU_STARTUP_STATE::STARTED; 
+}
+bool Application::EnableHardwareComposite() {
+  if (IsHardwareCompositeEnable())
     return true;
 
   ui::Slot<void()> func([]() {
@@ -499,13 +501,18 @@ bool Application::EnableGpuComposite() {
       UI_LOG_ERROR("GpuStartup Failed");
     }
   });
+  
   RenderThread::Main::PostTask(std::move(func));
 
+  // wait
+  while (ui::GetGpuStartupState() <= GPU_STARTUP_STATE::STARTING) {
+    ::sleep(1);
+  }
   return true;
 }
 
 void Application::ShutdownGpuCompositor() {
-  if (!ui::IsGpuStartup())
+  if (!IsHardwareCompositeEnable())
     return;
 
   ui::Slot<void()> func(&ui::GpuShutdown);

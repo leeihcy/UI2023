@@ -4,10 +4,10 @@
 #include <memory>
 #include <map>
 #include "layer_sync_op.h"
+#include "layer_rt.h"
 #include "include/interface/iwindow.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/rect_region.h"
-#include "src/layer/layer_sync.h"
 
 //
 // 负责窗口的渲染，决定是采用软件方式，还是硬件合成
@@ -45,9 +45,10 @@ public:
   Application& GetUIApplication();
 
 public:
+  bool IsHardwareComposite();
   void AddInvalidateRect(const Rect*);
   void Paint(const Rect *commit_rect = nullptr);
-  void DirectCommit(const DirtyRegion& dirty_region);
+  void DirectCommit(DirtyRegion dirty_region_dip);
    
 public:
   void onWindowCreated();
@@ -73,15 +74,17 @@ public:
   void InvalidateNow();
 
 private:
-  void on_swap_chain(DirtyRegion dirty_region);
+  void on_swap_chain(DirtyRegion dirty_region_dip);
   bool update_dirty(RectRegion *outDirtyInWindow);
   void hardware_update_dirty_recursion(Layer *p);
   void commit(const RectRegion & dirty_region_px);
 
 public:
   Window& m_window;
-  std::shared_ptr<WindowRenderRT> m_rt;
 
+  // render thread!
+  std::shared_ptr<WindowRenderRT> m_rt;
+  
 private:
   std::unique_ptr<IWindowRender> m_pIWindowRender;
 
@@ -96,7 +99,11 @@ private:
 
   // 限制刷新时postmessage的次数。如果已经post了一个，就不再post
   long m_request_invalidate_ref = 0;
+  
   weakptr_factory<WindowRender> m_weakptr_factory = {this};
+
+private:
+  
 };
 
 //
@@ -112,15 +119,17 @@ public:
   void Resize(uint width, uint height);
   void HardwareCommit();
   void OnLayerTreeChanged(LayerTreeSyncOperation op);
+  void SyncLayerProperties(LAYERID layer_id, LayerTreeProperties properties);
+  void BindLayer(LAYERID layer_id, std::shared_ptr<IGpuLayer> gpu_layer);
 
 private:
-  void hardwareCommit2(Layer *p, GpuLayerCommitContext *pContext);
-  LayerRT* find_layer(LAYERID layer_id);
+  void hardwareCommit2(LayerRT *p, GpuLayerCommitContext *pContext);
+  std::shared_ptr<LayerRT> find_layer(LAYERID layer_id);
 
 public:
   WindowRender&  m_window_render; // TODO: delete this var;
 
-  IGpuCompositor *m_gpu_composition = nullptr;
+  std::shared_ptr<IGpuCompositor> m_gpu_composition;
   
   std::shared_ptr<LayerRT> m_root_layer;
   std::map<LAYERID, std::shared_ptr<LayerRT>> m_layer_map;
@@ -128,6 +137,15 @@ public:
   ui::weakptr_factory<WindowRenderRT> m_factory = {this};
 };
 
+class WindowRenderRTMap {
+public:
+  static WindowRenderRTMap& GetInstance();
+  void Bind(void* key, std::shared_ptr<WindowRenderRT> rt);
+  void Unbind(void* key);
+  std::shared_ptr<WindowRenderRT> find(void* key);
+public:
+  std::map<void*, std::shared_ptr<WindowRenderRT>> m_window_render_map;
+};
 
 } // namespace ui
 

@@ -137,7 +137,6 @@ public:
 
   virtual bool UpdateDirty();
   
-
   void HardwareCommit(GpuLayerCommitContext *context);
   void MapView2Layer(Point *pPoint);
 
@@ -150,8 +149,8 @@ protected:
   Object *GetLayerContentObject();
 
   bool hardwareUpdateDirty();
+  void hardwareSyncLayerProperties();
   bool softwareUpdateDirty();
-  void upload_2_gpu();
   
 private:
   void on_layer_tree_changed(LayerTreeSyncOperation& op);
@@ -196,7 +195,8 @@ protected:
   float m_fzRotate;          // 设置的值
   float m_fxScale;           // 设置的值
   float m_fyScale;           // 设置的值
-                             // 相对于控件m_rcParent的相对值
+                             
+  // 相对于控件m_rcParent的相对值
   float m_xTranslate;        // 设置的值
   float m_yTranslate;        // 设置的值
   float m_zTranslate;        // 设置的值

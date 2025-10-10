@@ -7,6 +7,7 @@
 #include "ui/sdk/include/util/struct.h"
 #include "ui/sdk/include/common/signalslot/slot.h"
 
+#include <memory>
 #include <string>
 #include <shared_mutex>
 
@@ -268,10 +269,14 @@ public:
 // 渲染好的帧缓存数据，可用于主线程窗口提交渲染。
 // 其实是对应于front render target的buffer数据。
 struct FrameBuffer {
-  int width;
-  int height;
-  const void *data;
-  int rowbytes;
+  // software
+  int width = 0;
+  int height = 0;
+  const void *data = nullptr;
+  int rowbytes = 0;
+
+  // hardware
+  std::shared_ptr<IGpuLayer> gpu_layer;
 };
 
 struct FrameBufferWithReadLock : public FrameBuffer {
@@ -311,10 +316,8 @@ struct IRenderTarget : public IClipOrigin {
   virtual void ClipRoundRect(const Rect& rect, int radius) = 0;
   virtual void ClipRect(const Rect& rect) = 0;
 
-  virtual void CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) = 0;
+  virtual void CreateSwapChain(bool is_hardware, IGpuCompositor* ) = 0;
   virtual bool SwapChain(slot<void()>&& callback) = 0;
-  virtual void Upload2Gpu(Rect *prcArray, int nCount,
-                          float scale) = 0;
   virtual void DumpToImage(const char *szPath) = 0;
   virtual bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) = 0;
 

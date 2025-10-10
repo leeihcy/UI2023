@@ -33,11 +33,9 @@ public:
   void ClipRoundRect(const Rect& rect, int radius) override;
   void ClipRect(const Rect& rect) override;
 
-  void CreateSwapChain(bool is_hardware, IGpuCompositor* gpu_compositor) override;
+  void CreateSwapChain(bool is_hardware, IGpuCompositor* Compositor) override;
   bool SwapChain(slot<void()>&& callback) override;
   void DumpToImage(const char *szPath) override;
-  void Upload2Gpu(Rect *prcArray, int nCount,
-                          float scale) override;
   bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
   void SetDirtyRegion(const DirtyRegion& dirty_region) override;
@@ -65,6 +63,7 @@ protected:
 
   void update_clip_rgn();
   void upload_2_gpu();
+  void Upload2Gpu(Rect *prcArray, int nCount, float scale);
   void resize_gpu_layer(unsigned int width, unsigned int height);
   void render_to_surface(SkSurface* source, SkSurface* target, Render2TargetParam *param);
   

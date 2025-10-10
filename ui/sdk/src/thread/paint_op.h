@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "include/util/rect_region.h"
+#include "src/layer/layer_sync_op.h"
 #include "third_party/skia/src/include/core/SkRefCnt.h"
 #include "third_party/skia/src/include/core/SkTextBlob.h"
 
@@ -30,10 +31,10 @@ enum class PaintOpType : unsigned char {
   DrawRect,
   DrawString,
   DrawBitmap,
-  CreateSwapChain,
+  // CreateSwapChain,
   SwapChain,
   DumpToImage,
-  Upload2Gpu,
+  // Upload2Gpu,
   RenderOnThread,
   
   RenderOpEnd,
@@ -44,6 +45,7 @@ enum class PaintOpType : unsigned char {
   PostCommandStart,
   AsyncTask,
   RemoveKey,
+  SyncLayerProperties,
   PostCommandEnd,
 };
 
@@ -51,7 +53,7 @@ struct PaintOp {
   PaintOp(PaintOpType t) : type(t) {}
   void processOnRenderThread(IRenderTarget* rt);
 
-  void *key = nullptr;
+  IRenderTarget *key = nullptr;
   PaintOpType type;
 };
 
@@ -155,14 +157,6 @@ struct DumpToImageOp : public PaintOp {
   std::string path;
 };
 
-struct CreateSwapChainOp : public PaintOp {
-  CreateSwapChainOp(bool _is_hardware, IGpuCompositor* _compositor)
-      : PaintOp(PaintOpType::CreateSwapChain), is_hardware(_is_hardware), compositor(_compositor){ }
-
-  bool is_hardware;
-  IGpuCompositor* compositor;
-};
-
 struct SwapChainOp : public PaintOp {
   SwapChainOp(slot<void()> &&_callback)
     : PaintOp(PaintOpType::SwapChain), callback(std::move(_callback)) {}
@@ -170,10 +164,10 @@ struct SwapChainOp : public PaintOp {
   slot<void()> callback;
 };
 
-struct Upload2GpuOp : public PaintOp {
-  Upload2GpuOp()
-      : PaintOp(PaintOpType::Upload2Gpu) { }
-};
+// struct Upload2GpuOp : public PaintOp {
+//   Upload2GpuOp()
+//       : PaintOp(PaintOpType::Upload2Gpu) { }
+// };
 
 struct RenderOnThreadOp : public PaintOp {
   RenderOnThreadOp(slot<void(IRenderTarget *)> &&_callback)
@@ -187,6 +181,11 @@ struct AsyncTaskCommand : public PaintOp {
     : PaintOp(PaintOpType::AsyncTask), callback(std::move(_callback)) {}
 
   slot<void()> callback;
+};
+
+struct SyncLayerPropertiesCommand : public PaintOp {
+  SyncLayerPropertiesCommand()
+    : PaintOp(PaintOpType::SyncLayerProperties) {}
 };
 
 } // namespace ui

@@ -1,3 +1,4 @@
+#include "include/interface/renderlibrary.h"
 #include "render_thread.h"
 #include "src/application/config/config.h"
 #include "src/thread/paint_op.h"
@@ -20,6 +21,11 @@ void RenderThread::Main::Stop() {
 }
 
 void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
+  if (!self.m_running) {
+    // 没有开启render thread，直接运行
+    paint_op->processOnRenderThread((SkiaRenderTarget*)paint_op->key);
+    return;
+  }
   bool is_command = paint_op->type >= PaintOpType::PostCommandStart;
 
   std::lock_guard<std::mutex> lock(self.m_paint_op_queue_mutex);
@@ -31,7 +37,11 @@ void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
 }
 
 void RenderThread::Main::AddTask(slot<void()> &&callback) {
-  AddPaintOp(std::make_unique<AsyncTaskCommand>(std::move(callback)));
+  if (self.m_running) {
+    AddPaintOp(std::make_unique<AsyncTaskCommand>(std::move(callback)));
+  } else {
+    callback.emit();
+  }
 }
 
 // 如果启用子多线程渲染，则在render thread上执行。如果没启用，直接执行。
@@ -50,7 +60,7 @@ bool RenderThread::Main::GetFrontFrameBuffer(void *key, FrameBufferWithReadLock*
   return ((SkiaRenderTarget*)key)->GetFrontFrameBuffer(frame_buffer);
 }
 
-void RenderThread::Main::RemoveKey(void* key) {
+void RenderThread::Main::RemoveKey(IRenderTarget* key) {
   auto op = std::make_unique<PaintOp>(PaintOpType::RemoveKey);
   op->key = key;
   AddPaintOp(std::move(op));

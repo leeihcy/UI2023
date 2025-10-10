@@ -44,7 +44,7 @@ public:
     void on_swap_chain(void *key, const DirtyRegion& dirty_region);
 
     bool GetFrontFrameBuffer(void *key, FrameBufferWithReadLock* fb);
-    void RemoveKey(void *key);
+    void RemoveKey(IRenderTarget *key);
 
   private:
     RenderThread &self;
@@ -82,9 +82,6 @@ private:
   };
   std::deque<std::unique_ptr<PaintOpGroup>> m_paint_op_group;
   std::condition_variable m_command_wait;
-
-  // 窗口列表
-  std::map<void*, std::shared_ptr<WindowRenderRT>> m_map_window_render;
 
   // 跳线程使用
   weakptr_factory<RenderThread> m_weakptr_factory = {this};

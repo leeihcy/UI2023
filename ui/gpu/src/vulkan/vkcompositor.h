@@ -31,7 +31,6 @@ public:
   ~VulkanCompositor();
 
   bool Initialize(IGpuCompositorWindow*);
-  void Release() override { delete this; }
 
   std::shared_ptr<IGpuLayer> CreateLayerTexture() override;
   bool BeginCommit(GpuLayerCommitContext *) override;

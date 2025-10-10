@@ -70,11 +70,11 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
     rt->DrawBitmap(param->bitmap, &param->param);
     break;
   };
-  case PaintOpType::CreateSwapChain: {
-    rt->CreateSwapChain(static_cast<CreateSwapChainOp *>(op)->is_hardware,
-                        static_cast<CreateSwapChainOp *>(op)->compositor);
-    break;
-  }
+  // case PaintOpType::CreateSwapChain: {
+  //   rt->CreateSwapChain(static_cast<CreateSwapChainOp *>(op)->is_hardware,
+  //                       static_cast<CreateSwapChainOp *>(op)->key);
+  //   break;
+  // }
   case PaintOpType::SwapChain: {
     if (rt->SwapChain(Slot<void()>([](){}))) {
       PostTaskToUIThread(std::move(static_cast<SwapChainOp*>(op)->callback));

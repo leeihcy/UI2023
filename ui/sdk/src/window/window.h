@@ -82,8 +82,8 @@ public:
   float GetScaleFactor();
   Size GetDesiredSize();
 
-	void  SetGpuComposite(bool b);
-	bool  IsGpuComposite();
+	void  SetHardwareComposite(bool b);
+	bool  IsHardwareComposite();
 	void  DirectComposite();
 
 	bool  IsChildWindow();

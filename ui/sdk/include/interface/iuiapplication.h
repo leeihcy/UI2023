@@ -130,8 +130,8 @@ public:
   bool IsUnderXpOS();
   bool IsVistaOrWin7etc();
   bool IsAeroEnable();
-  bool IsGpuCompositeEnable();
-  bool EnableGpuComposite();
+  bool IsHardwareCompositeEnable();
+  bool EnableHardwareComposite();
 #if 0
   HWND GetForwardPostMessageWnd();
   IWindowBase *GetWindowBaseFromHWND(HWND hWnd);

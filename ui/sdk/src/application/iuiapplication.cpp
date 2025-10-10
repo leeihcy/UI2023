@@ -266,11 +266,11 @@ void IApplication::KillTimer(TimerID timer_id) {
 //     return m_pImpl->GetForwardPostMessageWnd();
 // }
 
-bool IApplication::IsGpuCompositeEnable() {
-  return m_pImpl->IsGpuCompositeEnable();
+bool IApplication::IsHardwareCompositeEnable() {
+  return m_pImpl->IsHardwareCompositeEnable();
 }
-bool IApplication::EnableGpuComposite() {
-  return m_pImpl->EnableGpuComposite();
+bool IApplication::EnableHardwareComposite() {
+  return m_pImpl->EnableHardwareComposite();
 }
 
 // IWindowBase*  IApplication::GetWindowBaseFromHWND(HWND hWnd)

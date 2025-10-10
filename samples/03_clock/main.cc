@@ -91,14 +91,14 @@ int main() {
 
   ui::ApplicationPtr app;
   if (use_gpu) {
-    app->EnableGpuComposite();
+    app->EnableHardwareComposite();
   }
   ui::SvgRegisterObjects(app.get());
   ui::IResource *resource = app->LoadResource("sample/clock");
 
   ui::WindowPtr window(resource);
   if (use_gpu) {
-    window->EnableGpuComposite(true);
+    window->EnableHardwareComposite(true);
   }
 
   window->Create("clock", nullptr);
@@ -110,7 +110,7 @@ int main() {
 
   if (use_gpu) {
     g_clock_animate.update_rotate(window.get());
-    start_animate(app.get(), window.get());
+    // start_animate(app.get(), window.get());
   }
 
   ui::TimerID timer_id =

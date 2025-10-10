@@ -127,25 +127,36 @@ void MultiMatrix(GpuLayerCommitContext &c, float *matrix16) {
 }
 #endif
 
-extern "C" {
-UIGPUAPI IGpuCompositor *CreateGpuComposition(IGpuCompositorWindow* window) {
-  std::unique_ptr<IGpuCompositor> p;
-
-#if defined(ENABLE_D3D10)  
-  auto* c = new D3D10Compositor();
+static void ReleaseGpuCompositorWindow(IGpuCompositor *p) {
+  if (p) {
+#if defined(ENABLE_D3D10)
+    delete static_cast<D3D10Compositor *>(p);
 #else
-  auto* c = new VulkanCompositor();
+    delete static_cast<VulkanCompositor *>(p);
+#endif
+  }
+}
+
+UIGPUAPI std::shared_ptr<IGpuCompositor>
+CreateGpuComposition(IGpuCompositorWindow *window) {
+  std::shared_ptr<IGpuCompositor> p;
+
+#if defined(ENABLE_D3D10)
+  auto *c = new D3D10Compositor();
+#else
+  auto *c = new VulkanCompositor();
 #endif
   if (!c->Initialize(window)) {
     return nullptr;
   }
-  p.reset(c);
-  return p.release();
+  return std::shared_ptr<IGpuCompositor>(c, ReleaseGpuCompositorWindow);
 }
 
-static std::atomic_bool g_startup = false;
-
+static std::atomic_int g_startup = GPU_STARTUP_STATE::NOT_START;
+extern "C" {
 UIGPUAPI bool GpuStartup() {
+  g_startup = GPU_STARTUP_STATE::STARTING;
+
 #if defined(ENABLE_D3D10)
   g_startup = D3D10App::Startup();
 #else
@@ -162,8 +173,9 @@ UIGPUAPI void GpuShutdown() {
 #endif
 }
 
-UIGPUAPI bool IsGpuStartup() {
-  return g_startup;
+
+UIGPUAPI GPU_STARTUP_STATE GetGpuStartupState() {
+  return (GPU_STARTUP_STATE)(int)g_startup;
 }
 
 #if defined(ENABLE_D3D10) // TODO:
