@@ -159,7 +159,7 @@ private:
 
 protected:
   ILayer m_iLayer;
-  WindowRender *m_pCompositor;
+  WindowRender *m_window_render;
   LayerType m_type;
 
   IRenderTarget *m_pRenderTarget;

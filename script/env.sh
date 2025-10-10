@@ -33,9 +33,16 @@ GN_NINJA_DIR=${ROOT_DIR}/build_tools/${OS}
 # vulkan
 VULKAN_SDK_BIN_DIR=${VULKAN_SDK_DIR}/bin
 export VULKAN_SDK_DIR
+echo VULKAN_SDK_DIR = $VULKAN_SDK_DIR
 
 # python
 export PYTHON_INC_DIR
+echo PYTHON_INC_DIR = $PYTHON_INC_DIR
 export PYTHON_LIB_DIR
+echo PYTHON_LIB_DIR = $PYTHON_LIB_DIR
 
 export PATH=$DEPOT_TOOLS_DIR:$GN_NINJA_DIR:$VULKAN_SDK_BIN_DIR:$PATH
+echo PATH updated.
+
+echo ""
+echo "Environment initialized for ${OS}"

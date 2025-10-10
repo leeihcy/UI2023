@@ -99,7 +99,7 @@ public:
   // platform回调
   void onClose();
   void onDestroy();
-  void onPaint(const Rect *commit_rect_dip);
+  void onPaint(const Rect *commit_rect_px);
   void onSize(int width_px, int height_px);
   void enterResize(bool);
 

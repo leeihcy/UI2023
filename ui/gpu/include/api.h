@@ -3,6 +3,7 @@
 
 #include "gpu/include/interface.h"
 #include "sdk/include/util/rect.h"
+#include <memory>
 
 #if defined(WS_WIN)
 #elif defined(OS_LINUX)
@@ -57,7 +58,7 @@ struct IGpuCompositorWindowX11 : public IGpuCompositorWindow {
 struct IGpuCompositor {
   virtual ~IGpuCompositor() {}
   virtual void Release() = 0;
-  virtual IGpuLayer *CreateLayerTexture() = 0;
+  virtual std::shared_ptr<IGpuLayer> CreateLayerTexture() = 0;
 
   virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
   virtual void EndCommit(GpuLayerCommitContext*) = 0;

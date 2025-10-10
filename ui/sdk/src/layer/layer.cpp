@@ -26,7 +26,7 @@ enum LAYER_ANIMATE_TYPE {
 static LAYERID s_layerid = 0;
 
 Layer::Layer(LayerType type) : m_iLayer(this), m_type(type) {
-  m_pCompositor = nullptr;
+  m_window_render = nullptr;
   m_pRenderTarget = nullptr;
 
   m_layer_id = ++s_layerid;
@@ -67,7 +67,7 @@ Layer::~Layer() {
     m_pLayerContent->OnLayerDestory();
   }
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
   if (pAni) {
     pAni->ClearStoryboardByNotify(
         static_cast<uia::IAnimateEventCallback *>(this));
@@ -100,20 +100,20 @@ void Layer::Serialize(SerializeParam *param) {
       ->AsData();
 }
 
-void Layer::SetWindowRender(WindowRender *p) { m_pCompositor = p; }
+void Layer::SetWindowRender(WindowRender *p) { m_window_render = p; }
 
 // bUpdateNow -- 场景：如果是阻塞型的动画，则要立即刷新
 void Layer::InvalidateForLayerAnimate(bool bUpdateNow) {
   if (GetType() == Layer_Software) {
     this->Invalidate(nullptr);
     if (bUpdateNow) {
-      m_pCompositor->InvalidateNow();
+      m_window_render->InvalidateNow();
     }
   } else {
     if (bUpdateNow) {
-      m_pCompositor->InvalidateNow();
+      m_window_render->InvalidateNow();
     } else {
-      m_pCompositor->RequestInvalidate();
+      m_window_render->RequestInvalidate();
     }
   }
 }
@@ -152,8 +152,8 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
 
     m_pParent->Invalidate(&rcDirty);
   } else {
-    if (m_pCompositor)
-      m_pCompositor->RequestInvalidate();
+    if (m_window_render)
+      m_window_render->RequestInvalidate();
   }
 }
 
@@ -242,11 +242,11 @@ void Layer::SetContent(ILayerContent *p) { m_pLayerContent = p; }
 ILayerContent *Layer::GetContent() { return m_pLayerContent; }
 
 void Layer::on_layer_tree_changed(LayerTreeSyncOperation &op) {
-  UIASSERT(m_pCompositor);
+  UIASSERT(m_window_render);
   if (Config::GetInstance().enable_render_thread) {
     RenderThread::GetIntance().main.AddTask(
         ui::Slot(&WindowRenderRT::OnLayerTreeChanged,
-                 m_pCompositor->m_rt->m_factory.get(), op));
+                 m_window_render->m_rt->m_factory.get(), op));
   }
 }
 
@@ -275,7 +275,7 @@ void Layer::OnSize(uint width, uint height, float scale) {
   virtualOnSize(width, height);
 }
 
-void Layer::PostCompositorRequest() { m_pCompositor->RequestInvalidate(); }
+void Layer::PostCompositorRequest() { m_window_render->RequestInvalidate(); }
 
 void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
   if (pParam == DefaultLayerAnimateParam)
@@ -294,7 +294,7 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
 
   // 开启隐式动画
   if (pParam) {
-    uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+    uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
     pAni->RemoveStoryboardByNotityAndId(
         static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_OPACITY);
@@ -345,7 +345,7 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
 
   m_fyRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_YROTATE);
@@ -396,7 +396,7 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
 
   m_fxRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_XROTATE);
@@ -447,7 +447,7 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
 
   m_fzRotate = f;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_ZROTATE);
@@ -497,7 +497,7 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
   m_fxScale = x;
   m_fyScale = y;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_SCALE);
@@ -556,7 +556,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
   m_yTranslate = y;
   m_zTranslate = z;
 
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   pAni->RemoveStoryboardByNotityAndId(
       static_cast<uia::IAnimateEventCallback *>(this), STORYBOARD_ID_TRANSLATE);
@@ -598,7 +598,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
       if (obj)
         obj->Invalidate();
     } else {
-      m_pCompositor->RequestInvalidate();
+      m_window_render->RequestInvalidate();
     }
   }
 }
@@ -701,10 +701,10 @@ void Layer::CopyDirtyRect(RectRegion *arr) {
 
 IRenderTarget *Layer::GetRenderTarget() {
   if (!m_pRenderTarget) {
-    if (!m_pCompositor)
+    if (!m_window_render)
       return nullptr;
 
-    m_pCompositor->CreateRenderTarget(&m_pRenderTarget);
+    m_window_render->CreateRenderTarget(&m_pRenderTarget);
   }
   return m_pRenderTarget;
 }
@@ -768,7 +768,7 @@ Object *Layer::GetLayerContentObject() {
 
 // 本类中所有的创建动画都走这里，用于数量统计
 uia::IStoryboard *Layer::create_storyboard(int id) {
-  uia::IAnimate *pAni = m_pCompositor->GetUIApplication().GetAnimate();
+  uia::IAnimate *pAni = m_window_render->GetUIApplication().GetAnimate();
 
   uia::IStoryboard *pStoryboard = pAni->CreateStoryboard(
       static_cast<uia::IAnimateEventCallback *>(this), id);
@@ -795,10 +795,10 @@ void Layer::HardwareCommit(GpuLayerCommitContext *pContext) {
   pContext->SetOffset(rcWnd.left, rcWnd.top);
 
   Rect rcParentWnd = {0};
-  if (m_bClipLayerInParentObj && m_pCompositor->GetRootLayer() != this) {
+  if (m_bClipLayerInParentObj && m_window_render->GetRootLayer() != this) {
     m_pLayerContent->GetParentWindowRect(&rcParentWnd);
   } else {
-    m_pCompositor->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
+    m_window_render->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
   }
 
   rcParentWnd.Scale(scale);

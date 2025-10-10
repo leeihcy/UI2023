@@ -7,6 +7,7 @@
 #include "vklayer.h"
 
 #include "vulkan/vulkan.h"
+#include <memory>
 #if defined(OS_WIN)
 #include "vulkan/vulkan_win32.h"
 #include "windows.h"
@@ -51,8 +52,15 @@ void VulkanCompositor::destory() {
 }
 
 
-IGpuLayer *VulkanCompositor::CreateLayerTexture() {
-  GpuLayer *p = new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge *>(this));
+static void ReleaseGpuLayer(IGpuLayer* p) {
+  if (p) {
+    p->Release();
+  }
+}
+std::shared_ptr<IGpuLayer> VulkanCompositor::CreateLayerTexture() {
+  auto p = std::shared_ptr<IGpuLayer>(
+      new VulkanGpuLayer(*static_cast<vulkan::IVulkanBridge *>(this)),
+      ReleaseGpuLayer);
   // p->SetGpuCompositor(this);
   return p;
 }

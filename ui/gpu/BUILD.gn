@@ -110,6 +110,9 @@ shared_library("uigpu") {
       else if (is_mac) {
         include_dirs += [ VULKAN_SDK_DIR + "/include" ]
         libs += ["vulkan.1.3.261"]
+        print("include dir :" + include_dirs[4])
+        print("include dir :" + include_dirs[5])
+        print("include dir :" + include_dirs[6])
       }
       else if (is_linux) {
         include_dirs += [ VULKAN_SDK_DIR + "/include" ]
@@ -160,25 +163,26 @@ copy("copy_resource") {
     "$root_build_dir/bin/sample/uigpu/{{source_file_part}}"
   ]
 }
-executable("uigpu_sample") {
-  output_dir = "$root_out_dir/bin"
-  output_name = "sample_uigpu"
 
-  deps = [
-    "//ui/gpu:uigpu",
-    ":copy_resource",
-  ]
+if (is_win) {
+  executable("uigpu_sample") {
+    output_dir = "$root_out_dir/bin"
+    output_name = "sample_uigpu"
 
-  cflags = []
-  if (is_debug || (is_mac||is_linux)) {
-    cflags = ["-g"]
-  }
+    deps = [
+      "//ui/gpu:uigpu",
+      ":copy_resource",
+    ]
 
-  include_dirs = [
-    "//ui/",
-    "//ui/gpu/",
-  ]
-  if (is_win) {
+    cflags = []
+    if (is_debug || (is_mac||is_linux)) {
+      cflags = ["-g"]
+    }
+
+    include_dirs = [
+      "//ui/",
+      "//ui/gpu/",
+    ]
     include_dirs += [
       "//ui/3rd/wtl90/include"
     ]
@@ -186,17 +190,18 @@ executable("uigpu_sample") {
       "atls.lib",
       "gdiplus.lib"
     ]
+
+    sources = [
+      # "sample/sample.cpp",
+      "sample/sample_thread.cpp",
+    ]
   }
-
-  sources = [
-    # "sample/sample.cpp",
-    "sample/sample_thread.cpp",
-  ]
 }
-
 group("gpu_test") {
-  deps = [
-    ":uigpu_sample"
-  ]
+  if (is_win) {
+    deps = [
+      ":uigpu_sample"
+    ]
+  }
 }
 }

@@ -267,10 +267,10 @@ void Window::onDestroy() {
 }
 
 // commit_rect是逻辑坐标，不是像素坐标。
-void Window::onPaint(const Rect *commit_rect) {
+void Window::onPaint(const Rect *commit_rect_px) {
   // 从窗口主动触发的paint消息，不额外增加invalidate区域，而是由我们自己
   // 来控制需要提交的区域。
-  m_window_render.Paint(commit_rect);
+  m_window_render.Paint(commit_rect_px);
 }
 
 // void Window::on_paint(SkCanvas &canvas) { m_signal_paint.emit(canvas); }

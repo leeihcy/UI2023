@@ -273,8 +273,8 @@ int client_width = m_window.contentView.bounds.size.width;
 
   // 目前不是处于drawRect调用中，调用displayRect触发窗口刷新。
   if (!context) {
-    for (int i = 0; i < dirty_region.Count(); i++) {
-      const ui::Rect& recti = dirty_region.RectPtr2()[i];
+    for (int i = 0; i < dirty_region_px.Count(); i++) {
+      ui::Rect recti = dirty_region_px.RectPtr2()[i];
       m_ui_window.m_dpi.RestoreRect(&recti);
       NSRect rect = NSMakeRect(recti.left,
                                // 转换成左下角原点
@@ -306,24 +306,28 @@ int client_width = m_window.contentView.bounds.size.width;
       kCGRenderingIntentDefault);
   assert(image);
 
-  for (int i = 0; i < dirty_region.Count(); i++) {
-    const ui::Rect &rc_dirty = dirty_region.RectPtr2()[i];
-    Rect rc = rc_dirty;
-    // Rect rc = ui::Rect::MakeXYWH(0, 0, 600, 300);
+  for (int i = 0; i < dirty_region_px.Count(); i++) {
+    const ui::Rect& rc_dirty = dirty_region_px.RectPtr2()[i];
+
+    Rect rc_dirty_px = rc_dirty;
+
+    ui::Rect rc_dirty_dip = rc_dirty;
+    m_ui_window.m_dpi.RestoreRect(&rc_dirty_dip);
 
 #if 1
     // 效率比使用clip低，废弃
     // 使用子图片实现脏区域提交
-    NSRect nsrect = CGRectMake(rc.left, rc.top, rc.width(), rc.height());
+    NSRect nsrect = CGRectMake(rc_dirty_px.left, rc_dirty_px.top,
+                               rc_dirty_px.width(), rc_dirty_px.height());
     CGImageRef part_image = CGImageCreateWithImageInRect(image, nsrect);
 
     NSRect dirty =
-        CGRectMake(rc_dirty.left, // * m_window.backingScaleFactor,
-                                  // 转换成左下角原点
-                   client_height - rc_dirty.top -
-                       rc_dirty.height(), // * m_window.backingScaleFactor,
-                   rc_dirty.width(),      // * m_window.backingScaleFactor,
-                   rc_dirty.height());    // * m_window.backingScaleFactor);
+        CGRectMake(rc_dirty_dip.left, // * m_window.backingScaleFactor,
+                                      // 转换成左下角原点
+                   client_height - rc_dirty_dip.top -
+                       rc_dirty_dip.height(), // * m_window.backingScaleFactor,
+                   rc_dirty_dip.width(),      // * m_window.backingScaleFactor,
+                   rc_dirty_dip.height());    // * m_window.backingScaleFactor);
 
     CGContextDrawImage(context, dirty, part_image);
     CGImageRelease(part_image);
@@ -375,7 +379,9 @@ void WindowPlatformMac::notifySize() {
 }
 
 void WindowPlatformMac::onPaint(const Rect &dirty) {
-  m_ui_window.onPaint(&dirty);
+  ui::Rect rect_px = dirty;
+  m_ui_window.m_dpi.ScaleRect(&rect_px);
+  m_ui_window.onPaint(&rect_px);
 }
 
 // Vulkan调用vkCreateMacOSSurfaceMVK时使用。

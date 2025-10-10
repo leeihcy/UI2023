@@ -95,7 +95,7 @@ protected:
   // gpu backend
   // 硬件合成
   bool m_enable_hardware_backend = false;
-  IGpuLayer *m_gpu_texture = nullptr;
+  std::shared_ptr<IGpuLayer> m_gpu_texture;
 };
 
 } // namespace ui

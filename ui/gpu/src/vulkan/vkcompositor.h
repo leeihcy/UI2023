@@ -33,7 +33,7 @@ public:
   bool Initialize(IGpuCompositorWindow*);
   void Release() override { delete this; }
 
-  IGpuLayer *CreateLayerTexture() override;
+  std::shared_ptr<IGpuLayer> CreateLayerTexture() override;
   bool BeginCommit(GpuLayerCommitContext *) override;
   void EndCommit(GpuLayerCommitContext *) override;
   void Resize(int nWidth, int nHeight) override;

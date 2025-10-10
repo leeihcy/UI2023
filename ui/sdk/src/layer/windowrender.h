@@ -121,6 +121,7 @@ public:
   WindowRender&  m_window_render; // TODO: delete this var;
 
   IGpuCompositor *m_gpu_composition = nullptr;
+  
   std::shared_ptr<LayerRT> m_root_layer;
   std::map<LAYERID, std::shared_ptr<LayerRT>> m_layer_map;
 
