@@ -128,6 +128,9 @@ shared_library("uisdk") {
         "src/attribute/int_attribute.cpp",
         "src/attribute/length_attribute.cpp",
         "src/attribute/rect_attribute.cpp",
+        "src/attribute/rect_attribute.h",
+        "src/attribute/radius_attribute.cpp",
+        "src/attribute/radius_attribute.h",
         "src/attribute/renderbase_attribute.cpp",
         "src/attribute/stringselect_attribute.cpp",
         "src/attribute/size_attribute.cpp",
@@ -250,6 +253,10 @@ shared_library("uisdk") {
     sources += [
       "src/control/text/label.h",
       "src/control/text/label.cpp",
+      "src/control/text/label_meta.h",
+      "src/control/button/button.h",
+      "src/control/button/button.cpp",
+      "src/control/button/button_meta.h",
     ]
 
     if (is_linux) {

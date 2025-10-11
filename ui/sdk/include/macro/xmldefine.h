@@ -74,15 +74,12 @@ namespace ui
 #define XML_ALIGN_CENTER     "center"
 #define XML_ALIGN_VCENTER    "vcenter"
 
-enum ALIGN_TYPE
-{
-    ALIGN_LEFT = 0x00,
-    ALIGN_TOP  = 0x01,     
-    ALIGN_RIGHT  = 0x02,     
-    ALIGN_BOTTOM = 0x04,      
-    ALIGN_CENTER =  0x08,
-    ALIGN_VCENTER = 0x10,
-};
+constexpr int AlignLeft = 0x00;
+constexpr int AlignTop  = 0x01;     
+constexpr int AlignRight  = 0x02;     
+constexpr int AlignBottom = 0x04;      
+constexpr int AlignCenter =  0x08;
+constexpr int AlignVCenter = 0x10;
 
 
 #define XML_FONT_FACENAME    "face"   // 以逗号分隔多个字体，依次进行尝试
@@ -180,7 +177,6 @@ enum VISIBILITY_TYPE
 #define XML_RENDER_TYPE_IMAGELISTITEM     "imagelistitem"           // 图片列表中的一项，需要指定其索引
 #define XML_RENDER_TYPE_IMAGELIST         "imagelist"               // 图片列表
 #define XML_RENDER_TYPE_COLOR             "color"                   // 纯色填充 Color
-#define XML_RENDER_TYPE_SYSCOLOR          "syscolor"                // 系统色填充 Color
 #define XML_RENDER_TYPE_COLORLIST         "colorlist"               // 类似office 2003工具栏式按钮
 #define XML_RENDER_TYPE_NOTHEME           "notheme"                 // win2000主题控件
 #define XML_RENDER_TYPE_THEME             "theme"                   // 系统主题控件
@@ -189,7 +185,8 @@ enum VISIBILITY_TYPE
 
 #define XML_RENDER_THEME_DISABLE          "render.theme.disable"    // 是否强制使用无主题的渲染
 #define XML_RENDER_COLOR                  "render.color"            // 填充颜色
-#define XML_RENDER_BORDER                 "render.border"           // 边框大小 Rect
+#define XML_RENDER_BORDER_WIDTH           "render.border.width"     // 边框大小
+#define XML_RENDER_RADIUS                 "render.radius"           // 边框圆角
 #define XML_RENDER_BORDERCOLOR            "render.border.color"     // 边框颜色
 #define XML_RENDER_COLORFROM              "render.color.from"       // 渐变起始色
 #define XML_RENDER_COLORTO                "render.color.to"         // 渐变终点色
@@ -613,16 +610,16 @@ typedef enum
 }BUTTON_RENDER_DRAW_FOCUS_TYPE;
 
 #define XML_BUTTON_AUTOSIZE_TYPE           "autosize"     // 当没有指定按钮大小时，如何计算其大小
-#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE   "backimage"      // 背景图片的大小决定按钮大小
+#define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE   "backimage"    // 背景图片的大小决定按钮大小
 #define XML_BUTTON_AUTOSIZE_TYPE_CONTENT   "content"      // 背景图片的内容(图标+文本)决定按钮大小
 #define XML_BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH "bkimagehcontentw"  // 图片的高度+内容的宽度
 
-enum BUTTON_AUTO_SIZE_TYPE
+enum class eButtonAutoSizeType : int
 {
-    BUTTON_AUTOSIZE_TYPE_NDEF,
-    BUTTON_AUTOSIZE_TYPE_BKIMAGE,
-    BUTTON_AUTOSIZE_TYPE_CONTENT,
-    BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH
+    NotDefine = 0,
+    BackImage,
+    Content,
+    BackImageHeightAndContentWidth
 };
 
 #define XML_BUTTON_ICON_ALIGN  "iconalign"    // 按钮图标的位置

@@ -20,7 +20,7 @@ public:
   bool IsGroup();
   void SetGroup(bool b);
 
-  ITextRenderBase *GetTextRenderDefault();
+  ITextRenderBase *GetTextRenderOrDefault();
   ITextRenderBase *CreateDefaultTextRender();
   void TryUpdateLayoutOnContentChanged();
 

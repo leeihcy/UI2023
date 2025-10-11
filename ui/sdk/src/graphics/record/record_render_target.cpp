@@ -1,4 +1,5 @@
 #include "src/graphics/record/record_render_target.h"
+#include "include/macro/xmldefine.h"
 #include "src/graphics/font/font.h"
 #include "src/thread/paint_op.h"
 #include "src/thread/render_thread.h"
@@ -63,7 +64,7 @@ void RecordRenderTarget::Save() {
 void RecordRenderTarget::Restore() {
   addPaintOp(std::move(std::make_unique<RestoreOp>()));
 }
-void RecordRenderTarget::ClipRoundRect(const Rect &rect, int radius) {
+void RecordRenderTarget::ClipRoundRect(const Rect &rect, const CornerRadius& radius) {
   addPaintOp(std::move(std::make_unique<ClipRoundRectOp>(rect, radius)));
 }
 void RecordRenderTarget::ClipRect(const Rect &rect) {
@@ -121,9 +122,25 @@ void RecordRenderTarget::Render2Target(IRenderTarget *pDst,
                                        Render2TargetParam *pParam) {
   // Render this target to another target
 }
-void RecordRenderTarget::DrawRect(const Rect &rect, const Color &color) {
-  addPaintOp(std::move(std::make_unique<DrawRectOp>(rect, color)));
+
+void RecordRenderTarget::FillRect(const Rect &rect, const Color &color) {
+  addPaintOp(std::move(std::make_unique<FillRectOp>(rect, color)));
 }
+void RecordRenderTarget::StrokeRect(const Rect &rect, const Color &color,
+                                    int width) {
+  addPaintOp(std::move(std::make_unique<StrokeRectOp>(rect, color, width)));
+}
+void RecordRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
+                                       const CornerRadius &radius) {
+  addPaintOp(std::move(std::make_unique<FillRoundRectOp>(rect, color, radius)));
+}
+void RecordRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
+                                         const CornerRadius &radius,
+                                         int width) {
+  addPaintOp(
+      std::move(std::make_unique<StrokeRoundRectOp>(rect, color, radius, width)));
+}
+
 void RecordRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
                                     DRAWBITMAPPARAM *param) {
   // TODO: 支持多线程！
@@ -135,7 +152,7 @@ std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
                                   /*out*/ int &measure_width);
 
 void RecordRenderTarget::DrawString(const DrawTextParam &param) {
-  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc, m_scale);
+  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc);
 
   SkPaint paint;
   paint.setColor(param.color.value);
@@ -160,14 +177,14 @@ void RecordRenderTarget::DrawString(const DrawTextParam &param) {
   y = y - metrics.fAscent;
 
   if (!param.multiline) {
-    if (param.align & ALIGN_CENTER) {
+    if (param.align & AlignCenter) {
       x += (param.bound.width() - measure_width) / 2;
-    } else if (param.align & ALIGN_RIGHT) {
+    } else if (param.align & AlignRight) {
       x += param.bound.width() - measure_width;
     }
-    if (param.align & ALIGN_VCENTER) {
+    if (param.align & AlignVCenter) {
       y += (param.bound.height() - totalHeight) / 2;
-    } else if (param.align & ALIGN_BOTTOM) {
+    } else if (param.align & AlignBottom) {
       y += param.bound.height() - totalHeight;
     }
   }

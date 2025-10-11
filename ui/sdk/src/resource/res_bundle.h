@@ -1,6 +1,5 @@
 #pragma once
 #include "colormanager.h"
-#include "fontmanager.h"
 #include "i18nmanager.h"
 #include "imagemanager.h"
 #include "include/interface/iskindatasource.h"

@@ -365,12 +365,11 @@ public: // TODO:
   OBJSTYLE m_objStyle;
   OBJSTATE m_objState;
 protected:
-
-
   std::shared_ptr<IMapAttribute> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
-  IRenderBase *m_pBkgndRender;           // 背景渲染
-  IRenderBase *m_pForegndRender;         // 前景渲染
-  ITextRenderBase *m_pTextRender; // 文字渲染，由control负责读取该属性
+  IRenderBase *m_back_render;           // 背景渲染
+  IRenderBase *m_fore_render;         // 前景渲染
+  ITextRenderBase *m_text_render; // 文字渲染，由control负责读取该属性
+  
 #if 0 // defined(OS_WIN)
   IAccessible *m_pAccessible;
 #endif

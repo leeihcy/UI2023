@@ -28,7 +28,7 @@ public:
   
   void Save() override;
   void Restore() override;
-  void ClipRoundRect(const Rect& rect, int radius) override;
+  void ClipRoundRect(const Rect& rect, const CornerRadius& radius) override;
   void ClipRect(const Rect& rect) override;
 
   void CreateSwapChain(bool is_hardware, IGpuCompositor*) override;
@@ -46,7 +46,12 @@ public:
   bool IsRelativeRectInClip(const Rect &rect) override;
 
   void Render2Target(IRenderTarget *pDst, Render2TargetParam *pParam) override;
-  void DrawRect(const Rect& rc, const Color& color) override;
+  void FillRect(const Rect &rc, const Color &color) override;
+  void StrokeRect(const Rect &rc, const Color &color, int width) override;
+  void FillRoundRect(const Rect &rc, const Color &color,
+                     const CornerRadius &radius) override;
+  void StrokeRoundRect(const Rect &rc, const Color &color,
+                     const CornerRadius &radius, int width) override;
   void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap, DRAWBITMAPPARAM *param) override;
   void DrawString(const DrawTextParam &param) override;
   void _DrawString2(void* text_blob, const Color& color, float x, float y) override;

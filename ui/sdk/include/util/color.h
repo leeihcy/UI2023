@@ -40,7 +40,8 @@ typedef struct {
 } HSV, HSB;
 
 struct UIAPI Color {
-
+  Color();
+  
   static Color Make(uint);
   static Color MakeRGBA(byte r1, byte g1, byte b1, byte a1);
   static Color MakeARGB(byte a1, byte r1, byte g1, byte b1);

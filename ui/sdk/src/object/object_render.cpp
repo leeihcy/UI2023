@@ -128,9 +128,9 @@ void Object::DoPostPaint(IRenderTarget* pRenderTarget, RenderContext context)
 #endif
 
 void Object::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
-  if (m_pBkgndRender) {
+  if (m_back_render) {
     Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
-    m_pBkgndRender->DrawState(pRenderTarget, &rc, 0);
+    m_back_render->DrawState(pRenderTarget, &rc, 0);
   }
 }
 

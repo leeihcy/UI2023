@@ -6,7 +6,6 @@
 namespace ui
 {
 UI_IMPLEMENT_INTERFACE(ColorRender, RenderBase)
-UI_IMPLEMENT_INTERFACE(SysColorRender, RenderBase)
 UI_IMPLEMENT_INTERFACE(GradientRender, RenderBase)
 UI_IMPLEMENT_INTERFACE(ColorListRender, RenderBase)
 
@@ -18,9 +17,9 @@ void  IColorRender::SetBorderColor(Color col)
 {
     return __pImpl->SetBorderColor(col);
 }
-void  IColorRender::SetBorderRegion(const Rect* prc)
+void  IColorRender::SetBorder(int b)
 {
-    __pImpl->SetBorderRegion(prc);
+    __pImpl->SetBorder(b);
 }
 //////////////////////////////////////////////////////////////////////////
 
@@ -31,15 +30,6 @@ void  IColorListRender::SetStateColor(int nState, Color colorBk, bool bSetBk, Co
 void  IColorListRender::SetCount(int n)
 {
     __pImpl->SetCount(n);
-}
-
-void  ISysColorRender::SetBkColor(int nColorIndex)
-{
-	__pImpl->SetBkColor(nColorIndex);
-}
-void  ISysColorRender::SetBorderColor(int nColorIndex)
-{
-	__pImpl->SetBorderColor(nColorIndex);
 }
 
 }

@@ -8,6 +8,7 @@
 #include <SkRect.h>
 
 #include "include/macro/msg.h"
+#include "include/util/rect.h"
 #include "src/attribute/attribute.h"
 #include "src/graphics/skia/skia_render.h"
 #include "src/panel/panel_meta.h"
@@ -16,8 +17,6 @@ namespace ui {
 
 RoundPanel::RoundPanel(IRoundPanel *p) : Panel(p) {
   m_pIRoundPanel = p;
-  m_corner.SetEmpty();
-
   m_objStyle.post_paint = 1;
 }
 RoundPanel::~RoundPanel() {}
@@ -53,24 +52,26 @@ void RoundPanel::onSerialize(SerializeParam *pData) {
   Panel::onSerialize(pData);
 
   AttributeSerializer s(pData, "RoundPanel");
-  s.AddRect(XML_CORNER, Slot(&RoundPanel::loadCorner, this),
+  s.AddRadius(XML_CORNER, Slot(&RoundPanel::loadCorner, this),
            Slot(&RoundPanel::saveCorner, this));
 }
 
-void RoundPanel::SetRadius(int lefttop, int righttop, int leftbottom,
-                           int rightbottom) {
-  m_corner.Set(lefttop, righttop, leftbottom, rightbottom);
+void RoundPanel::SetRadius(const CornerRadius& radius) {
+  memcpy(&m_corner_radius, &radius, sizeof(m_corner_radius));
+}
+void RoundPanel::SetRadius(int radius) {
+  m_corner_radius.SetAll(radius);
 }
 
-void RoundPanel::loadCorner(Rect* rc) {
-  if (!rc) {
-    m_corner.SetEmpty();
+void RoundPanel::loadCorner(CornerRadius* radius) {
+  if (!radius) {
+    m_corner_radius.SetAll(0);
     return;
   }
-  m_corner.CopyFrom(*rc);
+  m_corner_radius = *radius;
 }
-void RoundPanel::saveCorner(Rect* rc) {
-  rc->CopyFrom(m_corner);
+void RoundPanel::saveCorner(CornerRadius* radius) {
+  *radius = m_corner_radius;
 }
 
 void RoundPanel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
@@ -87,22 +88,16 @@ void RoundPanel::onPostPaint(IRenderTarget *pRenderTarget) {
 }
 
 void RoundPanel::prePaint(IRenderTarget *pRenderTarget, int width, int height) {
-  if (m_corner.IsZero())
+  if (m_corner_radius.IsZero())
     return;
 
-  // TODO:
-  // SkScalar ul = (SkScalar)m_corner.left;
-  // SkScalar ur = (SkScalar)m_corner.top;
-  // SkScalar ll = (SkScalar)m_corner.right;
-  // SkScalar lr = (SkScalar)m_corner.bottom;
-
   pRenderTarget->Save();
-  pRenderTarget->ClipRoundRect(ui::Rect::MakeXYWH(0, 0, width, height), m_corner.left);
+  pRenderTarget->ClipRoundRect(ui::Rect::MakeXYWH(0, 0, width, height), m_corner_radius);
 }
 
 void RoundPanel::postPaint(IRenderTarget *pRenderTarget, int width,
                            int height) {
-  if (m_corner.IsZero())
+  if (m_corner_radius.IsZero())
     return;
 
   pRenderTarget->Restore();

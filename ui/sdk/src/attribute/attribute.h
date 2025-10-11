@@ -3,9 +3,11 @@
 #include "enum_attribute.h"
 #include "flags_attribute.h"
 #include "include/interface/iattribute.h"
+#include "include/util/rect.h"
 #include "int_attribute.h"
 #include "length_attribute.h"
 #include "rect_attribute.h"
+#include "radius_attribute.h"
 #include "size_attribute.h"
 #include "string_attribute.h"
 
@@ -108,6 +110,10 @@ public:
   RectAttribute *AddRect(const char *, slot<void(Rect *)> &&s,
                          slot<void(Rect *)> &&g);
 
+  RadiusAttribute *AddRadius(const char *, CornerRadius &rcBindValue);
+  RadiusAttribute *AddRadius(const char *, slot<void(CornerRadius *)> &&s,
+                         slot<void(CornerRadius *)> &&g);
+
   SizeAttribute *AddSize(const char *, Size &sBindValue);
   SizeAttribute *AddSize(const char *, slot<void(Size *)> &&s,
                          slot<void(Size *)> &&g);
@@ -160,6 +166,7 @@ public:
   void Enum2Editor(EnumAttribute *p, EditorAttributeFlag e);
   void Flags2Editor(FlagsAttribute *p, EditorAttributeFlag e);
   void Rect2Editor(RectAttribute *p, EditorAttributeFlag e);
+  void CornerRadius2Editor(RadiusAttribute* p, EditorAttributeFlag e);
   void Size2Editor(SizeAttribute *p, EditorAttributeFlag e);
   void Region92Editor(Region9Attribute *p, EditorAttributeFlag e);
   void StringEnum2Editor(StringEnumAttribute *p, EditorAttributeFlag e);

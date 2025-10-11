@@ -112,11 +112,10 @@ void Layer::InvalidateForLayerAnimate(bool bUpdateNow) {
       m_window_render->InvalidateNow();
     }
   } else {
-    if (bUpdateNow) {
-      m_window_render->InvalidateNow();
-    } else {
-      m_window_render->RequestInvalidate();
-    }
+    hardwareSyncLayerProperties();
+
+    DirtyRegion dirty;
+    m_window_render->DirectCommit(dirty);
   }
 }
 

@@ -8,6 +8,7 @@ namespace ui {
 struct IObject;
 struct SerializeParam;
 struct Rect;
+struct CornerRadius;
 struct Size;
 struct Color;
 struct Length;
@@ -24,6 +25,7 @@ enum DEFAULT_ATTRIBUTE_TYPE {
   ATTRIBUTE_TYPE_CHARARRAY,
   ATTRIBUTE_TYPE_BOOL,
   ATTRIBUTE_TYPE_RECT,
+  ATTRIBUTE_TYPE_RADIUS,
   ATTRIBUTE_TYPE_INTEGER,
   ATTRIBUTE_TYPE_LENGTH,
   ATTRIBUTE_TYPE_SIZE,
@@ -208,7 +210,7 @@ struct UIAPI IRectAttribute {
   IRectAttribute *AsData();
 
   IRectAttribute *SetCompatibleKey(const char *key);
-  IRectAttribute *SetDefault(Rect);
+  IRectAttribute *SetDefault(const Rect&);
 
   const char *GetKey();
   const char *GetDesc();
@@ -218,6 +220,24 @@ struct UIAPI IRectAttribute {
 
 private:
   RectAttribute *m_pImpl;
+};
+
+class RadiusAttribute;
+struct UIAPI IRadiusAttribute {
+  IRadiusAttribute(RadiusAttribute *);
+  IRadiusAttribute *AsData();
+
+  IRadiusAttribute *SetCompatibleKey(const char *key);
+  IRadiusAttribute *SetDefault(const CornerRadius&);
+
+  const char *GetKey();
+  const char *GetDesc();
+  const char *GetGroupName();
+  const char *GetParentKey();
+  const char *Get();
+
+private:
+  RadiusAttribute *m_pImpl;
 };
 
 class SizeAttribute;

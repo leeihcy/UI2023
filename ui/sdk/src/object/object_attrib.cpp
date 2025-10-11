@@ -16,17 +16,17 @@ namespace ui {
 void Object::onSerialize(SerializeParam *pData) {
   IMapAttribute *pMapAttrib = pData->pMapAttrib;
   if (pData->IsReload()) {
-    if (m_pBkgndRender) {
-      m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
-      m_pBkgndRender = nullptr;
+    if (m_back_render) {
+      m_back_render->GetMeta()->Destroy(m_back_render);
+      m_back_render = nullptr;
     }
-    if (m_pForegndRender) {
-      m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
-      m_pForegndRender = nullptr;
+    if (m_fore_render) {
+      m_fore_render->GetMeta()->Destroy(m_fore_render);
+      m_fore_render = nullptr;
     }
-    if (m_pTextRender) {
-      m_pTextRender->GetMeta()->Destroy(m_pTextRender);
-      m_pTextRender = nullptr;
+    if (m_text_render) {
+      m_text_render->GetMeta()->Destroy(m_text_render);
+      m_text_render = nullptr;
     }
     // SAFE_RELEASE(m_pCursor);
   }
@@ -106,9 +106,9 @@ void Object::onSerialize(SerializeParam *pData) {
     // 		    memfun_cast<pfnStringGetter>(&Object::SaveCursorId));
 
     // 设置背景渲染器
-    s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, this, m_pBkgndRender);
+    s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, this, m_back_render);
     // 设置前景绘制
-    s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, this, m_pForegndRender);
+    s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, this, m_fore_render);
 
     //         s.AddStringEnum(XML_BACKGND_RENDER_PREFIX XML_RENDER_TYPE, this,
     //             memfun_cast<pfnStringSetter>(&Object::LoadBkgndRender),
@@ -122,7 +122,7 @@ void Object::onSerialize(SerializeParam *pData) {
     //             ->ReloadOnChanged();
 
     // 背景属性
-    // 	   if (m_pBkgndRender)
+    // 	   if (m_back_render)
     // 	   {
     // 		   SerializeParam data(*pData);
     // 		   data.szParentKey = XML_BACKGND_RENDER_PREFIX XML_RENDER_TYPE;
@@ -135,11 +135,11 @@ void Object::onSerialize(SerializeParam *pData) {
     // 		   if (data.pUIApplication->IsDesignMode())
     // 			   data.SetErase(false);
     //
-    // 		   m_pBkgndRender->Serialize(&data);
+    // 		   m_back_render->Serialize(&data);
     // 	   }
     //
     // 	   // 前景属性
-    // 	   if (m_pForegndRender)
+    // 	   if (m_fore_render)
     // 	   {
     // 		   SerializeParam data(*pData);
     // 		   data.szParentKey = XML_FOREGND_RENDER_PREFIX XML_RENDER_TYPE;
@@ -147,7 +147,7 @@ void Object::onSerialize(SerializeParam *pData) {
     // 		   if (data.pUIApplication->IsDesignMode())
     // 			   data.SetErase(false);
     //
-    // 		   m_pForegndRender->Serialize(&data);
+    // 		   m_fore_render->Serialize(&data);
     // 	   }
   }
 

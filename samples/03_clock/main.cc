@@ -4,6 +4,7 @@
 #include "sdk/include/interface/iuiapplication.h"
 #include "sdk/include/interface/iwindow.h"
 #include "svg/include/inc.h"
+#include <chrono>
 #include <cstdio>
 #include <ctime>
 
@@ -48,7 +49,10 @@ public:
     ui::ILayer *min_layer = min->GetLayer();
     ui::ILayer *sec_layer = sec->GetLayer();
 
-    std::time_t now = std::time(nullptr);
+    auto clock_now = std::chrono::system_clock::now();
+    time_t now = std::chrono::system_clock::to_time_t(clock_now);
+    // std::time_t now = std::time(nullptr);
+
     // 转换为本地时间
     std::tm *local_time = std::localtime(&now);
 
@@ -56,10 +60,19 @@ public:
     int h = local_time->tm_hour;
     int m = local_time->tm_min;
     int s = local_time->tm_sec;
+    int ms = (std::chrono::duration_cast<std::chrono::milliseconds>(
+      clock_now.time_since_epoch()) % 1000).count();
 
     hour_layer->RotateZTo(30 * h + 0.5f * m + 0.5f * s / 120);
     min_layer->RotateZTo(6 * m + 0.1f * s);
-    sec_layer->RotateZTo(local_time->tm_sec * 6.0f);
+
+    bool smooth = true;
+    if (smooth) {
+      float angle = local_time->tm_sec * 6.0f + ms * 6.0f /1000;
+      sec_layer->RotateZTo(local_time->tm_sec * 6.0f + ms * 6.0f /1000);
+    } else {
+      sec_layer->RotateZTo(local_time->tm_sec * 6.0f);
+    }
   }
 };
 ClockAnimate g_clock_animate;
@@ -110,7 +123,7 @@ int main() {
 
   if (use_gpu) {
     g_clock_animate.update_rotate(window.get());
-    // start_animate(app.get(), window.get());
+    start_animate(app.get(), window.get());
   }
 
   ui::TimerID timer_id =

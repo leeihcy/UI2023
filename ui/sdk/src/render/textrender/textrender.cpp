@@ -15,6 +15,7 @@
 #include "src/render/renderbase.h"
 #include "src/resource/colorres.h"
 #include "src/resource/res_bundle.h"
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                      //
@@ -181,23 +182,15 @@ const char *TextRenderBase::_SaveColor(Color *&pColor) {
 }
 
 void TextRenderBase::onRouteMessage(ui::Msg *msg) {
-  if (msg->message == UI_MSG_GETDESIREDSIZE) {
-    // onGetDesiredSize(&static_cast<GetDesiredSizeMessage *>(msg)->size);
-
-    assert(0);
-    // *pSize = GetDesiredSize(pInfo->szText, pInfo->nLimitWidth);
-    return;
-  }
   Message::onRouteMessage(msg);
 }
 
-Size TextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
-  Size s = {0, 0};
-  IRenderFont *pFont = m_pITextRenderBase->GetRenderFont();
-  if (pFont)
-    s = pFont->MeasureString(szText, nLimitWidth);
-
-  return s;
+Size TextRenderBase::GetDesiredSize(const char *text, unsigned int limit_width) {
+  GetTextDesiredSizeMessage msg;
+  msg.text = text;
+  msg.limit_width = limit_width;
+  RouteMessage(&msg);
+  return msg.size;
 }
 
 IColorRes *TextRenderBase::GetSkinColorRes() {
@@ -281,10 +274,10 @@ void SerializeDrawTextParam(AttributeSerializer &serialize,
                             DrawTextParam &draw_ext_param) {
   serialize.AddColor(XML_TEXTRENDER "." XML_COLOR, draw_ext_param.color);
   serialize.AddFlags(XML_TEXTRENDER_ALIGN, draw_ext_param.align)
-      ->AddFlag(ALIGN_RIGHT, XML_TEXTRENDER_ALIGN_RIGHT)
-      ->AddFlag(ALIGN_CENTER, XML_TEXTRENDER_ALIGN_CENTER)
-      ->AddFlag(ALIGN_BOTTOM, XML_TEXTRENDER_ALIGN_BOTTOM)
-      ->AddFlag(ALIGN_VCENTER, XML_TEXTRENDER_ALIGN_VCENTER)
+      ->AddFlag(AlignRight, XML_TEXTRENDER_ALIGN_RIGHT)
+      ->AddFlag(AlignCenter, XML_TEXTRENDER_ALIGN_CENTER)
+      ->AddFlag(AlignBottom, XML_TEXTRENDER_ALIGN_BOTTOM)
+      ->AddFlag(AlignVCenter, XML_TEXTRENDER_ALIGN_VCENTER)
       // ->AddFlag(DT_SINGLELINE, XML_TEXTRENDER_ALIGN_SINGLELINE)
       // ->AddFlag(DT_WORDBREAK | DT_EDITCONTROL, XML_TEXTRENDER_ALIGN_MULTILINE)
       // ->AddFlag(DT_END_ELLIPSIS, XML_TEXTRENDER_ALIGN_END_ELLIPSIS)
@@ -301,7 +294,10 @@ SimpleTextRender::SimpleTextRender(ISimpleTextRender *p) : TextRenderBase(p) {
 SimpleTextRender::~SimpleTextRender() {}
 
 void SimpleTextRender::onRouteMessage(ui::Msg *msg) {
-  if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
+  if (msg->message == UI_MSG_GETTEXTDESIREDSIZE) {
+    onGetDesiredSize(static_cast<GetTextDesiredSizeMessage *>(msg));
+  }
+  else if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
     DrawState(&((TextRenderDrawStateMessage *)msg)->draw_state);
     return;
   } else if (msg->message == UI_MSG_SERIALIZE) {
@@ -309,6 +305,13 @@ void SimpleTextRender::onRouteMessage(ui::Msg *msg) {
     return;
   }
   TextRenderBase::onRouteMessage(msg);
+}
+
+void SimpleTextRender::onGetDesiredSize(GetTextDesiredSizeMessage *msg) {
+  assert(msg->limit_width == 0); // TODO:
+
+  msg->size = FontPool::GetInstance().MeasureString(m_draw_text_param.font_desc,
+                                                    msg->text);
 }
 
 // 如果字体指针为空，则取object对象的配置字体。

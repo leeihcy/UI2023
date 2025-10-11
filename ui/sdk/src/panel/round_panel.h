@@ -1,5 +1,5 @@
-#pragma once
-// #include "Src\Atl\image.h"
+#ifndef _UI_SDK_SRC_PANEL_ROUND_PANEL_H_
+#define _UI_SDK_SRC_PANEL_ROUND_PANEL_H_
 #include "panel.h"
 #include "src/graphics/bitmap/skiabitmap.h"
 
@@ -16,7 +16,8 @@ public:
   void onRouteMessage(ui::Msg *msg);
 
 public:
-  void SetRadius(int lefttop, int righttop, int leftbottom, int rightbottom);
+  void SetRadius(const CornerRadius& radius);
+  void SetRadius(int radius);
 
 protected:
   void onSerialize(SerializeParam *pData);
@@ -24,14 +25,16 @@ protected:
   void onPaint(IRenderTarget *pRenderTarget);
   void onPostPaint(IRenderTarget *pRenderTarget);
 
-  void loadCorner(Rect *);
-  void saveCorner(Rect *);
+  void loadCorner(CornerRadius* radius);
+  void saveCorner(CornerRadius* radius);
 
   void prePaint(IRenderTarget *pRenderTarget, int width, int height);
   void postPaint(IRenderTarget *pRenderTarget, int width, int height);
 private:
   IRoundPanel *m_pIRoundPanel;
-  Rect m_corner;
+  CornerRadius m_corner_radius;
 };
 
 } // namespace ui
+
+#endif

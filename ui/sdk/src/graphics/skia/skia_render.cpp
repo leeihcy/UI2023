@@ -1,5 +1,6 @@
 #include "skia_render.h"
 #include "include/core/SkBitmap.h"
+#include "include/core/SkPoint.h"
 #include "include/core/SkRect.h"
 #include "include/core/SkScalar.h"
 #include "include/gpu/GrTypes.h"
@@ -212,13 +213,13 @@ void SkiaRenderTarget::Restore() {
   canvas->restore();
 }
 
-void SkiaRenderTarget::ClipRoundRect(const Rect &rect, int radius) {
+void SkiaRenderTarget::ClipRoundRect(const Rect &rect, const CornerRadius& radius) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  SkScalar ul = (SkScalar)radius;
-  SkScalar ur = (SkScalar)radius;
-  SkScalar ll = (SkScalar)radius;
-  SkScalar lr = (SkScalar)radius;
+  SkScalar ul = (SkScalar)radius.top_left;
+  SkScalar ur = (SkScalar)radius.top_right;
+  SkScalar ll = (SkScalar)radius.bottom_left;
+  SkScalar lr = (SkScalar)radius.bottom_right;
 
   SkRRect rr;
   SkVector radii[4] = {
@@ -467,7 +468,7 @@ static void drawMultilineText(SkCanvas* canvas, const SkString& text, const SkRe
 void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc, m_scale);
+  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc);
 
   SkPaint paint;
   paint.setColor(param.color.value);
@@ -492,14 +493,14 @@ void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   y = y - metrics.fAscent;
 
   if (!param.multiline) {
-    if (param.align & ALIGN_CENTER) {
+    if (param.align & AlignCenter) {
       x += (param.bound.width() - measure_width) / 2;
-    } else if (param.align & ALIGN_RIGHT) {
+    } else if (param.align & AlignRight) {
       x += param.bound.width() - measure_width;
     }
-    if (param.align & ALIGN_VCENTER) {
+    if (param.align & AlignVCenter) {
       y += (param.bound.height() - totalHeight) / 2;
-    } else if (param.align & ALIGN_BOTTOM) {
+    } else if (param.align & AlignBottom) {
       y += param.bound.height() - totalHeight;
     }
   }
@@ -522,7 +523,7 @@ void SkiaRenderTarget::_DrawString2(void *text_blob, const Color &color,
 //   UIASSERT(false);
 // }
 
-void SkiaRenderTarget::DrawRect(const Rect &rect, const Color &color) {
+void SkiaRenderTarget::FillRect(const Rect &rect, const Color &color) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   SkRect skrect;
@@ -536,6 +537,80 @@ void SkiaRenderTarget::DrawRect(const Rect &rect, const Color &color) {
   canvas->drawRect(skrect, paint);
 }
 
+void SkiaRenderTarget::StrokeRect(const Rect &rect, const Color &color, int width) {
+  if (width <= 0) {
+    return;
+  }
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  // 默认边框是居中绘制的，这里调整为靠内侧绘制
+  SkScalar offset = width/2.0f;
+
+  SkRect skrect;
+  skrect.fLeft = (SkScalar)rect.left + offset;
+  skrect.fTop = (SkScalar)rect.top + offset;
+  skrect.fRight = (SkScalar)rect.right - offset;
+  skrect.fBottom = (SkScalar)rect.bottom - offset;
+
+  SkPaint paint;
+  paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+  paint.setStroke(true);
+  paint.setStrokeWidth(width);
+  canvas->drawRect(skrect, paint);
+}
+
+void SkiaRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
+                     const CornerRadius &radius) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  SkRect skrect;
+  skrect.fLeft = (SkScalar)rect.left;
+  skrect.fTop = (SkScalar)rect.top;
+  skrect.fRight = (SkScalar)rect.right;
+  skrect.fBottom = (SkScalar)rect.bottom;
+
+  SkPaint paint;
+  paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+  
+  SkVector radius4[4] = {
+    (SkScalar)radius.top_left, 
+    (SkScalar)radius.top_right, 
+    (SkScalar)radius.bottom_right, 
+    (SkScalar)radius.bottom_left
+  };
+  SkRRect rrect;
+  rrect.setRectRadii(skrect, radius4);
+  canvas->drawRRect(rrect, paint);
+}
+
+void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
+                     const CornerRadius &radius, int width) {
+  SkCanvas *canvas = m_sksurface->getCanvas();
+
+  // 默认边框是居中绘制的，这里调整为靠内侧绘制
+  SkScalar offset = width/2.0f;
+
+  SkRect skrect;
+  skrect.fLeft = (SkScalar)rect.left + offset;
+  skrect.fTop = (SkScalar)rect.top + offset;
+  skrect.fRight = (SkScalar)rect.right - offset;
+  skrect.fBottom = (SkScalar)rect.bottom - offset;
+
+  SkPaint paint;
+  paint.setStroke(true);
+  paint.setStrokeWidth(width);
+  paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+
+  SkVector radii[4] = {
+      {(SkScalar)radius.top_left, (SkScalar)radius.top_left},
+      {(SkScalar)radius.top_right, (SkScalar)radius.top_right},
+      {(SkScalar)radius.bottom_right, (SkScalar)radius.bottom_right},
+      {(SkScalar)radius.bottom_left, (SkScalar)radius.bottom_left},
+  };
+  SkRRect rrect;
+  rrect.setRectRadii(skrect, radii);
+  canvas->drawRRect(rrect, paint);
+}
 // void SkiaRenderTarget::TileRect(Rect *lprc, IRenderBitmap *pRenderBitmap) {
 //   UIASSERT(false);
 // }

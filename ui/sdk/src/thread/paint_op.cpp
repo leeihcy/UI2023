@@ -18,9 +18,24 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   case PaintOpType::Clear:
     rt->Clear(static_cast<ClearOp*>(op)->rect);
     break;
-  case PaintOpType::DrawRect: {
-    auto param = static_cast<DrawRectOp*>(op);
-    rt->DrawRect(param->rect, param->color);
+  case PaintOpType::FillRect: {
+    auto param = static_cast<FillRectOp*>(op);
+    rt->FillRect(param->rect, param->color);
+    break;
+  }
+  case PaintOpType::StrokeRect: {
+    auto param = static_cast<StrokeRectOp*>(op);
+    rt->StrokeRect(param->rect, param->color, param->width);
+    break;
+  }
+  case PaintOpType::FillRoundRect: {
+    auto param = static_cast<FillRoundRectOp*>(op);
+    rt->FillRoundRect(param->rect, param->color, param->radius);
+    break;
+  }
+  case PaintOpType::StrokeRoundRect: {
+    auto param = static_cast<StrokeRoundRectOp*>(op);
+    rt->StrokeRoundRect(param->rect, param->color, param->radius, param->width);
     break;
   }
   case PaintOpType::Resize: {

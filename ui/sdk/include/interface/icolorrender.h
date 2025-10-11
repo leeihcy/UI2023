@@ -9,19 +9,9 @@ class ColorRender;
 struct UIAPI IColorRender : public IRenderBase {
   void SetBkColor(Color col);
   void SetBorderColor(Color col);
-  void SetBorderRegion(const Rect *prc);
+  void SetBorder(int b);
 
   UI_DECLARE_INTERFACE(ColorRender);
-};
-
-//////////////////////////////////////////////////////////////////////////
-
-class SysColorRender;
-struct UIAPI ISysColorRender : public IRenderBase {
-  void SetBkColor(int nColorIndex);
-  void SetBorderColor(int nColorIndex);
-
-  UI_DECLARE_INTERFACE(SysColorRender);
 };
 
 //////////////////////////////////////////////////////////////////////////

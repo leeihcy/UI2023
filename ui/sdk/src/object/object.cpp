@@ -46,9 +46,9 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
   m_resource = nullptr;
   m_ppOutRef = nullptr;
 
-  m_pBkgndRender = nullptr;
-  m_pForegndRender = nullptr;
-  m_pTextRender = nullptr;
+  m_back_render = nullptr;
+  m_fore_render = nullptr;
+  m_text_render = nullptr;
 
   m_pIMapAttributeRemain = nullptr;
 #if 0 // defined(OS_WIN)
@@ -112,17 +112,17 @@ void Object::FinalRelease() {
   //	清理自己的邻居关系
   RemoveMeInTheTree();
 
-  if (m_pBkgndRender) {
-    m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
-    m_pBkgndRender = nullptr;
+  if (m_back_render) {
+    m_back_render->GetMeta()->Destroy(m_back_render);
+    m_back_render = nullptr;
   }
-  if (m_pForegndRender) {
-    m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
-    m_pForegndRender = nullptr;
+  if (m_fore_render) {
+    m_fore_render->GetMeta()->Destroy(m_fore_render);
+    m_fore_render = nullptr;
   }
-  if (m_pTextRender) {
-    m_pTextRender->GetMeta()->Destroy(m_pTextRender);
-    m_pTextRender = nullptr;
+  if (m_text_render) {
+    m_text_render->GetMeta()->Destroy(m_text_render);
+    m_text_render = nullptr;
   }
 
   // 在析构之前销毁，避免窗口的window compositor已经销毁了，但layer还没有被销毁
@@ -472,8 +472,8 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 //     IRenderFont* pRenderFont = nullptr;
 //
 //     // 向自己的textrender获取
-//     if (m_pTextRender)
-//         pRenderFont = m_pTextRender->GetRenderFont();
+//     if (m_text_render)
+//         pRenderFont = m_text_render->GetRenderFont();
 //
 //     if (pRenderFont)
 //         return pRenderFont;
@@ -550,17 +550,17 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
 // {
 // 	SetMsgHandled(false);
 //
-//     if (m_pBkgndRender)
-//         m_pBkgndRender->CheckThemeChanged();
-//     if (m_pForegndRender)
-//         m_pForegndRender->CheckThemeChanged();
+//     if (m_back_render)
+//         m_back_render->CheckThemeChanged();
+//     if (m_fore_render)
+//         m_fore_render->CheckThemeChanged();
 // }
 //
 // int  Object::OnSkinTextureChanged(unsigned int, int, int)
 // {
-//     if (m_pTextRender)
+//     if (m_text_render)
 //     {
-//         m_pTextRender->CheckSkinTextureChanged();
+//         m_text_render->CheckSkinTextureChanged();
 //     }
 //     return 0;
 // }
@@ -1235,32 +1235,32 @@ void Object::SortChildByZorder() {
 }
 
 void Object::SetBackRender(IRenderBase *p) {
-  if (m_pBkgndRender) {
-    m_pBkgndRender->GetMeta()->Destroy(m_pBkgndRender);
-    m_pBkgndRender = nullptr;
+  if (m_back_render) {
+    m_back_render->GetMeta()->Destroy(m_back_render);
+    m_back_render = nullptr;
   }
-  m_pBkgndRender = p;
+  m_back_render = p;
 }
 
 void Object::SetForegndRender(IRenderBase *p) {
-  if (m_pForegndRender) {
-    m_pForegndRender->GetMeta()->Destroy(m_pForegndRender);
-    m_pForegndRender = nullptr;
+  if (m_fore_render) {
+    m_fore_render->GetMeta()->Destroy(m_fore_render);
+    m_fore_render = nullptr;
   }
-  m_pForegndRender = p;
+  m_fore_render = p;
 }
 
 void Object::SetTextRender(ITextRenderBase *p) {
-  if (m_pTextRender) {
-    m_pTextRender->GetMeta()->Destroy(m_pTextRender);
-    m_pTextRender = nullptr;
+  if (m_text_render) {
+    m_text_render->GetMeta()->Destroy(m_text_render);
+    m_text_render = nullptr;
   }
-  m_pTextRender = p;
+  m_text_render = p;
 }
 
-ITextRenderBase *Object::GetTextRender() { return m_pTextRender; }
-IRenderBase *Object::GetBackRender() { return m_pBkgndRender; }
-IRenderBase *Object::GetForeRender() { return m_pForegndRender; }
+ITextRenderBase *Object::GetTextRender() { return m_text_render; }
+IRenderBase *Object::GetBackRender() { return m_back_render; }
+IRenderBase *Object::GetForeRender() { return m_fore_render; }
 
 //	获取自己的字体,这里返回的对象只是一个临时对象，
 //	如果需要保存使用，则需要调用AddRef
@@ -1268,8 +1268,8 @@ IRenderFont *Object::GetRenderFont() {
   IRenderFont *pRenderFont = nullptr;
 
   // 向自己的textrender获取
-  if (m_pTextRender)
-    pRenderFont = m_pTextRender->GetRenderFont();
+  if (m_text_render)
+    pRenderFont = m_text_render->GetRenderFont();
 
   if (pRenderFont)
     return pRenderFont;
@@ -1332,22 +1332,22 @@ const char *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
 }
 
 void Object::LoadBkgndRender(const char *szName) {
-  load_renderbase(szName, m_pBkgndRender);
+  load_renderbase(szName, m_back_render);
 }
 void Object::LoadForegndRender(const char *szName) {
-  load_renderbase(szName, m_pForegndRender);
+  load_renderbase(szName, m_fore_render);
 }
 void Object::LoadTextRender(const char *szName) {
-  load_textrender(szName, m_pTextRender);
+  load_textrender(szName, m_text_render);
 }
 const char *Object::SaveBkgndRender() {
-  return get_renderbase_name(m_pBkgndRender);
+  return get_renderbase_name(m_back_render);
 }
 const char *Object::SaveForegndRender() {
-  return get_renderbase_name(m_pForegndRender);
+  return get_renderbase_name(m_fore_render);
 }
 const char *Object::SaveTextRender() {
-  return get_textrender_name(m_pTextRender);
+  return get_textrender_name(m_text_render);
 }
 
 //////////////////////////////////////////////////////////////////////////

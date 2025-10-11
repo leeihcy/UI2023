@@ -3,6 +3,7 @@
 #include "include/inc.h"
 #include "src/application/uiapplication.h"
 #include "src/object/object.h"
+#include <memory>
 
 namespace ui {
 AttributeBase *CreateRenderBaseAttribute() { return new RenderBaseAttribute(); }
@@ -10,16 +11,11 @@ AttributeBase *CreateRenderBaseAttribute() { return new RenderBaseAttribute(); }
 RenderBaseAttribute::RenderBaseAttribute() {
   ReloadOnChanged();
 
-  m_pIRenderBaseAttribute = nullptr;
   m_ppBindValue = nullptr;
   m_pObject = nullptr;
-  //     _this = nullptr;
-  //     _setter = nullptr;
-  //     _getter = nullptr;
-}
-
-RenderBaseAttribute::~RenderBaseAttribute() {
-  SAFE_DELETE(m_pIRenderBaseAttribute);
+  // _this = nullptr;
+  // _setter = nullptr;
+  // _getter = nullptr;
 }
 
 void RenderBaseAttribute::SetBindValue(void *p) {
@@ -37,7 +33,7 @@ void RenderBaseAttribute::Set(const char *szType) {
 
   Reset();
   GetUIApplication()->CreateRenderBaseByName(szType, m_pObject->GetIObject(),
-                                           m_ppBindValue);
+                                             m_ppBindValue);
 }
 
 void RenderBaseAttribute::Reset() {
@@ -109,10 +105,10 @@ void RenderBaseAttribute::Editor(SerializeParam *pData, AttributeEditorProxy *p,
 }
 
 IRenderBaseAttribute *RenderBaseAttribute::GetIRenderBaseAttribute() {
-  if (!m_pIRenderBaseAttribute)
-    m_pIRenderBaseAttribute = new IRenderBaseAttribute(this);
-
-  return m_pIRenderBaseAttribute;
+  if (!m_pIRenderBaseAttribute) {
+    m_pIRenderBaseAttribute = std::make_unique<IRenderBaseAttribute>(this);
+  }
+  return m_pIRenderBaseAttribute.get();
 }
 
 } // namespace ui

@@ -88,7 +88,7 @@ void Label::onPaint(IRenderTarget *rt) {
   Rect rect;
   GetClientRectWithZeroOffset(&rect);
 
-  ITextRenderBase *p = GetTextRenderDefault();
+  ITextRenderBase *p = GetTextRenderOrDefault();
   if (p) {
     p->DrawState(rt, &rect, 0, m_text.c_str());
   }

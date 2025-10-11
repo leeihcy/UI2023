@@ -8,27 +8,9 @@
 
 namespace ui {
 
-// struct FontDesc {
-//   long lfHeight;
-//   long lfWidth;
-//   long lfEscapement;
-//   long lfOrientation;
-//   long lfWeight;
-//   unsigned char lfItalic;
-//   unsigned char lfUnderline;
-//   unsigned char lfStrikeOut;
-//   unsigned char lfCharSet;
-//   unsigned char lfOutPrecision;
-//   unsigned char lfClipPrecision;
-//   unsigned char lfQuality;
-//   unsigned char lfPitchAndFamily;
-//   char lfFaceName[LF_FACESIZE];
-// };
-
-
 class FontCache {
 public:
-  SkFont &LoadSkia(FontDesc &key);
+  SkFont &LoadSkia(const FontDesc &key);
 
 private:
   // skia
@@ -53,7 +35,8 @@ class FontPool {
 public:
   static FontPool &GetInstance();
 
-  SkFont &GetSkiaFont(const FontDesc &key, float scale);
+  SkFont &GetSkiaFont(const FontDesc &key);
+  Size MeasureString(const FontDesc &key, const char* text);
 private:
   FontCache& GetFont(const FontDesc &key);
 

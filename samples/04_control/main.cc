@@ -46,13 +46,13 @@ int main() {
   ui::SDKVersion::GetVersionText(version, 32);
 
   ui::ApplicationPtr app;
-  ui::IResource *resource = app->LoadResource("sample/dpi_layout");
+  ui::IResource *resource = app->LoadResource("sample/control");
 
   ui::WindowPtr window(resource);
 
   auto rc = ui::Rect::MakeXYWH(100, 100, 600, 600);
-  window->Create("dpi_layout", &rc);
-  window->SetTitle("Dpi & Layout Demo");
+  window->Create("control", &rc);
+  window->SetTitle("Control Demo");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));

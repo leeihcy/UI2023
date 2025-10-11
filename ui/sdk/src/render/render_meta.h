@@ -54,19 +54,6 @@ struct ColorListRenderMeta : public MetaImpl<IColorListRender> {
   }
 };
 
-struct SysColorRenderMeta : public MetaImpl<ISysColorRender> {
-  static SysColorRenderMeta& Get() {static SysColorRenderMeta s; return s; }
-
-  Uuid UUID() override { return {0x1978EFC6, 0x3E72, 0x11EE, {0x84, 0x02, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
-  const char* Name() override { return XML_RENDER_TYPE_SYSCOLOR; }
-  MetaDetail Detail() override {
-    MetaDetail param = { 0 };
-    param.major_type = RENDER;
-    param.minor_type = RENDER_TYPE_THEME_SYSCOLOR;
-    return param;
-  }
-};
-
 struct GradientRenderMeta : public MetaImpl<IGradientRender> {
   static GradientRenderMeta& Get() {static GradientRenderMeta s; return s; }
 

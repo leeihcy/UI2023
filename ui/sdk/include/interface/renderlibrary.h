@@ -233,27 +233,6 @@ public:
 #define FONTITEM_FLAG_ITALIC 0x04
 #define FONTITEM_FLAG_STRIKEOUT 0X08
 
-struct IRenderFont : public IRenderResource {
-public:
-  virtual bool Load(LOGFONT *plogfont) = 0;
-  virtual bool ModifyFont(LOGFONT *plogfont) = 0;
-
-  // virtual void Attach(HFONT hFont) = 0;
-  // virtual HFONT Detach() = 0;
-  // virtual bool IsAttach() = 0;
-
-  virtual unsigned int GetCaretHeight() = 0;
-  virtual Size MeasureString(const char *szText, int nLimitWidth = -1) = 0;
-
-  // virtual HFONT GetHFONT() = 0;
-  // virtual bool GetLogFont(LOGFONT *plf) = 0;
-
-  enum FontType {
-    CREATE,
-    ATTACH,
-  };
-};
-
 struct IRenderPen : public IRenderResource {
 public:
   virtual bool CreateSolidPen(int nWidth, Color *pColor) = 0;
@@ -313,7 +292,7 @@ struct IRenderTarget : public IClipOrigin {
 
   virtual void Save() = 0;
   virtual void Restore() = 0;
-  virtual void ClipRoundRect(const Rect& rect, int radius) = 0;
+  virtual void ClipRoundRect(const Rect& rect, const CornerRadius& radius) = 0;
   virtual void ClipRect(const Rect& rect) = 0;
 
   virtual void CreateSwapChain(bool is_hardware, IGpuCompositor* ) = 0;
@@ -325,7 +304,12 @@ struct IRenderTarget : public IClipOrigin {
   virtual void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) = 0;
 
-  virtual void DrawRect(const Rect& rc, const Color& color) = 0;
+  virtual void FillRect(const Rect &rc, const Color &color) = 0;
+  virtual void StrokeRect(const Rect &rc, const Color &color, int width) = 0;
+  virtual void FillRoundRect(const Rect &rc, const Color &color,
+                             const CornerRadius &radius) = 0;
+  virtual void StrokeRoundRect(const Rect &rc, const Color &color,
+                               const CornerRadius &radius, int width) = 0;
   // 使用shared_ptr，用于多线程传递参数。
   virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(const DrawTextParam &param) = 0;

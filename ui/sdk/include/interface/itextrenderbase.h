@@ -45,7 +45,7 @@ struct UIAPI ITextRenderBase : public IMessage {
   // TEXT_EFFECT GetTextEffect();
   // void SetDrawTextParam(long w, long l);
 
-  Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
+  Size GetDesiredSize(const char *szText, unsigned int nLimitWidth = 0);
   void DrawState(IRenderTarget *pRenderTarget, const Rect *prc, int nState,
                  const char *szText, int nDrawTextFlag = -1);
   void Init();

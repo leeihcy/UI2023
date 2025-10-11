@@ -138,8 +138,8 @@ void Panel::onGetDesiredSize(Size *pSize) {
 
   if (this->m_pLayout && m_pChild)
     *pSize = this->m_pLayout->Measure();
-  else if (m_pBkgndRender) {
-    *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(), this);
+  else if (m_back_render) {
+    *pSize = ScaleFactorHelper::Scale(m_back_render->GetDesiredSize(), this);
   }
 
   Rect rcNonClient = {0};
@@ -217,10 +217,10 @@ void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
 
   Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
 
-  if (m_pBkgndRender) {
+  if (m_back_render) {
     Rect rcBkgnd = rc;
     rcBkgnd.Deflate(m_rcBkgndRenderRegion);
-    m_pBkgndRender->DrawState(pRenderTarget, &rcBkgnd, 0);
+    m_back_render->DrawState(pRenderTarget, &rcBkgnd, 0);
   }
 
   if (m_pTextureRender) {
@@ -231,10 +231,10 @@ void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
 }
 
 void Panel::onPaint(IRenderTarget *pRenderTarget) {
-  if (m_pForegndRender) {
+  if (m_fore_render) {
     Rect rcForegnd = {0, 0, this->GetWidth(), this->GetHeight()};
     rcForegnd.Deflate(m_rcForegndRenderRegion);
-    m_pForegndRender->DrawState(pRenderTarget, &rcForegnd, 0);
+    m_fore_render->DrawState(pRenderTarget, &rcForegnd, 0);
   }
 }
 void Panel::onPostPaint(IRenderTarget *pRenderTarget) {

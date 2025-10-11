@@ -57,7 +57,7 @@ void Control::onSerialize(SerializeParam *pData) {
     s.AddString(XML_TOOLTIP, Slot(&Control::SetToolTipText, this),
                 Slot(&Control::GetToolTipText, this));
 
-    s.AddTextRenderBase(nullptr, this, m_pTextRender);
+    s.AddTextRenderBase(nullptr, this, m_text_render);
     // 		s.AddStringEnum(XML_TEXTRENDER_TYPE,
     // 			Slot(&Object::LoadTextRender, this),
     // 			Slot(&Object::SaveTextRender, this))
@@ -65,13 +65,13 @@ void Control::onSerialize(SerializeParam *pData) {
     // 			->ReloadOnChanged();
     //
     // 		// 字体
-    // 		if (m_pTextRender)
+    // 		if (m_text_render)
     // 		{
     // 			SerializeParam data(*pData);
     // 			data.szParentKey = XML_TEXTRENDER_TYPE;
     // 			if (data.pUIApplication->IsDesignMode())
     // 				data.SetErase(false);
-    // 			m_pTextRender->Serialize(&data);
+    // 			m_text_render->Serialize(&data);
     // 		}
   }
 }
@@ -107,24 +107,24 @@ bool Control::IsGroup() { return m_controlStyle.group; }
 void Control::SetGroup(bool b) { m_controlStyle.group = b; }
 
 // 获取字体，如果没有，则使用默认的
-ITextRenderBase *Control::GetTextRenderDefault() {
-  if (!m_pTextRender)
+ITextRenderBase *Control::GetTextRenderOrDefault() {
+  if (!m_text_render)
     CreateDefaultTextRender();
 
-  return m_pTextRender;
+  return m_text_render;
 }
 
 // 如果没有在皮肤中配置字体，则外部可调用该函数在Paint时创建一个默认的字体
 ITextRenderBase *Control::CreateDefaultTextRender() {
-  if (m_pTextRender) {
-    return m_pTextRender;
+  if (m_text_render) {
+    return m_text_render;
   }
 
   GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
       m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE, m_pIObject,
-      &m_pTextRender);
+      &m_text_render);
 
-  if (m_pTextRender) {
+  if (m_text_render) {
     std::shared_ptr<IMapAttribute> pMapAttr = m_pIMapAttributeRemain;
     if (!pMapAttr)
       pMapAttr = UICreateIMapAttribute();
@@ -134,10 +134,10 @@ ITextRenderBase *Control::CreateDefaultTextRender() {
     data.pMapAttrib = pMapAttr.get();
     data.szPrefix = nullptr;
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-    m_pTextRender->Serialize(&data);
+    m_text_render->Serialize(&data);
   }
 
-  return m_pTextRender;
+  return m_text_render;
 }
 
 const char *Control::GetToolTipText() {
@@ -194,17 +194,17 @@ void Control::TryUpdateLayoutOnContentChanged() {
 
 void Control::onPaintBkgnd(IRenderTarget *pRenderTarget) {
   Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
-  if (m_pBkgndRender) {
-    m_pBkgndRender->DrawState(pRenderTarget, &rc, 0);
+  if (m_back_render) {
+    m_back_render->DrawState(pRenderTarget, &rc, 0);
   }
 }
 
 void Control::onGetDesiredSize(Size *pSize) {
   pSize->width = pSize->height = 0;
-  if (m_pBkgndRender) {
-    // *pSize = ScaleFactorHelper::Scale(m_pBkgndRender->GetDesiredSize(),
+  if (m_back_render) {
+    // *pSize = ScaleFactorHelper::Scale(m_back_render->GetDesiredSize(),
     // this);
-    *pSize = m_pBkgndRender->GetDesiredSize();
+    *pSize = m_back_render->GetDesiredSize();
   }
 }
 

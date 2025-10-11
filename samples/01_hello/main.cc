@@ -20,7 +20,7 @@ void on_window_paint(ui::IWindow* window, ui::Event *e) {
   ui::Rect rc_client;
   window->GetRootObject()->GetClientRectInObject(&rc_client);
   ui::Color color_background = ui::Color::white();
-  pRT->DrawRect(rc_client, color_background);
+  pRT->FillRect(rc_client, color_background);
 #endif
 
   // 渐变颜色
@@ -62,7 +62,7 @@ void on_window_paint(ui::IWindow* window, ui::Event *e) {
     y_direction = -1;
   }
 
-  pRT->DrawRect(region, color);
+  pRT->FillRect(region, color);
 }
 
 int main() {

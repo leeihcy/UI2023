@@ -1,4 +1,5 @@
 #pragma once
+#include "include/interface/iattribute.h"
 #include "sdk/include/common/uuid/uuid.h"
 
 namespace ui {
@@ -91,6 +92,7 @@ struct IUIEditor {
   virtual void EditorFlagsAttribute(IFlagsAttribute *,
                                     EditorAttributeFlag e) = 0;
   virtual void EditorRectAttribute(IRectAttribute *, EditorAttributeFlag e) = 0;
+  virtual void EditorRadiusAttribute(IRadiusAttribute*, EditorAttributeFlag e) = 0;
   virtual void EditorSizeAttribute(ISizeAttribute *, EditorAttributeFlag e) = 0;
   virtual void EditorRegion9Attribute(IRegion9Attribute *,
                                       EditorAttributeFlag e) = 0;

@@ -5,7 +5,6 @@ namespace ui {
 class RenderBaseAttribute : public AttributeBase {
 public:
   RenderBaseAttribute();
-  ~RenderBaseAttribute();
 
   virtual const char *Get() override;
   virtual void Set(const char *) override;
@@ -32,7 +31,7 @@ private:
   void do_child_action(SerializeParam *);
 
 private:
-  IRenderBaseAttribute *m_pIRenderBaseAttribute;
+  std::unique_ptr<IRenderBaseAttribute> m_pIRenderBaseAttribute;
 
   IRenderBase **m_ppBindValue;
   Object *m_pObject;

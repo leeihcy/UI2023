@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<skin>
+	<layout>
+	</layout>
+  <include>control.xml</include>
+	<font>
+	</font>
+	<image>
+  </image>
+	<i18n>
+	</i18n>
+	<style>
+    <class id="button_theme_default" 
+      width="auto" height="40"
+      padding="20,12,20,12"
+      back.render.type="color" 
+      back.render.color="#fff" 
+      back.render.border.width="1"
+      back.render.border.color="#dcdfe6"
+      back.render.radius="4"
+      text.render.align="center|vcenter"
+      text.render.color="#606266"
+      />
+	</style>
+	<color />
+</skin>

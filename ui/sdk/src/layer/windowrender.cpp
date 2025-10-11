@@ -221,9 +221,14 @@ void WindowRender::onWindowCreated() {
     // 像素大小
     ui::Rect rc;
     m_window.GetWindowPlatform()->GetClientRect(&rc);
+#if defined (OS_MAC)
+    // TODO: 目前测试vkCreateMacOSSurfaceMVK必须是在主线程调用才能生效。
+    m_rt->CreateHardwareCompositor(p, rc);
+#else
     RenderThread::Main::PostTask(
         ui::Slot(&WindowRenderRT::CreateHardwareCompositor,
                  m_rt->m_factory.get(), p, rc));
+#endif
   }
 
   // 首次刷新，将窗口所有区域设置为无效

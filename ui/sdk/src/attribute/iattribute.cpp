@@ -7,8 +7,10 @@
 #include "flags_attribute.h"
 #include "include/inc.h"
 #include "include/interface/iobject.h"
+#include "include/util/rect.h"
 #include "int_attribute.h"
 #include "rect_attribute.h"
+#include "radius_attribute.h"
 #include "renderbase_attribute.h"
 #include "size_attribute.h"
 #include "string_attribute.h"
@@ -193,7 +195,7 @@ IRectAttribute *IRectAttribute::SetCompatibleKey(const char *key) {
   m_pImpl->SetCompatibleKey(key);
   return this;
 }
-IRectAttribute *IRectAttribute::SetDefault(Rect rc) {
+IRectAttribute *IRectAttribute::SetDefault(const Rect& rc) {
   m_pImpl->SetDefault(rc);
   return this;
 }
@@ -203,6 +205,28 @@ const char *IRectAttribute::GetDesc() { return m_pImpl->GetDesc(); }
 const char *IRectAttribute::GetGroupName() { return m_pImpl->GetGroupName(); }
 const char *IRectAttribute::GetParentKey() { return m_pImpl->GetParentKey(); }
 const char *IRectAttribute::Get() { return m_pImpl->Get(); }
+
+//////////////////////////////////////////////////////////////////////////
+
+IRadiusAttribute::IRadiusAttribute(RadiusAttribute *p) { m_pImpl = p; }
+IRadiusAttribute *IRadiusAttribute::AsData() {
+  m_pImpl->AsData();
+  return this;
+}
+IRadiusAttribute *IRadiusAttribute::SetCompatibleKey(const char *key) {
+  m_pImpl->SetCompatibleKey(key);
+  return this;
+}
+IRadiusAttribute *IRadiusAttribute::SetDefault(const CornerRadius& rc) {
+  m_pImpl->SetDefault(rc);
+  return this;
+}
+
+const char *IRadiusAttribute::GetKey() { return m_pImpl->GetKey(); }
+const char *IRadiusAttribute::GetDesc() { return m_pImpl->GetDesc(); }
+const char *IRadiusAttribute::GetGroupName() { return m_pImpl->GetGroupName(); }
+const char *IRadiusAttribute::GetParentKey() { return m_pImpl->GetParentKey(); }
+const char *IRadiusAttribute::Get() { return m_pImpl->Get(); }
 
 //////////////////////////////////////////////////////////////////////////
 

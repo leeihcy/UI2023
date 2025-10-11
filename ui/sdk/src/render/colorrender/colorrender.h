@@ -18,7 +18,7 @@ public:
 public:
   void SetBkColor(Color col);
   void SetBorderColor(Color col);
-  void SetBorderRegion(const Rect *prc);
+  void SetBorder(int b);
 
 protected:
   void OnSerialize(SerializeParam *pData);
@@ -29,41 +29,8 @@ public:
 
   Color m_back_color;
   Color m_border_color;
-  Rect m_rcBorder;
-};
-
-// 特用于某些控件需要使用系统主题颜色背景，当系统主题改变时，相应的颜色也需要改变
-class SysColorRender : public /*Theme*/ RenderBase {
-public:
-  SysColorRender(ISysColorRender *p);
-  ~SysColorRender();
-
-  // UI_BEGIN_MSG_MAP()
-  //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  //     UIMSG_QUERYINTERFACE(SysColorRender)
-  //     UIMSG_SERIALIZE(OnSerialize)
-  // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
-
-  void OnSerialize(SerializeParam *pData);
-  void DrawState(RENDERBASE_DRAWSTATE *pDrawStruct);
-
-  void SetBkColor(int nColorIndex);
-  void SetBorderColor(int nColorIndex);
-
-  // 由于改成每次重新获取颜色值，因此不需要响应主题改变的消息
-  // virtual const char* GetThemeName() { return nullptr; }
-  // virtual void  OnThemeChanged();
-
-public:
-  ISysColorRender *m_pISysColorRender;
-  int m_nBkColorIndex;
-  int m_nBorderColorIndex;
-  REGION4 m_rcBorder;
-
-  // Color    m_bkColor;     //
-  // 由于在WM_THEMECHANGED消息中，直接调用GetSysColor获取到的值仍然有可能是旧的
-  // Color    m_borderColor; //
-  // 因此这里放弃保存颜色值，而是每次绘制时都调用GetSysColor
+  int m_border = 0;
+  CornerRadius  m_radius;
 };
 
 // 横向渐变颜色背景

@@ -2,6 +2,7 @@
 #include "9region_attribute.h"
 #include "color_attribute.h"
 #include "include/inc.h"
+#include "include/interface/iattribute.h"
 #include "include/interface/imapattr.h"
 #include "include/interface/iobject.h"
 #include "include/interface/iuiapplication.h"
@@ -19,6 +20,7 @@ AttributeClassFactory::AttributeClassFactory() {
   Register(ATTRIBUTE_TYPE_I18N_STRING, CreateI18nStringAttribute);
   Register(ATTRIBUTE_TYPE_BOOL, CreateBoolAttribute);
   Register(ATTRIBUTE_TYPE_RECT, CreateRectAttribute);
+  Register(ATTRIBUTE_TYPE_RADIUS, CreateRadiusAttribute);
   Register(ATTRIBUTE_TYPE_9REGION, CreateRegion9Attribute);
   Register(ATTRIBUTE_TYPE_INTEGER, CreateIntAttribute);
   Register(ATTRIBUTE_TYPE_LENGTH, CreateLengthAttribute);
@@ -287,13 +289,6 @@ RectAttribute *AttributeSerializer::AddRect(const char *szKey,
   return static_cast<RectAttribute *>(
       Add(ATTRIBUTE_TYPE_RECT, szKey, &rcBindValue));
 }
-// RectAttribute *AttributeSerializer::AddRect(const char *szKey, void
-// *_this,
-//                                             pfnRectSetter s, pfnRectGetter g)
-//                                             {
-//   return static_cast<RectAttribute *>(
-//       Add(ATTRIBUTE_TYPE_RECT, szKey, _this, s, g));
-// }
 RectAttribute *AttributeSerializer::AddRect(const char *szKey,
                                             slot<void(Rect *)> &&s,
                                             slot<void(Rect *)> &&g) {
@@ -303,6 +298,25 @@ RectAttribute *AttributeSerializer::AddRect(const char *szKey,
   if (p) {
     p->Bind(std::forward<slot<void(Rect *)>>(s),
             std::forward<slot<void(Rect *)>>(g));
+  }
+  return p;
+}
+
+
+RadiusAttribute *AttributeSerializer::AddRadius(const char *szKey,
+                                            CornerRadius &rcBindValue) {
+  return static_cast<RadiusAttribute *>(
+      Add(ATTRIBUTE_TYPE_RADIUS, szKey, &rcBindValue));
+}
+RadiusAttribute *AttributeSerializer::AddRadius(const char *szKey,
+                                            slot<void(CornerRadius *)> &&s,
+                                            slot<void(CornerRadius *)> &&g) {
+  RadiusAttribute *p =
+      static_cast<RadiusAttribute *>(Add(ATTRIBUTE_TYPE_RADIUS, szKey, nullptr));
+
+  if (p) {
+    p->Bind(std::forward<slot<void(CornerRadius *)>>(s),
+            std::forward<slot<void(CornerRadius *)>>(g));
   }
   return p;
 }
@@ -703,6 +717,10 @@ void AttributeEditorProxy::Flags2Editor(FlagsAttribute *p,
 void AttributeEditorProxy::Rect2Editor(RectAttribute *p,
                                        EditorAttributeFlag e) {
   m_pEditor->EditorRectAttribute(p->GetIRectAttribute(), e);
+}
+void AttributeEditorProxy::CornerRadius2Editor(RadiusAttribute *p,
+                                               EditorAttributeFlag e) {
+  m_pEditor->EditorRadiusAttribute(p->GetIRadiusAttribute(), e);
 }
 void AttributeEditorProxy::Size2Editor(SizeAttribute *p,
                                        EditorAttributeFlag e) {

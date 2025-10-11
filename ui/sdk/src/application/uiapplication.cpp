@@ -7,6 +7,7 @@
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
 #include "src/control/text/text_meta.h"
+#include "src/control/button/button_meta.h"
 #include "src/graphics/record/record_render_target.h"
 #include "src/panel/panel_meta.h"
 #include "src/resource/colormanager.h"
@@ -328,6 +329,7 @@ void Application::RegisterDefaultUIObject() {
   RegisterUIObject(&ControlMeta::Get());
   RegisterUIObject(&RoundPanelMeta::Get());
   RegisterUIObject(&LabelMeta::Get());
+  RegisterUIObject(&ButtonMeta::Get());
 #if 0
   RegisterUIObject(ScrollPanelMeta::Get());
   RegisterUIObject(CustomWindowMeta::Get());
@@ -496,6 +498,9 @@ bool Application::EnableHardwareComposite() {
   if (IsHardwareCompositeEnable())
     return true;
 
+#if 1
+  ui::GpuStartup();
+#else
   ui::Slot<void()> func([]() {
     if (!ui::GpuStartup()) {
       UI_LOG_ERROR("GpuStartup Failed");
@@ -503,20 +508,23 @@ bool Application::EnableHardwareComposite() {
   });
   
   RenderThread::Main::PostTask(std::move(func));
-
   // wait
   while (ui::GetGpuStartupState() <= GPU_STARTUP_STATE::STARTING) {
     ::sleep(1);
   }
+#endif
   return true;
 }
 
 void Application::ShutdownGpuCompositor() {
   if (!IsHardwareCompositeEnable())
     return;
-
+#if 1
+  ui::GpuShutdown();
+#else
   ui::Slot<void()> func(&ui::GpuShutdown);
   RenderThread::Main::PostTask(std::move(func));
+#endif
 }
 
 void Application::LoadUIObjectListToToolBox() {

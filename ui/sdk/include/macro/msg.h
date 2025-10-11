@@ -89,6 +89,22 @@ struct GetDesiredSizeMessage : public Msg {
   Size size = {0, 0};
 };
 
+
+//
+//  获取对象期望大小，不包含对象的Margin，但需要自己去计算padding/border等
+//
+//  wparam : [out] Size*
+//  lparam : GETDESIREDSIZEINFO* (目前仅在ITextRenderBase值不为nullptr)
+//
+#define UI_MSG_GETTEXTDESIREDSIZE 250141055
+struct GetTextDesiredSizeMessage : public Msg {
+  GetTextDesiredSizeMessage() { message = UI_MSG_GETTEXTDESIREDSIZE; };
+  const char* text;
+  unsigned int limit_width = 0;
+  // out
+  Size size = {0, 0};
+};
+
 // void  GetDesiredSize(Size* pSize);
 // #define UIMSG_GETDESIREDSIZE(func)                                             \
 //   if (uMsg == UI_MSG_GETDESIREDSIZE) {                                         \

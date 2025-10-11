@@ -68,48 +68,6 @@ void LayerRT::BindGpuLayer(std::shared_ptr<IGpuLayer> gpu_layer) {
 
 
 void LayerRT::HardwareCommit(GpuLayerCommitContext *pContext) {
-#if 0
-  if (!m_pLayerContent)
-    return;
-
-  Rect rcWnd;
-  m_pLayerContent->GetWindowRect(&rcWnd);
-  if (rcWnd.IsEmpty())
-    return;
-
-  float scale = 1.0f;
-  if (m_pLayerContent) {
-    scale = m_pLayerContent->GetLayerScale();
-    rcWnd.Scale(scale);
-  }
-
-  pContext->SetOffset(rcWnd.left, rcWnd.top);
-
-  Rect rcParentWnd = {0};
-  if (m_bClipLayerInParentObj && m_window_render->GetRootLayer() != this) {
-    m_pLayerContent->GetParentWindowRect(&rcParentWnd);
-  } else {
-    m_window_render->GetRootLayer()->GetContent()->GetWindowRect(&rcParentWnd);
-  }
-
-  rcParentWnd.Scale(scale);
-  pContext->SetClipRect(&rcParentWnd);
-
-  if (m_nOpacity_Render != 255) {
-    pContext->MultiAlpha(m_nOpacity_Render);
-  }
-
-  // 绕自身中心旋转时，需要知道这个对象在屏幕中的位置，然后才能计算出真正的旋转矩阵。
-  // 因此每次使用前设置一次。
-  m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
-  if (!m_transfrom3d.is_identity()) {
-    MATRIX44 mat;
-    m_transfrom3d.get_matrix(&mat);
-    m_gpu_texture->Compositor(pContext, (float *)&mat);
-  } else {
-    m_gpu_texture->Compositor(pContext, nullptr);
-  }
-#else
   UIASSERT(m_gpu_layer);
   if (!m_gpu_layer) {
     return;
@@ -126,12 +84,12 @@ void LayerRT::HardwareCommit(GpuLayerCommitContext *pContext) {
     pContext->MultiAlpha(m_properties.opacity);
   }
 
-  m_transfrom3d.set_pos(bound.left, bound.top);
-  m_transfrom3d.rotateZ(m_properties.m_fzRotate);
-
   // 绕自身中心旋转时，需要知道这个对象在屏幕中的位置，然后才能计算出真正的旋转矩阵。
   // 因此每次使用前设置一次。
-  // m_transfrom3d.set_pos(rcWnd.left, rcWnd.top);
+  m_transfrom3d.set_pos(bound.left, bound.top);
+  m_transfrom3d.set_size(bound.Width(), bound.Height());
+
+  m_transfrom3d.rotateZ(m_properties.m_fzRotate);  
   if (!m_transfrom3d.is_identity()) {
     MATRIX44 mat;
     m_transfrom3d.get_matrix(&mat);
@@ -139,8 +97,6 @@ void LayerRT::HardwareCommit(GpuLayerCommitContext *pContext) {
   } else {
     m_gpu_layer->Compositor(pContext, nullptr);
   }
-  // m_gpu_layer->Compositor(pContext, nullptr);
-#endif
 }
 
 }

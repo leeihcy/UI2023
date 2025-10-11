@@ -1,12 +1,6 @@
 #pragma once
 #include "src/graphics/font/font.h"
 #include <memory>
-#if 0 // defined(OS_WIN)
-#include "Vsstyle.h"
-#include "uxtheme.h"
-#pragma comment(lib, "uxtheme.lib")
-#endif
-
 #include "include/interface/itextrenderbase.h"
 #include "include/macro/uimsg.h"
 #include "src/object/message.h"
@@ -25,10 +19,9 @@ public:
   ~TextRenderBase();
 
   void onRouteMessage(ui::Msg* msg);
-
   void Serialize(AttributeSerializer *ps);
-  Size GetDesiredSize(const char *szText, int nLimitWidth = -1);
-
+  Size GetDesiredSize(const char* text, unsigned int limit_width = 0);
+  
 public:
   void SetRenderFont(IRenderFont *pFont) {}
 
@@ -50,15 +43,11 @@ public:
   TEXTRENDER_TYPE GetTextRenderType() { return m_nTextRenderType; }
 
   IColorRes *GetSkinColorRes();
-  // IFontRes *GetSkinFontRes();
   Resource *GetResource();
 
   bool IsThemeRender();
   void CheckSkinTextureChanged();
 
-  // std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
-  // const char *_SaveFont(IRenderFont *pRenderFont);
-  // std::shared_ptr<IRenderFont> _LoadDefalutFont();
   void _LoadColor(const char *szColorId, Color *&pColor);
   const char *_SaveColor(Color *&pColor);
 
@@ -84,15 +73,12 @@ public:
   SimpleTextRender(ISimpleTextRender *p);
   ~SimpleTextRender();
 
-  // UI_DECLARE_TEXTRENDERBASE(SimpleTextRender, XML_TEXTRENDER_TYPE_SIMPLE,
-  //                           TEXTRENDER_TYPE_SIMPLE)
-
   void onRouteMessage(ui::Msg *msg);
 
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  // IRenderFont *GetRenderFont() { return m_pRenderFont.get(); }
-  // void SetRenderFont(std::shared_ptr<IRenderFont>);
+  void onGetDesiredSize(GetTextDesiredSizeMessage* msg);
+
   // void SetColor(Color *pColText);
   // bool GetColor(Color &color);
   // void LoadFont(const char *szFontId);

@@ -28,7 +28,7 @@ struct UIAPI IControl : public IObject
    void  SetToolTipText(const char* szText);
 
    ITextRenderBase*  CreateDefaultTextRender();
-   ITextRenderBase*  GetTextRenderDefault();
+   ITextRenderBase*  GetTextRenderOrDefault();
    void  TryUpdateLayoutOnContentChanged();
 
    UI_DECLARE_INTERFACE(Control);
@@ -36,10 +36,35 @@ struct UIAPI IControl : public IObject
 
 class Label;
 struct UIAPI ILabel : public IControl {
-   
    UI_DECLARE_INTERFACE(Label);
 };
 
+struct ButtonStyle {
+  bool default_push_button : 1; // 可以成为默认按钮
+  bool click_on_pushdown : 1; // 当鼠标按下时就触发click，而不是鼠标弹起时触发
+  bool notify_hoverleave : 1; // 鼠标移入移出时，发出通知
+  bool hand_cursor : 1;       // 使用手型鼠标
+  bool enable_radio_toggle : 1; // 允许radio button在被选中时，再次点击自己后，取消自己的选中状态
+};
+
+class Button;
+struct UIAPI IButton : public IControl {
+   UI_DECLARE_INTERFACE(Button);
+};
+
+#define BUTTON_CLICK_EVENT "clicked"
+struct ButtonClickedEvent : public Event {
+  IButton *button;
+};
+
+#define BUTTON_HOVER_EVENT "hover"
+struct ButtonHoverEvent : public Event {
+  IButton *button;
+};
+#define BUTTON_LEAVE_EVENT "leave"
+struct ButtonLeaveEvent : public Event {
+  IButton *button;
+};
 }
 
 #endif  // _UI_ICONTROL_H_

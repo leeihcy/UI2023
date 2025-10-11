@@ -28,7 +28,10 @@ enum class PaintOpType : unsigned char {
   ClipRoundRect,
   ClipRect,
   Clear,
-  DrawRect,
+  FillRect,
+  StrokeRect,
+  FillRoundRect,
+  StrokeRoundRect,
   DrawString,
   DrawBitmap,
   // CreateSwapChain,
@@ -96,10 +99,10 @@ struct SetDirtyRegionOp : public PaintOp {
 };
 
 struct ClipRoundRectOp : public PaintOp {
-  ClipRoundRectOp(const Rect& _rect, int _radius)
+  ClipRoundRectOp(const Rect& _rect, const CornerRadius& _radius)
       : PaintOp(PaintOpType::ClipRoundRect), rect(_rect), radius(_radius){}
   Rect rect;
-  int radius;
+  CornerRadius radius;
 };
 struct ClipRectOp : public PaintOp {
   ClipRectOp(const Rect& _rect)
@@ -124,11 +127,41 @@ struct ClearOp : public PaintOp {
   Rect rect;
 };
 
-struct DrawRectOp : public PaintOp {
-  DrawRectOp(const Rect &_rect, const Color &_color)
-      : PaintOp(PaintOpType::DrawRect), rect(_rect), color(_color) {}
+struct FillRectOp : public PaintOp {
+  FillRectOp(const Rect &_rect, const Color &_color)
+      : PaintOp(PaintOpType::FillRect), rect(_rect), color(_color) {}
   Rect rect;
   Color color;
+};
+
+struct StrokeRectOp : public PaintOp {
+  StrokeRectOp(const Rect &_rect, const Color &_color, int _width)
+      : PaintOp(PaintOpType::StrokeRect), rect(_rect), color(_color), width(_width) {}
+  Rect rect;
+  Color color;
+  int width;
+};
+
+struct FillRoundRectOp : public PaintOp {
+  FillRoundRectOp(const Rect &_rect, const Color &_color,
+                  const CornerRadius &_radius)
+      : PaintOp(PaintOpType::FillRoundRect), rect(_rect), color(_color),
+        radius(_radius) {}
+  Rect rect;
+  Color color;
+  CornerRadius radius;
+};
+
+
+struct StrokeRoundRectOp : public PaintOp {
+  StrokeRoundRectOp(const Rect &_rect, const Color &_color,
+                  const CornerRadius &_radius, int _width)
+      : PaintOp(PaintOpType::StrokeRoundRect), rect(_rect), color(_color),
+        radius(_radius), width(_width) {}
+  Rect rect;
+  Color color;
+  CornerRadius radius;
+  int width;
 };
 
 struct DrawStringOp : public PaintOp {

@@ -385,13 +385,22 @@ void WindowPlatformMac::onPaint(const Rect &dirty) {
 }
 
 // Vulkan调用vkCreateMacOSSurfaceMVK时使用。
+// 目前测试vkCreateMacOSSurfaceMVK必须是在主线程调用才行。但之后的swap chain可以在
+// 其它线程调用。
+//
+// VkMacOSSurfaceCreateInfoMVK::pView 字段说明：
+// 1. if pView is a CAMetalLayer object，is must be a valid CAMetalLayer
+// 2. if pView is an NSView object, it must be a valid NSView,
+//    must be backed by a CALayer object of CAMetaLayer,
+//    and vkCreateMacOSSurfaceMVK must be called on the main thread.
+// 
 void *WindowPlatformMac::GetNSWindowRootView() {
   NSView *view = m_window.contentView;
   [view setWantsLayer:YES];
   view.layer = [CAMetalLayer layer];
 
-  // CAMetalLayer *metalLayer = (CAMetalLayer *)view.layer;
-  return (void *)(view);
+  // return (void *)(view);
+  return (void*)view.layer;
 };
 
 } // namespace ui

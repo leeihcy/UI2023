@@ -86,17 +86,7 @@ void ITextRenderBase::Serialize(SerializeParam *pData) {
 // const char *ITextRenderBase::_SaveColor(Color *&pColor) {
 //   return __pImpl->_SaveColor(pColor);
 // }
-Size ITextRenderBase::GetDesiredSize(const char *szText, int nLimitWidth) {
-  //     Size s = {0,0};
-  //
-  //     GETDESIREDSIZEINFO info;
-  //     info.nLimitWidth = nLimitWidth;
-  //     info.szText = szText;
-  //     UISendMessage(static_cast<IMessage*>(this), UI_WM_GETDESIREDSIZE,
-  //     (long)&s, (long)&info);
-  //
-  //     return s;
-
+Size ITextRenderBase::GetDesiredSize(const char *szText, unsigned int nLimitWidth) {
   return __pImpl->GetDesiredSize(szText, nLimitWidth);
 }
 void ITextRenderBase::DrawState(IRenderTarget *pRenderTarget, const Rect *prc,

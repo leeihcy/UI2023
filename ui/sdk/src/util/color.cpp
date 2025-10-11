@@ -40,6 +40,10 @@
 
 namespace ui {
 
+Color::Color() {
+  value = 0;
+}
+
 // static 
 Color Color::Make(uint v) {
   Color c;

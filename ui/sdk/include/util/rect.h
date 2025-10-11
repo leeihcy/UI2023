@@ -72,6 +72,42 @@ struct RectFLTRB {
   float bottom;
 };
 
+struct CornerRadius {
+  int top_left;
+  int top_right;
+  int bottom_right;
+  int bottom_left;
+
+  bool IsZero() { 
+    return top_left == 0 && top_right == 0 && bottom_right == 0 && bottom_left == 0; 
+  }
+  void SetAll(int n) {
+    top_left = top_right = bottom_right = bottom_left = n;
+  }
+  CornerRadius() {
+    SetAll(0);
+  }
+  CornerRadius& operator=(const CornerRadius& o) {
+    top_left = o.top_left;
+    top_right = o.top_right;
+    bottom_right = o.bottom_right;
+    bottom_left = o.bottom_right;
+    return *this;
+  }
+  CornerRadius(const CornerRadius& o) {
+    top_left = o.top_left;
+    top_right = o.top_right;
+    bottom_right = o.bottom_right;
+    bottom_left = o.bottom_right;
+  }
+  bool operator==(const CornerRadius& o) const{
+    return top_left == o.top_left 
+    && top_right == o.top_right 
+    && bottom_right == o.bottom_right 
+    && bottom_left == o.bottom_left; 
+  }
+};
+
 struct Rect : public RectLTRB {
 
   static Rect MakeLTRB(int l, int t, int r, int b) {
