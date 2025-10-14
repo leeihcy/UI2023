@@ -23,6 +23,8 @@ public:
 	void  ModifyButtonStyle(ButtonStyle* add, ButtonStyle* remove);
 	bool  TestButtonStyle(const ButtonStyle& test);
   
+  bool IsChecked() { return m_button_style.checked; }
+
 protected:
   struct ButtonDrawContext {
     IRenderTarget *r;
@@ -35,6 +37,7 @@ protected:
 protected:
   void onFinalConstruct(FinalConstructMessage* msg);
   void onPaint(IRenderTarget* rt);
+  void onPaintBkgnd(IRenderTarget* rt);
   void onSerialize(SerializeParam *pData);
   void onGetDesiredSize(Size *pSize);
   void onStateChanged(StateChangedMessage* msg);

@@ -3,6 +3,7 @@
 
 // #include "windows.h"
 #include "sdk/include/event.h"
+#include "sdk/include/common/uuid/uuid.h"
 #include "sdk/include/util/rect.h"
 
 namespace ui {
@@ -291,6 +292,115 @@ struct GetScrollRangeMessage : public ui::Msg {
   int y_range = 0;
 };
 
+// HitTest
+enum class eHitTest : int {
+  Error = -2,
+  Transparent = -1,
+  Nowhere = 0,
+  Client = 1, 
+  Caption = 2,
+  Sysmenu = 3,
+  Growbox = 4,
+  Size = Growbox,
+  Menu = 5,
+  HorzScroll = 6,
+  VertScroll = 7,
+  MinButton = 8,
+  MaxButton = 9,
+  Left = 10,
+  Right = 11,
+  Top = 12,
+  TopLeft = 13,
+  TopRight = 14,
+  Bottom = 15,
+  BottomLeft = 16,
+  BottomRight = 17,
+  Border = 18,
+  Reduce = MinButton,
+  Zoom = MaxButton,
+  SizeFirst = Left,
+  SizeLast = BottomRight,
+  Object = 19,
+  Close = 20,
+  Help = 21
+};
+//
+//	测试一个坐标在指定的对象上面的位置
+//
+//		message: UI_WM_HITTEST
+//		code:
+//		wparam:  [in]  Point*  ptInParent
+//		lparam:  [out,optional] Point*  ptInChild
+//(例如减去自己的左上角偏移) 		pMsgFrom:
+//
+//	Return
+//		HTNOWHERE表示不在该对象上面
+//
+#define UI_MSG_HITTEST 168261616
+struct HitTestMessage : public ui::Msg {
+  HitTestMessage() {
+    message = UI_MSG_HITTEST;
+  }
+  Point pt_in_parent = {0, 0};  // in
+  Point pt_in_child = {0, 0};   // out
+  eHitTest hittest = eHitTest::Nowhere;  // out
+};
+
+#define UI_MSG_MOUSEMOVE 250141344
+struct MouseMoveMessage : public ui::Msg {
+  MouseMoveMessage() {
+    message = UI_MSG_MOUSEMOVE;
+  }
+  Point pt_in_window;
+};
+
+#define UI_MSG_MOUSELEAVE 250141345
+struct MouseLeaveMessage : public ui::Msg {
+  MouseLeaveMessage() {
+    message = UI_MSG_MOUSELEAVE;
+  }
+  Point pt_in_window;
+};
+
+
+#define UI_MSG_LBUTTONDOWN 250141346
+struct LButtonDownMessage : public ui::Msg {
+  LButtonDownMessage() {
+    message = UI_MSG_LBUTTONDOWN;
+  }
+  Point pt_in_window;
+};
+
+#define UI_MSG_LBUTTONUP 250141347
+struct LButtonUpMessage : public ui::Msg {
+  LButtonUpMessage() {
+    message = UI_MSG_LBUTTONUP;
+  }
+  Point pt_in_window;
+};
+
+#define UI_MSG_LBUTTONDBLCLK 250141348
+struct LButtonDBClickMessage : public ui::Msg {
+  LButtonDBClickMessage() {
+    message = UI_MSG_LBUTTONDBLCLK;
+  }
+  Point pt_in_window;
+};
+
+#define UI_MSG_SETFOCUS 250141408
+struct SetFocusMessage : public ui::Msg {
+  SetFocusMessage() {
+    message = UI_MSG_SETFOCUS;
+  }
+  IObject* old_focus = nullptr;
+};
+#define UI_MSG_KILLFOCUS 250141409
+struct KillFocusMessage : public ui::Msg {
+  KillFocusMessage() {
+    message = UI_MSG_KILLFOCUS;
+  }
+  IObject* new_focus = nullptr;
+};
 
 #if 0
 struct MSG {

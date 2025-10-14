@@ -42,8 +42,6 @@ private:
     m_render_bitmap = _LoadBitmap(szBitmapId);
   }
   const char *GetBitmapId() { return _GetBitmapId(m_render_bitmap.get()); }
-  void LoadColor(const char *szColorId) { _LoadColor(szColorId, m_pColorBk); }
-  const char *GetColorId() { return _GetColorId(m_pColorBk); }
 
 protected:
   IImageRender *m_pIImageRender;

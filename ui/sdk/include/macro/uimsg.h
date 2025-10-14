@@ -183,31 +183,6 @@ public:                                                                        \
 #define UIMSG_SERIALIZE(xxx)
 
 //
-//	测试一个坐标在指定的对象上面的位置
-//
-//		message: UI_WM_HITTEST
-//		code:
-//		wparam:  [in]  Point*  ptInParent
-//		lparam:  [out,optional] Point*  ptInChild
-//(例如减去自己的左上角偏移) 		pMsgFrom:
-//
-//	Return
-//
-//		HTNOWHERE表示不在该对象上面
-//
-#define UI_MSG_HITTEST 168261616
-// long*  OnHitTest(Point* ptInParent, Point* ptInChild)
-#define UIMSG_HITTEST(func)                                                    \
-  if (uMsg == UI_MSG_HITTEST) {                                                \
-    Point ptInParent = *(Point *)wParam;                                       \
-    SetMsgHandled(true);                                                       \
-    lResult = func(&ptInParent, (Point *)lParam);                              \
-    if (IsMsgHandled())                                                        \
-      return true;                                                             \
-  }
-
-
-//
 //  父对象需要计算它的non client region(不包括padding,border)区域时，给
 //  non client child object发送该消息
 //       message: UI_WM_CALC_PARENT_NONCLIENTRECT

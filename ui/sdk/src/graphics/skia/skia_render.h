@@ -78,6 +78,8 @@ protected:
 protected:
   sk_sp<SkSurface> m_sksurface; 
   ClipOriginImpl m_clip_origin_impl;
+  int m_save_count = 0;  // for save/restore
+
   float m_scale = 1.0f;
 
   // 用于标记本轮begin/end draw期间，是否被调用了Resize

@@ -75,10 +75,11 @@ void ImageRender::OnSerialize(SerializeParam *pData) {
   s.AddString(XML_RENDER_IMAGE, Slot(&ImageRender::LoadBitmap, this),
               Slot(&ImageRender::GetBitmapId, this));
 
-  // 背景颜色
+  // 背景颜色 TODO:
+#if 0
   s.AddString(XML_RENDER_COLOR, Slot(&ImageRender::LoadColor, this),
               Slot(&ImageRender::GetColorId, this));
-
+#endif
   // 拉伸区域
   s.Add9Region(XML_RENDER_IMAGE9REGION, m_Region);
 

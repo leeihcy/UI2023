@@ -8,6 +8,7 @@
 #include "src/attribute/string_attribute.h"
 #include "src/object/object.h"
 #include "src/render/render_meta.h"
+#include "src/util/util.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                      //
@@ -153,124 +154,131 @@ ColorListRender::ColorListRender(IColorListRender *p) : RenderBase(p) {
 
 ColorListRender::~ColorListRender() { this->Clear(); }
 void ColorListRender::Clear() {
-  // for (int i = 0; i < m_nCount; i++)
-  // {
-  // 	SAFE_RELEASE(m_vBkColor[i]);
-  // 	SAFE_RELEASE(m_vBorderColor[i]);
-  // }
-  // m_vBkColor.clear();
-  // m_vBorderColor.clear();
+  m_vBkColor.clear();
+  m_vBorderColor.clear();
+}
+
+
+void ColorListRender::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
+    DrawState(&((RenderBaseDrawStateMessage *)msg)->draw_state);
+    return;
+  } else if (msg->message == UI_MSG_SERIALIZE) {
+    OnSerialize(static_cast<SerializeMessage *>(msg)->param);
+    return;
+  } else if (msg->message == UI_MSG_QUERYINTERFACE) {
+    auto *m = static_cast<QueryInterfaceMessage *>(msg);
+    if (m->uuid == ColorListRenderMeta::Get().UUID()) {
+      *(m->pp) = m_pIColorListRender;
+      return;
+    }
+  }
+  RenderBase::onRouteMessage(msg);
 }
 
 void ColorListRender::SetStateColor(int nState, Color colorBk, bool bSetBk,
                                     Color colBorder, bool bSetBorder) {
-  // nState = (nState) & 0xFFFF;
-  // if (m_nCount <= nState)
-  // {
-  // 	return;
-  // }
+  nState = (nState)&0xFFFF;
+  if (m_nCount <= nState) {
+    return;
+  }
 
-  // if (bSetBk)
-  // {
-  // 	SAFE_RELEASE(m_vBkColor[nState]);
-  //       m_vBkColor[nState] = Color::CreateInstance(colorBk);
-  // }
-  // if (bSetBorder)
-  // {
-  // 	SAFE_RELEASE(m_vBorderColor[nState]);
-  //       m_vBorderColor[nState] = Color::CreateInstance(colBorder);
-  // }
+  if (bSetBk) {
+    m_vBkColor[nState] = colorBk;
+  }
+  if (bSetBorder) {
+    m_vBorderColor[nState] = colBorder;
+  }
 }
 
 void ColorListRender::SetCount(int n) {
-  // if (n < 0)
-  // 	return;
+  if (n < 0)
+  	return;
 
-  // this->Clear();
+  this->Clear();
 
-  // for(int i = 0; i < n; i++ )
-  // {
-  // 	m_vBkColor.push_back((Color*)nullptr);
-  // 	m_vBorderColor.push_back((Color*)nullptr);
-  // }
-  // m_nCount = n;
+  for(int i = 0; i < n; i++ )
+  {
+  	m_vBkColor.reserve(n);
+  	m_vBorderColor.reserve(n);
+  }
+  m_nCount = n;
 }
 int ColorListRender::GetCount() { return m_nCount; }
 
 void ColorListRender::LoadBkColor(const char *szText) {
-  // if (!szText)
-  //     return;
+  if (!szText)
+    return;
 
-  // ColorRes* pColorRes = GetSkinColorRes();
-  // if (nullptr == pColorRes)
-  //     return;
+  ColorRes *pColorRes = GetSkinColorRes();
+  if (nullptr == pColorRes)
+    return;
 
-  // std::vector<std::string> vColors;
-  // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-  // int nCount = (int)vColors.size();
+  std::vector<std::string> vColors;
+  UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+  int nCount = (int)vColors.size();
 
-  // if (0 == m_nCount)
-  //     this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+  if (0 == m_nCount) {
+    //  如果未显示指定count，则自动取这里的大小
+    this->SetCount(nCount);
+  }
 
-  // for (int i = 0; i < m_nCount && i < nCount; i++ )
-  // {
-  //     if (!vColors[i].empty())
-  //     {
-  //         pColorRes->GetColor(vColors[i].c_str(), &m_vBkColor[i]);
-  //     }
-  // }
+  for (int i = 0; i < m_nCount && i < nCount; i++) {
+    if (!vColors[i].empty()) {
+      m_vBkColor[i] = util::TranslateColor(vColors[i].c_str());
+    }
+  }
 }
 const char *ColorListRender::SaveBkColor() {
-  // std::string&  strBuffer = GetTempBufferString();
-  // for (int i = 0; i < m_nCount; i++)
-  // {
-  //     if (i > 0)
-  //         strBuffer.push_back(XML_MULTI_SEPARATOR);
+  std::string &strBuffer = GetTempBufferString();
 
-  //     const char* szTemp = _GetColorId(m_vBkColor[i]);
-  //     if (szTemp)
-  //         strBuffer.append(szTemp);
-  // }
+  char buffer[64] = {0};
+  for (int i = 0; i < m_nCount; i++) {
+    if (i > 0)
+      strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-  // return strBuffer.c_str();
-  return nullptr;
+    m_vBkColor[i].ToWebString(buffer);
+    strBuffer.append(buffer);
+  }
+
+  return strBuffer.c_str();
 }
 void ColorListRender::LoadBorderColor(const char *szText) {
-  // ColorRes* pColorRes = GetSkinColorRes();
-  // if (nullptr == pColorRes)
-  //     return;
+  ColorRes *pColorRes = GetSkinColorRes();
+  if (nullptr == pColorRes)
+    return;
 
-  // if (!szText)
-  //     return;
+  if (!szText)
+    return;
 
-  // std::vector<std::string> vColors;
-  // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-  // int nCount = (int)vColors.size();
+  std::vector<std::string> vColors;
+  UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+  int nCount = (int)vColors.size();
 
-  // if (0 == m_nCount)
-  //     this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+  if (0 == m_nCount) {
+    //  如果未显示指定count，则自动取这里的大小
+    this->SetCount(nCount);
+  }
 
-  // for (int i = 0; i < m_nCount && i < nCount; i++ )
-  // {
-  //     if (!vColors[i].empty())
-  //     {
-  //         pColorRes->GetColor(vColors[i].c_str(), &m_vBorderColor[i]);
-  //     }
-  // }
+  for (int i = 0; i < m_nCount && i < nCount; i++) {
+    if (!vColors[i].empty()) {
+      m_vBorderColor[i] = util::TranslateColor(vColors[i].c_str());
+    }
+  }
 }
 
 const char *ColorListRender::SaveBorderColor() {
   bool bHasValue = false;
   std::string &strBuffer = GetTempBufferString();
+
+  char buffer[64] = {0};
   for (int i = 0; i < m_nCount; i++) {
     if (i > 0)
       strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-    const char *szTemp = _GetColorId(m_vBorderColor[i]);
-    if (szTemp && szTemp[0]) {
-      bHasValue = true;
-      strBuffer.append(szTemp);
-    }
+    m_vBorderColor[i].ToWebString(buffer);
+    bHasValue = true;
+    strBuffer.append(buffer);
   }
 
   if (bHasValue)
@@ -279,47 +287,52 @@ const char *ColorListRender::SaveBorderColor() {
 }
 
 void ColorListRender::OnSerialize(SerializeParam *pData) {
-  // AttributeSerializer s(pData, "ColorListRender");
+  AttributeSerializer s(pData, "ColorListRender");
 
-  // s.AddInt(XML_RENDER_COLORLIST_COUNT,
-  //     Slot(&ColorListRender::SetCount, this),
-  //     Slot(&ColorListRender::GetCount, this));
-  // s.AddString(XML_RENDER_COLOR,
-  //     Slot(&ColorListRender::LoadBkColor, this),
-  //     Slot(&ColorListRender::SaveBkColor, this));
-  // s.AddString(XML_RENDER_BORDERCOLOR,
-  //     Slot(&ColorListRender::LoadBorderColor, this),
-  //     Slot(&ColorListRender::SaveBorderColor, this));
+  s.AddInt(XML_RENDER_COLORLIST_COUNT,
+      Slot(&ColorListRender::SetCount, this),
+      Slot(&ColorListRender::GetCount, this));
+  s.AddString(XML_RENDER_COLOR,
+      Slot(&ColorListRender::LoadBkColor, this),
+      Slot(&ColorListRender::SaveBkColor, this));
+  s.AddString(XML_RENDER_BORDERCOLOR,
+      Slot(&ColorListRender::LoadBorderColor, this),
+      Slot(&ColorListRender::SaveBorderColor, this));
+
+  s.AddInt(XML_RENDER_BORDER_WIDTH, m_border);
+  s.AddRadius(XML_RENDER_RADIUS, m_radius);
 }
 
 void ColorListRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
-  //   IRenderTarget* pRenderTarget = pDrawStruct->pRenderTarget;
-  // if (nullptr == pRenderTarget)
-  // 	return;
+  IRenderTarget *r = pDrawStruct->pRenderTarget;
+  if (nullptr == r)
+    return;
 
-  //   if (0 == m_nCount)
-  //       return;
+  if (0 == m_nCount)
+    return;
 
-  // int nRealState = (pDrawStruct->nState) & 0xFFFF;
-  // if (nRealState >= m_nCount)
-  // 	nRealState = 0;
+  int nRealState = (pDrawStruct->nState) & 0xFFFF;
+  if (nRealState >= m_nCount)
+    nRealState = 0;
 
-  // if (nullptr == m_vBorderColor[nRealState])   // 不绘制边框
-  // {
-  // 	if (m_vBkColor[nRealState])
-  // 	{
-  // 		pRenderTarget->DrawRect(&pDrawStruct->rc,
-  // m_vBkColor[nRealState]);
-  // 	}
-  // }
-  // else                           // 绘制边框
-  // {
-  // 	if (m_vBkColor[nRealState])
-  // 		pRenderTarget->Rectangle(&pDrawStruct->rc,
-  // m_vBorderColor[nRealState], m_vBkColor[nRealState], 1, false); 	else
-  // 		pRenderTarget->Rectangle(&pDrawStruct->rc,
-  // m_vBorderColor[nRealState], 0,1,true);
-  // }
+  Color back_color = m_vBkColor[nRealState];
+  Color border_color = m_vBorderColor[nRealState];
+
+  if (m_radius.IsZero()) {
+    if (!back_color.IsTransparnt()) {
+      r->FillRect(pDrawStruct->rc, back_color);
+    }
+    if (!border_color.IsTransparnt()) {
+      r->StrokeRect(pDrawStruct->rc, border_color, m_border);
+    }
+  } else {
+    if (!back_color.IsTransparnt()) {
+      r->FillRoundRect(pDrawStruct->rc, back_color, m_radius);
+    }
+    if (!border_color.IsTransparnt()) {
+      r->StrokeRoundRect(pDrawStruct->rc, border_color, m_radius, m_border);
+    }
+  }
 }
 
 } // namespace ui

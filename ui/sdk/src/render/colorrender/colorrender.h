@@ -48,13 +48,6 @@ public:
   void OnSerialize(SerializeParam *pData);
   void DrawState(RENDERBASE_DRAWSTATE *pDrawStruct);
 
-  void LoadFromColor(const char *sz) { _LoadColor(sz, m_pColorFrom); }
-  void LoadToColor(const char *sz) { _LoadColor(sz, m_pColorTo); }
-  void LoadBorderColor(const char *sz) { _LoadColor(sz, m_pBorderColor); }
-  const char *SaveFromColor() { return _GetColorId(m_pColorFrom); }
-  const char *SaveToColor() { return _GetColorId(m_pColorTo); }
-  const char *SaveBorderColor() { return _GetColorId(m_pBorderColor); }
-
 public:
   IGradientRender *m_pIGradientRender;
   Color *m_pColorFrom;
@@ -73,12 +66,8 @@ public:
   ColorListRender(IColorListRender *p);
   ~ColorListRender();
 
-  // UI_BEGIN_MSG_MAP()
-  //     UIMSG_RENDERBASE_DRAWSTATE(DrawState)
-  //     UIMSG_QUERYINTERFACE(ColorListRender)
-  //     UIMSG_SERIALIZE(OnSerialize)
-  // UI_END_MSG_MAP_CHAIN_PARENT(RenderBase)
-
+  void onRouteMessage(ui::Msg *msg);
+public:
   void Clear();
 
   void OnSerialize(SerializeParam *pData);
@@ -96,8 +85,12 @@ public:
 
 private:
   IColorListRender *m_pIColorListRender;
-  std::vector<Color *> m_vBkColor;
-  std::vector<Color *> m_vBorderColor;
+
+  std::vector<Color> m_vBkColor;
+  std::vector<Color> m_vBorderColor;
   int m_nCount;
+
+  int m_border = 0;
+  CornerRadius  m_radius;
 };
 } // namespace ui

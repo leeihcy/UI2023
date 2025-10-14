@@ -6,7 +6,7 @@
         <prop key="layout" left="0" right="0" top="0" height="300"/>
         <Label id="title" text="文本测试" layer="0" layer.needclear="true">
            <prop key="layout" left="0" right="0" top="0" height="100"/>
-           <prop key="text.render" color="red" align="center|vcenter"/>
+           <prop key="text.render" color="grey" align="center|vcenter"/>
            <prop key="text.render.font" size="36" weight="bold"/>
         </Label>
 

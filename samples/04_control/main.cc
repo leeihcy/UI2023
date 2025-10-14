@@ -58,10 +58,10 @@ int main() {
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
 
   
-  ui::TimerID timer_id =
-      app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
+  // ui::TimerID timer_id =
+  //     app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
-  app->KillTimer(timer_id);
+  // app->KillTimer(timer_id);
 
   return 0;
 }

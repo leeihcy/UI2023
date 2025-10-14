@@ -153,8 +153,9 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
 
     m_pParent->Invalidate(&rcDirty);
   } else {
-    if (m_window_render)
+    if (m_window_render) {
       m_window_render->RequestInvalidate();
+    }
   }
 }
 

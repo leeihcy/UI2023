@@ -1,5 +1,6 @@
 #pragma once
 #include "include/interface/iobject.h"
+#include "include/macro/msg.h"
 #include "object_layer.h"
 #include "objtree.h"
 #include "src/private_inc.h"
@@ -26,7 +27,6 @@ public:
 
   // UI_BEGIN_MSG_MAP()
   // UIMSG_ERASEBKGND(OnEraseBkgnd)
-  // UIMSG_HITTEST(OnHitTest)
   // UIMSG_VISIBLE_CHANGED(OnVisibleChanged)
   // UI_END_MSG_MAP()
   
@@ -291,7 +291,7 @@ public:
 protected:
   int FinalConstruct(IResource *pSkinRes);
   void FinalRelease();
-  unsigned int OnHitTest(Point *ptInParent, Point *ptInChild);
+  eHitTest OnHitTest(const Point& ptInParent, Point& ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
   void onSerialize(SerializeParam *pData);
   void OnEraseBkgnd(IRenderTarget *pRenderTarget);

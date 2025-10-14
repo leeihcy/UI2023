@@ -54,14 +54,14 @@ SkiaRenderTarget::~SkiaRenderTarget() {
 void SkiaRenderTarget::Release() { delete this; }
 
 void SkiaRenderTarget::update_clip_rgn() {
-  // TODO: canvas->clipRect 不支持replace操作，导致clip区域越来越小，无法还原
-  // 目前好像只能通过 save/restore 来还原clip区域，太恶心了。先不支持clip吧。
-#if 0
+  // canvas->clipRect 不支持replace操作，导致clip区域越来越小，无法还原
+  // 只能通过 save/restore 来还原clip区域。
+
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  int count = m_dirty_region.GetCount();
+  int count = m_clip_origin_impl.m_dirty_region.Count();
   for (int i = 0; i < count; i++) {
-    Rect *prc = m_dirty_region.GetRectPtrAt(i);
+    Rect *prc = m_clip_origin_impl.m_dirty_region.GetRectPtrAt(i);
 
     SkRect skrc;
     toSkRect(*prc, &skrc);
@@ -69,13 +69,13 @@ void SkiaRenderTarget::update_clip_rgn() {
     canvas->clipRect(skrc);
   }
 
-  if (!m_stackClipRect.empty()) {
-    auto iter = m_stackClipRect.begin();
+  if (!m_clip_origin_impl.m_stackClipRect.empty()) {
+    auto iter = m_clip_origin_impl.m_stackClipRect.begin();
 
     Rect rcIntersect = *iter;
     iter++;
 
-    for (; iter != m_stackClipRect.end(); ++iter) {
+    for (; iter != m_clip_origin_impl.m_stackClipRect.end(); ++iter) {
       rcIntersect.Intersect(*iter, &rcIntersect);
     }
 
@@ -83,7 +83,6 @@ void SkiaRenderTarget::update_clip_rgn() {
     toSkRect(rcIntersect, &skrc);
     canvas->clipRect(skrc);
   }
-#endif
 }
 
 void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
@@ -98,14 +97,22 @@ const DirtyRegion &SkiaRenderTarget::GetDirtyRegion() {
   return m_clip_origin_impl.GetDirtyRegion();
 }
 
-void SkiaRenderTarget::PushRelativeClipRect(const Rect &rc) {
-  m_clip_origin_impl.PushRelativeClipRect(rc);
-  update_clip_rgn();
+void SkiaRenderTarget::PushRelativeClipRect(const Rect &rect) {
+  m_clip_origin_impl.PushRelativeClipRect(rect);
+  // update_clip_rgn();
+
+  // Rect rc = rect;
+  // rc.Offset(m_clip_origin_impl.m_ptOffset.x, m_clip_origin_impl.m_ptOffset.y);
+
+  Save();
+  ClipRect(rect);
 }
 
 void SkiaRenderTarget::PopRelativeClipRect() {
   m_clip_origin_impl.PopRelativeClipRect();
-  update_clip_rgn();
+  // update_clip_rgn();
+
+  Restore();
 }
 
 bool SkiaRenderTarget::IsRelativeRectInClip(const Rect &rect) {
@@ -265,7 +272,7 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
   if (!canvas) {
     return false;
   }
-  canvas->save();
+  m_save_count = canvas->save();
 
   canvas->scale(scale, scale);
   m_scale = scale;
@@ -285,7 +292,7 @@ void SkiaRenderTarget::EndDraw() {
   if (!canvas) {
     return;
   }
-  canvas->restore();
+  canvas->restoreToCount(m_save_count);
 
   if (m_enable_hardware_backend) {
     upload_2_gpu();
@@ -572,14 +579,14 @@ void SkiaRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
   SkPaint paint;
   paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
   
-  SkVector radius4[4] = {
-    (SkScalar)radius.top_left, 
-    (SkScalar)radius.top_right, 
-    (SkScalar)radius.bottom_right, 
-    (SkScalar)radius.bottom_left
+  SkVector radii[4] = {
+      {(SkScalar)radius.top_left, (SkScalar)radius.top_left},
+      {(SkScalar)radius.top_right, (SkScalar)radius.top_right},
+      {(SkScalar)radius.bottom_right, (SkScalar)radius.bottom_right},
+      {(SkScalar)radius.bottom_left, (SkScalar)radius.bottom_left},
   };
   SkRRect rrect;
-  rrect.setRectRadii(skrect, radius4);
+  rrect.setRectRadii(skrect, radii);
   canvas->drawRRect(rrect, paint);
 }
 

@@ -287,6 +287,7 @@ enum IMAGELIST_LAYOUT_TYPE
 #define  XML_WINDOW_RESIZE_CAPABILITY_ALL               "all"              // 能拖拽，能修改大小
 #define  XML_WINDOW_RESIZE_CAPABILITY_TRANSPARENT       "transparent"    // 穿透到父窗口拖拽
 
+
 #define WRSB_TRANSPARENT      0x10000    // 用于实现鼠标在子窗口上拖拽时，能够直接拖拽父窗口
 #define WRSB_TOP              0x8000     // ↑
 #define WRSB_LEFT             0x4000     // ←

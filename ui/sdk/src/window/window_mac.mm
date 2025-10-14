@@ -488,10 +488,10 @@ void *WindowPlatformMac::GetNSWindowRootView() {
   //       (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
   
   // 转换成左上角坐标
-  ui::Rect r = {
+  ui::Rect r = ui::Rect::MakeXYWH(
       (int)rect.origin.x,
       (int)(self.bounds.size.height - rect.origin.y - rect.size.height),
-      (int)rect.size.width, (int)rect.size.height};
+      (int)rect.size.width, (int)rect.size.height);
   m_window->onPaint(r);
 }
 
@@ -527,6 +527,17 @@ void *WindowPlatformMac::GetNSWindowRootView() {
   int y = (rect.size.height - pos.y);
   m_window->m_ui_window.m_mouse_key.OnMouseMove(x, y);
 }
+
+// 鼠标按下时，收不到mouseMoved，转换成了mouseDragged事件。
+- (void)mouseDragged:(NSEvent *)event {
+  const NSPoint pos = [event locationInWindow];
+  const NSRect rect = [self frame];
+
+  int x = pos.x;
+  int y = (rect.size.height - pos.y);
+  m_window->m_ui_window.m_mouse_key.OnMouseMove(x, y);
+}
+
 
 - (void)scrollWheel:(NSEvent *)event {
   printf("scrollWheel\n");

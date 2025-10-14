@@ -50,10 +50,8 @@ public:
   ColorRes *GetSkinColorRes();
   ImageRes *GetSkinImageRes();
 
-  void _LoadColor(const char *szColorId, Color *&pColorRef);
   std::shared_ptr<IRenderBitmap> _LoadBitmap(const char *id);
 
-  const char *_GetColorId(Color *&pColorRef);
   const char *_GetBitmapId(IRenderBitmap* pBitmap);
 
 protected:

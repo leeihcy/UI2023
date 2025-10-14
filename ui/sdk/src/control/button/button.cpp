@@ -3,10 +3,31 @@
 #include "include/interface/itextrenderbase.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
+#include "include/util/rect.h"
 #include "src/attribute/attribute.h"
 #include "src/control/button/button_meta.h"
 
 namespace ui {
+
+const uint  BUTTON_BKGND_RENDER_STATE_NORMAL = RENDER_STATE_NORMAL | 0;
+const uint  BUTTON_BKGND_RENDER_STATE_HOVER = RENDER_STATE_HOVER | 1;
+const uint  BUTTON_BKGND_RENDER_STATE_PRESS = RENDER_STATE_PRESS | 2;
+const uint  BUTTON_BKGND_RENDER_STATE_DISABLE = RENDER_STATE_DISABLE | 3;
+const uint  BUTTON_BKGND_RENDER_STATE_DEFAULT = RENDER_STATE_DEFAULT | 4;
+const uint  BUTTON_BKGND_RENDER_STATE_SELECTED_NORMAL = RENDER_STATE_NORMAL | RENDER_STATE_SELECTED | 4;
+const uint  BUTTON_BKGND_RENDER_STATE_SELECTED_HOVER = RENDER_STATE_HOVER | RENDER_STATE_SELECTED | 5;
+const uint  BUTTON_BKGND_RENDER_STATE_SELECTED_PRESS = RENDER_STATE_PRESS | RENDER_STATE_SELECTED | 6;
+const uint  BUTTON_BKGND_RENDER_STATE_SELECTED_DISABLE = RENDER_STATE_DISABLE | RENDER_STATE_SELECTED | 7;
+
+const uint  BUTTON_ICON_RENDER_STATE_NORMAL = RENDER_STATE_NORMAL | 0;
+const uint  BUTTON_ICON_RENDER_STATE_HOVER = RENDER_STATE_HOVER | 1;
+const uint  BUTTON_ICON_RENDER_STATE_PRESS = RENDER_STATE_PRESS | 2;
+const uint  BUTTON_ICON_RENDER_STATE_DISABLE = RENDER_STATE_DISABLE | 3;
+const uint  BUTTON_ICON_RENDER_STATE_SELECTED_NORMAL = RENDER_STATE_NORMAL | RENDER_STATE_SELECTED | 4;
+const uint  BUTTON_ICON_RENDER_STATE_SELECTED_HOVER = RENDER_STATE_HOVER | RENDER_STATE_SELECTED | 5;
+const uint  BUTTON_ICON_RENDER_STATE_SELECTED_PRESS = RENDER_STATE_PRESS | RENDER_STATE_SELECTED | 6;
+const uint  BUTTON_ICON_RENDER_STATE_SELECTED_DISABLE = RENDER_STATE_DISABLE | RENDER_STATE_SELECTED | 7;
+
 
 Button::Button(IButton *p) : Control(p), m_pIButton(p) {
   	memset(&m_button_style, 0, sizeof(ButtonStyle));
@@ -15,6 +36,9 @@ Button::Button(IButton *p) : Control(p), m_pIButton(p) {
 void Button::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_PAINT) {
     onPaint(static_cast<PaintMessage *>(msg)->rt);
+    return;
+  } else if (msg->message == UI_MSG_PAINTBKGND) {
+    onPaintBkgnd(static_cast<PaintBkgndMessage *>(msg)->rt);
     return;
   } else if (msg->message == UI_MSG_STATECHANGED) {
     onStateChanged(static_cast<StateChangedMessage*>(msg));
@@ -131,14 +155,47 @@ void Button::onPaint(IRenderTarget *r) {
     .r = r
   };
   
-  drawBackground(c);
   drawIcon(c);
   drawText(c);
   drawFocus(c);
 }
 
-void Button::drawBackground(ButtonDrawContext& c) {
+void Button::onPaintBkgnd(IRenderTarget* r) {
+  if (!m_back_render) {
+    return;
+  }
+
+  bool bDisable = !IsEnable();
+  bool bHover = IsHover();
+  bool bPress = IsPress();
+  bool bForePress = IsForcePress();
+  bool bChecked = IsChecked();
+  bool bDefault = IsDefault();
+
+  Rect rc = ui::Rect::MakeXYWH(0, 0, GetWidth(), GetHeight());
+  if (bDisable) {
+    m_back_render->DrawState(r, &rc,
+                             bChecked
+                                 ? BUTTON_BKGND_RENDER_STATE_SELECTED_DISABLE
+                                 : BUTTON_BKGND_RENDER_STATE_DISABLE);
+  } else if (bForePress || (bPress && bHover)) {
+    m_back_render->DrawState(r, &rc,
+                             bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_PRESS
+                                      : BUTTON_BKGND_RENDER_STATE_PRESS);
+  } else if (bHover || bPress) {
+    m_back_render->DrawState(r, &rc,
+                             bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_HOVER
+                                      : BUTTON_BKGND_RENDER_STATE_HOVER);
+  } else if (bDefault) {
+    m_back_render->DrawState(r, &rc, BUTTON_BKGND_RENDER_STATE_DEFAULT);
+  } else {
+    m_back_render->DrawState(r, &rc,
+                             bChecked
+                                 ? BUTTON_BKGND_RENDER_STATE_SELECTED_NORMAL
+                                 : BUTTON_BKGND_RENDER_STATE_NORMAL);
+  }
 }
+
 void Button::drawText(ButtonDrawContext& c) {
   if (m_text.empty()) {
     return;

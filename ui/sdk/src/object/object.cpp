@@ -2,6 +2,8 @@
 #include "include/interface/imessage.h"
 #include "include/interface/imeta.h"
 #include "include/interface/iobject.h"
+#include "include/macro/msg.h"
+#include "include/macro/uidefine.h"
 #include "object_layer.h"
 #include "include/interface/ilayout.h"
 #include "include/interface/iwindow.h"
@@ -73,11 +75,17 @@ Object::~Object(void) {
 }
 
 void Object::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_HITTEST) {
+    HitTestMessage *hittest_msg = static_cast<HitTestMessage *>(msg);
+    hittest_msg->hittest =
+        OnHitTest(hittest_msg->pt_in_parent, hittest_msg->pt_in_child);
+    return;
+  }
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
     Message::onRouteMessage(msg);
     FinalConstruct(static_cast<FinalConstructMessage*>(msg)->resource);
     return;
-  } 
+  }
   if (msg->message == UI_MSG_FINALRELEASE) {
     FinalRelease();
     return;
@@ -502,7 +510,7 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 //		你这个位置处于我什么部位。同时给Object配备一个RECT，来表示每一个对象的范围，因为大部分时候使用的都是RECT区域。
 //
 
-unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
+eHitTest Object::OnHitTest(const Point& ptInParent, Point& ptInChild) {
   bool bIn = false;
 
   // 	if (this->m_hRgn)
@@ -513,37 +521,28 @@ unsigned int Object::OnHitTest(Point *ptInParent, Point *ptInChild) {
   // 		    return HTCLIENT;
   // 	}
 
-#if 0 // defined(OS_WIN)
   Layer *layer = GetSelfLayer();
   if (layer) {
-    Point ptObj = {ptInParent->x - m_rcParent.left,
-                   ptInParent->y - m_rcParent.top};
+    Point ptObj = {ptInParent.x - m_rcParent.left,
+                   ptInParent.y - m_rcParent.top};
 
     layer->MapView2Layer(&ptObj);
 
     Rect rcObj = {0, 0, m_rcParent.Width(), m_rcParent.Height()};
-    if (PtInRect(&rcObj, ptObj)) {
-      if (ptInChild)
-        *ptInChild = ptObj;
-
-      return HTCLIENT;
+    if (rcObj.PtIn(ptObj)) {
+      ptInChild = ptObj;
+      return eHitTest::Client;
     }
-  } else
-  {
-    bIn = m_rcParent.PtIn(*ptInParent);
-    if (bIn) {
-      if (ptInChild) {
-        ptInChild->x = ptInParent->x - m_rcParent.left;
-        ptInChild->y = ptInParent->y - m_rcParent.top;
-      }
+  } else {
+    if (m_rcParent.PtIn(ptInParent)) {
+      ptInChild.x = ptInParent.x - m_rcParent.left;
+      ptInChild.y = ptInParent.y - m_rcParent.top;
 
-      return HTOBJECT;
+      return eHitTest::Object;
     }
   }
 
-  return HTNOWHERE;
-#endif
-  return 0;
+  return eHitTest::Nowhere;
 }
 
 // void Object::OnThemeChanged()
@@ -800,10 +799,9 @@ void Object::SetFocus(bool b, bool bNoitfy) {
 
   m_objState.focus = b;
   if (bNoitfy) {
-    assert(false);
-#if 0 // 废弃，使用RouteMessage代替。
-    GetIMessage()->SendMessage(UI_MSG_STATECHANGED, OSB_FOCUS);
-#endif
+    StateChangedMessage msg;
+    msg.state_changed_mask = OSB_FOCUS;
+    RouteMessage(&msg);
   }
 }
 

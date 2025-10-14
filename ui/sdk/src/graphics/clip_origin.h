@@ -22,7 +22,7 @@ public:
 
   bool IsRelativeRectInClip(const Rect& rect) override;
 
-private:
+public:
   // 剪裁数据
   DirtyRegion m_dirty_region;
   // 需要遍历，不使用std::stack

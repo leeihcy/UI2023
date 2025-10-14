@@ -41,9 +41,10 @@ struct UIAPI ILabel : public IControl {
 
 struct ButtonStyle {
   bool default_push_button : 1; // 可以成为默认按钮
-  bool click_on_pushdown : 1; // 当鼠标按下时就触发click，而不是鼠标弹起时触发
-  bool notify_hoverleave : 1; // 鼠标移入移出时，发出通知
-  bool hand_cursor : 1;       // 使用手型鼠标
+  bool click_on_pushdown : 1;   // 当鼠标按下时就触发click，而不是鼠标弹起时触发
+  bool notify_hoverleave : 1;   // 鼠标移入移出时，发出通知
+  bool hand_cursor : 1;         // 使用手型鼠标
+  bool checked : 1;             // radio/check button
   bool enable_radio_toggle : 1; // 允许radio button在被选中时，再次点击自己后，取消自己的选中状态
 };
 
