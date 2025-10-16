@@ -7,30 +7,16 @@ namespace ui {
 
 class ColorRender;
 struct UIAPI IColorRender : public IRenderBase {
-  void SetBkColor(Color col);
-  void SetBorderColor(Color col);
-  void SetBorder(int b);
+  void SetBackColor(Color color);
+  void SetBorderColor(Color color);
+  void SetBackColor(Color color, int index);
+  void SetBorderColor(Color color, int index);
+  
+  void SetBorder(int width);
 
   UI_DECLARE_INTERFACE(ColorRender);
 };
 
-//////////////////////////////////////////////////////////////////////////
-
-class GradientRender;
-struct UIAPI IGradientRender : public IRenderBase {
-  UI_DECLARE_INTERFACE(GradientRender);
-};
-
-//////////////////////////////////////////////////////////////////////////
-
-class ColorListRender;
-struct UIAPI IColorListRender : public IRenderBase {
-  void SetStateColor(int nState, Color colorBk, bool bSetBk,
-                     Color colBorder, bool bSetBorder);
-  void SetCount(int n);
-
-  UI_DECLARE_INTERFACE(ColorListRender);
-};
 } // namespace ui
 
 #endif // _UI_ICOLORRENDER_H_

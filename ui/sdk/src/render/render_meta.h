@@ -39,34 +39,7 @@ struct ColorRenderMeta : public MetaImpl<IColorRender> {
     param.minor_type = RENDER_TYPE_COLOR;
     return param;
   }
-};
-
-struct ColorListRenderMeta : public MetaImpl<IColorListRender> {
-  static ColorListRenderMeta& Get() {static ColorListRenderMeta s; return s; }
-
-  Uuid UUID() override { return {0x61B7CD08, 0x3E88, 0x11EE, {0x82, 0x98, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
-  const char* Name() override { return XML_RENDER_TYPE_COLORLIST; }
-  MetaDetail Detail() override {
-    MetaDetail param = { 0 };
-    param.major_type = RENDER;
-    param.minor_type = RENDER_TYPE_COLORLIST;
-    return param;
-  }
-};
-
-struct GradientRenderMeta : public MetaImpl<IGradientRender> {
-  static GradientRenderMeta& Get() {static GradientRenderMeta s; return s; }
-
-  Uuid UUID() override { return {0x2EA910E2, 0x3E72, 0x11EE, {0xA5, 0x8B, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
-  const char* Name() override { return XML_RENDER_TYPE_GRADIENT; }
-  MetaDetail Detail() override {
-    MetaDetail param = { 0 };
-    param.major_type = RENDER;
-    param.minor_type = RENDER_TYPE_GRADIENT;
-    return param;
-  }
-};
-
+}; 
 
 struct ImageRenderMeta : public MetaImpl<IImageRender> {
   static ImageRenderMeta& Get() {static ImageRenderMeta s; return s; }
@@ -125,11 +98,24 @@ struct SimpleTextRenderMeta : public MetaImpl<ISimpleTextRender> {
   static SimpleTextRenderMeta& Get() {static SimpleTextRenderMeta s; return s; }
 
   Uuid UUID() override { return {0xA31572D2, 0x3E88, 0x11EE, {0xAB, 0x10, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
-  const char* Name() override { return nullptr; }
+  const char* Name() override { return XML_TEXTRENDER_TYPE_SIMPLE; }
   MetaDetail Detail() override {
     MetaDetail param = { 0 };
     param.major_type = TEXT_RENDER;
     param.minor_type = TEXTRENDER_TYPE_SIMPLE;
+    return param;
+  }
+};
+
+struct ColorListTextRenderMeta : public MetaImpl<IColorListTextRender> {
+  static ColorListTextRenderMeta& Get() {static ColorListTextRenderMeta s; return s; }
+
+  Uuid UUID() override { return {0xF846F9C6, 0x3E88, 0x11EE, {0xBD, 0x07, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
+  const char* Name() override { return XML_TEXTRENDER_TYPE_COLORLIST; }
+  MetaDetail Detail() override {
+    MetaDetail param = { 0 };
+    param.major_type = TEXT_RENDER;
+    param.minor_type = TEXTRENDER_TYPE_COLORLIST;
     return param;
   }
 };
@@ -175,18 +161,6 @@ struct FontColorListTextRenderMeta : public MetaImpl<IFontColorListTextRender> {
   }
 };
 
-struct ColorListTextRenderMeta : public MetaImpl<IColorListTextRender> {
-  static ColorListTextRenderMeta& Get() {static ColorListTextRenderMeta s; return s; }
-
-  Uuid UUID() override { return {0xF846F9C6, 0x3E88, 0x11EE, {0xBD, 0x07, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
-  const char* Name() override { return nullptr; }
-  MetaDetail Detail() override {
-    MetaDetail param = { 0 };
-    param.major_type = TEXT_RENDER;
-    param.minor_type = TEXTRENDER_TYPE_COLORLIST;
-    return param;
-  }
-};
 #endif
 
 }

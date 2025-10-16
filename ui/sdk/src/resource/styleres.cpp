@@ -45,7 +45,7 @@ void StyleResItem::SetInherits(const char *sz) {
   m_vInheritList.clear();
 
   std::vector<std::string> vStrArray;
-  UI_Split(m_strInherits, XML_MULTI_SEPARATOR, vStrArray);
+  UI_Split(m_strInherits, XML_SPACE, vStrArray);
   int nSize = (int)vStrArray.size();
   if (0 != nSize) {
     for (int i = 0; i < nSize; i++) {
@@ -441,7 +441,7 @@ bool StyleRes::LoadStyle(const char *szTagName, const char *szStyleClass,
   // strStyleClass可能有多个
   if (szStyleClass && strlen(szStyleClass) > 0) {
     std::vector<std::string> vStrArray;
-    UI_Split(szStyleClass, XML_MULTI_SEPARATOR, vStrArray);
+    UI_Split(szStyleClass, XML_SPACE, vStrArray);
     int nCount = (int)vStrArray.size();
     if (0 != nCount) {
       for (int i = 0; i < nCount; i++) {

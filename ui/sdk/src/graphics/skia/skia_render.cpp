@@ -59,14 +59,14 @@ void SkiaRenderTarget::update_clip_rgn() {
 
   SkCanvas *canvas = m_sksurface->getCanvas();
 
+  SkPath clip_path;
   int count = m_clip_origin_impl.m_dirty_region.Count();
   for (int i = 0; i < count; i++) {
     Rect *prc = m_clip_origin_impl.m_dirty_region.GetRectPtrAt(i);
 
     SkRect skrc;
     toSkRect(*prc, &skrc);
-
-    canvas->clipRect(skrc);
+    clip_path.addRect(skrc);
   }
 
   if (!m_clip_origin_impl.m_stackClipRect.empty()) {
@@ -81,11 +81,25 @@ void SkiaRenderTarget::update_clip_rgn() {
 
     SkRect skrc;
     toSkRect(rcIntersect, &skrc);
-    canvas->clipRect(skrc);
+    clip_path.addRect(skrc);
+  }
+
+  if (!clip_path.isEmpty()) {
+    canvas->clipPath(clip_path);
   }
 }
 
 void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
+  if (Config::GetInstance().debug.log_window_onpaint) {
+    UI_LOG_INFO("SkiaRenderTarget SetDirtyRegion count = %d",
+                dirty_region.Count());
+    for (uint i = 0; i < dirty_region.Count(); i++) {
+      const Rect &rc = dirty_region.RectPtr2()[i];
+      UI_LOG_INFO("  count %d = %d,%d, %d,%d", i, rc.left, rc.top, rc.right,
+                  rc.bottom);
+    }
+  }
+
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
   update_clip_rgn();
 
@@ -578,6 +592,7 @@ void SkiaRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
 
   SkPaint paint;
   paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+  paint.setAntiAlias(true);
   
   SkVector radii[4] = {
       {(SkScalar)radius.top_left, (SkScalar)radius.top_left},
@@ -607,6 +622,7 @@ void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
   paint.setStroke(true);
   paint.setStrokeWidth(width);
   paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
+  paint.setAntiAlias(true);
 
   SkVector radii[4] = {
       {(SkScalar)radius.top_left, (SkScalar)radius.top_left},

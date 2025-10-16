@@ -33,7 +33,8 @@ protected:
   void drawText(ButtonDrawContext& c);
   void drawIcon(ButtonDrawContext& c);
   void drawFocus(ButtonDrawContext& c);
-
+  int getDrawState();
+  
 protected:
   void onFinalConstruct(FinalConstructMessage* msg);
   void onPaint(IRenderTarget* rt);
@@ -42,6 +43,9 @@ protected:
   void onGetDesiredSize(Size *pSize);
   void onStateChanged(StateChangedMessage* msg);
   void onTextChanged();
+  void onLButtonDown(LButtonDownMessage* msg);
+  void onLButtonUp(LButtonUpMessage* msg);
+  void onClicked();
 
 private:
   IButton *m_pIButton;

@@ -10,20 +10,12 @@ namespace ui {
 
 HorzLayout::HorzLayout() {
   m_nSpace = 0;
-  //	this->m_eDirection = LAYOUT_Horz_LEFTTORIGHT;   // 默认堆栈是从左到右
 }
 HorzLayout::~HorzLayout() {}
 void HorzLayout::Serialize(SerializeParam *pData) {
-  //     AttributeSerializer s(pData, "HorzLayout");
-  //
-  //     s.AddInt(XML_LAYOUT_HORZ_GAP, this,
-  //         memfun_cast<pfnLongSetter>(&HorzLayout::LoadGap),
-  //         memfun_cast<pfnLongGetter>(&HorzLayout::SaveGap));
-  //
+  AttributeSerializer s(pData, "HorzLayout");
+  s.AddInt(XML_LAYOUT_GAP, m_nSpace);
 }
-
-void HorzLayout::LoadGap(int n) { m_nSpace = ScaleByDpi_if_gt0(n); }
-int HorzLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
 
 void HorzLayout::SetSpace(int n) { m_nSpace = n; }
 
@@ -33,6 +25,8 @@ Size HorzLayout::Measure() {
   int nMaxHeight = 0;
 
   Object *pChild = nullptr;
+  
+  int space_counter = -1;
   while ((pChild = m_pPanel->EnumChildObject(pChild))) {
     // 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
     HorzLayoutParam *pParam = GetObjectLayoutParam(pChild);
@@ -41,6 +35,7 @@ Size HorzLayout::Measure() {
 
     if (pChild->IsSelfCollapsed())
       continue;
+    space_counter ++;
 
     if (pParam->m_eWidthType == WH_AUTO) {
       s.width += pChild->GetDesiredSize().width;
@@ -64,7 +59,10 @@ Size HorzLayout::Measure() {
     nMaxHeight = std::max(nMaxHeight, nHeight);
   }
   s.height = nMaxHeight;
-
+  if (space_counter > 0) {
+    s.width += space_counter * m_nSpace;
+  }
+  
   return s;
 }
 
@@ -210,6 +208,7 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
       rcObj.left = rcObj.right - info.width;
 
       nRightConsume += info.width + rMargin.left;
+      nRightConsume += m_nSpace;
     } else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_LEFT)
     {
       nLeftConsume += rMargin.left;
@@ -218,6 +217,7 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
       rcObj.right = rcObj.left + info.width;
 
       nLeftConsume += info.width + rMargin.right;
+      nLeftConsume += m_nSpace;
     }
 
     // 计算y坐标

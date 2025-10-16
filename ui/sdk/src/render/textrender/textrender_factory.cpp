@@ -18,8 +18,8 @@ void TextRenderFactory::Init() {
 // 				(ui::pfnUICreateTextRenderPtr)ObjectCreator<I##classname>::CreateInstance2);
 
   this->RegisterUITextRender(SimpleTextRenderMeta::Get());
+  this->RegisterUITextRender(ColorListTextRenderMeta::Get());
 #if 0 // TODO
-	REGISTER_UI_TEXTRENDERBASE2(ColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(FontColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorListTextRender)

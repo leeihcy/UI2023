@@ -23,8 +23,6 @@ public:
   Size GetDesiredSize(const char* text, unsigned int limit_width = 0);
   
 public:
-  void SetRenderFont(IRenderFont *pFont) {}
-
   void SetTextAlignment(int nDrawFlag);
   int GetTextAlignment() { return m_nDrawTextFlag; }
   // void SetTextEffect(TEXT_EFFECT e) { m_eDrawTextEffect = e; }
@@ -79,15 +77,48 @@ public:
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   void onGetDesiredSize(GetTextDesiredSizeMessage* msg);
 
-  // void SetColor(Color *pColText);
-  // bool GetColor(Color &color);
-  // void LoadFont(const char *szFontId);
-  // const char *GetFontId();
-
 protected:
   ISimpleTextRender *m_pISimpleTextRender;
   DrawTextParam m_draw_text_param;
 };
+
+class ColorListTextRender : public TextRenderBase {
+public:
+  ColorListTextRender(IColorListTextRender *p);
+  ~ColorListTextRender();
+
+  void onRouteMessage(ui::Msg *msg);
+
+  // UI_BEGIN_MSG_MAP()
+  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
+  // UIMSG_GETRENDERFONT(GetRenderFont)
+  // UIMSG_QUERYINTERFACE(ColorListTextRender)
+  // UIMSG_SERIALIZE(OnSerialize)
+  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
+
+  void OnSerialize(SerializeParam *pData);
+  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
+  void onGetDesiredSize(GetTextDesiredSizeMessage* msg);
+
+  void SetCount(int nCount);
+  int GetCount();
+
+  void LoadColor(const char *szText);
+  const char *GetColor();
+
+  void SetColor(int nIndex, Color col);
+
+protected:
+  void Clear();
+
+private:
+  IColorListTextRender *m_pIColorListTextRender;
+  DrawTextParam m_draw_text_param;
+
+  std::vector<Color> m_vTextColor;
+  int m_nCount;
+};
+
 #if 0
 // 根据皮肤颜色，自适应设置文本的颜色是白还是黑
 class ContrastColorTextRender : public TextRenderBase {
@@ -175,52 +206,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////
 
-class ColorListTextRender : public TextRenderBase {
-public:
-  ColorListTextRender(IColorListTextRender *p);
-  ~ColorListTextRender();
-
-  UI_DECLARE_TEXTRENDERBASE(ColorListTextRender, XML_TEXTRENDER_TYPE_COLORLIST,
-                            TEXTRENDER_TYPE_COLORLIST)
-
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  // UIMSG_GETRENDERFONT(GetRenderFont)
-  // UIMSG_QUERYINTERFACE(ColorListTextRender)
-  // UIMSG_SERIALIZE(OnSerialize)
-  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
-
-  void OnSerialize(SerializeParam *pData);
-  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-
-  IRenderFont *GetRenderFont();
-  void SetRenderFont(std::shared_ptr<IRenderFont>);
-
-  void LoadFont(const char *szFontId);
-  const char *GetFontId();
-
-  void SetCount(int nCount);
-  int GetCount();
-
-  void LoadColor(const char *szText);
-  const char *GetColor();
-
-  void SetColor(int nIndex, Color col);
-
-protected:
-  void Clear();
-
-private:
-  IColorListTextRender *m_pIColorListTextRender;
-
-  std::vector<Color*> m_vTextColor;
-  std::shared_ptr<IRenderFont> m_pRenderFont;
-  int m_nCount;
-
-#ifdef EDITOR_MODE
-  std::string m_strFontId;
-#endif
-};
 #if 0
 	class FontListTextRender : public TextRenderBase
 	{

@@ -15,11 +15,10 @@
         <Label text="居中对齐文本" 
           layout.left="0"  layout.top="150" width="400" height="20" text.render.align="right"/>
       </Panel>
-      <Panel>
-        <prop key="layout" left="0" right="0" top="300" height="400"/>
-        <Button text="普通按钮" style="button_theme_default">
-           <prop key="layout" left="10" top="10"/>
-        </Button>
+      <Panel padding="10">
+        <prop key="layout" type="horz" gap="10" left="0" right="0" top="300" height="400"/>
+        <Button id="btn_1" text="普通按钮" class="button button_theme_default"/>
+        <Button id="btn_2" text="主要按钮" class="button button_theme_primary"/>
       </Panel>
     </Window>
   </layout>

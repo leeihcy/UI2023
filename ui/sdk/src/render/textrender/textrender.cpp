@@ -15,6 +15,7 @@
 #include "src/render/renderbase.h"
 #include "src/resource/colorres.h"
 #include "src/resource/res_bundle.h"
+#include "src/util/util.h"
 #include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +273,6 @@ void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
 }
 void SerializeDrawTextParam(AttributeSerializer &serialize,
                             DrawTextParam &draw_ext_param) {
-  serialize.AddColor(XML_TEXTRENDER "." XML_COLOR, draw_ext_param.color);
   serialize.AddFlags(XML_TEXTRENDER_ALIGN, draw_ext_param.align)
       ->AddFlag(AlignRight, XML_TEXTRENDER_ALIGN_RIGHT)
       ->AddFlag(AlignCenter, XML_TEXTRENDER_ALIGN_CENTER)
@@ -316,60 +316,12 @@ void SimpleTextRender::onGetDesiredSize(GetTextDesiredSizeMessage *msg) {
 
 // 如果字体指针为空，则取object对象的配置字体。
 void SimpleTextRender::OnSerialize(SerializeParam *pData) {
-  {
-    AttributeSerializer s(pData, "SimpleTextRender");
-    TextRenderBase::Serialize(&s);
+  AttributeSerializer s(pData, "SimpleTextRender");
+  TextRenderBase::Serialize(&s);
 
-    SerializeDrawTextParam(s, m_draw_text_param);
-  }
-
-  // if (!m_pRenderFont && pData->IsLoad()) {
-  //   m_pRenderFont = _LoadDefalutFont();
-  // }
+  s.AddColor(XML_TEXTRENDER_COLOR, m_draw_text_param.color);
+  SerializeDrawTextParam(s, m_draw_text_param);
 }
-
-// void SimpleTextRender::LoadFont(const char *szFontId) {
-// #ifdef EDITOR_MODE
-//   assert(false);
-//   // if (m_pObject && m_pObject->GetUIApplication()->IsEditorMode()) {
-//   //   if (szFontId)
-//   //     m_strFontId = szFontId;
-//   //   else
-//   //     m_strFontId.clear();
-//   // }
-// #endif
-
-//   Resource *pSkinRes = GetResource();
-//   if (!pSkinRes)
-//     return;
-
-//   szFontId = pSkinRes->GetI18nRes().MapConfigValue(szFontId);
-//   m_pRenderFont = _LoadFont(szFontId);
-// }
-// const char *SimpleTextRender::GetFontId() {
-// #ifdef EDITOR_MODE
-//   return m_strFontId.c_str();
-// #endif
-//   return nullptr;
-// }
-
-// void SimpleTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
-//   m_pRenderFont = pFont;
-// }
-
-// void SimpleTextRender::SetColor(Color *pColText) {
-//   // SAFE_RELEASE(m_pColorText);
-//   // if (pColText)
-//   //   m_pColorText = Color::CreateInstance(pColText->m_col);
-// }
-
-// bool SimpleTextRender::GetColor(Color &color) {
-//   // if (!m_pColorText)
-//   //   return false;
-
-//   // color = m_pColorText->GetGDIValue();
-//   return true;
-// }
 
 void SimpleTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
   IRenderTarget *pRenderTarget = pDrawStruct->ds_renderbase.pRenderTarget;
@@ -585,7 +537,7 @@ void ContrastColorListTextRender::SetCount(int nCount) {
   }
 }
 int ContrastColorListTextRender::GetCount() { return (int)m_vTextColor.size(); }
-
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 ColorListTextRender::ColorListTextRender(IColorListTextRender *p)
@@ -595,11 +547,30 @@ ColorListTextRender::ColorListTextRender(IColorListTextRender *p)
 }
 ColorListTextRender::~ColorListTextRender() { this->Clear(); }
 void ColorListTextRender::Clear() {
-  // for (int i = 0; i < m_nCount; i++) {
-  //   SAFE_RELEASE(m_vTextColor[i]);
-  // }
-  // m_vTextColor.clear();
-  // m_nCount = 0;
+  m_vTextColor.clear();
+  m_nCount = 0;
+}
+
+
+void ColorListTextRender::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_GETTEXTDESIREDSIZE) {
+    onGetDesiredSize(static_cast<GetTextDesiredSizeMessage *>(msg));
+  }
+  else if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
+    DrawState(&((TextRenderDrawStateMessage *)msg)->draw_state);
+    return;
+  } else if (msg->message == UI_MSG_SERIALIZE) {
+    OnSerialize(static_cast<SerializeMessage *>(msg)->param);
+    return;
+  }
+  TextRenderBase::onRouteMessage(msg);
+}
+
+void ColorListTextRender::onGetDesiredSize(GetTextDesiredSizeMessage *msg) {
+  assert(msg->limit_width == 0); // TODO:
+
+  msg->size = FontPool::GetInstance().MeasureString(m_draw_text_param.font_desc,
+                                                    msg->text);
 }
 
 void ColorListTextRender::OnSerialize(SerializeParam *pData) {
@@ -615,122 +586,92 @@ void ColorListTextRender::OnSerialize(SerializeParam *pData) {
                 Slot(&ColorListTextRender::LoadColor, this),
                 Slot(&ColorListTextRender::GetColor, this));
 
-    s.AddString(XML_TEXTRENDER_FONT, Slot(&ColorListTextRender::LoadFont, this),
-                Slot(&ColorListTextRender::GetFontId, this));
+    SerializeDrawTextParam(s, m_draw_text_param);
   }
-
-  if (pData->IsLoad() && !m_pRenderFont) {
-    m_pRenderFont = _LoadDefalutFont();
-  }
-}
-
-void ColorListTextRender::LoadFont(const char *szFontId) {
-#ifdef EDITOR_MODE
-  if (szFontId)
-    m_strFontId = szFontId;
-  else
-    m_strFontId.clear();
-#endif
-
-  Resource *pSkinRes = GetResource();
-  if (!pSkinRes)
-    return;
-
-  szFontId = pSkinRes->GetI18nRes().MapConfigValue(szFontId);
-  m_pRenderFont = _LoadFont(szFontId);
-}
-const char *ColorListTextRender::GetFontId() {
-  // return _SaveFont(m_pRenderFont);
-#ifdef EDITOR_MODE
-  return m_strFontId.c_str();
-#endif
-  return nullptr;
 }
 
 void ColorListTextRender::LoadColor(const char *szText) {
-  // if (!szText)
-  //   return;
+  if (!szText)
+    return;
 
-  // IColorRes *pColorRes = GetSkinColorRes();
+  std::vector<std::string> vColors;
+  UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
+  int nCount = (int)vColors.size();
 
-  // std::vector<std::string> vColors;
-  // UI_Split(szText, XML_MULTI_SEPARATOR, vColors);
-  // int nCount = (int)vColors.size();
+  if (0 == m_nCount) {
+    this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
+  }
 
-  // if (0 == m_nCount) {
-  //   this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
-  // }
-
-  // for (int i = 0; i < m_nCount && i < nCount; i++) {
-  //   if (!vColors[i].empty()) {
-  //     SAFE_RELEASE(m_vTextColor[i]);
-  //     pColorRes->GetColor(vColors[i].c_str(), &m_vTextColor[i]);
-  //   }
-  // }
+  m_vTextColor.clear();
+  for (int i = 0; i < m_nCount && i < nCount; i++) {
+    if (!vColors[i].empty()) {
+      m_vTextColor.push_back(util::TranslateColor(vColors[i].c_str()));
+    }
+  }
 }
 const char *ColorListTextRender::GetColor() {
-  // std::string &strBuffer = GetTempBufferString();
-  // for (int i = 0; i < m_nCount; i++) {
-  //   if (i > 0)
-  //     strBuffer.push_back(XML_MULTI_SEPARATOR);
+  std::string &strBuffer = GetTempBufferString();
+  char buffer[64] = {0};
+  for (int i = 0; i < m_nCount; i++) {
+    if (i > 0)
+      strBuffer.push_back(XML_MULTI_SEPARATOR);
 
-  //   const char *szTemp = _SaveColor(m_vTextColor[i]);
-  //   if (szTemp)
-  //     strBuffer.append(szTemp);
-  // }
+    m_vTextColor[i].ToWebString(buffer);
+    strBuffer.append(buffer);
+  }
 
-  // return strBuffer.c_str();
-  return nullptr;
+  return strBuffer.c_str();
 }
 
 void ColorListTextRender::DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct) {
-  // if (0 == m_nCount)
-  //   return;
+  if (0 == m_nCount)
+    return;
 
-  // int nRealState = (pDrawStruct->ds_renderbase.nState) & 0xFFFF;
-  // if (nRealState >= m_nCount)
-  //   nRealState = 0;
+  int nRealState = (pDrawStruct->ds_renderbase.nState) & 0xFFFF;
+  if (nRealState >= m_nCount)
+    nRealState = 0;
 
-  // DRAWTEXTPARAM param;
-  // if (m_vTextColor[nRealState])
-  //   param.color = m_vTextColor[nRealState]->m_col;
-  // param.prc = &pDrawStruct->ds_renderbase.rc;
-  // param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
-  //                         ? m_nDrawTextFlag
-  //                         : pDrawStruct->nDrawTextFlag;
-  // param.szText = pDrawStruct->szText;
-  // pDrawStruct->ds_renderbase.pRenderTarget->DrawString(m_pRenderFont,
-  // &param);
-}
-IRenderFont *ColorListTextRender::GetRenderFont() {
-  return m_pRenderFont.get();
-}
+  if (nRealState < m_vTextColor.size()) {
+    m_draw_text_param.color = m_vTextColor[nRealState];
+  }
 
-void ColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> pFont) {
-  m_pRenderFont = pFont;
+  IRenderTarget *pRenderTarget = pDrawStruct->ds_renderbase.pRenderTarget;
+  if (nullptr == pRenderTarget || nullptr == pDrawStruct->szText)
+    return;
+
+  if (strlen(pDrawStruct->szText) > 0) {
+    // param.nFormatFlag = pDrawStruct->nDrawTextFlag == -1
+    //                         ? m_nDrawTextFlag
+    //                         : pDrawStruct->nDrawTextFlag;
+    m_draw_text_param.bound = pDrawStruct->ds_renderbase.rc;
+    m_draw_text_param.text = pDrawStruct->szText;
+
+    // param.nEffectFlag = m_eDrawTextEffect;
+    // if (m_pColorTextBkgnd)
+    //   param.bkcolor = *m_pColorTextBkgnd;
+    // param.wParam = m_wparamDrawText;
+    // param.lParam = m_lparamDrawText;
+    pRenderTarget->DrawString(m_draw_text_param);
+  }
 }
 
 void ColorListTextRender::SetCount(int nCount) {
   this->Clear();
   m_nCount = nCount;
 
-  for (int i = 0; i < m_nCount; i++) {
-    m_vTextColor.push_back(nullptr);
-  }
+  m_vTextColor.reserve(m_nCount);
 }
 int ColorListTextRender::GetCount() { return (int)m_vTextColor.size(); }
 
 void ColorListTextRender::SetColor(int nIndex, Color col) {
-  // nIndex = nIndex & 0xFFFF;
-  // if (nIndex >= m_nCount)
-  //   return;
+  nIndex = nIndex & 0xFFFF;
+  if (nIndex >= m_nCount)
+    return;
 
-  // if (m_vTextColor[nIndex]) {
-  //   SAFE_RELEASE(m_vTextColor[nIndex]);
-  // }
-  // m_vTextColor[nIndex] = Color::CreateInstance(col);
+  m_vTextColor[nIndex] = col;
 }
 
+#if 0
 //////////////////////////////////////////////////////////////////////////
 FontColorListTextRender::FontColorListTextRender(IFontColorListTextRender *p)
     : TextRenderBase(p) {

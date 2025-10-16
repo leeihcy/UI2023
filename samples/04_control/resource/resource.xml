@@ -1,27 +1,5 @@
 <?xml version="1.0"?>
 <skin>
-	<layout>
-	</layout>
   <include>control.xml</include>
-	<font>
-	</font>
-	<image>
-  </image>
-	<i18n>
-	</i18n>
-	<style>
-    <class id="button_theme_default" 
-      width="auto" height="40"
-      padding="20,12,20,12"
-      back.render.type="colorlist" 
-      back.render.colorlist.count="4" 
-      back.render.color="#fff;#ecf5ff;#fff" 
-      back.render.border.width="1"
-      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6"
-      back.render.radius="4"
-      text.render.align="center|vcenter"
-      text.render.color="#606266"
-      />
-	</style>
-	<color />
+  <include>style.xml</include>
 </skin>

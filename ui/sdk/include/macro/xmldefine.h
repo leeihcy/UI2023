@@ -11,6 +11,7 @@ namespace ui
 /////////////////////////////////////////////////////////////////////////////////
 
 #define XML_SEPARATOR             ','            // xml中的分隔符，如表示颜色、区域
+#define XML_SPACE                 ' '            // xml中的分隔符，如class样式
 #define XML_PATH_SEPARATOR        '/'            // xml中的路径分隔符（如样式路径，子对象路径）
 #define XML_MULTI_SEPARATOR       ';'            // xml中的分隔符,如分隔一个控件的多个style.
 #define XML_FLAG_SEPARATOR        '|'            // xml中的分隔符，如文本对齐方式: left|top|vcenter
@@ -138,7 +139,7 @@ enum IMAGE_ITEM_TYPE
 // Object对象属性
 
 //#define XML_ID                   "id"            // 每个对象的标识符
-#define XML_STYLECLASS           "style"         // 对象的样式类型
+#define XML_STYLECLASS           "class"         // 对象的样式类型
 #define XML_WIDTH                "width"         // 对象的宽度，可以为 auto | 数值
 #define XML_HEIGHT               "height"        // 对象的高度，可以为 auto | 数值
 #define XML_MARGIN               "margin"        // 对象的外边距
@@ -177,7 +178,6 @@ enum VISIBILITY_TYPE
 #define XML_RENDER_TYPE_IMAGELISTITEM     "imagelistitem"           // 图片列表中的一项，需要指定其索引
 #define XML_RENDER_TYPE_IMAGELIST         "imagelist"               // 图片列表
 #define XML_RENDER_TYPE_COLOR             "color"                   // 纯色填充 Color
-#define XML_RENDER_TYPE_COLORLIST         "colorlist"               // 类似office 2003工具栏式按钮
 #define XML_RENDER_TYPE_NOTHEME           "notheme"                 // win2000主题控件
 #define XML_RENDER_TYPE_THEME             "theme"                   // 系统主题控件
 #define XML_RENDER_TYPE_NULL              "null"                    // 不绘制该render，但也会实例化该render指针，避免控件默认使用theme主题
@@ -203,7 +203,6 @@ enum
 #define XML_RENDER_IMAGE                  "render.image"            // 背景图片
 #define XML_RENDER_IMAGE9REGION           "render.image.9region"    // 背景伸缩方式
 #define XML_RENDER_LIST_STATEMAPINDEX     "render.statemap"    // 设置控件绘制状态对应的图片项，例如0:0,1:0,2:0,3:0,4:1 表示有两个图片项，但selection用第二张图片，其它用第一张图片
-#define XML_RENDER_COLORLIST_COUNT        "render.colorlist.count"  // 颜色列表的数量
 // #define XML_RENDER_IMAGELIST_COUNT        "render.imagelist.count"  // 图片列表中的图片数量
 // #define XML_RENDER_IMAGELIST_LAYOUT       "render.imagelist.layout" // 图片排列方向(默认为横向)
 // #define XML_RENDER_IMAGELIST_LAYOUT_H     "h"                       // 图片横向排列
@@ -470,7 +469,7 @@ enum ROUND_CORNER_TYPE
 //     LAYOUT_STACK_BOTTOMTOTOP  = 4,   
 //     LAYOUT_STACK_TOPANDBOTTOM = 5   
 // };
-#define XML_LAYOUT_STACK_GAP            "layout.gap"        // 每一项之间的间隙
+#define XML_LAYOUT_GAP            "layout.gap"        // 每一项之间的间隙
 
 // average布局
 #define XML_LAYOUT_AVERAGE_DIRECTION    "layout.direction"  // stack布局的方向

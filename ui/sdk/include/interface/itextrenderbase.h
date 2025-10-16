@@ -54,12 +54,6 @@ struct UIAPI ITextRenderBase : public IMessage {
   void Serialize(SerializeParam *pData);
 
 protected:
-  // std::shared_ptr<IRenderFont> _LoadFont(const char *szFontId);
-  // const char *_SaveFont(IRenderFont *&pRenderFont);
-  // std::shared_ptr<IRenderFont> _LoadDefalutFont();
-  // void _LoadColor(const char *szColorId, Color *&pColor);
-  // const char *_SaveColor(Color *&pColor);
-
   ITextRenderBase();
   UI_DECLARE_INTERFACE(TextRenderBase);
 };
@@ -80,21 +74,10 @@ class ThemeTextRenderBase;
 
 class SimpleTextRender;
 struct UIAPI ISimpleTextRender : public ITextRenderBase {
-  // void SetRenderFont(IRenderFont *);
   // void SetColor(Color color);
   // Color GetColor();
 
   UI_DECLARE_INTERFACE(SimpleTextRender);
-};
-#if 0
-class ContrastColorTextRender;
-struct UIAPI IContrastColorTextRender : public ITextRenderBase {
-  UI_DECLARE_INTERFACE(ContrastColorTextRender)
-};
-
-class ContrastColorListTextRender;
-struct UIAPI IContrastColorListTextRender : public ITextRenderBase {
-  UI_DECLARE_INTERFACE(ContrastColorListTextRender);
 };
 
 class ColorListTextRender;
@@ -104,6 +87,17 @@ struct UIAPI IColorListTextRender : public ITextRenderBase {
   void SetColor(int nIndex, Color col);
 
   UI_DECLARE_INTERFACE(ColorListTextRender);
+};
+
+#if 0
+class ContrastColorTextRender;
+struct UIAPI IContrastColorTextRender : public ITextRenderBase {
+  UI_DECLARE_INTERFACE(ContrastColorTextRender)
+};
+
+class ContrastColorListTextRender;
+struct UIAPI IContrastColorListTextRender : public ITextRenderBase {
+  UI_DECLARE_INTERFACE(ContrastColorListTextRender);
 };
 
 class FontColorListTextRender;

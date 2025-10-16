@@ -36,6 +36,7 @@ copy("copy_dpi_resource") {
   sources = [
     "resource/resource.xml", 
     "resource/control.xml", 
+    "resource/style.xml", 
   ]
   outputs = [
     "$root_build_dir/bin/sample/control/{{source_file_part}}"

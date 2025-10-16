@@ -7,7 +7,7 @@ class Resource;
 struct IStyleRes;
 
 // 1. 控件设置一个class样式：
-//    styleclass="imagebtn;aaa"
+//    class="imagebtn aaa"
 //
 // 2. Tag 样式
 //       <CustomWindow font="normal" transparentrgn.type="4corner"
@@ -17,7 +17,7 @@ struct IStyleRes;
 //       <id id="imagebtn" xxx="yyy"/>
 //
 // 4. class 样式
-//       <class id="imagebtn" xxx="yyy"/>
+//       <class id="imagebtn" xxx="yyy" inherit="..."/>
 //
 
 struct IStyleResItem;

@@ -16,7 +16,7 @@ UI_IMPLEMENT_INTERFACE(TextRenderBase, Message)
 UI_IMPLEMENT_INTERFACE(SimpleTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(ContrastColorTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(ContrastColorListTextRender, TextRenderBase)
-// UI_IMPLEMENT_INTERFACE(ColorListTextRender, TextRenderBase)
+UI_IMPLEMENT_INTERFACE(ColorListTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(FontColorListTextRender, TextRenderBase)
 
 ITextRenderBase::ITextRenderBase() : IMessage(CREATE_IMPL_FALSE) {
@@ -111,6 +111,10 @@ void ITextRenderBase::Init() {
 void ITextRenderBase::CheckSkinTextureChanged() {
   return __pImpl->CheckSkinTextureChanged();
 }
+void IColorListTextRender::SetCount(int nCount) { __pImpl->SetCount(nCount); }
+void IColorListTextRender::SetColor(int nIndex, Color col) {
+  __pImpl->SetColor(nIndex, col);
+}
 
 //
 // const char*  IThemeTextRenderBase::GetThemeName()
@@ -144,14 +148,6 @@ void ITextRenderBase::CheckSkinTextureChanged() {
 
 //////////////////////////////////////////////////////////////////////////
 #if 0
-void IColorListTextRender::SetRenderFont(std::shared_ptr<IRenderFont> p) {
-  __pImpl->SetRenderFont(p);
-}
-void IColorListTextRender::SetCount(int nCount) { __pImpl->SetCount(nCount); }
-void IColorListTextRender::SetColor(int nIndex, Color col) {
-  __pImpl->SetColor(nIndex, col);
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 void IFontColorListTextRender::SetCount(int nCount) {

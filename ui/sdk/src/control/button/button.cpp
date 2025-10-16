@@ -60,6 +60,10 @@ void Button::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
     onFinalConstruct(static_cast<FinalConstructMessage *>(msg));
     return;
+  } else if (msg->message == UI_MSG_LBUTTONDOWN) {
+    onLButtonDown(static_cast<LButtonDownMessage*>(msg));
+  } else if (msg->message == UI_MSG_LBUTTONUP) {
+    onLButtonUp(static_cast<LButtonUpMessage*>(msg));
   }
   Control::onRouteMessage(msg);
 }
@@ -132,6 +136,27 @@ void Button::SetText(const char *text) {
 void Button::onTextChanged() {
 }
 
+void Button::onClicked() {
+  ButtonClickedEvent event;
+  event.button = m_pIButton;
+  emit(BUTTON_CLICK_EVENT, &event);
+}
+
+void Button::onLButtonDown(LButtonDownMessage *msg) {
+  if (m_button_style.click_on_pushdown) {
+    onClicked();
+  }
+}
+
+void Button::onLButtonUp(LButtonUpMessage* msg) {
+  if (m_button_style.click_on_pushdown)
+    return;
+
+  if (IsHover()) {
+    onClicked();
+  }
+}
+
 void Button::onStateChanged(StateChangedMessage *msg) {
   int mask = msg->state_changed_mask;
   if (mask & OSB_HOVER) {
@@ -160,11 +185,7 @@ void Button::onPaint(IRenderTarget *r) {
   drawFocus(c);
 }
 
-void Button::onPaintBkgnd(IRenderTarget* r) {
-  if (!m_back_render) {
-    return;
-  }
-
+int Button::getDrawState() {
   bool bDisable = !IsEnable();
   bool bHover = IsHover();
   bool bPress = IsPress();
@@ -174,26 +195,28 @@ void Button::onPaintBkgnd(IRenderTarget* r) {
 
   Rect rc = ui::Rect::MakeXYWH(0, 0, GetWidth(), GetHeight());
   if (bDisable) {
-    m_back_render->DrawState(r, &rc,
-                             bChecked
-                                 ? BUTTON_BKGND_RENDER_STATE_SELECTED_DISABLE
-                                 : BUTTON_BKGND_RENDER_STATE_DISABLE);
+    return bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_DISABLE
+                    : BUTTON_BKGND_RENDER_STATE_DISABLE;
   } else if (bForePress || (bPress && bHover)) {
-    m_back_render->DrawState(r, &rc,
-                             bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_PRESS
-                                      : BUTTON_BKGND_RENDER_STATE_PRESS);
+    return bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_PRESS
+                    : BUTTON_BKGND_RENDER_STATE_PRESS;
   } else if (bHover || bPress) {
-    m_back_render->DrawState(r, &rc,
-                             bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_HOVER
-                                      : BUTTON_BKGND_RENDER_STATE_HOVER);
+    return bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_HOVER
+                    : BUTTON_BKGND_RENDER_STATE_HOVER;
   } else if (bDefault) {
-    m_back_render->DrawState(r, &rc, BUTTON_BKGND_RENDER_STATE_DEFAULT);
+    return BUTTON_BKGND_RENDER_STATE_DEFAULT;
   } else {
-    m_back_render->DrawState(r, &rc,
-                             bChecked
-                                 ? BUTTON_BKGND_RENDER_STATE_SELECTED_NORMAL
-                                 : BUTTON_BKGND_RENDER_STATE_NORMAL);
+    return bChecked ? BUTTON_BKGND_RENDER_STATE_SELECTED_NORMAL
+                    : BUTTON_BKGND_RENDER_STATE_NORMAL;
   }
+}
+void Button::onPaintBkgnd(IRenderTarget* r) {
+  if (!m_back_render) {
+    return;
+  }
+  
+  Rect rc = ui::Rect::MakeXYWH(0, 0, GetWidth(), GetHeight());
+  m_back_render->DrawState(r, &rc, getDrawState());
 }
 
 void Button::drawText(ButtonDrawContext& c) {
@@ -205,7 +228,7 @@ void Button::drawText(ButtonDrawContext& c) {
 
   ITextRenderBase *p = GetTextRenderOrDefault();
   if (p) {
-    p->DrawState(c.r, &rect, 0, m_text.c_str());
+    p->DrawState(c.r, &rect, getDrawState(), m_text.c_str());
   }
 }
 void Button::drawIcon(ButtonDrawContext& c) {

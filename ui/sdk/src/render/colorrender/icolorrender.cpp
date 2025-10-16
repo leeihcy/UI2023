@@ -3,33 +3,21 @@
 #include "src/render/colorrender/colorrender.h"
 #include "src/render/render_meta.h"
 
-namespace ui
-{
+namespace ui {
 UI_IMPLEMENT_INTERFACE(ColorRender, RenderBase)
-UI_IMPLEMENT_INTERFACE(GradientRender, RenderBase)
-UI_IMPLEMENT_INTERFACE(ColorListRender, RenderBase)
 
-void  IColorRender::SetBkColor(Color col)
-{
-    return __pImpl->SetBkColor(col);
+void IColorRender::SetBackColor(Color color) {
+  return __pImpl->SetBackColor(color);
 }
-void  IColorRender::SetBorderColor(Color col)
-{
-    return __pImpl->SetBorderColor(col);
+void IColorRender::SetBorderColor(Color col) {
+  return __pImpl->SetBorderColor(col);
 }
-void  IColorRender::SetBorder(int b)
-{
-    __pImpl->SetBorder(b);
+void IColorRender::SetBackColor(Color color, int index) {
+  return __pImpl->SetBackColor(color, index);
 }
-//////////////////////////////////////////////////////////////////////////
+void IColorRender::SetBorderColor(Color color, int index) {
+  return __pImpl->SetBorderColor(color, index);
+}
+void IColorRender::SetBorder(int width) { __pImpl->SetBorder(width); }
 
-void  IColorListRender::SetStateColor(int nState, Color colorBk, bool bSetBk, Color colBorder, bool bSetBorder)
-{  
-    return __pImpl->SetStateColor(nState, colorBk, bSetBk, colBorder, bSetBorder);
-}
-void  IColorListRender::SetCount(int n)
-{
-    __pImpl->SetCount(n);
-}
-
-}
+} // namespace ui

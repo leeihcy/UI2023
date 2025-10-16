@@ -63,10 +63,6 @@ protected:
                           int &nRightCustom, Size size);
   void ArrangeObject_Right(Object *pChildObj, int &nLeftCustom,
                            int &nRightCustom, Size size);
-
-  void LoadGap(int);
-  int SaveGap();
-
 public:
   int m_nSpace; // 两个子对象之间间隙
 };

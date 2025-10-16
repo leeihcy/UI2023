@@ -4,6 +4,7 @@
 #include "src/application/uiapplication.h"
 #include "src/object/object.h"
 #include "src/resource/res_bundle.h"
+#include "src/util/util.h"
 
 namespace ui {
 AttributeBase *CreateColorAttribute() { return new ColorAttribute(); }
@@ -22,6 +23,7 @@ Color ColorAttribute::parse_color(const char *text) {
     return m_default;
   }
 
+#if 0
   size_t length = strlen(text);
   size_t last_index = length - 1;
 
@@ -43,52 +45,8 @@ Color ColorAttribute::parse_color(const char *text) {
     ColorRes &colorRes = m_pSkinRes->GetColorRes();
     return colorRes.GetColor(str.c_str(), nullptr);
   }
-  // simple color text
-  else if (strcmp("transparent", text) == 0) {
-    return Color::MakeARGB(0, 0, 0, 0);
-  } else if (strcmp("none", text) == 0) {
-    return Color::MakeARGB(0, 0, 0, 0);
-  }
-
-  else if (strcmp("black", text) == 0) {
-    return Color::MakeRGB(0, 0, 0);
-  } else if (strcmp("silver", text) == 0) {
-    return Color::MakeRGB(192, 192, 192);
-  } else if (strcmp("gray", text) == 0 || strcmp("grey", text) == 0) {
-    return Color::MakeRGB(128, 128, 128);
-  } else if (strcmp("white", text) == 0) {
-    return Color::MakeRGB(255, 255, 255);
-  } else if (strcmp("maroon", text) == 0) {
-    return Color::MakeRGB(128, 0, 0);
-  } else if (strcmp("red", text) == 0) {
-    return Color::MakeRGB(255, 0, 0);
-  } else if (strcmp("purple", text) == 0) {
-    return Color::MakeRGB(128, 0, 128);
-  } else if (strcmp("fuchsia", text) == 0) {
-    return Color::MakeRGB(255, 0, 255);
-  } else if (strcmp("green", text) == 0) {
-    return Color::MakeRGB(0, 128, 0);
-  } else if (strcmp("lime", text) == 0) {
-    return Color::MakeRGB(0, 255, 0);
-  } else if (strcmp("olive", text) == 0) {
-    return Color::MakeRGB(128, 128, 0);
-  } else if (strcmp("yellow", text) == 0) {
-    return Color::MakeRGB(255, 255, 0);
-  } else if (strcmp("navy", text) == 0) {
-    return Color::MakeRGB(0, 0, 128);
-  } else if (strcmp("blue", text) == 0) {
-    return Color::MakeRGB(0, 0, 255);
-  } else if (strcmp("teal", text) == 0) {
-    return Color::MakeRGB(0, 128, 128);
-  } else if (strcmp("aqua", text) == 0) {
-    return Color::MakeRGB(0, 255, 255);
-  }
-
-  // TODO:
-  else if (strcmp("orange", text) == 0) {
-    return Color::MakeRGB(255, 165, 0);
-  }
-  return m_default;
+#endif
+  return util::TranslateColor(text);
 }
 
 void ColorAttribute::Set(const char *szColorId) {

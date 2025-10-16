@@ -58,10 +58,6 @@ public:
   // virtual void ChildObjectVisibleChanged(IObject *pObj) override;
   virtual void SetSpace(int n) override;
 
-protected:
-  void LoadGap(int);
-  int SaveGap();
-
 public:
   int m_nSpace; // 两个子对象之间间隙
 };

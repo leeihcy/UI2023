@@ -331,6 +331,11 @@ int client_width = m_window.contentView.bounds.size.width;
 
     CGContextDrawImage(context, dirty, part_image);
     CGImageRelease(part_image);
+    
+    // printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
+    //        dirty.origin.x, dirty.origin.y, dirty.size.width, dirty.size.height);
+
+
 #else
     // 使用clip实现脏区域提交
     // CGRect dirty = CGRectMake(rc.left,

@@ -10,20 +10,12 @@ namespace ui {
 
 VertLayout::VertLayout() {
   m_nSpace = 0;
-  //	this->m_eDirection = LAYOUT_Vert_LEFTTORIGHT;   // 默认堆栈是从左到右
 }
 VertLayout::~VertLayout() {}
 void VertLayout::Serialize(SerializeParam *pData) {
-  //     AttributeSerializer s(pData, "VertLayout");
-  //
-  //     s.AddInt(XML_LAYOUT_VERT_GAP, this,
-  //         memfun_cast<pfnLongSetter>(&VertLayout::LoadGap),
-  //         memfun_cast<pfnLongGetter>(&VertLayout::SaveGap));
-  //
+  AttributeSerializer s(pData, "VertLayout");
+  s.AddInt(XML_LAYOUT_GAP, m_nSpace);
 }
-
-void VertLayout::LoadGap(int n) { m_nSpace = ScaleByDpi_if_gt0(n); }
-int VertLayout::SaveGap() { return RestoreByDpi_if_gt0(m_nSpace); }
 
 void VertLayout::SetSpace(int n) { m_nSpace = n; }
 
@@ -33,6 +25,8 @@ Size VertLayout::Measure() {
   int nMaxWidth = 0;
 
   Object *pChild = nullptr;
+
+  int space_counter = -1;
   while ((pChild = m_pPanel->EnumChildObject(pChild))) {
     // 放在IsSelfCollapsed之前。editor中也需要加载隐藏对象的布局属性
     VertLayoutParam *pParam = GetObjectLayoutParam(pChild);
@@ -41,6 +35,7 @@ Size VertLayout::Measure() {
 
     if (pChild->IsSelfCollapsed())
       continue;
+    space_counter ++;
 
     if (pParam->m_eHeightType == AUTO) {
       s.height += pChild->GetDesiredSize().height;
@@ -62,7 +57,9 @@ Size VertLayout::Measure() {
     nMaxWidth = std::max(nMaxWidth, nWidth);
   }
   s.width = nMaxWidth;
-
+  if (space_counter > 0) {
+    s.height += space_counter * m_nSpace;
+  }
   return s;
 }
 
@@ -202,6 +199,7 @@ void VertLayout::DoArrange(ArrangeParam& param) {
       rcObj.top = rcObj.bottom - info.height;
 
       nBottomConsume += info.height + rMargin.top;
+      nBottomConsume += m_nSpace;
     } else // if (pParam->m_nConfigLayoutFlags & LAYOUT_ITEM_ALIGN_TOP)
     {
       nTopConsume += rMargin.top;
@@ -210,6 +208,7 @@ void VertLayout::DoArrange(ArrangeParam& param) {
       rcObj.bottom = rcObj.top + info.height;
 
       nTopConsume += info.height + rMargin.bottom;
+      nTopConsume += m_nSpace;
     }
 
     // 计算x坐标

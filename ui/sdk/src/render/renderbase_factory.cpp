@@ -13,11 +13,7 @@ RenderBaseFactory::RenderBaseFactory(Application &app) : m_app(app) {}
 RenderBaseFactory::~RenderBaseFactory() { Clear(); }
 
 void RenderBaseFactory::Init() {
-  // REGISTER_UI_RENDERBASE(this, NullRender) -- 2015.4.1过期，不再使用
-
   this->RegisterUIRenderBase(ColorRenderMeta::Get());
-  // this->RegisterUIRenderBase(GradientRenderMeta::Get());
-  this->RegisterUIRenderBase(ColorListRenderMeta::Get());
   this->RegisterUIRenderBase(ImageRenderMeta::Get());
   this->RegisterUIRenderBase(ImageListRenderMeta::Get());
   this->RegisterUIRenderBase(ImageListItemRenderMeta::Get());

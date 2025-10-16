@@ -278,7 +278,6 @@ void WindowMouseKey::OnMouseEnter() {}
 void WindowMouseKey::OnMouseLeave() {}
 
 void WindowMouseKey::OnMouseMove(int x, int y) {
-  printf("onMouseMove....\n");
   // if (m_bMouseTrack) //若允许追踪，则。
   // {
   //   TRACKMOUSEEVENT tme;

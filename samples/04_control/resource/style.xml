@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<skin>
+	<style>
+    <class id="button"
+      width="auto" height="40"
+      padding="20,12,20,12"
+    />
+
+    <class id="button_theme_default" 
+      back.render.type="color" 
+      back.render.color="#fff;#ecf5ff;#fff" 
+      back.render.border.width="1"
+      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6"
+      back.render.radius="4"
+      text.render.type="colorlist"
+      text.render.align="center|vcenter"
+      text.render.color="#606266;#409eff;#409eff"
+      />
+    <class id="button_theme_primary" 
+      back.render.type="color" 
+      back.render.color="#409eff;#66b1ff;#3a8ee6" 
+      back.render.radius="4"
+      text.render.type="simple"
+      text.render.align="center|vcenter"
+      text.render.color="#fff"
+      />
+	</style>
+	<color />
+</skin>

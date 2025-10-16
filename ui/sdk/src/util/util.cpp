@@ -3,10 +3,12 @@
 #include "include/macro/helper.h"
 #include "include/util/struct.h"
 
+#include <_ctype.h>
 #include <algorithm> // transform
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <map>
 
 #if defined(OS_WIN)
 #include <shlwapi.h>
@@ -357,17 +359,52 @@ Color TranslateHexColor(const char *szColor) {
   return Color::MakeARGB(a,r,g,b);
 }
 
-Color TranslateColor(const char *szColor) {
-  if (!szColor)
+Color TranslateColor(const char *color) {
+  if (!color)
     return Color::Make(0);
 
-  if (szColor[0] == '#') // 16进制
-    return TranslateHexColor(szColor + 1);
-  else if (szColor[0] == '0' && szColor[1] == 'x')
-    return TranslateHexColor(szColor + 2);
+  // 16进制
+  if (color[0] == '#') {
+    return TranslateHexColor(color + 1);
+  }
 
-  // A,R,G,B形式
-  return TranslateRGB(szColor);
+  if (color[0] == '0' && color[1] == 'x') {
+    return TranslateHexColor(color + 2);
+  }
+
+  if (isdigit(color[0])) {
+    // A,R,G,B形式
+    return TranslateRGB(color);
+  }
+
+  static std::map<std::string, Color> color_map = {
+    {"transparent", Color::MakeARGB(0, 0, 0, 0)},
+    {"none", Color::MakeARGB(0, 0, 0, 0)},
+    {"black", Color::MakeRGB(0, 0, 0)}, 
+    {"silver", Color::MakeRGB(192, 192, 192)},
+    {"grey", Color::MakeRGB(128, 128, 128)},
+    {"gray", Color::MakeRGB(128, 128, 128)},
+    {"white", Color::MakeRGB(255, 255, 255)},
+    {"maroon", Color::MakeRGB(128, 0, 0)},
+    {"red", Color::MakeRGB(255, 0, 0)},
+    {"purple", Color::MakeRGB(128, 0, 128)},
+    {"fuchsia", Color::MakeRGB(255, 0, 255)},
+    {"green", Color::MakeRGB(0, 128, 0)},
+    {"lime", Color::MakeRGB(0, 255, 0)},
+    {"olive", Color::MakeRGB(128, 128, 0)},
+    {"yellow", Color::MakeRGB(255, 255, 0)},
+    {"navy", Color::MakeRGB(0, 0, 128)},
+    {"blue", Color::MakeRGB(0, 0, 255)},
+    {"teal", Color::MakeRGB(0, 128, 128)},
+    {"aqua", Color::MakeRGB(0, 255, 255)},
+    {"orange", Color::MakeRGB(255, 165, 0)}
+  };
+  auto iter = color_map.find(color);
+  if (iter != color_map.end()) {
+    return iter->second;
+  }
+  
+  return Color::Make(0);
 }
 
 bool TranslateRECT(const char *szRect, Rect *pRect, char szSep) {
