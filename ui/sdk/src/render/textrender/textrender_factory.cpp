@@ -10,15 +10,7 @@ TextRenderFactory::TextRenderFactory(Application &app) : m_app(app) {}
 TextRenderFactory::~TextRenderFactory() { Clear(); }
 
 void TextRenderFactory::Init() {
-
-  // #define REGISTER_UI_TEXTRENDERBASE2(classname) \
-//         this->RegisterUITextRenderCreateData( \
-//                 classname::GetXmlName(),          \
-//                 classname::GetType(),             \
-// 				(ui::pfnUICreateTextRenderPtr)ObjectCreator<I##classname>::CreateInstance2);
-
   this->RegisterUITextRender(SimpleTextRenderMeta::Get());
-  this->RegisterUITextRender(ColorListTextRenderMeta::Get());
 #if 0 // TODO
 	REGISTER_UI_TEXTRENDERBASE2(FontColorListTextRender)
 	REGISTER_UI_TEXTRENDERBASE2(ContrastColorTextRender)
@@ -48,69 +40,63 @@ void TextRenderFactory::Clear() { m_vecTextRenderCreator.clear(); }
 // 	return true;
 // }
 
-bool TextRenderFactory::RegisterUITextRender(IMeta &meta) {
+bool TextRenderFactory::RegisterUITextRender(ITextRenderBaseMeta &meta) {
   m_vecTextRenderCreator.push_back(&meta);
   return true;
 }
 
-bool TextRenderFactory::CreateTextRenderBaseByName(IResource *resource,
+std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(IResource *resource,
                                                    const char *name,
-                                                   IObject *obj,
-                                                   ITextRenderBase **ppOut) {
-  if (!resource || !name || !obj || !ppOut)
-    return false;
+                                                   IObject *obj) {
+  if (!resource || !name || !obj)
+    return nullptr;
 
   auto iter = m_vecTextRenderCreator.begin();
   for (; iter != m_vecTextRenderCreator.end(); ++iter) {
-    IMeta *meta = *iter;
+    ITextRenderBaseMeta *meta = *iter;
     if (!meta || !meta->Name())
       continue;
 
     if (strcmp(name, meta->Name()) != 0)
       continue;
 
-    meta->Create(resource, (void **)ppOut);
-    if (*ppOut) {
-      (*ppOut)->SetObject(obj);
-      (*ppOut)->Init();
-      (*ppOut)->SetType((TEXTRENDER_TYPE)meta->Detail().minor_type);
-      return true;
+    std::shared_ptr<ITextRenderBase> out = meta->CreateShared(resource);
+    if (out) {
+      out->SetObject(obj);
+      out->Init();
+      out->SetType((TEXTRENDER_TYPE)meta->Detail().minor_type);
     }
-
-    return false;
+    return out;
   }
 
   UI_LOG_WARN("Create Failed. Name=%s", name);
-  return false;
+  return nullptr;
 }
-bool TextRenderFactory::CreateTextRender(IResource *resource, int type,
-                                         IObject *object,
-                                         ITextRenderBase **ppOut) {
-  if (nullptr == object || nullptr == ppOut)
-    return false;
+std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResource *resource, int type,
+                                         IObject *object) {
+  if (nullptr == object)
+    return nullptr;
 
   auto iter = m_vecTextRenderCreator.begin();
   for (; iter != m_vecTextRenderCreator.end(); iter++) {
-    IMeta *meta = *iter;
+    ITextRenderBaseMeta *meta = *iter;
     if (!meta)
       continue;
 
     if (meta->Detail().minor_type != type)
       continue;
 
-    meta->Create(resource, (void **)ppOut);
-    if (*ppOut) {
-      (*ppOut)->SetObject(object);
-      (*ppOut)->Init();
-      (*ppOut)->SetType((TEXTRENDER_TYPE)type);
-      return true;
+    std::shared_ptr<ITextRenderBase> out = meta->CreateShared(resource);
+    if (out) {
+      out->SetObject(object);
+      out->Init();
+      out->SetType((TEXTRENDER_TYPE)type);
     }
-
-    return false;
+    return out;
   }
 
   UI_LOG_WARN("Create Failed. Type=%d", type);
-  return false;
+  return nullptr;
 }
 
 const char *TextRenderFactory::GetTextRenderBaseName(int nType) {

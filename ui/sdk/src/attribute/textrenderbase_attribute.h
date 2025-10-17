@@ -1,5 +1,7 @@
 #pragma once
 #include "attributebase.h"
+#include "include/interface/itextrenderbase.h"
+#include <memory>
 
 namespace ui {
 
@@ -36,7 +38,7 @@ private:
 private:
   ITextRenderBaseAttribute *m_pITextRenderBaseAttribute;
 
-  ITextRenderBase **m_ppBindValue;
+  std::shared_ptr<ITextRenderBase>* m_ppBindValue;
   Object *m_pObject;
 
   std::string m_strPrefix;

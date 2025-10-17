@@ -6,7 +6,7 @@ namespace ui {
 class Application;
 struct IResource;
 struct IObject;
-struct IMeta;
+struct ITextRenderBaseMeta;
 struct ITextRenderBase;
 
 class TextRenderFactory {
@@ -16,13 +16,12 @@ public:
 
   void Init();
   void Clear();
-  bool RegisterUITextRender(IMeta &meta);
+  bool RegisterUITextRender(ITextRenderBaseMeta &meta);
 
-  bool CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName,
-                                  IObject *pObject, ITextRenderBase **ppOut);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName,
+                                  IObject *pObject);
 
-  bool CreateTextRender(IResource *pSkinRes, int nType, IObject *pObject,
-                        ITextRenderBase **ppOut);
+  std::shared_ptr<ITextRenderBase> CreateTextRender(IResource *pSkinRes, int nType, IObject *pObject);
 
   const char *GetTextRenderBaseName(int nType);
 
@@ -31,6 +30,6 @@ public:
 
 private:
   Application &m_app;
-  std::vector<IMeta *> m_vecTextRenderCreator;
+  std::vector<ITextRenderBaseMeta*> m_vecTextRenderCreator;
 };
 } // namespace ui

@@ -17,21 +17,20 @@ typedef struct tagControlStyle
 } ControlStyle;
 
 class Control;
-struct UIAPI IControl : public IObject
-{
-   void  ModifyControlStyle(ControlStyle* add, ControlStyle* remove);
-   bool  TestControlStyle(ControlStyle* test);
-   bool  IsGroup();
-   void  SetGroup(bool);
+struct UIAPI IControl : public IObject {
+  void ModifyControlStyle(ControlStyle *add, ControlStyle *remove);
+  bool TestControlStyle(ControlStyle *test);
+  bool IsGroup();
+  void SetGroup(bool);
 
-   const char*  GetToolTipText();
-   void  SetToolTipText(const char* szText);
+  const char *GetToolTipText();
+  void SetToolTipText(const char *szText);
 
-   ITextRenderBase*  CreateDefaultTextRender();
-   ITextRenderBase*  GetTextRenderOrDefault();
-   void  TryUpdateLayoutOnContentChanged();
+  std::shared_ptr<ITextRenderBase> CreateDefaultTextRender();
+  std::shared_ptr<ITextRenderBase> GetTextRenderOrDefault();
+  void TryUpdateLayoutOnContentChanged();
 
-   UI_DECLARE_INTERFACE(Control);
+  UI_DECLARE_INTERFACE(Control);
 };
 
 class Label;

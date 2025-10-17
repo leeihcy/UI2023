@@ -12,6 +12,7 @@
 #include "src/layout/layout.h"
 #include "src/object/layout/layout_object.h"
 #include "src/window/window.h"
+#include <memory>
 
 
 namespace ui {
@@ -37,14 +38,6 @@ Panel::Panel(IPanel *p) : Object(p) {
 
 Panel::~Panel() {
   SAFE_RELEASE(m_pLayout);
-  if (m_pTextureRender) {
-    m_pTextureRender->GetMeta()->Destroy(m_pTextureRender);
-    m_pTextureRender = nullptr;
-  }
-  if (m_pMaskRender) {
-    m_pMaskRender->GetMeta()->Destroy(m_pMaskRender);
-    m_pMaskRender = nullptr;
-  }
 }
 
 void Panel::onRouteMessage(ui::Msg *msg) {
@@ -245,13 +238,9 @@ void Panel::onPostPaint(IRenderTarget *pRenderTarget) {
   }
 }
 
-void Panel::SetTextureRender(IRenderBase *p) {
-  if (m_pTextureRender) {
-    m_pTextureRender->GetMeta()->Destroy(m_pTextureRender);
-    m_pTextureRender = nullptr;
-  }
+void Panel::SetTextureRender(std::shared_ptr<IRenderBase> p) {
   m_pTextureRender = p;
 }
-IRenderBase *Panel::GetTextureRender() { return m_pTextureRender; }
+std::shared_ptr<IRenderBase> Panel::GetTextureRender() { return m_pTextureRender; }
 
 } // namespace ui

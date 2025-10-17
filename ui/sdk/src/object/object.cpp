@@ -120,18 +120,9 @@ void Object::FinalRelease() {
   //	清理自己的邻居关系
   RemoveMeInTheTree();
 
-  if (m_back_render) {
-    m_back_render->GetMeta()->Destroy(m_back_render);
-    m_back_render = nullptr;
-  }
-  if (m_fore_render) {
-    m_fore_render->GetMeta()->Destroy(m_fore_render);
-    m_fore_render = nullptr;
-  }
-  if (m_text_render) {
-    m_text_render->GetMeta()->Destroy(m_text_render);
-    m_text_render = nullptr;
-  }
+  m_back_render.reset();
+  m_fore_render.reset();
+  m_text_render.reset();
 
   // 在析构之前销毁，避免窗口的window compositor已经销毁了，但layer还没有被销毁
   m_objLayer.DestroyLayer();
@@ -1232,33 +1223,21 @@ void Object::SortChildByZorder() {
   }
 }
 
-void Object::SetBackRender(IRenderBase *p) {
-  if (m_back_render) {
-    m_back_render->GetMeta()->Destroy(m_back_render);
-    m_back_render = nullptr;
-  }
+void Object::SetBackRender(std::shared_ptr<IRenderBase> p) {
   m_back_render = p;
 }
 
-void Object::SetForegndRender(IRenderBase *p) {
-  if (m_fore_render) {
-    m_fore_render->GetMeta()->Destroy(m_fore_render);
-    m_fore_render = nullptr;
-  }
+void Object::SetForegndRender(std::shared_ptr<IRenderBase> p) {
   m_fore_render = p;
 }
 
-void Object::SetTextRender(ITextRenderBase *p) {
-  if (m_text_render) {
-    m_text_render->GetMeta()->Destroy(m_text_render);
-    m_text_render = nullptr;
-  }
+void Object::SetTextRender(std::shared_ptr<ITextRenderBase> p) {
   m_text_render = p;
 }
 
-ITextRenderBase *Object::GetTextRender() { return m_text_render; }
-IRenderBase *Object::GetBackRender() { return m_back_render; }
-IRenderBase *Object::GetForeRender() { return m_fore_render; }
+std::shared_ptr<ITextRenderBase> Object::GetTextRender() { return m_text_render; }
+std::shared_ptr<IRenderBase> Object::GetBackRender() { return m_back_render; }
+std::shared_ptr<IRenderBase> Object::GetForeRender() { return m_fore_render; }
 
 //	获取自己的字体,这里返回的对象只是一个临时对象，
 //	如果需要保存使用，则需要调用AddRef
@@ -1283,7 +1262,7 @@ IRenderFont *Object::GetRenderFont() {
   return nullptr;
 }
 
-void Object::load_renderbase(const char *szName, IRenderBase *&pRender) {
+void Object::load_renderbase(const char *szName, std::shared_ptr<IRenderBase> &pRender) {
   UIASSERT(false);
 //   SAFE_RELEASE(pRender);
 //   if (szName) {
@@ -1297,7 +1276,7 @@ void Object::load_renderbase(const char *szName, IRenderBase *&pRender) {
 }
 
 void Object::load_textrender(const char *szName,
-                             ITextRenderBase *&pTextRender) {
+                             std::shared_ptr<ITextRenderBase> &pTextRender) {
                               UIASSERT(false);
 //   SAFE_RELEASE(pTextRender);
 //   if (szName) {
@@ -1308,7 +1287,7 @@ void Object::load_textrender(const char *szName,
 //   }
 }
 
-const char *Object::get_renderbase_name(IRenderBase *&pRender) {
+const char *Object::get_renderbase_name(std::shared_ptr<IRenderBase> &pRender) {
   if (!pRender)
     return nullptr;
 #if 0 // defined(OS_WIN)
@@ -1318,7 +1297,7 @@ const char *Object::get_renderbase_name(IRenderBase *&pRender) {
   return nullptr;
 #endif
 }
-const char *Object::get_textrender_name(ITextRenderBase *&pTextRender) {
+const char *Object::get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender) {
   if (!pTextRender)
     return nullptr;
 #if 0 // defined(OS_WIN)

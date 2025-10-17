@@ -138,12 +138,12 @@ public:
   bool SetKeyboardCapture(int nNotifyMsgId);
   bool ReleaseKeyboardCapture();
 
-  void SetBackRender(IRenderBase *p);
-  void SetForegndRender(IRenderBase *p);
-  void SetTextRender(ITextRenderBase *p);
-  ITextRenderBase *GetTextRender();
-  IRenderBase *GetBackRender();
-  IRenderBase *GetForeRender();
+  void SetBackRender(std::shared_ptr<IRenderBase> p);
+  void SetForegndRender(std::shared_ptr<IRenderBase> p);
+  void SetTextRender(std::shared_ptr<ITextRenderBase> p);
+  std::shared_ptr<ITextRenderBase> GetTextRender();
+  std::shared_ptr<IRenderBase> GetBackRender();
+  std::shared_ptr<IRenderBase> GetForeRender();
   IRenderFont *GetRenderFont();
 
   void LoadBkgndRender(const char *szName);
@@ -300,10 +300,10 @@ protected:
   Object *find_child_object(const char *szobjId, bool bFindDecendant);
   Object *find_child_object(Uuid uuid, bool bFindDecendant);
   Object *find_ncchild_object(Uuid uuid, bool bFindDecendant);
-  void load_renderbase(const char *szName, IRenderBase *&pRender);
-  void load_textrender(const char *szName, ITextRenderBase *&pTextRender);
-  const char *get_renderbase_name(IRenderBase *&pRender);
-  const char *get_textrender_name(ITextRenderBase *&pTextRender);
+  void load_renderbase(const char *szName, std::shared_ptr<IRenderBase> &pRender);
+  void load_textrender(const char *szName, std::shared_ptr<ITextRenderBase> &pTextRender);
+  const char *get_renderbase_name(std::shared_ptr<IRenderBase> &pRender);
+  const char *get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender);
 
   void load_layer_config(bool b);
 
@@ -366,9 +366,9 @@ public: // TODO:
   OBJSTATE m_objState;
 protected:
   std::shared_ptr<IMapAttribute> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
-  IRenderBase *m_back_render;           // 背景渲染
-  IRenderBase *m_fore_render;         // 前景渲染
-  ITextRenderBase *m_text_render; // 文字渲染，由control负责读取该属性
+  std::shared_ptr<IRenderBase> m_back_render;           // 背景渲染
+  std::shared_ptr<IRenderBase> m_fore_render;         // 前景渲染
+  std::shared_ptr<ITextRenderBase> m_text_render; // 文字渲染，由control负责读取该属性
   
 #if 0 // defined(OS_WIN)
   IAccessible *m_pAccessible;

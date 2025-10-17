@@ -562,7 +562,7 @@ IColorAttribute *AttributeSerializerWrap::AddColor(const char *szKey,
 
 IRenderBaseAttribute *
 AttributeSerializerWrap::AddRenderBase(const char *szPrefix, IObject *pObj,
-                                       IRenderBase *&pBindValue) {
+                                       std::shared_ptr<IRenderBase> &pBindValue) {
   RenderBaseAttribute *p = m_pImpl->AddRenderBase(
       szPrefix, pObj ? pObj->GetImpl() : nullptr, pBindValue);
   if (!p)
@@ -573,7 +573,7 @@ AttributeSerializerWrap::AddRenderBase(const char *szPrefix, IObject *pObj,
 
 ITextRenderBaseAttribute *
 AttributeSerializerWrap::AddTextRenderBase(const char *szPrefix, IObject *pObj,
-                                           ITextRenderBase *&pBindValue) {
+                                           std::shared_ptr<ITextRenderBase> &pBindValue) {
   TextRenderBaseAttribute *p = m_pImpl->AddTextRenderBase(
       szPrefix, pObj ? pObj->GetImpl() : nullptr, pBindValue);
   if (!p)

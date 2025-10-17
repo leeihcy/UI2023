@@ -20,10 +20,10 @@ bool IControl::TestControlStyle(ControlStyle *test) {
 bool IControl::IsGroup() { return __pImpl->IsGroup(); }
 void IControl::SetGroup(bool b) { return __pImpl->SetGroup(b); }
 
-ITextRenderBase *IControl::GetTextRenderOrDefault() {
+std::shared_ptr<ITextRenderBase> IControl::GetTextRenderOrDefault() {
   return __pImpl->GetTextRenderOrDefault();
 }
-ITextRenderBase *IControl::CreateDefaultTextRender() {
+std::shared_ptr<ITextRenderBase> IControl::CreateDefaultTextRender() {
   return __pImpl->CreateDefaultTextRender();
 }
 

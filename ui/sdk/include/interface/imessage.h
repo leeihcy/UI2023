@@ -16,7 +16,7 @@ struct IMeta;
 
 class Message;
 struct UIAPI IMessage {
-  IMessage(E_BOOL_CREATE_IMPL);
+  IMessage(eCreateImpl);
   Message *GetImpl();
 
   void *QueryInterface(const Uuid &iid);

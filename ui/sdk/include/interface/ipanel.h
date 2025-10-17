@@ -14,8 +14,8 @@ struct UIAPI IPanel : public IObject {
   void SetLayout(ILayout* p);
   void SetLayoutType(const char* name);
 
-  void SetTextureRender(IRenderBase *p);
-  IRenderBase *GetTextureRender();
+  void SetTextureRender(std::shared_ptr<IRenderBase> p);
+  std::shared_ptr<IRenderBase> GetTextureRender();
 
   UI_DECLARE_INTERFACE(Panel);
 };

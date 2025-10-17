@@ -226,7 +226,7 @@ void Button::drawText(ButtonDrawContext& c) {
   Rect rect;
   GetClientRectWithZeroOffset(&rect);
 
-  ITextRenderBase *p = GetTextRenderOrDefault();
+  std::shared_ptr<ITextRenderBase> p = GetTextRenderOrDefault();
   if (p) {
     p->DrawState(c.r, &rect, getDrawState(), m_text.c_str());
   }
@@ -267,7 +267,7 @@ void Button::onSerialize(SerializeParam *pData) {
 
 void Button::onGetDesiredSize(Size *size) {
   size->width = size->height = 0;
-  ITextRenderBase* text_render = GetTextRenderOrDefault();
+  std::shared_ptr<ITextRenderBase> text_render = GetTextRenderOrDefault();
 
   eButtonAutoSizeType auto_size = m_auto_size_type;
   if (auto_size == eButtonAutoSizeType::NotDefine) {

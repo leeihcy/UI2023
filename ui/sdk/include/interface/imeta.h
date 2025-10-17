@@ -2,6 +2,7 @@
 #define _UI_SDK_INCLUDE_INTERFACE_IMETA_H_
 #include "sdk/include/macro/msg.h"
 #include "sdk/include/util/rect.h"
+#include <memory>
 namespace ui {
 struct Msg;
 struct IMessage;
@@ -76,9 +77,9 @@ enum RENDER_BASE_TYPE {
   RENDER_BASE_IMAGE,
 };
 
-enum E_BOOL_CREATE_IMPL {
-  CREATE_IMPL_FALSE = 0,
-  CREATE_IMPL_TRUE = 1,
+enum class eCreateImpl {
+  False = 0,
+  True = 1,
 };
 
 #define CATEGORY_CONTROL  "Control";
@@ -121,30 +122,36 @@ struct IMeta {
   virtual MetaDetail Detail() = 0;
 };
 
-template<class Ixx>
-struct MetaImpl : public IMeta {
+template<class Ixx, class Super=IMeta>
+struct MetaImpl : public Super {
   using IxxPtr = std::unique_ptr<Ixx, void (*)(Ixx*)>;
-  using This = MetaImpl<Ixx>;
+  using This = MetaImpl<Ixx, Super>;
 
-  IxxPtr create(IResource *resource) {
-    Ixx *p = new Ixx(E_BOOL_CREATE_IMPL::CREATE_IMPL_TRUE);
+  Ixx* create(IResource *resource) {
+    Ixx *p = new Ixx(eCreateImpl::True);
 
     FinalConstructMessage msg;
     msg.resource = resource;
-    msg.meta = static_cast<IMeta*>(this);
+    msg.meta = static_cast<Super*>(this);
     
     p->onRouteMessage(&msg);
     if (!msg.success) {
       delete p;
-      return IxxPtr(nullptr, This::destroy);
+      return nullptr;
     }
 
     // 确保FinalConstructMessage消息传递到了Message中。
     assert(p->GetMeta() == static_cast<IMeta*>(this));
-    
-    return IxxPtr(p, This::destroy);
+    return p;
   }
 
+  IxxPtr CreateUnique(IResource *resource) {
+    Ixx *p = create(resource);
+    if (!p) {
+      return IxxPtr(nullptr, This::destroy);
+    }
+    return IxxPtr(p, This::destroy);
+  }
   static void destroy(Ixx* p) {
     if (!p) return;
   
@@ -155,7 +162,7 @@ struct MetaImpl : public IMeta {
   }
   
   void Create(IResource *p, void **pp) override {
-    *pp = This::create(p).release();
+    *pp = This::create(p);
   }
   void Destroy(void* obj) override {
     This::destroy((Ixx*)obj);
@@ -164,10 +171,6 @@ struct MetaImpl : public IMeta {
   void RouteMessage(IMessage* obj, Msg* msg) override {
     static_cast<Ixx*>(obj)->onRouteMessage(msg);
   }
-  // 兼容老版本的消息映射
-  // bool virtualProcessMessage(UIMSG *pMsg, int nMsgMapID, bool bDoHook) override {
-  //   return static_cast<Ixx*>(pMsg->pMsgTo)->nvProcessMessage(pMsg, nMsgMapID, bDoHook);
-  // }
 };
 
 } // namespace ui

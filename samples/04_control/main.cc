@@ -30,8 +30,7 @@ int main() {
 
   ui::WindowPtr window(resource);
 
-  auto rc = ui::Rect::MakeXYWH(100, 100, 600, 600);
-  window->Create("control", &rc);
+  window->Create("control", nullptr);
   window->SetTitle("Control Demo");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));

@@ -8,6 +8,7 @@
 #include "src/application/uiapplication.h"
 #include "src/object/object_meta.h"
 #include "src/resource/res_bundle.h"
+#include <memory>
 
 using namespace ui;
 
@@ -731,15 +732,15 @@ void IObject::SetLayoutParam(ILayoutParam *p) { __pImpl->SetLayoutParam(p); }
 // 	__pImpl->SetConfigBottom(n);
 // }
 
-ITextRenderBase *IObject::GetTextRender() { return __pImpl->GetTextRender(); }
-IRenderBase *IObject::GetBackRender() { return __pImpl->GetBackRender(); }
-IRenderBase *IObject::GetForeRender() { return __pImpl->GetForeRender(); }
-void IObject::SetBackRender(IRenderBase *p) { __pImpl->SetBackRender(p); }
+std::shared_ptr<ITextRenderBase> IObject::GetTextRender() { return __pImpl->GetTextRender(); }
+std::shared_ptr<IRenderBase> IObject::GetBackRender() { return __pImpl->GetBackRender(); }
+std::shared_ptr<IRenderBase> IObject::GetForeRender() { return __pImpl->GetForeRender(); }
+void IObject::SetBackRender(std::shared_ptr<IRenderBase> p) { __pImpl->SetBackRender(p); }
 // void  IObject::SetForegndRender(IRenderBase* p)
 // {
 // 	__pImpl->SetForegndRender(p);
 // }
-void IObject::SetTextRender(ITextRenderBase *p) { __pImpl->SetTextRender(p); }
+void IObject::SetTextRender(std::shared_ptr<ITextRenderBase> p) { __pImpl->SetTextRender(p); }
 
 // void  IObject::SetAttributeByPrefix(const char* szPrefix, IMapAttribute*
 // pMatAttrib, bool bReload, bool bErase)

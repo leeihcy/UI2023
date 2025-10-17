@@ -3,6 +3,7 @@
 #include "include/interface/ipanel.h"
 #include "panel_meta.h"
 #include "src/object/object.h"
+#include <memory>
 
 namespace ui {
 
@@ -23,8 +24,8 @@ public:
   const char* GetLayoutName();
   void SetLayoutName(const char* name);
 
-  void SetTextureRender(IRenderBase *p);
-  IRenderBase *GetTextureRender();
+  void SetTextureRender(std::shared_ptr<IRenderBase> p);
+  std::shared_ptr<IRenderBase> GetTextureRender();
 
 protected:
   virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
@@ -42,11 +43,11 @@ protected:
   Rect m_rcForegndRenderRegion;
 
   // 用于支持换肤功能的皮肤图片
-  IRenderBase *m_pTextureRender;
+  std::shared_ptr<IRenderBase> m_pTextureRender;
   Rect m_rcTextureRenderRegion;
 
   // 最上面的遮罩层
-  IRenderBase *m_pMaskRender;
+  std::shared_ptr<IRenderBase> m_pMaskRender;
   Rect m_rcMaskRenderRegion;
 
   std::string m_layout_name;

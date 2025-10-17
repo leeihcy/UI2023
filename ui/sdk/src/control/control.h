@@ -2,6 +2,7 @@
 
 #include "include/interface/icontrol.h"
 #include "src/object/object.h"
+#include <memory>
 
 namespace ui {
 struct IToolTipUI;
@@ -20,8 +21,8 @@ public:
   bool IsGroup();
   void SetGroup(bool b);
 
-  ITextRenderBase *GetTextRenderOrDefault();
-  ITextRenderBase *CreateDefaultTextRender();
+  std::shared_ptr<ITextRenderBase> GetTextRenderOrDefault();
+  std::shared_ptr<ITextRenderBase> CreateDefaultTextRender();
   void TryUpdateLayoutOnContentChanged();
 
 public:

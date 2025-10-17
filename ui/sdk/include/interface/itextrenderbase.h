@@ -80,15 +80,6 @@ struct UIAPI ISimpleTextRender : public ITextRenderBase {
   UI_DECLARE_INTERFACE(SimpleTextRender);
 };
 
-class ColorListTextRender;
-struct UIAPI IColorListTextRender : public ITextRenderBase {
-  void SetRenderFont(std::shared_ptr<IRenderFont>);
-  void SetCount(int nCount);
-  void SetColor(int nIndex, Color col);
-
-  UI_DECLARE_INTERFACE(ColorListTextRender);
-};
-
 #if 0
 class ContrastColorTextRender;
 struct UIAPI IContrastColorTextRender : public ITextRenderBase {
@@ -110,6 +101,20 @@ struct UIAPI IFontColorListTextRender : public ITextRenderBase {
   UI_DECLARE_INTERFACE(FontColorListTextRender);
 };
 #endif
+
+struct ITextRenderBaseMeta : public IMeta {
+  virtual std::shared_ptr<ITextRenderBase> CreateShared(ui::IResource *p) = 0;
+};
+
+template <class Ixx>
+struct TextRenderBaseMetaImpl : public MetaImpl<Ixx, ITextRenderBaseMeta> {
+  using This = MetaImpl<Ixx, ITextRenderBaseMeta>;
+
+  std::shared_ptr<ITextRenderBase> CreateShared(IResource *resource) override {
+    Ixx *p = This::create(resource);
+    return std::shared_ptr<Ixx>(p, This::destroy);
+  }
+};
 
 } // namespace ui
 

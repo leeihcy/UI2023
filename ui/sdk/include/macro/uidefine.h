@@ -25,7 +25,7 @@ public:                                                                        \
   typedef T ImplName;                                                          \
   friend struct T##Meta;                                                       \
   static std::unique_ptr<I##T, void (*)(I##T *)> create(ui::IResource *);      \
-  I##T(ui::E_BOOL_CREATE_IMPL);                                                \
+  I##T(ui::eCreateImpl);                                                       \
   void onRouteMessage(ui::Msg *msg);                                           \
   static Uuid UUID();                                                          \
   T *GetImpl();
@@ -43,8 +43,8 @@ protected:                                                                     \
 //   那么在T构造函数中调用Ixxx类的方法时，Ixxx的m_pImpl还没有
 //   被赋值。因此将该操作分解成两步：malloc + construct
 #define UI_IMPLEMENT_INTERFACE(T, SUPER)                                       \
-  I##T::I##T(ui::E_BOOL_CREATE_IMPL b) : I##SUPER(ui::CREATE_IMPL_FALSE) {     \
-    if (b) {                                                                   \
+  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::False) {           \
+    if (b == ui::eCreateImpl::True) {                                          \
       m_pImpl = (T *)operator new(sizeof(T));                                  \
       new (m_pImpl) T(this);                                                   \
     } else {                                                                   \
@@ -53,7 +53,7 @@ protected:                                                                     \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
   std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
-    return T##Meta::Get().create(res);                                         \
+    return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
   Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
   void I##T::onRouteMessage(ui::Msg *msg) { __pImpl->onRouteMessage(msg); }
@@ -65,8 +65,8 @@ protected:                                                                     \
       m_pImpl = nullptr;                                                       \
     }                                                                          \
   }                                                                            \
-  I##T::I##T(ui::E_BOOL_CREATE_IMPL b) : I##SUPER(ui::CREATE_IMPL_TRUE) {      \
-    if (b) {                                                                   \
+  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::True) {            \
+    if (b == eCreateImpl::True) {                                              \
       m_pImpl = (T *)operator new(sizeof(T));                                  \
       new (m_pImpl) T(this);                                                   \
     } else {                                                                   \
@@ -75,7 +75,7 @@ protected:                                                                     \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
   std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
-    return T##Meta::Get().create(res);                                         \
+    return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
   Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
   void I##T::onRouteMessage(ui::Msg *msg) {                                    \

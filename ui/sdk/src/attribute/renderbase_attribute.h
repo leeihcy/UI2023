@@ -33,7 +33,7 @@ private:
 private:
   std::unique_ptr<IRenderBaseAttribute> m_pIRenderBaseAttribute;
 
-  IRenderBase **m_ppBindValue;
+  std::shared_ptr<IRenderBase> *m_ppBindValue;
   Object *m_pObject;
 
   std::string m_strPrefix;

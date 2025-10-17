@@ -11,6 +11,6 @@ void IPanel::SetLayout(ILayout *p) { __pImpl->SetLayout(p); }
 void IPanel::SetLayoutType(const char *name) {
   __pImpl->SetLayoutType(name);
 }
-void IPanel::SetTextureRender(IRenderBase *p) { __pImpl->SetTextureRender(p); }
-IRenderBase *IPanel::GetTextureRender() { return __pImpl->GetTextureRender(); }
+void IPanel::SetTextureRender(std::shared_ptr<IRenderBase> p) { __pImpl->SetTextureRender(p); }
+std::shared_ptr<IRenderBase> IPanel::GetTextureRender() { return __pImpl->GetTextureRender(); }
 } // namespace ui

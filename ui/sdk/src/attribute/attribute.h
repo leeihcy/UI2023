@@ -126,9 +126,9 @@ public:
   ColorAttribute *AddColor(const char *, slot<void(Color)>&& setter, slot<Color()>&& getter);
   
   RenderBaseAttribute *AddRenderBase(const char *szPrefix, Object *pObj,
-                                     IRenderBase *&pBindValue);
+                                     std::shared_ptr<IRenderBase> &pBindValue);
   TextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix, Object *pObj,
-                                             ITextRenderBase *&pBindValue);
+                                             std::shared_ptr<ITextRenderBase> &pBindValue);
 
 private:
   // AttributeBase*  GetAttributeClassByKey(const char*);

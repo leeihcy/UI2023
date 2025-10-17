@@ -25,7 +25,7 @@ TextRenderBaseAttribute::~TextRenderBaseAttribute() {
 }
 
 void TextRenderBaseAttribute::SetBindValue(void *p) {
-  m_ppBindValue = (ITextRenderBase **)p;
+  m_ppBindValue = (std::shared_ptr<ITextRenderBase>*)p;
 }
 
 void TextRenderBaseAttribute::Set(const char *szType) {
@@ -38,8 +38,8 @@ void TextRenderBaseAttribute::Set(const char *szType) {
   }
 
   Reset();
-  GetUIApplication()->GetIUIApplication()->CreateTextRenderBaseByName(
-      szType, m_pObject->GetIObject(), m_ppBindValue);
+  *m_ppBindValue = GetUIApplication()->GetIUIApplication()->CreateTextRenderBaseByName(
+      szType, m_pObject->GetIObject());
 }
 
 void TextRenderBaseAttribute::Reset() {

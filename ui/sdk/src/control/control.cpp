@@ -9,6 +9,7 @@
 #include "src/attribute/stringselect_attribute.h"
 #include "src/helper/scale/scale_factor.h"
 #include "src/resource/res_bundle.h"
+#include <memory>
 
 namespace ui {
 
@@ -107,7 +108,7 @@ bool Control::IsGroup() { return m_controlStyle.group; }
 void Control::SetGroup(bool b) { m_controlStyle.group = b; }
 
 // 获取字体，如果没有，则使用默认的
-ITextRenderBase *Control::GetTextRenderOrDefault() {
+std::shared_ptr<ITextRenderBase> Control::GetTextRenderOrDefault() {
   if (!m_text_render)
     CreateDefaultTextRender();
 
@@ -115,14 +116,13 @@ ITextRenderBase *Control::GetTextRenderOrDefault() {
 }
 
 // 如果没有在皮肤中配置字体，则外部可调用该函数在Paint时创建一个默认的字体
-ITextRenderBase *Control::CreateDefaultTextRender() {
+std::shared_ptr<ITextRenderBase> Control::CreateDefaultTextRender() {
   if (m_text_render) {
     return m_text_render;
   }
 
-  GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
-      m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE, m_pIObject,
-      &m_text_render);
+  m_text_render = GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
+      m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE, m_pIObject);
 
   if (m_text_render) {
     std::shared_ptr<IMapAttribute> pMapAttr = m_pIMapAttributeRemain;

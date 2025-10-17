@@ -1,5 +1,6 @@
 #include "include/interface/itextrenderbase.h"
 #include "include/inc.h"
+#include "include/interface/imeta.h"
 #include "include/interface/iuiapplication.h"
 #include "include/interface/renderlibrary.h"
 #include "sdk/include/util/struct.h"
@@ -16,10 +17,9 @@ UI_IMPLEMENT_INTERFACE(TextRenderBase, Message)
 UI_IMPLEMENT_INTERFACE(SimpleTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(ContrastColorTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(ContrastColorListTextRender, TextRenderBase)
-UI_IMPLEMENT_INTERFACE(ColorListTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(FontColorListTextRender, TextRenderBase)
 
-ITextRenderBase::ITextRenderBase() : IMessage(CREATE_IMPL_FALSE) {
+ITextRenderBase::ITextRenderBase() : IMessage(eCreateImpl::False) {
   m_pImpl = new TextRenderBase(this);
 }
 
@@ -111,11 +111,6 @@ void ITextRenderBase::Init() {
 void ITextRenderBase::CheckSkinTextureChanged() {
   return __pImpl->CheckSkinTextureChanged();
 }
-void IColorListTextRender::SetCount(int nCount) { __pImpl->SetCount(nCount); }
-void IColorListTextRender::SetColor(int nIndex, Color col) {
-  __pImpl->SetColor(nIndex, col);
-}
-
 //
 // const char*  IThemeTextRenderBase::GetThemeName()
 // {

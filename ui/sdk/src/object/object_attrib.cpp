@@ -16,18 +16,9 @@ namespace ui {
 void Object::onSerialize(SerializeParam *pData) {
   IMapAttribute *pMapAttrib = pData->pMapAttrib;
   if (pData->IsReload()) {
-    if (m_back_render) {
-      m_back_render->GetMeta()->Destroy(m_back_render);
-      m_back_render = nullptr;
-    }
-    if (m_fore_render) {
-      m_fore_render->GetMeta()->Destroy(m_fore_render);
-      m_fore_render = nullptr;
-    }
-    if (m_text_render) {
-      m_text_render->GetMeta()->Destroy(m_text_render);
-      m_text_render = nullptr;
-    }
+    m_back_render.reset();
+    m_fore_render.reset();
+    m_text_render.reset();
     // SAFE_RELEASE(m_pCursor);
   }
 

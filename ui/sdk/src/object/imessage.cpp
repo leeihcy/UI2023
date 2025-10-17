@@ -6,8 +6,8 @@
 
 namespace ui {
 
-IMessage::IMessage(E_BOOL_CREATE_IMPL b) {
-  if (b)
+IMessage::IMessage(eCreateImpl b) {
+  if (b == eCreateImpl::True)
     m_pImpl = new Message(this);
   else
     m_pImpl = nullptr;

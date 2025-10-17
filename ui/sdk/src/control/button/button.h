@@ -2,10 +2,12 @@
 #define _UI_SDK_SRC_CONTROL_BUTTON_BUTTON_H_
 
 #include "include/interface/icontrol.h"
+#include "include/interface/irenderbase.h"
 #include "include/interface/renderlibrary.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
 #include "src/control/control.h"
+#include <shared_mutex>
 
 namespace ui {
 
@@ -56,6 +58,9 @@ private:
   eButtonAutoSizeType m_auto_size_type = eButtonAutoSizeType::NotDefine;
   int m_icon_align = AlignLeft;
   int m_icon_text_space = 0;
+
+  std::shared_ptr<IRenderBase>  m_focus_render;
+  std::shared_ptr<IRenderBase>  m_default_render;
 };
 
 } // namespace ui

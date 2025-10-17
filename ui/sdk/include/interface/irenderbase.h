@@ -3,6 +3,7 @@
 #include "sdk/include/interface.h"
 #include "sdk/include/interface/imessage.h"
 #include "sdk/include/util/rect.h"
+#include <memory>
 
 #if 0 // defined(OS_WIN)
 #include <uxtheme.h>
@@ -95,14 +96,19 @@ struct UIAPI IRenderBase : public IMessage {
   UI_DECLARE_INTERFACE(RenderBase);
 };
 
-// -- 2015.4.1过期，不再使用
-// class NullRender;
-// struct __declspec(uuid("4A0A8C42-CA22-4BD4-8875-C58FB8FC2788"))
-// INullRender : public IRenderBase
-// {
-//     UI_DECLARE_INTERFACE(NullRender);
-// };
-//////////////////////////////////////////////////////////////////////////
+struct IRenderBaseMeta : public IMeta {
+  virtual std::shared_ptr<IRenderBase> CreateShared(ui::IResource *p) = 0;
+};
+
+template <class Ixx>
+struct RenderBaseMetaImpl : public MetaImpl<Ixx, IRenderBaseMeta> {
+  using This = MetaImpl<Ixx, IRenderBaseMeta>;
+
+  std::shared_ptr<IRenderBase> CreateShared(IResource *resource) override {
+    Ixx *p = This::create(resource);
+    return std::shared_ptr<Ixx>(p, This::destroy);
+  }
+};
 
 } // namespace ui
 

@@ -29,6 +29,8 @@ struct IStyleRes;
 struct ILayoutManager;
 struct ILayoutRes;
 struct IMeta;
+struct IRenderBaseMeta;
+struct ITextRenderBaseMeta;
 struct IWindowBase;
 struct ITopWindowManager;
 struct IRenderBase;
@@ -86,16 +88,14 @@ public:
   bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 
-  bool RegisterUIRenderBase(IMeta& meta);
-  bool CreateRenderBase(int nType, IObject *pObject, IRenderBase **ppOut);
+  bool RegisterUIRenderBase(IRenderBaseMeta& meta);
+  std::shared_ptr<IRenderBase> CreateRenderBase(int nType, IObject *pObject);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
 
-  bool RegisterUITextRender(IMeta &meta);
-  bool CreateTextRenderBaseByName(const char *szName, IObject *pObject,
-                                  ITextRenderBase **ppOut);
-  bool CreateTextRenderBase(int nType, IObject *pObject,
-                            ITextRenderBase **ppOut);
+  bool RegisterUITextRender(ITextRenderBaseMeta &meta);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(const char *szName, IObject *pObject);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBase(int nType, IObject *pObject);
   void EnumTextRenderBaseName(pfnEnumTextRenderNameCallback callback,
                               llong wParam, llong lParam);
 

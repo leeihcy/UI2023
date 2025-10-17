@@ -42,7 +42,7 @@ public:
 
 //     return p;
 //   }
-  ObjectCreator() : T(E_BOOL_CREATE_IMPL::CREATE_IMPL_TRUE) {}
+  ObjectCreator() : T(eCreateImpl::True) {}
 
   // 确保delete和new在同一模块，由IMessage::destroy触发
   // virtual void virtual_delete_this() override {

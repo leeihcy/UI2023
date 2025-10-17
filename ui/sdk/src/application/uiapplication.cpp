@@ -2,6 +2,7 @@
 
 #include "include/interface/ianimate.h"
 #include "include/interface/iobject.h"
+#include "include/interface/irenderbase.h"
 #include "include/interface/iuiautotest.h"
 #include "src/application/config/config.h"
 #include "src/animate/animate.h"
@@ -537,8 +538,8 @@ void Application::LoadUIObjectListToToolBox() {
   }
 }
 
-bool Application::CreateRenderBaseByName(const char *szName, IObject *pObject,
-                                         IRenderBase **ppOut) {
+std::shared_ptr<IRenderBase>
+Application::CreateRenderBaseByName(const char *szName, IObject *pObject) {
   IResource *pSkinRes = nullptr;
   if (pObject) {
     pSkinRes = pObject->GetResource();
@@ -547,8 +548,7 @@ bool Application::CreateRenderBaseByName(const char *szName, IObject *pObject,
     pSkinRes = p ? p->GetIResource() : nullptr;
   }
 
-  return m_renderBaseFactory.CreateRenderBaseByName(pSkinRes, szName, pObject,
-                                                    ppOut);
+  return m_renderBaseFactory.CreateRenderBaseByName(pSkinRes, szName, pObject);
 }
 
 const char *Application::GetRenderBaseName(int nType) {

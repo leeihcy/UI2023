@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <skin>
   <layout>
-    <Window id="control" width="500" height="500" back.render.type="color" back.render.color="white" >
+    <Window id="control" width="700" height="500" back.render.type="color" back.render.color="white" >
       <Panel id="render_text_panel">
         <prop key="layout" left="0" right="0" top="0" height="300"/>
         <Label id="title" text="文本测试" layer="0" layer.needclear="true">
@@ -17,8 +17,12 @@
       </Panel>
       <Panel padding="10">
         <prop key="layout" type="horz" gap="10" left="0" right="0" top="300" height="400"/>
-        <Button id="btn_1" text="普通按钮" class="button button_theme_default"/>
-        <Button id="btn_2" text="主要按钮" class="button button_theme_primary"/>
+        <Button id="btn_1" text="普通按钮" class="button button_default"/>
+        <Button id="btn_2" text="主要按钮" class="button button_primary"/>
+        <Button id="btn_3" text="成功按钮" class="button button_success"/>
+        <Button id="btn_4" text="信息按钮" class="button button_info"/>
+        <Button id="btn_5" text="警告按钮" class="button button_warning"/>
+        <Button id="btn_6" text="危险按钮" class="button button_danger"/>
       </Panel>
     </Window>
   </layout>

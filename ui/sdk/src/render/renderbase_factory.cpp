@@ -1,11 +1,14 @@
 #include "renderbase_factory.h"
 #include "include/inc.h"
+#include "include/interface/irenderbase.h"
 #include "include/macro/msg.h"
 #include "src/application/uiapplication.h"
 #include "src/private_inc.h"
 #include "src/render/colorrender/colorrender.h"
 #include "src/render/imagerender/imagerender.h"
 #include "render_meta.h"
+#include <cstddef>
+#include <memory>
 
 namespace ui {
 RenderBaseFactory::RenderBaseFactory(Application &app) : m_app(app) {}
@@ -23,84 +26,62 @@ void RenderBaseFactory::Clear() {
   m_vecUIRenderBase.clear();
 }
 
-bool RenderBaseFactory::RegisterUIRenderBase(IMeta& meta) {
+bool RenderBaseFactory::RegisterUIRenderBase(IRenderBaseMeta& meta) {
   m_vecUIRenderBase.push_back(&meta);
-  // UI_LOG_DEBUG("%s, type=%d, ctrl=%d @ 0x%08X", bstrName, nType, pfunc);
+  UI_LOG_DEBUG("register render base %s", meta.Name());
   return true;
 }
 
-bool RenderBaseFactory::CreateRenderBaseByName(IResource *pSkinRes,
+std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBaseByName(IResource *pSkinRes,
                                                const char *strName,
-                                               IObject *pObject,
-                                               IRenderBase **ppOut) {
-  if (!strName || !strName[0] || !pObject || !ppOut)
-    return false;
+                                               IObject *pObject) {
+  if (!strName || !strName[0] || !pObject)
+    return nullptr;
 
   auto iter = m_vecUIRenderBase.begin();
   for (; iter != m_vecUIRenderBase.end(); ++iter) {
-    IMeta* meta = *iter;
+    IRenderBaseMeta* meta = *iter;
     if (!meta || !meta->Name())
       continue;
 
     if (strcmp(strName, meta->Name()) != 0)
       continue;
 
-    // 废弃
-    //      if (-1 != pData->m_nControlType)
-    //      {
-    //          if (pObject->GetObjectExtentType() != pData->m_nControlType)
-    //              continue;
-    //      }
-    //
-    //      if (-1 != pData->m_nControlSubType)
-    //      {
-    //          int  nStylyEx = pObject->GetStyleEx();
-    //          if (GETCONTROLSUBTYPE(nStylyEx) != pData->m_nControlSubType)
-    //              continue;
-    //      }
-
-    meta->Create(pSkinRes, (void **)ppOut);
-    if (*ppOut) {
-      (*ppOut)->SetObject(m_app.GetIUIApplication(), pObject);
-      (*ppOut)->Init();
-      (*ppOut)->SetType((RENDER_TYPE)meta->Detail().minor_type);
-      return true;
+    std::shared_ptr<IRenderBase> out = meta->CreateShared(pSkinRes);
+    if (out) {
+      out->SetObject(m_app.GetIUIApplication(), pObject);
+      out->Init();
+      out->SetType((RENDER_TYPE)meta->Detail().minor_type);
     }
-
-    return false;
+    return out;
   }
 
   UI_LOG_WARN("Create Failed. Name=%s", strName);
-  return false;
+  return nullptr;
 }
-bool RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType,
-                                         IObject *pObject,
-                                         IRenderBase **ppOut) {
-  if (nullptr == ppOut)
-    return false;
-
+std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType,
+                                         IObject *pObject) {
   auto iter = m_vecUIRenderBase.begin();
   for (; iter != m_vecUIRenderBase.end(); iter++) {
-    IMeta* meta = *iter;
+    IRenderBaseMeta* meta = *iter;
     if (!meta)
       continue;
 
     if (meta->Detail().minor_type != nType)
       continue;
 
-    meta->Create(pSkinRes, (void **)ppOut);
-    if (*ppOut) {
-      (*ppOut)->SetObject(m_app.GetIUIApplication(), pObject);
-      (*ppOut)->Init();
-      (*ppOut)->SetType((RENDER_TYPE)nType);
-      return true;
+    std::shared_ptr<IRenderBase> out = meta->CreateShared(pSkinRes);
+    if (out) {
+      out->SetObject(m_app.GetIUIApplication(), pObject);
+      out->Init();
+      out->SetType((RENDER_TYPE)nType);
     }
 
-    return false;
+    return out;
   }
 
   UI_LOG_WARN("Create Failed. Type=%d", nType);
-  return false;
+  return nullptr;
 }
 
 // 根据类型获取对应的xml name

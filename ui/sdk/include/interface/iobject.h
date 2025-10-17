@@ -181,12 +181,12 @@ struct UIAPI IObject : public IMessage {
   void WindowPoint2ObjectClientPoint(const Point *ptWindow, Point *ptObj,
                                      bool bCalcTransform);
 
-  ITextRenderBase *GetTextRender();
+  std::shared_ptr<ITextRenderBase> GetTextRender();
   IRenderFont *GetRenderFont();
-  IRenderBase *GetBackRender();
-  IRenderBase *GetForeRender();
-  void SetBackRender(IRenderBase *);
-  void SetTextRender(ITextRenderBase *);
+  std::shared_ptr<IRenderBase> GetBackRender();
+  std::shared_ptr<IRenderBase> GetForeRender();
+  void SetBackRender(std::shared_ptr<IRenderBase>);
+  void SetTextRender(std::shared_ptr<ITextRenderBase>);
   ILayer *GetLayer();
   ILayer *GetSelfLayer();
 

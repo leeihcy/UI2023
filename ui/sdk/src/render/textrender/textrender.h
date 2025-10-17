@@ -73,50 +73,23 @@ public:
 
   void onRouteMessage(ui::Msg *msg);
 
-  void OnSerialize(SerializeParam *pData);
-  void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
-  void onGetDesiredSize(GetTextDesiredSizeMessage* msg);
-
 protected:
-  ISimpleTextRender *m_pISimpleTextRender;
-  DrawTextParam m_draw_text_param;
-};
-
-class ColorListTextRender : public TextRenderBase {
-public:
-  ColorListTextRender(IColorListTextRender *p);
-  ~ColorListTextRender();
-
-  void onRouteMessage(ui::Msg *msg);
-
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_TEXTRENDERBASE_DRAWSTATE(DrawState)
-  // UIMSG_GETRENDERFONT(GetRenderFont)
-  // UIMSG_QUERYINTERFACE(ColorListTextRender)
-  // UIMSG_SERIALIZE(OnSerialize)
-  // UI_END_MSG_MAP_CHAIN_PARENT(TextRenderBase)
-
   void OnSerialize(SerializeParam *pData);
   void DrawState(TEXTRENDERBASE_DRAWSTATE *pDrawStruct);
   void onGetDesiredSize(GetTextDesiredSizeMessage* msg);
-
-  void SetCount(int nCount);
-  int GetCount();
 
   void LoadColor(const char *szText);
   const char *GetColor();
 
-  void SetColor(int nIndex, Color col);
+public:
+  void SetColor(Color color);
+  void SetColor(Color color, int index);
 
 protected:
-  void Clear();
-
-private:
-  IColorListTextRender *m_pIColorListTextRender;
+  ISimpleTextRender *m_pISimpleTextRender;
   DrawTextParam m_draw_text_param;
 
   std::vector<Color> m_vTextColor;
-  int m_nCount;
 };
 
 #if 0

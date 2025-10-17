@@ -10,6 +10,7 @@
 #include "src/object/object.h"
 #include "stringselect_attribute.h"
 #include "textrenderbase_attribute.h"
+#include <memory>
 
 using namespace ui;
 
@@ -405,7 +406,7 @@ ColorAttribute *AttributeSerializer::AddColor(const char * key,
 
 RenderBaseAttribute *
 AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
-                                   IRenderBase *&pBindValue) {
+                                   std::shared_ptr<IRenderBase> &pBindValue) {
   std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
@@ -433,7 +434,7 @@ AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
 
 TextRenderBaseAttribute *
 AttributeSerializer::AddTextRenderBase(const char *szPrefix, Object *pObj,
-                                       ITextRenderBase *&pBindValue) {
+                                       std::shared_ptr<ITextRenderBase> &pBindValue) {
   std::string strKey;
   if (szPrefix)
     strKey = szPrefix;

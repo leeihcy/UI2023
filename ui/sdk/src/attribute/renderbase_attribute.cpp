@@ -19,7 +19,7 @@ RenderBaseAttribute::RenderBaseAttribute() {
 }
 
 void RenderBaseAttribute::SetBindValue(void *p) {
-  m_ppBindValue = (IRenderBase **)p;
+  m_ppBindValue = (std::shared_ptr<IRenderBase> *)p;
 }
 
 void RenderBaseAttribute::Set(const char *szType) {
@@ -32,8 +32,8 @@ void RenderBaseAttribute::Set(const char *szType) {
   }
 
   Reset();
-  GetUIApplication()->CreateRenderBaseByName(szType, m_pObject->GetIObject(),
-                                             m_ppBindValue);
+  *m_ppBindValue = GetUIApplication()->CreateRenderBaseByName(
+      szType, m_pObject->GetIObject());
 }
 
 void RenderBaseAttribute::Reset() {

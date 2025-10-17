@@ -242,7 +242,6 @@ enum IMAGELIST_LAYOUT_TYPE
 #define XML_TEXTRENDER                      "text.render"            // 文字渲染
 #define XML_TEXTRENDER_TYPE                 "text.render.type"       // 设置文字渲染类型
 #define XML_TEXTRENDER_TYPE_SIMPLE          "simple"                // color + font
-#define XML_TEXTRENDER_TYPE_COLORLIST       "colorlist"             // color list + font
 #define XML_TEXTRENDER_TYPE_FONTLIST        "fontlist"              // font list + color
 #define XML_TEXTRENDER_TYPE_FONTCOLORLIST   "fontcolorlist"         // font list + color list
 #define XML_TEXTRENDER_TYPE_CONTRAST_COLOR    "contrastcolor"       // font + 跟随背景色自适应的黑白color
@@ -250,7 +249,6 @@ enum IMAGELIST_LAYOUT_TYPE
 
 #define XML_TEXTRENDER_COLOR                "text.render.color"      // 字体颜色
 #define XML_TEXTRENDER_FONT                 "text.render.font"       // 字体
-#define XML_TEXTRENDER_COLORLIST_COUNT      "text.render.colorlist.count"
 #define XML_TEXTRENDER_FONTCOLORLIST_COUNT  "text.render.fontcolorlist.count"  // 字体、颜色数量
 #define XML_TEXTRENDER_ALIGN                "text.render.align"      // 对齐
 #define XML_TEXTRENDER_EFFECT               "text.render.effect"     // 特效
