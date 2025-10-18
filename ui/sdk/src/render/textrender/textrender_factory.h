@@ -18,10 +18,9 @@ public:
   void Clear();
   bool RegisterUITextRender(ITextRenderBaseMeta &meta);
 
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName,
-                                  IObject *pObject);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName);
 
-  std::shared_ptr<ITextRenderBase> CreateTextRender(IResource *pSkinRes, int nType, IObject *pObject);
+  std::shared_ptr<ITextRenderBase> CreateTextRender(IResource *pSkinRes, int nType);
 
   const char *GetTextRenderBaseName(int nType);
 

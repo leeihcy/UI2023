@@ -76,12 +76,6 @@ enum RENDER_TYPE {
 
 class RenderBase;
 struct UIAPI IRenderBase : public IMessage {
-  void CheckThemeChanged();
-  bool IsThemeRender();
-
-  void SetObject(IApplication *pUIApp, IObject *pObject);
-  IObject *GetObject();
-
   void SetType(RENDER_TYPE nType);
   RENDER_TYPE GetType();
 

@@ -12,23 +12,6 @@ namespace ui {
 UI_IMPLEMENT_INTERFACE(RenderBase, Message)
 // UI_IMPLEMENT_INTERFACE(NullRender, RenderBase)
 
-void IRenderBase::CheckThemeChanged() { return __pImpl->CheckThemeChanged(); }
-
-bool IRenderBase::IsThemeRender() { return __pImpl->IsThemeRender(); }
-void IRenderBase::SetObject(IApplication *pUIApp, IObject *pObject) {
-  Object *pObj = nullptr;
-  if (pObject) {
-    pObj = pObject->GetImpl();
-  }
-  return __pImpl->SetObject(pUIApp ? pUIApp->GetImpl() : nullptr, pObj);
-}
-IObject *IRenderBase::GetObject() {
-  Object *pObj = __pImpl->GetObject();
-  if (nullptr == pObj)
-    return nullptr;
-
-  return pObj->GetIObject();
-}
 void IRenderBase::SetType(RENDER_TYPE nType) { __pImpl->SetRenderType(nType); }
 RENDER_TYPE IRenderBase::GetType() { return __pImpl->GetRenderType(); }
 IColorRes *IRenderBase::GetSkinColorRes() {

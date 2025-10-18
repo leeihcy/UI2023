@@ -182,7 +182,7 @@ void I18nStringAttribute::Set(const char *szValue) {
     int nLength1 = (int)strlen(szValue);
     int nLength2 = 0;
 
-    const char *szValue2 = m_pSkinRes->GetI18nRes().MapConfigValue(szValue);
+    const char *szValue2 = m_resource->GetI18nRes().MapConfigValue(szValue);
     if (szValue2)
       nLength2 = (int)strlen(szValue2);
 

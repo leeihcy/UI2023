@@ -30,6 +30,8 @@ public:
 protected:
   struct ButtonDrawContext {
     IRenderTarget *r;
+    int render_state;
+    ui::Rect bounds;  // 0,0,w,h
   };
   void drawBackground(ButtonDrawContext& c);
   void drawText(ButtonDrawContext& c);

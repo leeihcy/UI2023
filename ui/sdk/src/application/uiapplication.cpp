@@ -539,16 +539,8 @@ void Application::LoadUIObjectListToToolBox() {
 }
 
 std::shared_ptr<IRenderBase>
-Application::CreateRenderBaseByName(const char *szName, IObject *pObject) {
-  IResource *pSkinRes = nullptr;
-  if (pObject) {
-    pSkinRes = pObject->GetResource();
-  } else {
-    Resource *p = GetDefaultSkinRes();
-    pSkinRes = p ? p->GetIResource() : nullptr;
-  }
-
-  return m_renderBaseFactory.CreateRenderBaseByName(pSkinRes, szName, pObject);
+Application::CreateRenderBaseByName(IResource *resource, const char *name) {
+  return m_renderBaseFactory.CreateRenderBaseByName(resource, name);
 }
 
 const char *Application::GetRenderBaseName(int nType) {

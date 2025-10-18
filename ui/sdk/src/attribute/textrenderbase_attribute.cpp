@@ -14,10 +14,6 @@ TextRenderBaseAttribute::TextRenderBaseAttribute() {
 
   m_pITextRenderBaseAttribute = nullptr;
   m_ppBindValue = nullptr;
-  m_pObject = nullptr;
-  //     _this = nullptr;
-  //     _setter = nullptr;
-  //     _getter = nullptr;
 }
 
 TextRenderBaseAttribute::~TextRenderBaseAttribute() {
@@ -32,14 +28,10 @@ void TextRenderBaseAttribute::Set(const char *szType) {
   if (!m_ppBindValue)
     return;
 
-  if (!m_pObject) {
-    UIASSERT(0);
-    return;
-  }
-
   Reset();
-  *m_ppBindValue = GetUIApplication()->GetIUIApplication()->CreateTextRenderBaseByName(
-      szType, m_pObject->GetIObject());
+  *m_ppBindValue =
+      GetUIApplication()->GetIUIApplication()->CreateTextRenderBaseByName(
+          m_resource->GetIResource(), szType);
 }
 
 void TextRenderBaseAttribute::Reset() {

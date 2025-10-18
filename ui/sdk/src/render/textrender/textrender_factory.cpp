@@ -46,9 +46,8 @@ bool TextRenderFactory::RegisterUITextRender(ITextRenderBaseMeta &meta) {
 }
 
 std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(IResource *resource,
-                                                   const char *name,
-                                                   IObject *obj) {
-  if (!resource || !name || !obj)
+                                                   const char *name) {
+  if (!resource || !name)
     return nullptr;
 
   auto iter = m_vecTextRenderCreator.begin();
@@ -62,7 +61,7 @@ std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(I
 
     std::shared_ptr<ITextRenderBase> out = meta->CreateShared(resource);
     if (out) {
-      out->SetObject(obj);
+      // out->SetObject(obj);
       out->Init();
       out->SetType((TEXTRENDER_TYPE)meta->Detail().minor_type);
     }
@@ -72,11 +71,7 @@ std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(I
   UI_LOG_WARN("Create Failed. Name=%s", name);
   return nullptr;
 }
-std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResource *resource, int type,
-                                         IObject *object) {
-  if (nullptr == object)
-    return nullptr;
-
+std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResource *resource, int type) {
   auto iter = m_vecTextRenderCreator.begin();
   for (; iter != m_vecTextRenderCreator.end(); iter++) {
     ITextRenderBaseMeta *meta = *iter;
@@ -88,7 +83,7 @@ std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResource *
 
     std::shared_ptr<ITextRenderBase> out = meta->CreateShared(resource);
     if (out) {
-      out->SetObject(object);
+      // out->SetObject(object);
       out->Init();
       out->SetType((TEXTRENDER_TYPE)type);
     }

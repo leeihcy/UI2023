@@ -3,9 +3,11 @@
 
 #include "include/interface/iuires.h"
 #include "include/interface/renderlibrary.h"
+#include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
+#include "src/object/message.h"
 #include "src/object/object.h"
 #include "src/resource/res_bundle.h"
 // #include "src\UIObject\Window\windowbase.h"
@@ -18,16 +20,20 @@ using namespace ui;
 
 RenderBase::RenderBase(IRenderBase *p) : Message(p) {
   m_pIRenderBase = p;
-  m_pObject = nullptr;
+  m_resouce = nullptr;
   m_nRenderType = RENDER_TYPE_NULL;
-  m_pUIApplication = nullptr;
+}
+
+void RenderBase::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    Message::onRouteMessage(msg);
+    m_resouce = static_cast<FinalConstructMessage *>(msg)->resource->GetImpl();
+    return;
+  }
 }
 
 Resource *RenderBase::GetResource() {
-  if (!m_pObject)
-    return nullptr;
-
-  return m_pObject->GetResource();
+  return m_resouce;
 }
 ColorRes *RenderBase::GetSkinColorRes() {
   Resource *pSkinRes = GetResource();
@@ -43,15 +49,6 @@ ImageRes *RenderBase::GetSkinImageRes() {
     return nullptr;
 
   return &pSkinRes->GetImageRes();
-}
-
-void RenderBase::CheckThemeChanged() {
-  if (this->IsThemeRender()) {
-    assert(false);
-#if 0 // 废弃，使用RouteMessage代替。
-    static_cast<IMessage *>(m_pIRenderBase)->SendMessage(WM_THEMECHANGED);
-#endif
-  }
 }
 
 std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {

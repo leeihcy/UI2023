@@ -12,28 +12,19 @@ RenderBaseAttribute::RenderBaseAttribute() {
   ReloadOnChanged();
 
   m_ppBindValue = nullptr;
-  m_pObject = nullptr;
-  // _this = nullptr;
-  // _setter = nullptr;
-  // _getter = nullptr;
 }
 
 void RenderBaseAttribute::SetBindValue(void *p) {
   m_ppBindValue = (std::shared_ptr<IRenderBase> *)p;
 }
 
-void RenderBaseAttribute::Set(const char *szType) {
+void RenderBaseAttribute::Set(const char *type) {
   if (!m_ppBindValue)
     return;
 
-  if (!m_pObject) {
-    UIASSERT(0);
-    return;
-  }
-
   Reset();
   *m_ppBindValue = GetUIApplication()->CreateRenderBaseByName(
-      szType, m_pObject->GetIObject());
+      m_resource->GetIResource(), type);
 }
 
 void RenderBaseAttribute::Reset() {

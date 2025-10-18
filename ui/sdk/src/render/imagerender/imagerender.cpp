@@ -163,7 +163,7 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     //   param.prcRealDraw = &rcRealDraw;
     // }
 
-    param.scale_factor = ScaleFactorHelper::GetObjectScaleFactor(m_pObject);
+    // param.scale_factor = ScaleFactorHelper::GetObjectScaleFactor(m_pObject);
     pDrawStruct->pRenderTarget->DrawBitmap(m_render_bitmap, &param);
   }
 

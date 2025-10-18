@@ -1,5 +1,6 @@
 #include "include/interface/iuiapplication.h"
 #include "include/interface/iobject.h"
+#include "include/macro/uidefine.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/res_bundle.h"
 
@@ -120,14 +121,8 @@ bool IApplication::RegisterUIRenderBase(IRenderBaseMeta &meta) {
 // 	return m_pImpl->GetRenderBaseFactory().GetRenderBaseName(nType);
 // }
 
-std::shared_ptr<IRenderBase> IApplication::CreateRenderBase(int nType, IObject *pObject) {
-  IResource *pSkinRes = nullptr;
-  if (pObject)
-    pSkinRes = pObject->GetResource();
-  else
-    pSkinRes = GetDefaultSkinRes();
-  return m_pImpl->GetRenderBaseFactory().CreateRenderBase(pSkinRes, nType,
-                                                          pObject);
+std::shared_ptr<IRenderBase> IApplication::CreateRenderBase(IResource* resource, int type) {
+  return m_pImpl->GetRenderBaseFactory().CreateRenderBase(resource, type);
 }
 
 void IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback,
@@ -138,25 +133,15 @@ void IApplication::EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback,
 bool IApplication::RegisterUITextRender(ITextRenderBaseMeta &meta) {
   return m_pImpl->GetTextRenderFactroy().RegisterUITextRender(meta);
 }
-std::shared_ptr<ITextRenderBase> IApplication::CreateTextRenderBaseByName(const char *szName,
-                                              IObject *pObject) {
-  IResource *pSkinRes = nullptr;
-  if (pObject)
-    pSkinRes = pObject->GetResource();
-  else
-    pSkinRes = GetDefaultSkinRes();
+std::shared_ptr<ITextRenderBase> IApplication::CreateTextRenderBaseByName(
+    IResource* resource, const char *name) {
   return m_pImpl->GetTextRenderFactroy().CreateTextRenderBaseByName(
-      pSkinRes, szName, pObject);
+      resource, name);
 }
+
 std::shared_ptr<ITextRenderBase>
-IApplication::CreateTextRenderBase(int nType, IObject *pObject) {
-  IResource *pSkinRes = nullptr;
-  if (pObject)
-    pSkinRes = pObject->GetResource();
-  else
-    pSkinRes = GetDefaultSkinRes();
-  return m_pImpl->GetTextRenderFactroy().CreateTextRender(pSkinRes, nType,
-                                                          pObject);
+IApplication::CreateTextRenderBase(IResource* resource, int nType) {
+  return m_pImpl->GetTextRenderFactroy().CreateTextRender(resource, nType);
 }
 void IApplication::EnumTextRenderBaseName(
     pfnEnumTextRenderNameCallback callback, llong wParam, llong lParam) {

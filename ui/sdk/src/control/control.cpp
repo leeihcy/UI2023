@@ -122,7 +122,7 @@ std::shared_ptr<ITextRenderBase> Control::CreateDefaultTextRender() {
   }
 
   m_text_render = GetUIApplication()->GetTextRenderFactroy().CreateTextRender(
-      m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE, m_pIObject);
+      m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE);
 
   if (m_text_render) {
     std::shared_ptr<IMapAttribute> pMapAttr = m_pIMapAttributeRemain;
@@ -130,7 +130,7 @@ std::shared_ptr<ITextRenderBase> Control::CreateDefaultTextRender() {
       pMapAttr = UICreateIMapAttribute();
 
     SerializeParam data = {0};
-    data.pSkinRes = m_resource->GetIResource();
+    data.resource = m_resource->GetIResource();
     data.pMapAttrib = pMapAttr.get();
     data.szPrefix = nullptr;
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;

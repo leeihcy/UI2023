@@ -230,6 +230,8 @@ enum
 #define XML_BACKGND_RENDER_PREFIX         "back."    // 背景渲染属性前缀，如back.render.type="" fore.render.image=""
 #define XML_FOREGND_RENDER_PREFIX         "fore."    // 前景
 #define XML_ICON_RENDER_PREFIX            "icon."    // 图标属性渲染前缀
+#define XML_FUCOS_RENDER_PREFIX           "focus"    // 控件焦点渲染前缀
+#define XML_DEFAULT_RENDER_PREFIX         "default"  // 默认按钮渲染前缀
 #define XML_BKGCOLOR                      "bkgcolor"  // 背景颜色
 #define XML_BKGCOLOR_PREFIX               "bkgcolor." // 背景颜色前缀
 

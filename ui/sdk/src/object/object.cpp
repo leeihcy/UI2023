@@ -361,7 +361,7 @@ void Object::LoadAttributes(bool bReload) {
                      strId.c_str(), m_pIMapAttributeRemain.get());
 
   SerializeParam data = {0};
-  data.pSkinRes = m_resource->GetIResource();
+  data.resource = m_resource->GetIResource();
   data.pMapAttrib = m_pIMapAttributeRemain.get();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
@@ -1141,7 +1141,7 @@ void Object::InitDefaultAttrib() {
                      pMapAttrib.get());
 
   SerializeParam data = {0};
-  data.pSkinRes = m_resource->GetIResource();
+  data.resource = m_resource->GetIResource();
   data.pMapAttrib = pMapAttrib.get();
   data.nFlags = SERIALIZEFLAG_LOAD;
 

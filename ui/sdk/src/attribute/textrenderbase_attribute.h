@@ -22,7 +22,6 @@ public:
                       EditorAttributeFlag e) override;
 
 public:
-  void SetObjectPtr(Object *p) { m_pObject = p; }
   void SetPrefix(const char *szPrefix) {
     if (szPrefix)
       m_strPrefix = szPrefix;
@@ -37,14 +36,8 @@ private:
 
 private:
   ITextRenderBaseAttribute *m_pITextRenderBaseAttribute;
-
   std::shared_ptr<ITextRenderBase>* m_ppBindValue;
-  Object *m_pObject;
-
   std::string m_strPrefix;
-  //     void*  _this;
-  //     pfnLongSetter  _setter;
-  //     pfnLongGetter  _getter;
 };
 
 AttributeBase *CreateTextRenderBaseAttribute();

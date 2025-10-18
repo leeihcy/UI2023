@@ -177,8 +177,11 @@ void Button::onStateChanged(StateChangedMessage *msg) {
 
 void Button::onPaint(IRenderTarget *r) {
   ButtonDrawContext c {
-    .r = r
+    .r = r,
+    .render_state = getDrawState()
   };
+
+  GetClientRectWithZeroOffset(&c.bounds);
   
   drawIcon(c);
   drawText(c);
@@ -223,19 +226,20 @@ void Button::drawText(ButtonDrawContext& c) {
   if (m_text.empty()) {
     return;
   }
-  Rect rect;
-  GetClientRectWithZeroOffset(&rect);
 
   std::shared_ptr<ITextRenderBase> p = GetTextRenderOrDefault();
   if (p) {
-    p->DrawState(c.r, &rect, getDrawState(), m_text.c_str());
+    p->DrawState(c.r, &c.bounds, getDrawState(), m_text.c_str());
   }
 }
 void Button::drawIcon(ButtonDrawContext& c) {
 
 }
 void Button::drawFocus(ButtonDrawContext& c) {
-
+  if (!IsFocus() || !m_focus_render) {
+    return;
+  }
+  m_focus_render->DrawState(c.r, &c.bounds, c.render_state);
 }
 
 void Button::onSerialize(SerializeParam *pData) {
@@ -263,6 +267,7 @@ void Button::onSerialize(SerializeParam *pData) {
       ->SetDefault(AlignLeft);
 
   s.AddInt(XML_BUTTON_ICON_TEXT_SPACE, m_icon_text_space);
+  s.AddRenderBase(XML_FUCOS_RENDER_PREFIX, this, m_focus_render);
 }
 
 void Button::onGetDesiredSize(Size *size) {

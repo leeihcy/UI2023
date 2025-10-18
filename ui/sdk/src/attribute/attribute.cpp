@@ -91,8 +91,8 @@ void AttributeSerializer::DoAction() {
 
 SerializeParam *AttributeSerializer::GetSerializeData() { return m_pData; }
 IApplication *AttributeSerializer::GetUIApplication() {
-  if (m_pData && m_pData->pSkinRes)
-    return m_pData->pSkinRes->GetUIApplication();
+  if (m_pData && m_pData->resource)
+    return m_pData->resource->GetUIApplication();
 
   return nullptr;
 }
@@ -419,12 +419,12 @@ AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
     return nullptr;
 
   p->SetPrefix(szPrefix);
-  p->SetObjectPtr(pObj);
+  // p->SetObjectPtr(pObj);
 
   // 在editor中，动态修改render type不要清除属性。
   // 1. 属性可能共用一个key，如render.image=，即使换了type，属性也可以共享
   // 2. 要实现undo/redo，不能丢掉属性
-  if (m_pData->pSkinRes->GetUIApplication()->IsEditorMode())
+  if (m_pData->resource->GetUIApplication()->IsEditorMode())
     m_pData->SetErase(false);
 
   // p->FillRenderBaseTypeData()
@@ -447,7 +447,7 @@ AttributeSerializer::AddTextRenderBase(const char *szPrefix, Object *pObj,
     return nullptr;
 
   p->SetPrefix(szPrefix);
-  p->SetObjectPtr(pObj);
+  // p->SetObjectPtr(pObj);
   return p;
 }
 
@@ -459,7 +459,7 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey) {
     return nullptr;
   }
 
-  pAttribute->SetSkinRes(m_pData->pSkinRes ? m_pData->pSkinRes->GetImpl()
+  pAttribute->SetResource(m_pData->resource ? m_pData->resource->GetImpl()
                                            : nullptr);
   if (m_pData->szPrefix) {
     std::string str(m_pData->szPrefix);
@@ -468,7 +468,6 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey) {
   } else {
     pAttribute->SetKey(szKey);
   }
-
   pAttribute->SetParentKey(m_pData->szParentKey);
 
   m_list.push_back(pAttribute);
@@ -483,8 +482,10 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
     return nullptr;
   }
 
-  pAttribute->SetSkinRes(m_pData->pSkinRes ? m_pData->pSkinRes->GetImpl()
-                                           : nullptr);
+  if (m_pData->resource) {
+    pAttribute->SetResource(m_pData->resource->GetImpl());
+  }
+
   if (m_pData->szPrefix) {
     std::string str(m_pData->szPrefix);
     str.append(szKey);
@@ -494,8 +495,9 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
   }
 
   pAttribute->SetParentKey(m_pData->szParentKey);
-  if (pBindValue)
+  if (pBindValue) {
     pAttribute->SetBindValue(pBindValue);
+  }
 
   m_list.push_back(pAttribute);
   return pAttribute;
@@ -660,7 +662,7 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
 
     SerializeParam data = {0};
     data.pAttributeEditorProxy = &m_oIProxy;
-    data.pSkinRes = pObj->GetResource();
+    data.resource = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 
     SerializeMessage msg;

@@ -81,7 +81,7 @@ public:
     std::shared_ptr<IMapAttribute> pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
     SerializeParam data = {0};
-    data.pSkinRes = pObj->GetResource();
+    data.resource = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
     data.pMapAttrib = pMapAttr.get();
 

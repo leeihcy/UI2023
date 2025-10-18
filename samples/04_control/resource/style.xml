@@ -14,6 +14,7 @@
       back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6"
       back.render.radius="4"
       text.render.color="#606266;#409eff;#409eff"
+      focus.render.type="color"
       />
     <class id="button_primary" 
       back.render.color="#409eff;#66b1ff;#3a8ee6" 

@@ -32,7 +32,7 @@ void ObjectLayer::CreateLayer() {
     }
 
     SerializeParam data = {0};
-    data.pSkinRes = m_obj.GetIResource();
+    data.resource = m_obj.GetIResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
     data.pMapAttrib = m_obj.GetMapAttribute().get();
 

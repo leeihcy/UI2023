@@ -20,10 +20,8 @@ public:
 
   bool RegisterUIRenderBase(IRenderBaseMeta &meta);
   std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResource *pSkinRes,
-                                                      const char *szName,
-                                                      IObject *pObject);
-  std::shared_ptr<IRenderBase> CreateRenderBase(IResource *pSkinRes, int nType,
-                                                IObject *pObject);
+                                                      const char *szName);
+  std::shared_ptr<IRenderBase> CreateRenderBase(IResource *pSkinRes, int nType);
   const char *GetRenderBaseName(int nType);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);

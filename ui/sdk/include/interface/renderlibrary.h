@@ -49,7 +49,7 @@ typedef struct tagDRAWBITMAPPARAM {
   tagDRAWBITMAPPARAM() {
     memset(this, 0, sizeof(tagDRAWBITMAPPARAM));
     nAlpha = 255;
-    scale_factor = 1.0f;
+    // scale_factor = 1.0f;
     nFlag = DRAW_BITMAP_BITBLT;
   }
 
@@ -66,7 +66,7 @@ typedef struct tagDRAWBITMAPPARAM {
   C9Region nine_region; // 不需要拉伸时，不使用
   unsigned char nAlpha;
 
-  float scale_factor;
+  // float scale_factor;
 
   // out param (废弃。多线程渲染后已获取不到，外部调用者自己计算吧。)
   // Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取

@@ -62,10 +62,10 @@ void AttributeBase::SetGroupName(const char *szGroupName) {
   SETSTRING(m_strGroupName, szGroupName);
 }
 const char *AttributeBase::GetGroupName() { return m_strGroupName.c_str(); }
-void AttributeBase::SetSkinRes(Resource *p) { m_pSkinRes = p; }
+void AttributeBase::SetResource(Resource *p) { m_resource = p; }
 Application *AttributeBase::GetUIApplication() { 
-  if (!m_pSkinRes) { return nullptr; }
-  return m_pSkinRes->GetUIApplication();
+  if (!m_resource) { return nullptr; }
+  return m_resource->GetUIApplication();
 }
 
 void AttributeBase::Load(SerializeParam *pData) {

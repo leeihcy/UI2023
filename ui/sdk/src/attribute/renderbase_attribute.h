@@ -18,7 +18,6 @@ public:
                       EditorAttributeFlag e) override;
 
 public:
-  void SetObjectPtr(Object *p) { m_pObject = p; }
   void SetPrefix(const char *szPrefix) {
     if (szPrefix)
       m_strPrefix = szPrefix;
@@ -34,13 +33,7 @@ private:
   std::unique_ptr<IRenderBaseAttribute> m_pIRenderBaseAttribute;
 
   std::shared_ptr<IRenderBase> *m_ppBindValue;
-  Object *m_pObject;
-
   std::string m_strPrefix;
-
-  //     void*  _this;
-  //     pfnStringSetter  _setter;
-  //     pfnStringGetter  _getter;
 };
 
 AttributeBase *CreateRenderBaseAttribute();

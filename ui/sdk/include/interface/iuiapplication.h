@@ -89,13 +89,13 @@ public:
   void LoadUIObjectListToToolBox();
 
   bool RegisterUIRenderBase(IRenderBaseMeta& meta);
-  std::shared_ptr<IRenderBase> CreateRenderBase(int nType, IObject *pObject);
+  std::shared_ptr<IRenderBase> CreateRenderBase(IResource* resource, int type);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
 
   bool RegisterUITextRender(ITextRenderBaseMeta &meta);
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(const char *szName, IObject *pObject);
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBase(int nType, IObject *pObject);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource* resource, const char *szName);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBase(IResource* resource, int nType);
   void EnumTextRenderBaseName(pfnEnumTextRenderNameCallback callback,
                               llong wParam, llong lParam);
 

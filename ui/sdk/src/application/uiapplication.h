@@ -64,7 +64,7 @@ public:
   TimerHelper &GetTimerHelper() { return m_timer_helper; }
 
   const char *GetRenderBaseName(int nType);
-  std::shared_ptr<IRenderBase> CreateRenderBaseByName(const char *szName, IObject *pObject);
+  std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResource *resource, const char *name);
 
   Resource *GetDefaultSkinRes();
 #if 0
