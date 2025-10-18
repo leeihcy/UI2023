@@ -58,7 +58,7 @@ void Control::onSerialize(SerializeParam *pData) {
     s.AddString(XML_TOOLTIP, Slot(&Control::SetToolTipText, this),
                 Slot(&Control::GetToolTipText, this));
 
-    s.AddTextRenderBase(nullptr, this, m_text_render);
+    s.AddTextRenderBase(nullptr, m_text_render);
     // 		s.AddStringEnum(XML_TEXTRENDER_TYPE,
     // 			Slot(&Object::LoadTextRender, this),
     // 			Slot(&Object::SaveTextRender, this))

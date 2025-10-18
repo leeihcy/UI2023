@@ -135,11 +135,13 @@ struct FillRectOp : public PaintOp {
 };
 
 struct StrokeRectOp : public PaintOp {
-  StrokeRectOp(const Rect &_rect, const Color &_color, int _width)
-      : PaintOp(PaintOpType::StrokeRect), rect(_rect), color(_color), width(_width) {}
+  StrokeRectOp(const Rect &_rect, const Color &_color, int _width, bool _dash)
+      : PaintOp(PaintOpType::StrokeRect), rect(_rect), color(_color),
+        width(_width), dash(_dash) {}
   Rect rect;
   Color color;
   int width;
+  bool dash;
 };
 
 struct FillRoundRectOp : public PaintOp {
@@ -152,16 +154,16 @@ struct FillRoundRectOp : public PaintOp {
   CornerRadius radius;
 };
 
-
 struct StrokeRoundRectOp : public PaintOp {
   StrokeRoundRectOp(const Rect &_rect, const Color &_color,
-                  const CornerRadius &_radius, int _width)
+                    const CornerRadius &_radius, int _width, bool _dash)
       : PaintOp(PaintOpType::StrokeRoundRect), rect(_rect), color(_color),
-        radius(_radius), width(_width) {}
+        radius(_radius), width(_width), dash(_dash) {}
   Rect rect;
   Color color;
   CornerRadius radius;
   int width;
+  bool dash;
 };
 
 struct DrawStringOp : public PaintOp {

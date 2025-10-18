@@ -19,16 +19,6 @@ namespace ui {
 
 Panel::Panel(IPanel *p) : Object(p) {
   m_pIPanel = p;
-  m_pLayout = nullptr;
-
-  m_pTextureRender = nullptr;
-  m_rcTextureRenderRegion.SetEmpty();
-
-  m_pMaskRender = nullptr;
-  m_rcMaskRenderRegion.SetEmpty();
-
-  m_rcBkgndRenderRegion.SetEmpty();
-  m_rcForegndRenderRegion.SetEmpty();
 
   OBJSTYLE s = {0};
   s.default_transparent = 1;
@@ -154,20 +144,9 @@ void Panel::onSerialize(SerializeParam *pData) {
     AttributeSerializer s(pData, "Panel");
 
     // 纹理层
-    s.AddRenderBase(XML_TEXTURE_RENDER_PREFIX, this, m_pTextureRender);
-    s.AddRect(XML_TEXTURE_RENDER_PREFIX XML_PANEL_RENDER_REGION,
-              m_rcTextureRenderRegion);
-
+    s.AddRenderBase(XML_TEXTURE_RENDER_PREFIX, m_pTextureRender);
     // 顶层遮罩层
-    s.AddRenderBase(XML_MASK_RENDER_PREFIX, this, m_pMaskRender);
-    s.AddRect(XML_MASK_RENDER_PREFIX XML_PANEL_RENDER_REGION,
-              m_rcMaskRenderRegion);
-
-    s.AddRect(XML_BACKGND_RENDER_PREFIX XML_PANEL_RENDER_REGION,
-              m_rcBkgndRenderRegion);
-    s.AddRect(XML_FOREGND_RENDER_PREFIX XML_PANEL_RENDER_REGION,
-              m_rcForegndRenderRegion);
-
+    s.AddRenderBase(XML_MASK_RENDER_PREFIX, m_pMaskRender);
     s.AddStringEnum(XML_LAYOUT_TYPE, Slot(&Panel::SetLayoutName, this),
                     Slot(&Panel::GetLayoutName, this))
         ->FillLayoutTypeData();
@@ -212,13 +191,11 @@ void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
 
   if (m_back_render) {
     Rect rcBkgnd = rc;
-    rcBkgnd.Deflate(m_rcBkgndRenderRegion);
     m_back_render->DrawState(pRenderTarget, &rcBkgnd, 0);
   }
 
   if (m_pTextureRender) {
     Rect rcTextureRegion = rc;
-    rcTextureRegion.Deflate(m_rcTextureRenderRegion);
     m_pTextureRender->DrawState(pRenderTarget, &rcTextureRegion, 0);
   }
 }
@@ -226,14 +203,12 @@ void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
 void Panel::onPaint(IRenderTarget *pRenderTarget) {
   if (m_fore_render) {
     Rect rcForegnd = {0, 0, this->GetWidth(), this->GetHeight()};
-    rcForegnd.Deflate(m_rcForegndRenderRegion);
     m_fore_render->DrawState(pRenderTarget, &rcForegnd, 0);
   }
 }
 void Panel::onPostPaint(IRenderTarget *pRenderTarget) {
   if (m_pMaskRender) {
     Rect rcMask = {0, 0, this->GetWidth(), this->GetHeight()};
-    rcMask.Deflate(m_rcMaskRenderRegion);
     m_pMaskRender->DrawState(pRenderTarget, &rcMask, 0);
   }
 }

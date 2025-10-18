@@ -95,6 +95,9 @@ public:
   // Object
   void SetWindowPos(int x, int y, int cx, int cy, SetPositionFlags flags);
 
+  void SetMouseCapture(Object*);
+  void ReleaseMouseCapture(Object*);
+
 public:
   // platform回调
   void onClose();

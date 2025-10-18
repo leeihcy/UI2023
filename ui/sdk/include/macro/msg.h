@@ -402,6 +402,23 @@ struct KillFocusMessage : public ui::Msg {
   IObject* new_focus = nullptr;
 };
 
+#define UI_MSG_KEYDOWN 250181618
+struct KeyDownMessage : public ui::Msg {
+  KeyDownMessage() {
+    message = UI_MSG_KEYDOWN;
+  }
+  int key = 0;
+  int flags = 0;
+};
+#define UI_MSG_KEYUP 250181619
+struct KeyUpMessage : public ui::Msg {
+  KeyUpMessage() {
+    message = UI_MSG_KEYUP;
+  }
+  int key = 0;
+  int flags = 0;
+};
+
 #if 0
 struct MSG {
 #if 0 // defined(OS_WIN)

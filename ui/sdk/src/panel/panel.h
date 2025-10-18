@@ -37,18 +37,13 @@ protected:
   void onSerialize(SerializeParam *pData);
   void onGetDesiredSize(Size *pSize); 
 protected:
-  IPanel *m_pIPanel;
-  ILayout *m_pLayout;
-  Rect m_rcBkgndRenderRegion;
-  Rect m_rcForegndRenderRegion;
+  IPanel *m_pIPanel = nullptr;
+  ILayout *m_pLayout = nullptr;
 
   // 用于支持换肤功能的皮肤图片
   std::shared_ptr<IRenderBase> m_pTextureRender;
-  Rect m_rcTextureRenderRegion;
-
   // 最上面的遮罩层
   std::shared_ptr<IRenderBase> m_pMaskRender;
-  Rect m_rcMaskRenderRegion;
 
   std::string m_layout_name;
 };

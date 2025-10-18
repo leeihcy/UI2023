@@ -97,9 +97,9 @@ void Object::onSerialize(SerializeParam *pData) {
     // 		    memfun_cast<pfnStringGetter>(&Object::SaveCursorId));
 
     // 设置背景渲染器
-    s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, this, m_back_render);
+    s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, m_back_render);
     // 设置前景绘制
-    s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, this, m_fore_render);
+    s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, m_fore_render);
 
     //         s.AddStringEnum(XML_BACKGND_RENDER_PREFIX XML_RENDER_TYPE, this,
     //             memfun_cast<pfnStringSetter>(&Object::LoadBkgndRender),

@@ -125,9 +125,9 @@ public:
   ColorAttribute *AddColor(const char *, Color &pBindValue);
   ColorAttribute *AddColor(const char *, slot<void(Color)>&& setter, slot<Color()>&& getter);
   
-  RenderBaseAttribute *AddRenderBase(const char *szPrefix, Object *pObj,
+  RenderBaseAttribute *AddRenderBase(const char *szPrefix,
                                      std::shared_ptr<IRenderBase> &pBindValue);
-  TextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix, Object *pObj,
+  TextRenderBaseAttribute *AddTextRenderBase(const char *szPrefix,
                                              std::shared_ptr<ITextRenderBase> &pBindValue);
 
 private:

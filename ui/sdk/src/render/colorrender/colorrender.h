@@ -47,6 +47,8 @@ public:
   std::vector<Color> m_border_color;
 
   int m_border = 0;
+  // 虚线边框，例如用于focus render
+  bool m_border_dash = false;
   CornerRadius  m_radius;
 };
 

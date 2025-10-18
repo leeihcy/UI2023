@@ -49,11 +49,11 @@ public:
   void Render2Target(IRenderTarget *pDst,
                              Render2TargetParam *pParam) override;
   void FillRect(const Rect &rc, const Color &color) override;
-  void StrokeRect(const Rect &rc, const Color &color, int width) override;
+  void StrokeRect(const Rect &rc, const Color &color, int width, bool dash) override;
   void FillRoundRect(const Rect &rc, const Color &color,
                      const CornerRadius &radius) override;
   void StrokeRoundRect(const Rect &rc, const Color &color,
-                     const CornerRadius &radius, int width) override;
+                     const CornerRadius &radius, int width, bool dash) override;
   void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
                   DRAWBITMAPPARAM *param) override;
   void DrawString(const DrawTextParam &param) override;

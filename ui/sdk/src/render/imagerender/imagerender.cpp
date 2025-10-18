@@ -38,6 +38,7 @@ void ImageRender::onRouteMessage(ui::Msg *msg) {
     return;
   }
   else if (msg->message == UI_MSG_SERIALIZE) {
+    RenderBase::onRouteMessage(msg);
     OnSerialize(static_cast<SerializeMessage*>(msg)->param);
     return;
   }

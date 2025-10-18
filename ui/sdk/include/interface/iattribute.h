@@ -356,10 +356,10 @@ struct UIAPI AttributeSerializerWrap {
   IColorAttribute *AddColor(const char *szKey, slot<void(Color)> &&setter,
                             slot<Color()> &&getter);
   IRegion9Attribute *Add9Region(const char *, C9Region &rBindValue);
-  IRenderBaseAttribute *AddRenderBase(const char *szPrefix, IObject *pObj,
+  IRenderBaseAttribute *AddRenderBase(const char *szPrefix,
                                       std::shared_ptr<IRenderBase> &pBindValue);
   ITextRenderBaseAttribute *
-  AddTextRenderBase(const char *szPrefix, IObject *pObj,
+  AddTextRenderBase(const char *szPrefix,
                     std::shared_ptr<ITextRenderBase> &pBindValue);
 
 private:

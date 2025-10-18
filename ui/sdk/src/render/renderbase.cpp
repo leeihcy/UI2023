@@ -10,8 +10,6 @@
 #include "src/object/message.h"
 #include "src/object/object.h"
 #include "src/resource/res_bundle.h"
-// #include "src\UIObject\Window\windowbase.h"
-// #include "src/Layer\windowrender.h"
 
 #if 0 // defined(OS_WIN)
 #pragma comment(lib, "uxtheme.lib")
@@ -29,6 +27,11 @@ void RenderBase::onRouteMessage(ui::Msg *msg) {
     Message::onRouteMessage(msg);
     m_resouce = static_cast<FinalConstructMessage *>(msg)->resource->GetImpl();
     return;
+  } else if (msg->message == UI_MSG_SERIALIZE) {
+    SerializeParam *param = static_cast<SerializeMessage *>(msg)->param;
+    
+    AttributeSerializer s(param, "RenderBase");
+    s.AddRect(XML_RENDER_MARGIN, m_deflate_margin);
   }
 }
 

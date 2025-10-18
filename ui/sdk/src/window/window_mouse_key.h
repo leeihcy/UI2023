@@ -31,6 +31,9 @@ public:
   void OnRButtonDown(int x, int y);
   void OnRButtonUp(int x, int y);
 
+  bool OnKeyDown(int key, int flags);
+  bool OnKeyUp(int key, int flags);
+
 private:
   void _OnMouseMove(Object* pObj, Point pt);
   void _OnMouseLeave(Point pt);
@@ -40,7 +43,11 @@ private:
 
   void _SetHoverObject(Object* pNewHoverObj);
   void _SetPressObject(Object* pNewPressObj);
- 
+
+  void tabToPrevControl();
+  void tabToNextControl();
+  void checkDefPushButton(Object* pNewObj);
+
 private:
   void updateImeStatus();
 
@@ -71,6 +78,9 @@ public:
   void OnObjectRemoveInd(Object *pObj);
   void ClearStateDirect();
 
+  void SetMouseCapture(Object*);
+  void ReleaseMouseCapture(Object*);
+
 private:
   Window &m_window;
 
@@ -96,7 +106,10 @@ private:
 
   // 用于解决经常会出现的场景：还没使用MOUSEMOVE获取hover obj，就收到了一个BUTTONDOWN的消息，
   // 导致消息响应失败。例如手动发送一个MOUSEMOVE或者按下ALT键导致的MouseLeave
-  bool  m_bMouseMoveReady = false;          
+  bool  m_bMouseMoveReady = false;    
+  
+  Object*  m_pObjKeyboardCapture = nullptr;      // 临时需要拦截键盘消息的对象
+  Object*  m_pObjMouseCapture = nullptr;         // 临时需要拦截鼠标消息的对象
 };
 }
 

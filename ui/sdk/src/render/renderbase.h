@@ -3,6 +3,7 @@
 #include "include/interface/irenderbase.h"
 #include "include/util/color.h"
 #include "include/macro/uimsg.h"
+#include "include/util/rect.h"
 #include "src/object/message.h"
 
 namespace ui {
@@ -47,6 +48,12 @@ protected:
   IRenderBase *m_pIRenderBase;
 
   RENDER_TYPE m_nRenderType; // 自己的类型
+
+protected:
+  // 通用属性
+
+  // 渲染内缩间距
+  Rect m_deflate_margin = { 0 };
 };
 
 // 将bkgnd.render.type=null表示不使用默认背景

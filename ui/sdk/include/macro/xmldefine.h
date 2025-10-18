@@ -186,11 +186,13 @@ enum VISIBILITY_TYPE
 #define XML_RENDER_THEME_DISABLE          "render.theme.disable"    // 是否强制使用无主题的渲染
 #define XML_RENDER_COLOR                  "render.color"            // 填充颜色
 #define XML_RENDER_BORDER_WIDTH           "render.border.width"     // 边框大小
+#define XML_RENDER_BORDER_DASH            "render.border.dash"      // 边框使用虚线风格
 #define XML_RENDER_RADIUS                 "render.radius"           // 边框圆角
 #define XML_RENDER_BORDERCOLOR            "render.border.color"     // 边框颜色
 #define XML_RENDER_COLORFROM              "render.color.from"       // 渐变起始色
 #define XML_RENDER_COLORTO                "render.color.to"         // 渐变终点色
 #define XML_RENDER_COLOR_GRADIENT_DIR     "render.color.gradient.dir" // 渐变色方向
+#define XML_RENDER_MARGIN                 "render.margin"           // 内间距
 
 #define XML_RENDER_COLOR_GRADIENT_DIR_H   "h"
 #define XML_RENDER_COLOR_GRADIENT_DIR_V   "v"
@@ -230,7 +232,7 @@ enum
 #define XML_BACKGND_RENDER_PREFIX         "back."    // 背景渲染属性前缀，如back.render.type="" fore.render.image=""
 #define XML_FOREGND_RENDER_PREFIX         "fore."    // 前景
 #define XML_ICON_RENDER_PREFIX            "icon."    // 图标属性渲染前缀
-#define XML_FUCOS_RENDER_PREFIX           "focus"    // 控件焦点渲染前缀
+#define XML_FUCOS_RENDER_PREFIX           "focus."   // 控件焦点渲染前缀
 #define XML_DEFAULT_RENDER_PREFIX         "default"  // 默认按钮渲染前缀
 #define XML_BKGCOLOR                      "bkgcolor"  // 背景颜色
 #define XML_BKGCOLOR_PREFIX               "bkgcolor." // 背景颜色前缀
@@ -370,7 +372,6 @@ enum GRAPHICS_RENDER_LIBRARY_TYPE
 
 #define XML_TEXTURE_RENDER_PREFIX            "texture."         // customwindow用于支持换肤的皮肤render前缀
 #define XML_MASK_RENDER_PREFIX               "mask."            // 在绘制完子结点后，再画的一层(PostPaint)
-#define XML_PANEL_RENDER_REGION              "render.region"    // 皮肤图片在窗口上显示的区域，类型于padding的配置
 
 enum ROUND_CORNER_TYPE
 {

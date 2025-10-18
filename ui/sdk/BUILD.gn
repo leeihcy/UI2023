@@ -325,13 +325,15 @@ shared_library("uisdk") {
     if (is_mac) {
         sources += [
             "src/window/window_mac.mm",
+            "src/window/window_mac.h",
+            "src/window/window_mac_keyboard.mm",
             "src/message_loop/message_loop_mac.mm",
         ]
     }
 
     if (is_mac) {
         sources += [
-            "src/application//application_mac.mm",
+            "src/application/application_mac.mm",
         ]
         # skia Mac 依赖
         ldflags += [
@@ -340,6 +342,7 @@ shared_library("uisdk") {
             "-framework", "CoreText",
             "-framework", "CoreServices",
             "-framework", "Cocoa",
+            "-framework", "Carbon",
             "-framework", "QuartzCore",  # Core Animation
         ]
     }

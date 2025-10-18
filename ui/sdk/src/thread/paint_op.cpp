@@ -25,7 +25,7 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   }
   case PaintOpType::StrokeRect: {
     auto param = static_cast<StrokeRectOp*>(op);
-    rt->StrokeRect(param->rect, param->color, param->width);
+    rt->StrokeRect(param->rect, param->color, param->width, param->dash);
     break;
   }
   case PaintOpType::FillRoundRect: {
@@ -35,7 +35,7 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   }
   case PaintOpType::StrokeRoundRect: {
     auto param = static_cast<StrokeRoundRectOp*>(op);
-    rt->StrokeRoundRect(param->rect, param->color, param->radius, param->width);
+    rt->StrokeRoundRect(param->rect, param->color, param->radius, param->width, param->dash);
     break;
   }
   case PaintOpType::Resize: {

@@ -30,6 +30,8 @@
 #include "third_party/skia/src/include/core/SkRRect.h"
 #include "third_party/skia/src/include/core/SkRect.h"
 #include "third_party/skia/src/include/core/SkTextBlob.h"
+#include "third_party/skia/src/include/core/SkPathEffect.h"
+#include "third_party/skia/src/include/effects/SkDashPathEffect.h"
 
 #if defined(OS_WIN)
 #include "src/util/windows.h"
@@ -558,7 +560,7 @@ void SkiaRenderTarget::FillRect(const Rect &rect, const Color &color) {
   canvas->drawRect(skrect, paint);
 }
 
-void SkiaRenderTarget::StrokeRect(const Rect &rect, const Color &color, int width) {
+void SkiaRenderTarget::StrokeRect(const Rect &rect, const Color &color, int width, bool dash) {
   if (width <= 0) {
     return;
   }
@@ -577,6 +579,20 @@ void SkiaRenderTarget::StrokeRect(const Rect &rect, const Color &color, int widt
   paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
   paint.setStroke(true);
   paint.setStrokeWidth(width);
+
+  if (dash) {
+      // 1. 定义虚线模式：实线x像素，间隔y像素
+    const SkScalar intervals[] = {4.0f, 2.0f};
+    const int count = 2; // intervals数组的元素个数
+    const SkScalar phase = 0; // 相位，从模式起点开始
+
+    // 2. 创建虚线路径效果
+    sk_sp<SkPathEffect> dashEffect = SkDashPathEffect::Make(intervals, count, phase);
+
+    // 3. 为画笔设置路径效果
+    paint.setPathEffect(dashEffect);
+  }
+  
   canvas->drawRect(skrect, paint);
 }
 
@@ -606,7 +622,7 @@ void SkiaRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
 }
 
 void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
-                     const CornerRadius &radius, int width) {
+                     const CornerRadius &radius, int width, bool dash) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
   // 默认边框是居中绘制的，这里调整为靠内侧绘制
@@ -623,6 +639,19 @@ void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
   paint.setStrokeWidth(width);
   paint.setColor(SkColorSetARGB(color.a, color.r, color.g, color.b));
   paint.setAntiAlias(true);
+
+  if (dash) {
+      // 1. 定义虚线模式：实线x像素，间隔y像素
+    const SkScalar intervals[] = {1.0f, 1.0f};
+    const int count = 2; // intervals数组的元素个数
+    const SkScalar phase = 0; // 相位，从模式起点开始
+
+    // 2. 创建虚线路径效果
+    sk_sp<SkPathEffect> dashEffect = SkDashPathEffect::Make(intervals, count, phase);
+
+    // 3. 为画笔设置路径效果
+    paint.setPathEffect(dashEffect);
+  }
 
   SkVector radii[4] = {
       {(SkScalar)radius.top_left, (SkScalar)radius.top_left},

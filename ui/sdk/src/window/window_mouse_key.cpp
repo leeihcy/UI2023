@@ -23,8 +23,8 @@ void  WindowMouseKey::ClearStateDirect()
 	m_pFocusObject = nullptr;
 	m_pFocusObject = nullptr;
 	m_pOldFocusObject = nullptr;
-	// m_pObjKeyboardCapture  = nullptr;
-	// m_pObjMouseCapture = nullptr;
+	m_pObjKeyboardCapture  = nullptr;
+	m_pObjMouseCapture = nullptr;
 
 	// m_bMouseTrack = TRUE;      // 默认需要进行鼠标监视
 	// m_nKeyboardCaptureNotifyMsgId = 0;
@@ -83,7 +83,7 @@ void WindowMouseKey::OnObjectVisibleChangeInd(Object *pObj, bool bVisible) {
       // ::UISendMessage(m_pFocusObject, WM_KILLFOCUS, (WPARAM)pObj, 0);
       m_pFocusObject = nullptr;
 
-      // this->Tab_2_NextControl();
+      this->tabToNextControl();
     }
   }
 }
@@ -124,16 +124,12 @@ void WindowMouseKey::OnObjectRemoveInd(Object *pObj) {
     m_pOldFocusObject = nullptr;
   }
 
-  // if (pObj->GetIMessage() == m_pObjKeyboardCapture)
-  // {
-  //     m_pObjKeyboardCapture = nullptr;
-  //     m_nKeyboardCaptureNotifyMsgId = 0;
-  // }
-  // if (pObj->GetIMessage() == m_pObjMouseCapture)
-  // {
-  //     m_pObjMouseCapture = nullptr;
-  //     m_nMouseCaptureNotifyMsgId = 0;
-  // }
+  if (pObj == m_pObjKeyboardCapture) {
+    m_pObjKeyboardCapture = nullptr;
+  }
+  if (pObj == m_pObjMouseCapture) {
+    m_pObjMouseCapture = nullptr;
+  }
 }
 
 //
@@ -278,6 +274,13 @@ void WindowMouseKey::OnMouseEnter() {}
 void WindowMouseKey::OnMouseLeave() {}
 
 void WindowMouseKey::OnMouseMove(int x, int y) {
+  if (m_pObjMouseCapture) {
+    MouseMoveMessage msg;
+    msg.pt_in_window = {x, y};
+    m_pObjMouseCapture->RouteMessage(&msg);
+    return;
+  }
+
   // if (m_bMouseTrack) //若允许追踪，则。
   // {
   //   TRACKMOUSEEVENT tme;
@@ -411,6 +414,13 @@ void WindowMouseKey::_OnMouseLeave(Point pt) {
 }
 
 void WindowMouseKey::OnLButtonDown(int x, int y) {
+  if (m_pObjMouseCapture) {
+    LButtonDownMessage msg;
+    msg.pt_in_window = {x, y};
+    m_pObjMouseCapture->RouteMessage(&msg);
+    return;
+  }
+
   // TODO: 事件冒泡逻辑？
   // LButtonDownEvent event;
   // event.obj = m_window.GetRootObject().GetIObject();
@@ -478,6 +488,13 @@ bool WindowMouseKey::_OnLButtonDBClick(Point pt) {
 }
 
 void WindowMouseKey::OnLButtonUp(int x, int y) {
+  if (m_pObjMouseCapture) {
+    LButtonUpMessage msg;
+    msg.pt_in_window = {x, y};
+    m_pObjMouseCapture->RouteMessage(&msg);
+    return;
+  }
+
   // 为了防止在对象在处理WM_LBUTTONUP消息时MouseManager的状态发生了改变,先保存状态
   Object *pSaveObjPress = m_pObjPress;
   Object *pSaveObjHover = m_pObjHover;
@@ -824,6 +841,29 @@ void  WindowMouseKey::updateImeStatus()
 #endif
 }
 
+bool WindowMouseKey::OnKeyDown(int key, int flags) {
+  if (this->m_pFocusObject) {
+    KeyDownMessage msg;
+    msg.key = key;
+    msg.flags = flags;
+    m_pFocusObject->RouteMessage(&msg);
+    return true;
+  }
+  return false;
+}
+
+bool WindowMouseKey::OnKeyUp(int key, int flags) {
+  if (this->m_pFocusObject) {
+    KeyUpMessage msg;
+    msg.key = key;
+    msg.flags = flags;
+    m_pFocusObject->RouteMessage(&msg);
+    return true;
+  }
+
+  return false;
+}
+
 #if 0
 
 BOOL WindowMouseMgr::OnChar(WPARAM w, LPARAM l)
@@ -835,28 +875,6 @@ BOOL WindowMouseMgr::OnChar(WPARAM w, LPARAM l)
     }
     return FALSE;
 }
-
-BOOL WindowMouseMgr::OnKeyDown(UINT nMsg, WPARAM w,LPARAM l)
-{
-    if (this->m_pFocusObject)
-    {
-        UISendMessage(m_pFocusObject, WM_KEYDOWN, w, l );
-        return TRUE;
-    }
-
-    return FALSE;
-}
-BOOL WindowMouseMgr::OnKeyUp(WPARAM w,LPARAM l)
-{
-    if (this->m_pFocusObject)
-    {
-        UISendMessage(m_pFocusObject, WM_KEYUP, w, l);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
 long WindowMouseMgr::OnMouseWheel(WPARAM w, LPARAM l)
 {
     // 先询问当前的press obj，能否进行mouse wheel分发
@@ -921,5 +939,115 @@ bool  WindowMouseMgr::AdjustDoubleClickMessage(LPARAM l)
 }
 
 #endif
+
+
+void WindowMouseKey::tabToNextControl()
+{
+    Object* p = m_pFocusObject;
+    if (!p)
+        p = &m_window.GetRootObject();
+
+    if (!p)
+        return;
+
+    p = p->GetNextTabObject();
+
+    if (p)
+    {
+        checkDefPushButton(p);
+        SetFocusObject(p);
+    }
+}
+void WindowMouseKey::tabToPrevControl()
+{
+    Object* p = m_pFocusObject;
+    if (nullptr == p)
+    {
+        p = &m_window.GetRootObject();
+    }
+    p = p->GetPrevTabObject();
+
+    if (p)
+    {
+        checkDefPushButton(p);
+        SetFocusObject(p);
+    }
+}
+
+
+/*
+Code                   Meaning
+------------------------------------------------------------------------
+
+DLGC_BUTTON            Control is a button (of any kind).
+DLGC_DEFPUSHBUTTON     Control is a default push button.
+DLGC_HASSETSEL         Windows will send an EM_SETSEL message to the control to select its contents.
+DLGC_RADIOBUTTON       Control is an option (radio) button.
+DLGC_STATIC            Control is a static control.
+DLGC_UNDEFPUSHBUTTON   Control is a push button but not the default push button.(是一个按钮，但不是default)
+DLGC_WANTALLKEYS       Control processes all keyboard input.
+DLGC_WANTARROWS        Control processes arrow keys.
+DLGC_WANTCHARS         Control processes WM_CHAR messages.
+DLGC_WANTMESSAGE       Control processes the message in the MSG structure that lParam points to.
+DLGC_WANTTAB           Control processes the TAB key.
+*/
+
+void WindowMouseKey::checkDefPushButton(Object* pNewObj)
+{
+    if (nullptr == pNewObj)
+        return;
+#if 0
+	LONG_PTR codeNewFocus = UISendMessage(pNewObj->GetIObject(), WM_GETDLGCODE);
+
+    if (pNewObj == m_pFocusObject)
+    {
+        if (codeNewFocus & DLGC_UNDEFPUSHBUTTON)
+        {
+            SetDefaultObject(pNewObj, true);
+        }
+        return;
+    }
+
+    if (codeNewFocus & DLGC_DEFPUSHBUTTON)
+        return;
+
+    Object* pLastDefaultObj = m_pObjDefault; // 用于计算最终defbtn
+
+    /*
+     * If the focus is changing to or from a pushbutton, then remove the
+     * default style from the current default button
+     */
+    if ((m_pFocusObject != nullptr && (UISendMessage(m_pFocusObject, WM_GETDLGCODE) & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON))) ||
+        (pNewObj != nullptr && (codeNewFocus & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON))))
+    {
+        pLastDefaultObj = nullptr;
+    }
+
+    /*
+     * If moving to a button, make that button the default.
+     */
+    if (codeNewFocus & DLGC_UNDEFPUSHBUTTON)
+    {
+        pLastDefaultObj = pNewObj;
+    }
+    else
+    {
+        /*
+         * Otherwise, make sure the original default button is default
+         * and no others.
+         */
+        pLastDefaultObj = m_pObjOriginDefault;
+    }
+
+    SetDefaultObject(pLastDefaultObj, true);
+#endif
+}
+
+void WindowMouseKey::SetMouseCapture(Object *obj) { m_pObjMouseCapture = obj; }
+void WindowMouseKey::ReleaseMouseCapture(Object *obj) {
+  if (obj == m_pObjMouseCapture) {
+    m_pObjMouseCapture = nullptr;
+  }
+}
 
 } // namespace ui

@@ -1,13 +1,20 @@
 #include "window_mac.h"
-#import "Cocoa/Cocoa.h"
-#import "QuartzCore/CAMetalLayer.h"
+#import <Cocoa/Cocoa.h>
+#import <QuartzCore/CAMetalLayer.h>
+
 #include "include/util/rect.h"
+#include "include/macro/vkey.h"
 #include "src/graphics/skia/skia_render.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include "third_party/skia/src/include/utils/mac/SkCGUtils.h"
 #include "third_party/skia/src/src/utils/mac/SkUniqueCFRef.h"
 #include <cassert>
 #include <string.h>
+
+namespace ui {
+KeyboardCode KeyboardCodeFromNSEvent(NSEvent* event);
+int ModifierFlagsFromNSEvent(NSEvent* event);
+}
 
 @interface WindowDelegate : NSObject <NSWindowDelegate>
 
@@ -501,11 +508,16 @@ void *WindowPlatformMac::GetNSWindowRootView() {
 }
 
 - (void)keyDown:(NSEvent *)event {
-  printf("keyDown\n");
+  m_window->m_ui_window.m_mouse_key.OnKeyDown(
+    ui::KeyboardCodeFromNSEvent(event), 
+    ui::ModifierFlagsFromNSEvent(event));
 }
 - (void)keyUp:(NSEvent *)event {
-  printf("keyUp\n");
+  m_window->m_ui_window.m_mouse_key.OnKeyUp(
+    ui::KeyboardCodeFromNSEvent(event), 
+    ui::ModifierFlagsFromNSEvent(event));
 }
+
 - (void)mouseDown:(NSEvent *)event {
   const NSPoint pos = [event locationInWindow];
   const NSRect rect = [self frame];

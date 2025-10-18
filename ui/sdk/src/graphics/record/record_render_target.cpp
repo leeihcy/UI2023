@@ -127,8 +127,8 @@ void RecordRenderTarget::FillRect(const Rect &rect, const Color &color) {
   addPaintOp(std::move(std::make_unique<FillRectOp>(rect, color)));
 }
 void RecordRenderTarget::StrokeRect(const Rect &rect, const Color &color,
-                                    int width) {
-  addPaintOp(std::move(std::make_unique<StrokeRectOp>(rect, color, width)));
+                                    int width, bool dash) {
+  addPaintOp(std::move(std::make_unique<StrokeRectOp>(rect, color, width, dash)));
 }
 void RecordRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
                                        const CornerRadius &radius) {
@@ -136,9 +136,9 @@ void RecordRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
 }
 void RecordRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
                                          const CornerRadius &radius,
-                                         int width) {
+                                         int width, bool dash) {
   addPaintOp(
-      std::move(std::make_unique<StrokeRoundRectOp>(rect, color, radius, width)));
+      std::move(std::make_unique<StrokeRoundRectOp>(rect, color, radius, width, dash)));
 }
 
 void RecordRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,

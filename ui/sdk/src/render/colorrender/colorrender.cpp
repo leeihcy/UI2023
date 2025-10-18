@@ -30,6 +30,7 @@ void ColorRender::onRouteMessage(ui::Msg *msg) {
     DrawState(&((RenderBaseDrawStateMessage *)msg)->draw_state);
     return;
   } else if (msg->message == UI_MSG_SERIALIZE) {
+    RenderBase::onRouteMessage(msg);
     OnSerialize(static_cast<SerializeMessage *>(msg)->param);
     return;
   } else if (msg->message == UI_MSG_QUERYINTERFACE) {
@@ -83,6 +84,7 @@ void ColorRender::OnSerialize(SerializeParam *pData) {
       Slot(&ColorRender::SaveBorderColor, this));
 
   s.AddInt(XML_RENDER_BORDER_WIDTH, m_border);
+  s.AddBool(XML_RENDER_BORDER_DASH, m_border_dash);
   s.AddRadius(XML_RENDER_RADIUS, m_radius);
 }
 
@@ -92,6 +94,9 @@ void ColorRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 
   Color back_color;
   Color border_color;
+
+  Rect rect = pDrawStruct->rc;
+  rect.Deflate(m_deflate_margin);
 
   if (!m_back_color.empty()) {
     if (index < m_back_color.size())
@@ -108,17 +113,17 @@ void ColorRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 
   if (m_radius.IsZero()) {
     if (!back_color.IsTransparnt()) {
-      r->FillRect(pDrawStruct->rc, back_color);
+      r->FillRect(rect, back_color);
     }
-    if (!border_color.IsTransparnt()) {
-      r->StrokeRect(pDrawStruct->rc, border_color, m_border);
+    if (!border_color.IsTransparnt() && m_border > 0) {
+      r->StrokeRect(rect, border_color, m_border, m_border_dash);
     }
   } else {
     if (!back_color.IsTransparnt()) {
-      r->FillRoundRect(pDrawStruct->rc, back_color, m_radius);
+      r->FillRoundRect(rect, back_color, m_radius);
     }
-    if (!border_color.IsTransparnt()) {
-      r->StrokeRoundRect(pDrawStruct->rc, border_color, m_radius, m_border);
+    if (!border_color.IsTransparnt() && m_border > 0) {
+      r->StrokeRoundRect(rect, border_color, m_radius, m_border, m_border_dash);
     }
   }
 }

@@ -2,6 +2,7 @@
 #include "include/interface/icontrol.h"
 #include "include/interface/itextrenderbase.h"
 #include "include/macro/msg.h"
+#include "include/macro/vkey.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/rect.h"
 #include "src/attribute/attribute.h"
@@ -64,6 +65,10 @@ void Button::onRouteMessage(ui::Msg *msg) {
     onLButtonDown(static_cast<LButtonDownMessage*>(msg));
   } else if (msg->message == UI_MSG_LBUTTONUP) {
     onLButtonUp(static_cast<LButtonUpMessage*>(msg));
+  } else if (msg->message == UI_MSG_KEYDOWN) {
+    onKeyDown(static_cast<KeyDownMessage*>(msg));
+  } else if (msg->message == UI_MSG_KEYUP) {
+    onKeyUp(static_cast<KeyUpMessage*>(msg));
   }
   Control::onRouteMessage(msg);
 }
@@ -136,6 +141,39 @@ void Button::SetText(const char *text) {
 void Button::onTextChanged() {
 }
 
+void Button::onKeyDown(KeyDownMessage *msg) {
+  if (VKEY_SPACE == msg->key && IsEnable()) {
+    if (msg->flags != 0) {
+      return;
+    }
+
+    // windows控件在SPACE按下时，会去为Button窗口xxxBNSetCapture，
+    // 这样所有的鼠标消息都只跑到它里面来
+    SetForcePress(true, false);
+    Invalidate();
+
+    SetMouseCapture(0);
+  }
+}
+void Button::onKeyUp(KeyUpMessage *msg) {
+  if (VKEY_SPACE == msg->key && IsEnable() && IsForcePress()) {
+    SetForcePress(false, false);
+    ReleaseMouseCapture();
+
+#if 1 
+    // if (!IsKeyDown(VK_LBUTTON)) {  // TODO:
+      this->onClicked();
+    // }
+#elif 0 
+    // 有问题，此时mouse被capture了，不会更新hover/press
+    if (!IsPress()) {  
+      this->onClicked();
+    }
+#endif
+    Invalidate();
+  }
+}
+
 void Button::onClicked() {
   ButtonClickedEvent event;
   event.button = m_pIButton;
@@ -185,7 +223,6 @@ void Button::onPaint(IRenderTarget *r) {
   
   drawIcon(c);
   drawText(c);
-  drawFocus(c);
 }
 
 int Button::getDrawState() {
@@ -218,8 +255,14 @@ void Button::onPaintBkgnd(IRenderTarget* r) {
     return;
   }
   
+  int render_state = getDrawState();
   Rect rc = ui::Rect::MakeXYWH(0, 0, GetWidth(), GetHeight());
-  m_back_render->DrawState(r, &rc, getDrawState());
+  m_back_render->DrawState(r, &rc, render_state);
+
+  // draw focus;
+  if (IsFocus() && m_focus_render) {
+    m_focus_render->DrawState(r, &rc, render_state);
+  }
 }
 
 void Button::drawText(ButtonDrawContext& c) {
@@ -233,13 +276,7 @@ void Button::drawText(ButtonDrawContext& c) {
   }
 }
 void Button::drawIcon(ButtonDrawContext& c) {
-
-}
-void Button::drawFocus(ButtonDrawContext& c) {
-  if (!IsFocus() || !m_focus_render) {
-    return;
-  }
-  m_focus_render->DrawState(c.r, &c.bounds, c.render_state);
+  
 }
 
 void Button::onSerialize(SerializeParam *pData) {
@@ -267,7 +304,7 @@ void Button::onSerialize(SerializeParam *pData) {
       ->SetDefault(AlignLeft);
 
   s.AddInt(XML_BUTTON_ICON_TEXT_SPACE, m_icon_text_space);
-  s.AddRenderBase(XML_FUCOS_RENDER_PREFIX, this, m_focus_render);
+  s.AddRenderBase(XML_FUCOS_RENDER_PREFIX, m_focus_render);
 }
 
 void Button::onGetDesiredSize(Size *size) {

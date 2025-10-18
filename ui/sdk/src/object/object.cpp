@@ -38,20 +38,7 @@ using namespace ui;
 
 Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
   m_pIObject = p;
-  m_rcParent.SetEmpty();
-  m_rcExtNonClient.SetEmpty();
-  m_rcMargin.SetEmpty();
-  m_rcPadding.SetEmpty();
-  m_rcBorder.SetEmpty();
-
   // m_lCanRedrawRef = 0;
-  m_resource = nullptr;
-  m_ppOutRef = nullptr;
-
-  m_back_render = nullptr;
-  m_fore_render = nullptr;
-  m_text_render = nullptr;
-
   m_pIMapAttributeRemain = nullptr;
 #if 0 // defined(OS_WIN)
   m_pAccessible = nullptr;
@@ -1463,31 +1450,22 @@ Object *Object::GetObjectByPos(Point *pt) {
 }
 
 bool Object::SetMouseCapture(int nNotifyMsgId) {
-#if 0 // defined(OS_WIN)
-  WindowBase *pWindow = GetWindow();
-  if (!pWindow)
+  Window *window = GetWindow();
+  if (!window)
     return false;
 
-  pWindow->GetMouseMgr()->SetMouseCapture(m_pIObject, nNotifyMsgId);
+  window->SetMouseCapture(this);
   return true;
-#else
-  UIASSERT(false);
-  return false;
-#endif
 }
 bool Object::ReleaseMouseCapture() {
-#if 0 // defined(OS_WIN)
-  WindowBase *pWindow = GetWindow();
-  if (!pWindow)
+  Window *window = GetWindow();
+  if (!window)
     return false;
 
-  pWindow->GetMouseMgr()->ReleaseMouseCapture(m_pIObject);
+  window->ReleaseMouseCapture(this);
   return true;
-#else
-  UIASSERT(false);
-  return false;
-#endif
 }
+
 bool Object::SetKeyboardCapture(int nNotifyMsgId) {
 #if 0 // defined(OS_WIN)
   WindowBase *pWindow = GetWindow();

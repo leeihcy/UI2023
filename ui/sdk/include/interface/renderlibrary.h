@@ -305,11 +305,11 @@ struct IRenderTarget : public IClipOrigin {
                              Render2TargetParam *pParam) = 0;
 
   virtual void FillRect(const Rect &rc, const Color &color) = 0;
-  virtual void StrokeRect(const Rect &rc, const Color &color, int width) = 0;
+  virtual void StrokeRect(const Rect &rc, const Color &color, int width, bool dash) = 0;
   virtual void FillRoundRect(const Rect &rc, const Color &color,
                              const CornerRadius &radius) = 0;
   virtual void StrokeRoundRect(const Rect &rc, const Color &color,
-                               const CornerRadius &radius, int width) = 0;
+                               const CornerRadius &radius, int width, bool dash) = 0;
   // 使用shared_ptr，用于多线程传递参数。
   virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(const DrawTextParam &param) = 0;

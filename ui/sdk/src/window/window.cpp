@@ -445,4 +445,12 @@ void Window::SetWindowPos(int x, int y, int cx, int cy,
   // m_platform->GetClientRect(&m_rcParent);
 }
 
+void Window::SetMouseCapture(Object* obj) {
+  m_mouse_key.SetMouseCapture(obj);
+}
+void Window::ReleaseMouseCapture(Object* obj) {
+  m_mouse_key.ReleaseMouseCapture(obj);
+}
+
+
 } // namespace ui

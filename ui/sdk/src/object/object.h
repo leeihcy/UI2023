@@ -336,7 +336,7 @@ public:
 protected:
   IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
-  Resource *m_resource; 
+  Resource *m_resource = nullptr; 
 
   std::string m_strId; // 该对象在XML中的标识
 #ifdef EDITOR_MODE
@@ -347,15 +347,15 @@ protected:
 
 #pragma region //坐标相关数据
 // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
-  Rect m_rcParent; 
+  Rect m_rcParent = { 0 }; 
 
   // 扩展的非客户区，与border、padding共同做为对象的非客户区。
   // 对于窗口类型，这个值会动态计算，带上边框、标题栏范围。
-  Rect m_rcExtNonClient; 
+  Rect m_rcExtNonClient = { 0 }; 
 
-  Rect m_rcMargin;
-  Rect m_rcPadding;
-  Rect m_rcBorder;
+  Rect m_rcMargin = { 0 };
+  Rect m_rcPadding = { 0 };
+  Rect m_rcBorder = { 0 };
   // HRGN     m_hRgn;                  //
   // （未使用）如果该对象是一个不规则区域，必须设置该值，该值对window类型对象无效.
   // rgn是相对于窗口左上角的。
@@ -375,7 +375,7 @@ protected:
 #endif
   
   // 为了解决一个类成员对象，有可能被自己的父对象删除后，这个类却不知道，再删除该对象时崩溃了.
-  void ** m_ppOutRef; 
+  void ** m_ppOutRef = nullptr; 
 
   friend class ObjectAccessible;
 };

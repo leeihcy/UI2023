@@ -405,8 +405,7 @@ ColorAttribute *AttributeSerializer::AddColor(const char * key,
 }
 
 RenderBaseAttribute *
-AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
-                                   std::shared_ptr<IRenderBase> &pBindValue) {
+AttributeSerializer::AddRenderBase(const char *szPrefix, std::shared_ptr<IRenderBase> &pBindValue) {
   std::string strKey;
   if (szPrefix)
     strKey = szPrefix;
@@ -419,7 +418,6 @@ AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
     return nullptr;
 
   p->SetPrefix(szPrefix);
-  // p->SetObjectPtr(pObj);
 
   // 在editor中，动态修改render type不要清除属性。
   // 1. 属性可能共用一个key，如render.image=，即使换了type，属性也可以共享
@@ -433,7 +431,7 @@ AttributeSerializer::AddRenderBase(const char *szPrefix, Object *pObj,
 }
 
 TextRenderBaseAttribute *
-AttributeSerializer::AddTextRenderBase(const char *szPrefix, Object *pObj,
+AttributeSerializer::AddTextRenderBase(const char *szPrefix,
                                        std::shared_ptr<ITextRenderBase> &pBindValue) {
   std::string strKey;
   if (szPrefix)
@@ -447,7 +445,6 @@ AttributeSerializer::AddTextRenderBase(const char *szPrefix, Object *pObj,
     return nullptr;
 
   p->SetPrefix(szPrefix);
-  // p->SetObjectPtr(pObj);
   return p;
 }
 

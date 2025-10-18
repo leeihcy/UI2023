@@ -6,6 +6,7 @@
 #include "include/interface/renderlibrary.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
+#include "include/util/rect.h"
 #include "src/control/control.h"
 #include <shared_mutex>
 
@@ -19,50 +20,51 @@ public:
   IButton *GetIButton() { return m_pIButton; }
 
 public:
-  const char* GetText();
-  void SetText(const char* text);
+  const char *GetText();
+  void SetText(const char *text);
 
-	void  ModifyButtonStyle(ButtonStyle* add, ButtonStyle* remove);
-	bool  TestButtonStyle(const ButtonStyle& test);
-  
+  void ModifyButtonStyle(ButtonStyle *add, ButtonStyle *remove);
+  bool TestButtonStyle(const ButtonStyle &test);
+
   bool IsChecked() { return m_button_style.checked; }
 
 protected:
   struct ButtonDrawContext {
     IRenderTarget *r;
     int render_state;
-    ui::Rect bounds;  // 0,0,w,h
+    ui::Rect bounds; // 0,0,w,h
   };
-  void drawBackground(ButtonDrawContext& c);
-  void drawText(ButtonDrawContext& c);
-  void drawIcon(ButtonDrawContext& c);
-  void drawFocus(ButtonDrawContext& c);
+  void drawText(ButtonDrawContext &c);
+  void drawIcon(ButtonDrawContext &c);
   int getDrawState();
-  
+
 protected:
-  void onFinalConstruct(FinalConstructMessage* msg);
-  void onPaint(IRenderTarget* rt);
-  void onPaintBkgnd(IRenderTarget* rt);
+  void onFinalConstruct(FinalConstructMessage *msg);
+  void onPaint(IRenderTarget *rt);
+  void onPaintBkgnd(IRenderTarget *rt);
   void onSerialize(SerializeParam *pData);
   void onGetDesiredSize(Size *pSize);
-  void onStateChanged(StateChangedMessage* msg);
+  void onStateChanged(StateChangedMessage *msg);
   void onTextChanged();
-  void onLButtonDown(LButtonDownMessage* msg);
-  void onLButtonUp(LButtonUpMessage* msg);
+  void onLButtonDown(LButtonDownMessage *msg);
+  void onLButtonUp(LButtonUpMessage *msg);
   void onClicked();
+
+  void onKeyDown(KeyDownMessage* msg);
+  void onKeyUp(KeyUpMessage* msg);
 
 private:
   IButton *m_pIButton;
-  ButtonStyle  m_button_style;
+  ButtonStyle m_button_style;
 
-  std::string  m_text;  // utf8
+  std::string m_text; // utf8
 
   eButtonAutoSizeType m_auto_size_type = eButtonAutoSizeType::NotDefine;
   int m_icon_align = AlignLeft;
   int m_icon_text_space = 0;
 
-  std::shared_ptr<IRenderBase>  m_focus_render;
-  std::shared_ptr<IRenderBase>  m_default_render;
+  std::shared_ptr<IRenderBase> m_focus_render;
+  std::shared_ptr<IRenderBase> m_default_render;
 };
 
 } // namespace ui
