@@ -598,11 +598,9 @@ enum STYLE_SELECTOR_TYPE
 //////////////////////////////////////////////////////////////////////////
 // Button
 
-#define  XML_BUTTON_DEFPUSHBUTTON       "defpushbutton"    // 是否是默认按钮
-#define  XML_BUTTON_DRAW_FOCUS_TYPE     "drawfocus"        // 如何绘制焦点
-#define  XML_BUTTON_DRAW_FOCUS_TYPE_NONE   "none"        
-#define  XML_BUTTON_DRAW_FOCUS_TYPE_DOT    "dot"    
-#define  XML_BUTTON_HAND_CUROSR         "handcursor"       // 显示手型鼠标样式
+#define XML_BUTTON_DEFPUSHBUTTON       "defaultbutton"    // 作为当前窗口的默认按钮
+#define XML_BUTTON_AUTODEFAULT         "autodefault"      // 可以变成默认按钮
+#define XML_BUTTON_HAND_CUROSR         "handcursor"       // 显示手型鼠标样式
 
 typedef enum
 {

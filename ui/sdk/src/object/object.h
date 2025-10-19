@@ -46,6 +46,7 @@ public:
   Resource *GetResource();
   IResource *GetIResource();
   Window *GetWindow();
+  Message *GetWindow2();
   Object* GetRootObject();
 #if 0 // defined(OS_WIN)
   HWND GetHWND();

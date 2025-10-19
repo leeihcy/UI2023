@@ -1,4 +1,5 @@
 #include "button.h"
+#include "include/common/signalslot/slot.h"
 #include "include/interface/icontrol.h"
 #include "include/interface/itextrenderbase.h"
 #include "include/macro/msg.h"
@@ -7,6 +8,8 @@
 #include "include/util/rect.h"
 #include "src/attribute/attribute.h"
 #include "src/control/button/button_meta.h"
+#include "src/object/message.h"
+#include "src/object/object.h"
 
 namespace ui {
 
@@ -61,14 +64,24 @@ void Button::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
     onFinalConstruct(static_cast<FinalConstructMessage *>(msg));
     return;
-  } else if (msg->message == UI_MSG_LBUTTONDOWN) {
+  } else if (msg->message == UI_MSG_DOBINDPLZ) {
+    onBind();
+  } 
+  else if (msg->message == UI_MSG_LBUTTONDOWN) {
     onLButtonDown(static_cast<LButtonDownMessage*>(msg));
+    return;
   } else if (msg->message == UI_MSG_LBUTTONUP) {
     onLButtonUp(static_cast<LButtonUpMessage*>(msg));
+    return;
   } else if (msg->message == UI_MSG_KEYDOWN) {
     onKeyDown(static_cast<KeyDownMessage*>(msg));
+    return;
   } else if (msg->message == UI_MSG_KEYUP) {
     onKeyUp(static_cast<KeyUpMessage*>(msg));
+    return;
+  } else if (msg->message == UI_MSG_DEFAULTBUTTON_COMMAND) {
+    onClicked();
+    return;
   }
   Control::onRouteMessage(msg);
 }
@@ -80,6 +93,49 @@ void Button::onFinalConstruct(FinalConstructMessage *msg) {
   s.default_transparent = 1;          // 默认透明
 }
 
+void Button::onBind() {
+  // 检测自己是否是DefaultPushButton
+  if (m_button_style.default_button) {
+    setWindowDefaultButton();
+  }
+}
+
+void Button::onSerialize(SerializeParam *pData) {
+  Control::onSerialize(pData);
+
+  AttributeSerializer s(pData, "Button");
+  s.AddI18nString(XML_TEXT, m_text)->AsData();
+
+  s.AddEnum(XML_BUTTON_AUTOSIZE_TYPE, *(int *)&m_auto_size_type)
+      ->AddOption((int)eButtonAutoSizeType::NotDefine, "")
+      ->AddOption((int)eButtonAutoSizeType::Content,
+                  XML_BUTTON_AUTOSIZE_TYPE_CONTENT)
+      ->AddOption((int)eButtonAutoSizeType::BackImage,
+                  XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE)
+      ->AddOption((int)eButtonAutoSizeType::BackImageHeightAndContentWidth,
+                  XML_BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH)
+      ->SetDefault((int)eButtonAutoSizeType::NotDefine);
+
+  s.AddEnum(XML_BUTTON_ICON_ALIGN, *(int *)&m_icon_align)
+      ->AddOption(AlignLeft, XML_ALIGN_LEFT)
+      ->AddOption(AlignRight, XML_ALIGN_RIGHT)
+      ->AddOption(AlignTop, XML_ALIGN_TOP)
+      ->AddOption(AlignBottom, XML_ALIGN_BOTTOM)
+      ->AddOption(AlignCenter, XML_ALIGN_CENTER)
+      ->SetDefault(AlignLeft);
+
+  s.AddInt(XML_BUTTON_ICON_TEXT_SPACE, m_icon_text_space);
+  s.AddRenderBase(XML_FUCOS_RENDER_PREFIX, m_focus_render);
+
+  s.AddBool(XML_BUTTON_AUTODEFAULT,
+            ui::Slot(&Button::SetAutoDefault, this),
+            ui::Slot(&Button::IsAutoDefault, this))
+      ->SetDefault(false);
+  s.AddBool(XML_BUTTON_DEFPUSHBUTTON,
+            ui::Slot(&Button::SetDefaultPushButtonStyle, this),
+            ui::Slot(&Button::HasDefaultPushButtonStyle, this))
+      ->SetDefault(false);
+}
 
 void  Button::ModifyButtonStyle(ButtonStyle* add, ButtonStyle* remove)
 {
@@ -121,6 +177,30 @@ bool Button::TestButtonStyle(const ButtonStyle& test)
 	return true;
 }
 
+void Button::SetDefaultPushButtonStyle(bool b) {
+  m_button_style.default_button = b;
+  if (b) {
+    m_button_style.auto_default = true;
+  }
+}
+bool Button::HasDefaultPushButtonStyle() {
+  return m_button_style.default_button;
+}
+void Button::SetAutoDefault(bool b) {
+  m_button_style.auto_default = b;
+}
+bool Button::IsAutoDefault() {
+  return m_button_style.auto_default;
+}
+
+void Button::setWindowDefaultButton() {
+  Message* wnd = GetWindow2();
+  if (wnd) {
+    SetDefaultButtonMessage msg;
+    msg.default_button = m_pIButton;
+    wnd->RouteMessage(&msg);
+  }
+}
 
 const char *Button::GetText() { return m_text.c_str(); }
 void Button::SetText(const char *text) {
@@ -277,34 +357,6 @@ void Button::drawText(ButtonDrawContext& c) {
 }
 void Button::drawIcon(ButtonDrawContext& c) {
   
-}
-
-void Button::onSerialize(SerializeParam *pData) {
-  Control::onSerialize(pData);
-
-  AttributeSerializer s(pData, "Button");
-  s.AddI18nString(XML_TEXT, m_text)->AsData();
-
-  s.AddEnum(XML_BUTTON_AUTOSIZE_TYPE, *(int *)&m_auto_size_type)
-      ->AddOption((int)eButtonAutoSizeType::NotDefine, "")
-      ->AddOption((int)eButtonAutoSizeType::Content,
-                  XML_BUTTON_AUTOSIZE_TYPE_CONTENT)
-      ->AddOption((int)eButtonAutoSizeType::BackImage,
-                  XML_BUTTON_AUTOSIZE_TYPE_BKIMAGE)
-      ->AddOption((int)eButtonAutoSizeType::BackImageHeightAndContentWidth,
-                  XML_BUTTON_AUTOSIZE_TYPE_BKIMAGEHEIGHT_CONTENTWIDTH)
-      ->SetDefault((int)eButtonAutoSizeType::NotDefine);
-
-  s.AddEnum(XML_BUTTON_ICON_ALIGN, *(int *)&m_icon_align)
-      ->AddOption(AlignLeft, XML_ALIGN_LEFT)
-      ->AddOption(AlignRight, XML_ALIGN_RIGHT)
-      ->AddOption(AlignTop, XML_ALIGN_TOP)
-      ->AddOption(AlignBottom, XML_ALIGN_BOTTOM)
-      ->AddOption(AlignCenter, XML_ALIGN_CENTER)
-      ->SetDefault(AlignLeft);
-
-  s.AddInt(XML_BUTTON_ICON_TEXT_SPACE, m_icon_text_space);
-  s.AddRenderBase(XML_FUCOS_RENDER_PREFIX, m_focus_render);
 }
 
 void Button::onGetDesiredSize(Size *size) {

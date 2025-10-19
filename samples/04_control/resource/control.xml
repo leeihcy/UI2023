@@ -17,7 +17,7 @@
       </Panel>
       <Panel padding="10">
         <prop key="layout" type="horz" gap="10" left="0" right="0" top="300" height="400"/>
-        <Button id="btn_1" text="普通按钮" class="button button_default"/>
+        <Button id="btn_1" defaultbutton="1" text="普通按钮" class="button button_default"/>
         <Button id="btn_2" text="主要按钮" class="button button_primary"/>
         <Button id="btn_3" text="成功按钮" class="button button_success"/>
         <Button id="btn_4" text="信息按钮" class="button button_info"/>

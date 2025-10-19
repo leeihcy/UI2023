@@ -173,8 +173,12 @@ Window *Object::GetWindow() {
   // if (pWindow)
   //   return pWindow->GetImpl();
   // return nullptr;
-
 }
+
+Message *Object::GetWindow2() {
+  return static_cast<Message*>(GetWindow());
+}
+
 #if 0 // defined(OS_WIN)
 HWND Object::GetHWND() {
   WindowBase *pWindow = this->GetWindow();
@@ -603,7 +607,9 @@ void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
     __ADD(zindex_overlap);
     __ADD(noclip);
     __ADD(clip_client);
-    __ADD(tabstop);
+    __ADD(tabstop)
+    __ADD(want_tab)
+    __ADD(want_return)
 
     if (add->layer)
       m_objLayer.CreateLayer();
@@ -648,6 +654,8 @@ void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
     __REMOVE(noclip);
     __REMOVE(clip_client);
     __REMOVE(tabstop);
+    __REMOVE(want_tab)
+    __REMOVE(want_return)
 
     if (remove->layer) {
       m_objLayer.TryDestroyLayer();
@@ -696,6 +704,8 @@ bool Object::TestObjectStyle(const OBJSTYLE &test) {
   TEST(noclip);
   TEST(clip_client);
   TEST(tabstop);
+  TEST(want_tab);
+  TEST(want_return);
   TEST(layer);
 
   return true;

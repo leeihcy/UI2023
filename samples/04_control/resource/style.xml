@@ -17,7 +17,7 @@
     <class id="button_default" 
       back.render.color="#fff;#ecf5ff;#fff" 
       back.render.border.width="1"
-      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6"
+      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6;;#0000ff"
       back.render.radius="4"
       text.render.color="#606266;#409eff;#409eff"
       />

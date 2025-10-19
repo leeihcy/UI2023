@@ -27,6 +27,10 @@ public:
   bool TestButtonStyle(const ButtonStyle &test);
 
   bool IsChecked() { return m_button_style.checked; }
+  void SetDefaultPushButtonStyle(bool);
+  bool HasDefaultPushButtonStyle();
+  void SetAutoDefault(bool);
+  bool IsAutoDefault();
 
 protected:
   struct ButtonDrawContext {
@@ -40,6 +44,7 @@ protected:
 
 protected:
   void onFinalConstruct(FinalConstructMessage *msg);
+  void onBind();
   void onPaint(IRenderTarget *rt);
   void onPaintBkgnd(IRenderTarget *rt);
   void onSerialize(SerializeParam *pData);
@@ -52,6 +57,8 @@ protected:
 
   void onKeyDown(KeyDownMessage* msg);
   void onKeyUp(KeyUpMessage* msg);
+  
+  void setWindowDefaultButton();
 
 private:
   IButton *m_pIButton;

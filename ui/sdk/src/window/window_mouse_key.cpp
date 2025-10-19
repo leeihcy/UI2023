@@ -1,7 +1,12 @@
 #include "window_mouse_key.h"
+#include "include/interface/icontrol.h"
+#include "include/interface/iobject.h"
 #include "include/macro/msg.h"
+#include "include/macro/vkey.h"
 #include "include/macro/uidefine.h"
 #include "include/util/rect.h"
+#include "src/control/button/button_meta.h"
+#include "src/control/button/button.h"
 #include "src/render/textrender/textrender.h"
 #include "window.h"
 #include "src/panel/root_object.h"
@@ -421,6 +426,10 @@ void WindowMouseKey::OnLButtonDown(int x, int y) {
     return;
   }
 
+  if (m_pObjHover) {
+    checkDefPushButton(m_pObjHover);
+  }
+
   // TODO: 事件冒泡逻辑？
   // LButtonDownEvent event;
   // event.obj = m_window.GetRootObject().GetIObject();
@@ -726,7 +735,7 @@ void WindowMouseKey::SetFocusObjectDirect(Object *pObj) {
 
 Object *WindowMouseKey::GetFocusObject() { return m_pFocusObject; }
 
-void WindowMouseKey::SetDefaultObject(Object *pObj, bool bUpdate) {
+void WindowMouseKey::SetDefaultObject(Button *pObj, bool bUpdate) {
   if (pObj == m_pObjDefault)
     return;
 
@@ -739,9 +748,12 @@ void WindowMouseKey::SetDefaultObject(Object *pObj, bool bUpdate) {
     m_pObjDefault->SetDefault(true, bUpdate);
 }
 
-Object *WindowMouseKey::GetOriginDefaultObject() { return m_pObjOriginDefault; }
-void WindowMouseKey::SetOriginDefaultObject(Object *pObj) {
+Button *WindowMouseKey::GetOriginDefaultObject() { return m_pObjOriginDefault; }
+void WindowMouseKey::SetOriginDefaultObject(Button *pObj) {
   m_pObjOriginDefault = pObj;
+  if (m_pObjOriginDefault && nullptr == m_pObjDefault) {
+    SetDefaultObject(m_pObjOriginDefault, true);
+  }
 }
 Object *WindowMouseKey::GetDefaultObject() { return m_pObjDefault; }
 
@@ -842,6 +854,10 @@ void  WindowMouseKey::updateImeStatus()
 }
 
 bool WindowMouseKey::OnKeyDown(int key, int flags) {
+  if (isDialogKeyDownMessage(key, flags)) {
+    return true;
+  }
+
   if (this->m_pFocusObject) {
     KeyDownMessage msg;
     msg.key = key;
@@ -849,6 +865,7 @@ bool WindowMouseKey::OnKeyDown(int key, int flags) {
     m_pFocusObject->RouteMessage(&msg);
     return true;
   }
+
   return false;
 }
 
@@ -861,6 +878,55 @@ bool WindowMouseKey::OnKeyUp(int key, int flags) {
     return true;
   }
 
+  return false;
+}
+
+// TAB、RETURN 两个按键逻辑处理，切换Focus、Default Push Button
+bool WindowMouseKey::isDialogKeyDownMessage(int key, int flags) {
+  if (VKEY_TAB == key) {
+#if 0 // TODO:
+    if (!IsWindowEnabled(m_oWindow.m_hWnd))
+      return false;
+#endif
+
+#if defined(OS_WIN)
+    // LRESULT lRet = SendMessage(m_oWindow.m_hWnd, WM_QUERYUISTATE, 0, 0);
+    // if (lRet & UISF_HIDEFOCUS) {
+    //   lRet &= ~UISF_HIDEFOCUS;
+    //   SendMessage(m_oWindow.m_hWnd, WM_UPDATEUISTATE, lRet | UIS_SET, 0);
+    // }
+#endif
+
+    OBJSTYLE style = {0};
+    style.want_tab = 1;
+    if (m_pFocusObject && m_pFocusObject->TestObjectStyle(style)) {
+        return false;
+    }
+
+    // 导航
+    if (flags & VKEY_FLAG_SHIFT) {
+      tabToPrevControl();
+    } else {
+      tabToNextControl();
+    }
+    return true;
+  } else if (VKEY_RETURN == key || VKEY_EXECUTE == key) {
+    OBJSTYLE style;
+    style.want_return = 1;
+    if (m_pFocusObject && m_pFocusObject->TestObjectStyle(style)) {
+      // 例如在多行编辑框中回车
+      return false;
+    }
+
+    // Windows的做法是给窗口发送一个WM_COMMAND( id, hwnd )的消息
+    // 查找default button，发送给defpushbutton
+    if (m_pObjDefault && m_pObjDefault->IsEnable() &&
+        m_pObjDefault->IsVisible()) {
+      DefaultButtonReturnMessage msg;
+      m_pObjDefault->RouteMessage(&msg);
+      return true;
+    }
+  }
   return false;
 }
 
@@ -940,40 +1006,33 @@ bool  WindowMouseMgr::AdjustDoubleClickMessage(LPARAM l)
 
 #endif
 
+void WindowMouseKey::tabToNextControl() {
+  Object *p = m_pFocusObject;
+  if (!p)
+    p = &m_window.GetRootObject();
 
-void WindowMouseKey::tabToNextControl()
-{
-    Object* p = m_pFocusObject;
-    if (!p)
-        p = &m_window.GetRootObject();
+  if (!p)
+    return;
 
-    if (!p)
-        return;
+  p = p->GetNextTabObject();
 
-    p = p->GetNextTabObject();
-
-    if (p)
-    {
-        checkDefPushButton(p);
-        SetFocusObject(p);
-    }
+  if (p) {
+    checkDefPushButton(p);
+    SetFocusObject(p);
+  }
 }
-void WindowMouseKey::tabToPrevControl()
-{
-    Object* p = m_pFocusObject;
-    if (nullptr == p)
-    {
-        p = &m_window.GetRootObject();
-    }
-    p = p->GetPrevTabObject();
+void WindowMouseKey::tabToPrevControl() {
+  Object *p = m_pFocusObject;
+  if (nullptr == p) {
+    p = &m_window.GetRootObject();
+  }
+  p = p->GetPrevTabObject();
 
-    if (p)
-    {
-        checkDefPushButton(p);
-        SetFocusObject(p);
-    }
+  if (p) {
+    checkDefPushButton(p);
+    SetFocusObject(p);
+  }
 }
-
 
 /*
 Code                   Meaning
@@ -992,55 +1051,52 @@ DLGC_WANTMESSAGE       Control processes the message in the MSG structure that l
 DLGC_WANTTAB           Control processes the TAB key.
 */
 
-void WindowMouseKey::checkDefPushButton(Object* pNewObj)
-{
-    if (nullptr == pNewObj)
-        return;
-#if 0
-	LONG_PTR codeNewFocus = UISendMessage(pNewObj->GetIObject(), WM_GETDLGCODE);
+void WindowMouseKey::checkDefPushButton(Object *pNewObj) {
+  if (nullptr == pNewObj || m_pObjDefault == pNewObj) {
+    return;
+  }
 
-    if (pNewObj == m_pFocusObject)
-    {
-        if (codeNewFocus & DLGC_UNDEFPUSHBUTTON)
-        {
-            SetDefaultObject(pNewObj, true);
-        }
-        return;
+  IButton *p = (IButton *)pNewObj->QueryInterface(IButton::UUID());
+  if (!p) {
+    return;
+  }
+  Button *new_button = p->GetImpl();
+
+  ButtonStyle button_style = {0};
+  button_style.auto_default = 1;
+  bool new_button_auto_default = new_button->IsAutoDefault();
+
+  if (pNewObj == m_pFocusObject) {
+    if (new_button_auto_default) {
+      SetDefaultObject(new_button, true);
     }
+    return;
+  }
 
-    if (codeNewFocus & DLGC_DEFPUSHBUTTON)
-        return;
+  Button *pLastDefaultObj = m_pObjDefault; // 用于计算最终defbtn
 
-    Object* pLastDefaultObj = m_pObjDefault; // 用于计算最终defbtn
-
-    /*
-     * If the focus is changing to or from a pushbutton, then remove the
-     * default style from the current default button
-     */
-    if ((m_pFocusObject != nullptr && (UISendMessage(m_pFocusObject, WM_GETDLGCODE) & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON))) ||
-        (pNewObj != nullptr && (codeNewFocus & (DLGC_DEFPUSHBUTTON | DLGC_UNDEFPUSHBUTTON))))
-    {
-        pLastDefaultObj = nullptr;
+  /*
+   * If the focus is changing to or from a pushbutton, then remove the
+   * default style from the current default button
+   */
+  bool focus_auto_default = false;
+  if (m_pFocusObject) {
+    IButton* focus_button = (IButton*)m_pFocusObject->QueryInterface(IButton::UUID());
+    if (focus_button) {
+      focus_auto_default = focus_button->GetImpl()->IsAutoDefault();
     }
+  }
+  if (focus_auto_default || new_button_auto_default) {
+    pLastDefaultObj = nullptr;
+  }
 
-    /*
-     * If moving to a button, make that button the default.
-     */
-    if (codeNewFocus & DLGC_UNDEFPUSHBUTTON)
-    {
-        pLastDefaultObj = pNewObj;
-    }
-    else
-    {
-        /*
-         * Otherwise, make sure the original default button is default
-         * and no others.
-         */
-        pLastDefaultObj = m_pObjOriginDefault;
-    }
+  if (new_button_auto_default) {
+    pLastDefaultObj = new_button;
+  } else {
+    pLastDefaultObj = m_pObjOriginDefault;
+  }
 
-    SetDefaultObject(pLastDefaultObj, true);
-#endif
+  SetDefaultObject(pLastDefaultObj, true);
 }
 
 void WindowMouseKey::SetMouseCapture(Object *obj) { m_pObjMouseCapture = obj; }

@@ -36,4 +36,8 @@ void IControl::TryUpdateLayoutOnContentChanged() {
   __pImpl->TryUpdateLayoutOnContentChanged();
 }
 
+bool IButton::TestButtonStyle(const ButtonStyle &test) {
+  return __pImpl->TestButtonStyle(test);
+}
+
 } // namespace ui

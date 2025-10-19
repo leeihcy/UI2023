@@ -27,13 +27,7 @@ void IMessage::RouteMessage(int message) { m_pImpl->RouteMessage(message); }
 void IMessage::RouteMessage(Msg *msg) { m_pImpl->RouteMessage(msg); }
 
 void *IMessage::QueryInterface(const Uuid &iid) {
-  void *result = nullptr;
-  QueryInterfaceMessage msg;
-  msg.uuid = iid;
-  msg.pp = &result;
-
-  RouteMessage(&msg);
-  return result;
+   return m_pImpl->QueryInterface(iid);
 }
 
 MessageProxy::MessageProxy(IMessage *p) : m_pImpl(p->GetImpl()) {}

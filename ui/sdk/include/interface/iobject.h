@@ -15,10 +15,11 @@ struct ILayoutParam;
 struct LayerAnimateParam;
 
 typedef struct tagObjStyle {
-  bool initialized : 1; // 已初始化完成，接收过了init通知
+  // 已初始化完成，接收过了init通知
+  bool initialized : 1; 
   bool transparent : 1;
-  bool
-      float_on_parent_content : 1; // 在刷新该控件时，不仅仅需要重绘父对象背景(wm_erasebkgbkgnd)，还要重绘父对象内容(wm_paint)
+  // 在刷新该控件时，不仅仅需要重绘父对象背景(wm_erasebkgbkgnd)，还要重绘父对象内容(wm_paint)
+  bool float_on_parent_content : 1; 
   bool post_paint : 1;
   bool hscroll : 1;
   bool vscroll : 1;
@@ -29,22 +30,31 @@ typedef struct tagObjStyle {
   bool enable_ime : 1;
   bool zindex_overlap : 1;
   bool noclip : 1;
-  bool
-      clip_client : 1; // 绘制完对象的背景后，再绘制对象的client区域时，是否需要对client区域作剪裁。（一般的对象不做，但对于会滚动的listctrl则需要剪裁，否则滚动的内容会超出来覆盖背景
+  // 绘制完对象的背景后，再绘制对象的client区域时，是否需要对client区域作剪裁。
+  // （一般的对象不做，但对于会滚动的listctrl则需要剪裁，否则滚动的内容会超出来覆盖背景
+  bool clip_client : 1;
+  // 可使用tab切换焦点的控件
   bool tabstop : 1;
-  bool layer; // 开启分层
+  // 当前focus控件需要自己处理tab key事件，不要切下个focus object
+  bool want_tab : 1;
+  // 当前focus控件需要自己处理回车事件，不要处理default push button
+  bool want_return : 1;
+  // 开启分层
+  bool layer : 1; 
 
   // 默认值字段。用于派生类覆盖父类的默认行为
   // 可以考虑专门为default也构造一个同样的tagObjStyle，用于对应每一个样式的默认值
   bool default_ncobject : 1; // scrollbar默认为ncobj
-  bool
-      default_reject_all_mouse_msg : 1; // 默认该控件就不接收鼠标消息。如panel/label
+  // 默认该控件就不接收鼠标消息。如panel/label
+  bool default_reject_all_mouse_msg : 1; 
   bool default_reject_self_mouse_msg : 1;
-  bool
-      default_transparent : 1; // 该控件默认是透明的。默认所有的控件不透明，用于提升绘制效率
-  bool default_tabstop : 1; // 默认该控件能否tabstop
+  // 该控件默认是透明的。默认所有的控件不透明，用于提升绘制效率
+  bool default_transparent : 1; 
+  // 默认该控件能否tabstop
+  bool default_tabstop : 1; 
 
 } OBJSTYLE;
+
 typedef struct tagObjState {
   unsigned char visibility_ : 2; // 0:collapsed 1:visible 2:hidden
   bool disable : 1;

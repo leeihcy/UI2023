@@ -12,6 +12,7 @@ struct IMeta;
 struct IResource;
 struct IRenderTarget;
 struct ILayout;
+struct IButton;
 
 #define UI_MSG_FINALCONSTRUCT 168252120
 struct FinalConstructMessage : public Msg {
@@ -417,6 +418,24 @@ struct KeyUpMessage : public ui::Msg {
   }
   int key = 0;
   int flags = 0;
+};
+
+
+// 回车，作用到了默认按钮上面
+#define UI_MSG_DEFAULTBUTTON_COMMAND  169281816
+struct DefaultButtonReturnMessage : public ui::Msg {
+  DefaultButtonReturnMessage() {
+    message = UI_MSG_DEFAULTBUTTON_COMMAND;
+  }
+};
+
+// 申请成员窗口默认按钮
+#define UI_MSG_SETDEFAULTBUTTON 250190916
+struct SetDefaultButtonMessage : public ui::Msg {
+  SetDefaultButtonMessage() {
+    message = UI_MSG_SETDEFAULTBUTTON;
+  }
+  IButton* default_button;
 };
 
 #if 0

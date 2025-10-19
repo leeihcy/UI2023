@@ -15,6 +15,7 @@ public:
   virtual ~Message();
 
   IMessage *GetIMessage();
+  void* QueryInterface(const Uuid &iid);
 
   void connect(const char* event_name, slot<void(Event*)>&& s);
   void emit(const char* event_name, Event* event);

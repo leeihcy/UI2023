@@ -110,14 +110,14 @@ private:
   // prop
 
 private:
-  void  recursion_on_load_notify(Object* pParent);
+  void recursion_on_load_notify(Object* pParent);
 
   void postCreate(CreateWindowParam& param);
 
 protected:
   void FinalConstruct(FinalConstructMessage *msg);
   void onSerialize(SerializeParam *pData);
-
+  
 public:
   WindowStyle& GetWindowStyle() { return m_window_style; }
 

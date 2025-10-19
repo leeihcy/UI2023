@@ -5,6 +5,7 @@
 #include "include/macro/msg.h"
 #include "include/util/log.h"
 #include "include/util/rect.h"
+#include "include/interface/icontrol.h"
 #include "src/application/config/config.h"
 #include "src/application/uiapplication.h"
 #include "src/layout/desktop_layout.h"
@@ -62,6 +63,13 @@ void Window::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_SERIALIZE) {
     auto *m = static_cast<SerializeMessage *>(msg);
     onSerialize(m->param);
+    return;
+  }
+  if (msg->message == UI_MSG_SETDEFAULTBUTTON) {
+    IButton *btn = static_cast<SetDefaultButtonMessage *>(msg)->default_button;
+    if (btn) {
+      m_mouse_key.SetOriginDefaultObject(btn->GetImpl());
+    }
     return;
   }
   // if (msg->message == UI_MSG_GETDESIREDSIZE) {

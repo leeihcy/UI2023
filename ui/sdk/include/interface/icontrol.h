@@ -39,7 +39,9 @@ struct UIAPI ILabel : public IControl {
 };
 
 struct ButtonStyle {
-  bool default_push_button : 1; // 可以成为默认按钮
+  bool auto_default : 1;        // 可以成为默认按钮，例如使用Tab切换得到焦点时成为默认按钮。
+  bool default_button : 1;      // 窗口的原始默认按钮
+
   bool click_on_pushdown : 1;   // 当鼠标按下时就触发click，而不是鼠标弹起时触发
   bool notify_hoverleave : 1;   // 鼠标移入移出时，发出通知
   bool hand_cursor : 1;         // 使用手型鼠标
@@ -50,6 +52,7 @@ struct ButtonStyle {
 class Button;
 struct UIAPI IButton : public IControl {
    UI_DECLARE_INTERFACE(Button);
+   bool TestButtonStyle(const ButtonStyle &test);
 };
 
 #define BUTTON_CLICK_EVENT "clicked"

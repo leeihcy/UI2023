@@ -35,6 +35,16 @@ void Message::onRouteMessage(ui::Msg *msg) {
   }
 }
 
+void *Message::QueryInterface(const Uuid &iid) {
+  void *result = nullptr;
+  QueryInterfaceMessage msg;
+  msg.uuid = iid;
+  msg.pp = &result;
+
+  RouteMessage(&msg);
+  return result;
+}
+
 void Message::connect(const char *event_name, slot<void(Event *)> &&s) {
   if (!event_name || !event_name[0]) {
     return;

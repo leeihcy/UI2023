@@ -6,6 +6,7 @@ namespace ui
 class Window;
 class Object;
 struct Point;
+class Button;
 
 struct GetObjectByPosExData
 {
@@ -47,6 +48,7 @@ private:
   void tabToPrevControl();
   void tabToNextControl();
   void checkDefPushButton(Object* pNewObj);
+  bool isDialogKeyDownMessage(int key, int flags);
 
 private:
   void updateImeStatus();
@@ -63,16 +65,16 @@ public:
   Object *GetFocusObject();
   Object *GetDefaultObject();
   Object *GetOldFocusObject(bool bRemove = true);
-  Object *GetOriginDefaultObject();
+  Button *GetOriginDefaultObject();
 
   void SetFocusObject(Object *pObj);
-  void SetDefaultObject(Object *pObj, bool bUpdate);
+  void SetDefaultObject(Button *pObj, bool bUpdate);
   void SetHoverObject(Object *pNewHoverObj);
   void SetPressObject(Object *pNewPressObj);
   void SetHoverObjectDirectNULL();
   void SetPressObjectDirectNULL();
   void SetFocusObjectDirect(Object *pObj);
-  void SetOriginDefaultObject(Object *pObj);
+  void SetOriginDefaultObject(Button *pObj);
 
   void OnObjectVisibleChangeInd(Object *pObj, bool bVisible);
   void OnObjectRemoveInd(Object *pObj);
@@ -100,9 +102,9 @@ private:
   Object *m_pFocusObject = nullptr;
 
   // 当前default button
-  Object *m_pObjDefault = nullptr;
+  Button *m_pObjDefault = nullptr;
   // 原始的default button，没有defbtn时，系统将把default属性设置到该对象上面。
-  Object *m_pObjOriginDefault = nullptr;
+  Button *m_pObjOriginDefault = nullptr;
 
   // 用于解决经常会出现的场景：还没使用MOUSEMOVE获取hover obj，就收到了一个BUTTONDOWN的消息，
   // 导致消息响应失败。例如手动发送一个MOUSEMOVE或者按下ALT键导致的MouseLeave
