@@ -1,11 +1,16 @@
 config("compiler_defaults") {
   defines = []
   cflags = []
+  cflags_cc = []
+  cflags_objcc = []
 
-  if (is_win) { # TODO: msvc
-    cflags += ["/std:c++20"]
+  if (is_win) {
+    cflags_cc += ["/std:c++20"]
+    cflags += [ "/std:c11" ]
   } else {
-    cflags = ["-std=c++20"]
+    cflags += [ "-std=c11" ]   
+    cflags_cc += [ "-std=c++20" ]
+    cflags_objcc += ["-std=c++20"]
   }
 
   if (is_win) {

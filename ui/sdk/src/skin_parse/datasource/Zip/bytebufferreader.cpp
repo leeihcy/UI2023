@@ -1,5 +1,5 @@
 #include "include/inc.h"
-#include "ByteBufferReader.h"
+#include "bytebufferreader.h"
 #include <fstream>
 
 ByteBufferReader::ByteBufferReader()
@@ -44,19 +44,19 @@ int   ByteBufferReader::read(char* pread, int nread)
     m_pcur += ncanread;
     return ncanread;
 }
-void  ByteBufferReader::seek(int npos, ios_base::seek_dir dir)
+void  ByteBufferReader::seek(int npos, std::ios::seekdir dir)
 {
     switch (dir)
     {
-    case ios_base::cur:
+    case std::ios::seekdir::cur:
         m_pcur += npos;
         break;
 
-    case ios_base::beg:
+    case std::ios::seekdir::beg:
         m_pcur = m_pdata + npos;
         break;
 
-    case ios_base::end:
+    case std::ios::seekdir::end:
         m_pcur = m_pend - npos;
         break;
     }
@@ -82,13 +82,13 @@ bool  ByteBufferReader::load(const byte* pdata, int nsize, bool bdeletedata)
     return true;
 }
 
-bool  ByteBufferReader::save(const wchar_t* szPath)
+bool  ByteBufferReader::save(const char* szPath)
 {
     if (!szPath)
         return false;
 
-    fstream f;
-    f.open(szPath, ios_base::out|ios_base::binary);
+    std::fstream f;
+    f.open(szPath, std::ios::out|std::ios::binary);
     if (f.fail())
         return false;
 

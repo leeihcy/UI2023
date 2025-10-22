@@ -27,10 +27,10 @@ namespace ui
 #define XML_BOOL_VALUE_TRUE       "true"
 #define XML_BOOL_VALUE_FALSE      "false"
 
-// #define XML_UI_XMLFILE_EXT   ".ui"          // 工程描述文件的后缀名
+// #define XML_UI_XMLFILE_EXT   ".ui"        // 工程描述文件的后缀名
 #define XML_SKIN_XML              "skin.xml"
 #define XML_RESOURCE_XML          "resource.xml"
-#define XML_SKIN_PACKET_EXT       "skn"        // 皮肤包后缀名
+#define XML_SKIN_PACKET_EXT       "zip"      // 皮肤包后缀名
 
 #define XML_UI               "ui"            // root
 #define XML_RESOURCE         "resource"      // root

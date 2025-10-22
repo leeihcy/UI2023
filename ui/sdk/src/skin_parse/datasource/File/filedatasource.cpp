@@ -3,7 +3,7 @@
 // #include "src/Atl\image.h"
 #include "include/util/path.h"
 #include "sdk/include/macro/helper.h"
-#include "src/skin_parse/datasource/File/filebufferreader.h"
+#include "src/skin_parse/datasource/file/filebufferreader.h"
 #include "src/skin_parse/xml/xmlwrap.h"
 #include "src/util/util.h"
 #include <fstream>

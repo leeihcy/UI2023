@@ -1,8 +1,8 @@
 #include "skindatasource.h"
-// #include "Zip/zipdatasource.h"
-#include "File/filedatasource.h"
+#include "zip/zipdatasource.h"
+#include "file/filedatasource.h"
 // #include "Zip/bytebufferreader.h"
-#include "File/filebufferreader.h"
+#include "file/filebufferreader.h"
 #include "include/interface/iskindatasource.h"
 #include "sdk/include/macro/helper.h"
 
@@ -20,11 +20,7 @@ void CreateDataSourceInstance(eResourceFormat e, SkinDataSource **pp) {
 
   case eResourceFormat::Zip:
   case eResourceFormat::Bundle: {
-#if 0
-			p = ZipDataSource::Create();
-#else
-    UIASSERT(false);
-#endif
+    p = ZipDataSource::Create();
   } break;
   }
 

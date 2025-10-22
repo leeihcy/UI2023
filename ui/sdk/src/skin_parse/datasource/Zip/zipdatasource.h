@@ -1,44 +1,47 @@
-#pragma once
+#ifndef _UI_SDK_SRC_SKINPARSE_DATASOURCE_ZIP_ZIPDATASOURCE_H_
+#define _UI_SDK_SRC_SKINPARSE_DATASOURCE_ZIP_ZIPDATASOURCE_H_
+
 #include "include/interface/iskindatasource.h"
-// #include "../3rd/zip/unzip.h"
-#include "../skindatasource.h"
+#include "src/skin_parse/datasource/skindatasource.h"
+#include "3rd/zlib/contrib/minizip/unzip.h"
 
-namespace ui
-{
+namespace ui {
 
-class ZipDataSource : public SkinDataSource
-{
+class ZipDataSource : public SkinDataSource {
 public:
-    ZipDataSource();
-    ~ZipDataSource();
+  ZipDataSource();
+  ~ZipDataSource();
 
-	static ZipDataSource*  Create();
-    
-	virtual void  Release() override;
-	virtual ISkinDataSource*  GetISkinDataSource() override;
+  static ZipDataSource *Create();
 
-    void  SetPath(const wchar_t* szPath);
-	const wchar_t*  GetPath();
-	void  SetData(byte* data, int size);
+  virtual void Release() override;
+  virtual ISkinDataSource *GetISkinDataSource() override;
 
-    eResourceFormat  GetType();
+  void SetPath(const char *szPath) override;
+  const char *GetPath() override;
+  void SetData(byte *data, int size) override;
 
-    bool  Load_UIDocument(UIDocument* pDocument, const wchar_t* szPath);
-    bool  Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e);
-    bool  Load_Image(const wchar_t* szPath, ImageWrap* pImage);
-    bool  Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadWrap* pImage);
-    bool  Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReader** pp);
-	bool  FileExist(const wchar_t* szPath);
-	
-private:
-    void  TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPath);
-	bool  Init();
+  eResourceFormat GetType() override;
+
+  bool Load_UIDocument(UIDocument *pDocument, const char *szPath) override;
+  bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *szPath,
+                         RENDER_BITMAP_LOAD_FLAG e) override;
+  bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
+  bool FileExist(const char *szPath) override;
+  bool Load(const char* szPath, slot<void(const char*)>&& callback) override { return false; }
 
 private:
-    std::string  m_strPath;
+  void TranslatePath(const char *szOrignPath, char *szLastPath);
+  bool Init();
 
-    HZIP  m_hZip;
-	ISkinDataSource  m_ISkinDataSource;
+  bool unzip_path(const char* path, std::vector<byte>& buffer);
+
+private:
+  std::string m_strPath;
+  ISkinDataSource m_ISkinDataSource;
+
+  unzFile m_unzip;
 };
 
-}
+} // namespace ui
+#endif

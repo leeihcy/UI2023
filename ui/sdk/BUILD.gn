@@ -2,6 +2,24 @@ declare_args() {
   enable_python = true
 }
 
+source_set("source_zlib") {
+  sources = [
+    "//ui/3rd/zlib/inflate.c",
+    "//ui/3rd/zlib/inflate.h",
+    "//ui/3rd/zlib/adler32.c",
+    "//ui/3rd/zlib/zutil.c",
+    "//ui/3rd/zlib/inffast.c",
+    "//ui/3rd/zlib/crc32.c",
+    "//ui/3rd/zlib/inftrees.c",
+
+    "//ui/3rd/zlib/contrib/minizip/unzip.h",
+    "//ui/3rd/zlib/contrib/minizip/unzip.c",
+    "//ui/3rd/zlib/contrib/minizip/ioapi.c",
+    "//ui/3rd/zlib/contrib/minizip/ioapi.h",
+    "//ui/3rd/zlib/contrib/minizip/crypt.h",
+  ]
+}
+
 shared_library("uisdk") {
   output_dir = "$root_out_dir/bin"
 
@@ -27,7 +45,8 @@ shared_library("uisdk") {
     defines = ["UI_EXPORTS"]
     deps = [
       "//ui/gpu:uigpu",
-      ":copy_skia"
+      ":copy_skia",
+      ":source_zlib",
     ]
 
     include_dirs = [
@@ -222,8 +241,12 @@ shared_library("uisdk") {
         "src/thread/render_thread.h",
         "src/thread/paint_op.cpp",
         "src/thread/paint_op.h",
-        "src/skin_parse/datasource/File/filedatasource.cpp",
-        "src/skin_parse/datasource/File/filebufferreader.cpp",
+        "src/skin_parse/datasource/file/filedatasource.cpp",
+        "src/skin_parse/datasource/file/filebufferreader.cpp",
+        "src/skin_parse/datasource/zip/zipdatasource.cpp",
+        "src/skin_parse/datasource/zip/zipdatasource.h",
+        "src/skin_parse/datasource/zip/bytebufferreader.cpp",
+        "src/skin_parse/datasource/zip/bytebufferreader.h",
         "src/skin_parse/datasource/skindatasource.cpp",
         "src/skin_parse/mapattr/mapattr.cpp",
         "src/skin_parse/skinparseengine.cpp",

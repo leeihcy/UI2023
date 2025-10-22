@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _UI_SDK_SRC_SKINPARSE_DATASOURCE_SKINDATASOURCE_H_
+#define _UI_SDK_SRC_SKINPARSE_DATASOURCE_SKINDATASOURCE_H_
+
 #include "include/interface/iskindatasource.h"
 #include "include/interface/renderlibrary.h"
 #include "include/common/signalslot/slot.h"
@@ -37,3 +39,4 @@ void  CreateStreamBuffer(eStreamType e, IStreamBufferReader** pp);
 
 
 }
+#endif

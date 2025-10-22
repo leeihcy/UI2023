@@ -1,282 +1,188 @@
-#include "include/inc.h"
 #include "zipdatasource.h"
-#include "Inc\Util\iimage.h"
-#include "src/Atl\image.h"
-#include "src/skin_parse/datasource/Zip\bytebufferreader.h"
-#include "src/SkinParse\xml\xmlwrap.h"
+#include "include/inc.h"
+#include "include/macro/helper.h"
+#include "include/util/log.h"
+#include "src/skin_parse/datasource/zip/bytebufferreader.h"
+#include "src/skin_parse/xml/xmlwrap.h"
+#include <vector>
+#define MAX_PATH 256
 
-namespace ui
-{
+namespace ui {
 
-ZipDataSource::ZipDataSource() : m_ISkinDataSource(this)
-{
-    m_hZip = nullptr;
+ZipDataSource::ZipDataSource()
+    : m_ISkinDataSource(static_cast<SkinDataSource *>(this)) {
+  m_unzip = 0;
 }
-ZipDataSource::~ZipDataSource()
-{
-    if (m_hZip)
-    {
-        CloseZip(m_hZip);
-        m_hZip = nullptr;
+
+ZipDataSource::~ZipDataSource() {
+  if (m_unzip) {
+    unzClose(m_unzip);
+    m_unzip = nullptr;
+  }
+}
+
+ZipDataSource *ZipDataSource::Create() { return new ZipDataSource(); }
+void ZipDataSource::Release() { delete this; }
+ISkinDataSource *ZipDataSource::GetISkinDataSource() {
+  return &m_ISkinDataSource;
+}
+
+eResourceFormat ZipDataSource::GetType() { return eResourceFormat::Zip; }
+
+void ZipDataSource::SetPath(const char *szPath) {
+  if (szPath)
+    m_strPath = szPath;
+  else
+    m_strPath.clear();
+}
+const char *ZipDataSource::GetPath() { return m_strPath.c_str(); }
+
+void ZipDataSource::SetData(byte *data, int size) {
+  UIASSERT(!m_unzip);
+
+  UIASSERT(false && "TODO");
+
+  // m_hZip = OpenZip(data, size, nullptr);
+  // if (nullptr == m_hZip) {
+  //   UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
+  //   return;
+  // }
+}
+
+bool ZipDataSource::Init() {
+  if (nullptr == m_unzip) {
+    m_unzip = unzOpen(m_strPath.c_str());
+    if (nullptr == m_unzip) {
+      UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
+      return false;
     }
+  }
+  return true;
 }
 
-ZipDataSource*  ZipDataSource::Create()
-{
-	return new ZipDataSource();
-}
-void  ZipDataSource::Release()
-{
-	delete this;
-}
-ISkinDataSource*  ZipDataSource::GetISkinDataSource()
-{
-	return &m_ISkinDataSource;
-}
+bool ZipDataSource::unzip_path(const char *path, std::vector<byte> &buffer) {
+  if (!m_unzip) {
+    return false;
+  }
 
-eResourceFormat  ZipDataSource::GetType()
-{
-    return eResourceFormat::Zip;
-}
+  char path2[MAX_PATH];
+  TranslatePath(path, path2);
 
-void  ZipDataSource::SetPath(const wchar_t* szPath)
-{
-	if (szPath)
-		m_strPath = szPath;
-	else
-		m_strPath.clear();
-}
-const wchar_t*  ZipDataSource::GetPath()
-{
-	return m_strPath.c_str();
-}
+  if (unzLocateFile(m_unzip, path2, 0) != UNZ_OK) {
+    UI_LOG_ERROR("File %s not found in zip", path);
+    return false;
+  }
 
-void  ZipDataSource::SetData(byte* data, int size)
-{
-	UIASSERT(!m_hZip);
+  unz_file_info file_info;
+  if (unzGetCurrentFileInfo(m_unzip, &file_info, NULL, 0, NULL, 0, NULL, 0) !=
+      UNZ_OK) {
+    UI_LOG_ERROR("Cannot get file info for %s\n", path);
+    return false;
+  }
 
-	m_hZip = OpenZip(data, size, nullptr);
-	if (nullptr == m_hZip)
-	{
-		UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
-		return;
-	}
+  // 打开当前文件进行解压
+  if (unzOpenCurrentFile(m_unzip) != UNZ_OK) {
+    UI_LOG_ERROR("Cannot open file %s in zip\n", path);
+    return false;
+  }
 
-	return;
+  // 分配内存缓冲区
+  unsigned int size = file_info.uncompressed_size;
+  std::vector<byte> data(size);
+
+  int bytes_read = unzReadCurrentFile(m_unzip, (void *)data.data(), size);
+  unzCloseCurrentFile(m_unzip);
+
+  if (bytes_read < 0 || (size_t)bytes_read != size) {
+    UI_LOG_ERROR("Unzip file %s failed in zip\n", path);
+    return false;
+  }
+
+  buffer.swap(data);
+  return true;
 }
 
-bool  ZipDataSource::Init()
-{
-    if (nullptr == m_hZip)
-    {
-        m_hZip = OpenZip(m_strPath.c_str(), nullptr);
-        if (nullptr == m_hZip)
-        {
-            UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
-			return false;
-        }
-    }
-	return true;
+bool ZipDataSource::Load_UIDocument(UIDocument *pDocument, const char *path) {
+  if (!m_unzip && !Init()) {
+    return false;
+  }
+
+  std::vector<byte> buffer;
+  if (!unzip_path(path, buffer)) {
+    return false;
+  }
+
+  return pDocument->LoadData(buffer.data(), buffer.size());
 }
 
-bool  ZipDataSource::Load_UIDocument(UIDocument* pDocument, const wchar_t* szPath)
-{
-    if (!m_hZip && !Init())
-	{
-		return false;
-	}
+void ZipDataSource::TranslatePath(const char *szOrignPath, char *szLastPath) {
+  const char *p = szOrignPath;
+  char *p2 = szLastPath;
 
-    ZIPENTRY ze;
-    int index = 0; 
+  // 跳过 .\xxx 表示的当前目录
+  if (strlen(szOrignPath) > 2 && szOrignPath[0] == '.' &&
+      (szOrignPath[1] == '/' || szOrignPath[1] == '\\')) {
+    p += 2;
+  }
 
-    wchar_t szPath2[MAX_PATH];
-    TranslatePath(szPath, szPath2);
+  while (*p) {
+    if (*p == '\\')
+      *p2 = '/';
+    else
+      *p2 = *p;
 
-    FindZipItem(m_hZip, szPath2, true, &index, &ze);
-    if (-1 == index)
-    {
-        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
-        return false;
-    }
-
-	int nSize = ze.unc_size;
-    byte* szbuf = new byte[nSize];  // 最后一个用0填充，标明字符串结束
-    memset(szbuf, 0, nSize);
-    UnzipItem(m_hZip, index, szbuf, ze.unc_size);
-
-    bool bRet = pDocument->LoadData(szbuf, nSize);    
-    SAFE_ARRAY_DELETE(szbuf);
-    return bRet;
+    p++;
+    p2++;
+  }
+  *p2 = '\0';
 }
 
-void  ZipDataSource::TranslatePath(const wchar_t* szOrignPath, wchar_t* szLastPath)
-{
-    const wchar_t* p = szOrignPath;
-    wchar_t* p2 = szLastPath;
+// 注：zip内部的路径符号是/
+bool ZipDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap, const char *path,
+                                      RENDER_BITMAP_LOAD_FLAG e) {
+  if (!m_unzip || !Init())
+    return false;
 
-    // 跳过 .\xxx 表示的当前目录
-    if (strlen(szOrignPath) > 2 &&
-        szOrignPath[0] == _T('.') && 
-        (szOrignPath[1] == _T('/') || szOrignPath[1] == _T('\\')))
-    {
-        p += 2;
-    }
+  if (nullptr == pBitmap || nullptr == path)
+    return false;
 
-    while (*p)
-    {
-        if (*p == '\\')
-            *p2 = '/';
-        else
-            *p2 = *p;
+  std::vector<byte> buffer;
+  if (!unzip_path(path, buffer)) {
+    return false;
+  }
 
-        p++;
-        p2++;
-    }
-    *p2 = _T('\0');
+  return pBitmap->LoadFromData(buffer.data(), buffer.size(), e);
 }
 
-// 注：zip内部的路径符号是/，而不是\ 
-bool  ZipDataSource::Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e)
-{
-    if (!m_hZip || !Init())
-        return false;
+bool ZipDataSource::Load_StreamBuffer(const char *path,
+                                      IStreamBufferReader **pp) {
+  if (!m_unzip || !Init())
+    return false;
 
-    if (nullptr == pBitmap || nullptr == szPath)
-        return false;
+  if (nullptr == path || nullptr == pp)
+    return false;
 
-    ZIPENTRY ze;
-    int index = 0; 
+  std::vector<byte> buffer;
+  if (!unzip_path(path, buffer)) {
+    return false;
+  }
 
-    // 替换路径符号
-    wchar_t szPath2[MAX_PATH] = _T("");
-    TranslatePath(szPath, szPath2);
-	
-    FindZipItem(m_hZip, szPath2, true, &index, &ze);
-    if (-1 == index)
-    {
-        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
-        return false;
-    }
+  ByteBufferReader *pBuffer = new ByteBufferReader;
+  pBuffer->load(buffer.data(), buffer.size(), true);
+  *pp = pBuffer;
 
-    char* szbuf = new char[ze.unc_size];
-    memset(szbuf, 0, ze.unc_size);
-    UnzipItem(m_hZip, index, szbuf, ze.unc_size);
-
-    bool bRet = pBitmap->LoadFromData((byte*)szbuf, ze.unc_size, e);
-    delete[] szbuf;
-
-    return bRet;
+  return true;
 }
 
-bool  ZipDataSource::Load_Image(const wchar_t* szPath, ImageWrap* pImage)
-{
-    if (!m_hZip || !Init())
-        return false;
+bool ZipDataSource::FileExist(const char *szPath) {
+  if (!m_unzip) {
+    return false;
+  }
 
-    if (nullptr == pImage || nullptr == szPath)
-        return false;
-
-    ZIPENTRY ze;
-    int index = 0; 
-
-    // 替换路径符号
-    wchar_t szPath2[MAX_PATH] = _T("");
-    TranslatePath(szPath, szPath2);
-
-    FindZipItem(m_hZip, szPath2, true, &index, &ze);
-    if (-1 == index)
-    {
-        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
-        return false;
-    }
-
-    char* szbuf = new char[ze.unc_size];
-    memset(szbuf, 0, ze.unc_size);
-    UnzipItem(m_hZip, index, szbuf, ze.unc_size);
-
-    pImage->GetImpl()->LoadFromData((byte*)szbuf, ze.unc_size);
-    delete[] szbuf;
-
-    return pImage->IsNull()? false:true;
+  // 第二个参数："folder/test.txt"
+  // 第三个参数：0表示大小写敏感，1为不敏感
+  int result = unzLocateFile(m_unzip, szPath, 0);
+  return result == UNZ_OK;
 }
 
-bool  ZipDataSource::Load_GdiplusImage(const wchar_t* szPath, GdiplusBitmapLoadWrap* pImage)
-{
-    if (!m_hZip || !Init())
-        return false;
-
-    if (nullptr == pImage || nullptr == szPath)
-        return false;
-
-    ZIPENTRY ze;
-    int index = 0; 
-
-    // 替换路径符号
-    wchar_t szPath2[MAX_PATH] = _T("");
-    TranslatePath(szPath, szPath2);
-
-    FindZipItem(m_hZip, szPath2, true, &index, &ze);
-    if (-1 == index)
-    {
-        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
-        return false;
-    }
-
-    char* szbuf = new char[ze.unc_size];
-    memset(szbuf, 0, ze.unc_size);
-    UnzipItem(m_hZip, index, szbuf, ze.unc_size);
-
-    bool bRet = pImage->LoadFromByte((byte*)szbuf, ze.unc_size);
-    delete[] szbuf;
-
-    return bRet;
-}
-
-bool  ZipDataSource::Load_StreamBuffer(const wchar_t* szPath, IStreamBufferReader** pp)
-{
-    if (!m_hZip || !Init())
-        return false;
-
-    if (nullptr == szPath || nullptr == pp)
-        return false;
-
-    ZIPENTRY ze;
-    int index = 0; 
-
-    // 替换路径符号
-    wchar_t szPath2[MAX_PATH] = _T("");
-    TranslatePath(szPath, szPath2);
-
-    FindZipItem(m_hZip, szPath2, true, &index, &ze);
-    if (-1 == index)
-    {
-        UI_LOG_ERROR("FindZipItem Failed. path=%s", szPath);
-        return false;
-    }
-
-    char* szbuf = new char[ze.unc_size];
-    memset(szbuf, 0, ze.unc_size);
-    UnzipItem(m_hZip, index, szbuf, ze.unc_size);
-
-    ByteBufferReader* pBuffer = new ByteBufferReader;
-    pBuffer->load((const byte*)szbuf, ze.unc_size, true);
-    *pp = pBuffer;
-
-    return true;
-}
-
-bool ZipDataSource::FileExist(const wchar_t* szPath)
-{
-	ZIPENTRY ze;
-	int index = 0;
-
-	// 替换路径符号
-	wchar_t szPath2[MAX_PATH] = _T("");
-	TranslatePath(szPath, szPath2);
-
-	FindZipItem(m_hZip, szPath2, true, &index, &ze);
-
-	return (-1 == index) ? false : true;
-}
-
-}
+} // namespace ui

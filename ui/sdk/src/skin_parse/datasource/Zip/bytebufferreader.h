@@ -1,8 +1,11 @@
 #pragma once
 #include "include/interface/iskindatasource.h"
+#include <ios>
 
 class ByteBufferReader : public ui::IByteBufferReader
 {
+  using byte = unsigned char;
+
 public:
     ByteBufferReader();
     ~ByteBufferReader();
@@ -12,10 +15,10 @@ public:
     virtual void  Release();
 
     virtual int   read(char* pread, int nread);
-    virtual void  seek(int npos, ios_base::seek_dir dir);
+    virtual void  seek(int npos, std::ios::seekdir dir);
     virtual int   tell();
     virtual bool  load(const byte* pdata, int nsize, bool bdeletedata);
-    virtual bool  save(const wchar_t* szPath);
+    virtual bool  save(const char* szPath);
 
 private:
     void  destroy();
