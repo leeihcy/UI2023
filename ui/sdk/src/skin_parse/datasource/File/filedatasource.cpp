@@ -37,7 +37,7 @@ const char *FileDataSource::GetPath() { return m_strPath.c_str(); }
 
 void FileDataSource::SetData(byte *data, int size) { UIASSERT(0); }
 
-SKIN_PACKET_TYPE FileDataSource::GetType() { return SKIN_PACKET_TYPE_DIR; }
+eResourceFormat FileDataSource::GetType() { return eResourceFormat::Directory; }
 
 bool FileDataSource::Load(const char* szPath, slot<void(const char*)>&& callback) {
  if (!szPath)
@@ -46,7 +46,7 @@ bool FileDataSource::Load(const char* szPath, slot<void(const char*)>&& callback
   std::string strTemp = m_strPath;
   strTemp.append(szPath);
  
-  if (!util::Path_FileExists(strTemp.c_str())) {
+  if (!util::PathExists(strTemp.c_str())) {
     return false;
   }
 
@@ -137,7 +137,7 @@ bool FileDataSource::FileExist(const char *szPath) {
   std::string strTemp = m_strPath;
   strTemp.append(szPath);
 
-  return ui::util::Path_FileExists(strTemp.c_str()) ? true : false;
+  return ui::util::PathExists(strTemp.c_str()) ? true : false;
 }
 
 //

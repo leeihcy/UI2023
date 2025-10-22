@@ -1,0 +1,41 @@
+
+# 资源目录打包。
+# 使用方法：
+#
+# build_bundle("control") {
+#   directory = "resource"
+#   output = "$root_build_dir/bin/sample/control.zip"
+# }
+#
+template("build_bundle") {
+  assert(defined(invoker.directory), "directory must be defined for zip_directory")
+  assert(defined(invoker.output), "output must be defined for zip_directory")
+  
+  _directory = invoker.directory
+  _output = invoker.output
+  _base_dir = _directory
+  
+  # 遍历资源目录下的所有文件，做为sources
+  _sources = exec_script(
+    "//build_tools/scripts/tree.py",
+    [
+      "--directory",
+      rebase_path(_directory)
+    ],
+    "list lines")
+  
+  # 单个 action 处理所有文件
+  action(target_name) {
+    script = "//build_tools/scripts/zip.py"
+    inputs = _sources
+    outputs = [ _output ]
+    
+    args = [
+      "--output",
+      rebase_path(_output, root_build_dir),
+      "--base-dir",
+      rebase_path(_base_dir, root_build_dir),
+    ] 
+    args += rebase_path(_sources, root_build_dir)
+  }
+}

@@ -74,7 +74,7 @@ public:
   void load_next() {
     ui::Path svg_path = ui::Path::ExecutePath()
                             .Dir()
-                            .Join("sample/svg")
+                            .Join("bundle/svg")
                             .Join(samples[samples_index % samples_count]);
     samples_index++;
     load_svg_from_file(svg_path.ToString());

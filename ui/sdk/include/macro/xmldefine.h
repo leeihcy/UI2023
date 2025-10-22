@@ -33,7 +33,7 @@ namespace ui
 #define XML_SKIN_PACKET_EXT       "skn"        // 皮肤包后缀名
 
 #define XML_UI               "ui"            // root
-#define XML_SKIN             "skin"          // root
+#define XML_RESOURCE         "resource"      // root
 #define XML_XML              "xml"
 #define XML_LOG              "log"
 #define XML_IMG              "image"

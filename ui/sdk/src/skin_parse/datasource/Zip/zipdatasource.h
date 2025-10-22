@@ -21,7 +21,7 @@ public:
 	const wchar_t*  GetPath();
 	void  SetData(byte* data, int size);
 
-    SKIN_PACKET_TYPE  GetType();
+    eResourceFormat  GetType();
 
     bool  Load_UIDocument(UIDocument* pDocument, const wchar_t* szPath);
     bool  Load_RenderBitmap(IRenderBitmap* pBitmap, const wchar_t* szPath, RENDER_BITMAP_LOAD_FLAG e);

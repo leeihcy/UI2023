@@ -3,86 +3,63 @@
 #include "File/filedatasource.h"
 // #include "Zip/bytebufferreader.h"
 #include "File/filebufferreader.h"
+#include "include/interface/iskindatasource.h"
 #include "sdk/include/macro/helper.h"
-#if 0 // defined(OS_WIN)
-#include <gdiplus.h>
-#endif
 
-namespace ui
-{
+namespace ui {
 
-void  CreateDataSourceInstance(SKIN_PACKET_TYPE e, SkinDataSource** pp)
-{
-    if (nullptr == pp)
-        return;
+void CreateDataSourceInstance(eResourceFormat e, SkinDataSource **pp) {
+  if (nullptr == pp)
+    return;
 
-    SkinDataSource* p = nullptr;
-    switch (e)
-    {
-    case SKIN_PACKET_TYPE_DIR:
-        {
-			p = FileDataSource::Create();
-        }
-        break;;
+  SkinDataSource *p = nullptr;
+  switch (e) {
+  case eResourceFormat::Directory: {
+    p = FileDataSource::Create();
+  } break;
 
-    case SKIN_PACKET_TYPE_ZIP:
-	case SKIN_PACKET_TYPE_RESZIP:
-        {
+  case eResourceFormat::Zip:
+  case eResourceFormat::Bundle: {
 #if 0
 			p = ZipDataSource::Create();
-#else   
+#else
     UIASSERT(false);
 #endif
-        }
-        break;
-    }
-    
-    *pp = p;
+  } break;
+  }
+
+  *pp = p;
 }
 
-void  CreateStreamBuffer(STREAM_TYPE e, IStreamBufferReader** pp)
-{
-    if (nullptr == pp)
-        return;
+void CreateStreamBuffer(eStreamType e, IStreamBufferReader **pp) {
+  if (nullptr == pp)
+    return;
 
-    IStreamBufferReader* p = nullptr;
-    switch (e)
-    {
-    case STREAM_TYPE_FILE:
-        {
-			p = FileBufferReader::Create();
-        }
-        break;;
+  IStreamBufferReader *p = nullptr;
+  switch (e) {
+  case eStreamType::File: {
+    p = FileBufferReader::Create();
+  } break;
 
-    case STREAM_TYPE_BYTE:
-        {
+  case eStreamType::Byte: {
 #if 0
 			p = ByteBufferReader::Create();
 #else
     UIASSERT(false);
 #endif
-        }
-        break;
-    }
+  } break;
+  }
 
-    *pp = p;
+  *pp = p;
 }
 
-ISkinDataSource::ISkinDataSource(SkinDataSource* p)
-{
-	m_pImpl = p;
-}
+ISkinDataSource::ISkinDataSource(SkinDataSource *p) { m_pImpl = p; }
 
-const char*  ISkinDataSource::GetPath()
-{
-	return m_pImpl->GetPath();
-}
-SKIN_PACKET_TYPE  ISkinDataSource::GetType()
-{
-	return m_pImpl->GetType();
-}
+const char *ISkinDataSource::GetPath() { return m_pImpl->GetPath(); }
+eResourceFormat ISkinDataSource::GetType() { return m_pImpl->GetType(); }
 
-bool ISkinDataSource::Load(const char* szPath, slot<void(const char*)>&& callback) {
+bool ISkinDataSource::Load(const char *szPath,
+                           slot<void(const char *)> &&callback) {
   return m_pImpl->Load(szPath, std::move(callback));
 }
 
@@ -157,4 +134,4 @@ bool  GdiplusBitmapLoadWrap::LoadFromByte(LPBYTE pByte, int nSize)
     return true;
 }
 #endif
-}
+} // namespace ui

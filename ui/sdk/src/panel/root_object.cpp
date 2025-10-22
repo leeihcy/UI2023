@@ -27,6 +27,7 @@ void RootObject::FinalConstruct() {
   // m_root->m_objLayer.CreateLayer();
 }
 
+// 会去加载<Window> xml结点的属性，作为RootObject属性。
 bool RootObject::LoadLayout(const char *layout_id) {
   if (layout_id && strlen(layout_id) > 0) {
     LayoutManager &layoutmanager = m_resource->GetLayoutManager();

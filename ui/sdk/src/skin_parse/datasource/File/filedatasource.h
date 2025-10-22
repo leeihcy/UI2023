@@ -15,7 +15,7 @@ public:
   virtual void SetPath(const char *szPath) override;
   virtual const char *GetPath() override;
   virtual void SetData(byte *data, int size) override;
-  virtual SKIN_PACKET_TYPE GetType() override;
+  virtual eResourceFormat GetType() override;
 
   virtual bool Load(const char* szPath, slot<void(const char*)>&& callback) override;
   virtual bool Load_UIDocument(UIDocument *pDocument,

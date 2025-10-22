@@ -17,7 +17,7 @@ struct SkinDataSource
 	virtual void  SetPath(const char* szPath) = 0;
 	virtual const char*  GetPath() = 0;
 	virtual void  SetData(unsigned char* data, int size) = 0;
-	virtual SKIN_PACKET_TYPE  GetType() = 0;
+	virtual eResourceFormat  GetType() = 0;
 
 	virtual bool  FileExist(const char* szPath) = 0;
   virtual bool  Load(const char* szPath, slot<void(const char*)>&& callback) = 0;
@@ -31,8 +31,8 @@ struct SkinDataSource
 #endif
 };
 
-void  CreateDataSourceInstance(SKIN_PACKET_TYPE e, SkinDataSource** pp);
-void  CreateStreamBuffer(STREAM_TYPE e, IStreamBufferReader** pp);
+void  CreateDataSourceInstance(eResourceFormat e, SkinDataSource** pp);
+void  CreateStreamBuffer(eStreamType e, IStreamBufferReader** pp);
 
 
 

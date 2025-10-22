@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<skin>
+<resource>
   <layout>
     <Window id="clock" back.render.type="color" back.render.color="gray" layout.left="0" layout.top="0">
       <Panel width="360" height="360">
@@ -19,4 +19,4 @@
       back.render.type="image"  
     />
   </style>
-</skin>
+</resource>

@@ -510,7 +510,7 @@ bool PugiXmlDocument::LoadFile(const char *szFile) {
   if (!szFile)
     return false;
 
-  if (!util::Path_FileExists(szFile))
+  if (!util::PathExists(szFile))
     return false;
 
   m_strPath.clear();

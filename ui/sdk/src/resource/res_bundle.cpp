@@ -48,7 +48,7 @@ void Resource::SetPath(const char *szPath) {
   m_pDataSource->SetPath(szPath);
 }
 
-SkinDataSource *Resource::CreateDataSource(SKIN_PACKET_TYPE eType) {
+SkinDataSource *Resource::CreateDataSource(eResourceFormat eType) {
   SAFE_DELETE(m_pDataSource);
   CreateDataSourceInstance(eType, &m_pDataSource);
 

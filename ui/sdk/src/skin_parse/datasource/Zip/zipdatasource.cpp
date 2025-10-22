@@ -34,9 +34,9 @@ ISkinDataSource*  ZipDataSource::GetISkinDataSource()
 	return &m_ISkinDataSource;
 }
 
-SKIN_PACKET_TYPE  ZipDataSource::GetType()
+eResourceFormat  ZipDataSource::GetType()
 {
-    return SKIN_PACKET_TYPE_ZIP;
+    return eResourceFormat::Zip;
 }
 
 void  ZipDataSource::SetPath(const wchar_t* szPath)

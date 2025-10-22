@@ -1,3 +1,5 @@
+import("//ui/sdk/util.gni")
+
 executable("svg") {
   output_dir = "$root_out_dir/bin"
     output_name = "sample_svg"
@@ -33,6 +35,7 @@ copy("copy_svg_files") {
     "test/transform_1.svg",
   ]
   outputs = [
-    "$root_build_dir/bin/sample/svg/{{source_file_part}}"
+    "$root_build_dir/bin/bundle/svg/{{source_file_part}}"
   ]
 }
+

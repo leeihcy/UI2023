@@ -1,7 +1,9 @@
 #include "src/graphics/font/font.h"
+#include "include/core/SkTypeface.h"
 #include "third_party/skia/src/include/core/SkFont.h"
 #include "third_party/skia/src/include/core/SkFontMetrics.h"
 #include <memory>
+#include <string.h>
 
 namespace ui {
 
@@ -19,8 +21,23 @@ SkFont &FontCache::LoadSkia(const FontDesc &key) {
   // TODO:
   SkFontStyle style(key.weight, SkFontStyle::kNormal_Width,
                     SkFontStyle::kUpright_Slant);
-  sk_sp<SkTypeface> typeface =
-      SkTypeface::MakeFromName(key.face.c_str(), style);
+
+  bool is_font_file = false;
+  if (key.face.length() > 4) {
+     const char* key_face_ext = key.face.c_str() + key.face.length() - 4;
+     if (strcmp(key_face_ext, ".ttf") == 0) {
+      is_font_file = true;
+     }
+  }
+  sk_sp<SkTypeface> typeface;
+  if (is_font_file) {
+    typeface = SkTypeface::MakeFromFile(key.face.c_str());
+  // } else if (is_font_stream) {
+  //   // typeface = SKTypeface::MakeFromStream(stream);
+  } else {
+    typeface = SkTypeface::MakeFromName(key.face.c_str(), style);
+  }
+
   m_skia_font = std::make_unique<SkFont>(typeface, key.size);
   m_skia_font->setEdging(SkFont::Edging::kSubpixelAntiAlias);
 

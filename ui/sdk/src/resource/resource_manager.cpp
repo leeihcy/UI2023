@@ -1,12 +1,7 @@
 #include "resource_manager.h"
 #include "include/interface/iresbundle.h"
 #include "src/util/util.h"
-// #include "interface\iuires.h"
 #include "res_bundle.h"
-// #include "include/interface/iuiinterface.h"
-// #include "..\Base\Application\uiapplication.h"
-// #include "..\Helper\topwindow\topwindowmanager.h"
-// #include "..\SkinParse\datasource\skindatasource.h"
 
 namespace ui {
 
@@ -93,7 +88,7 @@ finddata.cFileName, strPath.c_str());
             {
                                 int nLength = strlen(finddata.cFileName);
                                 finddata.cFileName[nLength-4] = L'';
-                OnFindSkinInSkinDir(SKIN_PACKET_TYPE_ZIP, finddata.cFileName,
+                OnFindSkinInSkinDir(eResourceFormat::Zip, finddata.cFileName,
 m_strSkinDir.c_str());
             }
         }
@@ -132,7 +127,7 @@ strFilePath.c_str()); if (p) return p->GetIResource();
 
 
 // 在调用SetSkinDirection后，如果发现一个皮肤文件，则调用该响应函数
-Resource*  ResourceManager::OnFindSkinInSkinDir(SKIN_PACKET_TYPE eType, const
+Resource*  ResourceManager::OnFindSkinInSkinDir(eResourceFormat eType, const
 char* szPath, const char* szPath)
 {
     Resource*  pSkin = new Resource(*this);
@@ -285,10 +280,10 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
               szPath);
 
   char szSkinName[MAX_PATH] = {0};
-  SKIN_PACKET_TYPE eSkinPackageType = SKIN_PACKET_TYPE_DIR;
+  eResourceFormat eSkinPackageType = eResourceFormat::Directory;
 
   std::string strPath(szPath);
-  if (util::Path_IsDirectory(szPath)) { 
+  if (util::PathIsDirectory(szPath)) { 
     // 从路径中获取皮肤名。
     char szDir[MAX_PATH] = {0};
     strcpy(szDir, szPath);
@@ -301,16 +296,9 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
       szDir[nLength - 1] = 0;
     ui::util::GetPathFileName(szDir, szSkinName);
 
-    // 允许同名，但在不同的路径下面
-    // 		Resource* pTest = GetResourceByName(szSkinName);
-    // 		if (pTest)
-    // 		{
-    // 			UI_LOG_WARN(TEXT("Skin Exist: name=%s"), szSkinName);
-    // 			return pTest;
-    // 		}
-    eSkinPackageType = SKIN_PACKET_TYPE_DIR;
+    eSkinPackageType = eResourceFormat::Directory;
   } else {
-    char szExt[MAX_PATH] = "";
+     char szExt[MAX_PATH] = "";
     util::GetPathFileExt(szPath, szExt);
 
     int nExtLength = 0;
@@ -318,7 +306,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
     // 如果没有带后缀名，尝试一下补个后缀
     if (!szExt[0]) {
       strPath.append("." XML_SKIN_PACKET_EXT);
-      if (!util::Path_FileExists(strPath.c_str())) {
+      if (!util::PathExists(strPath.c_str())) {
         UI_LOG_ERROR("Skin File not exist: %s", strPath.c_str());
         return nullptr;
       }
@@ -337,9 +325,9 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
       return pTest;
     }
 
-    eSkinPackageType = SKIN_PACKET_TYPE_ZIP;
+    eSkinPackageType = eResourceFormat::Zip;
   }
-
+  
   Resource *pSkin = new Resource(*this);
   pSkin->CreateDataSource(eSkinPackageType);
   pSkin->SetName(szSkinName);

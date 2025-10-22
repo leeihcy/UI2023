@@ -17,8 +17,9 @@ bool TranslateImage9Region(const char *str, C9Region *p9Region,
                            char szSep = ',');
 
 // TODO add Path class
-bool Path_IsDirectory(const char *path);
-bool Path_FileExists(const char *path);
+bool PathIsDirectory(const char *path);
+bool PathIsFile(const char *path);
+bool PathExists(const char *path);
 
 int wtoi(const wchar_t *text);
 }

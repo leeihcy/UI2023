@@ -582,7 +582,7 @@ void SkiaRenderTarget::StrokeRect(const Rect &rect, const Color &color, int widt
 
   if (dash) {
       // 1. 定义虚线模式：实线x像素，间隔y像素
-    const SkScalar intervals[] = {4.0f, 2.0f};
+    const SkScalar intervals[] = {2.0f, 2.0f};
     const int count = 2; // intervals数组的元素个数
     const SkScalar phase = 0; // 相位，从模式起点开始
 
@@ -642,7 +642,7 @@ void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
 
   if (dash) {
       // 1. 定义虚线模式：实线x像素，间隔y像素
-    const SkScalar intervals[] = {1.0f, 1.0f};
+    const SkScalar intervals[] = {2.0f, 2.0f};
     const int count = 2; // intervals数组的元素个数
     const SkScalar phase = 0; // 相位，从模式起点开始
 

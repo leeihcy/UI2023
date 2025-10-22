@@ -43,8 +43,8 @@ shared_library("uisdk") {
       # defines += ["HAVE_WCHAR_H"]
 
 
-      PYTHON_INC_DIR = exec_script("//script/get_env.py", ["PYTHON_INC_DIR"], "string")
-      PYTHON_LIB_DIR = exec_script("//script/get_env.py", ["PYTHON_LIB_DIR"], "string")
+      PYTHON_INC_DIR = exec_script("//build_tools/scripts/getenv.py", ["PYTHON_INC_DIR"], "string")
+      PYTHON_LIB_DIR = exec_script("//build_tools/scripts/getenv.py", ["PYTHON_LIB_DIR"], "string")
 
       if (is_mac) {
         cflags += [

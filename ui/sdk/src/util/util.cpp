@@ -842,29 +842,28 @@ bool IsWin7OrLater() {
 }
 #endif
 
-bool Path_IsDirectory(const char *path) {
+bool PathIsDirectory(const char *path) {
   if (!path) {
     return false;
   }
-  // #if 0 // defined(OS_WIN)
-  //   return PathIsDirectoryA(szPath);
-  // #else
   const std::filesystem::path p = path;
   return std::filesystem::is_directory(p);
 }
 
-bool Path_FileExists(const char *path) {
+bool PathIsFile(const char *path) {
   if (!path) {
     return false;
   }
-#if 0 // defined(OS_WIN)
-  return PathFileExistsA(path);
-#else
-  // std::string path2 = wstring2string(path);
-  // return ::access(path, F_OK) == 0;
+  const std::filesystem::path p = path;
+  return std::filesystem::is_regular_file(p); 
+}
+
+bool PathExists(const char *path) {
+  if (!path) {
+    return false;
+  }
   const std::filesystem::path p = path;
   return std::filesystem::exists(p);
-#endif
 }
 
 } // namespace util

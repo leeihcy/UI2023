@@ -1,4 +1,5 @@
 
+import("//ui/sdk/util.gni")
 
 executable("control") {
     output_dir = "$root_out_dir/bin"
@@ -26,19 +27,12 @@ executable("control") {
       # otool -s __TEXT __info_plist <YourApp> | xxd -r
       ldflags += [
         "-sectcreate", "__TEXT", "__info_plist",
-        rebase_path("resource/Info.plist", root_build_dir)
+        rebase_path("Info.plist", root_build_dir)
       ]
     }
 }
 
-
-copy("copy_dpi_resource") {
-  sources = [
-    "resource/resource.xml", 
-    "resource/control.xml", 
-    "resource/style.xml", 
-  ]
-  outputs = [
-    "$root_build_dir/bin/sample/control/{{source_file_part}}"
-  ]
+build_bundle("control_bundle") {
+  directory = "resource"
+  output = "$root_build_dir/bin/bundle/control.zip"
 }

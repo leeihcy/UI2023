@@ -36,7 +36,7 @@ public:
   const char *GetPath();
   void SetName(const char *);
   void SetPath(const char *);
-  SkinDataSource *CreateDataSource(SKIN_PACKET_TYPE eType);
+  SkinDataSource *CreateDataSource(eResourceFormat eType);
   bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
   IResource *GetIResource();

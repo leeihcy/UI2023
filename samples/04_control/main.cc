@@ -21,12 +21,29 @@ void on_button_click(ui::Event* e) {
   printf("button clicked, id=%s\n", sender->GetId());
 }
 
+void bind_controls(ui::IWindow *window) {
+  ui::IObject *btn = nullptr;
+
+  const char *button_ids[] = {"btn_1", "btn_2", "btn_3", "btn_4",
+                              "btn_5", "btn_6", "btn_7", "btn_8"};
+  for (auto id : button_ids) {
+    btn = window->TryFindObject(id);
+    if (btn) {
+      btn->connect(BUTTON_CLICK_EVENT, ui::Slot(on_button_click));
+    }
+  }
+  btn = window->TryFindObject("btn_8");
+  if (btn) {
+    btn->SetEnable(false);
+  }
+}
+
 int main() {
   char version[32] = {0};
   ui::SDKVersion::GetVersionText(version, 32);
 
   ui::ApplicationPtr app;
-  ui::IResource *resource = app->LoadResource("sample/control");
+  ui::IResource *resource = app->LoadResource("bundle/control");
 
   ui::WindowPtr window(resource);
 
@@ -34,11 +51,7 @@ int main() {
   window->SetTitle("Control Demo");
   window->Show();
   window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
-
-  auto* btn_1 = window->TryFindObject("btn_1");
-  if (btn_1) {
-    btn_1->connect(BUTTON_CLICK_EVENT, ui::Slot(on_button_click));
-  }
+  bind_controls(window.get());
 
   ui::TimerID timer_id =
       app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));

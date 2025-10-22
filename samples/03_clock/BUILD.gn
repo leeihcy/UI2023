@@ -1,3 +1,4 @@
+import("//ui/sdk/util.gni")
 
 executable("clock") {
   output_dir = "$root_out_dir/bin"
@@ -29,17 +30,7 @@ executable("clock") {
     }
 }
 
-copy("copy_clock_resource") {
-  sources = [
-    "resource/resource.xml", 
-    "resource/clock.xml", 
-    "resource/clock.jpg", 
-    "resource/clock.svg", 
-    "resource/hourhand.png", 
-    "resource/minhand.png", 
-    "resource/sechand.png",
-  ]
-  outputs = [
-    "$root_build_dir/bin/sample/clock/{{source_file_part}}"
-  ]
+build_bundle("clock_bundle") {
+  directory = "resource"
+  output = "$root_build_dir/bin/bundle/clock.zip"
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<skin>
+<resource>
   <include>control.xml</include>
   <include>style.xml</include>
-</skin>
+</resource>

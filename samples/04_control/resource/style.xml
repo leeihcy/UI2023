@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<skin>
+<resource>
 	<style>
     <class id="button"
       width="auto" height="40"
@@ -10,16 +10,16 @@
       focus.render.type="color"
       focus.render.border.width="1"
       focus.render.border.dash="true"
-      focus.render.border.color="#A0A0A0A0"
+      focus.render.border.color="#D0A0A0A0"
       focus.render.margin="2"
       focus.render.radius="4"
     />
     <class id="button_default" 
       back.render.color="#fff;#ecf5ff;#fff" 
       back.render.border.width="1"
-      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6;;#0000ff"
+      back.render.border.color="#dcdfe6;#c6e2ff;#3a8ee6;gray;#0000ff"
       back.render.radius="4"
-      text.render.color="#606266;#409eff;#409eff"
+      text.render.color="#606266;#409eff;#409eff;gray"
       />
     <class id="button_primary" 
       back.render.color="#409eff;#66b1ff;#3a8ee6" 
@@ -46,6 +46,9 @@
       back.render.radius="4"
       text.render.color="#fff"
       />
+    <class id="buttle_circle" width="40" height="40" 
+      focus.render.radius="18"
+      back.render.radius="20"/>
 	</style>
 	<color />
-</skin>
+</resource>

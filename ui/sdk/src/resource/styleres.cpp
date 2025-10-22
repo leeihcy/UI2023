@@ -161,7 +161,7 @@ bool StyleResItem::InheritMyAttributesToAnother(StyleResItem *pChild) {
 }
 
 //
-//	将自己的属性应用到一个已有的map中，如果map中已有这个属性，则使用该map的属性
+//	将自己的属性应用到一个已有的map中，如果map中已有这个属性，则使用bOverwrite判断是否覆盖
 //
 bool StyleResItem::Apply(IMapAttribute *pMapAttrib, bool bOverwrite) {
   if (!pMapAttrib || !m_pMapAttrib)
@@ -429,39 +429,39 @@ long StyleRes::GetItemPos(StyleResItem *p) {
 //			级别4. CLASS列表中，排后面的样式匹配的属性 >
 //前面的样式匹配的属性 			级别5. 通过TAG匹配的属性
 //
-bool StyleRes::LoadStyle(const char *szTagName, const char *szStyleClass,
-                         const char *szID, IMapAttribute *pMapStyle) {
-  if (szID && strlen(szID) > 0) {
-    StyleResItem *pIDStyleItem = this->GetItem(STYLE_SELECTOR_TYPE_ID, szID);
+bool StyleRes::LoadStyle(const char *tag_name, const char *style_class,
+                         const char *id, IMapAttribute *style_map) {
+  if (id && strlen(id) > 0) {
+    StyleResItem *pIDStyleItem = this->GetItem(STYLE_SELECTOR_TYPE_ID, id);
     if (pIDStyleItem) {
-      pIDStyleItem->Apply(pMapStyle, false);
+      pIDStyleItem->Apply(style_map, false);
     }
   }
 
   // strStyleClass可能有多个
-  if (szStyleClass && strlen(szStyleClass) > 0) {
+  if (style_class && strlen(style_class) > 0) {
     std::vector<std::string> vStrArray;
-    UI_Split(szStyleClass, XML_SPACE, vStrArray);
+    UI_Split(style_class, XML_SPACE, vStrArray);
     int nCount = (int)vStrArray.size();
-    if (0 != nCount) {
-      for (int i = 0; i < nCount; i++) {
-        if (vStrArray[i].empty())
-          continue;
 
-        StyleResItem *pClassStyleItem =
-            this->GetItem(STYLE_SELECTOR_TYPE_CLASS, vStrArray[i].c_str());
-        if (pClassStyleItem) {
-          pClassStyleItem->Apply(pMapStyle, false);
-        }
+    // 放后面的优先级更高，先读取后面的
+    for (int i = nCount - 1; i >= 0; i--) {
+      if (vStrArray[i].empty())
+        continue;
+
+      StyleResItem *pClassStyleItem =
+          this->GetItem(STYLE_SELECTOR_TYPE_CLASS, vStrArray[i].c_str());
+      if (pClassStyleItem) {
+        pClassStyleItem->Apply(style_map, false);
       }
     }
   }
 
-  if (szTagName && strlen(szTagName) > 0) {
+  if (tag_name && strlen(tag_name) > 0) {
     StyleResItem *pTagStyleItem =
-        this->GetItem(STYLE_SELECTOR_TYPE_TAG, szTagName);
+        this->GetItem(STYLE_SELECTOR_TYPE_TAG, tag_name);
     if (pTagStyleItem) {
-      pTagStyleItem->Apply(pMapStyle, false);
+      pTagStyleItem->Apply(style_map, false);
     }
   }
 
@@ -469,12 +469,12 @@ bool StyleRes::LoadStyle(const char *szTagName, const char *szStyleClass,
 }
 
 // 将pListAttribte中属于style的属性过滤掉
-bool StyleRes::UnloadStyle(const char *szTagName,
-                           const char *szStyleClass, const char *szID,
+bool StyleRes::UnloadStyle(const char *tag_name,
+                           const char *style_class, const char *id,
                            IListAttribute *pListAttribte) {
   // 先拿到所有的样式列表
   std::shared_ptr<IMapAttribute> pStyleAttr = UICreateIMapAttribute();
-  LoadStyle(szTagName, szStyleClass, szID, pStyleAttr.get());
+  LoadStyle(tag_name, style_class, id, pStyleAttr.get());
 
   pListAttribte->BeginEnum();
 

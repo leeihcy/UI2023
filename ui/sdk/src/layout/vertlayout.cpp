@@ -279,6 +279,7 @@ void VertLayoutParam::UpdateByRect() {
   }
 }
 
+// 不支持 layout.left/right
 void VertLayoutParam::Serialize(SerializeParam *pData) {
   AttributeSerializer s(pData, "VertLayoutParam");
 

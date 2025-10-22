@@ -107,7 +107,7 @@ int main() {
     app->EnableHardwareComposite();
   }
   ui::SvgRegisterObjects(app.get());
-  ui::IResource *resource = app->LoadResource("sample/clock");
+  ui::IResource *resource = app->LoadResource("bundle/clock");
 
   ui::WindowPtr window(resource);
   if (use_gpu) {

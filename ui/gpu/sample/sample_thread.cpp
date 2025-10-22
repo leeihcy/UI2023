@@ -113,7 +113,7 @@ public:
   }
   void BuildLayers() {
     ATL::CImage image;
-    image.Load(L"sample/uigpu/bg.png");
+    image.Load(L"bundle/uigpu/bg.png");
     assert(image.GetBPP() == 32); // must be 32 bpp
     m_root_size.cx = image.GetWidth();
     m_root_size.cy = image.GetHeight();
