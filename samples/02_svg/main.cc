@@ -20,7 +20,7 @@ static int samples_index = 0;
 
 class MainWindow {
 public:
-  MainWindow(ui::IResource *res) : m_window(res) {
+  MainWindow(ui::IResourceBundle *res) : m_window(res) {
     create_ui();
 
     ui::Rect rc = {0, 0, 500, 400};

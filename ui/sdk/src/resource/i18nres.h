@@ -4,10 +4,10 @@
 #include "include/interface/iuires.h"
 
 namespace ui {
-class Resource;
+class ResourceBundle;
 class I18nRes : public II18nCallback {
 public:
-  I18nRes(Resource *);
+  I18nRes(ResourceBundle *);
   ~I18nRes();
 
 public:
@@ -22,7 +22,7 @@ private:
   virtual const char *Map(const char *key) override;
 
 private:
-  Resource *m_pSkinRes;
+  ResourceBundle *m_resource_bundle;
   II18nRes *m_pII18nRes;
 
   std::map<std::string, std::string> m_dict;

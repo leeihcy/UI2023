@@ -69,8 +69,8 @@ IApplication *IObject::GetUIApplication() {
 
   return p->GetIUIApplication();
 }
-IResource *IObject::GetResource() {
-  Resource *p = __pImpl->GetResource();
+IResourceBundle *IObject::GetResource() {
+  ResourceBundle *p = __pImpl->GetResource();
   if (!p)
     return nullptr;
 
@@ -742,12 +742,12 @@ void IObject::SetBackRender(std::shared_ptr<IRenderBase> p) { __pImpl->SetBackRe
 // }
 void IObject::SetTextRender(std::shared_ptr<ITextRenderBase> p) { __pImpl->SetTextRender(p); }
 
-// void  IObject::SetAttributeByPrefix(const char* szPrefix, IMapAttribute*
+// void  IObject::SetAttributeByPrefix(const char* szPrefix, IAttributeMap*
 // pMatAttrib, bool bReload, bool bErase)
 // {
 // 	__pImpl->SetAttributeByPrefix(szPrefix, pMatAttrib, bReload, bErase);
 // }
-// void  IObject::LoadAttributeFromMap(IMapAttribute* pMatAttrib, bool bReload)
+// void  IObject::LoadAttributeFromMap(IAttributeMap* pMatAttrib, bool bReload)
 // {
 // 	__pImpl->LoadAttributeFromMap(pMatAttrib, bReload);
 // }
@@ -761,7 +761,7 @@ const char *IObject::GetAttribute(const char *szKey, bool bErase) {
 void IObject::AddAttribute(const char *szKey, const char *szValue) {
   __pImpl->AddAttribute(szKey, szValue);
 }
-std::shared_ptr<IMapAttribute> IObject::GetMapAttribute() {
+std::shared_ptr<IAttributeMap> IObject::GetMapAttribute() {
   return __pImpl->GetMapAttribute();
 }
 void IObject::ClearMapAttribute() { __pImpl->ClearMapAttribute(); }

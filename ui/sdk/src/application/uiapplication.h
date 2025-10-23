@@ -64,9 +64,9 @@ public:
   TimerHelper &GetTimerHelper() { return m_timer_helper; }
 
   const char *GetRenderBaseName(int nType);
-  std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResource *resource, const char *name);
+  std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResourceBundle *resource, const char *name);
 
-  Resource *GetDefaultSkinRes();
+  ResourceBundle *GetDefaultSkinRes();
 #if 0
 	bool  ShowToolTip(TOOLTIPITEM* pItem);
 	void  HideToolTip();
@@ -77,8 +77,8 @@ public:
   bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
   bool RegisterUIObject(IMeta *);
-  IObject *CreateUIObjectByName(const char *szXmlName, IResource *);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *);
+  IObject *CreateUIObjectByName(const char *szXmlName, IResourceBundle *);
+  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResourceBundle *);
 
   void LoadUIObjectListToToolBox();
 

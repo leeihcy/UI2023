@@ -156,7 +156,7 @@ ILayoutParam *LayoutObject::GetSafeLayoutParam() {
   m_pLayoutParam = layout.CreateLayoutParam(m_object.GetIObject());
 
   SerializeParam data = {0};
-  data.pMapAttrib = m_object.GetMapAttribute().get();
+  data.attribute_map = m_object.GetMapAttribute().get();
   data.resource = m_object.GetIResource();
   data.nFlags = SERIALIZEFLAG_LOAD;
   m_pLayoutParam->Serialize(&data);

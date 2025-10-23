@@ -10,14 +10,14 @@
 #include "src/resource/res_bundle.h"
 #include "src/resource/stylemanager.h"
 #include "src/resource/uiresource.h"
-#include "src/skin_parse/skinparseengine.h"
-#include "src/skin_parse/xml/xmlwrap.h"
+#include "src/parser/skinparseengine.h"
+#include "src/parser/xml/xmlwrap.h"
 #include "include/interface/ilayout.h"
 
 namespace ui {
 
-LayoutManager::LayoutManager(Resource *p) {
-  m_pSkinRes = p;
+LayoutManager::LayoutManager(ResourceBundle *p) {
+  m_resource_bundle = p;
   m_pILayoutManager = nullptr;
 }
 
@@ -105,7 +105,7 @@ UIElementProxy LayoutManager::FindWindowElement(const char *szTagName,
                                                 const char *szId) {
   UIElementProxy proxy;
 
-  if (!m_pSkinRes || !szId)
+  if (!m_resource_bundle || !szId)
     return proxy;
 
   // 1. 从缓存m_listUIElement中查找结点
@@ -125,7 +125,7 @@ UIElementProxy LayoutManager::FindWindowElement(const char *szTagName,
   if (proxy)
     return proxy;
 
-  Resource *pParentRes = m_pSkinRes->GetParentSkinRes();
+  ResourceBundle *pParentRes = m_resource_bundle->GetParentSkinRes();
   if (pParentRes) {
     return pParentRes->GetLayoutManager().FindWindowElement(szTagName, szId);
   }
@@ -135,7 +135,7 @@ UIElementProxy LayoutManager::FindWindowElement(const char *szTagName,
 UIElementProxy LayoutManager::FindListItemElement(const char *szId) {
   UIElementProxy proxy;
 
-  if (!m_pSkinRes || !szId)
+  if (!m_resource_bundle || !szId)
     return proxy;
 
   // 1. 从缓存m_listUIElement中查找结点
@@ -154,14 +154,14 @@ UIElementProxy LayoutManager::FindListItemElement(const char *szId) {
 UIElementProxy LayoutManager::load_window_by_id(const char *szTagName,
                                                 const char *szId) {
   UIElementProxy proxy;
-  SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
+  BundleSource *pDataSource = m_resource_bundle->GetSource();
   if (!pDataSource)
     return proxy;
 
   std::string strFile(szId);
   strFile.append("." XML_XML);
 
-  SkinParseEngine engine(m_pSkinRes);
+  SkinParseEngine engine(m_resource_bundle);
   if (engine.Parse(pDataSource, strFile.c_str())) {
     // TODO: parse只是将文件添加到列表中，还得重新从列表中拿到xml结点
     // 有待优化
@@ -202,7 +202,7 @@ LayoutManager::load_element_from_layout_config(const char *szTagName,
   if (!szId)
     return UIElementProxy();
 
-  SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
+  BundleSource *pDataSource = m_resource_bundle->GetSource();
   if (!pDataSource)
     return UIElementProxy();
 
@@ -214,7 +214,7 @@ LayoutManager::load_element_from_layout_config(const char *szTagName,
       continue;
     }
 
-    SkinParseEngine engine(m_pSkinRes);
+    SkinParseEngine engine(m_resource_bundle);
     if (engine.Parse(pDataSource, pConfigItem->GetPath())) {
       // TODO: parse只是将文件添加到列表中，还得重新从列
       // 表中拿到xml结点。有待优化
@@ -284,7 +284,7 @@ bool IsTrue(const char *szValue) {
 // 得到一个元素指针，创建该元素及其子结点，并返回对象指针
 Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
                                     IMessage *pNotifyTarget, int flags) {
-  Application *pUIApp = m_pSkinRes->GetUIApplication();
+  Application *pUIApp = m_resource_bundle->GetUIApplication();
 
   Object *pObj = nullptr;
   std::string bstrTagName = pUIElement->GetTagName();
@@ -297,13 +297,13 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
     return nullptr;
 
   IObject *pIObject = pUIApp->CreateUIObjectByName(bstrTagName.c_str(),
-                                                   m_pSkinRes->GetIResource());
+                                                   m_resource_bundle->GetIResource());
   if (nullptr == pIObject) {
     // 尝试寻找该Tag是否被注册了
     pfnParseControlTag func = nullptr;
     pUIApp->GetControlTagParseFunc(bstrTagName.c_str(), &func);
     if (func) {
-      eParseRet = func(pUIElement->GetIUIElement(), m_pSkinRes->GetIResource(),
+      eParseRet = func(pUIElement->GetIUIElement(), m_resource_bundle->GetIResource(),
                        pParent ? pParent->GetIObject() : nullptr, &pIObject);
 
       if (eParseRet == ParseControl_Failed) {
@@ -395,7 +395,7 @@ bool LayoutManager::ReLoadLayout(Object *pRootObj, const char *szNewLayoutId,
 void LayoutManager::ReloadChildObjects(
     Object *pObjParent, UIElement *pObjElement,
     std::map<std::string, Object *> &mapNamedChildren) {
-  Application *pUIApp = m_pSkinRes->GetUIApplication();
+  Application *pUIApp = m_resource_bundle->GetUIApplication();
   UIElementProxy childElem = pObjElement->FirstChild();
 
   // 遍历所有子对象
@@ -460,14 +460,14 @@ void LayoutManager::ReloadChildObjects(
 //////////////////////////////////////////////////////////////////////////
 
 int LayoutManager::UIParseLayoutTagCallback(IUIElement *pElem,
-                                             IResource *pSkinRes) {
-  ILayoutManager &pLayoutMgr = pSkinRes->GetLayoutManager();
+                                             IResourceBundle *resource_bundle) {
+  ILayoutManager &pLayoutMgr = resource_bundle->GetLayoutManager();
   pLayoutMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
   return true;
 }
 int LayoutManager::UIParseLayoutConfigTagCallback(IUIElement *pElem,
-                                                   IResource *pSkinRes) {
-  ILayoutManager &pLayoutMgr = pSkinRes->GetLayoutManager();
+                                                   IResourceBundle *resource_bundle) {
+  ILayoutManager &pLayoutMgr = resource_bundle->GetLayoutManager();
   pLayoutMgr.GetImpl()->ParseLayoutConfigTag(pElem->GetImpl());
   return 0;
 }

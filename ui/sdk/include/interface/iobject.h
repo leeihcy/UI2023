@@ -4,13 +4,13 @@
 
 namespace ui {
 struct IWindow;
-struct IResource;
+struct IResourceBundle;
 struct IMeta;
 struct ITextRenderBase;
 struct IRenderFont;
 struct IRenderBase;
 struct ILayer;
-struct IMapAttribute;
+struct IAttributeMap;
 struct ILayoutParam;
 struct LayerAnimateParam;
 
@@ -76,16 +76,16 @@ typedef struct tagObjState {
 class Object;
 struct UIAPI IObject : public IMessage {
   IApplication *GetUIApplication();
-  IResource *GetResource();
+  IResourceBundle *GetResource();
   IWindow *GetWindow();
   const char *GetId();
   void SetId(const char *szText);
   // HWND GetHWND();
   void InitDefaultAttrib();
-  std::shared_ptr<IMapAttribute> GetMapAttribute();
+  std::shared_ptr<IAttributeMap> GetMapAttribute();
   void ClearMapAttribute();
   void SetOutRef(void **ppOutRef);
-  // void LoadAttributeFromMap(IMapAttribute *pMatAttrib, bool bReload);
+  // void LoadAttributeFromMap(IAttributeMap *pMatAttrib, bool bReload);
   void LoadAttributeFromXml(IUIElement *pXmlElement, bool bReload);
   const char *GetAttribute(const char *szKey, bool bErase);
   void AddAttribute(const char *szKey, const char *szValue);

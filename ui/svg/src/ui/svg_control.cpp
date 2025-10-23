@@ -1,6 +1,6 @@
 #include "svg_control.h"
 #include "sdk/include/interface/iattribute.h"
-#include "sdk/include/interface/iskindatasource.h"
+#include "sdk/include/interface/ibundlesource.h"
 #include "src/element/dom.h"
 #include "svg_layout.h"
 #include "svg_meta.h"
@@ -59,14 +59,15 @@ void Svg::setImageResourceId(const char *id) {
   if (!id || !id[0]) {
     return;
   }
-  ui::ISkinDataSource *data_source = m_pISvg->GetResource()->GetDataSource();
+  ui::IBundleSource *data_source = m_pISvg->GetResource()->GetSource();
   if (!data_source) {
     return;
   }
 
-  data_source->Load(
-      id, ui::Slot<void(Svg *, const char *), Svg *>(
-              [](Svg *pthis, const char *data) { pthis->Load(data); }, this));
+  data_source->LoadBuffer(id, ui::Slot<void(Svg *, const char *, unsigned int), Svg *>(
+                            [](Svg *pthis, const char *data,
+                               unsigned int size) { pthis->Load(data); },
+                            this));
 }
 const char *Svg::getImageResourceId() {
   // TODO:

@@ -26,19 +26,19 @@ void IApplication::Quit() { m_pImpl->Quit(); }
 
 Application *IApplication::GetImpl() { return m_pImpl; }
 
-IResource *IApplication::RootBundle() {
+IResourceBundle *IApplication::RootBundle() {
   return m_pImpl->GetResourceManager().RootBundle().GetIResource();
 }
 
-IResource *IApplication::LoadResource(const char *szSkinResPath) {
-  Resource *p = m_pImpl->GetResourceManager().LoadResource(szSkinResPath);
+IResourceBundle *IApplication::LoadResource(const char *szSkinResPath) {
+  ResourceBundle *p = m_pImpl->GetResourceManager().LoadResource(szSkinResPath);
   if (p)
     return p->GetIResource();
   return nullptr;
 }
 
-IResource *IApplication::LoadResource(llong hInstance, int resId) {
-  Resource *p = m_pImpl->GetResourceManager().LoadResource(hInstance, resId);
+IResourceBundle *IApplication::LoadResource(llong hInstance, int resId) {
+  ResourceBundle *p = m_pImpl->GetResourceManager().LoadResource(hInstance, resId);
   if (p)
     return p->GetIResource();
   return nullptr;
@@ -62,8 +62,8 @@ uia::IAnimate *IApplication::GetAnimate() { return m_pImpl->GetAnimate(); }
 // {
 // 	return m_pImpl->GetMessageFilterMgr();
 // }
-IResource *IApplication::GetDefaultSkinRes() {
-  Resource *p = m_pImpl->GetDefaultSkinRes();
+IResourceBundle *IApplication::GetDefaultSkinRes() {
+  ResourceBundle *p = m_pImpl->GetDefaultSkinRes();
   if (p)
     return p->GetIResource();
   return nullptr;
@@ -85,11 +85,11 @@ bool IApplication::GetControlTagParseFunc(const char *szTag,
 }
 
 IObject *IApplication::CreateUIObjectByName(const char *szName,
-                                            IResource *pISkinRes) {
+                                            IResourceBundle *pISkinRes) {
   return m_pImpl->CreateUIObjectByName(szName, pISkinRes);
 }
 IObject *IApplication::CreateUIObjectByClsid(const Uuid &clsid,
-                                             IResource *pISkinRes) {
+                                             IResourceBundle *pISkinRes) {
   return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
 }
 bool IApplication::RegisterUIObject(IMeta *p) {
@@ -106,14 +106,14 @@ bool IApplication::RegisterUIRenderBase(IRenderBaseMeta &meta) {
 // bool  IApplication::CreateRenderBaseByName(
 // 		const char* szName, IObject* pObject, IRenderBase** ppOut)
 // {
-//     IResource* pSkinRes = nullptr;
+//     IResourceBundle* resource_bundle = nullptr;
 //     if (pObject)
-//         pSkinRes = pObject->GetResource();
+//         resource_bundle = pObject->GetResource();
 //     else
-//         pSkinRes = GetDefaultSkinRes();
+//         resource_bundle = GetDefaultSkinRes();
 //
 //     return m_pImpl->GetRenderBaseFactory().CreateRenderBaseByName(
-// 		pSkinRes, szName, pObject, ppOut);
+// 		resource_bundle, szName, pObject, ppOut);
 // }
 //
 // const char*  IApplication::GetRenderBaseName(int nType)
@@ -121,7 +121,7 @@ bool IApplication::RegisterUIRenderBase(IRenderBaseMeta &meta) {
 // 	return m_pImpl->GetRenderBaseFactory().GetRenderBaseName(nType);
 // }
 
-std::shared_ptr<IRenderBase> IApplication::CreateRenderBase(IResource* resource, int type) {
+std::shared_ptr<IRenderBase> IApplication::CreateRenderBase(IResourceBundle* resource, int type) {
   return m_pImpl->GetRenderBaseFactory().CreateRenderBase(resource, type);
 }
 
@@ -134,13 +134,13 @@ bool IApplication::RegisterUITextRender(ITextRenderBaseMeta &meta) {
   return m_pImpl->GetTextRenderFactroy().RegisterUITextRender(meta);
 }
 std::shared_ptr<ITextRenderBase> IApplication::CreateTextRenderBaseByName(
-    IResource* resource, const char *name) {
+    IResourceBundle* resource, const char *name) {
   return m_pImpl->GetTextRenderFactroy().CreateTextRenderBaseByName(
       resource, name);
 }
 
 std::shared_ptr<ITextRenderBase>
-IApplication::CreateTextRenderBase(IResource* resource, int nType) {
+IApplication::CreateTextRenderBase(IResourceBundle* resource, int nType) {
   return m_pImpl->GetTextRenderFactroy().CreateTextRender(resource, nType);
 }
 void IApplication::EnumTextRenderBaseName(

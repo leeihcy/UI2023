@@ -25,7 +25,7 @@ public:
 protected:
 	virtual void  virtualOnSize(unsigned int nType, unsigned int nWidth, unsigned int nHeight);
 
-    HRESULT  FinalConstruct(IResource* p);
+    HRESULT  FinalConstruct(IResourceBundle* p);
 	void  OnSerialize(SerializeParam* pData);
     BOOL  OnMouseWheel(unsigned int nFlags, short zDelta, POINT pt);
 	void  OnLButtonDown(unsigned int nFlags, POINT point);

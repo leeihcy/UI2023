@@ -319,14 +319,14 @@ void PugiXmlElement::enum_attr(
   }
 }
 
-void PugiXmlElement::GetAttribList(IMapAttribute *ppMapAttrib) {
+void PugiXmlElement::GetAttribList(IAttributeMap *ppMapAttrib) {
   //(*ppMapAttrib)->SetTag(m_node.name());
 
   enum_attr([ppMapAttrib](const char *k, const char *v) {
     ppMapAttrib->AddAttr(k, v);
   });
 }
-void PugiXmlElement::GetAttribList2(IListAttribute **ppListAttrib) {
+void PugiXmlElement::GetAttribList2(IAttributeList **ppListAttrib) {
   UICreateIListAttribute(ppListAttrib);
 
   //(*ppListAttrib)->SetTag(m_node.name());
@@ -336,19 +336,19 @@ void PugiXmlElement::GetAttribList2(IListAttribute **ppListAttrib) {
   });
 }
 
-void PugiXmlElement::set_attr_by_prefix(IListAttribute *pListAttrib,
+void PugiXmlElement::set_attr_by_prefix(IAttributeList *attribute_list,
                                         const char *szPrefix) {
-  UIASSERT(pListAttrib);
+  UIASSERT(attribute_list);
   UIASSERT(szPrefix);
 
   int nLength = (int)strlen(szPrefix);
 
-  pListAttrib->BeginEnum();
+  attribute_list->BeginEnum();
 
   const char *szKey = nullptr;
   const char *szValue = nullptr;
   pugi::xml_node propnode;
-  while (pListAttrib->EnumNext(&szKey, &szValue)) {
+  while (attribute_list->EnumNext(&szKey, &szValue)) {
     if (strstr(szKey, szPrefix) == szKey) {
       if (!propnode) {
         propnode = m_node.prepend_child(XML_PROP);
@@ -357,14 +357,14 @@ void PugiXmlElement::set_attr_by_prefix(IListAttribute *pListAttrib,
 
       // +1 补上后面的一个 .
       propnode.append_attribute(szKey + nLength + 1).set_value(szValue);
-      pListAttrib->EraseAttr(szKey);
+      attribute_list->EraseAttr(szKey);
     }
   }
-  pListAttrib->EndEnum();
+  attribute_list->EndEnum();
 }
 
-bool PugiXmlElement::SetAttribList2(IListAttribute *pListAttrib) {
-  if (!pListAttrib)
+bool PugiXmlElement::SetAttribList2(IAttributeList *attribute_list) {
+  if (!attribute_list)
     return false;
 
   ClearAttrib();
@@ -379,16 +379,16 @@ bool PugiXmlElement::SetAttribList2(IListAttribute *pListAttrib) {
 
   int nCount = sizeof(szPrefixArray) / sizeof(const char *);
   for (int i = 0; i < nCount; i++) {
-    set_attr_by_prefix(pListAttrib, szPrefixArray[i]);
+    set_attr_by_prefix(attribute_list, szPrefixArray[i]);
   }
 
-  pListAttrib->BeginEnum();
+  attribute_list->BeginEnum();
   const char *szKey = nullptr;
   const char *szValue = nullptr;
-  while (pListAttrib->EnumNext(&szKey, &szValue)) {
+  while (attribute_list->EnumNext(&szKey, &szValue)) {
     AddAttrib(szKey, szValue);
   }
-  pListAttrib->EndEnum();
+  attribute_list->EndEnum();
 
   return true;
 }

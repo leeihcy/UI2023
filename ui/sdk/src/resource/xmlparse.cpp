@@ -2283,13 +2283,13 @@ IStyleManager*  CXmlLayoutParse::getStyleMgr()
 	if (NULL == pSkinMgr)
 		return NULL;
 
-	IResource* pSkinRes = NULL;
-	pSkinMgr->GetActiveSkin(&pSkinRes);
-	if (NULL == pSkinRes)
+	IResourceBundle* resource_bundle = NULL;
+	pSkinMgr->GetActiveSkin(&resource_bundle);
+	if (NULL == resource_bundle)
 		return NULL;
 
 	IStyleManager* pStyleMgr = NULL;
-	pSkinRes->GetStyleManager(&pStyleMgr);
+	resource_bundle->GetStyleManager(&pStyleMgr);
 	
 	return pStyleMgr;
 }
@@ -2402,8 +2402,8 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 			pResItem = pResLayout->AddResItem(pObj);
 	}
 
-    std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
-    UIASSERT(pMapAttrib);
+    std::shared_ptr<IAttributeMap> attribute_map = UICreateIMapAttribute();
+    UIASSERT(attribute_map);
 
 	//
 	//	加载所有属性
@@ -2414,12 +2414,12 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 		if (_T("") == key)
 			break;
 
-        pMapAttrib->AddAttr(key.c_str(), m_xml.GetAttrib(key).c_str());
+        attribute_map->AddAttr(key.c_str(), m_xml.GetAttrib(key).c_str());
 	}
 
 	if (m_pUIApp->IsDesignMode() && NULL != pResItem)
 	{
-		pResItem->SetSelfAttr(pMapAttrib);
+		pResItem->SetSelfAttr(attribute_map);
 	}
 
 	//
@@ -2428,11 +2428,11 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 
     std::string strID, strStyleClass;  // 避免pMapAttrib->GetAttr返回临时变量。
     {
-	    const wchar_t*  szID = pMapAttrib->GetAttr(XML_ID, false);
+	    const wchar_t*  szID = attribute_map->GetAttr(XML_ID, false);
         if (szID)
             strID = szID;
 
-    	const wchar_t*  szStyleClass = pMapAttrib->GetAttr(XML_STYLECLASS, false);
+    	const wchar_t*  szStyleClass = attribute_map->GetAttr(XML_STYLECLASS, false);
         if (szStyleClass)
             strStyleClass = szStyleClass;
     }
@@ -2442,12 +2442,12 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 	if (m_pUIApp->IsDesignMode() && NULL != pResItem)
 	{
 		//ATTRMAP attrMapStyle;
-        std::shared_ptr<IMapAttribute> pAttrMapStyle = UICreateIMapAttribute();
+        std::shared_ptr<IAttributeMap> pAttrMapStyle = UICreateIMapAttribute();
 		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pAttrMapStyle.get());
 		pResItem->SetStyleAttr(pAttrMapStyle);
 
-		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pMapAttrib.get());
-		pResItem->SetLastAttr(pMapAttrib);
+		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), attribute_map.get());
+		pResItem->SetLastAttr(attribute_map);
 
 #if 0 // -- 架构改造
 		IUIBuilder* pUIBuilder = NULL;
@@ -2460,7 +2460,7 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
 	}
 	else
 	{
-		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), pMapAttrib);  // 非编辑模式下，直接使用该mapattrib
+		pStyleMgr->LoadStyle(szTagName, strStyleClass.c_str(), strID.c_str(), attribute_map);  // 非编辑模式下，直接使用该mapattrib
 	}
 
 	// 
@@ -2470,8 +2470,8 @@ bool CXmlLayoutParse::loadAttributeForCurrentObjectInXml(Object* pObj, LayoutRes
     {
         UISendMessage(pObj, UI_WM_RESETATTRIBUTE);
     }
-    UISendMessage(pObj, UI_WM_SETATTRIBUTE, (long)pMapAttrib, (long)bReload);
-    SAFE_RELEASE(pMapAttrib);
+    UISendMessage(pObj, UI_WM_SETATTRIBUTE, (long)attribute_map, (long)bReload);
+    SAFE_RELEASE(attribute_map);
 
 // 	if (bReload)
 // 	{
@@ -2656,7 +2656,7 @@ bool CXmlLayoutParse::loadRenderChain(Object* pObjParent)
 		if (m_xml.GetTagName() != XML_RENDERCHAIN_LAYER)
 			continue;
 
-        std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
+        std::shared_ptr<IAttributeMap> attribute_map = UICreateIMapAttribute();
 
 		for (int j = 0; ; j++)
 		{
@@ -2665,10 +2665,10 @@ bool CXmlLayoutParse::loadRenderChain(Object* pObjParent)
 				break;
 
 			std::string value = m_xml.GetAttrib( key );
-            pMapAttrib->AddAttr(key.c_str(), m_xml.GetAttrib(key).c_str());
+            attribute_map->AddAttr(key.c_str(), m_xml.GetAttrib(key).c_str());
 		}
-		pWindow->InsertRenderLayer(pMapAttrib);
-        SAFE_RELEASE(pMapAttrib);
+		pWindow->InsertRenderLayer(attribute_map);
+        SAFE_RELEASE(attribute_map);
 	}
 	return true;
 }

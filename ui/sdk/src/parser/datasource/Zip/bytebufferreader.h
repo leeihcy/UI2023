@@ -1,5 +1,5 @@
 #pragma once
-#include "include/interface/iskindatasource.h"
+#include "include/interface/ibundlesource.h"
 #include <ios>
 
 class ByteBufferReader : public ui::IByteBufferReader

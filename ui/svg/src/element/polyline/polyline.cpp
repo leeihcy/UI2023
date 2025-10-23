@@ -12,7 +12,7 @@ void Polyline::ShapeRender(RenderContext &context, SkPaint& paint) {
 void Polyline::SetAttribute(ui::SerializeParam &data) {
   Shape::SetAttribute(data);
 
-  const char *text = data.pMapAttrib->GetAttr("points", true);
+  const char *text = data.attribute_map->GetAttr("points", true);
   load_points(text);
 }
 

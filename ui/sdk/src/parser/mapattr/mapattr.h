@@ -4,7 +4,7 @@
 
 namespace ui {
 
-class CMapAttribute : public IMapAttribute {
+class CMapAttribute : public IAttributeMap {
 public:
   CMapAttribute();
   ~CMapAttribute();
@@ -39,10 +39,10 @@ public:
   virtual bool AddAttr_REGION4(const char *szKey, REGION4 *pr) override;
   virtual bool AddAttr_int(const char *szKey, int nValue) override;
 
-  virtual std::shared_ptr<IMapAttribute>
+  virtual std::shared_ptr<IAttributeMap>
     ExtractMapAttrByPrefix(const char *szPrefix, bool bErase) override;
   // virtual void Destroy() override;
-  virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) override;
+  virtual void CopyTo(IAttributeMap *pDestMapAttrib, bool bOverride) override;
 
   virtual void BeginEnum() override;
   virtual bool EnumNext(const char **szKey, const char **szValue) override;
@@ -68,7 +68,7 @@ public:
   ListAttrItem *pPrev;
 };
 
-class CListAttribute : public IListAttribute {
+class CListAttribute : public IAttributeList {
 public:
   CListAttribute();
   ~CListAttribute();

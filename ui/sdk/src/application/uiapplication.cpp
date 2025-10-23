@@ -17,7 +17,7 @@
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
 #include "src/resource/stylemanager.h"
-#include "src/skin_parse/skinparseengine.h"
+#include "src/parser/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "ui/gpu/include/api.h"
 #include <cstddef>
@@ -150,14 +150,14 @@ void Application::x_Init() {
 #endif
 }
 
-Resource *Application::GetDefaultSkinRes() {
+ResourceBundle *Application::GetDefaultSkinRes() {
   return m_resource_manager.GetDefaultSkinRes();
 }
 MessageLoop &Application::GetMessageLoop() { return m_message_loop; }
 
 Application::~Application(void) {
   // 应用程序退出日志
-  UI_LOG_INFO("------------  UI Quit ----------------");
+  UI_LOG_INFO("\n\n------------  UI Quit ----------------");
 
   if (m_pUIAutoTest) {
     m_pUIAutoTest->Release();
@@ -361,7 +361,7 @@ void Application::RestoreRegisterUIObject() {
 }
 
 IObject *Application::CreateUIObjectByName(const char *szXmlName,
-                                           IResource *pSkinRes) {
+                                           IResourceBundle *resource_bundle) {
   if (!szXmlName)
     return nullptr;
 
@@ -369,7 +369,7 @@ IObject *Application::CreateUIObjectByName(const char *szXmlName,
   for (int i = 0; i < nSize; i++) {
     if (0 == strcmp(szXmlName, m_vecUIObjectDesc[i]->Name())) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->Create(pSkinRes, (void **)&p);
+      m_vecUIObjectDesc[i]->Create(resource_bundle, (void **)&p);
       return p;
     }
   }
@@ -379,12 +379,12 @@ IObject *Application::CreateUIObjectByName(const char *szXmlName,
 }
 
 IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
-                                            IResource *pSkinRes) {
+                                            IResourceBundle *resource_bundle) {
   int nSize = (int)m_vecUIObjectDesc.size();
   for (int i = 0; i < nSize; i++) {
     if (clsid == m_vecUIObjectDesc[i]->UUID()) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->Create(pSkinRes, (void **)&p);
+      m_vecUIObjectDesc[i]->Create(resource_bundle, (void **)&p);
       return p;
     }
   }
@@ -539,7 +539,7 @@ void Application::LoadUIObjectListToToolBox() {
 }
 
 std::shared_ptr<IRenderBase>
-Application::CreateRenderBaseByName(IResource *resource, const char *name) {
+Application::CreateRenderBaseByName(IResourceBundle *resource, const char *name) {
   return m_renderBaseFactory.CreateRenderBaseByName(resource, name);
 }
 

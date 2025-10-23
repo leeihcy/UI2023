@@ -193,7 +193,7 @@ public:
     BOOL  ProcessItemMKMessage(UIMSG* pMSG);
 
 protected:
-    // void  SetAttribute(IMapAttribute* pMapAttr, bool bReload);
+    // void  SetAttribute(IAttributeMap* pMapAttr, bool bReload);
     void  OnSize();
     void  OnLazyLoadData();
     long  OnDelayOp(unsigned int, WPARAM, LPARAM);

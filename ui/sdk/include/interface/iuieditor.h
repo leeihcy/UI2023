@@ -23,7 +23,7 @@ struct ITextRenderBaseAttribute;
 struct IObject;
 struct IMeta;
 struct IUIElement;
-struct IResource;
+struct IResourceBundle;
 struct IApplication;
 
 struct EditorAddObjectResData {
@@ -79,9 +79,9 @@ struct IUIEditor {
   virtual void OnCursorItemDeleteInd(
       /*__in*/ ICursorResItem *pItem) = 0;
 
-  virtual void OnStyleChanged(IResource *pSkinRes, IStyleResItem *p,
+  virtual void OnStyleChanged(IResourceBundle *resource_bundle, IStyleResItem *p,
                               EditorOPType e) = 0;
-  virtual void OnStyleAttributeChanged(IResource *pSkinRes, IStyleResItem *p,
+  virtual void OnStyleAttributeChanged(IResourceBundle *resource_bundle, IStyleResItem *p,
                                        const char *szKey,
                                        EditorOPType e) = 0;
   virtual void EditorStringAttribute(IStringAttribute *,

@@ -15,9 +15,9 @@ I18nManager::~I18nManager()
     m_listElement.clear();
 }
 
-int  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResource* pSkinRes)
+int  I18nManager::UIParseI18nTagCallback(IUIElement* pElem, IResourceBundle* resource_bundle)
 {
-	I18nManager& mgr = pSkinRes->GetImpl()->GetI18nManager();
+	I18nManager& mgr = resource_bundle->GetImpl()->GetI18nManager();
 	return mgr.ParseNewElement(pElem->GetImpl());
 }
 
@@ -41,7 +41,7 @@ int  I18nManager::ParseNewElement(UIElement* p)
 
 void  I18nManager::parse(UIElement* p)
 {
-	const char* szLanguage = m_pSkinRes->GetSkinMgr().GetCurrentLanguage();
+	const char* szLanguage = m_resource_bundle->GetSkinMgr().GetCurrentLanguage();
 
 	UIElementProxy xml = p->FirstChild();
 	while (xml)

@@ -2,15 +2,15 @@
 #include "include/inc.h"
 #include "include/macro/helper.h"
 #include "include/util/log.h"
-#include "src/skin_parse/datasource/zip/bytebufferreader.h"
-#include "src/skin_parse/xml/xmlwrap.h"
+#include "src/parser/datasource/zip/bytebufferreader.h"
+#include "src/parser/xml/xmlwrap.h"
 #include <vector>
 #define MAX_PATH 256
 
 namespace ui {
 
 ZipDataSource::ZipDataSource()
-    : m_ISkinDataSource(static_cast<SkinDataSource *>(this)) {
+    : m_IBundleSource(static_cast<BundleSource *>(this)) {
   m_unzip = 0;
 }
 
@@ -21,13 +21,11 @@ ZipDataSource::~ZipDataSource() {
   }
 }
 
-ZipDataSource *ZipDataSource::Create() { return new ZipDataSource(); }
-void ZipDataSource::Release() { delete this; }
-ISkinDataSource *ZipDataSource::GetISkinDataSource() {
-  return &m_ISkinDataSource;
+IBundleSource *ZipDataSource::GetIBundleSource() {
+  return &m_IBundleSource;
 }
 
-eResourceFormat ZipDataSource::GetType() { return eResourceFormat::Zip; }
+eBundleFormat ZipDataSource::GetType() { return eBundleFormat::Zip; }
 
 void ZipDataSource::SetPath(const char *szPath) {
   if (szPath)
@@ -37,17 +35,17 @@ void ZipDataSource::SetPath(const char *szPath) {
 }
 const char *ZipDataSource::GetPath() { return m_strPath.c_str(); }
 
-void ZipDataSource::SetData(byte *data, int size) {
-  UIASSERT(!m_unzip);
+// void ZipDataSource::SetData(byte *data, int size) {
+//   UIASSERT(!m_unzip);
 
-  UIASSERT(false && "TODO");
+//   UIASSERT(false && "TODO");
 
-  // m_hZip = OpenZip(data, size, nullptr);
-  // if (nullptr == m_hZip) {
-  //   UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
-  //   return;
-  // }
-}
+//   // m_hZip = OpenZip(data, size, nullptr);
+//   // if (nullptr == m_hZip) {
+//   //   UI_LOG_ERROR("OpenZip Failed. file=%s", m_strPath.c_str());
+//   //   return;
+//   // }
+// }
 
 bool ZipDataSource::Init() {
   if (nullptr == m_unzip) {
@@ -60,7 +58,12 @@ bool ZipDataSource::Init() {
   return true;
 }
 
-bool ZipDataSource::unzip_path(const char *path, std::vector<byte> &buffer) {
+bool ZipDataSource::loadFullPath(const char *path, std::string &full_path) { 
+  UIASSERT(false);
+  return false;
+}
+
+bool ZipDataSource::loadBuffer(const char* path, std::vector<unsigned char>& buffer) {
   if (!m_unzip) {
     return false;
   }
@@ -80,13 +83,11 @@ bool ZipDataSource::unzip_path(const char *path, std::vector<byte> &buffer) {
     return false;
   }
 
-  // 打开当前文件进行解压
   if (unzOpenCurrentFile(m_unzip) != UNZ_OK) {
     UI_LOG_ERROR("Cannot open file %s in zip\n", path);
     return false;
   }
 
-  // 分配内存缓冲区
   unsigned int size = file_info.uncompressed_size;
   std::vector<byte> data(size);
 
@@ -102,17 +103,16 @@ bool ZipDataSource::unzip_path(const char *path, std::vector<byte> &buffer) {
   return true;
 }
 
-bool ZipDataSource::Load_UIDocument(UIDocument *pDocument, const char *path) {
-  if (!m_unzip && !Init()) {
-    return false;
-  }
-
+bool ZipDataSource::LoadBuffer(const char *path,
+                          slot<void(const char *, unsigned int)> &&callback) {
   std::vector<byte> buffer;
-  if (!unzip_path(path, buffer)) {
+  if (!loadBuffer(path, buffer)) {
+    callback.emit(nullptr, 0);
     return false;
+  } else {
+    callback.emit((const char*)buffer.data(), buffer.size());
+    return true;
   }
-
-  return pDocument->LoadData(buffer.data(), buffer.size());
 }
 
 void ZipDataSource::TranslatePath(const char *szOrignPath, char *szLastPath) {
@@ -137,6 +137,29 @@ void ZipDataSource::TranslatePath(const char *szOrignPath, char *szLastPath) {
   *p2 = '\0';
 }
 
+bool ZipDataSource::FileExist(const char *szPath) {
+  if (!m_unzip) {
+    return false;
+  }
+
+  // 第二个参数："folder/test.txt"
+  // 第三个参数：0表示大小写敏感，1为不敏感
+  int result = unzLocateFile(m_unzip, szPath, 0);
+  return result == UNZ_OK;
+}
+
+bool ZipDataSource::Load_UIDocument(UIDocument *pDocument, const char *path) {
+  if (!m_unzip && !Init()) {
+    return false;
+  }
+
+  std::vector<byte> buffer;
+  if (!loadBuffer(path, buffer)) {
+    return false;
+  }
+
+  return pDocument->LoadData(buffer.data(), buffer.size());
+}
 // 注：zip内部的路径符号是/
 bool ZipDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap, const char *path,
                                       RENDER_BITMAP_LOAD_FLAG e) {
@@ -147,7 +170,7 @@ bool ZipDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap, const char *path,
     return false;
 
   std::vector<byte> buffer;
-  if (!unzip_path(path, buffer)) {
+  if (!loadBuffer(path, buffer)) {
     return false;
   }
 
@@ -163,7 +186,7 @@ bool ZipDataSource::Load_StreamBuffer(const char *path,
     return false;
 
   std::vector<byte> buffer;
-  if (!unzip_path(path, buffer)) {
+  if (!loadBuffer(path, buffer)) {
     return false;
   }
 
@@ -172,17 +195,6 @@ bool ZipDataSource::Load_StreamBuffer(const char *path,
   *pp = pBuffer;
 
   return true;
-}
-
-bool ZipDataSource::FileExist(const char *szPath) {
-  if (!m_unzip) {
-    return false;
-  }
-
-  // 第二个参数："folder/test.txt"
-  // 第三个参数：0表示大小写敏感，1为不敏感
-  int result = unzLocateFile(m_unzip, szPath, 0);
-  return result == UNZ_OK;
 }
 
 } // namespace ui

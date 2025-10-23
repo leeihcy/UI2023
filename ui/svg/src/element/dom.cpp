@@ -19,10 +19,10 @@ namespace svg {
 
 Dom::Dom() {} // ui::Svg &svg) : m_svg(svg) {}
 
-void create_attribute_map(pugi::xml_node &node, ui::IMapAttribute *pMapAttrib) {
+void create_attribute_map(pugi::xml_node &node, ui::IAttributeMap *attribute_map) {
   for (pugi::xml_attribute attr = node.first_attribute(); !attr.empty();
        attr = attr.next_attribute()) {
-    pMapAttrib->AddAttr(attr.name(), attr.as_string());
+    attribute_map->AddAttr(attr.name(), attr.as_string());
   }
 }
 
@@ -87,12 +87,12 @@ std::unique_ptr<Element> Dom::handle_element(pugi::xml_node &node) {
     return nullptr;
   }
 
-  std::shared_ptr<ui::IMapAttribute> pMapAttrib = ui::UICreateIMapAttribute();
-  create_attribute_map(node, pMapAttrib.get());
+  std::shared_ptr<ui::IAttributeMap> attribute_map = ui::UICreateIMapAttribute();
+  create_attribute_map(node, attribute_map.get());
 
   ui::SerializeParam data = {0};
   data.nFlags = ui::SERIALIZEFLAG_LOAD;
-  data.pMapAttrib = pMapAttrib.get();
+  data.attribute_map = attribute_map.get();
   element->SetAttribute(data);
 
   scan_node(element.get(), node);

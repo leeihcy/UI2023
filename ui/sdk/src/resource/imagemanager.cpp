@@ -12,16 +12,16 @@ namespace ui {
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-ImageManager::ImageManager(Resource *pSkinRes)
-    : m_resImage(pSkinRes)
+ImageManager::ImageManager(ResourceBundle *resource_bundle)
+    : m_resImage(resource_bundle)
 #if 0 // defined(OS_WIN)
-, m_resGif(pSkinRes)
+, m_resGif(resource_bundle)
 #endif
 {
   m_pIImageManager = nullptr;
-  m_pSkinRes = pSkinRes;
+  m_resource_bundle = resource_bundle;
 #if 0 // defined(OS_WIN)    
-	m_resGif.SetUIApplication(pSkinRes->GetUIApplication());
+	m_resGif.SetUIApplication(resource_bundle->GetUIApplication());
 #endif
 }
 
@@ -116,7 +116,7 @@ bool ImageManager::RemoveImageItem(const char *szId) {
   if (nullptr == szId)
     return false;
 
-  Application *pUIApp = m_pSkinRes->GetUIApplication();
+  Application *pUIApp = m_resource_bundle->GetUIApplication();
   if (!pUIApp->IsEditorMode()) {
     if (false == m_resImage.RemoveImage(szId)) {
       UI_LOG_ERROR("m_resImage.RemoveImage strID=%s Failed. ", szId);
@@ -152,8 +152,8 @@ GifRes&  ImageManager::GetGifRes()
 //////////////////////////////////////////////////////////////////////////
 
 int ImageManager::UIParseImageTagCallback(IUIElement *pElem,
-                                          IResource *pSkinRes) {
-  IImageManager &pImageMgr = pSkinRes->GetImageManager();
+                                          IResourceBundle *resource_bundle) {
+  IImageManager &pImageMgr = resource_bundle->GetImageManager();
   return pImageMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
@@ -194,15 +194,15 @@ void ImageManager::OnNewChild(UIElement *pElem) {
   std::string bstrTagName = pElem->GetTagName();
 
   //	加载所有属性
-  std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
-  pElem->GetAttribList(pMapAttrib.get());
+  std::shared_ptr<IAttributeMap> attribute_map = UICreateIMapAttribute();
+  pElem->GetAttribList(attribute_map.get());
 
   // 获取路径
   std::string bstrPath = pElem->GetData();
 
   if (bstrPath.empty()) {
     // 如果没有配置在内容中，就检查一下是否是配置成属性了
-    const char* path = pMapAttrib->GetAttr(XML_PATH, true);
+    const char* path = attribute_map->GetAttr(XML_PATH, true);
     if (path) {
       bstrPath = path;
     }
@@ -223,7 +223,7 @@ void ImageManager::OnNewChild(UIElement *pElem) {
   //     else
   //     {
   //         char szFullPath[MAX_PATH] = _T("");
-  //         util::CalcFullPathByRelative(m_pSkinRes->GetPath(), (BSTR)bstrPath,
+  //         util::CalcFullPathByRelative(m_resource_bundle->GetPath(), (BSTR)bstrPath,
   //         szFullPath);
   //
   //         strFullPath = szFullPath;
@@ -231,10 +231,10 @@ void ImageManager::OnNewChild(UIElement *pElem) {
 
   if (bstrTagName == XML_IMAGE_ITEM_CURSOR) {
 #if 0 // defined(OS_WIN)
-        CursorResItem* p = m_resCursor.LoadItem(pMapAttrib, strPath.c_str());
+        CursorResItem* p = m_resCursor.LoadItem(attribute_map, strPath.c_str());
         if (p)
         {
-            IUIEditor* pEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
+            IUIEditor* pEditor = m_resource_bundle->GetUIApplication()->GetUIEditorPtr();
             if (pEditor)
             {
                 pEditor->OnCursorItemLoad(
@@ -249,10 +249,10 @@ void ImageManager::OnNewChild(UIElement *pElem) {
 #endif
   } else if (bstrTagName == XML_IMAGE_ITEM_GIF) {
 #if 0 // defined(OS_WIN)
-        GifResItem* p = m_resGif.LoadItem(pMapAttrib, strPath);
+        GifResItem* p = m_resGif.LoadItem(attribute_map, strPath);
         if (p)
         {
-            IUIEditor* pEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
+            IUIEditor* pEditor = m_resource_bundle->GetUIApplication()->GetUIEditorPtr();
             if (pEditor)
             {
                 pEditor->OnGifItemLoad(
@@ -267,9 +267,9 @@ void ImageManager::OnNewChild(UIElement *pElem) {
 #endif
   } else {
     ImageResItem *p =
-        m_resImage.LoadItem(bstrTagName.c_str(), pMapAttrib.get(), strPath.c_str());
+        m_resImage.LoadItem(bstrTagName.c_str(), attribute_map.get(), strPath.c_str());
     if (p) {
-      IUIEditor *pEditor = m_pSkinRes->GetUIApplication()->GetUIEditorPtr();
+      IUIEditor *pEditor = m_resource_bundle->GetUIApplication()->GetUIEditorPtr();
       if (pEditor) {
         pEditor->OnImageItemLoad(p->GetIImageResItem(), pElem->GetIUIElement());
       }

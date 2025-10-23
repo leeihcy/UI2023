@@ -43,7 +43,7 @@ int main() {
   ui::SDKVersion::GetVersionText(version, 32);
 
   ui::ApplicationPtr app;
-  ui::IResource *resource = app->LoadResource("bundle/control");
+  ui::IResourceBundle *resource = app->LoadResource("bundle/control");
 
   ui::WindowPtr window(resource);
 

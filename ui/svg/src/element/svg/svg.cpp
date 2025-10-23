@@ -121,10 +121,10 @@ void Svg::SetAttribute(ui::SerializeParam &data) {
       ->SetDefault({100, ui::Length::Unit::Percentage});
 
   // 手动解析view box
-  if (data.pMapAttrib) {
-    const char *text = data.pMapAttrib->GetAttr("viewBox", true);
+  if (data.attribute_map) {
+    const char *text = data.attribute_map->GetAttr("viewBox", true);
     if (!text) {
-      text = data.pMapAttrib->GetAttr("viewbox", true);
+      text = data.attribute_map->GetAttr("viewbox", true);
     }
     if (text) {
       ui::util::ISplitStringEnum *penum = nullptr;

@@ -4,7 +4,7 @@
 #include "sdk/include/macro/uidefine.h"
 
 namespace ui {
-struct IMapAttribute;
+struct IAttributeMap;
 struct IUIElement;
 struct IUIDocument;
 
@@ -46,9 +46,9 @@ public:
   bool SetData(const char *szText);
   void SetTagName(const char *);
 
-  void GetAttribList(IMapAttribute *ppMapAttrib);
-  void GetAttribList2(IListAttribute **ppListAttrib);
-  bool SetAttribList2(IListAttribute *pListAttrib);
+  void GetAttribList(IAttributeMap *ppMapAttrib);
+  void GetAttribList2(IAttributeList **ppListAttrib);
+  bool SetAttribList2(IAttributeList *attribute_list);
 
 #if 0 // defined(OS_WIN)
   bool GetAttrib(const char *szKey, BSTR *pbstrValue);

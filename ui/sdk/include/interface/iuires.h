@@ -210,7 +210,7 @@ struct UIAPI IStyleResItem : public IRootInterface {
   // 		void  SetAttribute(const char* key, const char* value);
   // 		void  RemoveAttribute(const char* key);
 
-  std::shared_ptr<IMapAttribute> GetAttributeMap();
+  std::shared_ptr<IAttributeMap> GetAttributeMap();
 
   void SetXmlElement(IUIElement *p);
   IUIElement *GetXmlElement();
@@ -247,9 +247,9 @@ struct UIAPI IStyleRes : public IRootInterface {
   IStyleResItem *FindItem(STYLE_SELECTOR_TYPE type, const char *szId);
 
   bool LoadStyle(const char *szTagName, const char *szStyleClass,
-                 const char *szID, IMapAttribute *pMapStyle);
+                 const char *szID, IAttributeMap *pMapStyle);
   bool UnloadStyle(const char *szTagName, const char *szStyleClass,
-                   const char *szID, IListAttribute *pListAttribte);
+                   const char *szID, IAttributeList *pListAttribte);
 
 private:
   StyleRes *m_pImpl;

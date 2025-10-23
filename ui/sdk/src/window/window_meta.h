@@ -31,7 +31,7 @@ struct WindowMeta : public MetaImpl<IWindow> {
 //     static WindowMeta s;
 //     return &s;
 //   }
-//   static IWindowPtr create(IResource *p) {
+//   static IWindowPtr create(IResourceBundle *p) {
 //     IWindow *p = new ui::ObjectCreator<IWindow>();
 
 //     FinalConstructMessage msg;
@@ -51,7 +51,7 @@ struct WindowMeta : public MetaImpl<IWindow> {
 //   }
 
   
-//   void Create(IResource *p, void **pp) override {
+//   void Create(IResourceBundle *p, void **pp) override {
 //     *pp = WindowMeta::create(p);
 //   }
 //   void Destroy(void* obj) override {
@@ -103,7 +103,7 @@ public:
 		return &s;
 	}
 
-    virtual void  CreateInstance(IResource* p, void** pp) override
+    virtual void  CreateInstance(IResourceBundle* p, void** pp) override
     {
         *pp = UI::ICustomWindow::create(p);
     }

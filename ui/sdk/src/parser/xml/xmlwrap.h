@@ -8,8 +8,8 @@ struct UIDocument;
 struct IUIDocument;
 struct IUIElement;
 struct UIElement;
-struct IMapAttribute;
-struct IListAttribute;
+struct IAttributeMap;
+struct IAttributeList;
 
 // 模拟 share_ptr 实现UIElement生命周期管理。
 // 调用者只需要直接拿到UIElementProxy返回值进行调用即可，不用负责销毁
@@ -65,9 +65,9 @@ struct UIElement {
   virtual UIElementProxy NextElement() = 0;
   virtual UIElementProxy FindChild(const char *szChildName) = 0;
 
-  virtual void GetAttribList(IMapAttribute *) = 0;
-  virtual void GetAttribList2(IListAttribute **ppListAttrib) = 0;
-  virtual bool SetAttribList2(IListAttribute *pListAttrib) = 0;
+  virtual void GetAttribList(IAttributeMap *) = 0;
+  virtual void GetAttribList2(IAttributeList **ppListAttrib) = 0;
+  virtual bool SetAttribList2(IAttributeList *attribute_list) = 0;
 #if 0 // defined(OS_WIN)
   virtual bool GetAttrib(const char *szKey, BSTR *pbstrValue) = 0;
 #endif

@@ -1,7 +1,7 @@
 #include "skinparseengine.h"
-#include "datasource/skindatasource.h"
+#include "datasource/bundle_source.h"
 #include "include/inc.h"
-#include "include/interface/iskindatasource.h"
+#include "include/interface/ibundlesource.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
@@ -10,15 +10,15 @@
 
 namespace ui {
 
-SkinParseEngine::SkinParseEngine(Resource *pSkinRes) {
-  UIASSERT(pSkinRes);
-  m_pSkinRes = pSkinRes;
-  m_pUIApplication = m_pSkinRes->GetUIApplication();
+SkinParseEngine::SkinParseEngine(ResourceBundle *resource_bundle) {
+  UIASSERT(resource_bundle);
+  m_resource_bundle = resource_bundle;
+  m_pUIApplication = m_resource_bundle->GetUIApplication();
 }
 
 SkinParseEngine::~SkinParseEngine() {}
 
-bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
+bool SkinParseEngine::Parse(BundleSource *pDataSource,
                             const char *szXmlFile) {
 #if 0
 	1. 查找 <skin> root element，如果没有找到则直接返回，表示这不是一个合法文件
@@ -48,7 +48,7 @@ bool SkinParseEngine::Parse(SkinDataSource *pDataSource,
       break;
     }
 
-    m_pSkinRes->OnNewUIDocument(pUIDocument);
+    m_resource_bundle->OnNewUIDocument(pUIDocument);
 
     UIElementProxy childElem = rootElem->FirstChild();
     while (childElem) {
@@ -71,20 +71,20 @@ void SkinParseEngine::NewChild(UIElement *pElement) {
     return;
   }
 
-  func(pElement->GetIUIElement(), m_pSkinRes->GetIResource());
+  func(pElement->GetIUIElement(), m_resource_bundle->GetIResource());
 }
 
 int SkinParseEngine::UIParseIncludeTagCallback(IUIElement *pElement,
-                                               IResource *pSkinRes) {
-  if (nullptr == pElement || nullptr == pSkinRes)
+                                               IResourceBundle *resource_bundle) {
+  if (nullptr == pElement || nullptr == resource_bundle)
     return -1; // E_FAIL;
 
   const char *szData = pElement->GetData();
   if (!szData)
     return -1; // E_FAIL;
 
-  SkinParseEngine parse(pSkinRes->GetImpl());
-  SkinDataSource *pDataSource = pSkinRes->GetImpl()->GetDataSource();
+  SkinParseEngine parse(resource_bundle->GetImpl());
+  BundleSource *pDataSource = resource_bundle->GetImpl()->GetSource();
 
   if (!parse.Parse(pDataSource, szData))
     return -1; // E_FAIL;

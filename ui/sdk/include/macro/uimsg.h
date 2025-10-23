@@ -77,8 +77,8 @@
   }
 
 // #define UI_BEGIN_MSG_MAP_Ixxx(iclassname)                                      \
-//   static iclassname *CreateInstance(ui::IResource *pSkinRes) {                \
-//     return ui::ObjectNoImplCreator<iclassname>::CreateInstance(pSkinRes);      \
+//   static iclassname *CreateInstance(ui::IResourceBundle *resource_bundle) {                \
+//     return ui::ObjectNoImplCreator<iclassname>::CreateInstance(resource_bundle);      \
 //   }                                                                            \
 //   UI_BEGIN_MSG_MAP()
 
@@ -594,14 +594,14 @@ struct CREATEBYEDITORDATA {
 //
 //  message : UI_WM_FINALCONSTRUCT
 //  code : NA
-//  wparam : IResource*,对象所属资源包
+//  wparam : IResourceBundle*,对象所属资源包
 //
 #define UI_MSG_FINALCONSTRUCT 168252120
-// long  FinalConstruct(IResource* p);
+// long  FinalConstruct(IResourceBundle* p);
 #define UIMSG_FINALCONSTRUCT(func)                                             \
   if (uMsg == UI_MSG_FINALCONSTRUCT) {                                         \
     SetMsgHandled(true);                                                       \
-    lResult = func((ui::IResource *)wParam);                                  \
+    lResult = func((ui::IResourceBundle *)wParam);                                  \
     if (IsMsgHandled())                                                        \
       return true;                                                             \
   }

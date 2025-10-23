@@ -15,7 +15,7 @@ public:
 
 class StyleManager {
 public:
-  StyleManager(Resource *p);
+  StyleManager(ResourceBundle&);
   ~StyleManager(void);
 
   StyleRes &GetStyleRes();
@@ -23,8 +23,8 @@ public:
 
   UIElement *GetStyleXmlElem(const char *szId);
 
-  // bool  ParseStyle(IMapAttribute* pMapAttrib);
-  // bool  ReverseParseStyle(IListAttribute* pListAttrib);
+  // bool  ParseStyle(IAttributeMap* attribute_map);
+  // bool  ReverseParseStyle(IAttributeList* attribute_list);
 
 public:
   // Editor
@@ -42,11 +42,12 @@ public:
   //  bool     GetStyleItemInfo( STYLE_SELECTOR_TYPE eType, const char*
   //  szSelectorID, IStyleResItem** ppStyleItemInfo );
 
-  static int UIParseStyleTagCallback(IUIElement *, IResource *pSkinRes);
+  static int UIParseStyleTagCallback(IUIElement *, IResourceBundle *resource_bundle);
 
 private:
   int ParseNewElement(UIElement *pElem);
-  void OnNewChild(UIElement *pElem);
+  void onNewChild(UIElement *pElem);
+  void onNewFontFace(UIElement *pElem);
 
   bool parse_inherit(tree<StyleResItem *> *pTreeItem, StyleRes *pStyleRes);
   bool MakeInheritString(const STYLE_SELECTOR_TYPE &eStyletype,
@@ -63,8 +64,8 @@ private:
   _MyList m_listUIElement;
 
   // 对象属性
-  StyleRes m_StyleRes;
-  Resource *m_pSkinRes;
+  StyleRes m_style_res;
+  ResourceBundle& m_resource_bundle;
 };
 
 } // namespace ui

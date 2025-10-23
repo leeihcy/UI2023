@@ -1,5 +1,5 @@
 #pragma once
-#include "include/interface/iskindatasource.h"
+#include "include/interface/ibundlesource.h"
 #include <fstream>
 
 class FileBufferReader : public ui::IFileBufferReader

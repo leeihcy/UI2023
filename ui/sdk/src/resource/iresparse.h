@@ -16,7 +16,7 @@ namespace ui
 		void  SetUIApplicationPtr(IApplication* p) { m_pUIApp = p; }
 		void  SetDataSource(const std::string& strDataSource) { m_strDataSource = strDataSource; }
 		void  Release(){ delete this; }
-		const std::string& GetDataSourceStringRef() { return m_strDataSource; }
+		const std::string& GetSourceStringRef() { return m_strDataSource; }
 	};
 
 #if 0

@@ -14,7 +14,7 @@ namespace ui {
 // 将xml用的配置转成对象的属性，注意，子类重载该函数时，必须先调用父类的该方法
 // bReload表示为换肤时调用，此时不能再给某些属性赋值，例如text属性
 void Object::onSerialize(SerializeParam *pData) {
-  IMapAttribute *pMapAttrib = pData->pMapAttrib;
+  IAttributeMap *attribute_map = pData->attribute_map;
   if (pData->IsReload()) {
     m_back_render.reset();
     m_fore_render.reset();
@@ -23,7 +23,7 @@ void Object::onSerialize(SerializeParam *pData) {
   }
 
   if (pData->IsLoad()) {
-    if (nullptr == pMapAttrib) {
+    if (nullptr == attribute_map) {
       UI_LOG_ERROR("Invalid Argument.");
       return;
     }

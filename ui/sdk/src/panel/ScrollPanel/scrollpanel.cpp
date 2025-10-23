@@ -15,7 +15,7 @@ ScrollPanel::~ScrollPanel()
 {
 }
 
-HRESULT  ScrollPanel::FinalConstruct(IResource* p)
+HRESULT  ScrollPanel::FinalConstruct(IResourceBundle* p)
 {
     DO_PARENT_PROCESS(IScrollPanel, IPanel);
     if (FAILED(GetCurMsg()->lRet))

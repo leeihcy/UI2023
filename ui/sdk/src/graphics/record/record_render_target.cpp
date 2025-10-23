@@ -3,6 +3,7 @@
 #include "src/graphics/font/font.h"
 #include "src/thread/paint_op.h"
 #include "src/thread/render_thread.h"
+#include "src/resource/res_bundle.h"
 #include "third_party/skia/src/include/core/SkFont.h"
 #include "third_party/skia/src/include/core/SkFontMetrics.h"
 #include "third_party/skia/src/include/core/SkTextBlob.h"
@@ -152,7 +153,7 @@ std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
                                   /*out*/ int &measure_width);
 
 void RecordRenderTarget::DrawString(const DrawTextParam &param) {
-  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc);
+  SkFont &font = param.resource->GetImpl()->GetFontRes().GetSkiaFont(param.font_desc);
 
   SkPaint paint;
   paint.setColor(param.color.value);

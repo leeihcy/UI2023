@@ -183,6 +183,11 @@ const char *TextRenderBase::_SaveColor(Color *&pColor) {
 }
 
 void TextRenderBase::onRouteMessage(ui::Msg *msg) {
+  if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    Message::onRouteMessage(msg);
+    m_resouce = static_cast<FinalConstructMessage *>(msg)->resource->GetImpl();
+    return;
+  } 
   Message::onRouteMessage(msg);
 }
 
@@ -195,14 +200,14 @@ Size TextRenderBase::GetDesiredSize(const char *text, unsigned int limit_width) 
 }
 
 IColorRes *TextRenderBase::GetSkinColorRes() {
-  Resource *pSkinRes = GetResource();
-  if (!pSkinRes)
+  ResourceBundle *resource_bundle = GetResource();
+  if (!resource_bundle)
     return nullptr;
 
-  return &pSkinRes->GetColorRes().GetIColorRes();
+  return &resource_bundle->GetColorRes().GetIColorRes();
 }
 
-Resource *TextRenderBase::GetResource() {
+ResourceBundle *TextRenderBase::GetResource() {
   if (m_pObject) {
     return m_pObject->GetResource();
   }
@@ -211,11 +216,11 @@ Resource *TextRenderBase::GetResource() {
 }
 
 // IFontRes *TextRenderBase::GetSkinFontRes() {
-//   Resource *pSkinRes = GetResource();
-//   if (!pSkinRes)
+//   ResourceBundle *resource_bundle = GetResource();
+//   if (!resource_bundle)
 //     return nullptr;
 
-//   return &pSkinRes->GetFontRes().GetIFontRes();
+//   return &resource_bundle->GetFontRes().GetIFontRes();
 // }
 
 bool TextRenderBase::IsThemeRender() {
@@ -296,6 +301,10 @@ SimpleTextRender::~SimpleTextRender() {}
 void SimpleTextRender::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_GETTEXTDESIREDSIZE) {
     onGetDesiredSize(static_cast<GetTextDesiredSizeMessage *>(msg));
+  } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
+    TextRenderBase::onRouteMessage(msg);
+    m_draw_text_param.resource = m_resouce->GetIResource();
+    return;
   }
   else if (msg->message == UI_MSG_RENDERBASE_DRAWSTATE) {
     DrawState(&((TextRenderDrawStateMessage *)msg)->draw_state);
@@ -310,7 +319,7 @@ void SimpleTextRender::onRouteMessage(ui::Msg *msg) {
 void SimpleTextRender::onGetDesiredSize(GetTextDesiredSizeMessage *msg) {
   assert(msg->limit_width == 0); // TODO:
 
-  msg->size = FontPool::GetInstance().MeasureString(m_draw_text_param.font_desc,
+  msg->size = m_resouce->GetFontRes().MeasureString(m_draw_text_param.font_desc,
                                                     msg->text);
 }
 

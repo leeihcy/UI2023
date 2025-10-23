@@ -10,7 +10,7 @@
 #include "res_bundle.h"
 #include "resource_manager.h"
 #include "src/application/uiapplication.h"
-#include "src/skin_parse/datasource/skindatasource.h"
+#include "src/parser/datasource/bundle_source.h"
 // #include "i18nres.h"
 // #include "../Base/Object/object.h"
 #include "include/interface/ixmlwrap.h"
@@ -362,7 +362,7 @@ const char *IStyleResItem::GetAttribute(const char *szKey) {
 // 	m_pImpl->RemoveAttribute(key);
 // }
 
-std::shared_ptr<IMapAttribute> IStyleResItem::GetAttributeMap() {
+std::shared_ptr<IAttributeMap> IStyleResItem::GetAttributeMap() {
   return m_pImpl->GetAttributeMap();
 }
 
@@ -474,86 +474,86 @@ IStyleResItem *IStyleRes::FindItem(STYLE_SELECTOR_TYPE type, const char *szId) {
 }
 
 bool IStyleRes::LoadStyle(const char *szTagName, const char *szStyleClass,
-                          const char *szID, IMapAttribute *pMapStyle) {
+                          const char *szID, IAttributeMap *pMapStyle) {
   return m_pImpl->LoadStyle(szTagName, szStyleClass, szID, pMapStyle);
 }
 
 bool IStyleRes::UnloadStyle(const char *szTagName, const char *szStyleClass,
-                            const char *szID, IListAttribute *pListAttribte) {
+                            const char *szID, IAttributeList *pListAttribte) {
   return m_pImpl->UnloadStyle(szTagName, szStyleClass, szID, pListAttribte);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-IResource::IResource(Resource *p) { m_pImpl = p; }
-Resource *IResource::GetImpl() { return m_pImpl; }
+IResourceBundle::IResourceBundle(ResourceBundle *p) { m_pImpl = p; }
+ResourceBundle *IResourceBundle::GetImpl() { return m_pImpl; }
 
-void IResource::SetParentSkinRes(IResource *p) {
+void IResourceBundle::SetParentSkinRes(IResourceBundle *p) {
   m_pImpl->SetParentSkinRes(p ? p->GetImpl() : nullptr);
 }
 
-IApplication *IResource::GetUIApplication() {
+IApplication *IResourceBundle::GetUIApplication() {
   return m_pImpl->GetUIApplication()->GetIUIApplication();
 }
-IResourceManager &IResource::GetResourceManager() {
+IResourceManager &IResourceBundle::GetResourceManager() {
   return m_pImpl->GetSkinMgr().GetIResourceManager();
 }
-IImageManager &IResource::GetImageManager() {
+IImageManager &IResourceBundle::GetImageManager() {
   return m_pImpl->GetImageManager().GetIImageManager();
 }
-IColorManager &IResource::GetColorManager() {
+IColorManager &IResourceBundle::GetColorManager() {
   return m_pImpl->GetColorManager().GetIColorManager();
 }
-// IFontManager &IResource::GetFontManager() {
+// IFontManager &IResourceBundle::GetFontManager() {
 //   return m_pImpl->GetFontManager().GetIFontManager();
 // }
-IStyleManager &IResource::GetStyleManager() {
+IStyleManager &IResourceBundle::GetStyleManager() {
   return m_pImpl->GetStyleManager().GetIStyleManager();
 }
-ILayoutManager &IResource::GetLayoutManager() {
+ILayoutManager &IResourceBundle::GetLayoutManager() {
   return m_pImpl->GetLayoutManager().GetILayoutManager();
 }
 
-IImageRes &IResource::GetImageRes() {
+IImageRes &IResourceBundle::GetImageRes() {
   return m_pImpl->GetImageRes().GetIImageRes();
 }
-// IFontRes &IResource::GetFontRes() {
+// IFontRes &IResourceBundle::GetFontRes() {
 //   return m_pImpl->GetFontRes().GetIFontRes();
 // }
-IColorRes &IResource::GetColorRes() {
+IColorRes &IResourceBundle::GetColorRes() {
   return m_pImpl->GetColorRes().GetIColorRes();
 }
-IStyleRes &IResource::GetStyleRes() {
+IStyleRes &IResourceBundle::GetStyleRes() {
   return m_pImpl->GetStyleRes().GetIStyleRes();
 }
-II18nRes &IResource::GetI18nRes() {
+II18nRes &IResourceBundle::GetI18nRes() {
   return m_pImpl->GetI18nRes().GetII18nRes();
 }
 
-const char *IResource::GetName() { return m_pImpl->GetName(); }
-const char *IResource::GetPath() { return m_pImpl->GetPath(); }
+const char *IResourceBundle::GetName() { return m_pImpl->GetName(); }
+const char *IResourceBundle::GetPath() { return m_pImpl->GetPath(); }
 
-bool IResource::Load() { return m_pImpl->Load(); }
-bool IResource::ChangeSkinHLS(short h, short l, short s, int nFlag) {
+bool IResourceBundle::Load() { return m_pImpl->Load(); }
+bool IResourceBundle::ChangeSkinHLS(short h, short l, short s, int nFlag) {
   return m_pImpl->ChangeSkinHLS(h, l, s, nFlag);
 }
-ISkinDataSource *IResource::GetDataSource() {
-  SkinDataSource *p = m_pImpl->GetDataSource();
+IBundleSource *IResourceBundle::GetSource() {
+  BundleSource *p = m_pImpl->GetSource();
   if (!p)
     return nullptr;
 
-  return p->GetISkinDataSource();
+  return p->GetIBundleSource();
 }
 
-unsigned int IResource::GetXmlDocCount() { return m_pImpl->GetXmlDocCount(); }
+unsigned int IResourceBundle::GetXmlDocCount() { return m_pImpl->GetXmlDocCount(); }
 
-IUIDocument *IResource::GetXmlDoc(unsigned int nIndex) {
+IUIDocument *IResourceBundle::GetXmlDoc(unsigned int nIndex) {
   UIDocument *p = m_pImpl->GetXmlDoc(nIndex);
   if (p)
     return p->GetIUIDocument();
   return nullptr;
 }
-IUIDocument *IResource::GetXmlDocByName(const char *szName) {
+IUIDocument *IResourceBundle::GetXmlDocByName(const char *szName) {
   UIDocument *p = m_pImpl->GetXmlDocByName(szName);
   if (p)
     return p->GetIUIDocument();
@@ -571,15 +571,15 @@ void IResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
   m_pImpl->ChangeSkinHLS(h, l, s, nFlag);
 }
 
-bool IResourceManager::Save(IResource *pSkinRes) {
-  if (nullptr == pSkinRes)
+bool IResourceManager::Save(IResourceBundle *resource_bundle) {
+  if (nullptr == resource_bundle)
     return m_pImpl->Save(nullptr);
   else
-    return m_pImpl->Save(pSkinRes->GetImpl());
+    return m_pImpl->Save(resource_bundle->GetImpl());
 }
 
-IResource *IResourceManager::GetResourceByName(const char *szName) {
-  Resource *p = m_pImpl->GetResourceByName(szName);
+IResourceBundle *IResourceManager::GetResourceByName(const char *szName) {
+  ResourceBundle *p = m_pImpl->GetResourceByName(szName);
   if (p)
     return p->GetIResource();
 
@@ -589,8 +589,8 @@ IResource *IResourceManager::GetResourceByName(const char *szName) {
 uint IResourceManager::GetResourceCount() {
   return m_pImpl->GetResourceCount();
 }
-IResource *IResourceManager::GetResourceByIndex(uint i) {
-  Resource *p = m_pImpl->GetResourceByIndex(i);
+IResourceBundle *IResourceManager::GetResourceByIndex(uint i) {
+  ResourceBundle *p = m_pImpl->GetResourceByIndex(i);
   if (p)
     return p->GetIResource();
 

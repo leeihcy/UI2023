@@ -7,7 +7,7 @@
 #include "src/object/layout/layout_object.h"
 
 namespace ui {
-class Resource;
+class ResourceBundle;
 class Application;
 class Window;
 class Layer;
@@ -43,8 +43,8 @@ public:
 #endif
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
-  Resource *GetResource();
-  IResource *GetIResource();
+  ResourceBundle *GetResource();
+  IResourceBundle *GetIResource();
   Window *GetWindow();
   Message *GetWindow2();
   Object* GetRootObject();
@@ -128,7 +128,7 @@ public:
 
   const char *GetAttribute(const char *szKey, bool bErase);
   void AddAttribute(const char *szKey, const char *szValue);
-  std::shared_ptr<IMapAttribute> GetMapAttribute();
+  std::shared_ptr<IAttributeMap> GetMapAttribute();
   void ClearMapAttribute();
   void InitDefaultAttrib();
    
@@ -290,7 +290,7 @@ public:
   void ScaleTo(float x, float y, LayerAnimateParam *param = nullptr);
 
 protected:
-  int FinalConstruct(IResource *pSkinRes);
+  int FinalConstruct(IResourceBundle *resource_bundle);
   void FinalRelease();
   eHitTest OnHitTest(const Point& ptInParent, Point& ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
@@ -337,7 +337,7 @@ public:
 protected:
   IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
-  Resource *m_resource = nullptr; 
+  ResourceBundle *m_resource = nullptr; 
 
   std::string m_strId; // 该对象在XML中的标识
 #ifdef EDITOR_MODE
@@ -366,7 +366,7 @@ public: // TODO:
   OBJSTYLE m_objStyle;
   OBJSTATE m_objState;
 protected:
-  std::shared_ptr<IMapAttribute> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
+  std::shared_ptr<IAttributeMap> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
   std::shared_ptr<IRenderBase> m_back_render;           // 背景渲染
   std::shared_ptr<IRenderBase> m_fore_render;         // 前景渲染
   std::shared_ptr<ITextRenderBase> m_text_render; // 文字渲染，由control负责读取该属性

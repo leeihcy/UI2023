@@ -7,7 +7,7 @@ namespace ui
 {
 class Object;
 class Window;
-class Resource;
+class ResourceBundle;
 class Application;
 struct ITopWindowManager;
 struct IWindow;
@@ -31,7 +31,7 @@ public:
 #if 0 // defined(OS_WIN)
 	IWindow* GetWindow(HWND hWnd); 
 #endif
-	// void  ChangeSkin(Resource* pNewSkinRes);
+	// void  ChangeSkin(ResourceBundle* pNewSkinRes);
 	bool  UpdateAllWindow();
 
     void  SendMessage2AllWnd(UIMSG* pMsg);

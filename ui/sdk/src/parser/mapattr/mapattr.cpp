@@ -260,8 +260,8 @@ int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
 //     {
 //         SerializeParam data = {0};
 //         data.pUIApplication = pUIApp;
-// 		data.pSkinRes = pBindObj?pBindObj->GetResource():nullptr;
-//         data.pMapAttrib = static_cast<IMapAttribute*>(this);
+// 		data.resource_bundle = pBindObj?pBindObj->GetResource():nullptr;
+//         data.attribute_map = static_cast<IAttributeMap*>(this);
 //         data.szPrefix = szPrefix;
 //         data.nFlags = SERIALIZEFLAG_LOAD;
 //         if (bErase)
@@ -282,7 +282,7 @@ int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
 //     const char* szPrefix,
 //     const char* szKey,
 //     bool bErase,
-//     IResource* pUIApp,
+//     IResourceBundle* pUIApp,
 //     IObject* pBindObj,
 //     ITextRenderBase** ppGet)
 // {
@@ -307,8 +307,8 @@ int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
 //     {
 //         SerializeParam data = {0};
 //         data.pUIApplication = pUIApp;
-// 		data.pSkinRes = pBindObj ? pBindObj->GetResource() : nullptr;
-//         data.pMapAttrib = static_cast<IMapAttribute*>(this);
+// 		data.resource_bundle = pBindObj ? pBindObj->GetResource() : nullptr;
+//         data.attribute_map = static_cast<IAttributeMap*>(this);
 //         data.szPrefix = szPrefix;
 //         data.nFlags = SERIALIZEFLAG_LOAD;
 //         if (bErase)
@@ -329,12 +329,12 @@ int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
 //         const char* szPrefix,
 //         const char* szKey,
 //         bool bErase,
-//         IResource* pSkinRes,
+//         IResourceBundle* resource_bundle,
 //         Color** ppColor)
 // {
-//     UIASSERT(pSkinRes);
+//     UIASSERT(resource_bundle);
 //
-//     if (nullptr == szKey || nullptr == ppColor || !pSkinRes)
+//     if (nullptr == szKey || nullptr == ppColor || !resource_bundle)
 //         return MAPATTR_RET_ERROR;
 //
 //     LRESULT lRet = MAPATTR_RET_OK;
@@ -349,7 +349,7 @@ int CMapAttribute::GetAttr_Image9Region(const char *szPrefix,
 //
 //     SAFE_RELEASE(*ppColor);
 //
-//     IColorRes* pColorRes = pSkinRes->GetColorRes();
+//     IColorRes* pColorRes = resource_bundle->GetColorRes();
 //     pColorRes->GetColor(iter->second.c_str(), ppColor);
 //
 //     if (bErase)
@@ -411,14 +411,14 @@ bool CMapAttribute::AddAttr_int(const char *szKey, int nValue) {
 
 // 使用前缀Prefix，从当前属性中抽取出相应的属性集放在ppMapAttribute中返回给外部
 // 外部调用完之后，需要使用ppMapAttribute->Release释放内存
-std::shared_ptr<IMapAttribute> CMapAttribute::ExtractMapAttrByPrefix(
+std::shared_ptr<IAttributeMap> CMapAttribute::ExtractMapAttrByPrefix(
     const char *szPrefix, bool bErase) {
 
   if (nullptr == szPrefix || 0 == strlen(szPrefix)) {
-    //         *ppMapAttribute = static_cast<IMapAttribute*>(this);
+    //         *ppMapAttribute = static_cast<IAttributeMap*>(this);
     //         this->AddRef();
     //         return true;
-    return std::shared_ptr<IMapAttribute>();
+    return std::shared_ptr<IAttributeMap>();
   }
 
   ATTRMAP::iterator iter = m_mapAttr.begin();
@@ -426,7 +426,7 @@ std::shared_ptr<IMapAttribute> CMapAttribute::ExtractMapAttrByPrefix(
 
   int nPrifixLength = (int)strlen(szPrefix);
 
-  std::shared_ptr<IMapAttribute> pSubMapAttrib = UICreateIMapAttribute();
+  std::shared_ptr<IAttributeMap> pSubMapAttrib = UICreateIMapAttribute();
 
   for (; iter != iterEnd;) {
     char *szKey = const_cast<char *>(iter->first.c_str());
@@ -450,7 +450,7 @@ std::shared_ptr<IMapAttribute> CMapAttribute::ExtractMapAttrByPrefix(
 // }
 
 // 将自己的属性拷贝给pDestMapAttrib，如果pDestMapAttrib中已经存在，则按钮bOverride参数判断是否覆盖
-void CMapAttribute::CopyTo(IMapAttribute *pDestMapAttrib, bool bOverride) {
+void CMapAttribute::CopyTo(IAttributeMap *pDestMapAttrib, bool bOverride) {
   if (nullptr == pDestMapAttrib)
     return;
 
@@ -485,16 +485,16 @@ bool CMapAttribute::EnumNext(const char **szKey, const char **szValue) {
 }
 void CMapAttribute::EndEnum() { m_iterEnum = m_mapAttr.end(); }
 
-std::shared_ptr<IMapAttribute> UICreateIMapAttribute() {
-  return std::shared_ptr<IMapAttribute>(static_cast<IMapAttribute*>(new CMapAttribute));
+std::shared_ptr<IAttributeMap> UICreateIMapAttribute() {
+  return std::shared_ptr<IAttributeMap>(static_cast<IAttributeMap*>(new CMapAttribute));
 }
 
-int UICreateIListAttribute(IListAttribute **ppOut) {
+int UICreateIListAttribute(IAttributeList **ppOut) {
   if (nullptr == ppOut)
     return -1; // E_INVALIDARG;
 
   CListAttribute *p = new CListAttribute;
-  *ppOut = static_cast<IListAttribute *>(p);
+  *ppOut = static_cast<IAttributeList *>(p);
   p->AddRef();
 
   return 0;

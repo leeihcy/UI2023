@@ -50,13 +50,13 @@ struct IWindow;
 // struct IWindow;
 // using IWindowPtr = std::unique_ptr<IWindow, void (*)(IWindow*)>;
 // struct WindowPtr : public IWindowPtr {
-//     WindowPtr(IResource *res) : IWindowPtr(IWindow::create(res)){ }
+//     WindowPtr(IResourceBundle *res) : IWindowPtr(IWindow::create(res)){ }
 // };
 #define UI_DEFINE_PTR(Xxx)                                                     \
   struct I##Xxx;                                                               \
   using I##Xxx##Ptr = std::unique_ptr<I##Xxx, void (*)(I##Xxx *)>;             \
   struct Xxx##Ptr : public I##Xxx##Ptr {                                       \
-    Xxx##Ptr(IResource *res) : I##Xxx##Ptr(I##Xxx::create(res)) {}             \
+    Xxx##Ptr(IResourceBundle *res) : I##Xxx##Ptr(I##Xxx::create(res)) {}             \
   };
 
 } // namespace ui

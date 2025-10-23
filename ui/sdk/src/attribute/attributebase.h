@@ -50,7 +50,7 @@ public:
   void SetGroupName(const char *szGroupName);
   const char *GetGroupName();
   void SetUIApplication(Application *p);
-  void SetResource(Resource *p);
+  void SetResource(ResourceBundle *p);
   Application *GetUIApplication();
 
 protected:
@@ -82,6 +82,6 @@ private:
   bool m_bReloadOnChanged;
 
 protected:
-  Resource *m_resource;
+  ResourceBundle *m_resource;
 };
 } // namespace ui

@@ -1,4 +1,12 @@
 #include "skia_render.h"
+#include "skia_bitmap.h"
+
+#include "SkStream.h"
+#include <algorithm>
+#include <cassert>
+#include <string>
+#include <vector>
+
 #include "include/core/SkBitmap.h"
 #include "include/core/SkPoint.h"
 #include "include/core/SkRect.h"
@@ -9,18 +17,13 @@
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
 #include "include/util/rect.h"
-#include "skia_bitmap.h"
-#include "src/application/config/config.h"
 
-#include "SkStream.h"
 #include "gpu/include/api.h"
-#include <algorithm>
-#include <cassert>
-#include <string>
-#include <vector>
 
+#include "src/application/config/config.h"
 #include "src/graphics/font/font.h"
 #include "src/layer/windowrender.h"
+#include "src/resource/res_bundle.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include "third_party/skia/src/include/core/SkCanvas.h"
 #include "third_party/skia/src/include/core/SkFont.h"
@@ -491,7 +494,7 @@ static void drawMultilineText(SkCanvas* canvas, const SkString& text, const SkRe
 void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 
-  SkFont &font = FontPool::GetInstance().GetSkiaFont(param.font_desc);
+  SkFont &font = param.resource->GetImpl()->GetFontRes().GetSkiaFont(param.font_desc);
 
   SkPaint paint;
   paint.setColor(param.color.value);

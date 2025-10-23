@@ -19,7 +19,7 @@
 
 namespace ui {
 class Window;
-class Resource;
+class ResourceBundle;
 struct CreateWindowParam;
 struct IGpuCompositorWindow;
 
@@ -67,7 +67,7 @@ public:
   WindowRender&  GetWindowRender() { return m_window_render; }
   WindowPlatform* GetWindowPlatform() { return m_platform.get(); }
   RootObject& GetRootObject();
-  Resource& GetResource() { return *m_resource; }
+  ResourceBundle& GetResource() { return *m_resource; }
   Application& GetApplication();
 
 public:
@@ -133,7 +133,7 @@ public:
 
 private:
   IWindow*  m_pIWindow;  // not null
-  Resource* m_resource = nullptr;  // not null
+  ResourceBundle* m_resource = nullptr;  // not null
 
   // 作为window <--> object的桥梁
   IRootObjectPtr m_root;

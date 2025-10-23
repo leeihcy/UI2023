@@ -81,11 +81,11 @@ bool StyleResItem::RemoveInheritItem(const char *sz) {
   return false;
 }
 
-void StyleResItem::SetAttributeMap(std::shared_ptr<IMapAttribute> pMapAttrib) {
-  m_pMapAttrib = pMapAttrib;
+void StyleResItem::SetAttributeMap(std::shared_ptr<IAttributeMap> attribute_map) {
+  m_pMapAttrib = attribute_map;
 }
 
-std::shared_ptr<IMapAttribute> StyleResItem::GetAttributeMap() {
+std::shared_ptr<IAttributeMap> StyleResItem::GetAttributeMap() {
   return m_pMapAttrib;
 }
 
@@ -152,9 +152,9 @@ bool StyleResItem::InheritMyAttributesToAnother(StyleResItem *pChild) {
   if (nullptr == pChild)
     return false;
 
-  std::shared_ptr<IMapAttribute> pMapAttrib = pChild->GetAttributeMap();
-  if (pMapAttrib) {
-    m_pMapAttrib->CopyTo(pMapAttrib.get(), false);
+  std::shared_ptr<IAttributeMap> attribute_map = pChild->GetAttributeMap();
+  if (attribute_map) {
+    m_pMapAttrib->CopyTo(attribute_map.get(), false);
   }
 
   return true;
@@ -163,11 +163,11 @@ bool StyleResItem::InheritMyAttributesToAnother(StyleResItem *pChild) {
 //
 //	将自己的属性应用到一个已有的map中，如果map中已有这个属性，则使用bOverwrite判断是否覆盖
 //
-bool StyleResItem::Apply(IMapAttribute *pMapAttrib, bool bOverwrite) {
-  if (!pMapAttrib || !m_pMapAttrib)
+bool StyleResItem::Apply(IAttributeMap *attribute_map, bool bOverwrite) {
+  if (!attribute_map || !m_pMapAttrib)
     return false;
 
-  m_pMapAttrib->CopyTo(pMapAttrib, bOverwrite);
+  m_pMapAttrib->CopyTo(attribute_map, bOverwrite);
   return true;
 }
 
@@ -176,9 +176,8 @@ bool StyleResItem::Apply(IMapAttribute *pMapAttrib, bool bOverwrite) {
 //   StyleRes
 //
 
-StyleRes::StyleRes(Resource *p) {
+StyleRes::StyleRes(ResourceBundle& o) : m_resource_bundle(o) {
   m_pIStyleRes = nullptr;
-  m_pSkinRes = p;
 }
 
 StyleRes::~StyleRes() {
@@ -232,7 +231,7 @@ bool StyleRes::Add(StyleResItem *pNewItem) {
   }
 
   this->m_vStyles.push_back(pNewItem);
-  m_pSkinRes->GetStyleManager().OnStyleAdd(pNewItem);
+  m_resource_bundle.GetStyleManager().OnStyleAdd(pNewItem);
   return true;
 }
 
@@ -257,7 +256,7 @@ StyleResItem *StyleRes::Insert(STYLE_SELECTOR_TYPE type, const char *szId,
   else
     m_vStyles.insert(iter, pStyleItem);
 
-  m_pSkinRes->GetStyleManager().OnStyleAdd(pStyleItem);
+  m_resource_bundle.GetStyleManager().OnStyleAdd(pStyleItem);
   return pStyleItem;
 }
 
@@ -270,7 +269,7 @@ bool StyleRes::Modify(StyleResItem *pItem, STYLE_SELECTOR_TYPE type,
   pItem->SetSelectorType(type);
   pItem->SetInherits(szInherit);
 
-  m_pSkinRes->GetStyleManager().OnStlyeModify(pItem);
+  m_resource_bundle.GetStyleManager().OnStlyeModify(pItem);
   return true;
 }
 
@@ -279,7 +278,7 @@ bool StyleRes::Remove(STYLE_SELECTOR_TYPE type, const char *szId) {
   for (; iter != m_vStyles.end(); ++iter) {
     StyleResItem *p = *iter;
     if (p->GetSelectorType() == type && 0 == strcmp(p->GetId(), szId)) {
-      m_pSkinRes->GetStyleManager().OnStyleRemove(p);
+      m_resource_bundle.GetStyleManager().OnStyleRemove(p);
       delete p;
       p = nullptr;
       m_vStyles.erase(iter);
@@ -295,7 +294,7 @@ bool StyleRes::Remove(StyleResItem *pNewItem) {
   if (iter == m_vStyles.end())
     return false;
 
-  m_pSkinRes->GetStyleManager().OnStyleRemove(*iter);
+  m_resource_bundle.GetStyleManager().OnStyleRemove(*iter);
   m_vStyles.erase(iter);
   delete pNewItem;
   return true;
@@ -308,7 +307,7 @@ bool StyleRes::AddAttribute(StyleResItem *pItem, const char *szKey,
 
   pItem->SetAttribute(szKey, szValue);
 
-  m_pSkinRes->GetStyleManager().OnStyleAttributeAdd(pItem, szKey);
+  m_resource_bundle.GetStyleManager().OnStyleAttributeAdd(pItem, szKey);
   return true;
 }
 
@@ -319,7 +318,7 @@ bool StyleRes::ModifyAttribute(StyleResItem *pItem, const char *szKey,
 
   pItem->ModifyAttribute(szKey, szValue);
 
-  m_pSkinRes->GetStyleManager().OnStyleAttributeModify(pItem, szKey);
+  m_resource_bundle.GetStyleManager().OnStyleAttributeModify(pItem, szKey);
   return true;
 }
 
@@ -329,7 +328,7 @@ bool StyleRes::RemoveAttribute(StyleResItem *pItem, const char *szKey) {
 
   pItem->RemoveAttribute(szKey);
 
-  m_pSkinRes->GetStyleManager().OnStyleAttributeRemove(pItem, szKey);
+  m_resource_bundle.GetStyleManager().OnStyleAttributeRemove(pItem, szKey);
   return true;
 }
 
@@ -356,7 +355,7 @@ StyleResItem *StyleRes::GetItem(STYLE_SELECTOR_TYPE type, const char *szId) {
     }
   }
 
-  Resource *pParentRes = m_pSkinRes->GetParentSkinRes();
+  ResourceBundle *pParentRes = m_resource_bundle.GetParentSkinRes();
   if (pParentRes) {
     return pParentRes->GetStyleRes().GetItem(type, szId);
   }
@@ -430,7 +429,7 @@ long StyleRes::GetItemPos(StyleResItem *p) {
 //前面的样式匹配的属性 			级别5. 通过TAG匹配的属性
 //
 bool StyleRes::LoadStyle(const char *tag_name, const char *style_class,
-                         const char *id, IMapAttribute *style_map) {
+                         const char *id, IAttributeMap *style_map) {
   if (id && strlen(id) > 0) {
     StyleResItem *pIDStyleItem = this->GetItem(STYLE_SELECTOR_TYPE_ID, id);
     if (pIDStyleItem) {
@@ -471,9 +470,9 @@ bool StyleRes::LoadStyle(const char *tag_name, const char *style_class,
 // 将pListAttribte中属于style的属性过滤掉
 bool StyleRes::UnloadStyle(const char *tag_name,
                            const char *style_class, const char *id,
-                           IListAttribute *pListAttribte) {
+                           IAttributeList *pListAttribte) {
   // 先拿到所有的样式列表
-  std::shared_ptr<IMapAttribute> pStyleAttr = UICreateIMapAttribute();
+  std::shared_ptr<IAttributeMap> pStyleAttr = UICreateIMapAttribute();
   LoadStyle(tag_name, style_class, id, pStyleAttr.get());
 
   pListAttribte->BeginEnum();

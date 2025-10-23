@@ -76,7 +76,7 @@ ListCtrlBase::~ListCtrlBase() {
   SAFE_RELEASE(m_pFocusRender);
 }
 
-HRESULT ListCtrlBase::FinalConstruct(IResource *p) {
+HRESULT ListCtrlBase::FinalConstruct(IResourceBundle *p) {
   DO_PARENT_PROCESS(IListCtrlBase, IControl);
   if (FAILED(GetCurMsg()->lRet))
     return (HRESULT)GetCurMsg()->lRet;
@@ -148,7 +148,7 @@ void ListCtrlBase::OnSerialize(SerializeParam *pData) {
   // 	if (nullptr == m_pIListCtrlBase->GetTextRender())
   // 	{
   //         ITextRenderBase* pTextRender = nullptr;
-  //         pMapAttrib->GetAttr_TextRenderBase(nullptr, XML_TEXTRENDER_TYPE,
+  //         attribute_map->GetAttr_TextRenderBase(nullptr, XML_TEXTRENDER_TYPE,
   //         true, pUIApp, m_pIListCtrlBase, &pTextRender); if (pTextRender)
   //         {
   //             m_pIListCtrlBase->SetTextRender(pTextRender);
@@ -163,7 +163,7 @@ void ListCtrlBase::OnSerialize(SerializeParam *pData) {
   //         {
   //             SerializeParam data = {0};
   //             data.pUIApplication = GetIUIApplication();
-  //             data.pMapAttrib = pMapAttrib;
+  //             data.attribute_map = attribute_map;
   //             data.szPrefix = nullptr;
   //             data.nFlags = SERIALIZEFLAG_LOAD|SERIALIZEFLAG_LOAD_ERASEATTR;
   //             pTextRender->Serialize(&data);
@@ -179,7 +179,7 @@ void ListCtrlBase::OnSerialize(SerializeParam *pData) {
     for (; iter != m_mapItemTypeShareData.end(); iter++) {
       // 		    SerializeParam data = {0};
       //             data.pUIApplication = GetIUIApplication();
-      // 		    data.pMapAttrib = pData->pMapAttrib;
+      // 		    data.attribute_map = pData->attribute_map;
       // 		    data.nFlags = SERIALIZEFLAG_LOAD;
       // 		    if (data.IsReload())
       // 			    data.nFlags |= SERIALIZEFLAG_RELOAD;
@@ -187,7 +187,7 @@ void ListCtrlBase::OnSerialize(SerializeParam *pData) {
       msg.param = pData;
       static_cast<IMessage *>(iter->second)->RouteMessage(msg);
 
-      // UISendMessage(iter->second, UI_WM_SETATTRIBUTE, (WPARAM)pMapAttrib,
+      // UISendMessage(iter->second, UI_WM_SETATTRIBUTE, (WPARAM)attribute_map,
       // (LPARAM)bReload);
     }
   }
@@ -2241,7 +2241,7 @@ void ListCtrlBase::SetItemTypeShareData(int lType, IListItemShareData *pData) {
     if (this->m_pIMapAttributeRemain) {
       SerializeParam data = {0};
       data.pUIApplication = GetIUIApplication();
-      data.pMapAttrib = m_pIMapAttributeRemain;
+      data.attribute_map = m_pIMapAttributeRemain;
       data.nFlags = SERIALIZEFLAG_LOAD;
 
       SerializeMessage msg;

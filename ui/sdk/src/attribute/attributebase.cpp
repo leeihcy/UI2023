@@ -62,7 +62,7 @@ void AttributeBase::SetGroupName(const char *szGroupName) {
   SETSTRING(m_strGroupName, szGroupName);
 }
 const char *AttributeBase::GetGroupName() { return m_strGroupName.c_str(); }
-void AttributeBase::SetResource(Resource *p) { m_resource = p; }
+void AttributeBase::SetResource(ResourceBundle *p) { m_resource = p; }
 Application *AttributeBase::GetUIApplication() { 
   if (!m_resource) { return nullptr; }
   return m_resource->GetUIApplication();
@@ -76,12 +76,12 @@ void AttributeBase::Load(SerializeParam *pData) {
       return;
 
     const char *szKey = GetKey();
-    const char *szText = pData->pMapAttrib->GetAttr(nullptr, szKey, bEraseAttr);
+    const char *szText = pData->attribute_map->GetAttr(nullptr, szKey, bEraseAttr);
     if (!szText) {
       const char *szCompatibleKey = GetCompatibleKey();
       if (szCompatibleKey && szCompatibleKey[0])
         szText =
-            pData->pMapAttrib->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
+            pData->attribute_map->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
     }
 
     if (szText) {
@@ -95,13 +95,13 @@ void AttributeBase::Load(SerializeParam *pData) {
     }
   } else {
     const char *szKey = GetKey();
-    const char *szText = pData->pMapAttrib->GetAttr(nullptr, szKey, bEraseAttr);
+    const char *szText = pData->attribute_map->GetAttr(nullptr, szKey, bEraseAttr);
 
     if (!szText) {
       const char *szCompatibleKey = GetCompatibleKey();
       if (szCompatibleKey && szCompatibleKey[0])
         szText =
-            pData->pMapAttrib->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
+            pData->attribute_map->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
     }
 
     if (szText) {
@@ -121,7 +121,7 @@ void AttributeBase::Save(SerializeParam *pData) {
 
   const char *szValue = Get();
   if (szValue && !IsDefaultValue()) {
-    pData->pListAttrib->AddAttr(szKey, szValue);
+    pData->attribute_list->AddAttr(szKey, szValue);
   }
 }
 

@@ -7,7 +7,7 @@
 namespace ui {
 struct IColorResItem;
 struct IColorRes;
-class Resource;
+class ResourceBundle;
 
 //
 //	color中的一项信息数据
@@ -42,7 +42,7 @@ public:
   Color GetColor();
   void SetColor(const std::string &strColor);
 
-  void SetAttribute(IMapAttribute *p);
+  void SetAttribute(IAttributeMap *p);
   bool ModifyHLS(short h, short l, short s, int nFlag);
 
 private:
@@ -54,7 +54,7 @@ private:
 //
 class ColorRes {
 public:
-  ColorRes(Resource *p);
+  ColorRes(ResourceBundle *p);
   ~ColorRes();
 
   IColorRes &GetIColorRes();
@@ -73,11 +73,11 @@ public:
   bool RemoveColor(const std::string &id);
   void Clear();
 
-  bool LoadItem(IMapAttribute *pMapAttrib, const char *szData);
+  bool LoadItem(IAttributeMap *attribute_map, const char *szData);
   bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 private:
-  Resource *m_pSkinRes;
+  ResourceBundle *m_resource_bundle;
   IColorRes *m_pIColorRes;
   std::vector<ColorResItem *> m_items;
 };

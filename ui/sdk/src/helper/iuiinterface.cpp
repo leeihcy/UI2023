@@ -31,7 +31,7 @@ long  ITopWindowManager::RemoveTopWindowObject(IWindow* p)
 
     return m_pImpl->RemoveTopWindowObject(p->GetImpl());
 }
-// void  ITopWindowManager::ChangeSkin(IResource* pNewSkinRes)
+// void  ITopWindowManager::ChangeSkin(IResourceBundle* pNewSkinRes)
 // {
 //     if (nullptr == pNewSkinRes)
 //         return;

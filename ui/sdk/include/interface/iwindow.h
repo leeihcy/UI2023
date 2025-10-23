@@ -10,7 +10,7 @@
 namespace ui {
 struct IRenderTarget;
 struct IRootObject;
-struct IResource;
+struct IResourceBundle;
 
 #if 0
 struct IWindowMouseMgr;
@@ -119,7 +119,7 @@ struct UIAPI_UUID(1C7CED21 - 3CF6 - 49C9 - 9E52 - 72522C8A1CF6) IWindowBase
     : public IPanel {
   HWND GetHWND();
   IWindowRender *GetWindowRender();
-  IResource *GetResource();
+  IResourceBundle *GetResource();
 
   bool IsChildWindow();
   bool IsWindowVisible();
@@ -218,7 +218,7 @@ struct UIAPI IWindow : public IMessage {
   IRootObject* GetRootObject();
   IObject *FindObject(const char *obj_id);
   IObject *TryFindObject(const char *obj_id);
-  IResource* GetResource();
+  IResourceBundle* GetResource();
 
   void GetClientRect(ui::Rect* rc);
   void DpiScaleRect(ui::Rect* rc);

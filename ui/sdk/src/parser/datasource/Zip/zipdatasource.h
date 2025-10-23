@@ -1,44 +1,42 @@
 #ifndef _UI_SDK_SRC_SKINPARSE_DATASOURCE_ZIP_ZIPDATASOURCE_H_
 #define _UI_SDK_SRC_SKINPARSE_DATASOURCE_ZIP_ZIPDATASOURCE_H_
 
-#include "include/interface/iskindatasource.h"
-#include "src/skin_parse/datasource/skindatasource.h"
+#include "include/interface/ibundlesource.h"
+#include "src/parser/datasource/bundle_source.h"
 #include "3rd/zlib/contrib/minizip/unzip.h"
 
 namespace ui {
 
-class ZipDataSource : public SkinDataSource {
+class ZipDataSource : public BundleSource {
 public:
   ZipDataSource();
   ~ZipDataSource();
 
-  static ZipDataSource *Create();
-
-  virtual void Release() override;
-  virtual ISkinDataSource *GetISkinDataSource() override;
+  virtual IBundleSource *GetIBundleSource() override;
 
   void SetPath(const char *szPath) override;
   const char *GetPath() override;
-  void SetData(byte *data, int size) override;
+  // void SetData(byte *data, int size) override;
 
-  eResourceFormat GetType() override;
+  eBundleFormat GetType() override;
+
+  bool FileExist(const char *szPath) override;
+  bool loadBuffer(const char* path, std::vector<unsigned char>& buffer) override;
+  bool loadFullPath(const char *path, std::string &full_path) override;
+  bool LoadBuffer(const char* szPath, slot<void(const char*, unsigned int)>&& callback) override;
 
   bool Load_UIDocument(UIDocument *pDocument, const char *szPath) override;
   bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *szPath,
                          RENDER_BITMAP_LOAD_FLAG e) override;
   bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
-  bool FileExist(const char *szPath) override;
-  bool Load(const char* szPath, slot<void(const char*)>&& callback) override { return false; }
 
 private:
   void TranslatePath(const char *szOrignPath, char *szLastPath);
   bool Init();
 
-  bool unzip_path(const char* path, std::vector<byte>& buffer);
-
 private:
   std::string m_strPath;
-  ISkinDataSource m_ISkinDataSource;
+  IBundleSource m_IBundleSource;
 
   unzFile m_unzip;
 };

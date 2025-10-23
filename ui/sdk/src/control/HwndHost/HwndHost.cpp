@@ -92,7 +92,7 @@ void  HwndHost::OnSerialize(SerializeParam* pData)
 	    HWND hParentWnd = this->GetHWND();
 
         int nControlID = 0;
-        if (MAPATTR_RET_NOT_EXIST != pData->pMapAttrib->GetAttr_int(XML_HWNDHOST_CONTROL_ID, true, &nControlID))
+        if (MAPATTR_RET_NOT_EXIST != pData->attribute_map->GetAttr_int(XML_HWNDHOST_CONTROL_ID, true, &nControlID))
 	    {
 		    HWND hWnd = ::GetDlgItem(hParentWnd, nControlID);
 		    if (nullptr == hWnd)

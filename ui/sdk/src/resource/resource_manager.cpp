@@ -26,14 +26,14 @@ void ResourceManager::Destroy() {
   //////////////////////////////////////////////////////////////////////////
   // 释放各皮肤数据内存
 
-  std::vector<Resource *>::iterator iter = m_resoures.begin();
-  std::vector<Resource *>::iterator iterEnd = m_resoures.end();
+  std::vector<ResourceBundle *>::iterator iter = m_bundles.begin();
+  std::vector<ResourceBundle *>::iterator iterEnd = m_bundles.end();
 
   for (; iter != iterEnd; iter++) {
-    Resource *p = (*iter);
+    ResourceBundle *p = (*iter);
     delete p;
   }
-  m_resoures.clear();
+  m_bundles.clear();
 }
 
 // 遍历该目录下的皮肤列表
@@ -88,7 +88,7 @@ finddata.cFileName, strPath.c_str());
             {
                                 int nLength = strlen(finddata.cFileName);
                                 finddata.cFileName[nLength-4] = L'';
-                OnFindSkinInSkinDir(eResourceFormat::Zip, finddata.cFileName,
+                OnFindSkinInSkinDir(eBundleFormat::Zip, finddata.cFileName,
 m_strSkinDir.c_str());
             }
         }
@@ -107,7 +107,7 @@ void  ResourceManager::GetSkinDirection(char*  szOut)
 }
 
 // 在皮肤目录中添加一个新皮肤
-IResource*  ResourceManager::AddSkin(const char*  szPath)
+IResourceBundle*  ResourceManager::AddSkin(const char*  szPath)
 {
     if (nullptr == szPath)
         return nullptr;
@@ -119,7 +119,7 @@ IResource*  ResourceManager::AddSkin(const char*  szPath)
     if (!PathFileExists(strFilePath.c_str()))
         return nullptr;
 
-    Resource* p = OnFindSkinInSkinDir(SKIN_PACKET_TYPE_DIR, szPath,
+    ResourceBundle* p = OnFindSkinInSkinDir(SKIN_PACKET_TYPE_DIR, szPath,
 strFilePath.c_str()); if (p) return p->GetIResource();
 
     return nullptr;
@@ -127,26 +127,26 @@ strFilePath.c_str()); if (p) return p->GetIResource();
 
 
 // 在调用SetSkinDirection后，如果发现一个皮肤文件，则调用该响应函数
-Resource*  ResourceManager::OnFindSkinInSkinDir(eResourceFormat eType, const
+ResourceBundle*  ResourceManager::OnFindSkinInSkinDir(eBundleFormat eType, const
 char* szPath, const char* szPath)
 {
-    Resource*  pSkin = new Resource(*this);
-    pSkin->SetParam(eType, szPath, szPath);
+    ResourceBundle*  pResourceBundle = new ResourceBundle(*this);
+    pResourceBundle->SetParam(eType, szPath, szPath);
 
-    m_resoures.push_back(pSkin);
-    return pSkin;
+    m_bundles.push_back(pResourceBundle);
+    return pResourceBundle;
 }
 
 // 换肤
 //
 bSync用于解决：点击一个按钮换肤，但这个按钮在换肤中被delete了，导致换肤结束后堆栈崩溃
-long ResourceManager::ChangeSkin(IResource* pISkinRes, bool bSync)
+long ResourceManager::ChangeSkin(IResourceBundle* pISkinRes, bool bSync)
 {
         if (nullptr == pISkinRes)
                 return E_INVALIDARG;
 
-    Resource* pSkinRes = pISkinRes->GetImpl();
-    if (pSkinRes == m_pCurActiveSkinRes)
+    ResourceBundle* resource_bundle = pISkinRes->GetImpl();
+    if (resource_bundle == m_pCurActiveSkinRes)
         return S_FALSE;
 
     if (!bSync)
@@ -160,15 +160,15 @@ long ResourceManager::ChangeSkin(IResource* pISkinRes, bool bSync)
         return E_PENDING;
     }
 
-        Resource* pOldSkinRes = m_pCurActiveSkinRes;
+        ResourceBundle* pOldSkinRes = m_pCurActiveSkinRes;
         m_pCurActiveSkinRes = nullptr;
 
-    pSkinRes->Load();
-    m_pCurActiveSkinRes = pSkinRes;
+    resource_bundle->Load();
+    m_pCurActiveSkinRes = resource_bundle;
 
     ITopWindowManager* pTopWndMgr = m_pUIApplication->GetTopWindowMgr();
     if (pTopWndMgr)
-        pTopWndMgr->GetImpl()->ChangeSkin(pSkinRes);
+        pTopWndMgr->GetImpl()->ChangeSkin(resource_bundle);
 
     pOldSkinRes->Unload();
 
@@ -176,13 +176,13 @@ long ResourceManager::ChangeSkin(IResource* pISkinRes, bool bSync)
         return true;
 }
 
-Resource*  ResourceManager::GetResourceByIndex(long lIndex)
+ResourceBundle*  ResourceManager::GetResourceByIndex(long lIndex)
 {
-        int nSize = (int)m_resoures.size();
+        int nSize = (int)m_bundles.size();
         if (lIndex < 0 || lIndex >= nSize )
                 return nullptr;
 
-        return m_resoures[lIndex];
+        return m_bundles[lIndex];
 }
 
 //
@@ -190,16 +190,16 @@ Resource*  ResourceManager::GetResourceByIndex(long lIndex)
 //
 //	一些GET操作都是默认针对于当前皮肤而言的
 //
-long ResourceManager::SetActiveSkin(IResource* pSkinRes)
+long ResourceManager::SetActiveSkin(IResourceBundle* resource_bundle)
 {
-        if (nullptr == pSkinRes)
+        if (nullptr == resource_bundle)
         {
                 UI_LOG_WARN("ResourceManager::SetActiveSkin failed");
                 return E_INVALIDARG;
         }
 
-        Resource* pSkinRes2 = pSkinRes->GetImpl(); //
-内部仍然保存为SkinRes，便于调用 m_pCurActiveSkinRes = pSkinRes2; return 0;
+        ResourceBundle* pResourceBundleRes2 = resource_bundle->GetImpl(); //
+内部仍然保存为SkinRes，便于调用 m_pCurActiveSkinRes = pResourceBundleRes2; return 0;
 }
 
 
@@ -208,25 +208,25 @@ long ResourceManager::SetActiveSkin(IResource* pSkinRes)
 //
 //	失败返回-1
 //
-int ResourceManager::GetResourceIndex(Resource* pSkinRes)
+int ResourceManager::GetResourceIndex(ResourceBundle* resource_bundle)
 {
-        if (nullptr == pSkinRes)
+        if (nullptr == resource_bundle)
                 return -1;
 
-        int nSize = (int)m_resoures.size();
+        int nSize = (int)m_bundles.size();
         if (0 == nSize )
                 return -1;
 
         for (int i = 0; i < nSize; i++)
         {
-                if (m_resoures[i] == pSkinRes)
+                if (m_bundles[i] == resource_bundle)
                         return i;
         }
 
         return -1;
 }
 
-Resource* ResourceManager::GetActiveSkin()
+ResourceBundle* ResourceManager::GetActiveSkin()
 {
         if (nullptr == m_pCurActiveSkinRes)
                 return nullptr;
@@ -241,13 +241,13 @@ Application *ResourceManager::GetUIApplication() { return m_pUIApplication; }
 // void  ChangeSkinTimerProc(unsigned int*, TimerItem* pItem)
 // {
 //     ResourceManager* pThis = (ResourceManager*)pItem->wParam;
-//     pThis->ChangeSkin((IResource*)pItem->lParam, true);
+//     pThis->ChangeSkin((IResourceBundle*)pItem->lParam, true);
 // }
 
 void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 #if 0
-	std::vector<Resource*>::iterator iter = m_resoures.begin();
-	for (; iter != m_resoures.end(); ++iter)
+	std::vector<ResourceBundle*>::iterator iter = m_bundles.begin();
+	for (; iter != m_bundles.end(); ++iter)
 	{
 		(*iter)->ChangeSkinHLS(h,l,s,nFlag);
 	}
@@ -270,7 +270,7 @@ void ResourceManager::ChangeSkinHLS(short h, short l, short s, int nFlag) {
 //
 //	加载皮肤数据
 //
-Resource *ResourceManager::LoadResource(const char *szPath) {
+ResourceBundle *ResourceManager::LoadResource(const char *szPath) {
   if (!szPath)
     return nullptr;
   
@@ -280,7 +280,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
               szPath);
 
   char szSkinName[MAX_PATH] = {0};
-  eResourceFormat eSkinPackageType = eResourceFormat::Directory;
+  eBundleFormat eSkinPackageType = eBundleFormat::Directory;
 
   std::string strPath(szPath);
   if (util::PathIsDirectory(szPath)) { 
@@ -296,7 +296,7 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
       szDir[nLength - 1] = 0;
     ui::util::GetPathFileName(szDir, szSkinName);
 
-    eSkinPackageType = eResourceFormat::Directory;
+    eSkinPackageType = eBundleFormat::Directory;
   } else {
      char szExt[MAX_PATH] = "";
     util::GetPathFileExt(szPath, szExt);
@@ -319,36 +319,36 @@ Resource *ResourceManager::LoadResource(const char *szPath) {
 
     util::GetPathFileName(szPath, szSkinName);
     szSkinName[strlen(szSkinName) - nExtLength] = 0;
-    Resource *pTest = GetResourceByName(szSkinName);
+    ResourceBundle *pTest = GetResourceByName(szSkinName);
     if (pTest) {
       UI_LOG_WARN("Skin Exist: name=%s", szSkinName);
       return pTest;
     }
 
-    eSkinPackageType = eResourceFormat::Zip;
+    eSkinPackageType = eBundleFormat::Zip;
   }
   
-  Resource *pSkin = new Resource(*this);
-  pSkin->CreateDataSource(eSkinPackageType);
-  pSkin->SetName(szSkinName);
-  pSkin->SetPath(strPath.c_str());
+  ResourceBundle *pResourceBundle = new ResourceBundle(*this);
+  pResourceBundle->CreateBundleSource(eSkinPackageType);
+  pResourceBundle->SetName(szSkinName);
+  pResourceBundle->SetPath(strPath.c_str());
 
-  if (!pSkin->Load()) {
+  if (!pResourceBundle->Load()) {
     UI_LOG_ERROR("Skin load failed: %s", strPath.c_str());
-    SAFE_DELETE(pSkin);
+    SAFE_DELETE(pResourceBundle);
     return nullptr;
   }
 
-  m_resoures.push_back(pSkin);
-  return pSkin;
+  m_bundles.push_back(pResourceBundle);
+  return pResourceBundle;
 }
 
-Resource *ResourceManager::LoadResource(llong hInstance, int resId) {
+ResourceBundle *ResourceManager::LoadResource(llong hInstance, int resId) {
 #if 0 // defined(OS_WIN)
   if (!hInstance)
     return nullptr;
 
-  Resource *pSkin = nullptr;
+  ResourceBundle *pResourceBundle = nullptr;
   bool bSuccess = false;
   HGLOBAL hData = nullptr;
   do {
@@ -371,15 +371,15 @@ Resource *ResourceManager::LoadResource(llong hInstance, int resId) {
     if (!text || !dwSize)
       break;
 
-    pSkin = new Resource(*this);
-    SkinDataSource *pDataSource =
-        pSkin->CreateDataSource(SKIN_PACKET_TYPE_RESZIP);
+    pResourceBundle = new ResourceBundle(*this);
+    BundleSource *pDataSource =
+        pResourceBundle->CreateBundleSource(SKIN_PACKET_TYPE_RESZIP);
     pDataSource->SetData(text, dwSize);
 
-    if (!pSkin->Load())
+    if (!pResourceBundle->Load())
       break;
 
-    m_resoures.push_back(pSkin);
+    m_bundles.push_back(pResourceBundle);
     bSuccess = true;
   } while (0);
 
@@ -388,10 +388,10 @@ Resource *ResourceManager::LoadResource(llong hInstance, int resId) {
     ::FreeResource(hData);
   }
   if (bSuccess) {
-    return pSkin;
+    return pResourceBundle;
   }
 
-  SAFE_DELETE(pSkin);
+  SAFE_DELETE(pResourceBundle);
   return nullptr;
 #else
   UIASSERT(false);
@@ -399,11 +399,11 @@ Resource *ResourceManager::LoadResource(llong hInstance, int resId) {
 #endif
 }
 
-Resource *ResourceManager::GetDefaultSkinRes() {
-  if (0 == m_resoures.size())
+ResourceBundle *ResourceManager::GetDefaultSkinRes() {
+  if (0 == m_bundles.size())
     return nullptr;
 
-  return m_resoures[0];
+  return m_bundles[0];
 }
 
 //
@@ -413,34 +413,34 @@ Resource *ResourceManager::GetDefaultSkinRes() {
 //		nullptr -  xx  当前皮肤的指定资源
 //		 xx  - nullptr 指定皮肤的所有资源
 //
-bool ResourceManager::Save(Resource *pSkinRes) {
+bool ResourceManager::Save(ResourceBundle *resource_bundle) {
   bool bRet = true;
 
   //////////////////////////////////////////////////////////////////////////
   // 保存各皮肤信息
 
-  int nSkinCount = (int)m_resoures.size();
+  int nSkinCount = (int)m_bundles.size();
   for (int i = 0; i < nSkinCount; i++) {
-    if (pSkinRes) {
-      if (pSkinRes != m_resoures[i])
+    if (resource_bundle) {
+      if (resource_bundle != m_bundles[i])
         continue;
 
-      pSkinRes->Save();
+      resource_bundle->Save();
     } else {
-      m_resoures[i]->Save();
+      m_bundles[i]->Save();
     }
   }
 
   return bRet;
 }
 
-Resource *ResourceManager::GetResourceByName(const char *szName) {
+ResourceBundle *ResourceManager::GetResourceByName(const char *szName) {
   if (nullptr == szName)
     return nullptr;
 
-  std::vector<Resource *>::iterator iter = m_resoures.begin();
-  for (; iter != m_resoures.end(); iter++) {
-    Resource *p = *iter;
+  std::vector<ResourceBundle *>::iterator iter = m_bundles.begin();
+  for (; iter != m_bundles.end(); iter++) {
+    ResourceBundle *p = *iter;
     if (0 == strcmp(szName, p->GetName()))
       return p;
   }
@@ -449,13 +449,13 @@ Resource *ResourceManager::GetResourceByName(const char *szName) {
 }
 
 unsigned int ResourceManager::GetResourceCount() {
-  return (unsigned int)m_resoures.size();
+  return (unsigned int)m_bundles.size();
 }
-Resource *ResourceManager::GetResourceByIndex(unsigned int i) {
-  if (i >= m_resoures.size())
+ResourceBundle *ResourceManager::GetResourceByIndex(unsigned int i) {
+  if (i >= m_bundles.size())
     return nullptr;
 
-  return m_resoures[i];
+  return m_bundles[i];
 }
 
 const char *ResourceManager::GetCurrentLanguage() {
@@ -470,8 +470,8 @@ void ResourceManager::SetCurrentLanguage(const char *szText) {
 
   m_strLanguage = szText;
 
-  std::vector<Resource *>::iterator iter = m_resoures.begin();
-  for (; iter != m_resoures.end(); ++iter) {
+  std::vector<ResourceBundle *>::iterator iter = m_bundles.begin();
+  for (; iter != m_bundles.end(); ++iter) {
     (*iter)->GetI18nManager().Reload();
   }
 }

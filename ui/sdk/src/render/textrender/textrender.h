@@ -11,7 +11,7 @@ class Application;
 class Object;
 struct TEXTRENDERBASE_DRAWSTATE;
 struct IFontRes;
-class Resource;
+class ResourceBundle;
 
 class TextRenderBase : public Message {
 public:
@@ -41,7 +41,7 @@ public:
   TEXTRENDER_TYPE GetTextRenderType() { return m_nTextRenderType; }
 
   IColorRes *GetSkinColorRes();
-  Resource *GetResource();
+  ResourceBundle *GetResource();
 
   bool IsThemeRender();
   void CheckSkinTextureChanged();
@@ -55,6 +55,8 @@ public:
 protected:
   ITextRenderBase *m_pITextRenderBase;
   TEXTRENDER_TYPE m_nTextRenderType; // 自己的类型
+
+  ResourceBundle*  m_resouce = nullptr;
 
   Object *m_pObject;                 // 绑定的对象，要绘制谁的文字
   int m_nDrawTextFlag;               // DrawText的flag标识

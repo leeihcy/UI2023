@@ -1,30 +1,24 @@
-#include "skindatasource.h"
+#include "bundle_source.h"
 #include "zip/zipdatasource.h"
 #include "file/filedatasource.h"
-// #include "Zip/bytebufferreader.h"
 #include "file/filebufferreader.h"
-#include "include/interface/iskindatasource.h"
+#include "include/interface/ibundlesource.h"
 #include "sdk/include/macro/helper.h"
+#include <memory>
 
 namespace ui {
 
-void CreateDataSourceInstance(eResourceFormat e, SkinDataSource **pp) {
-  if (nullptr == pp)
-    return;
-
-  SkinDataSource *p = nullptr;
+std::unique_ptr<BundleSource> CreateBundleSource(eBundleFormat e) {
   switch (e) {
-  case eResourceFormat::Directory: {
-    p = FileDataSource::Create();
+  case eBundleFormat::Directory: {
+    return std::make_unique<FileDataSource>();
   } break;
 
-  case eResourceFormat::Zip:
-  case eResourceFormat::Bundle: {
-    p = ZipDataSource::Create();
+  case eBundleFormat::Zip:
+  case eBundleFormat::ModuleResource: {
+    return std::make_unique<ZipDataSource>();
   } break;
   }
-
-  *pp = p;
 }
 
 void CreateStreamBuffer(eStreamType e, IStreamBufferReader **pp) {
@@ -49,27 +43,27 @@ void CreateStreamBuffer(eStreamType e, IStreamBufferReader **pp) {
   *pp = p;
 }
 
-ISkinDataSource::ISkinDataSource(SkinDataSource *p) { m_pImpl = p; }
+IBundleSource::IBundleSource(BundleSource *p) { m_pImpl = p; }
 
-const char *ISkinDataSource::GetPath() { return m_pImpl->GetPath(); }
-eResourceFormat ISkinDataSource::GetType() { return m_pImpl->GetType(); }
+const char *IBundleSource::GetPath() { return m_pImpl->GetPath(); }
+eBundleFormat IBundleSource::GetType() { return m_pImpl->GetType(); }
 
-bool ISkinDataSource::Load(const char *szPath,
-                           slot<void(const char *)> &&callback) {
-  return m_pImpl->Load(szPath, std::move(callback));
+bool IBundleSource::LoadBuffer(const char *szPath,
+                           slot<void(const char *, unsigned int)> &&callback) {
+  return m_pImpl->LoadBuffer(szPath, std::move(callback));
 }
 
 #if 0 // defined(OS_WIN)
-bool  ISkinDataSource::Load_Image(const char* szPath, ImageWrap* pImage)
+bool  IBundleSource::Load_Image(const char* szPath, ImageWrap* pImage)
 {
 	return m_pImpl->Load_Image(szPath, pImage);
 }
-bool  ISkinDataSource::Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage)
+bool  IBundleSource::Load_GdiplusImage(const char* szPath, GdiplusBitmapLoadWrap* pImage)
 {
 	return m_pImpl->Load_GdiplusImage(szPath, pImage);
 }
 
-bool  ISkinDataSource::Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp)
+bool  IBundleSource::Load_StreamBuffer(const char* szPath, IStreamBufferReader** pp)
 {
 	return m_pImpl->Load_StreamBuffer(szPath, pp);
 }

@@ -210,9 +210,9 @@ void ColorResItem::SetColor(const std::string &strColor) {
    m_valid = false;
 }
 
-void ColorResItem::SetAttribute(IMapAttribute *pMapAttrib) {
+void ColorResItem::SetAttribute(IAttributeMap *attribute_map) {
   bool bUseSkinHLS = true;
-  pMapAttrib->GetAttr_bool(XML_COLOR_USESKINHLS, true, &bUseSkinHLS);
+  attribute_map->GetAttr_bool(XML_COLOR_USESKINHLS, true, &bUseSkinHLS);
   this->SetUseSkinHLS(bUseSkinHLS);
 }
 
@@ -232,8 +232,8 @@ bool ColorResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   return true;
 }
 
-ColorRes::ColorRes(Resource *p) {
-  m_pSkinRes = p;
+ColorRes::ColorRes(ResourceBundle *p) {
+  m_resource_bundle = p;
   m_pIColorRes = nullptr;
 }
 
@@ -308,8 +308,8 @@ Color ColorRes::GetColor(const char *id, bool* exist) {
   // pItem->GetColor(pp, &bFirstTimeCreate);
   // if (bFirstTimeCreate && pItem->GetUseSkinHLS()) {
   //   // 检查当前皮肤的HLS
-  //   if (m_pSkinRes && m_pSkinRes->GetHLSInfo()) {
-  //     SKIN_HLS_INFO *pHLSInfo = m_pSkinRes->GetHLSInfo();
+  //   if (m_resource_bundle && m_resource_bundle->GetHLSInfo()) {
+  //     SKIN_HLS_INFO *pHLSInfo = m_resource_bundle->GetHLSInfo();
   //     pItem->ModifyHLS(pHLSInfo->h, pHLSInfo->l, pHLSInfo->s, pHLSInfo->nFlag);
   //   }
   // }
@@ -318,16 +318,16 @@ Color ColorRes::GetColor(const char *id, bool* exist) {
 //
 // 从文件中加载一项(由CXmlImageParse::load_from_file中调用)
 //
-bool ColorRes::LoadItem(IMapAttribute *pMapAttrib, const char *szValue) {
+bool ColorRes::LoadItem(IAttributeMap *attribute_map, const char *szValue) {
   std::string strID;
 
-  const char *szText = pMapAttrib->GetAttr(XML_ID, true);
+  const char *szText = attribute_map->GetAttr(XML_ID, true);
   if (szText)
     strID = szText;
 
   ColorResItem *pItem = nullptr;
   if (this->InsertColor(strID, szValue, &pItem)) {
-    pItem->SetAttribute(pMapAttrib);
+    pItem->SetAttribute(attribute_map);
     return true;
   } else {
     UI_LOG_WARN("insert image m_strId=%s, path=%s failed.", strID.c_str(),

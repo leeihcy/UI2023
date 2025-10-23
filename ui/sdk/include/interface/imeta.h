@@ -104,7 +104,7 @@ struct MetaDetail {
 
 struct IMeta {
   // 创建、销毁。做成通用型参数，用于overide
-  virtual void Create(ui::IResource *p, void **) = 0;
+  virtual void Create(ui::IResourceBundle *p, void **) = 0;
   virtual void Destroy(void*) = 0;
 
   // 静态成员
@@ -127,7 +127,7 @@ struct MetaImpl : public Super {
   using IxxPtr = std::unique_ptr<Ixx, void (*)(Ixx*)>;
   using This = MetaImpl<Ixx, Super>;
 
-  Ixx* create(IResource *resource) {
+  Ixx* create(IResourceBundle *resource) {
     Ixx *p = new Ixx(eCreateImpl::True);
 
     FinalConstructMessage msg;
@@ -145,7 +145,7 @@ struct MetaImpl : public Super {
     return p;
   }
 
-  IxxPtr CreateUnique(IResource *resource) {
+  IxxPtr CreateUnique(IResourceBundle *resource) {
     Ixx *p = create(resource);
     if (!p) {
       return IxxPtr(nullptr, This::destroy);
@@ -161,7 +161,7 @@ struct MetaImpl : public Super {
     delete p;  
   }
   
-  void Create(IResource *p, void **pp) override {
+  void Create(IResourceBundle *p, void **pp) override {
     *pp = This::create(p);
   }
   void Destroy(void* obj) override {

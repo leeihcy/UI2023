@@ -3,7 +3,7 @@
 #include <string>
 
 namespace ui {
-class Resource;
+class ResourceBundle;
 struct IStyleRes;
 
 // 1. 控件设置一个class样式：
@@ -50,8 +50,8 @@ public:
   UIElement *GetXmlElement();
   bool GetXmlElement2(UIElement **pp);
 
-  void SetAttributeMap(std::shared_ptr<IMapAttribute> pMapAttrib);
-  std::shared_ptr<IMapAttribute> GetAttributeMap();
+  void SetAttributeMap(std::shared_ptr<IAttributeMap> attribute_map);
+  std::shared_ptr<IAttributeMap> GetAttributeMap();
   void SetAttribute(const char *key, const char *value);
   const char *GetAttribute(const char *key);
   bool ModifyAttribute(const char *key, const char *value);
@@ -59,7 +59,7 @@ public:
 
   bool InheritAttribute(const char *key, const char *value);
   bool InheritMyAttributesToAnother(StyleResItem *pChild);
-  bool Apply(IMapAttribute *pMapAttrib, bool bOverwrite);
+  bool Apply(IAttributeMap *attribute_map, bool bOverwrite);
 
 private:
   IStyleResItem *m_pIStyleResItem;
@@ -67,7 +67,7 @@ private:
   STYLE_SELECTOR_TYPE m_eSelectorType;
   std::string m_strID;              // 该选择器的ID
   std::string m_strInherits;        // 继承列表
-  std::shared_ptr<IMapAttribute> m_pMapAttrib; // 该选择器的属性集
+  std::shared_ptr<IAttributeMap> m_pMapAttrib; // 该选择器的属性集
 
   // 非持久数据
   std::vector<std::string> m_vInheritList; // 继承列表，运行中解释m_strInherits
@@ -78,7 +78,7 @@ private:
 
 class StyleRes {
 public:
-  StyleRes(Resource *p);
+  StyleRes(ResourceBundle&);
   ~StyleRes();
   IStyleRes &GetIStyleRes();
   void Clear();
@@ -107,14 +107,14 @@ public:
   StyleResItem *GetItem(STYLE_SELECTOR_TYPE type, const char *szID);
 
   bool LoadStyle(const char *szTagName, const char *szStyleClass,
-                 const char *szID, IMapAttribute *pMapAttribute);
+                 const char *szID, IAttributeMap *pMapAttribute);
   bool UnloadStyle(const char *szTagName, const char *szStyleClass,
-                   const char *szID, IListAttribute *pListAttribte);
+                   const char *szID, IAttributeList *pListAttribte);
 
 private:
   IStyleRes *m_pIStyleRes;
 
-  Resource *m_pSkinRes;
+  ResourceBundle& m_resource_bundle;
   std::vector<StyleResItem *> m_vStyles;
 };
 } // namespace ui

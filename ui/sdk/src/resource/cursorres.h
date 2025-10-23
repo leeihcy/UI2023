@@ -23,7 +23,7 @@ public:
 
 	IUICursor*  GetCursor();
 	bool  ModifyCursor( const std::string& strCurFilePath );
-	void  SetAttribute(IMapAttribute* p){}
+	void  SetAttribute(IAttributeMap* p){}
 
 	ICursorResItem*  GetICursorResItem();
 public:
@@ -49,7 +49,7 @@ public:
 	CursorResItem* GetCursorItem(UICursor* p);
 	CursorResItem* GetCursorItem(const char* szId);
 	int   GetCursorCount();
-	CursorResItem*  LoadItem(IMapAttribute* pMapAttrib, const char* szFullPath);
+	CursorResItem*  LoadItem(IAttributeMap* attribute_map, const char* szFullPath);
 	bool  InsertCursor(const char* strID, const char* strCurFilePath, CursorResItem** ppItem);
 	bool  ModifyCursor(const char* strID, const char* strCursor );
 	bool  RemoveCursor(const char* strID );

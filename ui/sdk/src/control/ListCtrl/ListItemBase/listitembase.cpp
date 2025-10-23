@@ -1052,18 +1052,18 @@ void  ListItemBase::OnSize()
 }
 
 
-// void  ListItemBase::SetAttribute(IMapAttribute* pMapAttrib, bool bReload)
+// void  ListItemBase::SetAttribute(IAttributeMap* attribute_map, bool bReload)
 // {
 //     if (!bReload)
 //     {
-//         const wchar_t* szText = pMapAttrib->GetAttr(XML_TOOLTIP, true);
+//         const wchar_t* szText = attribute_map->GetAttr(XML_TOOLTIP, true);
 //         if (szText)
 //         {
 //             SetToolTip(szText);
 //         }
 //     }
 // 
-//     pMapAttrib->GetAttr_RenderBase(XML_ICON_RENDER_PREFIX, XML_RENDER_TYPE, true,
+//     attribute_map->GetAttr_RenderBase(XML_ICON_RENDER_PREFIX, XML_RENDER_TYPE, true,
 //         m_pListCtrlBase->GetIUIApplication(), m_pListCtrlBase->GetIListCtrlBase(), &m_pIconRender);
 // }
 
@@ -1217,22 +1217,22 @@ void  ListItemBase::SetIconFromImageId(const wchar_t* szImageId)
     if (nullptr == m_pListCtrlBase)
         return;
 
-    IResource*  pSkinRes = GetIListCtrlBase()->GetSkinRes();
-    if (nullptr == pSkinRes)
+    IResourceBundle*  resource_bundle = GetIListCtrlBase()->GetSkinRes();
+    if (nullptr == resource_bundle)
     {
         UIASSERT(0);
         return;
     }
 
     UI::IRenderBitmap*  pRenderBitmap = nullptr;
-    pSkinRes->GetImageRes().GetBitmap(
+    resource_bundle->GetImageRes().GetBitmap(
         szImageId, 
         GRAPHICS_RENDER_LIBRARY_TYPE_GDI/*GetIListCtrlBase()->GetGraphicsRenderLibraryType()*/, 
         &pRenderBitmap);
     if (!pRenderBitmap)
         return;
 
-    IApplication* pUIApp = pSkinRes->GetUIApplication();
+    IApplication* pUIApp = resource_bundle->GetUIApplication();
     pUIApp->CreateRenderBase(
         RENDER_TYPE_IMAGE, 
         GetIListCtrlBase(),

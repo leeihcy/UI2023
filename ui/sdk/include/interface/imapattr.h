@@ -14,13 +14,13 @@ struct ITextRenderBase;
 struct Rect;
 struct C9Region;
 
-struct IMapAttribute {
-  virtual ~IMapAttribute() {}
+struct IAttributeMap {
+  virtual ~IAttributeMap() {}
   virtual bool HasAttrib(const char *szKey) = 0;
-  virtual std::shared_ptr<IMapAttribute>
+  virtual std::shared_ptr<IAttributeMap>
     ExtractMapAttrByPrefix(const char *szPrefix, bool bErase) = 0;
   // virtual void Destroy() = 0;
-  virtual void CopyTo(IMapAttribute *pDestMapAttrib, bool bOverwrite) = 0;
+  virtual void CopyTo(IAttributeMap *pDestMapAttrib, bool bOverwrite) = 0;
   virtual int GetAttrCount() = 0;
 
   virtual const char *GetAttr(const char *szKey, bool bErase) = 0;
@@ -54,7 +54,7 @@ struct IMapAttribute {
 };
 
 // 与IMapAttribute不同的是，IListAttribute不自动排序，可用于在保存属性时，不改变字段顺序
-struct IListAttribute {
+struct IAttributeList {
   // 	virtual void  SetTag(const char* szKey) = 0;
   //     virtual const char*  GetTag() = 0;
 
@@ -69,8 +69,8 @@ struct IListAttribute {
   virtual int Release() = 0;
   virtual int AddRef() = 0;
 };
-UIAPI std::shared_ptr<IMapAttribute> UICreateIMapAttribute();
-UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
+UIAPI std::shared_ptr<IAttributeMap> UICreateIMapAttribute();
+UIAPI int UICreateIListAttribute(IAttributeList **ppOut);
 
 } // namespace ui
 

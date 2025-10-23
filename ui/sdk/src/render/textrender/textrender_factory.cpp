@@ -45,7 +45,7 @@ bool TextRenderFactory::RegisterUITextRender(ITextRenderBaseMeta &meta) {
   return true;
 }
 
-std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(IResource *resource,
+std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(IResourceBundle *resource,
                                                    const char *name) {
   if (!resource || !name)
     return nullptr;
@@ -71,7 +71,7 @@ std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRenderBaseByName(I
   UI_LOG_WARN("Create Failed. Name=%s", name);
   return nullptr;
 }
-std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResource *resource, int type) {
+std::shared_ptr<ITextRenderBase> TextRenderFactory::CreateTextRender(IResourceBundle *resource, int type) {
   auto iter = m_vecTextRenderCreator.begin();
   for (; iter != m_vecTextRenderCreator.end(); iter++) {
     ITextRenderBaseMeta *meta = *iter;

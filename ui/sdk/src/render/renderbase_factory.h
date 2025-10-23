@@ -6,7 +6,7 @@
 namespace ui {
 class Application;
 struct IRenderBase;
-struct IResource;
+struct IResourceBundle;
 struct IObject;
 struct IRenderBaseMeta;
 
@@ -19,9 +19,9 @@ public:
   void Clear();
 
   bool RegisterUIRenderBase(IRenderBaseMeta &meta);
-  std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResource *pSkinRes,
+  std::shared_ptr<IRenderBase> CreateRenderBaseByName(IResourceBundle *resource_bundle,
                                                       const char *szName);
-  std::shared_ptr<IRenderBase> CreateRenderBase(IResource *pSkinRes, int nType);
+  std::shared_ptr<IRenderBase> CreateRenderBase(IResourceBundle *resource_bundle, int nType);
   const char *GetRenderBaseName(int nType);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);

@@ -7,7 +7,7 @@ namespace ui {
 struct IToolTipUI;
 struct IWindow;
 struct IResourceManager;
-struct IResource;
+struct IResourceBundle;
 struct TOOLTIPITEM;
 struct IRenderBitmap;
 struct IRenderFont;
@@ -17,7 +17,7 @@ struct ITopWindowManager;
 struct IWaitForHandlesMgr;
 struct IRenderTarget;
 struct IMessageFilterMgr;
-struct IMapAttribute;
+struct IAttributeMap;
 struct IObject;
 
 // 句柄定义
@@ -30,7 +30,7 @@ struct UIAPI ITopWindowManager : public IRootInterface {
 
   long AddTopWindowObject(IWindow *);
   long RemoveTopWindowObject(IWindow *);
-  // void     ChangeSkin(IResource* pNewSkinRes);
+  // void     ChangeSkin(IResourceBundle* pNewSkinRes);
 
   bool UpdateAllWindow();
   // void SendMessage2AllWnd(UIMSG *pMsg);

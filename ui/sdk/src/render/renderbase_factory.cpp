@@ -32,7 +32,7 @@ bool RenderBaseFactory::RegisterUIRenderBase(IRenderBaseMeta& meta) {
   return true;
 }
 
-std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBaseByName(IResource *pSkinRes,
+std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBaseByName(IResourceBundle *resource_bundle,
                                                const char *strName) {
   if (!strName || !strName[0])
     return nullptr;
@@ -46,7 +46,7 @@ std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBaseByName(IResource
     if (strcmp(strName, meta->Name()) != 0)
       continue;
 
-    std::shared_ptr<IRenderBase> out = meta->CreateShared(pSkinRes);
+    std::shared_ptr<IRenderBase> out = meta->CreateShared(resource_bundle);
     if (out) {
       out->Init();
       out->SetType((RENDER_TYPE)meta->Detail().minor_type);
@@ -57,7 +57,7 @@ std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBaseByName(IResource
   UI_LOG_WARN("Create Failed. Name=%s", strName);
   return nullptr;
 }
-std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBase(IResource *pSkinRes, int nType) {
+std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBase(IResourceBundle *resource_bundle, int nType) {
   auto iter = m_vecUIRenderBase.begin();
   for (; iter != m_vecUIRenderBase.end(); iter++) {
     IRenderBaseMeta* meta = *iter;
@@ -67,7 +67,7 @@ std::shared_ptr<IRenderBase> RenderBaseFactory::CreateRenderBase(IResource *pSki
     if (meta->Detail().minor_type != nType)
       continue;
 
-    std::shared_ptr<IRenderBase> out = meta->CreateShared(pSkinRes);
+    std::shared_ptr<IRenderBase> out = meta->CreateShared(resource_bundle);
     if (out) {
       out->Init();
       out->SetType((RENDER_TYPE)nType);

@@ -867,5 +867,4 @@ bool PathExists(const char *path) {
 }
 
 } // namespace util
-
 } // namespace ui

@@ -4,7 +4,7 @@
 
 namespace ui {
 class Application;
-struct IResource;
+struct IResourceBundle;
 struct IObject;
 struct ITextRenderBaseMeta;
 struct ITextRenderBase;
@@ -18,9 +18,9 @@ public:
   void Clear();
   bool RegisterUITextRender(ITextRenderBaseMeta &meta);
 
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource *pSkinRes, const char *szName);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResourceBundle *resource_bundle, const char *szName);
 
-  std::shared_ptr<ITextRenderBase> CreateTextRender(IResource *pSkinRes, int nType);
+  std::shared_ptr<ITextRenderBase> CreateTextRender(IResourceBundle *resource_bundle, int nType);
 
   const char *GetTextRenderBaseName(int nType);
 

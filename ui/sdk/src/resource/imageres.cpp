@@ -10,7 +10,7 @@
 #include "include/interface/iuires.h"
 #include "include/macro/xmldefine.h"
 #include "src/application/uiapplication.h"
-#include "src/skin_parse/datasource/skindatasource.h"
+#include "src/parser/datasource/bundle_source.h"
 #include "src/util/DPI/dpihelper.h"
 #include "uiresource.h"
 #include <math.h>
@@ -77,15 +77,15 @@ bool ImageResItem::IsMyRenderBitmap(IRenderBitmap *pRenderBitmap) {
 }
 
 std::shared_ptr<IRenderBitmap>
-ImageResItem::GetImage(Resource *pSkinRes,
+ImageResItem::GetImage(ResourceBundle *resource_bundle,
                        GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
                        bool *pbFirstTimeCreate) {
-  if (nullptr == pSkinRes)
+  if (nullptr == resource_bundle)
     return nullptr;
 
   switch (eRenderType) {
   case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA:
-    return GetSkiaImage(pSkinRes, pbFirstTimeCreate);
+    return GetSkiaImage(resource_bundle, pbFirstTimeCreate);
   default:
     return nullptr;
   }
@@ -94,9 +94,9 @@ ImageResItem::GetImage(Resource *pSkinRes,
 }
 
 std::shared_ptr<IRenderBitmap>
-ImageResItem::GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate) {
+ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCreate) {
 
-  SkinDataSource *pDataSource = pSkinRes->GetDataSource();
+  BundleSource *pDataSource = resource_bundle->GetSource();
   if (nullptr == pDataSource)
     return nullptr;
 
@@ -105,7 +105,7 @@ ImageResItem::GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate) {
   }
 
   m_render_bitmap = RenderBitmapFactory::CreateInstance(
-      pSkinRes->GetUIApplication()->GetIUIApplication(),
+      resource_bundle->GetUIApplication()->GetIUIApplication(),
       GRAPHICS_RENDER_LIBRARY_TYPE_SKIA, m_eType);
 
   if (!m_render_bitmap) {
@@ -252,24 +252,24 @@ bool ImageResItem::NeedDpiAdapt() {
 
   return true;
 }
-void ImageResItem::SetAttribute(IMapAttribute *pMapAttrib) {
+void ImageResItem::SetAttribute(IAttributeMap *attribute_map) {
   if (!m_pMapAttrib) {
     m_pMapAttrib = UICreateIMapAttribute();
   }
-  pMapAttrib->CopyTo(m_pMapAttrib.get(), true);
+  attribute_map->CopyTo(m_pMapAttrib.get(), true);
 
   bool bUseSkinHLS = false;
   bool bNeedAntiAliasing = false;
   bool bDpiAdapt = true;
 
-  pMapAttrib->GetAttr_bool(XML_IMAGE_THEMEHLS, true, &bUseSkinHLS);
+  attribute_map->GetAttr_bool(XML_IMAGE_THEMEHLS, true, &bUseSkinHLS);
   this->SetUseSkinHLS(bUseSkinHLS);
 
-  pMapAttrib->GetAttr_bool(XML_IMAGE_NEED_ANTIALIASING, true,
+  attribute_map->GetAttr_bool(XML_IMAGE_NEED_ANTIALIASING, true,
                            &bNeedAntiAliasing);
   this->SetNeedAntiAliasing(bNeedAntiAliasing);
 
-  pMapAttrib->GetAttr_bool(XML_IMAGE_DPI_ADAPT, true, &bDpiAdapt);
+  attribute_map->GetAttr_bool(XML_IMAGE_DPI_ADAPT, true, &bDpiAdapt);
   m_bDpiAdapt = bDpiAdapt;
 }
 
@@ -316,10 +316,10 @@ void ImageListResItem::SetLayoutType(IMAGELIST_LAYOUT_TYPE e) {
   m_eLayoutType = e;
 }
 void ImageListResItem::SetItemCount(int n) { m_nCount = n; }
-void ImageListResItem::SetAttribute(IMapAttribute *pMapAttrib) {
-  ImageResItem::SetAttribute(pMapAttrib);
+void ImageListResItem::SetAttribute(IAttributeMap *attribute_map) {
+  ImageResItem::SetAttribute(attribute_map);
 
-  const char *szText = pMapAttrib->GetAttr(XML_IMAGE_IMAGELIST_LAYOUT, true);
+  const char *szText = attribute_map->GetAttr(XML_IMAGE_IMAGELIST_LAYOUT, true);
   if (szText) {
     if (0 == strcmp(szText, XML_IMAGE_IMAGELIST_LAYOUT_V))
       m_eLayoutType = IMAGELIST_LAYOUT_TYPE_V;
@@ -327,7 +327,7 @@ void ImageListResItem::SetAttribute(IMapAttribute *pMapAttrib) {
       m_eLayoutType = IMAGELIST_LAYOUT_TYPE_H;
   }
 
-  pMapAttrib->GetAttr_int(XML_IMAGE_IMAGELIST_COUNT, true, &m_nCount);
+  attribute_map->GetAttr_int(XML_IMAGE_IMAGELIST_COUNT, true, &m_nCount);
 }
 
 void ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
@@ -357,11 +357,11 @@ IImageResItem *ImageIconResItem::GetIImageResItem() {
 
   return m_pIImageResItem;
 }
-void ImageIconResItem::SetAttribute(IMapAttribute *pMapAttrib) {
-  ImageResItem::SetAttribute(pMapAttrib);
+void ImageIconResItem::SetAttribute(IAttributeMap *attribute_map) {
+  ImageResItem::SetAttribute(attribute_map);
 
-  pMapAttrib->GetAttr_int(XML_IMAGE_ICON_WIDTH, true, (int *)&m_sizeDraw.width);
-  pMapAttrib->GetAttr_int(XML_IMAGE_ICON_HEIGHT, true,
+  attribute_map->GetAttr_int(XML_IMAGE_ICON_WIDTH, true, (int *)&m_sizeDraw.width);
+  attribute_map->GetAttr_int(XML_IMAGE_ICON_HEIGHT, true,
                           (int *)&m_sizeDraw.height);
 }
 
@@ -382,8 +382,8 @@ void ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
 //	ImageRes
 //
 
-ImageRes::ImageRes(Resource *pSkinRes) {
-  m_pSkinRes = pSkinRes;
+ImageRes::ImageRes(ResourceBundle *resource_bundle) {
+  m_resource_bundle = resource_bundle;
   m_pIImageRes = nullptr;
 }
 
@@ -402,12 +402,12 @@ IImageRes &ImageRes::GetIImageRes() {
 //
 // 从文件中加载一项(由CXmlImageParse::load_from_file中调用)
 //
-ImageResItem *ImageRes::LoadItem(const char *szType, IMapAttribute *pMapAttrib,
+ImageResItem *ImageRes::LoadItem(const char *szType, IAttributeMap *attribute_map,
                                  const char *szFullPath) {
-  if (!szType || !pMapAttrib || !szFullPath)
+  if (!szType || !attribute_map || !szFullPath)
     return nullptr;
 
-  const char *szId = pMapAttrib->GetAttr(XML_ID, true);
+  const char *szId = attribute_map->GetAttr(XML_ID, true);
   if (!szId)
     return nullptr;
 
@@ -435,7 +435,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType, IMapAttribute *pMapAttrib,
     return nullptr;
   }
 
-  pItem->SetAttribute(pMapAttrib);
+  pItem->SetAttribute(attribute_map);
   return pItem;
 }
 
@@ -519,7 +519,7 @@ ImageResItem *ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
     if (ui::GetDpi() == DEFAULT_SCREEN_DPI)
       break;
 
-    SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
+    BundleSource *pDataSource = m_resource_bundle->GetSource();
     if (!pDataSource)
       break;
 
@@ -569,8 +569,8 @@ bool ImageRes::ModifyImage(const char *szId, const char *szPath) {
     bool bRet = p->ModifyImage(szPath);
     if (p->GetUseSkinHLS()) {
       // 检查当前皮肤的HLS
-      if (m_pSkinRes && m_pSkinRes->GetHLSInfo()) {
-        SKIN_HLS_INFO *pHLSInfo = m_pSkinRes->GetHLSInfo();
+      if (m_resource_bundle && m_resource_bundle->GetHLSInfo()) {
+        SKIN_HLS_INFO *pHLSInfo = m_resource_bundle->GetHLSInfo();
         p->ModifyHLS(pHLSInfo->h, pHLSInfo->l, pHLSInfo->s, pHLSInfo->nFlag);
       }
     }
@@ -655,7 +655,7 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
 //     return nullptr;
 //   }
 
-//   SkinDataSource *pDataSource = m_pSkinRes->GetDataSource();
+//   BundleSource *pDataSource = m_resource_bundle->GetSource();
 //   if (nullptr == pDataSource)
 //     return nullptr;
 
@@ -680,8 +680,8 @@ ImageRes::GetBitmap(const char *szImageID,
   ImageResItem *pItem = this->GetImageItem2(szImageID);
   if (!pItem) {
     // 获取失败，尝试向上一级资源获取
-    if (m_pSkinRes->GetParentSkinRes()) {
-      return m_pSkinRes->GetParentSkinRes()->GetImageRes().GetBitmap(
+    if (m_resource_bundle->GetParentSkinRes()) {
+      return m_resource_bundle->GetParentSkinRes()->GetImageRes().GetBitmap(
           szImageID, eRenderType);
     }
 
@@ -691,7 +691,7 @@ ImageRes::GetBitmap(const char *szImageID,
 
   bool bFirstTimeCreate = false;
   std::shared_ptr<IRenderBitmap> pBitmap =
-      pItem->GetImage(m_pSkinRes, eRenderType, &bFirstTimeCreate);
+      pItem->GetImage(m_resource_bundle, eRenderType, &bFirstTimeCreate);
   if (!pBitmap) {
     UI_LOG_ERROR("GetImage：%s failed .2", szImageID);
     return pBitmap;
@@ -699,8 +699,8 @@ ImageRes::GetBitmap(const char *szImageID,
 
   // if (bFirstTimeCreate && pItem->GetUseSkinHLS()) {
   //   // 检查当前皮肤的HLS
-  //   if (m_pSkinRes && m_pSkinRes->GetHLSInfo()) {
-  //     SKIN_HLS_INFO *pHLSInfo = m_pSkinRes->GetHLSInfo();
+  //   if (m_resource_bundle && m_resource_bundle->GetHLSInfo()) {
+  //     SKIN_HLS_INFO *pHLSInfo = m_resource_bundle->GetHLSInfo();
   //     pItem->ModifyHLS(pBitmap, pHLSInfo->h, pHLSInfo->l, pHLSInfo->s,
   //                      pHLSInfo->nFlag);
   //   }
@@ -720,7 +720,7 @@ const char *ImageRes::GetRenderBitmapId(IRenderBitmap *pBitmap) {
     }
   }
 
-  Resource *pParent = m_pSkinRes->GetParentSkinRes();
+  ResourceBundle *pParent = m_resource_bundle->GetParentSkinRes();
   if (pParent) {
     return pParent->GetImageRes().GetRenderBitmapId(pBitmap);
   }

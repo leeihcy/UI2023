@@ -14,7 +14,7 @@ namespace ui {
 class Application;
 struct ILayout;
 struct IUIEditor;
-struct IResource;
+struct IResourceBundle;
 struct IResourceManager;
 struct IImageManager;
 struct IImageRes;
@@ -62,9 +62,9 @@ public:
   void Run();
   void Quit();
 
-  IResource *RootBundle();
-  IResource *LoadResource(const char *szSkinPath);
-  IResource *LoadResource(llong hInstance, int resId = -1);
+  IResourceBundle *RootBundle();
+  IResourceBundle *LoadResource(const char *szSkinPath);
+  IResourceBundle *LoadResource(llong hInstance, int resId = -1);
 
   void SetEditorMode(bool b);
   bool IsEditorMode();
@@ -76,26 +76,26 @@ public:
   uia::IAnimate *GetAnimate();
   // IMessageFilterMgr*  GetMessageFilterMgr();
 
-  IResource *GetDefaultSkinRes();
+  IResourceBundle *GetDefaultSkinRes();
 
   void RestoreRegisterUIObject();
   bool RegisterControlTagParseFunc(const char *szTag, pfnParseControlTag func);
   bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
   bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
 
-  IObject *CreateUIObjectByName(const char *szName, IResource *pISkinRes);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResource *pISkinRes);
+  IObject *CreateUIObjectByName(const char *szName, IResourceBundle *pISkinRes);
+  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResourceBundle *pISkinRes);
   bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 
   bool RegisterUIRenderBase(IRenderBaseMeta& meta);
-  std::shared_ptr<IRenderBase> CreateRenderBase(IResource* resource, int type);
+  std::shared_ptr<IRenderBase> CreateRenderBase(IResourceBundle* resource, int type);
   void EnumRenderBaseName(pfnEnumRenderBaseNameCallback callback, llong wParam,
                           llong lParam);
 
   bool RegisterUITextRender(ITextRenderBaseMeta &meta);
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResource* resource, const char *szName);
-  std::shared_ptr<ITextRenderBase> CreateTextRenderBase(IResource* resource, int nType);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBaseByName(IResourceBundle* resource, const char *szName);
+  std::shared_ptr<ITextRenderBase> CreateTextRenderBase(IResourceBundle* resource, int nType);
   void EnumTextRenderBaseName(pfnEnumTextRenderNameCallback callback,
                               llong wParam, llong lParam);
 

@@ -6,7 +6,7 @@
 
 namespace ui {
 
-struct IMapAttribute;
+struct IAttributeMap;
 struct IUIElement;
 
 class PugiXmlElement : public UIElement {
@@ -47,9 +47,9 @@ public:
   virtual UIElementProxy NextElement() override;
   virtual UIElementProxy FindChild(const char *szChildName) override;
 
-  virtual void GetAttribList(IMapAttribute *ppMapAttrib) override;
-  virtual void GetAttribList2(IListAttribute **ppListAttrib) override;
-  virtual bool SetAttribList2(IListAttribute *pListAttrib) override;
+  virtual void GetAttribList(IAttributeMap *ppMapAttrib) override;
+  virtual void GetAttribList2(IAttributeList **ppListAttrib) override;
+  virtual bool SetAttribList2(IAttributeList *attribute_list) override;
 #if 0 // defined(OS_WIN)
   virtual bool GetAttrib(const char *szKey, BSTR *pbstrValue) override;
 #endif
@@ -65,7 +65,7 @@ public:
   virtual bool GetAttribInt(const char *szKey, int *pInt) override;
   virtual bool AddAttribInt(const char *szKey, int nInt) override;
 
-  void set_attr_by_prefix(IListAttribute *pListAttrib, const char *szPrefix);
+  void set_attr_by_prefix(IAttributeList *attribute_list, const char *szPrefix);
   void
   enum_attr(const std::function<void(const char *, const char *)> &callback);
 

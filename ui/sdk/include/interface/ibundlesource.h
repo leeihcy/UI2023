@@ -9,13 +9,13 @@ class Bitmap;
 }
 namespace ui {
 
-enum class eResourceFormat {
+enum class eBundleFormat {
   // 原始目录结构
   Directory,
   // 压缩包结构
   Zip, 
   // dll/exe/...模块资源
-  Bundle,
+  ModuleResource,
 };
 
 enum class eStreamType {
@@ -24,17 +24,17 @@ enum class eStreamType {
 };
 
 struct IStreamBufferReader;
-struct SkinDataSource;
-struct UIAPI ISkinDataSource {
-  ISkinDataSource(SkinDataSource *);
+struct BundleSource;
+struct UIAPI IBundleSource {
+  IBundleSource(BundleSource *);
 
   const char *GetPath();
-  eResourceFormat GetType();
-  bool Load(const char* szPath, slot<void(const char*)>&& callback);
+  eBundleFormat GetType();
+  bool LoadBuffer(const char* szPath, slot<void(const char*, unsigned int)>&& callback);
   bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
 
 private:
-  SkinDataSource *m_pImpl;
+  BundleSource *m_pImpl;
 };
 
 struct IStreamBufferReader {

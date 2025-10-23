@@ -103,14 +103,14 @@ struct UIAPI IFontColorListTextRender : public ITextRenderBase {
 #endif
 
 struct ITextRenderBaseMeta : public IMeta {
-  virtual std::shared_ptr<ITextRenderBase> CreateShared(ui::IResource *p) = 0;
+  virtual std::shared_ptr<ITextRenderBase> CreateShared(ui::IResourceBundle *p) = 0;
 };
 
 template <class Ixx>
 struct TextRenderBaseMetaImpl : public MetaImpl<Ixx, ITextRenderBaseMeta> {
   using This = MetaImpl<Ixx, ITextRenderBaseMeta>;
 
-  std::shared_ptr<ITextRenderBase> CreateShared(IResource *resource) override {
+  std::shared_ptr<ITextRenderBase> CreateShared(IResourceBundle *resource) override {
     Ixx *p = This::create(resource);
     return std::shared_ptr<Ixx>(p, This::destroy);
   }

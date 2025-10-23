@@ -13,7 +13,7 @@ namespace ui {
 //   return true;
 // }
 
-PARSE_CONTROL_RETURN UIParseSvgTag(IUIElement *pElem, IResource *pSkinRes,
+PARSE_CONTROL_RETURN UIParseSvgTag(IUIElement *pElem, IResourceBundle *resource_bundle,
                                    IObject *pParent, IObject **ppOut) {
   return ParseControl_LoadDescendants;          
 }

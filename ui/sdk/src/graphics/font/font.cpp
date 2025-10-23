@@ -1,18 +1,22 @@
 #include "src/graphics/font/font.h"
+#include "include/core/SkData.h"
 #include "include/core/SkTypeface.h"
+#include "include/interface/ibundlesource.h"
+#include "include/macro/helper.h"
+#include "include/util/log.h"
+#include "src/parser/datasource/bundle_source.h"
+#include "src/resource/res_bundle.h"
 #include "third_party/skia/src/include/core/SkFont.h"
 #include "third_party/skia/src/include/core/SkFontMetrics.h"
 #include <memory>
 #include <string.h>
+#include <utility>
+#include <vector>
+
 
 namespace ui {
 
-// static
-FontPool &FontPool::GetInstance() {
-  static FontPool s_font_pool;
-  return s_font_pool;
-}
-
+FontCache::FontCache(FontRes &res) : m_fontres(res) {}
 SkFont &FontCache::LoadSkia(const FontDesc &key) {
   if (m_skia_font) {
     return *m_skia_font;
@@ -22,20 +26,32 @@ SkFont &FontCache::LoadSkia(const FontDesc &key) {
   SkFontStyle style(key.weight, SkFontStyle::kNormal_Width,
                     SkFontStyle::kUpright_Slant);
 
-  bool is_font_file = false;
-  if (key.face.length() > 4) {
-     const char* key_face_ext = key.face.c_str() + key.face.length() - 4;
-     if (strcmp(key_face_ext, ".ttf") == 0) {
-      is_font_file = true;
-     }
-  }
+  FontFace *custom_fontface = m_fontres.GetFontFace(key.face);
+
   sk_sp<SkTypeface> typeface;
-  if (is_font_file) {
-    typeface = SkTypeface::MakeFromFile(key.face.c_str());
-  // } else if (is_font_stream) {
-  //   // typeface = SKTypeface::MakeFromStream(stream);
+  if (custom_fontface) {
+    // 如果是自定义字体，加载对应的本地资源文件
+
+    BundleSource *bundle_resouce = m_fontres.GetResourceBundle().GetSource();
+    UIASSERT(bundle_resouce);
+
+    std::string font_path;
+    if (bundle_resouce->GetType() == eBundleFormat::Directory &&
+        bundle_resouce->loadFullPath(custom_fontface->src.c_str(), font_path)) {
+      typeface = SkTypeface::MakeFromFile(font_path.c_str());
+    } else {
+      std::vector<unsigned char> buffer;
+      bundle_resouce->loadBuffer(custom_fontface->src.c_str(), buffer);
+
+      sk_sp<SkData> sk_data =
+          SkData::MakeWithoutCopy(buffer.data(), buffer.size());
+      typeface = SkTypeface::MakeFromData(sk_data);
+    }
   } else {
     typeface = SkTypeface::MakeFromName(key.face.c_str(), style);
+  }
+  if (!typeface) {
+    UI_LOG_WARN("Create font failed: %s", key.face.c_str());
   }
 
   m_skia_font = std::make_unique<SkFont>(typeface, key.size);
@@ -44,7 +60,11 @@ SkFont &FontCache::LoadSkia(const FontDesc &key) {
   return *m_skia_font;
 }
 
-SkFont &FontPool::GetSkiaFont(const FontDesc &desc/*, float scale*/) {
+//----------------------------------------------------------------
+
+FontRes::FontRes(ResourceBundle &rb) : m_resource_bundle(rb) {}
+
+SkFont &FontRes::GetSkiaFont(const FontDesc &desc /*, float scale*/) {
 #if 0 // skia已经整体缩放了，不需要字体再单独缩放。
   FontDesc desc_copy = desc; // TODO: 能否减少这一步拷贝
 
@@ -58,21 +78,37 @@ SkFont &FontPool::GetSkiaFont(const FontDesc &desc/*, float scale*/) {
 #endif
 }
 
-FontCache &FontPool::GetFont(const FontDesc &key) {
+FontCache &FontRes::GetFont(const FontDesc &key) {
   auto iter = m_caches.find(key);
   if (iter != m_caches.end()) {
-    return iter->second;
+    return *(iter->second.get());
   }
 
-  m_caches[key] = FontCache();
-  return m_caches[key];
+  std::shared_ptr<FontCache> cache = std::make_shared<FontCache>(*this);
+  m_caches[key] = cache;
+  return *(cache.get());
 }
 
-Size FontPool::MeasureString(const FontDesc &key, const char* text) {
+void FontRes::AddFontFace(const FontFace &font_face) {
+  if (font_face.font_family.empty()) {
+    return;
+  }
+  m_custom_faces[font_face.font_family] = std::make_shared<FontFace>(font_face);
+}
+FontFace *FontRes::GetFontFace(const std::string& font_family) {
+
+  auto face_iter = m_custom_faces.find(font_family);
+  if (face_iter != m_custom_faces.end()) {
+    return face_iter->second.get();
+  }
+  return nullptr;
+}
+
+Size FontRes::MeasureString(const FontDesc &key, const char *text) {
   // TBD: 只支持skia
-  SkFont& font = GetSkiaFont(key);
+  SkFont &font = GetSkiaFont(key);
   int width = font.measureText(text, strlen(text), SkTextEncoding::kUTF8);
-  
+
   SkFontMetrics metrics;
   font.getMetrics(&metrics);
   int height = metrics.fDescent - metrics.fAscent + metrics.fLeading;

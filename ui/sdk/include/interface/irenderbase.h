@@ -91,14 +91,14 @@ struct UIAPI IRenderBase : public IMessage {
 };
 
 struct IRenderBaseMeta : public IMeta {
-  virtual std::shared_ptr<IRenderBase> CreateShared(ui::IResource *p) = 0;
+  virtual std::shared_ptr<IRenderBase> CreateShared(ui::IResourceBundle *p) = 0;
 };
 
 template <class Ixx>
 struct RenderBaseMetaImpl : public MetaImpl<Ixx, IRenderBaseMeta> {
   using This = MetaImpl<Ixx, IRenderBaseMeta>;
 
-  std::shared_ptr<IRenderBase> CreateShared(IResource *resource) override {
+  std::shared_ptr<IRenderBase> CreateShared(IResourceBundle *resource) override {
     Ixx *p = This::create(resource);
     return std::shared_ptr<Ixx>(p, This::destroy);
   }

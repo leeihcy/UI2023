@@ -10,8 +10,8 @@ struct IUIElement;
 class I18nManager
 {
 public:
-	I18nManager(Resource* p) : m_i18nRes(p) {
-		m_pSkinRes = p;
+	I18nManager(ResourceBundle* p) : m_i18nRes(p) {
+		m_resource_bundle = p;
 	}
     ~I18nManager();
 
@@ -19,7 +19,7 @@ public:
 		return m_i18nRes;
 	}
 
-	static int  UIParseI18nTagCallback(IUIElement*, IResource* pSkinRes);
+	static int  UIParseI18nTagCallback(IUIElement*, IResourceBundle* resource_bundle);
 	int  ParseNewElement(UIElement*);
 
     void  Reload();
@@ -29,7 +29,7 @@ private:
 
 private:
 	I18nRes  m_i18nRes;
-	Resource*  m_pSkinRes;
+	ResourceBundle*  m_resource_bundle;
 
     // xml结点记录，用于动态切换语言（如编辑器中）
     std::list<UIElement*>  m_listElement;

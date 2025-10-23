@@ -24,7 +24,7 @@ enum {
 public:                                                                        \
   typedef T ImplName;                                                          \
   friend struct T##Meta;                                                       \
-  static std::unique_ptr<I##T, void (*)(I##T *)> create(ui::IResource *);      \
+  static std::unique_ptr<I##T, void (*)(I##T *)> create(ui::IResourceBundle *);      \
   I##T(ui::eCreateImpl);                                                       \
   void onRouteMessage(ui::Msg *msg);                                           \
   static Uuid UUID();                                                          \
@@ -52,7 +52,7 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
+  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResourceBundle *res) {       \
     return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
   Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
@@ -74,7 +74,7 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
-  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResource *res) {       \
+  std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResourceBundle *res) {       \
     return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
   Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
@@ -120,21 +120,21 @@ enum SERIALIZEFLAG {
 
   // save 标识
 };
-struct IMapAttribute;
-struct IListAttribute;
+struct IAttributeMap;
+struct IAttributeList;
 struct IAttributeEditorProxy;
 struct IApplication;
-struct IResource;
+struct IResourceBundle;
 
 struct SerializeParam {
   union {
-    IMapAttribute *pMapAttrib;                    // load [in] / getlist [out]
-    IListAttribute *pListAttrib;                  // save [out]
-    IAttributeEditorProxy *pAttributeEditorProxy; // editor [in]
+    IAttributeMap *attribute_map;                    // load [in] / getlist [out]
+    IAttributeList *attribute_list;                  // save [out]
+    IAttributeEditorProxy *attribute_editor_proxy;   // editor [in]
   };
 
   // IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
-  IResource *resource;
+  IResourceBundle *resource;
   const char *szPrefix;    // 属性前缀
   const char *szParentKey; // 父属性（仅用于editor），如bkg.render.type
   unsigned int nFlags;

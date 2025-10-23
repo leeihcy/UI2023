@@ -75,7 +75,7 @@ IWindowRender*  IWindowBase::GetWindowRender()
 { 
 	return __pImpl->GetWindowRender()->GetIWindowRender();
 }
-IResource*  IWindowBase::GetResource()                                      
+IResourceBundle*  IWindowBase::GetResource()                                      
 { 
 	return __pImpl->GetResource()->GetIResource(); 
 }
@@ -216,7 +216,7 @@ IObject *IWindow::TryFindObject(const char *obj_id) {
   return obj->GetIObject();
 }
 
-IResource* IWindow::GetResource() {
+IResourceBundle* IWindow::GetResource() {
   return __pImpl->GetResource().GetIResource();
 }
 IRootObject* IWindow::GetRootObject() {

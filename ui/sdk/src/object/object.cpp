@@ -83,8 +83,8 @@ void Object::onRouteMessage(ui::Msg *msg) {
   }
 }
 
-int Object::FinalConstruct(IResource *pSkinRes) {
-  m_resource = pSkinRes->GetImpl();
+int Object::FinalConstruct(IResourceBundle *resource_bundle) {
+  m_resource = resource_bundle->GetImpl();
   return 0;
 }
 
@@ -353,7 +353,7 @@ void Object::LoadAttributes(bool bReload) {
 
   SerializeParam data = {0};
   data.resource = m_resource->GetIResource();
-  data.pMapAttrib = m_pIMapAttributeRemain.get();
+  data.attribute_map = m_pIMapAttributeRemain.get();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
@@ -401,7 +401,7 @@ void Object::AddAttribute(const char *szKey, const char *szValue) {
   }
   m_pIMapAttributeRemain->AddAttr(szKey, szValue);
 }
-std::shared_ptr<IMapAttribute> Object::GetMapAttribute() {
+std::shared_ptr<IAttributeMap> Object::GetMapAttribute() {
   return m_pIMapAttributeRemain;
 }
 void Object::ClearMapAttribute() {
@@ -1114,36 +1114,36 @@ void Object::SetRejectMouseMsgSelf(bool b) {
 
 // 当手动创建一个对象（非从xml中加载时，可以调用该函数完全默认属性的加载)
 void Object::InitDefaultAttrib() {
-  std::shared_ptr<IMapAttribute> pMapAttrib;
+  std::shared_ptr<IAttributeMap> attribute_map;
   if (m_pIMapAttributeRemain) {
-    pMapAttrib = m_pIMapAttributeRemain;
+    attribute_map = m_pIMapAttributeRemain;
   } else {
-    pMapAttrib = UICreateIMapAttribute();
+    attribute_map = UICreateIMapAttribute();
   }
 
   UIASSERT(m_strId.empty() && "将setid放在该函数之后调用，避免覆盖");
-  // pMapAttrib->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
+  // attribute_map->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
 
   // 解析样式
   UIASSERT(m_resource);
 
   StyleRes &styleRes = m_resource->GetStyleRes();
 
-  const char *szStyle = pMapAttrib->GetAttr(nullptr, XML_STYLE, true);
+  const char *szStyle = attribute_map->GetAttr(nullptr, XML_STYLE, true);
   std::string strStyle;
   if (szStyle)
     strStyle = szStyle;
 
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(), nullptr,
-                     pMapAttrib.get());
+                     attribute_map.get());
 
   SerializeParam data = {0};
   data.resource = m_resource->GetIResource();
-  data.pMapAttrib = pMapAttrib.get();
+  data.attribute_map = attribute_map.get();
   data.nFlags = SERIALIZEFLAG_LOAD;
 
-  m_pIMapAttributeRemain = pMapAttrib;
-  pMapAttrib = nullptr;
+  m_pIMapAttributeRemain = attribute_map;
+  attribute_map = nullptr;
 
   SerializeMessage msg;
   msg.param = &data;
@@ -1167,9 +1167,9 @@ void Object::InitDefaultAttrib() {
 
 void Object::SetOutRef(void **ppOutRef) { m_ppOutRef = ppOutRef; }
 
-Resource *Object::GetResource() { return m_resource; }
+ResourceBundle *Object::GetResource() { return m_resource; }
 
-IResource *Object::GetIResource() {
+IResourceBundle *Object::GetIResource() {
   if (!m_resource)
     return nullptr;
 

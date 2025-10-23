@@ -50,6 +50,7 @@ namespace ui
 #define XML_LAYOUTCONFIG     "layoutconfig"   // 延迟加载皮肤列表
 #define XML_PROP             "prop"           // 复杂属性，单独配置在一行
 #define XML_KEY              "key"            // <prop> </prop>下面的key
+#define XML_SRC              "src"
 
 #define XML_ITEM             "item"
 #define XML_IMAGE_ITEM_GIF   "gif"
@@ -579,6 +580,9 @@ enum STYLE_SELECTOR_TYPE
 
 #define  STYLE_ID_PREFIX                       '#'        // id选择器前缀
 #define  STYLE_CLASS_PREFIX                    '.'        // class选择器前缀
+
+#define  XML_STYLE_FONTFACE   "font-face"    // 自定义字体
+#define  XML_FONT_FAMILY      "font-family"  // 字体名称
 
 // Control
 

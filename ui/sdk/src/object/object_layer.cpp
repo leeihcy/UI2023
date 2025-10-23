@@ -34,7 +34,7 @@ void ObjectLayer::CreateLayer() {
     SerializeParam data = {0};
     data.resource = m_obj.GetIResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-    data.pMapAttrib = m_obj.GetMapAttribute().get();
+    data.attribute_map = m_obj.GetMapAttribute().get();
 
     m_pLayer->Serialize(&data);
 

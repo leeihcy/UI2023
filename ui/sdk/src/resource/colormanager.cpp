@@ -3,12 +3,12 @@
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/util/log.h"
-#include "src/skin_parse/xml/xmlwrap.h"
+#include "src/parser/xml/xmlwrap.h"
 
 namespace ui {
-ColorManager::ColorManager(Resource *pSkinRes) : m_resColor(pSkinRes) {
+ColorManager::ColorManager(ResourceBundle *resource_bundle) : m_resColor(resource_bundle) {
   m_pIColorManager = nullptr;
-  m_pSkinRes = pSkinRes;
+  m_resource_bundle = resource_bundle;
 }
 
 ColorManager::~ColorManager(void) {
@@ -53,8 +53,8 @@ ColorRes &ColorManager::GetColorRes() { return m_resColor; }
 //////////////////////////////////////////////////////////////////////////
 
 int ColorManager::UIParseColorTagCallback(IUIElement *pElem,
-                                           IResource *pSkinRes) {
-  IColorManager &pColorMgr = pSkinRes->GetColorManager();
+                                           IResourceBundle *resource_bundle) {
+  IColorManager &pColorMgr = resource_bundle->GetColorManager();
   return pColorMgr.GetImpl()->ParseNewElement(pElem->GetImpl());
 }
 
@@ -81,9 +81,9 @@ int ColorManager::ParseNewElement(UIElement *pElem) {
 }
 void ColorManager::OnNewChild(UIElement *pElem) {
   //	加载所有属性
-  std::shared_ptr<IMapAttribute> pMapAttrib = UICreateIMapAttribute();
-  pElem->GetAttribList(pMapAttrib.get());
-  if (false == m_resColor.LoadItem(pMapAttrib.get(), pElem->GetData())) {
+  std::shared_ptr<IAttributeMap> attribute_map = UICreateIMapAttribute();
+  pElem->GetAttribList(attribute_map.get());
+  if (false == m_resColor.LoadItem(attribute_map.get(), pElem->GetData())) {
     UI_LOG_WARN("insert color failed.");
   }
 }

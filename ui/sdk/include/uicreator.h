@@ -11,7 +11,7 @@
 
 namespace ui {
 struct IApplication;
-struct IResource;
+struct IResourceBundle;
 struct UIMSG;
 
 #if 0
@@ -20,12 +20,12 @@ struct UIMSG;
 template <class T> class ObjectCreator : public T {
 public:
   // 通用型
-  static void CreateInstance2(IResource *pResource, void **pp) {
+  static void CreateInstance2(IResourceBundle *pResource, void **pp) {
     // *pp = (void *)ObjectCreator<T>::create(pResource);
     // TODO:
   }
   // 专用型
-//   static T *create(IResource *pResource) {
+//   static T *create(IResourceBundle *pResource) {
 //     if (!pResource) {
 // #ifdef _DEBUG
 //       DebugBreak();
@@ -60,11 +60,11 @@ public:
 template <class T> class ObjectNoImplCreator : public T {
 public:
   // 通用型
-  static void CreateInstance2(IResource *pResource, void **pp) {
+  static void CreateInstance2(IResourceBundle *pResource, void **pp) {
     *pp = (void *)ObjectNoImplCreator<T>::CreateInstance(pResource);
   }
   // 专用型
-  static T *CreateInstance(IResource *pResource) {
+  static T *CreateInstance(IResourceBundle *pResource) {
     T *p = new ObjectNoImplCreator<T>;
 
     if (FAILED(p->SendMessage(UI_MSG_FINALCONSTRUCT, (long)pResource))) {

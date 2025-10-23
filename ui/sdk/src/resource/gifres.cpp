@@ -3,7 +3,7 @@
 #include "src/util/gif/gifImage.h"
 #include "include/interface/iuires.h"
 #include "Inc/Interface/imapattr.h"
-#include "src/skin_parse/datasource/skindatasource.h"
+#include "src/parser/datasource/bundle_source.h"
 
 namespace ui
 {
@@ -54,7 +54,7 @@ IGifResItem*  GifResItem::GetIGifResItem()
 	return m_pIGifResItem;
 }
 
-GifImageBase*  GifResItem::GetGifImage(Resource* pSkinRes)
+GifImageBase*  GifResItem::GetGifImage(ResourceBundle* resource_bundle)
 {
 	if (nullptr == m_pUIApp)
 		return nullptr;
@@ -75,7 +75,7 @@ GifImageBase*  GifResItem::GetGifImage(Resource* pSkinRes)
 
 	if (m_pGifImage && !m_pGifImage->IsLoaded())
 	{
-		SkinDataSource* pDataSource = pSkinRes->GetDataSource();
+		BundleSource* pDataSource = resource_bundle->GetSource();
 		if (!pDataSource)
 			return nullptr;
 
@@ -90,17 +90,17 @@ GifImageBase*  GifResItem::GetGifImage(Resource* pSkinRes)
 	return m_pGifImage;
 }
 
-void GifResItem::SetAttribute(IMapAttribute* pMapAttrib) 
+void GifResItem::SetAttribute(IAttributeMap* attribute_map) 
 { 
-	m_pMapAttrib = pMapAttrib; 
+	m_pMapAttrib = attribute_map; 
 	m_pMapAttrib->AddRef();
 }
 
-GifRes::GifRes(Resource* p)
+GifRes::GifRes(ResourceBundle* p)
 {
 	m_pUIApp = nullptr; 
 	m_pIGifRes = nullptr;
-	m_pSkinRes = p;
+	m_resource_bundle = p;
 }
 GifRes::~GifRes()
 {
@@ -116,18 +116,18 @@ IGifRes*  GifRes::GetIGifRes()
 	return m_pIGifRes;
 }
 
-GifResItem* GifRes::LoadItem(IMapAttribute* pMapAttrib, const std::string& strFullPath)
+GifResItem* GifRes::LoadItem(IAttributeMap* attribute_map, const std::string& strFullPath)
 {
 	std::string strID;
 
-	const wchar_t* szText = pMapAttrib->GetAttr(XML_ID, true);
+	const wchar_t* szText = attribute_map->GetAttr(XML_ID, true);
 	if (szText)
 		strID = szText;
 
 	GifResItem* pItem = nullptr;
 	if (this->InsertGif(strID, strFullPath, &pItem))
 	{
-		pItem->SetAttribute(pMapAttrib);
+		pItem->SetAttribute(attribute_map);
 		return pItem;
 	}
 	else
@@ -175,15 +175,15 @@ IGifImage*  GifRes::GetGifImage(const wchar_t* szId)
 	if (!pItem)
 	{
 		// ��ȡʧ�ܣ���������һ����Դ��ȡ
-		if (m_pSkinRes->GetParentSkinRes())
+		if (m_resource_bundle->GetParentSkinRes())
 		{
-			return m_pSkinRes->GetParentSkinRes()->
+			return m_resource_bundle->GetParentSkinRes()->
 				GetImageManager().GetGifRes().GetGifImage(szId);
 		}
 		return nullptr;
 	}
 
-	GifImageBase* pGifImage = pItem->GetGifImage(m_pSkinRes);
+	GifImageBase* pGifImage = pItem->GetGifImage(m_resource_bundle);
 	if (!pGifImage)
 		return nullptr;
 

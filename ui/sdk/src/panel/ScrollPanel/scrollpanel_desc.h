@@ -11,7 +11,7 @@ public:
 		return &s;
 	}
 
-    virtual void  CreateInstance(UI::IResource* p, void** pp) override
+    virtual void  CreateInstance(UI::IResourceBundle* p, void** pp) override
     {
         *pp = IScrollPanel::create(p);
     }

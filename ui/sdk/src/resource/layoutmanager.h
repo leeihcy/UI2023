@@ -1,5 +1,5 @@
 #pragma once
-#include "src/skin_parse/xml/xmlwrap.h"
+#include "src/parser/xml/xmlwrap.h"
 #include "src/util/DataStruct/list.h"
 #include <map>
 #include <vector>
@@ -7,11 +7,11 @@
 namespace ui {
 class Object;
 struct UIElement;
-class Resource;
+class ResourceBundle;
 struct ILayoutWindowNodeList;
 struct ILayoutManager;
 struct IMessage;
-struct IResource;
+struct IResourceBundle;
 
 //  延迟加载的布局配置
 //  一个xml配置中，允许配置多个相关联的窗口、自定义列表项
@@ -43,7 +43,7 @@ private:
 
 class LayoutManager {
 public:
-  LayoutManager(Resource *);
+  LayoutManager(ResourceBundle *);
   ~LayoutManager(void);
 
   ILayoutManager &GetILayoutManager();
@@ -71,8 +71,8 @@ public:
   void ReloadChildObjects(Object *pObjParent, UIElement *pObjElement,
                           std::map<std::string, Object *> &listAllChild);
 
-  static int UIParseLayoutTagCallback(IUIElement *, IResource *pSkinRes);
-  static int UIParseLayoutConfigTagCallback(IUIElement *, IResource *pSkinRes);
+  static int UIParseLayoutTagCallback(IUIElement *, IResourceBundle *resource_bundle);
+  static int UIParseLayoutConfigTagCallback(IUIElement *, IResourceBundle *resource_bundle);
 
   // 编辑器专用函数
   bool LoadWindowNodeList(ILayoutWindowNodeList **pp);
@@ -97,7 +97,7 @@ private:
   UIList<LayoutConfigItem *> m_listLayoutConfig; // 还未加载的布局项
 
   // 对象属性
-  Resource *m_pSkinRes;
+  ResourceBundle *m_resource_bundle;
 };
 
 } // namespace ui

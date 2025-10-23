@@ -35,23 +35,23 @@ void RenderBase::onRouteMessage(ui::Msg *msg) {
   }
 }
 
-Resource *RenderBase::GetResource() {
+ResourceBundle *RenderBase::GetResource() {
   return m_resouce;
 }
 ColorRes *RenderBase::GetSkinColorRes() {
-  Resource *pSkinRes = GetResource();
-  if (!pSkinRes)
+  ResourceBundle *resource_bundle = GetResource();
+  if (!resource_bundle)
     return nullptr;
 
-  return &pSkinRes->GetColorRes();
+  return &resource_bundle->GetColorRes();
 }
 
 ImageRes *RenderBase::GetSkinImageRes() {
-  Resource *pSkinRes = GetResource();
-  if (!pSkinRes)
+  ResourceBundle *resource_bundle = GetResource();
+  if (!resource_bundle)
     return nullptr;
 
-  return &pSkinRes->GetImageRes();
+  return &resource_bundle->GetImageRes();
 }
 
 std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {
@@ -59,8 +59,8 @@ std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {
     return std::shared_ptr<IRenderBitmap>();
 
   // if (m_pObject) {
-  //   Resource *pSkinRes = m_pObject->GetResource();
-  //   if (!pSkinRes)
+  //   ResourceBundle *resource_bundle = m_pObject->GetResource();
+  //   if (!resource_bundle)
   //     return;
 
   //   GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
@@ -71,7 +71,7 @@ std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {
   //       eType = pRender->GetGraphicsRenderType();
   //   }
 
-  //   pSkinRes->GetImageRes().GetBitmap(szBitmapId, eType, &pBitmapRef);
+  //   resource_bundle->GetImageRes().GetBitmap(szBitmapId, eType, &pBitmapRef);
   // } else {
     ImageRes *pImageRes = GetSkinImageRes();
     if (!pImageRes)

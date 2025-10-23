@@ -12,12 +12,12 @@ AverageLayout::AverageLayout() {
 AverageLayout::~AverageLayout() {}
 
 void AverageLayout::Serialize(SerializeParam *pData) {
-  IMapAttribute *pMapAttrib = pData->pMapAttrib;
-  if (nullptr == pMapAttrib)
+  IAttributeMap *attribute_map = pData->attribute_map;
+  if (nullptr == attribute_map)
     return;
 
   const char *szDirection =
-      pMapAttrib->GetAttr(XML_LAYOUT_AVERAGE_DIRECTION, true);
+      attribute_map->GetAttr(XML_LAYOUT_AVERAGE_DIRECTION, true);
   if (nullptr == szDirection)
     return;
 
@@ -30,7 +30,7 @@ void AverageLayout::Serialize(SerializeParam *pData) {
                 XML_LAYOUT_AVERAGE_DIRECTION, szDirection);
   }
 
-  pMapAttrib->GetAttr_int(XML_LAYOUT_AVERAGE_GAP, true, &m_nGap);
+  attribute_map->GetAttr_int(XML_LAYOUT_AVERAGE_GAP, true, &m_nGap);
 }
 
 Size AverageLayout::Measure() {

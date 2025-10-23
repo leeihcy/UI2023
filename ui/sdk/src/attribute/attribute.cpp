@@ -511,7 +511,7 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
 
   pAttribute->SetUIApplication(
       m_pData->pUIApplication ? m_pData->pUIApplication->GetImpl() : nullptr);
-  pAttribute->SetSkinRes(m_pData->pSkinRes ? m_pData->pSkinRes->GetImpl()
+  pAttribute->SetSkinRes(m_pData->resource_bundle ? m_pData->resource_bundle->GetImpl()
                                            : nullptr);
   if (m_pData->szPrefix) {
     std::string str(m_pData->szPrefix);
@@ -548,7 +548,7 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
 // }
 
 void AttributeSerializer::Load() {
-  if (!m_pData->pMapAttrib)
+  if (!m_pData->attribute_map)
     return;
 
   _AttrList::iterator iter = m_list.begin();
@@ -566,7 +566,7 @@ void AttributeSerializer::Save() {
 
 // 将AttributeBase*列表从AttributeSerializer类中脱离，交由UIEditor维护和管理/
 void AttributeSerializer::Editor() {
-  IAttributeEditorProxy *pIProxy = m_pData->pAttributeEditorProxy;
+  IAttributeEditorProxy *pIProxy = m_pData->attribute_editor_proxy;
   if (!pIProxy)
     return;
 
@@ -658,7 +658,7 @@ void AttributeEditorProxy::LoadAttribute2Editor(IObject *pObj) {
     m_bLoaded = true;
 
     SerializeParam data = {0};
-    data.pAttributeEditorProxy = &m_oIProxy;
+    data.attribute_editor_proxy = &m_oIProxy;
     data.resource = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_EDITOR;
 

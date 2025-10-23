@@ -12,6 +12,7 @@
 #include <shared_mutex>
 
 namespace ui {
+struct IResourceBundle;
 struct IRenderFont;
 struct IRenderPen;
 struct IRenderTarget;
@@ -121,6 +122,7 @@ struct DrawTextParam {
 
     // bkcolor.a = 0xff000000;
   }
+  IResourceBundle* resource = nullptr;
 
   FontDesc font_desc;
 

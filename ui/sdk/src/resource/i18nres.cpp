@@ -3,8 +3,8 @@
 #include "res_bundle.h"
 
 namespace ui {
-I18nRes::I18nRes(Resource *p) {
-  m_pSkinRes = p;
+I18nRes::I18nRes(ResourceBundle *p) {
+  m_resource_bundle = p;
   m_pII18nRes = nullptr;
 }
 
@@ -16,7 +16,7 @@ const char *I18nRes::Map(const char *key) {
 
   std::map<std::string, std::string>::iterator iter = m_dict.find(std::string(key));
   if (iter == m_dict.end()) {
-    Resource *pParentRes = m_pSkinRes->GetParentSkinRes();
+    ResourceBundle *pParentRes = m_resource_bundle->GetParentSkinRes();
     if (pParentRes)
       return pParentRes->GetI18nRes().Map(key);
 

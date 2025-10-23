@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <resource>
 	<style>
+    <font-face 
+      font-family="element-icons" 
+      src="element-icons.535877f.ttf"
+      font-weight="400"
+      font-style="normal"
+    />
+    <class id="element_icons"
+      text.render.font.face="element-icons"
+    />
+
     <class id="button"
       width="auto" height="40"
       padding="20,12,20,12"
@@ -47,6 +57,7 @@
       text.render.color="#fff"
       />
     <class id="buttle_circle" width="40" height="40" 
+      padding="0"
       focus.render.radius="18"
       back.render.radius="20"/>
 	</style>

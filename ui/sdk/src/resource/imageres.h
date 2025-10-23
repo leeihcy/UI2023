@@ -8,7 +8,7 @@ struct IImageRes;
 class ImageData;
 class GDIRenderBitmap;
 class GdiplusRenderBitmap;
-class Resource;
+class ResourceBundle;
 
 //
 //	image中的一项信息数据
@@ -38,18 +38,18 @@ public:
   bool ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s, int nFlag);
   bool ModifyAlpha(byte nAlphaPercent);
   std::shared_ptr<IRenderBitmap>
-  GetImage(Resource *pSkinRes,
+  GetImage(ResourceBundle *resource_bundle,
            GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
            bool *pbFirstTimeCreate = nullptr);
   std::shared_ptr<IRenderBitmap>
-  GetSkiaImage(Resource *pSkinRes, bool *pbFirstTimeCreate = nullptr);
+  GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCreate = nullptr);
 
   bool IsMyRenderBitmap(IRenderBitmap *pRenderBitmap);
 
   // 创建Ixxx接口
   virtual IImageResItem *GetIImageResItem();
   // 读取xml属性，如imagelist的layout、count
-  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  virtual void SetAttribute(IAttributeMap *attribute_map);
   // 在创建了RenderBitmap之后，由各个子类去为其设置扩展属性
   virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
@@ -73,7 +73,7 @@ protected:
 
   // 为该图片配置的属性，例如imagelist的count，icon的width
   // height
-  std::shared_ptr<IMapAttribute> m_pMapAttrib; 
+  std::shared_ptr<IAttributeMap> m_pMapAttrib; 
                      
   // 图片类型
   IMAGE_ITEM_TYPE m_eType; 
@@ -96,7 +96,7 @@ public:
   ImageListResItem();
 
   virtual IImageResItem *GetIImageResItem();
-  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  virtual void SetAttribute(IAttributeMap *attribute_map);
   virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
   IMAGELIST_LAYOUT_TYPE GetLayoutType();
@@ -114,7 +114,7 @@ public:
   ImageIconResItem();
 
   virtual IImageResItem *GetIImageResItem();
-  virtual void SetAttribute(IMapAttribute *pMapAttrib);
+  virtual void SetAttribute(IAttributeMap *attribute_map);
   virtual void SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap);
 
 private:
@@ -126,7 +126,7 @@ private:
 //
 class ImageRes {
 public:
-  ImageRes(Resource *pSkinRes);
+  ImageRes(ResourceBundle *resource_bundle);
   ~ImageRes();
 
   IImageRes &GetIImageRes();
@@ -142,7 +142,7 @@ public:
   const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
 
 public:
-  ImageResItem *LoadItem(const char *szType, IMapAttribute *pMapAttrib,
+  ImageResItem *LoadItem(const char *szType, IAttributeMap *attribute_map,
                          const char *szFullPath);
 
   ImageResItem *GetImageItem2(int nIndex);
@@ -158,7 +158,7 @@ public:
 
 private:
   IImageRes *m_pIImageRes;
-  Resource *m_pSkinRes;
+  ResourceBundle *m_resource_bundle;
 
   typedef std::map<std::string, ImageResItem *>::iterator _MyIter;
   std::map<std::string, ImageResItem *> m_mapImages;

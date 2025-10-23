@@ -16,15 +16,15 @@ struct IImageRes;
 struct IFontRes;
 struct IColorRes;
 struct IStyleRes;
-struct ISkinDataSource;
+struct IBundleSource;
 struct IUIDocument;
 struct II18nRes;
 
-class Resource;
-struct UIAPI IResource {
-  IResource(Resource *);
-  Resource *GetImpl();
-  void SetParentSkinRes(IResource *);
+class ResourceBundle;
+struct UIAPI IResourceBundle {
+  IResourceBundle(ResourceBundle *);
+  ResourceBundle *GetImpl();
+  void SetParentSkinRes(IResourceBundle *);
 
   IApplication *GetUIApplication();
   IResourceManager &GetResourceManager();
@@ -39,7 +39,7 @@ struct UIAPI IResource {
   IStyleRes &GetStyleRes();
   II18nRes &GetI18nRes();
 
-  ISkinDataSource *GetDataSource();
+  IBundleSource *GetSource();
 
   unsigned int GetXmlDocCount();
   IUIDocument *GetXmlDoc(unsigned int nIndex);
@@ -52,10 +52,10 @@ struct UIAPI IResource {
   bool ChangeSkinHLS(short h, short l, short s, int nFlag);
 
 private:
-  Resource *m_pImpl;
+  ResourceBundle *m_pImpl;
 };
 
-struct ISkinDataSource;
+struct IBundleSource;
 class ResourceManager;
 struct UIAPI IResourceManager : public IRootInterface {
   IResourceManager(ResourceManager *);
@@ -63,11 +63,11 @@ struct UIAPI IResourceManager : public IRootInterface {
 
   IApplication *GetUIApplication();
   void ChangeSkinHLS(short h, short l, short s, int nFlag);
-  bool Save(IResource *pSkinRes);
+  bool Save(IResourceBundle *resource_bundle);
 
   unsigned int GetResourceCount();
-  IResource *GetResourceByIndex(unsigned int i);
-  IResource *GetResourceByName(const char *szName);
+  IResourceBundle *GetResourceByIndex(unsigned int i);
+  IResourceBundle *GetResourceByName(const char *szName);
 
   void SetCurrentLanguage(const char *);
   const char *GetCurrentLanguage();

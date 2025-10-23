@@ -20,23 +20,23 @@ struct UIAPI SDKVersion {
 };
 
 struct IUIElement;
-struct IResource;
+struct IResourceBundle;
 struct IObject;
 struct ILayout;
 struct IApplication;
 
 // UI对象创建函数
-// typedef  int(*pfnUICreateRenderBasePtr)(IResource* pSkinRes, void** ppOut);
-// typedef  int(*pfnUICreateTextRenderPtr)(IResource* pSkinRes, void**
+// typedef  int(*pfnUICreateRenderBasePtr)(IResourceBundle* resource_bundle, void** ppOut);
+// typedef  int(*pfnUICreateTextRenderPtr)(IResourceBundle* resource_bundle, void**
 // ppOut);
-typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
+typedef int (*pfnParseSkinTag)(IUIElement *, IResourceBundle *resource_bundle);
 // typedef  int(*pfnUICreateLayoutPtr)(IObject* pObject, ILayout**  ppLayout);
 
 // UI对象创建函数
-typedef void (*pfnUICreateRenderBasePtr)(IResource *pSkinRes, void **ppOut);
-typedef void (*pfnUICreateTextRenderPtr)(IResource *pSkinRes,
+typedef void (*pfnUICreateRenderBasePtr)(IResourceBundle *resource_bundle, void **ppOut);
+typedef void (*pfnUICreateTextRenderPtr)(IResourceBundle *resource_bundle,
                                              void **ppOut);
-typedef int (*pfnParseSkinTag)(IUIElement *, IResource *pSkinRes);
+typedef int (*pfnParseSkinTag)(IUIElement *, IResourceBundle *resource_bundle);
 
 // uiapplication中的枚举回调
 typedef bool (*pfnEnumLayoutTypeCallback)(const char *, llong, llong);
@@ -50,7 +50,7 @@ enum PARSE_CONTROL_RETURN {
   ParseControl_LoadObject, // 创建对象并加载其属性，但处没处理子结点
   ParseControl_LoadDescendants, // 加载自己和所有子结点的属性
 };
-typedef PARSE_CONTROL_RETURN (*pfnParseControlTag)(IUIElement *, IResource *,
+typedef PARSE_CONTROL_RETURN (*pfnParseControlTag)(IUIElement *, IResourceBundle *,
                                                    IObject *pObjParent,
                                                    IObject **);
 
@@ -61,10 +61,10 @@ typedef int (*funRegisterUIObjectPtr)(IApplication *p);
 struct UIMSG;
 struct IMessage;
 
-struct IMapAttribute;
-struct IListAttribute;
-UIAPI std::shared_ptr<IMapAttribute> UICreateIMapAttribute();
-UIAPI int UICreateIListAttribute(IListAttribute **ppOut);
+struct IAttributeMap;
+struct IAttributeList;
+UIAPI std::shared_ptr<IAttributeMap> UICreateIMapAttribute();
+UIAPI int UICreateIListAttribute(IAttributeList **ppOut);
 
 struct IRenderBitmap;
 UIAPI std::shared_ptr<IRenderBitmap>

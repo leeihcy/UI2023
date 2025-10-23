@@ -75,18 +75,18 @@ bool  IUIElement::ClearAttrib()
     return m_pImpl->ClearAttrib();
 }
 
-void  IUIElement::GetAttribList(IMapAttribute* ppMapAttrib)
+void  IUIElement::GetAttribList(IAttributeMap* ppMapAttrib)
 {
     m_pImpl->GetAttribList(ppMapAttrib);
 }
 
-void  IUIElement::GetAttribList2(IListAttribute** ppListAttrib)
+void  IUIElement::GetAttribList2(IAttributeList** ppListAttrib)
 {
     m_pImpl->GetAttribList2(ppListAttrib);
 }
-bool  IUIElement::SetAttribList2(IListAttribute* pListAttrib)
+bool  IUIElement::SetAttribList2(IAttributeList* attribute_list)
 {
-    return m_pImpl->SetAttribList2(pListAttrib);
+    return m_pImpl->SetAttribList2(attribute_list);
 }
 
 //

@@ -52,7 +52,7 @@ private:
   _ClassMap m_map;
 };
 
-struct IMapAttribute;
+struct IAttributeMap;
 
 // xml属性序列化
 class AttributeSerializer {

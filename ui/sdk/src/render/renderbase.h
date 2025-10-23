@@ -12,7 +12,7 @@ struct IRenderBitmap;
 class Application;
 class ColorRes;
 class ImageRes;
-class Resource;
+class ResourceBundle;
 class Object;
 
 const unsigned int WINDOW_BKGND_RENDER_STATE_ACTIVE = 0; // 窗口激活样式
@@ -35,7 +35,7 @@ public:
   void SetRenderType(const RENDER_TYPE &nType) { m_nRenderType = nType; }
   RENDER_TYPE GetRenderType() { return m_nRenderType; }
 
-  Resource *GetResource();
+  ResourceBundle *GetResource();
   ColorRes *GetSkinColorRes();
   ImageRes *GetSkinImageRes();
 
@@ -44,7 +44,7 @@ public:
   const char *_GetBitmapId(IRenderBitmap* pBitmap);
 
 protected:
-  Resource* m_resouce;
+  ResourceBundle* m_resouce;
   IRenderBase *m_pIRenderBase;
 
   RENDER_TYPE m_nRenderType; // 自己的类型

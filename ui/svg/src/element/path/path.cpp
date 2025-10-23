@@ -12,7 +12,7 @@ void Path::ShapeRender(RenderContext &context, SkPaint& paint) {
 void Path::SetAttribute(ui::SerializeParam &data) {
   Shape::SetAttribute(data);
 
-  const char *text = data.pMapAttrib->GetAttr("d", true);
+  const char *text = data.attribute_map->GetAttr("d", true);
   if (text) {
     SkParsePath::FromSVGString(text, &m_path);
   }

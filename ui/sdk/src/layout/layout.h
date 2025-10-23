@@ -27,7 +27,7 @@ class LayoutManagerFactory
 {
 public:
 	static Layout* GetLayout(const wchar_t* szType, Object* pPanel);
-	static Layout* GetLayoutFromAttribute(IMapAttribute* pMapAttrib, Object* pObject, bool bCreateDefaultCanvasLayout=true);
+	static Layout* GetLayoutFromAttribute(IAttributeMap* attribute_map, Object* pObject, bool bCreateDefaultCanvasLayout=true);
 };
 #endif
 
@@ -78,12 +78,12 @@ public:
       return nullptr;
 
     TParam *p = new TParam(pObj->GetImpl());
-    std::shared_ptr<IMapAttribute> pMapAttr = pObj->GetImpl()->GetMapAttribute();
+    std::shared_ptr<IAttributeMap> pMapAttr = pObj->GetImpl()->GetMapAttribute();
 
     SerializeParam data = {0};
     data.resource = pObj->GetResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-    data.pMapAttrib = pMapAttr.get();
+    data.attribute_map = pMapAttr.get();
 
     p->Serialize(&data);
 

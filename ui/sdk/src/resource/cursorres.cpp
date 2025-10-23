@@ -329,17 +329,17 @@ const char*  CursorRes::GetCursorId(IUICursor* p)
 	return nullptr;
 }
 
-CursorResItem*  CursorRes::LoadItem(IMapAttribute* pMapAttrib, const char* szFullPath)
+CursorResItem*  CursorRes::LoadItem(IAttributeMap* attribute_map, const char* szFullPath)
 {
 	if (nullptr == szFullPath)
 		return nullptr;
 
-	const char* szId = pMapAttrib->GetAttr(XML_ID, true);
+	const char* szId = attribute_map->GetAttr(XML_ID, true);
 
 	CursorResItem* pItem = nullptr;
 	if (this->InsertCursor(szId, szFullPath, &pItem))
 	{
-		pItem->SetAttribute(pMapAttrib);
+		pItem->SetAttribute(attribute_map);
 		return pItem;
 	}
 	else

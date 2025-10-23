@@ -9,7 +9,7 @@
 namespace ui {
 class Object;
 struct IObject;
-struct IMapAttribute;
+struct IAttributeMap;
 
 struct ILayoutParam {
   // 取代layout type

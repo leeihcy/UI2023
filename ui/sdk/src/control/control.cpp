@@ -125,13 +125,13 @@ std::shared_ptr<ITextRenderBase> Control::CreateDefaultTextRender() {
       m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE);
 
   if (m_text_render) {
-    std::shared_ptr<IMapAttribute> pMapAttr = m_pIMapAttributeRemain;
+    std::shared_ptr<IAttributeMap> pMapAttr = m_pIMapAttributeRemain;
     if (!pMapAttr)
       pMapAttr = UICreateIMapAttribute();
 
     SerializeParam data = {0};
     data.resource = m_resource->GetIResource();
-    data.pMapAttrib = pMapAttr.get();
+    data.attribute_map = pMapAttr.get();
     data.szPrefix = nullptr;
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
     m_text_render->Serialize(&data);
@@ -160,7 +160,7 @@ void Control::SetToolTipText(const char *szText) {
 //   if (!szTooltip || !szTooltip[0])
 //     return 0;
 
-//   const wchar_t *szText = m_pSkinRes->GetI18nRes().MapConfigValue(szTooltip);
+//   const wchar_t *szText = m_resource_bundle->GetI18nRes().MapConfigValue(szTooltip);
 //   pToolTip->SetText(szText);
 //   return 1;
 // }

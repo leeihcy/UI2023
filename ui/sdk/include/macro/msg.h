@@ -9,7 +9,7 @@
 namespace ui {
 struct IObject;
 struct IMeta;
-struct IResource;
+struct IResourceBundle;
 struct IRenderTarget;
 struct ILayout;
 struct IButton;
@@ -18,7 +18,7 @@ struct IButton;
 struct FinalConstructMessage : public Msg {
   FinalConstructMessage() { message = UI_MSG_FINALCONSTRUCT; }
   // in
-  IResource* resource = nullptr;
+  IResourceBundle* resource = nullptr;
   IMeta* meta = nullptr;
   // out，如果设置为false，表示创建对象失败。
   bool success = true;

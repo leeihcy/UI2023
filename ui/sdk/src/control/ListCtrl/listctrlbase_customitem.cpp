@@ -14,13 +14,13 @@ CustomListItem*  ListCtrlBase::InsertCustomItem(
     if (!szLayoutName)
         return nullptr;
 
-    UIElementProxy element = m_pSkinRes->
+    UIElementProxy element = m_resource_bundle->
             GetLayoutManager().FindListItemElement(szLayoutName);
     if (!element)
         return nullptr;
 
     ICustomListItem* pItem = ICustomListItem::
-            CreateInstance(m_pSkinRes->GetIResource());
+            CreateInstance(m_resource_bundle->GetIResource());
 
     CustomListItem* pImpl = pItem->GetImpl();
     if (!this->InsertItem(pImpl, pParent, pInsertAfter))
@@ -38,7 +38,7 @@ CustomListItem*  ListCtrlBase::InsertCustomItem(
     pRootPanel->LoadAttributeFromXml(element.get(), false);
 
     // ½âÎö×Ó¿Ø¼þ
-    m_pSkinRes->GetLayoutManager().ParseChildElement(
+    m_resource_bundle->GetLayoutManager().ParseChildElement(
         element.get(), pRootPanel, NOTIFY_TARGET_NULL);
  
 	
