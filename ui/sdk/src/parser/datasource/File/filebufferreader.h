@@ -2,6 +2,7 @@
 #include "include/interface/ibundlesource.h"
 #include <fstream>
 
+namespace ui {
 class FileBufferReader : public ui::IFileBufferReader
 {
 public:
@@ -12,7 +13,7 @@ public:
 	static FileBufferReader* Create();
     virtual void  Release();
     virtual int   read(char* pread, int nread);
-    virtual void  seek(int npos, std::ios_base::seekdir dir);
+    virtual void  seek(int npos, eSeekDir dir);
     virtual int   tell();
     virtual bool  load(const char* szPath);
     virtual bool  save(const char* szPath);
@@ -20,3 +21,4 @@ public:
 private:
     std::fstream  f;
 };
+}

@@ -16,9 +16,6 @@ bool TranslateRECT(const char *szRect, Rect *pRect, char szSep = ',');
 bool TranslateImage9Region(const char *str, C9Region *p9Region,
                            char szSep = ',');
 
-// TODO: 直接使用 std::filesystem 即可。
-bool PathIsDirectory(const char *path);
-bool PathIsFile(const char *path);
 bool PathExists(const char *path);
 
 int wtoi(const wchar_t *text);

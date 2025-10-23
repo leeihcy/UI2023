@@ -3,7 +3,6 @@
 #include "include/macro/helper.h"
 #include "include/util/struct.h"
 
-#include <_ctype.h>
 #include <algorithm> // transform
 #include <filesystem>
 #include <string>
@@ -841,22 +840,6 @@ bool IsWin7OrLater() {
                            dwlConditionMask);
 }
 #endif
-
-bool PathIsDirectory(const char *path) {
-  if (!path) {
-    return false;
-  }
-  const std::filesystem::path p = path;
-  return std::filesystem::is_directory(p);
-}
-
-bool PathIsFile(const char *path) {
-  if (!path) {
-    return false;
-  }
-  const std::filesystem::path p = path;
-  return std::filesystem::is_regular_file(p); 
-}
 
 bool PathExists(const char *path) {
   if (!path) {

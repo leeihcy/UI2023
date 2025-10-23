@@ -24,7 +24,7 @@ void FileDataSource::SetPath(const char *path) {
 
   const std::filesystem::path p = path;
   if (!p.is_absolute()) {
-    m_path = std::filesystem::absolute(p);
+    m_path = std::filesystem::absolute(p).string();
   }
 
   int nLength = (int)m_path.length();
@@ -42,7 +42,7 @@ eBundleFormat FileDataSource::GetType() { return eBundleFormat::Directory; }
 bool FileDataSource::loadFullPath(const char *path, std::string &full_path) {
   std::filesystem::path p(m_path.c_str());
   p.append(path);
-  full_path = p.c_str();
+  full_path = p.string();
   return true;
 }
 

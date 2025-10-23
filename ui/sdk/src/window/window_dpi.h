@@ -17,6 +17,7 @@ public:
   WindowDPI();
   float GetScaleFactor();
   
+  void Restore(int& x);
   void ScaleRect(ui::Rect* rc);
   void RestoreRect(ui::Rect* rc);
   void ScaleSize(ui::Size* size);

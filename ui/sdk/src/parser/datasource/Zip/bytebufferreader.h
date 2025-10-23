@@ -2,7 +2,9 @@
 #include "include/interface/ibundlesource.h"
 #include <ios>
 
-class ByteBufferReader : public ui::IByteBufferReader
+namespace ui {
+
+class ByteBufferReader : public IByteBufferReader
 {
   using byte = unsigned char;
 
@@ -15,7 +17,7 @@ public:
     virtual void  Release();
 
     virtual int   read(char* pread, int nread);
-    virtual void  seek(int npos, std::ios::seekdir dir);
+    virtual void  seek(int npos, eSeekDir dir);
     virtual int   tell();
     virtual bool  load(const byte* pdata, int nsize, bool bdeletedata);
     virtual bool  save(const char* szPath);
@@ -30,3 +32,4 @@ private:
     int    m_nsize;
     bool   m_bdeletedata;
 };
+}

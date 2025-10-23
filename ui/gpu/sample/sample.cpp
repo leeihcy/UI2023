@@ -30,8 +30,8 @@ public:
     return 0;
   }
   LRESULT OnDestroy(UINT, WPARAM, LPARAM, BOOL &) {
-    m_root_layer->Release();
-    m_gpu_composition->Release();
+    m_root_layer.reset();
+    m_gpu_composition.reset();
     ::PostQuitMessage(0);
     return 0;
   }
@@ -102,8 +102,8 @@ protected:
   void *GetHWND() override { return m_hWnd; }
 
 private:
-  ui::IGpuCompositor *m_gpu_composition = nullptr;
-  ui::IGpuLayer* m_root_layer = nullptr;
+  std::shared_ptr<ui::IGpuCompositor> m_gpu_composition;
+  std::shared_ptr<ui::IGpuLayer> m_root_layer;
   SIZE m_root_size;
 };
 

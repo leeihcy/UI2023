@@ -2,40 +2,39 @@
 #include "include/interface/icontrol.h"
 #include "include/interface/iobject.h"
 #include "include/macro/msg.h"
-#include "include/macro/vkey.h"
 #include "include/macro/uidefine.h"
+#include "include/macro/vkey.h"
 #include "include/util/rect.h"
-#include "src/control/button/button_meta.h"
 #include "src/control/button/button.h"
+#include "src/control/button/button_meta.h"
+#include "src/panel/root_object.h"
 #include "src/render/textrender/textrender.h"
 #include "window.h"
-#include "src/panel/root_object.h"
 #include <cstdio>
 
 namespace ui {
 
 WindowMouseKey::WindowMouseKey(Window &window) : m_window(window) {}
 
-void  WindowMouseKey::ClearStateDirect()
-{
-	m_pObjPress = nullptr;
-	m_pObjHover = nullptr;
-	m_pObjRPress = nullptr;
-	m_pObjMPress = nullptr;
-	m_pObjGesture = nullptr;
-	m_pObjDefault = nullptr;
-	m_pObjOriginDefault = nullptr;
-	m_pFocusObject = nullptr;
-	m_pFocusObject = nullptr;
-	m_pOldFocusObject = nullptr;
-	m_pObjKeyboardCapture  = nullptr;
-	m_pObjMouseCapture = nullptr;
+void WindowMouseKey::ClearStateDirect() {
+  m_pObjPress = nullptr;
+  m_pObjHover = nullptr;
+  m_pObjRPress = nullptr;
+  m_pObjMPress = nullptr;
+  m_pObjGesture = nullptr;
+  m_pObjDefault = nullptr;
+  m_pObjOriginDefault = nullptr;
+  m_pFocusObject = nullptr;
+  m_pFocusObject = nullptr;
+  m_pOldFocusObject = nullptr;
+  m_pObjKeyboardCapture = nullptr;
+  m_pObjMouseCapture = nullptr;
 
-	// m_bMouseTrack = TRUE;      // 默认需要进行鼠标监视
-	// m_nKeyboardCaptureNotifyMsgId = 0;
-	// m_nMouseCaptureNotifyMsgId = 0;
-	this->m_bMouseMoveReady = false;
-	// m_posPrevClick = -1;
+  // m_bMouseTrack = TRUE;      // 默认需要进行鼠标监视
+  // m_nKeyboardCaptureNotifyMsgId = 0;
+  // m_nMouseCaptureNotifyMsgId = 0;
+  this->m_bMouseMoveReady = false;
+  // m_posPrevClick = -1;
 }
 
 Object *WindowMouseKey::GetHoverObject() { return m_pObjHover; }
@@ -141,15 +140,15 @@ void WindowMouseKey::OnObjectRemoveInd(Object *pObj) {
 //	[递归+遍历] [public] [static]
 //
 //	获取当前鼠标下的最小单位控件. （
-//不可见，不可用，不接受鼠标消息的控件、Panel 这些类型的对象不返回）
+// 不可见，不可用，不接受鼠标消息的控件、Panel 这些类型的对象不返回）
 //
 //	Parameter
 //
 //		pObjParent
 //			[in]
 //				递归遍历时，使用的parent
-//object.调用该函数时赋值为窗口对象(Window/)pObj即可。 		ptParent 			[in]
-//				在父对象中的鼠标位置，初始值为在窗口中的位置
+// object.调用该函数时赋值为窗口对象(Window/)pObj即可。 		ptParent
+// [in] 				在父对象中的鼠标位置，初始值为在窗口中的位置
 //
 //      bUIEditorInvoke
 //          [in]
@@ -302,13 +301,13 @@ void WindowMouseKey::OnMouseMove(int x, int y) {
 
   this->m_bMouseMoveReady = true;
 
-	// 1. 判断当前鼠标位置
-	Point pt = { x, y };
+  // 1. 判断当前鼠标位置
+  Point pt = {x, y};
   Point ptInObj = {0};
 
-	Object* pObj = this->GetObjectByPos(&m_window.GetRootObject(), &pt, &ptInObj);
+  Object *pObj = this->GetObjectByPos(&m_window.GetRootObject(), &pt, &ptInObj);
 
-	_OnMouseMove(pObj, pt);
+  _OnMouseMove(pObj, pt);
 
   if (pOldPress == m_pObjPress &&
       pOldHover != m_pObjHover) // 鼠标下的对象发生变化，需要重置鼠标样式
@@ -624,7 +623,6 @@ void WindowMouseKey::_SetPressObject(Object *pNewPressObj) {
   }
 }
 
-
 #if 0
 
 // 该函数同时还支撑着WM_CANCELMODE的作用
@@ -757,7 +755,6 @@ void WindowMouseKey::SetOriginDefaultObject(Button *pObj) {
 }
 Object *WindowMouseKey::GetDefaultObject() { return m_pObjDefault; }
 
-
 //
 //	该函数只会在两个地方触发:
 //		a. 鼠标点击选中一个UI控件
@@ -822,7 +819,7 @@ void WindowMouseKey::SetFocusObject(Object *pObj) {
 
     SetFocusMessage msg;
     if (m_pFocusObject) {
-    msg.old_focus = m_pFocusObject->GetIObject();
+      msg.old_focus = m_pFocusObject->GetIObject();
     }
     pObj->RouteMessage(&msg);
   }
@@ -831,9 +828,7 @@ void WindowMouseKey::SetFocusObject(Object *pObj) {
   updateImeStatus();
 }
 
-
-void  WindowMouseKey::updateImeStatus()
-{
+void WindowMouseKey::updateImeStatus() {
 #if 0
 	// 根据焦点对象切换输入法状态
 	// 窗口的输入法，用于区分一个控件是否需要启用输入法。
@@ -900,7 +895,7 @@ bool WindowMouseKey::isDialogKeyDownMessage(int key, int flags) {
     OBJSTYLE style = {0};
     style.want_tab = 1;
     if (m_pFocusObject && m_pFocusObject->TestObjectStyle(style)) {
-        return false;
+      return false;
     }
 
     // 导航
@@ -1040,15 +1035,15 @@ Code                   Meaning
 
 DLGC_BUTTON            Control is a button (of any kind).
 DLGC_DEFPUSHBUTTON     Control is a default push button.
-DLGC_HASSETSEL         Windows will send an EM_SETSEL message to the control to select its contents.
-DLGC_RADIOBUTTON       Control is an option (radio) button.
+DLGC_HASSETSEL         Windows will send an EM_SETSEL message to the control to
+select its contents. DLGC_RADIOBUTTON       Control is an option (radio) button.
 DLGC_STATIC            Control is a static control.
-DLGC_UNDEFPUSHBUTTON   Control is a push button but not the default push button.(是一个按钮，但不是default)
-DLGC_WANTALLKEYS       Control processes all keyboard input.
-DLGC_WANTARROWS        Control processes arrow keys.
+DLGC_UNDEFPUSHBUTTON   Control is a push button but not the default push
+button.(是一个按钮，但不是default) DLGC_WANTALLKEYS       Control processes all
+keyboard input. DLGC_WANTARROWS        Control processes arrow keys.
 DLGC_WANTCHARS         Control processes WM_CHAR messages.
-DLGC_WANTMESSAGE       Control processes the message in the MSG structure that lParam points to.
-DLGC_WANTTAB           Control processes the TAB key.
+DLGC_WANTMESSAGE       Control processes the message in the MSG structure that
+lParam points to. DLGC_WANTTAB           Control processes the TAB key.
 */
 
 void WindowMouseKey::checkDefPushButton(Object *pNewObj) {
@@ -1081,7 +1076,8 @@ void WindowMouseKey::checkDefPushButton(Object *pNewObj) {
    */
   bool focus_auto_default = false;
   if (m_pFocusObject) {
-    IButton* focus_button = (IButton*)m_pFocusObject->QueryInterface(IButton::UUID());
+    IButton *focus_button =
+        (IButton *)m_pFocusObject->QueryInterface(IButton::UUID());
     if (focus_button) {
       focus_auto_default = focus_button->GetImpl()->IsAutoDefault();
     }

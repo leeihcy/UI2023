@@ -5,8 +5,7 @@ config("compiler_defaults") {
   cflags_objcc = []
 
   if (is_win) {
-    cflags_cc += ["/std:c++20"]
-    cflags += [ "/std:c11" ]
+    cflags += ["/std:c++20"]
   } else {
     cflags += [ "-std=c11" ]   
     cflags_cc += [ "-std=c++20" ]

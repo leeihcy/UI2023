@@ -37,10 +37,16 @@ private:
   BundleSource *m_pImpl;
 };
 
+// 和std的值保持一致。
+enum class eSeekDir : int {
+  Beg = 0,
+  Cur = 1,
+  End = 2
+};
 struct IStreamBufferReader {
   virtual void Release() = 0;
   virtual int read(char *pread, int nread) = 0;
-  virtual void seek(int npos, std::ios::seekdir dir) = 0;
+  virtual void seek(int npos, eSeekDir dir) = 0;
   virtual int tell() = 0;
   virtual bool save(const char *szPath) = 0;
 };

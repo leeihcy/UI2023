@@ -11,6 +11,10 @@ float WindowDPI::GetScaleFactor() {
   return m_scale;
 }
 
+void WindowDPI::Restore(int& x) {
+  x /= m_scale;
+}
+
 void WindowDPI::ScaleRect(ui::Rect *rc) {
   if (m_policy == WindowScalePolicy::Raw) {
     return;

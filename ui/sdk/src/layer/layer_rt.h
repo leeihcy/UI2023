@@ -8,7 +8,7 @@
 // 将layer tree同步一份到render thread，避免跨线程引用。
 
 namespace ui {
-class IGpuLayer;
+struct IGpuLayer;
 class GpuLayerCommitContext;
 
 class LayerRT {

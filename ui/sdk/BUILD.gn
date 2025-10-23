@@ -18,6 +18,9 @@ source_set("source_zlib") {
     "//ui/3rd/zlib/contrib/minizip/ioapi.h",
     "//ui/3rd/zlib/contrib/minizip/crypt.h",
   ]
+  include_dirs = [
+    "//ui/3rd/zlib"
+  ]
 }
 
 shared_library("uisdk") {
@@ -53,6 +56,7 @@ shared_library("uisdk") {
         "//",
         "//ui/",
         "//ui/sdk/",
+        "//ui/3rd/zlib/",
         "//third_party/skia/src/",
         "//third_party/skia/src/include/core/",
     ]

@@ -121,10 +121,6 @@ Path Path::Join(const char *sub_path) {
   return Path(path_text.c_str());
 }
 
-bool Path::IsFullPath() {
-  
-}
-
 const char *Path::ToString() { return m_impl->m_path.c_str(); }
 
 } // namespace ui

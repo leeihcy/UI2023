@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <synchapi.h>
 #include <utility>
 
 #if !defined(OS_WIN)
@@ -511,7 +512,11 @@ bool Application::EnableHardwareComposite() {
   RenderThread::Main::PostTask(std::move(func));
   // wait
   while (ui::GetGpuStartupState() <= GPU_STARTUP_STATE::STARTING) {
+#if defined (OS_WIN)
+    ::Sleep(10);
+#else
     ::sleep(1);
+#endif
   }
 #endif
   return true;

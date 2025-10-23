@@ -853,8 +853,15 @@ LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg,
                                                  BOOL &bHandled) {
   int x = GET_X_LPARAM(lParam);
   int y = GET_Y_LPARAM(lParam);
+  
+  // 消息中拿到的坐标是像素坐标，我们的控件坐标都是独立坐标。
+  m_ui_window.m_dpi.Restore(x);
+  m_ui_window.m_dpi.Restore(y);
 
-  if (uMsg == WM_LBUTTONDOWN) {
+  if (uMsg == WM_MOUSEMOVE) {
+    m_ui_window.m_mouse_key.OnMouseMove(x, y);
+  }
+  else if (uMsg == WM_LBUTTONDOWN) {
     m_ui_window.m_mouse_key.OnLButtonDown(x, y);
   } else if (uMsg == WM_LBUTTONUP) {
     m_ui_window.m_mouse_key.OnLButtonUp(x, y);

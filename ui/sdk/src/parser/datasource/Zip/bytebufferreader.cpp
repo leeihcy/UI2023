@@ -2,6 +2,7 @@
 #include "bytebufferreader.h"
 #include <fstream>
 
+namespace ui {
 ByteBufferReader::ByteBufferReader()
 {
     m_bdeletedata = false;
@@ -44,19 +45,19 @@ int   ByteBufferReader::read(char* pread, int nread)
     m_pcur += ncanread;
     return ncanread;
 }
-void  ByteBufferReader::seek(int npos, std::ios::seekdir dir)
+void  ByteBufferReader::seek(int npos, eSeekDir dir)
 {
     switch (dir)
     {
-    case std::ios::seekdir::cur:
+    case eSeekDir::Cur:
         m_pcur += npos;
         break;
 
-    case std::ios::seekdir::beg:
+    case eSeekDir::Beg:
         m_pcur = m_pdata + npos;
         break;
 
-    case std::ios::seekdir::end:
+    case eSeekDir::End:
         m_pcur = m_pend - npos;
         break;
     }
@@ -98,4 +99,5 @@ bool  ByteBufferReader::save(const char* szPath)
 
     f.close();
     return true;
+}
 }

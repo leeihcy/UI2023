@@ -18,7 +18,6 @@ public:
   static Path ExecutePath();
   Path Dir();
   Path Join(const char* sub_path);
-  bool IsFullPath();
 
   const char* ToString();
 

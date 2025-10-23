@@ -2,6 +2,7 @@
 #include "include/interface/iresbundle.h"
 #include "src/util/util.h"
 #include "res_bundle.h"
+#include <filesystem>
 
 namespace ui {
 
@@ -283,7 +284,9 @@ ResourceBundle *ResourceManager::LoadResource(const char *szPath) {
   eBundleFormat eSkinPackageType = eBundleFormat::Directory;
 
   std::string strPath(szPath);
-  if (util::PathIsDirectory(szPath)) { 
+
+  const std::filesystem::path p(szPath);
+  if (std::filesystem::is_directory(p)) { 
     // 从路径中获取皮肤名。
     char szDir[MAX_PATH] = {0};
     strcpy(szDir, szPath);

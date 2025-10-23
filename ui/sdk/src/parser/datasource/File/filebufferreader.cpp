@@ -1,6 +1,8 @@
 #include "filebufferreader.h"
 #include "sdk/include/macro/helper.h"
 
+namespace ui {
+
 FileBufferReader::FileBufferReader()
 {
 
@@ -23,9 +25,9 @@ int   FileBufferReader::read(char* pread, int nread)
 {
     return (int)f.read(pread, nread).gcount();
 }
-void  FileBufferReader::seek(int npos, std::ios_base::seekdir dir)
+void  FileBufferReader::seek(int npos, eSeekDir dir)
 {
-    f.seekg(npos, dir);
+    f.seekg(npos, (int)dir);
 }
 int  FileBufferReader::tell()
 {
@@ -47,4 +49,6 @@ bool  FileBufferReader::save(const char* szPath)
 {
     UIASSERT(0 && "not implement");
     return false;  // not implement;
+}
+
 }
