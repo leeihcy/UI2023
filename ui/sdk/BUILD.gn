@@ -112,6 +112,8 @@ shared_library("uisdk") {
         "atls.lib",  # ATL
         "Shcore.lib", 
         "skia.dll.lib",
+        #"gdiplus.lib",
+        #"Shlwapi.lib",
       ]
     }
     else if (is_mac ) {

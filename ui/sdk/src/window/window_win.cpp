@@ -5,7 +5,6 @@
 #include <atlconv.h>
 
 #include <ShellScalingApi.h> // 需要 Windows 8.1+ SDK
-#include <winuser.h>
 // #pragma comment(lib, "Shcore.lib") // 链接 Shcore.lib
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
@@ -603,25 +602,68 @@ void Render2DC(/*HDC*/ llong _hDC,
 // 脏区域已转换成了像素坐标。
 void WindowPlatformWin::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
   HDC hDC = GetDC(m_hWnd);
+
+  BITMAPINFO bmi;
+  memset(&bmi, 0, sizeof(bmi));
+  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bmi.bmiHeader.biWidth = fb.width;
+  bmi.bmiHeader.biHeight = -fb.height; // top-down image
+  bmi.bmiHeader.biPlanes = 1;
+  bmi.bmiHeader.biBitCount = 32;
+  bmi.bmiHeader.biCompression = BI_RGB;
+  bmi.bmiHeader.biSizeImage = 0;
+
+#if 0
+#define GetObject GetObjectW
+#include <atlimage.h>
+{
+  // save dib
+  byte *bits = nullptr;
+  HBITMAP bitmap = ::CreateDIBSection(NULL, (LPBITMAPINFO)&bmi, DIB_RGB_COLORS,
+                                      (void **)&bits, NULL, 0);
+  memcpy(bits, fb.data, fb.width * fb.height * 4);
+  CImage image;
+  image.Attach(bitmap, CImage::DIBOR_TOPDOWN);
+  image.Save(L"D:\\images\\aaa.bmp", Gdiplus::ImageFormatBMP);
+}
+#endif
+
   for (unsigned int i = 0; i < dirty_region_px.Count(); i++) {
     Rect rcInWindow = dirty_region_px.RectPtr2()[i];
+    
+    // https://www-user.tu-chemnitz.de/~heha/hs/chm/petzold.chm/petzoldi/ch15c.htm
+    // 《Programming Windows Fifth Edition》
+    //    chapter 15 -- The Device-Independent Bitmap
+    //    Displaying and Printing
+    //
+    // The origin of a bottom-up DIB is the bottom left corner of the bitmap image,
+    // which is the first pixel of the first row of bitmap data. 
+    // The origin of a top-down DIB is also the bottom left corner of the bitmap image, 
+    // but in this case the bottom left corner is the first pixel of the last row of bitmap data.
+    //
+    ::SetDIBitsToDevice(
+        hDC,                 // device context handle
+        // 目标位置 
+        rcInWindow.left,     // x destination coordinate
+        rcInWindow.top,      // y destination coordinate
 
-    BITMAPINFO bmi;
-    memset(&bmi, 0, sizeof(bmi));
-    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth = fb.width;
-    bmi.bmiHeader.biHeight = -fb.height; // top-down image
-    bmi.bmiHeader.biPlanes = 1;
-    bmi.bmiHeader.biBitCount = 32;
-    bmi.bmiHeader.biCompression = BI_RGB;
-    bmi.bmiHeader.biSizeImage = 0;
+        // 绘制的宽和高
+        rcInWindow.Width(),  // source rectangle width
+        rcInWindow.Height(), // source rectangle height
 
-    ::StretchDIBits(hDC, rcInWindow.left, rcInWindow.top,
-                    rcInWindow.right - rcInWindow.left,
-                    rcInWindow.bottom - rcInWindow.top, rcInWindow.left,
-                    rcInWindow.top, rcInWindow.right - rcInWindow.left,
-                    rcInWindow.bottom - rcInWindow.top, fb.data, &bmi,
-                    DIB_RGB_COLORS, SRCCOPY);
+        // 图片的横坐标
+        rcInWindow.left,     // x source coordinate
+
+        // 对于top-down位图，SetDIBitsToDevice会将图片的左下角做为（0,0）原点。
+        // 相当于我们需要求出 rcInWindow 的底部，相对于左下角作为原点时的位置。
+        fb.height - rcInWindow.bottom, // y source coordinate
+
+        // 下面这5个参数固定不变，描述的是fb.data的属性。这里不涉及增量bits数据。
+        0,         // first scan line to draw
+        fb.height, // number of scan lines to draw
+        fb.data,   // pointer to DIB pixel bits
+        &bmi,      // pointer to DIB information
+        DIB_RGB_COLORS);
   }
   ReleaseDC(m_hWnd, hDC);
 }
