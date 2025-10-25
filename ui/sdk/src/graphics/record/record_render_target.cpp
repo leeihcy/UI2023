@@ -209,7 +209,7 @@ void RecordRenderTarget::DrawString(const DrawTextParam &param) {
       std::move(std::make_unique<DrawStringOp>(text_blob, param.color, x, y)));
 }
 
-void RecordRenderTarget::_DrawString2(void *text_blob, const Color &color,
+void RecordRenderTarget::drawString2(void *text_blob, const Color &color,
                                       float x, float y) {
   assert(false && "Not Implement");
 }

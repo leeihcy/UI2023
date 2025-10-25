@@ -77,7 +77,7 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   }
   case PaintOpType::DrawString: {
     auto param = static_cast<DrawStringOp*>(op);
-    rt->_DrawString2(param->blob.get(), param->color, param->x, param->y);
+    rt->drawString2(param->blob.get(), param->color, param->x, param->y);
     break;
   }
   case ui::PaintOpType::DrawBitmap: {

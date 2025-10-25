@@ -96,12 +96,14 @@ public:
   MESSAGE_HANDLER(WM_RBUTTONUP, _OnHandleMouseMessage)
   MESSAGE_HANDLER(WM_LBUTTONDBLCLK, _OnHandleMouseMessage)
   MESSAGE_HANDLER(WM_MOUSEWHEEL, _OnHandleMouseMessage)
+
+  MESSAGE_HANDLER(WM_KEYDOWN, _OnHandleKeyBoardMessage)
+  MESSAGE_HANDLER(WM_KEYUP, _OnHandleKeyBoardMessage)
+
 #if 0
   MESSAGE_HANDLER(WM_CANCELMODE, _OnHandleMouseMessage)
 
   MESSAGE_HANDLER(WM_CHAR, _OnHandleKeyBoardMessage)
-  MESSAGE_HANDLER(WM_KEYDOWN, _OnHandleKeyBoardMessage)
-  MESSAGE_HANDLER(WM_KEYUP, _OnHandleKeyBoardMessage)
   MESSAGE_HANDLER(WM_SYSKEYDOWN, _OnHandleKeyBoardMessage)
   MESSAGE_HANDLER(WM_SYSKEYUP, _OnHandleKeyBoardMessage)
 
@@ -179,6 +181,8 @@ private:
                      BOOL &bHandled);
   LRESULT _OnHandleMouseMessage(unsigned int uMsg, WPARAM wParam, LPARAM lParam,
                                 BOOL &bHandled);
+  LRESULT _OnHandleKeyBoardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
+                                   BOOL &bHandled);
 
 public:
   // 创建窗口时，拦截第一个窗口消息，将HWND->this

@@ -536,7 +536,7 @@ void SkiaRenderTarget::DrawString(const DrawTextParam &param) {
   return;
 }
 
-void SkiaRenderTarget::_DrawString2(void *text_blob, const Color &color,
+void SkiaRenderTarget::drawString2(void *text_blob, const Color &color,
                                     float x, float y) {
   SkCanvas *canvas = m_sksurface->getCanvas();
 

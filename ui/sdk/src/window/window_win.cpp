@@ -1,10 +1,12 @@
 #include "window_win.h"
 #include "include/util/math.h"
 #include "include/util/rect.h"
+#include "sdk/include/macro/vkey.h"
 #include <Windows.h>
 #include <atlconv.h>
 
 #include <ShellScalingApi.h> // 需要 Windows 8.1+ SDK
+#include <winuser.h>
 // #pragma comment(lib, "Shcore.lib") // 链接 Shcore.lib
 
 void RECT2Rect(const RECT &r, ui::Rect *prect) {
@@ -539,66 +541,6 @@ void WindowPlatformWin::CenterWindow() {
   // ::CenterWindow(m_hWnd);
 }
 
-#if 0 // TODO:
-void Render2DC(/*HDC*/ llong _hDC,
-                                 Render2TargetParam *pParam) {
-  if (!m_sksurface) {
-    return;
-  }
-  HDC hDC = (HDC)_hDC;
-
-  int &xDst = pParam->xDst;
-  int &yDst = pParam->yDst;
-  int &wDst = pParam->wDst;
-  int &hDst = pParam->hDst;
-  int &xSrc = pParam->xSrc;
-  int &ySrc = pParam->ySrc;
-  int &wSrc = pParam->wSrc;
-  int &hSrc = pParam->hSrc;
-  bool &bAlphaBlend = pParam->bAlphaBlend;
-  byte &opacity = pParam->opacity;
-
-  //  HBRUSH hBrush = (HBRUSH)GetStockObject(GRAY_BRUSH);
-  //  RECT rc = {xDst, yDst, xDst + wDst, yDst + hDst};
-  // ::FillRect(hDC, &rc, hBrush);
-
-  SkPixmap pm;
-  if (!m_sksurface->peekPixels(&pm)) {
-    return;
-  }
-
-  BITMAPINFO bmi;
-  memset(&bmi, 0, sizeof(bmi));
-  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth = pm.width();
-  bmi.bmiHeader.biHeight = -pm.height(); // top-down image
-  bmi.bmiHeader.biPlanes = 1;
-  bmi.bmiHeader.biBitCount = 32;
-  bmi.bmiHeader.biCompression = BI_RGB;
-  bmi.bmiHeader.biSizeImage = 0;
-
-  // if (wDst == wSrc && hDst == hSrc) {
-  //   SetDIBitsToDevice
-  // }
-  ::StretchDIBits(hDC, xDst, ySrc, wDst, hDst, xSrc, ySrc, wSrc, hSrc,
-                  pm.addr(), &bmi, DIB_RGB_COLORS, SRCCOPY);
-
-  // if (bAlphaBlend) {
-  //   BLENDFUNCTION bf = {AC_SRC_OVER, 0, opacity, AC_SRC_ALPHA};
-  //   ::AlphaBlend(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, wSrc, hSrc,
-  //                bf);
-  // } else {
-  //   if (wDst == wSrc && hDst == hSrc) {
-  //     ::BitBlt(hDstDC, xDst, yDst, wDst, hDst, hDC, xSrc, ySrc, SRCCOPY);
-  //   } else {
-  //     ::StretchBlt(hDstDC, xDst, ySrc, wDst, hDst, hDC, xSrc, ySrc, wSrc,
-  //     hSrc,
-  //                  SRCCOPY);
-  //   }
-  // }
-}
-#endif // TODO:
-
 // 脏区域已转换成了像素坐标。
 void WindowPlatformWin::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
   HDC hDC = GetDC(m_hWnd);
@@ -927,6 +869,42 @@ LRESULT WindowPlatformWin::_OnHandleMouseMessage(unsigned int uMsg,
 // 		bHandled = TRUE;
 // 	}
 #endif
+  return 0;
+}
+
+static int getModifierFlags() {
+  BYTE keyboardState[256] = {0};
+  GetKeyboardState(keyboardState);
+
+  int flags = 0;
+  if (keyboardState[VK_SHIFT] & 0x80) {
+    flags |= VKEY_FLAG_SHIFT;
+  }
+  if (keyboardState[VK_CONTROL] & 0x80) {
+    flags |= VKEY_FLAG_CTRL;
+  }
+  if (keyboardState[VK_MENU] & 0x80) {
+    flags |= VKEY_FLAG_ALT;
+  }
+  if (keyboardState[VK_CAPITAL] & 0x80) {
+    flags |= VKEY_FLAG_CAPSLOCK;
+  }
+  if ((keyboardState[VKEY_LWIN] & 0x80) || (keyboardState[VKEY_RWIN] & 0x80)) {
+    flags |= VKEY_FLAG_META;
+  }
+  return flags;
+}
+
+LRESULT WindowPlatformWin::_OnHandleKeyBoardMessage(UINT uMsg, WPARAM wParam,
+                                                    LPARAM lParam,
+                                                    BOOL &bHandled) {
+  bHandled = FALSE;
+  if (uMsg == WM_KEYDOWN) {
+    m_ui_window.m_mouse_key.OnKeyDown(wParam, getModifierFlags());
+  }
+  else if (uMsg == WM_KEYUP) {
+    m_ui_window.m_mouse_key.OnKeyUp(wParam, getModifierFlags());
+  }
   return 0;
 }
 

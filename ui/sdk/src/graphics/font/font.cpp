@@ -39,22 +39,29 @@ SkFont &FontCache::LoadSkia(const FontDesc &key) {
     if (bundle_resouce->GetType() == eBundleFormat::Directory &&
         bundle_resouce->loadFullPath(custom_fontface->src.c_str(), font_path)) {
       typeface = SkTypeface::MakeFromFile(font_path.c_str());
+      m_skia_font = std::make_unique<SkFont>(typeface, key.size);
     } else {
       std::vector<unsigned char> buffer;
       bundle_resouce->loadBuffer(custom_fontface->src.c_str(), buffer);
 
+      // TODO: reduce the memory alloc
+      // sk_sp<SkData> sk_data =
+      //     SkData::MakeWithoutCopy(buffer.data(), buffer.size());
       sk_sp<SkData> sk_data =
-          SkData::MakeWithoutCopy(buffer.data(), buffer.size());
+          SkData::MakeWithCopy(buffer.data(), buffer.size());
+
       typeface = SkTypeface::MakeFromData(sk_data);
+      m_skia_font = std::make_unique<SkFont>(typeface, key.size);
     }
   } else {
     typeface = SkTypeface::MakeFromName(key.face.c_str(), style);
+    m_skia_font = std::make_unique<SkFont>(typeface, key.size);
   }
   if (!typeface) {
     UI_LOG_WARN("Create font failed: %s", key.face.c_str());
   }
 
-  m_skia_font = std::make_unique<SkFont>(typeface, key.size);
+  // m_skia_font = std::make_unique<SkFont>(typeface, key.size);
   m_skia_font->setEdging(SkFont::Edging::kSubpixelAntiAlias);
 
   return *m_skia_font;

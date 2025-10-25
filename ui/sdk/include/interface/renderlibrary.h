@@ -316,7 +316,7 @@ struct IRenderTarget : public IClipOrigin {
   virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DRAWBITMAPPARAM *pParam) = 0;
   virtual void DrawString(const DrawTextParam &param) = 0;
 
-  virtual void _DrawString2(void* text_blob, const Color& color, float x, float y) = 0;
+  virtual void drawString2(void* text_blob, const Color& color, float x, float y) = 0;
 
 #if 0
   virtual bool CreateRenderBuffer(IRenderTarget *pSrcRT) = 0;

@@ -54,7 +54,7 @@ public:
                      const CornerRadius &radius, int width, bool dash) override;
   void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap, DRAWBITMAPPARAM *param) override;
   void DrawString(const DrawTextParam &param) override;
-  void _DrawString2(void* text_blob, const Color& color, float x, float y) override;
+  void drawString2(void* text_blob, const Color& color, float x, float y) override;
 
 private:
   void addPaintOp(std::unique_ptr<PaintOp>&& paint_op);

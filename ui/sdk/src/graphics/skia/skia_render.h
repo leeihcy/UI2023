@@ -57,7 +57,7 @@ public:
   void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
                   DRAWBITMAPPARAM *param) override;
   void DrawString(const DrawTextParam &param) override;
-  void _DrawString2(void* text_blob, const Color& color, float x, float y) override;
+  void drawString2(void* text_blob, const Color& color, float x, float y) override;
 
   bool IsRelativeRectInClip(const Rect& rect) override;
 public:
