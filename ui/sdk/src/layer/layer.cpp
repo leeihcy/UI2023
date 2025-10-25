@@ -59,9 +59,9 @@ Layer::Layer(LayerType type) : m_iLayer(this), m_type(type) {
   // 		TRANSFORM_ROTATE_ORIGIN_LEFT, 0,
   // 		TRANSFORM_ROTATE_ORIGIN_CENTER, 0, 0);
 
-#ifdef _DEBUG
-  UI_LOG_DEBUG(L"Create Layer, ptr=0x%08x", this);
-#endif
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[Layer] Create", this); // ptr=0x%08x
+  }
 }
 
 Layer::~Layer() {
@@ -125,6 +125,15 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer, uint nCount) {
 }
 
 void Layer::Invalidate(const Rect *prcDirtyInLayer) {
+  if (Config::GetInstance().debug.log_paint) {
+    if (prcDirtyInLayer) {
+      UI_LOG_DEBUG("[Layer] Invalidate %d,%d (%d,%d)", prcDirtyInLayer->left,
+                   prcDirtyInLayer->top, prcDirtyInLayer->Width(),
+                   prcDirtyInLayer->Height());
+    } else {
+      UI_LOG_DEBUG("[Layer] Invalidate null");
+    }
+  }
   Rect rcDirty = {0};
 
   if (!prcDirtyInLayer) {
@@ -138,6 +147,16 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
 
     rcDirty.CopyFrom(*prcDirtyInLayer);
     m_dirty_region.Union(*prcDirtyInLayer);
+  }
+
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[Layer] dirty rect count = %d",
+                m_dirty_region.Count());
+    for (uint i = 0; i < m_dirty_region.Count(); i++) {
+      Rect* rc = m_dirty_region[i];
+      UI_LOG_DEBUG("        %d,%d (%d,%d)", rc->left, rc->top, rc->Width(),
+                  rc->Height());
+    }
   }
 
   // 如果是软件渲染，向上冒泡
@@ -828,12 +847,15 @@ bool Layer::softwareUpdateDirty() {
   if (m_need_clear_background) {
     uint count = m_dirty_region.Count();
     for (uint i = 0; i < count; i++)
-      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
+      pRenderTarget->Clear(*m_dirty_region[i]);
   }
 
   // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
   m_dirty_region.Destroy();
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[layer] dirty region clear");
+  }
 
   m_pLayerContent->Draw(pRenderTarget);
   pRenderTarget->EndDraw();
@@ -863,7 +885,7 @@ bool Layer::hardwareUpdateDirty() {
   if (m_need_clear_background) {
     uint count = m_dirty_region.Count();
     for (uint i = 0; i < count; i++)
-      pRenderTarget->Clear(*m_dirty_region.GetRectPtrAt(i));
+      pRenderTarget->Clear(*m_dirty_region[i]);
   }
 
   float scale = m_pLayerContent->GetLayerScale();

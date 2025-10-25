@@ -66,8 +66,8 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
     return;
   }
 
-  if (Config::GetInstance().debug.log_window_onpaint) {
-    UI_LOG_DEBUG("WindowRender::AddInvalidateRect: (%d,%d)-(%d,%d)",
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[WindowRender] AddInvalidateRect: (%d,%d)-(%d,%d)",
                  dirty->left, dirty->top, dirty->right, dirty->bottom);
   }
 
@@ -215,6 +215,10 @@ Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
 }
 
 void WindowRender::onWindowCreated() {
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[WindowRender] onWindowCreated");
+  }
+
   if (IsHardwareComposite()) {
     IGpuCompositorWindow *p = m_window.GetWindowPlatform()->GetGpuCompositorWindow();
 
@@ -244,18 +248,32 @@ void WindowRender::RequestInvalidate() {
 
     app->GetMessageLoop().PostTask(Slot(&WindowRender::InvalidateNow, ptr));
     m_request_invalidate_ref++;
+
+    if (Config::GetInstance().debug.log_paint) {
+      UI_LOG_DEBUG("[WindowRender] RequestInvalidate");
+    }
+  } else {
+    if (Config::GetInstance().debug.log_paint) {
+      UI_LOG_DEBUG("[WindowRender] Skip RequestInvalidate");
+    }
   }
 }
 
-void WindowRender::InvalidateNow() { Paint(nullptr); }
+void WindowRender::InvalidateNow() { 
+  if (Config::GetInstance().debug.log_paint) {
+      UI_LOG_DEBUG("[WindowRender] InvalidateNow");
+    }
+
+  Paint(nullptr); 
+}
 
 void WindowRender::Paint(const Rect *commit_rect_px) {
   m_request_invalidate_ref = 0;
 
-  if (Config::GetInstance().debug.log_window_onpaint && commit_rect_px) {
-    UI_LOG_DEBUG("Window::onPaint commit_rect={%d,%d, %d,%d}",
+  if (Config::GetInstance().debug.log_paint && commit_rect_px) {
+    UI_LOG_DEBUG("[WindowRender] Paint commit rect: %d,%d (%d,%d) (px)",
                  (int)(commit_rect_px->left), (int)(commit_rect_px->top),
-                 (int)(commit_rect_px->right), (int)(commit_rect_px->bottom));
+                 (int)(commit_rect_px->Width()), (int)(commit_rect_px->Height()));
   }
 
   if (!CanCommit()) {
@@ -358,7 +376,7 @@ void WindowRender::DirectCommit(DirtyRegion dirty_region_dip) {
 
   DirtyRegion& dirty_region_px = dirty_region_dip;
   for (unsigned int i = 0; i < dirty_region_px.Count(); i++) {
-    Rect* rect = dirty_region_px.GetRectPtrAt(i);
+    Rect* rect = dirty_region_px[i];
     m_window.m_dpi.ScaleRect(rect);
   }
   
@@ -367,9 +385,20 @@ void WindowRender::DirectCommit(DirtyRegion dirty_region_dip) {
 
 void WindowRender::SoftwareCommit(IRenderTarget *pRT,
                                   const RectRegion &dirty_region_px) {
+  if (dirty_region_px.Count() == 0) {
+    return;
+  }
+
   FrameBufferWithReadLock frame_buffer;
   if (!pRT->GetFrontFrameBuffer(&frame_buffer)) {
     return;
+  }
+  if (Config::GetInstance().debug.log_paint) {
+    const Rect *prc = dirty_region_px[0];
+    UI_LOG_DEBUG("[WindowRender] Window platform commit rect count=%d, "
+                 "first=%d,%d, (%d,%d) (px)",
+                 dirty_region_px.Count(), prc->left, prc->top, prc->Width(),
+                 prc->Height());
   }
   m_window.m_platform->Commit2(frame_buffer, dirty_region_px);
 }

@@ -67,7 +67,7 @@ void SkiaRenderTarget::update_clip_rgn() {
   SkPath clip_path;
   int count = m_clip_origin_impl.m_dirty_region.Count();
   for (int i = 0; i < count; i++) {
-    Rect *prc = m_clip_origin_impl.m_dirty_region.GetRectPtrAt(i);
+    Rect *prc = m_clip_origin_impl.m_dirty_region[i];
 
     SkRect skrc;
     toSkRect(*prc, &skrc);
@@ -95,13 +95,13 @@ void SkiaRenderTarget::update_clip_rgn() {
 }
 
 void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
-  if (Config::GetInstance().debug.log_window_onpaint) {
-    UI_LOG_INFO("SkiaRenderTarget SetDirtyRegion count = %d",
-                dirty_region.Count());
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[SkiaRenderTarget] SetDirtyRegion count = %d",
+                 dirty_region.Count());
     for (uint i = 0; i < dirty_region.Count(); i++) {
       const Rect &rc = dirty_region.RectPtr2()[i];
-      UI_LOG_INFO("  count %d = %d,%d, %d,%d", i, rc.left, rc.top, rc.right,
-                  rc.bottom);
+      UI_LOG_DEBUG("        %d,%d, (%d,%d)", rc.left, rc.top, rc.Width(),
+                   rc.Height());
     }
   }
 
@@ -193,7 +193,7 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
     fix_height = std::max(m_sksurface->height(), fix_height);
   }
 
-  UI_LOG_INFO("SkiaRenderTarget(%p) resize:%d,%d => %d,%d(0x%x, 0x%x)", this,
+  UI_LOG_INFO("[SkiaRenderTarget] Resize:%d,%d => %d,%d(0x%x, 0x%x)",
               width, height, fix_width, fix_height, fix_width, fix_height);
 
   m_sksurface = create_surface(fix_width, fix_height);
@@ -279,6 +279,11 @@ void SkiaRenderTarget::ClipRect(const Rect &rect) {
 // }
 
 bool SkiaRenderTarget::BeginDraw(float scale) {
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[SkiaRenderTarget] BeginDraw back surface=0x%08x",
+                 m_sksurface.get());
+  }
+
   if (!m_sksurface) {
     return false;
   }
@@ -315,6 +320,10 @@ void SkiaRenderTarget::EndDraw() {
 
   if (m_enable_hardware_backend) {
     upload_2_gpu();
+  }
+  
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[SkiaRenderTarget] EndDraw");
   }
 }
 
@@ -1066,11 +1075,13 @@ void SkiaRenderTarget::Render2Target(IRenderTarget *pDst,
   if (!target->m_sksurface) {
     return;
   }
-  render_to_surface(m_sksurface.get(), target->m_sksurface.get(), param);
+
+  // 两个canvas都被scale了，需要将将源canvas等比例提交到target上，而不被再次放大。
+  render_to_surface(m_sksurface.get(), target->m_sksurface.get(), param, m_scale);
 }
 
 void SkiaRenderTarget::render_to_surface(SkSurface *source, SkSurface *target,
-                                         Render2TargetParam *param) {
+                                         Render2TargetParam *param, float scale) {
   SkCanvas *target_canvas = target->getCanvas();
   SkCanvas *source_canvas = source->getCanvas();
 
@@ -1082,13 +1093,12 @@ void SkiaRenderTarget::render_to_surface(SkSurface *source, SkSurface *target,
   SkSamplingOptions options;
   SkPaint paint;
 
-  // 两个canvas都被scale了，需要将将源canvas等比例提交到target上，而不被再次放大。
   {
     target_canvas->drawImageRect(
         source_image,
         SkRect::MakeXYWH(
-            (SkScalar)param->xSrc * m_scale, (SkScalar)param->ySrc * m_scale,
-            (SkScalar)param->wSrc * m_scale, (SkScalar)param->hSrc * m_scale),
+            (SkScalar)param->xSrc * scale, (SkScalar)param->ySrc * scale,
+            (SkScalar)param->wSrc * scale, (SkScalar)param->hSrc * scale),
         SkRect::MakeXYWH((SkScalar)param->xDst, (SkScalar)param->yDst,
                          (SkScalar)param->wDst, (SkScalar)param->hDst),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
@@ -1198,6 +1208,10 @@ bool SkiaRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
   // #endif
   //     surface.front->DumpToImage(path);
   //   }
+
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[SkiaRenderTarget] GetFrontFrameBuffer front sufrace = 0x%08x", surface);
+  }
   return true;
 }
 
@@ -1226,20 +1240,6 @@ void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* composi
     }
     m_enable_hardware_backend = true;
   } else {
-    // 当还没有创建m_sksurface，也得创建m_sksurface_front。先给一个默认大小为1的尺寸。
-    int width = 1;
-    int height = 1;
-    if (m_sksurface) {
-      width = m_sksurface->width();
-      height = m_sksurface->height();
-    }
-    SkImageInfo info =
-        SkImageInfo::Make(width, height,
-                          kBGRA_8888_SkColorType, kPremul_SkAlphaType);
-    SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
-
-    std::unique_lock lock(main.m_mutex);
-    main.m_sksurface_front = SkSurface::MakeRaster(info, &surfaceProps);
     m_enable_software_backend = true;
   }
 }
@@ -1250,13 +1250,45 @@ bool SkiaRenderTarget::SwapChain(slot<void()> &&callback) {
   }
   std::unique_lock lock(main.m_mutex);
 
-  if (!main.m_sksurface_front) {
+  if (!m_enable_software_backend) {
     return false;
+  }
+  if (!m_sksurface) {
+    return false;
+  }
+
+  // 将front surface推迟到swapchain的时候再创建，有两个好处：
+  // 1. 避免主线程提前获取到一个还没有数据的空白front surface去做commit操作
+  // 2. 此时back surface已就绪，创建完front surface后可直接进行数据同步，让二者保持同步。
+  if (!main.m_sksurface_front) {
+    int width = m_sksurface->width();
+    int height = m_sksurface->height();
+    SkImageInfo info = SkImageInfo::Make(width, height, kBGRA_8888_SkColorType,
+                                         kPremul_SkAlphaType);
+    SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
+    main.m_sksurface_front = SkSurface::MakeRaster(info, &surfaceProps);
+
+    // 创建front surface后，直接复制back surface的数据。让两者同步。
+    Render2TargetParam param = {0};
+    param.wDst = param.wSrc = width;
+    param.hDst = param.hSrc = height;
+    render_to_surface(m_sksurface.get(), main.m_sksurface_front.get(), &param, 1);
+
+    if (Config::GetInstance().debug.log_paint) {
+      UI_LOG_DEBUG("[SkiaRenderTarget] Create front surface 0x%08x",
+                   main.m_sksurface_front.get());
+    }
   }
 
   // 交换指针
   std::swap(m_sksurface, main.m_sksurface_front);
   callback.emit();
+
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[SkiaRenderTarget] SwapChain front surface=>0x%08x, back surface=>0x%08x",
+                 main.m_sksurface_front.get(), 
+                m_sksurface.get());
+  }
   return true;
 }
 
@@ -1278,14 +1310,13 @@ void SkiaRenderTarget::frames_sync_dirty() {
 
   // TODO: 继续优化，不仅仅是Contains，更应该是Sub
   for (unsigned int i = 0; i < m_last_dirty_region.Count(); i++) {
-    Rect *rect = m_last_dirty_region.GetRectPtrAt(i);
+    Rect *rect = m_last_dirty_region[i];
     Render2TargetParam param = {0};
     param.xSrc = param.xDst = rect->left;
     param.ySrc = param.yDst = rect->top;
     param.wSrc = param.wDst = rect->Width();
     param.hSrc = param.hDst = rect->Height();
-    param.opacity = 255;
-    render_to_surface(main.m_sksurface_front.get(), m_sksurface.get(), &param);
+    render_to_surface(main.m_sksurface_front.get(), m_sksurface.get(), &param, 1);
     // printf("frames sync dirty: %d,%d,  %d,%d\n", rect->left, rect->top,
     // rect->Width(), rect->Height());
   }

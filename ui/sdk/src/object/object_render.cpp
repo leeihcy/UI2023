@@ -1,4 +1,5 @@
 #include "include/inc.h"
+#include "include/util/log.h"
 #include "object.h"
 // #include "src/UIObject\Window\windowbase.h"
 // #include "src/Atl\image.h"
@@ -168,6 +169,10 @@ void Object::Invalidate(const Rect *prcObj) {
   if (!CalcRectInAncestor(&layerObj, prcObj, true, &rc))
     return;
 
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG("[Object] Invalidate id=%s, rect=%d,%d (%d,%d)",
+      m_strId.c_str(), rc.left, rc.top, rc.Width(), rc.Height());
+  }
   pLayer->GetLayer()->Invalidate(&rc);
 }
 

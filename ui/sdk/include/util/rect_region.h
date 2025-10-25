@@ -14,9 +14,11 @@ public:
 
   Rect *RectPtr();
   const Rect *RectPtr2() const;
-  Rect *GetRectPtrAt(unsigned int nIndex);
   unsigned int Count() const;
   void AddRect(const Rect&);
+  Rect* operator[](unsigned int index);
+  const Rect* operator[](unsigned int index) const;
+
 
   void Destroy();
   void CopyFrom(const RectRegion *po);

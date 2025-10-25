@@ -40,20 +40,24 @@ const Rect *RectRegion::RectPtr2() const {
   return m_stackArray;
 }
 
-Rect *RectRegion::GetRectPtrAt(unsigned int nIndex) {
-  UIASSERT(nIndex < m_count);
-  if (nIndex >= m_count) {
+Rect* RectRegion::operator[](unsigned int index) {
+  UIASSERT(index < m_count);
+  if (index >= m_count) {
     return nullptr;
   }
 
   if (m_heapArray)
-    return m_heapArray + nIndex;
+    return m_heapArray + index;
 
-  UIASSERT(nIndex < STACK_SIZE);
-  if (nIndex >= STACK_SIZE) {
+  UIASSERT(index < STACK_SIZE);
+  if (index >= STACK_SIZE) {
     return nullptr;
   }
-  return m_stackArray + nIndex;
+  return m_stackArray + index;
+}
+
+const Rect* RectRegion::operator[](unsigned int index) const {
+  return &(RectPtr2()[index]);
 }
 
 unsigned int RectRegion::Count() const { return m_count; }
@@ -112,19 +116,19 @@ void RectRegion::SetSize(unsigned int nCount) {
   }
 }
 
-bool RectRegion::SetAt(unsigned int nIndex, Rect *pValue) {
-  if (nIndex >= m_count)
+bool RectRegion::SetAt(unsigned int index, Rect *pValue) {
+  if (index >= m_count)
     return false;
   if (!pValue)
     return false;
 
-  GetRectPtrAt(nIndex)->CopyFrom(*pValue);
+  (*this)[index]->CopyFrom(*pValue);
   return true;
 }
 
 void RectRegion::Offset(int x, int y) {
   for (unsigned int i = 0; i < m_count; i++) {
-    GetRectPtrAt(i)->Offset(x, y);
+    (*this)[i]->Offset(x, y);
   }
 }
 
@@ -137,11 +141,11 @@ bool RectRegion::IntersectRect(const Rect *prc, bool OnlyTest) {
   unsigned int nNewCount = 0;
 
   for (unsigned int i = 0; i < m_count; i++) {
-    if (GetRectPtrAt(i)->Intersect(*prc, &temp)) {
+    if ((*this)[i]->Intersect(*prc, &temp)) {
       if (OnlyTest) {
         return true;
       } else {
-        GetRectPtrAt(nNewCount)->CopyFrom(temp);
+        (*this)[nNewCount]->CopyFrom(temp);
         nNewCount++;
       }
     }
@@ -162,8 +166,9 @@ bool RectRegion::IntersectRect(const Rect *prc, bool OnlyTest) {
     return true;
 
   // 清空没用的位置
-  for (unsigned int i = nNewCount; i < m_count; i++)
-    GetRectPtrAt(i)->SetEmpty();
+  for (unsigned int i = nNewCount; i < m_count; i++) {
+    (*this)[i]->SetEmpty();
+  }
 
   m_count = nNewCount;
   return true;
@@ -204,7 +209,7 @@ void RectRegion::UnionSimple(const Rect& rc)
   Rect rcTemp = {0};
   bool has_intersect = false;
   for (unsigned int i = 0; i < m_count; i++) {
-    Rect *prcTest = GetRectPtrAt(i);
+    Rect *prcTest = (*this)[i];
 
     if (!prcTest->Intersect(rc, &rcTemp))
       continue;
@@ -237,10 +242,10 @@ void RectRegion::Union(const Rect &rc) {
 
   std::vector<Rect> all_rects;
   for (unsigned int i = 0; i < m_count; i++) {
-    Rect *prc = GetRectPtrAt(i);
+    Rect *prc = (*this)[i];
     y_scanlines.insert(prc->top);
     y_scanlines.insert(prc->bottom);
-    all_rects.push_back(*GetRectPtrAt(i));
+    all_rects.push_back(*prc);
   }
   y_scanlines.insert(rc.top);
   y_scanlines.insert(rc.bottom);
@@ -315,7 +320,7 @@ void RectRegion::add_rects_same_topbottom(std::vector<Rect> &horz_rects) {
 // 如果这个矩形和已有的矩形上下能完全重合起来，则合并
 void RectRegion::add_rect_and_merge_vert(Rect& rc) {
   for (unsigned int i = 0; i < m_count; i++) {
-    Rect *prc = GetRectPtrAt(i);
+    Rect *prc = (*this)[i];
     if (prc->bottom != rc.top) {
       // 由于是从上往下扫描的，只需要判断是否和已有的区域bottom一致即可。
       continue;
@@ -360,7 +365,7 @@ HRGN RectRegion::CreateRgn() {
 void RectRegion::GetUnionRect(Rect *prc) {
   prc->SetEmpty();
   for (unsigned int i = 0; i < m_count; i++) {
-    GetRectPtrAt(i)->Union(*prc, prc);
+    (*this)[i]->Union(*prc, prc);
   }
 }
 } // namespace ui

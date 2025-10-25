@@ -29,11 +29,6 @@ struct BundleSource {
   // 可以跨模块调用
   virtual bool LoadBuffer(const char *path,
                     slot<void(const char *, unsigned int)> &&callback) = 0;
-  
-
-  virtual bool Load_UIDocument(UIDocument *pDocument, const char *path) = 0;
-  virtual bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *path,
-                                 RENDER_BITMAP_LOAD_FLAG e) = 0;
 };
 
 std::unique_ptr<BundleSource> CreateBundleSource(eBundleFormat e);

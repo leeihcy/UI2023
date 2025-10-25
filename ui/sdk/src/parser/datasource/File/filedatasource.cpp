@@ -84,30 +84,6 @@ bool FileDataSource::LoadBuffer(const char *path,
   }
 }
 
-bool FileDataSource::Load_UIDocument(UIDocument *pDocument,
-                                     const char *path) {
-  if (nullptr == pDocument || nullptr == path)
-    return false;
-
-  std::string strTemp = m_path;
-  strTemp.append(path);
-
-  return pDocument->LoadFile(strTemp.c_str());
-}
-
-bool FileDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap,
-                                       const char *path,
-                                       RENDER_BITMAP_LOAD_FLAG e) {
-  if (nullptr == pBitmap || nullptr == path)
-    return false;
-
-  std::string strTemp = m_path;
-  strTemp.append(path);
-
-  return pBitmap->LoadFromFile(strTemp.c_str(), e);
-}
-
-
 bool FileDataSource::FileExist(const char *path) {
   std::string strTemp = m_path;
   strTemp.append(path);

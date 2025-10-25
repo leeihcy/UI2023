@@ -20,11 +20,6 @@
 #include "src/parser/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "ui/gpu/include/api.h"
-#include <cstddef>
-#include <cstdio>
-#include <cstdlib>
-#include <synchapi.h>
-#include <utility>
 
 #if !defined(OS_WIN)
 #include <libgen.h> // dirname

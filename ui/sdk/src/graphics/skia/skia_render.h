@@ -71,7 +71,7 @@ protected:
   void upload_2_gpu();
   void Upload2Gpu(Rect *prcArray, int nCount, float scale);
   void resize_gpu_layer(unsigned int width, unsigned int height);
-  void render_to_surface(SkSurface* source, SkSurface* target, Render2TargetParam *param);
+  void render_to_surface(SkSurface* source, SkSurface* target, Render2TargetParam *param, float scale);
   
   sk_sp<SkSurface> create_surface(unsigned int width, unsigned int height);
 

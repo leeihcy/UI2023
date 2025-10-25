@@ -24,10 +24,6 @@ public:
   bool loadBuffer(const char* path, std::vector<unsigned char>& buffer) override;
   bool loadFullPath(const char *path, std::string &full_path) override;
   bool LoadBuffer(const char* szPath, slot<void(const char*, unsigned int)>&& callback) override;
-
-  bool Load_UIDocument(UIDocument *pDocument, const char *szPath) override;
-  bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *szPath,
-                         RENDER_BITMAP_LOAD_FLAG e) override;
   bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
 
 private:

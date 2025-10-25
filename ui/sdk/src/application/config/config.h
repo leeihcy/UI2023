@@ -9,7 +9,7 @@ public:
 
   struct Debug {
     // 记录窗口的paint事件
-    bool log_window_onpaint = false;
+    bool log_paint = false;
     // 记录和gpu相关的动作
     bool log_gpu = false;
     // 保护rendertarget到本地

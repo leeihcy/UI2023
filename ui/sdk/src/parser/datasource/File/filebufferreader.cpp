@@ -27,7 +27,11 @@ int   FileBufferReader::read(char* pread, int nread)
 }
 void  FileBufferReader::seek(int npos, eSeekDir dir)
 {
+#if defined(OS_WIN)
     f.seekg(npos, (int)dir);
+#else
+    f.seekg(npos, (std::ios_base::seekdir)dir);
+#endif
 }
 int  FileBufferReader::tell()
 {

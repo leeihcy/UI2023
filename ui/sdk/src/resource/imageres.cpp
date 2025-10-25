@@ -4,6 +4,7 @@
 #include "image/image.h"
 // #include "src\Renderlibrary\gdi\gdibitmap.h"
 // #ina clude "src/Renderlibrary\gdiplus\gdiplusbitmap.h"
+#include "include/interface/ibundlesource.h"
 #include "src/resource/res_bundle.h"
 // #include "Inc\Util\iimage.h"
 #include "include/interface/imapattr.h"
@@ -93,8 +94,31 @@ ImageResItem::GetImage(ResourceBundle *resource_bundle,
   return nullptr;
 }
 
+static bool loadRenderBitmap(BundleSource *source, IRenderBitmap *pBitmap,
+                      const char *path, RENDER_BITMAP_LOAD_FLAG e) {
+  if (nullptr == pBitmap || nullptr == path) {
+    return false;
+  }
+
+  if (source->GetType() == eBundleFormat::Directory) {
+
+    std::string full_path;
+    if (!source->loadFullPath(path, full_path)) {
+      return false;
+    }
+    return pBitmap->LoadFromFile(full_path.c_str(), e);
+  } else {
+    std::vector<byte> buffer;
+    if (!source->loadBuffer(path, buffer)) {
+      return false;
+    }
+    return pBitmap->LoadFromData(buffer.data(), buffer.size(), e);
+  }
+}
+
 std::shared_ptr<IRenderBitmap>
-ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCreate) {
+ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle,
+                           bool *pbFirstTimeCreate) {
 
   BundleSource *pDataSource = resource_bundle->GetSource();
   if (nullptr == pDataSource)
@@ -126,7 +150,7 @@ ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCre
     flags |= (m_nFileDpiScale) << 24;
   }
 
-  if (false == pDataSource->Load_RenderBitmap(m_render_bitmap.get(),
+  if (false == loadRenderBitmap(pDataSource, m_render_bitmap.get(),
                                               m_strPath.c_str(),
                                               (RENDER_BITMAP_LOAD_FLAG)flags)) {
     m_render_bitmap.reset();
@@ -140,6 +164,7 @@ ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCre
 
   return m_render_bitmap;
 }
+
 
 bool ImageResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   if (false == m_bUseSkinHLS)
@@ -266,7 +291,7 @@ void ImageResItem::SetAttribute(IAttributeMap *attribute_map) {
   this->SetUseSkinHLS(bUseSkinHLS);
 
   attribute_map->GetAttr_bool(XML_IMAGE_NEED_ANTIALIASING, true,
-                           &bNeedAntiAliasing);
+                              &bNeedAntiAliasing);
   this->SetNeedAntiAliasing(bNeedAntiAliasing);
 
   attribute_map->GetAttr_bool(XML_IMAGE_DPI_ADAPT, true, &bDpiAdapt);
@@ -360,9 +385,10 @@ IImageResItem *ImageIconResItem::GetIImageResItem() {
 void ImageIconResItem::SetAttribute(IAttributeMap *attribute_map) {
   ImageResItem::SetAttribute(attribute_map);
 
-  attribute_map->GetAttr_int(XML_IMAGE_ICON_WIDTH, true, (int *)&m_sizeDraw.width);
+  attribute_map->GetAttr_int(XML_IMAGE_ICON_WIDTH, true,
+                             (int *)&m_sizeDraw.width);
   attribute_map->GetAttr_int(XML_IMAGE_ICON_HEIGHT, true,
-                          (int *)&m_sizeDraw.height);
+                             (int *)&m_sizeDraw.height);
 }
 
 void ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
@@ -402,7 +428,8 @@ IImageRes &ImageRes::GetIImageRes() {
 //
 // 从文件中加载一项(由CXmlImageParse::load_from_file中调用)
 //
-ImageResItem *ImageRes::LoadItem(const char *szType, IAttributeMap *attribute_map,
+ImageResItem *ImageRes::LoadItem(const char *szType,
+                                 IAttributeMap *attribute_map,
                                  const char *szFullPath) {
   if (!szType || !attribute_map || !szFullPath)
     return nullptr;

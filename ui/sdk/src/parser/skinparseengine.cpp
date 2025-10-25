@@ -34,7 +34,7 @@ bool SkinParseEngine::Parse(BundleSource *pDataSource,
 
   UIDocument *pUIDocument = nullptr;
   CreateXmlDocument(XML_ENGINE_DEFAULT, &pUIDocument);
-  if (!pDataSource->Load_UIDocument(pUIDocument, szXmlFile)) {
+  if (!loadUIDocument(pDataSource, pUIDocument, szXmlFile)) {
     UI_LOG_ERROR("load file failed: %s", szXmlFile);
     SAFE_RELEASE(pUIDocument);
     return false;
@@ -59,6 +59,23 @@ bool SkinParseEngine::Parse(BundleSource *pDataSource,
 
   SAFE_RELEASE(pUIDocument);
   return true;
+}
+
+bool SkinParseEngine::loadUIDocument(BundleSource *source,
+                                     UIDocument *pDocument, const char *path) {
+  if (source->GetType() == eBundleFormat::Directory) {
+    std::string full_path;
+    if (!source->loadFullPath(path, full_path)) {
+      return false;
+    }
+    return pDocument->LoadFile(full_path.c_str());
+  } else {
+    std::vector<byte> buffer;
+    if (!source->loadBuffer(path, buffer)) {
+      return false;
+    }
+    return pDocument->LoadData(buffer.data(), buffer.size());
+  }
 }
 
 void SkinParseEngine::NewChild(UIElement *pElement) {

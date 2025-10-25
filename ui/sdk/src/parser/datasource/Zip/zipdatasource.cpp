@@ -32,6 +32,8 @@ void ZipDataSource::SetPath(const char *szPath) {
     m_strPath = szPath;
   else
     m_strPath.clear();
+
+  Init();
 }
 const char *ZipDataSource::GetPath() { return m_strPath.c_str(); }
 
@@ -146,35 +148,6 @@ bool ZipDataSource::FileExist(const char *szPath) {
   // 第三个参数：0表示大小写敏感，1为不敏感
   int result = unzLocateFile(m_unzip, szPath, 0);
   return result == UNZ_OK;
-}
-
-bool ZipDataSource::Load_UIDocument(UIDocument *pDocument, const char *path) {
-  if (!m_unzip && !Init()) {
-    return false;
-  }
-
-  std::vector<byte> buffer;
-  if (!loadBuffer(path, buffer)) {
-    return false;
-  }
-
-  return pDocument->LoadData(buffer.data(), buffer.size());
-}
-// 注：zip内部的路径符号是/
-bool ZipDataSource::Load_RenderBitmap(IRenderBitmap *pBitmap, const char *path,
-                                      RENDER_BITMAP_LOAD_FLAG e) {
-  if (!m_unzip || !Init())
-    return false;
-
-  if (nullptr == pBitmap || nullptr == path)
-    return false;
-
-  std::vector<byte> buffer;
-  if (!loadBuffer(path, buffer)) {
-    return false;
-  }
-
-  return pBitmap->LoadFromData(buffer.data(), buffer.size(), e);
 }
 
 bool ZipDataSource::Load_StreamBuffer(const char *path,

@@ -12,7 +12,6 @@ public:
 
   virtual void SetPath(const char *szPath) override;
   virtual const char *GetPath() override;
-  // virtual void SetData(byte *data, int size) override;
   virtual eBundleFormat GetType() override;
 
   virtual bool FileExist(const char *szPath) override;
@@ -21,11 +20,6 @@ public:
   virtual bool loadFullPath(const char *path, std::string &full_path) override;
   virtual bool LoadBuffer(const char *szPath,
                     slot<void(const char *, unsigned int)> &&callback) override;
-
-  virtual bool Load_UIDocument(UIDocument *pDocument,
-                               const char *szPath) override;
-  virtual bool Load_RenderBitmap(IRenderBitmap *pBitmap, const char *szPath,
-                                 RENDER_BITMAP_LOAD_FLAG e) override;
 
 private:
   std::string m_path;

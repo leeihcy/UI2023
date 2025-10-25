@@ -171,6 +171,7 @@ void Window::onSize(int window_width_px, int window_height_px) {
   if (m_window_width_px == window_width_px && m_window_height_px == window_height_px) {
     return;
   }
+
   m_window_width_px = window_width_px;
   m_window_height_px = window_height_px;
 
@@ -196,6 +197,12 @@ void Window::onSize(int window_width_px, int window_height_px) {
       old_client_width, 0, new_client_width, new_client_height);
   ui::Rect rc_invalid_bottom = ui::Rect::MakeLTRB(
       0, old_client_height, old_client_width, new_client_height);
+
+  if (Config::GetInstance().debug.log_paint) {
+    UI_LOG_DEBUG(
+        "Window::onSize window size=%d,%d (px), client size=%d,%d (dpi)",
+        window_width_px, window_height_px, new_client_width, new_client_height);
+  }
 
   // m_window_render.AddInvalidateRect(&rc_invalid_right);
   // m_window_render.AddInvalidateRect(&rc_invalid_bottom);

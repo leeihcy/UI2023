@@ -34,8 +34,8 @@ void test_union() {
     region.Union(r1);
     region.Union(r2);
     assert(region.Count() == 2);
-    assert(*region.GetRectPtrAt(0) == r1);
-    assert(*region.GetRectPtrAt(1) == r2);
+    assert(*region[0] == r1);
+    assert(*region[1] == r2);
   }
 
   // 两个相连的区域
@@ -54,7 +54,7 @@ void test_union() {
     region.Union(r2);
     assert(region.Count() == 1);
     Rect r3 = {10, 10, 30, 20};
-    assert(*region.GetRectPtrAt(0) == r3);
+    assert(*region[0] == r3);
   }
 
   // 两个相交的区域，但可以合成成一个
@@ -73,7 +73,7 @@ void test_union() {
     region.Union(r2);
     assert(region.Count() == 1);
     Rect r3 = {10, 10, 30, 20};
-    assert(*region.GetRectPtrAt(0) == r3);
+    assert(*region[0] == r3);
   }
 
   // 两个包含的区域，但可以合成成一个
@@ -91,7 +91,7 @@ void test_union() {
     region.Union(r1);
     region.Union(r2);
     assert(region.Count() == 1);
-    assert(*region.GetRectPtrAt(0) == r1);
+    assert(*region[0] == r1);
   }
 
   // 一个大的区域吃上一个小的区域
@@ -113,9 +113,9 @@ void test_union() {
     Rect result1 = {10,10, 20, 11};
     Rect result2 = {10,11, 30, 19};
     Rect result3 = {10,19, 20, 20};
-    assert(*region.GetRectPtrAt(0) == result1);
-    assert(*region.GetRectPtrAt(1) == result2);
-    assert(*region.GetRectPtrAt(2) == result3);
+    assert(*region[0] == result1);
+    assert(*region[1] == result2);
+    assert(*region[2] == result3);
   }
 
   // 一个区域的一角，与另一个区域的一角相交
@@ -137,9 +137,9 @@ void test_union() {
     Rect result1 = {10,10, 20, 15};
     Rect result2 = {10,15, 30, 20};
     Rect result3 = {15,20, 30, 30};
-    assert(*region.GetRectPtrAt(0) == result1);
-    assert(*region.GetRectPtrAt(1) == result2);
-    assert(*region.GetRectPtrAt(2) == result3);
+    assert(*region[0] == result1);
+    assert(*region[1] == result2);
+    assert(*region[2] == result3);
   }
 
   // 多个区域相交
@@ -167,11 +167,11 @@ void test_union() {
     Rect result3 = {10, 15, 50, 20};
     Rect result4 = {15, 20, 50, 25};
     Rect result5 = {15, 25, 40, 30};
-    assert(*region.GetRectPtrAt(0) == result1);
-    assert(*region.GetRectPtrAt(1) == result2);
-    assert(*region.GetRectPtrAt(2) == result3);
-    assert(*region.GetRectPtrAt(3) == result4);
-    assert(*region.GetRectPtrAt(4) == result5);
+    assert(*region[0] == result1);
+    assert(*region[1] == result2);
+    assert(*region[2] == result3);
+    assert(*region[3] == result4);
+    assert(*region[4] == result5);
   }
 }
 
