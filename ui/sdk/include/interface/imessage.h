@@ -24,7 +24,10 @@ struct UIAPI IMessage {
   void RouteMessage(int message);
   void RouteMessage(Msg* msg);
 
+  // 监听 attarge/bubbling阶段的事件
   void connect(const char* event, slot<void(Event*)>&&);
+  // 监听 capture阶段的事件
+  void capture(const char* event, slot<void(Event*)>&&);
 
 protected:
   friend class Message;

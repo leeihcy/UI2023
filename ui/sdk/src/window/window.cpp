@@ -266,7 +266,7 @@ void Window::onClose() {}
 void Window::onDestroy() {
   WindowDestroyEvent event;
   event.window = m_pIWindow;
-  emit(WINDOW_DESTROY_EVENT, &event);
+  emit(&event);
 
   // 释放资源
   m_root->GetImpl()->DestroyChildObject();

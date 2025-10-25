@@ -60,8 +60,8 @@ public:
     int h = local_time->tm_hour;
     int m = local_time->tm_min;
     int s = local_time->tm_sec;
-    int ms = (std::chrono::duration_cast<std::chrono::milliseconds>(
-      clock_now.time_since_epoch()) % 1000).count();
+    int ms = int((std::chrono::duration_cast<std::chrono::milliseconds>(
+      clock_now.time_since_epoch()) % 1000).count());
 
     hour_layer->RotateZTo(30 * h + 0.5f * m + 0.5f * s / 120);
     min_layer->RotateZTo(6 * m + 0.1f * s);

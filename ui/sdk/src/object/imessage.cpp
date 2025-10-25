@@ -20,6 +20,9 @@ Message *IMessage::GetImpl() { return m_pImpl; }
 void IMessage::connect(const char *event, slot<void(Event *)> &&s) {
   m_pImpl->connect(event, std::forward<slot<void(Event *)>>(s));
 }
+void IMessage::capture(const char* event, slot<void(Event*)>&& s) {
+  m_pImpl->capture(event, std::forward<slot<void(Event *)>>(s));
+}
 
 IMeta *IMessage::GetMeta() { return m_pImpl->GetMeta(); }
 

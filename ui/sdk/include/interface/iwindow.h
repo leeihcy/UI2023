@@ -238,21 +238,24 @@ UI_DEFINE_PTR(RootObject);
 
 #define WINDOW_DESTROY_EVENT "destroy"
 struct WindowDestroyEvent : public Event {
-  IWindow *window;
+  WindowDestroyEvent() { type = WINDOW_DESTROY_EVENT; }
+  IWindow *window = nullptr;
 };
 
 #define WINDOW_PAINT_EVENT "paint"
 struct WindowPaintEvent : public Event {
-  IWindow *window;
-  IRenderTarget *rt;
+  WindowPaintEvent() { type = WINDOW_PAINT_EVENT; }
+
+  IWindow *window = nullptr;;
+  IRenderTarget *rt = nullptr;
   bool handled = false;
 };
 
 #define LBUTTON_DOWN_EVENT "lbutton_down"
 struct LButtonDownEvent : public Event {
-  IObject *obj;
-  int x;
-  int y;
+  LButtonDownEvent() { type = LBUTTON_DOWN_EVENT; }
+  int x = 0;
+  int y = 0;
 };
 
 // #if 0

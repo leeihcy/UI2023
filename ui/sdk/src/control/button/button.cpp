@@ -10,6 +10,7 @@
 #include "src/control/button/button_meta.h"
 #include "src/object/message.h"
 #include "src/object/object.h"
+#include "src/window/event_dispather.h"
 
 namespace ui {
 
@@ -256,8 +257,7 @@ void Button::onKeyUp(KeyUpMessage *msg) {
 
 void Button::onClicked() {
   ButtonClickedEvent event;
-  event.button = m_pIButton;
-  emit(BUTTON_CLICK_EVENT, &event);
+  EventDispatcher::Dispatch(*this, &event);
 }
 
 void Button::onLButtonDown(LButtonDownMessage *msg) {
@@ -281,12 +281,10 @@ void Button::onStateChanged(StateChangedMessage *msg) {
     if (m_button_style.notify_hoverleave) {
       if (IsHover()) {
         ButtonHoverEvent event;
-        event.button = m_pIButton;
-        emit(BUTTON_HOVER_EVENT, &event);
+        EventDispatcher::Dispatch(*this, &event);
       } else {
         ButtonLeaveEvent event;
-        event.button = m_pIButton;
-        emit(BUTTON_LEAVE_EVENT, &event);
+        EventDispatcher::Dispatch(*this, &event);
       }
     }
   }

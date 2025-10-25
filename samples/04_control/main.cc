@@ -17,21 +17,16 @@ bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
 }
 
 void on_button_click(ui::Event* e) {
-  ui::IButton* sender = static_cast<ui::ButtonClickedEvent*>(e)->button;
+  ui::IObject* sender = e->Target();
   printf("button clicked, id=%s\n", sender->GetId());
 }
 
 void bind_controls(ui::IWindow *window) {
-  ui::IObject *btn = nullptr;
+  // 通过冒泡
+  ui::IRootObject* root = window->GetRootObject();
+  root->connect(BUTTON_CLICK_EVENT,ui::Slot(on_button_click));
 
-  const char *button_ids[] = {"btn_1", "btn_2", "btn_3", "btn_4",
-                              "btn_5", "btn_6", "btn_7", "btn_8"};
-  for (auto id : button_ids) {
-    btn = window->TryFindObject(id);
-    if (btn) {
-      btn->connect(BUTTON_CLICK_EVENT, ui::Slot(on_button_click));
-    }
-  }
+  ui::IObject *btn = nullptr;
   btn = window->TryFindObject("btn_8");
   if (btn) {
     btn->SetEnable(false);

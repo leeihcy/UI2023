@@ -1,5 +1,6 @@
 #include <string>
 
+#include "include/event.h"
 #include "include/macro/helper.h"
 #include "include/util/log.h"
 
@@ -52,20 +53,38 @@ void Message::connect(const char *event_name, slot<void(Event *)> &&s) {
   m_events[std::string(event_name)].connect(
       std::forward<slot<void(Event *)>>(s));
 }
-
-void Message::emit(const char *event_name, Event *event) {
+  // 监听 capture阶段的事件
+void Message::capture(const char* event_name, slot<void(Event*)>&& s) {
   if (!event_name || !event_name[0]) {
     return;
   }
-  auto iter = m_events.find(std::string(event_name));
-  if (iter == m_events.end()) {
+  m_captures[std::string(event_name)].connect(
+      std::forward<slot<void(Event *)>>(s));
+}
+
+void Message::emit(Event *event, EventPhase phase) {
+  const char *type = event->Type();
+  if (!type || !type[0]) {
     return;
   }
-  iter->second.emit(event);
+  if (phase == EventPhase::Capturing) {
+    auto iter = m_captures.find(std::string(type));
+    if (iter == m_captures.end()) {
+      return;
+    }
+    iter->second.emit(event);
+  } else {
+    auto iter = m_events.find(std::string(type));
+    if (iter == m_events.end()) {
+      return;
+    }
+    iter->second.emit(event);
+  }
 }
 
 void Message::clear_events() {
   m_events.clear();
+  m_captures.clear();
 }
 
 } // namespace ui

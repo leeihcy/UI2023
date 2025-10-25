@@ -57,16 +57,17 @@ struct UIAPI IButton : public IControl {
 
 #define BUTTON_CLICK_EVENT "clicked"
 struct ButtonClickedEvent : public Event {
-  IButton *button;
+  ButtonClickedEvent() { type = BUTTON_CLICK_EVENT; }
 };
 
 #define BUTTON_HOVER_EVENT "hover"
 struct ButtonHoverEvent : public Event {
-  IButton *button;
+  ButtonHoverEvent() { type = BUTTON_HOVER_EVENT; }
 };
+
 #define BUTTON_LEAVE_EVENT "leave"
 struct ButtonLeaveEvent : public Event {
-  IButton *button;
+  ButtonLeaveEvent() { type = BUTTON_LEAVE_EVENT; }
 };
 }
 
