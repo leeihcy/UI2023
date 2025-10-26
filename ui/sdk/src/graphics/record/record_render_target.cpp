@@ -1,6 +1,6 @@
 #include "src/graphics/record/record_render_target.h"
 #include "include/macro/xmldefine.h"
-#include "src/graphics/font/font.h"
+#include "src/resource/font.h"
 #include "src/thread/paint_op.h"
 #include "src/thread/render_thread.h"
 #include "src/resource/res_bundle.h"
@@ -143,7 +143,7 @@ void RecordRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
 }
 
 void RecordRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
-                                    DRAWBITMAPPARAM *param) {
+                                    DrawBitmapParam *param) {
   // TODO: 支持多线程！
   addPaintOp(std::move(std::make_unique<DrawBitmapOp>(bitmap, param)));
 }

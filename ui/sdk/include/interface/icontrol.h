@@ -38,6 +38,11 @@ struct UIAPI ILabel : public IControl {
    UI_DECLARE_INTERFACE(Label);
 };
 
+class Image;
+struct UIAPI IImage : public IControl {
+   UI_DECLARE_INTERFACE(Image);
+};
+
 struct ButtonStyle {
   bool auto_default : 1;        // 可以成为默认按钮，例如使用Tab切换得到焦点时成为默认按钮。
   bool default_button : 1;      // 窗口的原始默认按钮

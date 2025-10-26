@@ -179,11 +179,11 @@ struct DrawStringOp : public PaintOp {
 };
 
 struct DrawBitmapOp : public PaintOp {
-  DrawBitmapOp(std::shared_ptr<IRenderBitmap> _bitmap, DRAWBITMAPPARAM *_param)
+  DrawBitmapOp(std::shared_ptr<IRenderBitmap> _bitmap, DrawBitmapParam *_param)
       : PaintOp(PaintOpType::DrawBitmap), bitmap(_bitmap), param(*_param) {}
 
   std::shared_ptr<IRenderBitmap> bitmap;
-  DRAWBITMAPPARAM param;
+  DrawBitmapParam param;
 };
 
 struct DumpToImageOp : public PaintOp {

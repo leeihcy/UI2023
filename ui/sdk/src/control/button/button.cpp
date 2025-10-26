@@ -9,8 +9,9 @@
 #include "src/attribute/attribute.h"
 #include "src/control/button/button_meta.h"
 #include "src/object/message.h"
+#include "src/object/event_dispather.h"
 #include "src/object/object.h"
-#include "src/window/event_dispather.h"
+
 
 namespace ui {
 

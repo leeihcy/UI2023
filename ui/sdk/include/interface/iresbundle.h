@@ -28,12 +28,10 @@ struct UIAPI IResourceBundle {
 
   IApplication *GetUIApplication();
   IResourceManager &GetResourceManager();
-  IImageManager &GetImageManager();
   IColorManager &GetColorManager();
   IFontManager &GetFontManager();
   IStyleManager &GetStyleManager();
   ILayoutManager &GetLayoutManager();
-  IImageRes &GetImageRes();
   IFontRes &GetFontRes();
   IColorRes &GetColorRes();
   IStyleRes &GetStyleRes();

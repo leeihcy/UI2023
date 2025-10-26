@@ -39,10 +39,6 @@ public:
   ColorRes *GetSkinColorRes();
   ImageRes *GetSkinImageRes();
 
-  std::shared_ptr<IRenderBitmap> _LoadBitmap(const char *id);
-
-  const char *_GetBitmapId(IRenderBitmap* pBitmap);
-
 protected:
   ResourceBundle* m_resouce;
   IRenderBase *m_pIRenderBase;

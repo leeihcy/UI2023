@@ -1,5 +1,5 @@
-#ifndef _UI_SDK_SRC_WINDOW_EVENTDISPATHER_H_
-#define _UI_SDK_SRC_WINDOW_EVENTDISPATHER_H_
+#ifndef _UI_SDK_SRC_OBJECT_EVENTDISPATHER_H_
+#define _UI_SDK_SRC_OBJECT_EVENTDISPATHER_H_
 
 // 事件分发器
 // 参照HTML，实现为 “捕获 -> 目标 -> 冒泡” 的三阶段模型
@@ -7,7 +7,6 @@
 #include "include/event.h"
 #include "include/macro/helper.h"
 #include "src/object/object.h"
-#include "window_mouse_key.h"
 
 namespace ui {
 class EventDispatcher {

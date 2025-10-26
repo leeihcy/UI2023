@@ -2,7 +2,9 @@
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
+#include "include/util/log.h"
 #include "src/resource/res_bundle.h"
+#include "src/private_inc.h"
 
 namespace ui {
 

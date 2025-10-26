@@ -52,7 +52,7 @@ public:
                      const CornerRadius &radius) override;
   void StrokeRoundRect(const Rect &rc, const Color &color,
                      const CornerRadius &radius, int width, bool dash) override;
-  void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap, DRAWBITMAPPARAM *param) override;
+  void DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap, DrawBitmapParam *param) override;
   void DrawString(const DrawTextParam &param) override;
   void drawString2(void* text_blob, const Color& color, float x, float y) override;
 

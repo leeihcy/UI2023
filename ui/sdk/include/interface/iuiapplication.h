@@ -79,12 +79,12 @@ public:
   IResourceBundle *GetDefaultSkinRes();
 
   void RestoreRegisterUIObject();
-  bool RegisterControlTagParseFunc(const char *szTag, pfnParseControlTag func);
-  bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
-  bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
+  bool RegisterControlTagParseFunc(const char *szTag, pfnParseControlNode func);
+  bool GetSkinTagParseFunc(const char *szTag, pfnParseResourceNode *pFunc);
+  bool GetControlTagParseFunc(const char *szTag, pfnParseControlNode *pFunc);
 
   IObject *CreateUIObjectByName(const char *szName, IResourceBundle *pISkinRes);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResourceBundle *pISkinRes);
+  IObject *CreateUIObjectByUUID(const Uuid &clsid, IResourceBundle *pISkinRes);
   bool RegisterUIObject(IMeta *p);
   void LoadUIObjectListToToolBox();
 

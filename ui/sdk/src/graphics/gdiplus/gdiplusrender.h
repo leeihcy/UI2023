@@ -67,7 +67,7 @@ public:
 	virtual void  BitBlt( int xDest, int yDest, int wDest, int hDest, IRenderTarget* pSrcHDC, int xSrc, int ySrc, DWORD dwRop );
 	virtual void  ImageList_Draw( IRenderBitmap* hBitmap, int x, int y, int col, int row, int cx, int cy );
 	
-    virtual void  DrawBitmap(IRenderBitmap* hBitmap, DRAWBITMAPPARAM* pParam );
+    virtual void  DrawBitmap(IRenderBitmap* hBitmap, DrawBitmapParam* pParam );
     virtual void  DrawString(IRenderFont* pFont, DRAWTEXTPARAM* pParam);
 
     virtual IRenderPen*     CreateSolidPen(int nWidth, Color* pColor);
@@ -84,7 +84,7 @@ public:
 	static void  DrawBitmap(Gdiplus::Graphics* pGraphics, IRenderBitmap* hBitmap, int xDest, int yDest, int nDestWidth, 
 							int nDestHeight, int xSrc, int ySrc, int nSrcWidth, int nSrcHeight,
                             C9Region* p9Region, bool bDrawCenter=true, Gdiplus::ImageAttributes* pAttr=NULL);		
-	static void  DrawBitmapEx(HDC hBindDC, IRenderBitmap* pBitmap, DRAWBITMAPPARAM* pParam);
+	static void  DrawBitmapEx(HDC hBindDC, IRenderBitmap* pBitmap, DrawBitmapParam* pParam);
     static void  DrawStringEx(HDC hBindDC, IRenderFont*  pFont, DRAWTEXTPARAM* pParam);
 
     static void  GetStringFormatByGdiFormat(unsigned int, Gdiplus::StringFormat* p);

@@ -3,10 +3,10 @@
 #include "include/interface/ilayout.h"
 #include "include/interface/itextrenderbase.h"
 #include "include/interface/iuiapplication.h"
+#include "include/macro/msg.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/bool_attribute.h"
-#include "src/attribute/stringselect_attribute.h"
 #include "src/helper/scale/scale_factor.h"
 #include "src/resource/res_bundle.h"
 #include <memory>
@@ -24,7 +24,11 @@ void Control::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_PAINTBKGND) {
     onPaintBkgnd(static_cast<PaintBkgndMessage *>(msg)->rt);
     return;
-  } else if (msg->message == UI_MSG_GETDESIREDSIZE) {
+  } else if (msg->message == UI_MSG_PAINT) {
+    onPaint(static_cast<PaintMessage *>(msg)->rt);
+    return;
+  } 
+  else if (msg->message == UI_MSG_GETDESIREDSIZE) {
     onGetDesiredSize(&static_cast<GetDesiredSizeMessage *>(msg)->size);
     return;
   } else if (msg->message == UI_MSG_SERIALIZE) {
@@ -192,11 +196,21 @@ void Control::TryUpdateLayoutOnContentChanged() {
 #endif
 }
 
-void Control::onPaintBkgnd(IRenderTarget *pRenderTarget) {
-  Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
-  if (m_back_render) {
-    m_back_render->DrawState(pRenderTarget, &rc, 0);
+void Control::onPaintBkgnd(IRenderTarget *r) {
+  if (!m_back_render) {
+    return;
   }
+  Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
+  m_back_render->DrawState(r, &rc, 0);
+}
+
+void Control::onPaint(IRenderTarget *r) {
+  if (!m_fore_render) {
+    return;
+  }
+  Rect rc;
+  GetClientRectWithZeroOffset(&rc);
+  m_fore_render->DrawState(r, &rc, 0);
 }
 
 void Control::onGetDesiredSize(Size *pSize) {

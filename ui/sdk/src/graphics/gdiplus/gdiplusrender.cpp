@@ -1292,7 +1292,7 @@ void GdiplusRenderTarget::ImageList_Draw( IRenderBitmap* hBitmap, int x, int y, 
 }
 
 
-void GdiplusRenderTarget::DrawBitmap(IRenderBitmap* hBitmap, DRAWBITMAPPARAM* pParam)
+void GdiplusRenderTarget::DrawBitmap(IRenderBitmap* hBitmap, DrawBitmapParam* pParam)
 {
 	if (NULL == hBitmap || NULL == pParam)
 		return;
@@ -1309,7 +1309,7 @@ void GdiplusRenderTarget::DrawBitmap(IRenderBitmap* hBitmap, DRAWBITMAPPARAM* pP
 }
 
 // [注]:这里的alpha绘制效率很低，特别是在实现动画渐变效果时，效果很不好，最好还是用gdi的alpha blend
-void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DRAWBITMAPPARAM* pParam)
+void GdiplusRenderTarget::DrawBitmapEx(HDC hBindDC, IRenderBitmap* p, DrawBitmapParam* pParam)
 {
 	if (p->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS)
 		return;

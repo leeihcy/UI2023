@@ -841,7 +841,7 @@ void GdiRenderTarget::ImageList_Draw(IRenderBitmap *hBitmap, int x, int y,
 }
 
 void GdiRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap *pBitmap,
-                                   DRAWBITMAPPARAM *pParam) {
+                                   DrawBitmapParam *pParam) {
   IRenderBitmap *p = (IRenderBitmap *)pBitmap;
   if (p->GetGraphicsRenderLibraryType() != GRAPHICS_RENDER_LIBRARY_TYPE_GDI) {
     if (p->GetGraphicsRenderLibraryType() ==
@@ -1020,7 +1020,7 @@ void GdiRenderTarget::DrawBitmapEx(HDC hDC, IRenderBitmap *pBitmap,
   }
 }
 void GdiRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
-                                 DRAWBITMAPPARAM *pParam) {
+                                 DrawBitmapParam *pParam) {
   if (nullptr == pRenderBitmap || nullptr == pParam)
     return;
 
@@ -1048,7 +1048,7 @@ void GdiRenderTarget::DrawBitmap(IRenderBitmap *pRenderBitmap,
 //       否则该memdc提交到窗口DC上的内容将不正确
 // [注2] 默认这些旋转都是基本(0,0)坐标的，但该函数要实现的目标是基本自身中心旋转
 //
-void GdiRenderTarget::DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree, DRAWBITMAPPARAM* pParam)
+void GdiRenderTarget::DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree, DrawBitmapParam* pParam)
 {
 
 	IRenderBitmap* p = (IRenderBitmap*)pBitmap;

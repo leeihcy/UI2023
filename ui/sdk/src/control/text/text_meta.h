@@ -14,7 +14,7 @@ struct LabelMeta : public MetaImpl<ILabel> {
 
   Uuid UUID() override { return {0x74D8EF7F, 0x695E, 0x11F0, {0xAB, 0xAB, 0xE8, 0xB0, 0xC5, 0x68, 0x09, 0x7E}}; }
 
-  const char* Name() override { return "Label"; }
+  const char* Name() override { return "label"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

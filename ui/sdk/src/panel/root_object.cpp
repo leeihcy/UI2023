@@ -33,9 +33,7 @@ bool RootObject::LoadLayout(const char *layout_id) {
     LayoutManager &layoutmanager = m_resource->GetLayoutManager();
 
     //	加载子控件
-    const char *szName = "Window";
-    // if (GetMeta())
-    //   szName = GetMeta()->Name();
+    const char *szName = WindowMeta::Get().Name();
 
     UIElementProxy pUIElement =
         layoutmanager.FindWindowElement(szName, layout_id);

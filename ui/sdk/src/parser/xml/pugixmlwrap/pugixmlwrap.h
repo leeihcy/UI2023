@@ -91,7 +91,7 @@ public:
   virtual const char *GetSkinPath() override;
 
   virtual bool LoadFile(const char *szFile) override;
-  virtual bool LoadData(const byte *pData, int nDataSize) override;
+  virtual bool LoadData(const byte *pData, unsigned int nDataSize) override;
   virtual UIElementProxy FindElem(const char *szText) override;
   virtual bool Save() override;
   virtual bool SaveAs(const char *szPath) override;

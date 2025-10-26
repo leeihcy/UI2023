@@ -148,11 +148,11 @@ void ColorRender::loadColor(const char *text, std::vector<Color>& target) {
 
   std::vector<std::string> vColors;
   UI_Split(text, XML_MULTI_SEPARATOR, vColors);
-  uint count = vColors.size();
+  uint count = (uint)vColors.size();
   if (count == 0) {
     return;
   }
-  for (int i = 0; i < count; i++) {
+  for (uint i = 0; i < count; i++) {
     target.push_back(util::TranslateColor(vColors[i].c_str()));
   }
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "include/interface/imeta.h"
 #include "include/interface/iwindow.h"
-// #include "include/interface/icustomwindow.h"
 
 namespace ui {
 
@@ -13,7 +12,7 @@ struct WindowMeta : public MetaImpl<IWindow> {
 
   Uuid UUID() override { return {0x5C36801E, 0x5929, 0x4512, {0xA9, 0x98, 0xF9, 0x71, 0x9D, 0xCC, 0x69, 0x03}}; }
 
-  const char* Name() override { return "Window"; }
+  const char* Name() override { return "window"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

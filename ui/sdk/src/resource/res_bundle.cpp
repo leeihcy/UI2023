@@ -4,13 +4,14 @@
 #include "src/parser/skinparseengine.h"
 #include "src/parser/xml/xmlwrap.h"
 #include "include/interface/iuires.h"
+#include "include/util/log.h"
 #include "uiresource.h"
 
 namespace ui {
 
 ResourceBundle::ResourceBundle(ResourceManager &o)
     : m_mgrSkinRef(o), m_mgrLayout(this), m_mgrStyle(*this), /*m_mgrFont(this),*/
-      m_mgrColor(this), m_mgrImage(this), m_mgrI18n(this), m_fontres(*this)
+      m_mgrColor(this), m_mgrI18n(this), m_fontres(*this), m_imageres(this)
 
 {
   m_pISkinRes = nullptr;
@@ -127,8 +128,8 @@ bool ResourceBundle::ChangeSkinHLS(short h, short l, short s, int nFlag) {
   m_pHLSInfo->s = s;
   m_pHLSInfo->nFlag = nFlag;
 
-  if (false == m_mgrImage.ChangeSkinHLS(h, l, s, nFlag))
-    return false;
+  // if (false == m_mgrImage.ChangeSkinHLS(h, l, s, nFlag))
+  //   return false;
   if (false == m_mgrColor.ChangeSkinHLS(h, l, s, nFlag))
     return false;
 
@@ -174,11 +175,8 @@ IResourceManager &ResourceBundle::GetIResourceManager() {
   return m_mgrSkinRef.GetIResourceManager();
 }
 
-ImageRes &ResourceBundle::GetImageRes() { return m_mgrImage.GetImageRes(); }
+ImageRes &ResourceBundle::GetImageRes() { return m_imageres; }
 ColorRes &ResourceBundle::GetColorRes() { return m_mgrColor.GetColorRes(); }
-// FontRes &ResourceBundle::GetFontRes() { return m_mgrFont.GetFontRes(); }
-
 StyleRes &ResourceBundle::GetStyleRes() { return m_mgrStyle.GetStyleRes(); }
-
 I18nRes &ResourceBundle::GetI18nRes() { return m_mgrI18n.GetI18nRes(); }
 } // namespace ui

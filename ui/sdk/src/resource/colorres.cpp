@@ -1,7 +1,8 @@
 #include "colorres.h"
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
-// #include "Src/Atl/image.h"
+#include "include/util/log.h"
+#include "src/util/util.h"
 #include "res_bundle.h"
 #include "uiresource.h"
 

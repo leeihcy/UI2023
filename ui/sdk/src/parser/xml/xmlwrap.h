@@ -94,7 +94,7 @@ struct UIDocument {
   virtual const char *GetSkinPath() = 0;
 
   virtual bool LoadFile(const char *szFile) = 0;
-  virtual bool LoadData(const unsigned char *pData, int nDataSize) = 0;
+  virtual bool LoadData(const unsigned char *pData, unsigned int nDataSize) = 0;
   virtual UIElementProxy FindElem(const char *szText) = 0;
   virtual bool Save() = 0;
   virtual bool SaveAs(const char *szPath) = 0;

@@ -1,18 +1,10 @@
-// #include "colormanager.h"
 #include "include/interface/iuires.h"
 #include "include/interface/iresbundle.h"
-// #include "colorres.h"
-// #include "imagemanager.h"
-// #include "../SkinParse/xml/xmlwrap.h"
-// #include "fontmanager.h"
-// #include "stylemanager.h"
-// #include "layoutmanager.h"
 #include "res_bundle.h"
 #include "resource_manager.h"
+#include "src/resource/imageres.h"
 #include "src/application/uiapplication.h"
 #include "src/parser/datasource/bundle_source.h"
-// #include "i18nres.h"
-// #include "../Base/Object/object.h"
 #include "include/interface/ixmlwrap.h"
 #include <memory>
 
@@ -48,61 +40,6 @@ const char *IColorResItem::GetColorString() {
   return m_pImpl->GetColorString();
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-IImageManager::IImageManager(ImageManager *p) { m_pImpl = p; }
-ImageManager *IImageManager::GetImpl() { return m_pImpl; }
-
-IImageRes &IImageManager::GetImageRes() {
-  return m_pImpl->GetImageRes().GetIImageRes();
-}
-#if 0 // defined(OS_WIN)
-ICursorRes*  IImageManager::GetCursorRes()
-{
-    return m_pImpl->GetCursorRes().GetICursorRes();
-}
-IGifRes*     IImageManager::GetGifRes() 
-{ 
-    return m_pImpl->GetGifRes().GetIGifRes(); 
-}
-#endif
-IUIElement *IImageManager::GetImageXmlElem(const char *szId) {
-  UIElement *p = m_pImpl->GetImageXmlElem(szId);
-  if (p)
-    return p->GetIUIElement();
-  return nullptr;
-}
-
-IImageResItem *IImageManager::InsertImageItem(IMAGE_ITEM_TYPE eType,
-                                              const char *szID,
-                                              const char *szPath) {
-  return m_pImpl->InsertImageItem(eType, szID, szPath);
-}
-bool IImageManager::ModifyImageItem(const char *szID, const char *szPath) {
-  return m_pImpl->ModifyImageItem(szID, szPath);
-}
-bool IImageManager::RemoveImageItem(const char *szID) {
-  return m_pImpl->RemoveImageItem(szID);
-}
-
-bool IImageManager::ModifyImageItemInRunTime(const char *szID,
-                                             const char *szPath) {
-  return m_pImpl->ModifyImageItemInRunTime(szID, szPath);
-}
-bool IImageManager::ModifyImageItemAlpha(const char *szID, byte nAlphaPercent) {
-  return m_pImpl->ModifyImageItemAlpha(szID, nAlphaPercent);
-}
-
-//////////////////////////////////////////////////////////////////////////
-#if 0
-IFontManager::IFontManager(FontManager *p) { m_pImpl = p; }
-FontManager *IFontManager::GetImpl() { return m_pImpl; }
-
-IFontRes &IFontManager::GetFontRes() {
-  return m_pImpl->GetFontRes().GetIFontRes();
-}
-
-#endif
 //////////////////////////////////////////////////////////////////////////
 
 IStyleManager::IStyleManager(StyleManager *p) { m_pImpl = p; }
@@ -498,15 +435,9 @@ IApplication *IResourceBundle::GetUIApplication() {
 IResourceManager &IResourceBundle::GetResourceManager() {
   return m_pImpl->GetSkinMgr().GetIResourceManager();
 }
-IImageManager &IResourceBundle::GetImageManager() {
-  return m_pImpl->GetImageManager().GetIImageManager();
-}
 IColorManager &IResourceBundle::GetColorManager() {
   return m_pImpl->GetColorManager().GetIColorManager();
 }
-// IFontManager &IResourceBundle::GetFontManager() {
-//   return m_pImpl->GetFontManager().GetIFontManager();
-// }
 IStyleManager &IResourceBundle::GetStyleManager() {
   return m_pImpl->GetStyleManager().GetIStyleManager();
 }
@@ -514,12 +445,6 @@ ILayoutManager &IResourceBundle::GetLayoutManager() {
   return m_pImpl->GetLayoutManager().GetILayoutManager();
 }
 
-IImageRes &IResourceBundle::GetImageRes() {
-  return m_pImpl->GetImageRes().GetIImageRes();
-}
-// IFontRes &IResourceBundle::GetFontRes() {
-//   return m_pImpl->GetFontRes().GetIFontRes();
-// }
 IColorRes &IResourceBundle::GetColorRes() {
   return m_pImpl->GetColorRes().GetIColorRes();
 }

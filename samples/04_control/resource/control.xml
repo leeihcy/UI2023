@@ -1,46 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resource>
   <layout>
-    <Window id="control" width="900" height="500" back.render.type="color" back.render.color="white" layout.type="vert">
-      <Panel id="text">
+    <window id="control" width="900" height="500" back.render.type="color" back.render.color="white" layout.type="vert">
+      <panel id="text">
         <prop key="layout" width="100%" height="140"/>
-        <Label id="title" text="控件示例" layer="0" layer.needclear="true">
+        <label id="title" text="控件示例" layer="0" layer.needclear="true">
            <prop key="layout" left="0" right="0" height="100"/>
            <prop key="text.render" color="black" align="center|vcenter"/>
            <prop key="text.render.font" size="36" weight="bold"/>
-        </Label>
-        <Label text="——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————" 
+        </label>
+        <label text="——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————" 
           layout.left="0" layout.top="100" layout.right="100" height="20"/>
-        <Label text="2025/10/19" 
+        <label text="2025/10/19" 
           layout.left="10" layout.top="100" layout.right="10" height="20" text.render.align="right"/>
-      </Panel>
+      </panel>
 
-      <Panel width="100%" padding="10" height="200" layout.type="vert">
-        <Panel id="button"  width="100%" height="50">
+      <panel width="100%" padding="10" height="200" layout.type="vert">
+        <panel id="button"  width="100%" height="50">
           <prop key="layout" type="horz" gap="10"/>
-          <Button id="btn_1" text="普通按钮" class="button button_default"/>
-          <Button id="btn_7" defaultbutton="1" text="默认按钮" class="button button_default"/>
-          <Button id="btn_8" text="禁用按钮" class="button button_default"/>
-        </Panel>
-        <Panel width="100%" height="50">
+          <button id="btn_1" text="普通按钮" class="button button_default"/>
+          <button id="btn_7" defaultbutton="1" text="默认按钮" class="button button_default"/>
+          <button id="btn_8" text="禁用按钮" class="button button_default"/>
+        </panel>
+        <panel width="100%" height="50">
           <prop key="layout" type="horz" gap="10"/>
-          <Button id="btn_2" text="主要按钮" class="button button_primary"/>
-          <Button id="btn_3" text="成功按钮" class="button button_success"/>
-          <Button id="btn_4" text="信息按钮" class="button button_info"/>
-          <Button id="btn_5" text="警告按钮" class="button button_warning"/>
-          <Button id="btn_6" text="危险按钮" class="button button_danger"/>
-        </Panel>
-        <Panel width="100%" height="50">
+          <button id="btn_2" text="主要按钮" class="button button_primary"/>
+          <button id="btn_3" text="成功按钮" class="button button_success"/>
+          <button id="btn_4" text="信息按钮" class="button button_info"/>
+          <button id="btn_5" text="警告按钮" class="button button_warning"/>
+          <button id="btn_6" text="危险按钮" class="button button_danger"/>
+        </panel>
+        <panel width="100%" height="50">
           <prop key="layout" type="horz" gap="10"/>
-          <Button class="button button_default buttle_circle element_icons" text="&#xe778;"/>
-          <Button class="button button_primary buttle_circle element_icons" text="&#xe78c;"/>
-          <Button class="button button_success buttle_circle element_icons" text="&#xe6da;"/>
-          <Button class="button button_info    buttle_circle element_icons" text="&#xe72b;"/>
-          <Button class="button button_warning buttle_circle element_icons" text="&#xe717;"/>
-          <Button class="button button_danger  buttle_circle element_icons" text="&#xe6d7;"/>
-        </Panel>
-      </Panel>
+          <button class="button button_default buttle_circle element_icons" text="&#xe778;"/>
+          <button class="button button_primary buttle_circle element_icons" text="&#xe78c;"/>
+          <button class="button button_success buttle_circle element_icons" text="&#xe6da;"/>
+          <button class="button button_info    buttle_circle element_icons" text="&#xe72b;"/>
+          <button class="button button_warning buttle_circle element_icons" text="&#xe717;"/>
+          <button class="button button_danger  buttle_circle element_icons" text="&#xe6d7;"/>
+        </panel>
+      </panel>
+      <panel id="images"  width="100%" padding="10" height="200" layout.type="horz">
+        <img src="images/qq.png"/>
+        <img src="images/nvsheng.png"/>
+      </panel>
       
-    </Window>
+    </window>
   </layout>
 </resource>

@@ -300,7 +300,7 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
                                                    m_resource_bundle->GetIResource());
   if (nullptr == pIObject) {
     // 尝试寻找该Tag是否被注册了
-    pfnParseControlTag func = nullptr;
+    pfnParseControlNode func = nullptr;
     pUIApp->GetControlTagParseFunc(bstrTagName.c_str(), &func);
     if (func) {
       eParseRet = func(pUIElement->GetIUIElement(), m_resource_bundle->GetIResource(),

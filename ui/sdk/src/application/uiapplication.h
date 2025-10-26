@@ -58,9 +58,9 @@ public:
 	HMODULE  GetUID2DModule();
 	HMODULE  GetUID3DModule();
 #endif
-  RenderBaseFactory &GetRenderBaseFactory() { return m_renderBaseFactory; }
-  TextRenderFactory &GetTextRenderFactroy() { return m_textRenderFactroy; }
-  LayoutFactory &GetLayoutFactory() { return m_layoutFactory; }
+  RenderBaseFactory &GetRenderBaseFactory() { return m_render_base_factory; }
+  TextRenderFactory &GetTextRenderFactroy() { return m_text_render_base_factory; }
+  LayoutFactory &GetLayoutFactory() { return m_layout_factory; }
   TimerHelper &GetTimerHelper() { return m_timer_helper; }
 
   const char *GetRenderBaseName(int nType);
@@ -73,12 +73,12 @@ public:
 #endif
   void RestoreRegisterUIObject();
   bool RegisterControlTagParseFunc(const char *szTag,
-                                   pfnParseControlTag func);
-  bool GetSkinTagParseFunc(const char *szTag, pfnParseSkinTag *pFunc);
-  bool GetControlTagParseFunc(const char *szTag, pfnParseControlTag *pFunc);
+                                   pfnParseControlNode func);
+  bool GetSkinTagParseFunc(const char *szTag, pfnParseResourceNode *pFunc);
+  bool GetControlTagParseFunc(const char *szTag, pfnParseControlNode *pFunc);
   bool RegisterUIObject(IMeta *);
   IObject *CreateUIObjectByName(const char *szXmlName, IResourceBundle *);
-  IObject *CreateUIObjectByClsid(const Uuid &clsid, IResourceBundle *);
+  IObject *CreateUIObjectByUUID(const Uuid &clsid, IResourceBundle *);
 
   void LoadUIObjectListToToolBox();
 
@@ -100,19 +100,15 @@ public:
   void RegisterDefaultUIObject();
   void ClearRegisterUIObject();
 
-public:
 private:
-  typedef std::map<std::string, pfnParseSkinTag> UISKINTAGPARSE_DATA;
-  typedef std::map<std::string, pfnParseControlTag> UICONTROLTAGPARSE_DATA;
-
   // 保存UI对象的XML字符串，用于从字符串创建UI对象
-  std::vector<IMeta *> m_vecUIObjectDesc;
-  UISKINTAGPARSE_DATA m_mapSkinTagParseData;
-  UICONTROLTAGPARSE_DATA m_mapControlTagParseData;
+  std::vector<IMeta *> m_object_meta_array;
+  std::map<std::string, pfnParseResourceNode> m_resource_node_parser_map;
+  std::map<std::string, pfnParseControlNode> m_control_node_parser_map;
 
-  RenderBaseFactory m_renderBaseFactory;
-  TextRenderFactory m_textRenderFactroy;
-  LayoutFactory m_layoutFactory;
+  RenderBaseFactory m_render_base_factory;
+  TextRenderFactory m_text_render_base_factory;
+  LayoutFactory m_layout_factory;
 
   TopWindowManager m_TopWindowMgr;
   TimerHelper m_timer_helper;

@@ -4,6 +4,8 @@
 #include "include/interface/iobject.h"
 #include "include/interface/irenderbase.h"
 #include "include/interface/iuiautotest.h"
+#include "include/interface/iuieditor.h"
+#include "include/util/log.h"
 #include "src/application/config/config.h"
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
@@ -12,11 +14,8 @@
 #include "src/graphics/record/record_render_target.h"
 #include "src/panel/panel_meta.h"
 #include "src/resource/colormanager.h"
-#include "src/resource/i18nmanager.h"
-#include "src/resource/imagemanager.h"
 #include "src/resource/layoutmanager.h"
 #include "src/resource/res_bundle.h"
-#include "src/resource/stylemanager.h"
 #include "src/parser/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "ui/gpu/include/api.h"
@@ -34,8 +33,8 @@
 namespace ui {
 
 Application::Application(IApplication *p)
-    : m_pUIApplication(p), m_TopWindowMgr(this), m_renderBaseFactory(*this),
-      m_textRenderFactroy(*this), m_resource_manager(*this),
+    : m_pUIApplication(p), m_TopWindowMgr(this), m_render_base_factory(*this),
+      m_text_render_base_factory(*this), m_resource_manager(*this),
       m_message_loop(*this), m_timer_helper(*this), m_animate(this) {
 #if defined(OS_MAC)
   ApplicationMac::Init();
@@ -246,12 +245,12 @@ bool Application::IsVistaOrWin7etc() {
 #endif
 
 bool Application::GetSkinTagParseFunc(const char *szTag,
-                                      pfnParseSkinTag *pFunc) {
+                                      pfnParseResourceNode *pFunc) {
   if (nullptr == szTag || nullptr == pFunc)
     return false;
 
-  UISKINTAGPARSE_DATA::iterator iter = m_mapSkinTagParseData.find(szTag);
-  if (iter == m_mapSkinTagParseData.end())
+  auto iter = m_resource_node_parser_map.find(szTag);
+  if (iter == m_resource_node_parser_map.end())
     return false;
 
   *pFunc = iter->second;
@@ -259,21 +258,21 @@ bool Application::GetSkinTagParseFunc(const char *szTag,
 }
 
 bool Application::RegisterControlTagParseFunc(const char *szTag,
-                                              pfnParseControlTag func) {
+                                              pfnParseControlNode func) {
   if (nullptr == szTag || nullptr == func)
     return false;
 
-  m_mapControlTagParseData[szTag] = func;
+  m_control_node_parser_map[szTag] = func;
   return true;
 }
 
 bool Application::GetControlTagParseFunc(const char *szTag,
-                                         pfnParseControlTag *pFunc) {
+                                         pfnParseControlNode *pFunc) {
   if (nullptr == szTag || nullptr == pFunc)
     return false;
 
-  UICONTROLTAGPARSE_DATA::iterator iter = m_mapControlTagParseData.find(szTag);
-  if (iter == m_mapControlTagParseData.end())
+  auto iter = m_control_node_parser_map.find(szTag);
+  if (iter == m_control_node_parser_map.end())
     return false;
 
   *pFunc = iter->second;
@@ -292,15 +291,15 @@ bool Application::RegisterUIObject(IMeta *pObjDesc) {
   if (!pObjDesc)
     return false;
 
-  int nSize = (int)m_vecUIObjectDesc.size();
+  int nSize = (int)m_object_meta_array.size();
   for (int i = 0; i < nSize; i++) {
-    if (m_vecUIObjectDesc[i] == pObjDesc) {
+    if (m_object_meta_array[i] == pObjDesc) {
       UI_LOG_WARN("register duplicate. name=%s", pObjDesc->Name());
       return false;
     }
   }
 
-  m_vecUIObjectDesc.push_back(pObjDesc);
+  m_object_meta_array.push_back(pObjDesc);
   return true;
 }
 
@@ -313,11 +312,11 @@ void Application::ClearRegisterUIObject() {
     var.clear();                                                               \
   }
 
-  m_vecUIObjectDesc.clear();
+  m_object_meta_array.clear();
 
-  m_renderBaseFactory.Clear();
-  m_textRenderFactroy.Clear();
-  m_layoutFactory.Clear();
+  m_render_base_factory.Clear();
+  m_text_render_base_factory.Clear();
+  m_layout_factory.Clear();
 }
 
 void Application::RegisterDefaultUIObject() {
@@ -334,20 +333,19 @@ void Application::RegisterDefaultUIObject() {
     //  RegisterUIObject(ScrollPanelDescription::Get());
 #endif
 
-  m_mapSkinTagParseData[XML_IMG] = ImageManager::UIParseImageTagCallback;
-  m_mapSkinTagParseData[XML_COLOR] = ColorManager::UIParseColorTagCallback;
-  // m_mapSkinTagParseData[XML_FONT] = FontManager::UIParseFontTagCallback;
-  m_mapSkinTagParseData[XML_STYLE] = StyleManager::UIParseStyleTagCallback;
-  m_mapSkinTagParseData[XML_LAYOUT] = LayoutManager::UIParseLayoutTagCallback;
-  m_mapSkinTagParseData[XML_LAYOUTCONFIG] =
+  m_resource_node_parser_map[XML_COLOR] = ColorManager::UIParseColorTagCallback;
+  // m_resource_node_parser_map[XML_FONT] = FontManager::UIParseFontTagCallback;
+  m_resource_node_parser_map[XML_STYLE] = StyleManager::UIParseStyleTagCallback;
+  m_resource_node_parser_map[XML_LAYOUT] = LayoutManager::UIParseLayoutTagCallback;
+  m_resource_node_parser_map[XML_LAYOUTCONFIG] =
       LayoutManager::UIParseLayoutConfigTagCallback;
-  m_mapSkinTagParseData[XML_INCLUDE] =
+  m_resource_node_parser_map[XML_INCLUDE] =
       SkinParseEngine::UIParseIncludeTagCallback;
-  m_mapSkinTagParseData[XML_I18N] = I18nManager::UIParseI18nTagCallback;
+  m_resource_node_parser_map[XML_I18N] = I18nManager::UIParseI18nTagCallback;
 
-  m_renderBaseFactory.Init();
-  m_textRenderFactroy.Init();
-  m_layoutFactory.Init();
+  m_render_base_factory.Init();
+  m_text_render_base_factory.Init();
+  m_layout_factory.Init();
 }
 
 // 用于编辑器中调整控件库的依赖
@@ -356,36 +354,36 @@ void Application::RestoreRegisterUIObject() {
   RegisterDefaultUIObject();
 }
 
-IObject *Application::CreateUIObjectByName(const char *szXmlName,
+IObject *Application::CreateUIObjectByName(const char *name,
                                            IResourceBundle *resource_bundle) {
-  if (!szXmlName)
+  if (!name)
     return nullptr;
 
-  int nSize = (int)m_vecUIObjectDesc.size();
+  int nSize = (int)m_object_meta_array.size();
   for (int i = 0; i < nSize; i++) {
-    if (0 == strcmp(szXmlName, m_vecUIObjectDesc[i]->Name())) {
+    if (0 == strcmp(name, m_object_meta_array[i]->Name())) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->Create(resource_bundle, (void **)&p);
+      m_object_meta_array[i]->Create(resource_bundle, (void **)&p);
       return p;
     }
   }
 
-  UI_LOG_ERROR("GetUICreateInstanceFuncPtr Failed. name=%s", szXmlName);
+  UI_LOG_ERROR("CreateUIObjectByName failed, name=%s", name);
   return nullptr;
 }
 
-IObject *Application::CreateUIObjectByClsid(const Uuid &clsid,
+IObject *Application::CreateUIObjectByUUID(const Uuid &clsid,
                                             IResourceBundle *resource_bundle) {
-  int nSize = (int)m_vecUIObjectDesc.size();
+  int nSize = (int)m_object_meta_array.size();
   for (int i = 0; i < nSize; i++) {
-    if (clsid == m_vecUIObjectDesc[i]->UUID()) {
+    if (clsid == m_object_meta_array[i]->UUID()) {
       IObject *p = nullptr;
-      m_vecUIObjectDesc[i]->Create(resource_bundle, (void **)&p);
+      m_object_meta_array[i]->Create(resource_bundle, (void **)&p);
       return p;
     }
   }
 
-  UI_LOG_ERROR("GetUICreateInstanceFuncPtr Failed.");
+  UI_LOG_ERROR("CreateUIObjectByUUID Failed.");
   return nullptr;
 }
 #if 0
@@ -532,19 +530,19 @@ void Application::LoadUIObjectListToToolBox() {
   if (!m_pUIEditor)
     return;
 
-  auto iter = m_vecUIObjectDesc.begin();
-  for (; iter != m_vecUIObjectDesc.end(); iter++) {
+  auto iter = m_object_meta_array.begin();
+  for (; iter != m_object_meta_array.end(); iter++) {
     m_pUIEditor->OnToolBox_AddObject((*iter));
   }
 }
 
 std::shared_ptr<IRenderBase>
 Application::CreateRenderBaseByName(IResourceBundle *resource, const char *name) {
-  return m_renderBaseFactory.CreateRenderBaseByName(resource, name);
+  return m_render_base_factory.CreateRenderBaseByName(resource, name);
 }
 
 const char *Application::GetRenderBaseName(int nType) {
-  return m_renderBaseFactory.GetRenderBaseName(nType);
+  return m_render_base_factory.GetRenderBaseName(nType);
 }
 
 } // namespace ui

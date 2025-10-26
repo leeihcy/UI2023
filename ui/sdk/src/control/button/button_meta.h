@@ -14,7 +14,7 @@ struct ButtonMeta : public MetaImpl<IButton> {
 
   Uuid UUID() override { return {0x5E0E807A, 0xA650, 0x11F0, {0xA2, 0x36, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
 
-  const char* Name() override { return "Button"; }
+  const char* Name() override { return "button"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

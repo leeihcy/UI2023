@@ -72,15 +72,15 @@ void IApplication::RestoreRegisterUIObject() {
   m_pImpl->RestoreRegisterUIObject();
 }
 bool IApplication::RegisterControlTagParseFunc(const char *szTag,
-                                               pfnParseControlTag func) {
+                                               pfnParseControlNode func) {
   return m_pImpl->RegisterControlTagParseFunc(szTag, func);
 }
 bool IApplication::GetSkinTagParseFunc(const char *szTag,
-                                       pfnParseSkinTag *pFunc) {
+                                       pfnParseResourceNode *pFunc) {
   return m_pImpl->GetSkinTagParseFunc(szTag, pFunc);
 }
 bool IApplication::GetControlTagParseFunc(const char *szTag,
-                                          pfnParseControlTag *pFunc) {
+                                          pfnParseControlNode *pFunc) {
   return m_pImpl->GetControlTagParseFunc(szTag, pFunc);
 }
 
@@ -88,9 +88,9 @@ IObject *IApplication::CreateUIObjectByName(const char *szName,
                                             IResourceBundle *pISkinRes) {
   return m_pImpl->CreateUIObjectByName(szName, pISkinRes);
 }
-IObject *IApplication::CreateUIObjectByClsid(const Uuid &clsid,
+IObject *IApplication::CreateUIObjectByUUID(const Uuid &clsid,
                                              IResourceBundle *pISkinRes) {
-  return m_pImpl->CreateUIObjectByClsid(clsid, pISkinRes);
+  return m_pImpl->CreateUIObjectByUUID(clsid, pISkinRes);
 }
 bool IApplication::RegisterUIObject(IMeta *p) {
   return m_pImpl->RegisterUIObject(p);

@@ -168,8 +168,6 @@ shared_library("uisdk") {
         "src/graphics/skia/skia_render.cpp",
         "src/graphics/skia/skia_render.h",
         "src/graphics/skia/skia_bitmap.cpp",
-        "src/graphics/font/font.h",
-        "src/graphics/font/font.cpp",
         "src/graphics/record/record_render_target.cpp",
         "src/graphics/record/record_render_target.h",
         "src/graphics/clip_origin.cpp",
@@ -233,7 +231,6 @@ shared_library("uisdk") {
         "src/resource/colorres.cpp",
         # "src/resource/gifres.cpp",
         "src/resource/i18nres.cpp",
-        "src/resource/imagemanager.cpp",
         "src/resource/imageres.cpp",
         "src/resource/resource_manager.cpp",
         "src/resource/iuires.cpp",
@@ -242,6 +239,8 @@ shared_library("uisdk") {
         "src/resource/res_bundle.cpp",
         "src/resource/stylemanager.cpp",
         "src/resource/styleres.cpp",
+        "src/resource/font.h",
+        "src/resource/font.cpp",
         "src/thread/render_thread.cpp",
         "src/thread/render_thread_main.cpp",
         "src/thread/render_thread.h",
@@ -278,11 +277,14 @@ shared_library("uisdk") {
         "src/window/window_dpi.cpp",
     ]
 
-    # common controls
+    # core controls
     sources += [
       "src/control/text/label.h",
       "src/control/text/label.cpp",
       "src/control/text/label_meta.h",
+      "src/control/image/image.h",
+      "src/control/image/image.cpp",
+      "src/control/image/image_meta.h",
       "src/control/button/button.h",
       "src/control/button/button.cpp",
       "src/control/button/button_meta.h",

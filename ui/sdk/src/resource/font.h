@@ -1,5 +1,5 @@
-#ifndef _UI_SDK_SRC_GRAPHICS_FONT_FONT_H_
-#define _UI_SDK_SRC_GRAPHICS_FONT_FONT_H_
+#ifndef _UI_SDK_SRC_RESOURCE_FONT_H_
+#define _UI_SDK_SRC_RESOURCE_FONT_H_
 #include "include/core/SkFont.h"
 #include "include/interface/iresbundle.h"
 #include "include/interface/renderlibrary.h"

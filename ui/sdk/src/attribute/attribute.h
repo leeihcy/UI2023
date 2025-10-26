@@ -3,6 +3,7 @@
 #include "enum_attribute.h"
 #include "flags_attribute.h"
 #include "include/interface/iattribute.h"
+#include "include/interface/iuieditor.h"
 #include "include/util/rect.h"
 #include "int_attribute.h"
 #include "length_attribute.h"
@@ -10,6 +11,7 @@
 #include "radius_attribute.h"
 #include "size_attribute.h"
 #include "string_attribute.h"
+
 
 /*
   2015-2-27 11:28 属性加载代码重构

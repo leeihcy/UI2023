@@ -2,6 +2,8 @@
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
+#include "include/interface/iuieditor.h"
+#include "include/util/log.h"
 #include "res_bundle.h"
 #include "src/application/uiapplication.h"
 #include "src/parser/xml/xmlwrap.h"

@@ -36,8 +36,6 @@ namespace ui
 #define XML_RESOURCE         "resource"      // root
 #define XML_XML              "xml"
 #define XML_LOG              "log"
-#define XML_IMG              "image"
-#define XML_FONT             "font"
 #define XML_COLOR            "color"
 #define XML_LAYOUT           "layout"
 #define XML_STYLE            "style"

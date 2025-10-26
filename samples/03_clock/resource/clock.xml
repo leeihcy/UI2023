@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resource>
   <layout>
-    <Window id="clock" back.render.type="color" back.render.color="gray" layout.left="0" layout.top="0">
-      <Panel width="360" height="360">
+    <window id="clock" back.render.type="color" back.render.color="gray" layout.left="0" layout.top="0">
+      <panel width="360" height="360">
       <RoundPanel id="panel_clock" width="300" height="300" corner="50" 
         fore.render.type="color" fore.render.color="white" 
         layout.align="center|vcenter" border-radius="50%">
@@ -11,8 +11,8 @@
           <Control zorder="2" id="min" class="hand" back.render.image="clock_min"/>
           <Control zorder="3" id="sec" class="hand" back.render.image="clock_sec"/> 
       </RoundPanel>
-      </Panel>
-    </Window>
+      </panel>
+    </window>
   </layout>
   <style>
     <class id='hand' transparent="1" layer="1" layout.align="center|vcenter" width="15" height="300"

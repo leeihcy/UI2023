@@ -12,7 +12,6 @@
 #include "include/core/SkRect.h"
 #include "include/core/SkScalar.h"
 #include "include/gpu/GrTypes.h"
-#include "include/inc.h"
 #include "include/interface/renderlibrary.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
@@ -21,7 +20,7 @@
 #include "gpu/include/api.h"
 
 #include "src/application/config/config.h"
-#include "src/graphics/font/font.h"
+#include "src/resource/font.h"
 #include "src/layer/windowrender.h"
 #include "src/resource/res_bundle.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
@@ -715,7 +714,7 @@ void SkiaRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
 // }
 
 void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
-                                  DRAWBITMAPPARAM *pParam) {
+                                  DrawBitmapParam *pParam) {
   if (NULL == pRenderBitmap || NULL == pParam)
     return;
 
@@ -740,7 +739,7 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
     // 			 0.0f, 0.0f, 0.0f, 0.0f,  1.0f};
     // 	imageAttribute.SetColorMatrix(&matrix);
     // 	pImageAttribute = &imageAttribute;
-  } else if (pParam->nAlpha != 255) {
+  } else if (pParam->opacity != 0) {
     // 	const Gdiplus::ColorMatrix matrix =
     // 			{1.0f, 0.0f, 0.0f,  0.0f,  0.0f,      // Red
     // 			 0.0f, 1.0f, 0.0f,  0.0f,  0.0f,      // Green
@@ -759,24 +758,6 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
     int dest_width = pParam->wDest;
     int dest_height = pParam->hDest;
 
-    // 处理DPI缩放
-    // if (pParam->scale_factor == 0 || pParam->scale_factor == 1.0) {
-    //  src_width = dest_width = std::min(pParam->wDest, src_width);
-    //  src_height = dest_height = std::min(pParam->hDest, src_height);
-    //} else {
-    //  int scaled_src_width = pParam->wSrc/* * pParam->scale_factor */;
-    //  int scaled_src_height = pParam->hSrc/* * pParam->scale_factor */;
-    //  dest_width = std::min(pParam->wDest, scaled_src_width);
-    //  dest_height = std::min(pParam->hDest, scaled_src_height);
-    //
-    //  if (dest_width < scaled_src_width) {
-    //    src_width = dest_width / pParam->scale_factor;
-    //  }
-    //  if (dest_height < scaled_src_height) {
-    //    src_height = dest_height / pParam->scale_factor;
-    //  }
-    //}
-
     SkSamplingOptions options;
     SkPaint paint;
     canvas->drawImageRect(
@@ -787,11 +768,6 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
                          (SkScalar)dest_width, (SkScalar)dest_height),
         options, &paint, SkCanvas::kFast_SrcRectConstraint);
 
-    // if (pParam->prcRealDraw) {
-    //   pParam->prcRealDraw->Set(pParam->xDest, pParam->yDest,
-    //                            pParam->xDest + dest_width,
-    //                            pParam->yDest + dest_height);
-    // }
   } else if (pParam->nFlag & DRAW_BITMAP_STRETCH) {
     SkSamplingOptions options;
     SkPaint paint;

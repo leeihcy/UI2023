@@ -36,7 +36,7 @@ bool SkiaRenderBitmap::LoadFromFile(const char * path,
   return true;
 }
 
-bool SkiaRenderBitmap::LoadFromData(unsigned char *pData, int nSize,
+bool SkiaRenderBitmap::LoadFromData(unsigned char *pData, unsigned int nSize,
                                     RENDER_BITMAP_LOAD_FLAG e) {
   return false;
 }

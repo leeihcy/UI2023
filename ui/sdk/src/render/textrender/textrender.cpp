@@ -9,7 +9,7 @@
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/flags_attribute.h"
-#include "src/graphics/font/font.h"
+#include "src/resource/font.h"
 #include "src/object/object.h"
 #include "src/render/render_meta.h"
 #include "src/render/renderbase.h"
@@ -242,7 +242,7 @@ void TextRenderBase::CheckSkinTextureChanged() {
 // helper function
 void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
   serialize
-      .AddString(XML_TEXTRENDER "." XML_FONT "." XML_FONT_FACENAME,
+      .AddString(XML_TEXTRENDER_FONT "." XML_FONT_FACENAME,
                  font_desc.face)
 #if defined(OS_WIN)
       ->SetDefault("Microsoft YaHei")
@@ -253,11 +253,11 @@ void SerializeFont(AttributeSerializer &serialize, FontDesc &font_desc) {
 #endif
       ;
   serialize
-      .AddInt(XML_TEXTRENDER "." XML_FONT "." XML_FONT_SIZE, font_desc.size)
+      .AddInt(XML_TEXTRENDER_FONT "." XML_FONT_SIZE, font_desc.size)
       ->SetDefault(14);
 
   serialize
-      .AddEnum(XML_TEXTRENDER "." XML_FONT "." XML_FONT_WEIGHT,
+      .AddEnum(XML_TEXTRENDER_FONT "." XML_FONT_WEIGHT,
                font_desc.weight)
       ->AddOption(SkFontStyle::kInvisible_Weight, "invisible")
       ->AddOption(SkFontStyle::kThin_Weight, "thin")

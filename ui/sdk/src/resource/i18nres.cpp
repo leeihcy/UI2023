@@ -1,5 +1,5 @@
 #include "i18nres.h"
-#include "include/inc.h"
+#include "include/util/log.h"
 #include "res_bundle.h"
 
 namespace ui {

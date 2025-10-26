@@ -1,19 +1,13 @@
 #include "renderbase.h"
-#include "include/inc.h"
-
 #include "include/interface/iuires.h"
 #include "include/interface/renderlibrary.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
-#include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/object/message.h"
 #include "src/object/object.h"
 #include "src/resource/res_bundle.h"
 
-#if 0 // defined(OS_WIN)
-#pragma comment(lib, "uxtheme.lib")
-#endif
 using namespace ui;
 
 RenderBase::RenderBase(IRenderBase *p) : Message(p) {
@@ -54,40 +48,3 @@ ImageRes *RenderBase::GetSkinImageRes() {
   return &resource_bundle->GetImageRes();
 }
 
-std::shared_ptr<IRenderBitmap> RenderBase::_LoadBitmap(const char *id) {
-  if (!id)
-    return std::shared_ptr<IRenderBitmap>();
-
-  // if (m_pObject) {
-  //   ResourceBundle *resource_bundle = m_pObject->GetResource();
-  //   if (!resource_bundle)
-  //     return;
-
-  //   GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
-  //   Window *pWnd = m_pObject->GetWindow();
-  //   if (pWnd) {
-  //     WindowRender *pRender = pWnd->GetWindowRender();
-  //     if (pRender)
-  //       eType = pRender->GetGraphicsRenderType();
-  //   }
-
-  //   resource_bundle->GetImageRes().GetBitmap(szBitmapId, eType, &pBitmapRef);
-  // } else {
-    ImageRes *pImageRes = GetSkinImageRes();
-    if (!pImageRes)
-      return std::shared_ptr<IRenderBitmap>();
-
-    return pImageRes->GetBitmap(id, GRAPHICS_RENDER_LIBRARY_TYPE_SKIA);
-  // }
-}
-
-const char *RenderBase::_GetBitmapId(IRenderBitmap *pBitmap) {
-  if (!pBitmap)
-    return nullptr;
-
-  ImageRes *pImageRes = GetSkinImageRes();
-  if (!pImageRes)
-    return nullptr;
-
-  return pImageRes->GetRenderBitmapId(pBitmap);
-}

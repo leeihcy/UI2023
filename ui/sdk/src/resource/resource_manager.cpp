@@ -1,5 +1,7 @@
 #include "resource_manager.h"
 #include "include/interface/iresbundle.h"
+#include "include/util/log.h"
+#include "include/util/util.h"
 #include "src/util/util.h"
 #include "res_bundle.h"
 #include <filesystem>

@@ -58,12 +58,12 @@ public:
                       IRenderTarget *pSrcHDC, int xSrc, int ySrc, DWORD dwRop);
   virtual void ImageList_Draw(IRenderBitmap *hBitmap, int x, int y, int col,
                               int row, int cx, int cy);
-  virtual void DrawBitmap(IRenderBitmap *hBitmap, DRAWBITMAPPARAM *pParam);
+  virtual void DrawBitmap(IRenderBitmap *hBitmap, DrawBitmapParam *pParam);
   //	virtual void  DrawRotateBitmap(IRenderBitmap* pBitmap, int nDegree,
-  //DRAWBITMAPPARAM* pParam);
+  //DrawBitmapParam* pParam);
   virtual void DrawString(IRenderFont *pFont, DRAWTEXTPARAM *pParam);
   static void DrawBitmapEx(HDC hDC, IRenderBitmap *hBitmap,
-                           DRAWBITMAPPARAM *pParam);
+                           DrawBitmapParam *pParam);
 
   virtual IRenderPen *CreateSolidPen(int nWidth, Color *pColor);
   virtual IRenderPen *CreateDotPen(int nWidth, Color *pColor);

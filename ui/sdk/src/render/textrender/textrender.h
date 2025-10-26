@@ -1,5 +1,5 @@
 #pragma once
-#include "src/graphics/font/font.h"
+#include "src/resource/font.h"
 #include <memory>
 #include "include/interface/itextrenderbase.h"
 #include "include/macro/uimsg.h"

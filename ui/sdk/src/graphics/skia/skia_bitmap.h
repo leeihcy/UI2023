@@ -16,7 +16,7 @@ public:
 
   bool LoadFromFile(const char *szPath,
                             RENDER_BITMAP_LOAD_FLAG e)override;
-  bool LoadFromData(unsigned char *pData, int nSize,
+  bool LoadFromData(unsigned char *pData, unsigned int nSize,
                             RENDER_BITMAP_LOAD_FLAG e)override;
 
   IMAGE_ITEM_TYPE GetImageType()override;

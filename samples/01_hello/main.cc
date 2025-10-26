@@ -38,9 +38,9 @@ void on_window_paint(ui::IWindow* window, ui::Event *e) {
 
   color.a = 255;
   float progress = (counter & 0xff) / 256.f;
-  color.r = (int)from.r + ((int)to.r-(int)from.r) * progress;
-  color.g = (int)from.g + ((int)to.g-(int)from.g) * progress;
-  color.b = (int)from.b + ((int)to.b-(int)from.b) * progress;
+  color.r = (ui::byte)((int)from.r + ((int)to.r-(int)from.r) * progress);
+  color.g = (ui::byte)((int)from.g + ((int)to.g-(int)from.g) * progress);
+  color.b = (ui::byte)((int)from.b + ((int)to.b-(int)from.b) * progress);
 
 
   // 弹跳区域

@@ -521,7 +521,7 @@ bool PugiXmlDocument::LoadFile(const char *szFile) {
   return true;
 }
 
-bool PugiXmlDocument::LoadData(const byte *pData, int nDataSize) {
+bool PugiXmlDocument::LoadData(const byte *pData, unsigned int nDataSize) {
   if (!pData || nDataSize <= 0)
     return false;
 

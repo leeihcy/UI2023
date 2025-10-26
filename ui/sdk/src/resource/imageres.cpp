@@ -112,7 +112,7 @@ static bool loadRenderBitmap(BundleSource *source, IRenderBitmap *pBitmap,
     if (!source->loadBuffer(path, buffer)) {
       return false;
     }
-    return pBitmap->LoadFromData(buffer.data(), buffer.size(), e);
+    return pBitmap->LoadFromData(buffer.data(), (uint)buffer.size(), e);
   }
 }
 

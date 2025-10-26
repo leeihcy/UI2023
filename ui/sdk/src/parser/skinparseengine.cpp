@@ -1,9 +1,9 @@
 #include "skinparseengine.h"
 #include "datasource/bundle_source.h"
-#include "include/inc.h"
 #include "include/interface/ibundlesource.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
+#include "include/util/log.h"
 #include "src/application/uiapplication.h"
 #include "src/resource/res_bundle.h"
 #include "xml/pugixmlwrap/pugixmlwrap.h"
@@ -74,7 +74,7 @@ bool SkinParseEngine::loadUIDocument(BundleSource *source,
     if (!source->loadBuffer(path, buffer)) {
       return false;
     }
-    return pDocument->LoadData(buffer.data(), buffer.size());
+    return pDocument->LoadData(buffer.data(), (uint)buffer.size());
   }
 }
 
@@ -82,7 +82,7 @@ void SkinParseEngine::NewChild(UIElement *pElement) {
   if (!pElement)
     return;
 
-  pfnParseSkinTag func;
+  pfnParseResourceNode func;
   if (!m_pUIApplication->GetSkinTagParseFunc(
           (const char *)pElement->GetTagName(), &func)) {
     return;

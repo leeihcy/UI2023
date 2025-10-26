@@ -73,9 +73,10 @@ void ImageRender::SetImageStretch9Region(const C9Region &r) { m_Region = r; }
 
 void ImageRender::OnSerialize(SerializeParam *pData) {
   AttributeSerializer s(pData, "ImageRender");
+#if 0
   s.AddString(XML_RENDER_IMAGE, Slot(&ImageRender::LoadBitmap, this),
               Slot(&ImageRender::GetBitmapId, this));
-
+#endif
   // 背景颜色 TODO:
 #if 0
   s.AddString(XML_RENDER_COLOR, Slot(&ImageRender::LoadColor, this),
@@ -134,7 +135,7 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
 
   Rect rcRealDraw = {0, 0, 0, 0};
   if (m_render_bitmap) {
-    DRAWBITMAPPARAM param;
+    DrawBitmapParam param;
     param.nFlag = m_nImageDrawType;
     param.xDest = prc->left;
     param.yDest = prc->top;
@@ -154,7 +155,7 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     if (!m_Region.IsAll_0()) {
       param.nine_region = m_Region;
     }
-    param.nAlpha = (byte)m_nAlpha;
+    param.opacity = 255-(byte)m_nAlpha;
 
     if (pDrawStruct->nState & RENDER_STATE_DISABLE) {
       param.nFlag |= DRAW_BITMAP_DISABLE;
@@ -335,6 +336,7 @@ void ImageListRender::OnSerialize(SerializeParam *pData) {
 }
 
 void ImageListRender::LoadImageList(const char *szText) {
+#if 0
   m_image_list.reset();
 
   std::shared_ptr<IRenderBitmap> pBitmap = _LoadBitmap(szText);
@@ -354,10 +356,14 @@ void ImageListRender::LoadImageList(const char *szText) {
       m_bUseAlphaAnimate = false;
     }
   }
+#endif
 }
 const char *ImageListRender::GetImageListId() {
+  return nullptr;
+#if 0
   ui::IRenderBitmap *p = static_cast<ui::IRenderBitmap *>(m_image_list.get());
   return _GetBitmapId(p);
+#endif
 }
 
 void ImageListRender::SetState2Index(const char *szText) {
@@ -532,7 +538,7 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   if (nRealIndex < 0)
     return;
 
-  DRAWBITMAPPARAM param;
+  DrawBitmapParam param;
   param.nFlag = m_nImageDrawType;
   param.xDest = prc->left;
   param.yDest = prc->top;
@@ -543,7 +549,7 @@ void ImageListRender::DrawIndexWidthAlpha(IRenderTarget *pRenderTarget,
   if (!m_9Region.IsAll_0()) {
     param.nine_region = m_9Region;
   }
-  param.nAlpha = bAlpha;
+  param.opacity = 255-bAlpha;
 
   Point pt = {0, 0};
   m_image_list->GetIndexPos(nRealIndex, &pt);

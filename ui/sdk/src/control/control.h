@@ -31,9 +31,10 @@ public:
 
 protected:
   // BOOL OnGetToolTipInfo(TOOLTIPITEM *pItem, IToolTipUI *pUI);
-  void onSerialize(SerializeParam *pData);
-  void onPaintBkgnd(IRenderTarget *pRenderTarget);
-  void onGetDesiredSize(Size *pSize);
+  void onSerialize(SerializeParam *data);
+  void onPaintBkgnd(IRenderTarget *r);
+  void onPaint(IRenderTarget *r);
+  void onGetDesiredSize(Size *size);
 
 protected:
   IControl *m_pIControl;

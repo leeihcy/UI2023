@@ -12,7 +12,7 @@ struct PanelMeta : public MetaImpl<IPanel> {
 
   Uuid UUID() override { return {0xCBA1B3CC, 0x3E6B, 0x11EE, {0xB0, 0x72, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
 
-  const char* Name() override { return "Panel"; }
+  const char* Name() override { return "panel"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

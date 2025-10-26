@@ -1,6 +1,8 @@
 #pragma once
 #include "include/interface/iattribute.h"
+#include "include/interface/iuieditor.h"
 #include "src/resource/res_bundle.h"
+#include "src/private_inc.h"
 
 namespace ui {
 class AttributeSerializer;

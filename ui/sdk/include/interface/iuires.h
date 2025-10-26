@@ -255,43 +255,6 @@ private:
   StyleRes *m_pImpl;
 };
 
-class ImageManager;
-struct UIAPI IImageManager : public IRootInterface {
-  IImageManager(ImageManager *p);
-  ImageManager *GetImpl();
-
-  IImageRes &GetImageRes();
-#if 0 // defined(OS_WIN)
-  ICursorRes *GetCursorRes();
-  IGifRes *GetGifRes();
-#endif
-  IUIElement *GetImageXmlElem(const char *szId);
-
-  IImageResItem *InsertImageItem(IMAGE_ITEM_TYPE eType, const char *szID,
-                                 const char *szPath);
-  bool ModifyImageItem(const char *szID, const char *szPath);
-  bool RemoveImageItem(const char *szID);
-
-  bool ModifyImageItemInRunTime(const char *szID, const char *szPath);
-  bool ModifyImageItemAlpha(const char *szID, byte nAlphaPercent);
-
-private:
-  ImageManager *m_pImpl;
-};
-
-#if 0
-class FontManager;
-struct UIAPI IFontManager {
-  IFontManager(FontManager *p);
-  FontManager *GetImpl();
-
-  IFontRes &GetFontRes();
-
-private:
-  FontManager *m_pImpl;
-};
-#endif
-
 class StyleManager;
 struct UIAPI IStyleManager {
   IStyleManager(StyleManager *);

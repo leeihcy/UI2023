@@ -37,12 +37,6 @@ protected:
   void DrawState(RENDERBASE_DRAWSTATE *pDrawStruct);
   void GetDesiredSize(Size *pSize);
 
-private:
-  void LoadBitmap(const char *szBitmapId) {
-    m_render_bitmap = _LoadBitmap(szBitmapId);
-  }
-  const char *GetBitmapId() { return _GetBitmapId(m_render_bitmap.get()); }
-
 protected:
   IImageRender *m_pIImageRender;
 

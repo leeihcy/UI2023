@@ -46,10 +46,9 @@ enum DRAW_BITMAP_FLAG {
       0x08000000, // 拉伸时不需要插值，如二维码像素的拉伸
 };
 
-typedef struct tagDRAWBITMAPPARAM {
-  tagDRAWBITMAPPARAM() {
-    memset(this, 0, sizeof(tagDRAWBITMAPPARAM));
-    nAlpha = 255;
+struct DrawBitmapParam {
+  DrawBitmapParam() {
+    memset(this, 0, sizeof(DrawBitmapParam));
     // scale_factor = 1.0f;
     nFlag = DRAW_BITMAP_BITBLT;
   }
@@ -65,14 +64,14 @@ typedef struct tagDRAWBITMAPPARAM {
   int wSrc;
   int hSrc;
   C9Region nine_region; // 不需要拉伸时，不使用
-  unsigned char nAlpha;
+  unsigned char opacity;
 
   // float scale_factor;
 
   // out param (废弃。多线程渲染后已获取不到，外部调用者自己计算吧。)
   // Rect *prcRealDraw; // 图片真正绘制的区域。当prcRealDraw不为空时表示需要获取
 
-} DRAWBITMAPPARAM, *LPDRAWBITMAPPARAM;
+} ;
 
 struct DrawTextEffects {};
 
@@ -166,9 +165,6 @@ struct Render2TargetParam {
 struct IRenderResource {
   virtual ~IRenderResource(){};
   virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
-  //   virtual void SetOutRef(IRenderResource **ppOutRef) = 0;
-  //   virtual long AddRef() = 0;
-  //   virtual long Release() = 0;
 };
 
 enum RENDER_BITMAP_LOAD_FLAG {
@@ -181,7 +177,7 @@ enum RENDER_BITMAP_LOAD_FLAG {
 };
 struct IRenderBitmap : public IRenderResource {
   virtual bool LoadFromFile(const char *szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;
-  virtual bool LoadFromData(unsigned char *pData, int nSize,
+  virtual bool LoadFromData(unsigned char *pData, unsigned int nSize,
                             RENDER_BITMAP_LOAD_FLAG e) = 0;
 
   virtual IMAGE_ITEM_TYPE GetImageType() = 0;
@@ -313,7 +309,7 @@ struct IRenderTarget : public IClipOrigin {
   virtual void StrokeRoundRect(const Rect &rc, const Color &color,
                                const CornerRadius &radius, int width, bool dash) = 0;
   // 使用shared_ptr，用于多线程传递参数。
-  virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DRAWBITMAPPARAM *pParam) = 0;
+  virtual void DrawBitmap(std::shared_ptr<IRenderBitmap>, DrawBitmapParam *pParam) = 0;
   virtual void DrawString(const DrawTextParam &param) = 0;
 
   virtual void drawString2(void* text_blob, const Color& color, float x, float y) = 0;

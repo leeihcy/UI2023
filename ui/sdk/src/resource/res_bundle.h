@@ -3,10 +3,10 @@
 
 #include "colormanager.h"
 #include "i18nmanager.h"
-#include "imagemanager.h"
+#include "imageres.h"
 #include "include/interface/ibundlesource.h"
 #include "layoutmanager.h"
-#include "src/graphics/font/font.h"
+#include "src/resource/font.h"
 #include "stylemanager.h"
 #include <memory>
 
@@ -48,7 +48,6 @@ public:
   IResourceManager &GetIResourceManager();
 
   ResourceManager &GetSkinMgr() { return m_mgrSkinRef; } //  内部调用
-  ImageManager &GetImageManager() { return m_mgrImage; }
   ColorManager &GetColorManager() { return m_mgrColor; }
   StyleManager &GetStyleManager() { return m_mgrStyle; }
   LayoutManager &GetLayoutManager() { return m_mgrLayout; }
@@ -59,7 +58,6 @@ public:
 
   ImageRes &GetImageRes();
   ColorRes &GetColorRes();
-  // FontRes &GetFontRes();
   StyleRes &GetStyleRes();
   I18nRes &GetI18nRes();
 
@@ -84,8 +82,8 @@ private:
   std::unique_ptr<BundleSource> m_source;
 
   ColorManager m_mgrColor;
-  ImageManager m_mgrImage;
   FontRes m_fontres;
+  ImageRes m_imageres;
 
   StyleManager m_mgrStyle;
   LayoutManager m_mgrLayout;
