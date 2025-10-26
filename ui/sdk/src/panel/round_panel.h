@@ -1,7 +1,6 @@
 #ifndef _UI_SDK_SRC_PANEL_ROUND_PANEL_H_
 #define _UI_SDK_SRC_PANEL_ROUND_PANEL_H_
 #include "panel.h"
-#include "src/graphics/bitmap/skiabitmap.h"
 
 // 注：1. back.render的数据不会做圆角化，fore.render+child的数据会被圆角化
 //    2. 实现原理：利用skia的anti clip path，直接支持抗锯齿的圆角裁剪。

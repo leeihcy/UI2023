@@ -9,12 +9,15 @@
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
 #include "src/parser/datasource/bundle_source.h"
+#include "src/graphics/skia/skia_bitmap.h"
+#include <cstring>
 
 
 namespace ui {
 
 Image::Image(IImage *p) : Control(p), m_pIImage(p) {}
 Image::~Image() {
+  stopGifTimer();
 }
 
 void Image::onRouteMessage(ui::Msg *msg) {
@@ -83,12 +86,25 @@ void Image::loadSrc(const char *src) {
   }
   m_src = src;
 
+  // TBD: 做成属性配置
+  m_image_type = eImageType::Image;
+  if (m_src.length() > 4 &&
+      strcmp(".gif", m_src.c_str() + m_src.length() - 4) == 0) {
+    m_image_type = eImageType::Gif;
+  }
+
+  // GetWindow()->GetWindowRender()->GetGraphicsRenderType();
   m_bitmap = GetUIApplication()->CreateRenderBitmap(eGraphicsLibraryType::Skia,
-                                                    eImageItemType::Image);
+                                                    m_image_type);
   if (!m_resource->LoadRenderBitmap(m_bitmap.get(), src)) {
     UI_LOG_WARN("[Image] load src failed: %s", src);
   }
+
+  if (m_image_type == eImageType::Gif) {
+    startGifTimer();
+  }
 }
+
 const char *Image::saveSrc() { 
   return m_src.c_str(); 
 }
@@ -108,6 +124,24 @@ void Image::onGetDesiredSize(Size *size) {
 
   size->width += rcNonClient.left + rcNonClient.right;
   size->height += rcNonClient.top + rcNonClient.bottom;
+}
+
+void Image::startGifTimer() {
+  // TODO: story board or timer?
+  GetUIApplication()->GetTimerHelper().SetTimer(100, 
+    Slot(&Image::onTimerTick, this));
+}
+void Image::stopGifTimer() {
+  if (m_timer_id) {
+    GetUIApplication()->GetTimerHelper().KillTimer(m_timer_id);
+    m_timer_id = nullptr;
+  }
+}
+bool Image::onTimerTick(TimerID timer_id) {
+  if (static_cast<SkiaRenderGif*>(m_bitmap.get())->Tick()) {
+    Invalidate();
+  }
+  return true;
 }
 
 } // namespace ui

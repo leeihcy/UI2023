@@ -2,9 +2,11 @@
 #define _UI_SDK_SRC_CONTROL_IMAGE_IMAGE_H_
 
 #include "include/interface/graphics.h"
+#include "include/macro/xmldefine.h"
 #include "src/control/control.h"
 
 namespace ui {
+typedef void* TimerID;
 
 // 图片控件
 // 与 Back Render 中的 ImageRender的区别：
@@ -32,11 +34,20 @@ private:
   void loadSrc(const char* src);
   const char*  saveSrc();
 
+  void startGifTimer();
+  void stopGifTimer();
+  bool onTimerTick(TimerID timer_id);
+  
 private:
   IImage *m_pIImage;
 
   std::string m_src;
+  eImageType m_image_type = eImageType::Image;
+
   std::shared_ptr<IRenderBitmap> m_bitmap;
+
+  // Gif
+  TimerID m_timer_id = nullptr;
 };
 
 } // namespace ui

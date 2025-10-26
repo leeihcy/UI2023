@@ -234,7 +234,7 @@ void ImageListItemRender::OnSerialize(SerializeParam *pData) {
 
   if (pData->IsLoad()) {
     if (m_render_bitmap) {
-      if (m_render_bitmap->GetImageType() != eImageItemType::ImageList) {
+      if (m_render_bitmap->GetImageType() != eImageType::ImageList) {
         m_render_bitmap.reset();
       }
     }

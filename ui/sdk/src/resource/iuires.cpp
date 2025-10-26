@@ -140,10 +140,10 @@ void IImageResItem::SetUseSkinHLS(bool b) { return m_pImpl->SetUseSkinHLS(b); }
 void IImageResItem::SetNeedAntiAliasing(bool b) {
   return m_pImpl->SetNeedAntiAliasing(b);
 }
-eImageItemType IImageResItem::GetImageItemType() {
+eImageType IImageResItem::GetImageItemType() {
   return m_pImpl->GetImageItemType();
 }
-// void  IImageResItem::SetImageItemType(eImageItemType e)
+// void  IImageResItem::SetImageItemType(eImageType e)
 // {
 //     m_pImpl->SetImageItemType(e);
 // }

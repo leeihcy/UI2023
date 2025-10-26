@@ -181,7 +181,7 @@ struct IRenderBitmap : public IRenderResource {
   virtual bool LoadFromFile(const char *szPath) = 0;
   virtual bool LoadFromData(IBufferData* buffer) = 0;
 
-  virtual eImageItemType GetImageType() = 0;
+  virtual eImageType GetImageType() = 0;
   virtual bool Create(int nWidth, int nHeight) = 0;
   virtual void Destroy() = 0;
   virtual int GetWidth() = 0;

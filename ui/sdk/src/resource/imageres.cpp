@@ -32,7 +32,7 @@ ImageResItem::ImageResItem() {
   m_bNeedAntiAliasing = false;
   m_bMustHasAlphaChannel = true; // 默认都创建32位alpha channel，现在大部分gdi
                                  // render也支持fix alpha channel了
-  m_eType = eImageItemType::Image;
+  m_eType = eImageType::Image;
   m_nFileDpiScale = 1;
 }
 
@@ -61,10 +61,10 @@ IImageResItem *ImageResItem::GetIImageResItem() {
   return m_pIImageResItem;
 }
 
-eImageItemType ImageResItem::GetImageItemType() { return m_eType; }
-void ImageResItem::SetImageItemType(eImageItemType e) {
-  if (e == eImageItemType::Image || e == eImageItemType::Icon ||
-      e == eImageItemType::ImageList)
+eImageType ImageResItem::GetImageItemType() { return m_eType; }
+void ImageResItem::SetImageItemType(eImageType e) {
+  if (e == eImageType::Image || e == eImageType::Icon ||
+      e == eImageType::ImageList)
     m_eType = e;
 }
 
@@ -300,7 +300,7 @@ const char *ui::ImageResItem::GetPath() { return m_strPath.c_str(); }
 
 //////////////////////////////////////////////////////////////////////////
 ImageListResItem::ImageListResItem() {
-  m_eType = eImageItemType::ImageList;
+  m_eType = eImageType::ImageList;
   m_eLayoutType = IMAGELIST_LAYOUT_TYPE_H;
   m_nCount = 1;
 }
@@ -338,7 +338,7 @@ void ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
   if (!pRenderBitmap)
     return;
 
-  if (pRenderBitmap->GetImageType() != eImageItemType::ImageList)
+  if (pRenderBitmap->GetImageType() != eImageType::ImageList)
     return;
 
   IImageListRenderBitmap *pImageListBmp =
@@ -350,7 +350,7 @@ void ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
 //////////////////////////////////////////////////////////////////////////
 
 ImageIconResItem::ImageIconResItem() {
-  m_eType = eImageItemType::Icon;
+  m_eType = eImageType::Icon;
   m_sizeDraw.width = 16;
   m_sizeDraw.height = 16;
 }
@@ -374,7 +374,7 @@ void ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
   if (!pRenderBitmap)
     return;
 
-  if (pRenderBitmap->GetImageType() != eImageItemType::Icon)
+  if (pRenderBitmap->GetImageType() != eImageType::Icon)
     return;
 
   IImageIconRenderBitmap *pIcon =
@@ -417,7 +417,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType,
   if (!szId)
     return nullptr;
 
-  eImageItemType eType = IMAGE_ITEM_TYPE_IMAGE;
+  eImageType eType = IMAGE_ITEM_TYPE_IMAGE;
   if (0 == strcmp(szType, XML_IMAGE_ITEM_TYPE_ICON)) {
     eType = IMAGE_ITEM_TYPE_ICON;
   } else if (0 == strcmp(szType, XML_IMAGE_ITEM_TYPE_IMAGELIST)) {
@@ -489,7 +489,7 @@ ImageResItem *ImageRes::GetImageItem2(const char *szId) {
 }
 
 #if 0
-ImageResItem *ImageRes::InsertImage(eImageItemType eType, const char *szId,
+ImageResItem *ImageRes::InsertImage(eImageType eType, const char *szId,
                                     const char *szPath) {
   if (!szId || !szPath)
     return nullptr;

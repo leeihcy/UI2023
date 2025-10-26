@@ -19,8 +19,8 @@ public:
   ~ImageResItem();
 
   bool ModifyImage(const char *szPath);
-  eImageItemType GetImageItemType();
-  void SetImageItemType(eImageItemType e);
+  eImageType GetImageItemType();
+  void SetImageItemType(eImageType e);
 
   const char *GetId();
   void SetId(const char *text);
@@ -81,7 +81,7 @@ protected:
   std::shared_ptr<IAttributeMap> m_pMapAttrib; 
                      
   // 图片类型
-  eImageItemType m_eType; 
+  eImageType m_eType; 
 
   // 该图片的原始数据（改变图片色调时使用）
   ImageData *m_pOriginImageData; 
@@ -155,7 +155,7 @@ public:
   ImageResItem *GetImageItem2(const char *szId);
 
 #if 0
-  ImageResItem *InsertImage(eImageItemType eType, const char *szId,
+  ImageResItem *InsertImage(eImageType eType, const char *szId,
                             const char *szPath);
   bool RemoveImage(const char *szId);
   bool RemoveImage(IImageResItem *pItem);

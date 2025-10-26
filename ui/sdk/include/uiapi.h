@@ -63,7 +63,7 @@ struct IRenderBitmap;
 UIAPI std::shared_ptr<IRenderBitmap>
 UICreateRenderBitmap(IApplication *pUIApp,
                      eGraphicsLibraryType eGraphicsRenderType,
-                     eImageItemType eType);
+                     eImageType eType);
 
 UIAPI int GetDpi();
 UIAPI int ScaleByDpi(int x);

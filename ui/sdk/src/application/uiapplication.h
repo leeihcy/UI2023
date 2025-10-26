@@ -82,7 +82,7 @@ public:
 
   IRenderTarget *CreateRenderTarget(eGraphicsLibraryType lib_type);
   std::shared_ptr<IRenderBitmap>
-  CreateRenderBitmap(eGraphicsLibraryType lib_type, eImageItemType eType);
+  CreateRenderBitmap(eGraphicsLibraryType lib_type, eImageType eType);
 
   void LoadUIObjectListToToolBox();
 

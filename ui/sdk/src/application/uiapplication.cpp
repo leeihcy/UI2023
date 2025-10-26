@@ -5,6 +5,7 @@
 #include "include/interface/irenderbase.h"
 #include "include/interface/iuiautotest.h"
 #include "include/interface/iuieditor.h"
+#include "include/macro/xmldefine.h"
 #include "include/util/log.h"
 #include "src/application/config/config.h"
 #include "src/animate/animate.h"
@@ -554,17 +555,19 @@ const char *Application::GetRenderBaseName(int nType) {
 
 std::shared_ptr<IRenderBitmap> Application::CreateRenderBitmap(
   eGraphicsLibraryType lib_type,
-  eImageItemType eType) {
+  eImageType image_type) {
 
   switch (lib_type) {
   case eGraphicsLibraryType::Skia: {
-    // if (eType == eImageItemType::Icon) {
+    // if (eType == eImageType::Icon) {
     //   // GdiplusIconRenderBitmap::CreateInstance(ppOut);
-    // } else if (eType == eImageItemType::ImageList) {
+    // } else if (eType == eImageType::ImageList) {
     //   // GdiplusImageListRenderBitmap::CreateInstance(ppOut);
-    // } else {
+    if (image_type == eImageType::Gif) {
+      return SkiaRenderGif::CreateInstance();
+    } else {
       return SkiaRenderBitmap::CreateInstance();
-    // }
+    }
   } break;
 
   default:

@@ -67,8 +67,8 @@ struct UIAPI IImageResItem : public IRootInterface {
   void SetUseSkinHLS(bool b);
   void SetNeedAntiAliasing(bool b);
   bool ModifyImage(const char *szPath);
-  eImageItemType GetImageItemType();
-  //        void  SetImageItemType(eImageItemType e);
+  eImageType GetImageItemType();
+  //        void  SetImageItemType(eImageType e);
 
 private:
   ImageResItem *m_pImpl;

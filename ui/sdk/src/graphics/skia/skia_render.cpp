@@ -761,7 +761,7 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
     SkSamplingOptions options;
     SkPaint paint;
     canvas->drawImageRect(
-        skia_bitmap->m_bitmap.asImage(),
+        skia_bitmap->GetImage(),
         SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
                          (SkScalar)src_width, (SkScalar)src_height),
         SkRect::MakeXYWH((SkScalar)pParam->xDest, (SkScalar)pParam->yDest,
@@ -772,7 +772,7 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
     SkSamplingOptions options;
     SkPaint paint;
     canvas->drawImageRect(
-        skia_bitmap->m_bitmap.asImage(),
+        skia_bitmap->GetImage(),
         SkRect::MakeXYWH((SkScalar)pParam->xSrc, (SkScalar)pParam->ySrc,
                          (SkScalar)pParam->wSrc, (SkScalar)pParam->hSrc),
         SkRect::MakeXYWH((SkScalar)pParam->xDest, (SkScalar)pParam->yDest,
