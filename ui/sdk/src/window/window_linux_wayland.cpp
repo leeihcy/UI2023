@@ -25,7 +25,6 @@ WindowPlatformLinuxWayland::WindowPlatformLinuxWayland(ui::Window &w)
 WindowPlatformLinuxWayland::~WindowPlatformLinuxWayland() { Destroy(); }
 
 void WindowPlatformLinuxWayland::Initialize() {}
-void WindowPlatformLinuxWayland::Release() {}
 
 void WindowPlatformLinuxWayland::Destroy() {
   destroy_toplevel();

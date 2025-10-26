@@ -275,7 +275,7 @@ class GDIRenderBitmap : public GDIRenderBitmapImpl<IRenderResourceImpl<IRenderBi
 {
 public:
 	static  void CreateInstance(IRenderBitmap** ppOut);
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE; }
 };
 class GDIIconRenderBitmap : public GDIRenderBitmapImpl<IRenderResourceImpl<IImageIconRenderBitmap > >// : public GDIRenderBitmap
 {
@@ -286,7 +286,7 @@ public:
 	virtual bool  LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LOAD_FLAG e);
     virtual bool  LoadFromData(byte* pData, int nSize, RENDER_BITMAP_LOAD_FLAG e);
     
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
 
     virtual SIZE  GetDrawSize();
     virtual void  SetDrawSize(SIZE* ps);
@@ -315,7 +315,7 @@ public:
 	virtual bool  virtualLoadImageFromBitmap(
 		Gdiplus::Bitmap* pBmp, RENDER_BITMAP_LOAD_FLAG e) override;
 
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
 private:
 	IMAGELIST_LAYOUT_TYPE   m_eLayout;
 	int     m_nCount;

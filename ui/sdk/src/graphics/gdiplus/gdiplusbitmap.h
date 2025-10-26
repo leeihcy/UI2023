@@ -353,7 +353,7 @@ protected:
 	GdiplusRenderBitmap(){}
 public:
 	static  void CreateInstance( IRenderBitmap** pOutRef );
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE; }
 };
 class GdiplusIconRenderBitmap : public GdiplusRenderBitmapImpl<IRenderResourceImpl<IImageIconRenderBitmap > > // : public GdiplusRenderBitmap
 {
@@ -363,7 +363,7 @@ public:
 	~GdiplusIconRenderBitmap();
 	static  void  CreateInstance( IRenderBitmap** pOutRef );
 	virtual bool  LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LOAD_FLAG e);
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
 
     virtual SIZE  GetDrawSize();
     virtual void  SetDrawSize(SIZE* ps);
@@ -389,7 +389,7 @@ public:
 	virtual IMAGELIST_LAYOUT_TYPE GetLayoutType();
 	virtual bool GetIndexPos(int nIndex, POINT* pPoint);
 	virtual int  GetItemCount();
-    virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
+    virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
     virtual void  SetItemCount(int);
     virtual void  SetLayoutType(IMAGELIST_LAYOUT_TYPE);
 

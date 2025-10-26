@@ -18,7 +18,7 @@ struct BundleSource {
   virtual const char *GetPath() = 0;
   // virtual void SetData(unsigned char *data, int size) = 0;
 
-  virtual eBundleFormat GetType() = 0;
+  virtual eBundleFormat GetFormat() = 0;
 
   virtual bool FileExist(const char *path) = 0;
   // 不要跨模块调用
@@ -29,10 +29,12 @@ struct BundleSource {
   // 可以跨模块调用
   virtual bool LoadBuffer(const char *path,
                     slot<void(const char *, unsigned int)> &&callback) = 0;
+  // 可以跨模块调用
+  // 仅对Zip有效。避免调用方需要再拷贝一份数据。
+  virtual bool LoadBuffer(const char *path, IBufferData **pp) = 0;
 };
 
 std::unique_ptr<BundleSource> CreateBundleSource(eBundleFormat e);
-void CreateStreamBuffer(eStreamType e, IStreamBufferReader **pp);
 
 } // namespace ui
 #endif

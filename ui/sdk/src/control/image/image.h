@@ -17,6 +17,7 @@ namespace ui {
 class Image : public Control {
 public:
   Image(IImage *p);
+  ~Image();
 
   void onRouteMessage(ui::Msg *msg);
   IImage *GetIImage() { return m_pIImage; }

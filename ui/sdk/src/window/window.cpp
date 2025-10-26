@@ -34,13 +34,8 @@ Window::Window(IWindow *p)
     : Message(p), m_window_render(*this), m_mouse_key(*this), m_pIWindow(p),
       m_root(nullptr, nullptr) {
   memset(&m_window_style, 0, sizeof(m_window_style));
-  UI_LOG_DEBUG("Window");
 }
 Window::~Window() {
-  if (m_platform) {
-    m_platform->Release();
-  }
-  UI_LOG_DEBUG("~Window");
 }
 
 RootObject &Window::GetRootObject() { return *m_root->GetImpl(); }

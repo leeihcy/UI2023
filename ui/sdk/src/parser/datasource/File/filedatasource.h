@@ -8,18 +8,19 @@ class FileDataSource : public BundleSource {
 public:
   FileDataSource();
 
-  virtual IBundleSource *GetIBundleSource() override;
+  IBundleSource *GetIBundleSource() override;
 
-  virtual void SetPath(const char *szPath) override;
-  virtual const char *GetPath() override;
-  virtual eBundleFormat GetType() override;
+  void SetPath(const char *szPath) override;
+  const char *GetPath() override;
+  eBundleFormat GetFormat() override;
 
-  virtual bool FileExist(const char *szPath) override;
-  virtual bool loadBuffer(const char *path,
-                    std::vector<unsigned char> &buffer) override;
-  virtual bool loadFullPath(const char *path, std::string &full_path) override;
-  virtual bool LoadBuffer(const char *szPath,
-                    slot<void(const char *, unsigned int)> &&callback) override;
+  bool FileExist(const char *szPath) override;
+  bool loadBuffer(const char *path,
+                  std::vector<unsigned char> &buffer) override;
+  bool loadFullPath(const char *path, std::string &full_path) override;
+  bool LoadBuffer(const char *szPath,
+                  slot<void(const char *, unsigned int)> &&callback) override;
+  bool LoadBuffer(const char *path, IBufferData **pp) override;
 
 private:
   std::string m_path;

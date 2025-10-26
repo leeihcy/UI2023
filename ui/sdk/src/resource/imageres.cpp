@@ -32,7 +32,7 @@ ImageResItem::ImageResItem() {
   m_bNeedAntiAliasing = false;
   m_bMustHasAlphaChannel = true; // 默认都创建32位alpha channel，现在大部分gdi
                                  // render也支持fix alpha channel了
-  m_eType = IMAGE_ITEM_TYPE_IMAGE;
+  m_eType = eImageItemType::Image;
   m_nFileDpiScale = 1;
 }
 
@@ -61,10 +61,10 @@ IImageResItem *ImageResItem::GetIImageResItem() {
   return m_pIImageResItem;
 }
 
-IMAGE_ITEM_TYPE ImageResItem::GetImageItemType() { return m_eType; }
-void ImageResItem::SetImageItemType(IMAGE_ITEM_TYPE e) {
-  if (e == IMAGE_ITEM_TYPE_IMAGE || e == IMAGE_ITEM_TYPE_ICON ||
-      e == IMAGE_ITEM_TYPE_IMAGE_LIST)
+eImageItemType ImageResItem::GetImageItemType() { return m_eType; }
+void ImageResItem::SetImageItemType(eImageItemType e) {
+  if (e == eImageItemType::Image || e == eImageItemType::Icon ||
+      e == eImageItemType::ImageList)
     m_eType = e;
 }
 
@@ -76,7 +76,7 @@ bool ImageResItem::IsMyRenderBitmap(IRenderBitmap *pRenderBitmap) {
 #endif
   return false;
 }
-
+#if 0
 std::shared_ptr<IRenderBitmap>
 ImageResItem::GetImage(ResourceBundle *resource_bundle,
                        eGraphicsLibraryType eRenderType,
@@ -93,29 +93,9 @@ ImageResItem::GetImage(ResourceBundle *resource_bundle,
 
   return nullptr;
 }
+#endif
 
-static bool loadRenderBitmap(BundleSource *source, IRenderBitmap *pBitmap,
-                      const char *path, RENDER_BITMAP_LOAD_FLAG e) {
-  if (nullptr == pBitmap || nullptr == path) {
-    return false;
-  }
-
-  if (source->GetType() == eBundleFormat::Directory) {
-
-    std::string full_path;
-    if (!source->loadFullPath(path, full_path)) {
-      return false;
-    }
-    return pBitmap->LoadFromFile(full_path.c_str(), e);
-  } else {
-    std::vector<byte> buffer;
-    if (!source->loadBuffer(path, buffer)) {
-      return false;
-    }
-    return pBitmap->LoadFromData(buffer.data(), (uint)buffer.size(), e);
-  }
-}
-
+#if 0
 std::shared_ptr<IRenderBitmap>
 ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle,
                            bool *pbFirstTimeCreate) {
@@ -163,7 +143,7 @@ ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle,
 
   return m_render_bitmap;
 }
-
+#endif
 
 bool ImageResItem::ModifyHLS(short h, short l, short s, int nFlag) {
   if (false == m_bUseSkinHLS)
@@ -320,7 +300,7 @@ const char *ui::ImageResItem::GetPath() { return m_strPath.c_str(); }
 
 //////////////////////////////////////////////////////////////////////////
 ImageListResItem::ImageListResItem() {
-  m_eType = IMAGE_ITEM_TYPE_IMAGE_LIST;
+  m_eType = eImageItemType::ImageList;
   m_eLayoutType = IMAGELIST_LAYOUT_TYPE_H;
   m_nCount = 1;
 }
@@ -358,7 +338,7 @@ void ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
   if (!pRenderBitmap)
     return;
 
-  if (pRenderBitmap->GetImageType() != IMAGE_ITEM_TYPE_IMAGE_LIST)
+  if (pRenderBitmap->GetImageType() != eImageItemType::ImageList)
     return;
 
   IImageListRenderBitmap *pImageListBmp =
@@ -370,7 +350,7 @@ void ImageListResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
 //////////////////////////////////////////////////////////////////////////
 
 ImageIconResItem::ImageIconResItem() {
-  m_eType = IMAGE_ITEM_TYPE_ICON;
+  m_eType = eImageItemType::Icon;
   m_sizeDraw.width = 16;
   m_sizeDraw.height = 16;
 }
@@ -394,7 +374,7 @@ void ImageIconResItem::SetRenderBitmapAttribute(IRenderBitmap *pRenderBitmap) {
   if (!pRenderBitmap)
     return;
 
-  if (pRenderBitmap->GetImageType() != IMAGE_ITEM_TYPE_ICON)
+  if (pRenderBitmap->GetImageType() != eImageItemType::Icon)
     return;
 
   IImageIconRenderBitmap *pIcon =
@@ -423,7 +403,7 @@ IImageRes &ImageRes::GetIImageRes() {
 
   return *m_pIImageRes;
 }
-
+#if 0
 //
 // 从文件中加载一项(由CXmlImageParse::load_from_file中调用)
 //
@@ -437,7 +417,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType,
   if (!szId)
     return nullptr;
 
-  IMAGE_ITEM_TYPE eType = IMAGE_ITEM_TYPE_IMAGE;
+  eImageItemType eType = IMAGE_ITEM_TYPE_IMAGE;
   if (0 == strcmp(szType, XML_IMAGE_ITEM_TYPE_ICON)) {
     eType = IMAGE_ITEM_TYPE_ICON;
   } else if (0 == strcmp(szType, XML_IMAGE_ITEM_TYPE_IMAGELIST)) {
@@ -464,7 +444,7 @@ ImageResItem *ImageRes::LoadItem(const char *szType,
   pItem->SetAttribute(attribute_map);
   return pItem;
 }
-
+#endif
 long ImageRes::GetImageCount() { return (long)m_mapImages.size(); }
 
 IImageResItem *ImageRes::GetImageResItem(long lIndex) {
@@ -508,7 +488,8 @@ ImageResItem *ImageRes::GetImageItem2(const char *szId) {
   return iter->second;
 }
 
-ImageResItem *ImageRes::InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
+#if 0
+ImageResItem *ImageRes::InsertImage(eImageItemType eType, const char *szId,
                                     const char *szPath) {
   if (!szId || !szPath)
     return nullptr;
@@ -638,6 +619,7 @@ bool ImageRes::RemoveImage(IImageResItem *pItem) {
 
   return false;
 }
+#endif
 bool ImageRes::Clear() {
   _MyIter iter = m_mapImages.begin();
   for (; iter != m_mapImages.end(); iter++) {
@@ -697,6 +679,7 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
 // #endif
 // }
 
+#if 0
 std::shared_ptr<IRenderBitmap>
 ImageRes::GetBitmap(const char *szImageID,
                     eGraphicsLibraryType eRenderType) {
@@ -734,7 +717,7 @@ ImageRes::GetBitmap(const char *szImageID,
 
   return pBitmap;
 }
-
+#endif
 const char *ImageRes::GetRenderBitmapId(IRenderBitmap *pBitmap) {
   if (!pBitmap)
     return nullptr;

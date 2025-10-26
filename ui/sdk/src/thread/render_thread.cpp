@@ -80,6 +80,10 @@ void RenderThread::thread_proc() {
     }
     m_paint_op_group.pop_front();
   }
+
+  // 释放其它数据
+  m_paint_op_queue.clear();
+  m_paint_op_group.clear();
 }
 
 RenderThread::PaintOpGroup::PaintOpGroup(void *_key,

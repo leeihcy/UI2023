@@ -16,18 +16,16 @@ public:
 
   void SetPath(const char *szPath) override;
   const char *GetPath() override;
-  // void SetData(byte *data, int size) override;
-
-  eBundleFormat GetType() override;
+  eBundleFormat GetFormat() override;
 
   bool FileExist(const char *szPath) override;
   bool loadBuffer(const char* path, std::vector<unsigned char>& buffer) override;
   bool loadFullPath(const char *path, std::string &full_path) override;
   bool LoadBuffer(const char* szPath, slot<void(const char*, unsigned int)>&& callback) override;
-  bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
+  bool LoadBuffer(const char *path, IBufferData **pp) override;
 
 private:
-  void TranslatePath(const char *szOrignPath, char *szLastPath);
+  // void TranslatePath(const char *szOrignPath, char *szLastPath);
   bool Init();
 
 private:

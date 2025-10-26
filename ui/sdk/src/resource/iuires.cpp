@@ -120,30 +120,6 @@ bool ILayoutManager::FindWindowElement(const char *szTagName, const char *szId,
 IImageRes::IImageRes(ImageRes *p) { m_pImpl = p; }
 ImageRes *IImageRes::GetImpl() { return m_pImpl; }
 
-long IImageRes::GetImageCount() { return m_pImpl->GetImageCount(); }
-IImageResItem *IImageRes::GetImageResItem(long lIndex) {
-  return m_pImpl->GetImageResItem(lIndex);
-}
-IImageResItem *IImageRes::GetImageResItem(const char *szID) {
-  return m_pImpl->GetImageResItem(szID);
-}
-bool IImageRes::ModifyImage(const char *szId, const char *szPath) {
-  return m_pImpl->ModifyImage(szId, szPath);
-}
-std::shared_ptr<IRenderBitmap>
-IImageRes::GetBitmap(const char *szImageID,
-                     eGraphicsLibraryType eRenderType) {
-  return m_pImpl->GetBitmap(szImageID, eRenderType);
-}
-#if 0 // defined(OS_WIN)
-HBITMAP  IImageRes::LoadBitmap(const char* szId)  
-{ 
-    return m_pImpl->LoadBitmap(szId);
-}
-#endif
-const char *IImageRes::GetRenderBitmapId(IRenderBitmap *pBitmap) {
-  return m_pImpl->GetRenderBitmapId(pBitmap);
-}
 //////////////////////////////////////////////////////////////////////////
 
 IImageResItem::IImageResItem(ImageResItem *p) { m_pImpl = p; }
@@ -164,10 +140,10 @@ void IImageResItem::SetUseSkinHLS(bool b) { return m_pImpl->SetUseSkinHLS(b); }
 void IImageResItem::SetNeedAntiAliasing(bool b) {
   return m_pImpl->SetNeedAntiAliasing(b);
 }
-IMAGE_ITEM_TYPE IImageResItem::GetImageItemType() {
+eImageItemType IImageResItem::GetImageItemType() {
   return m_pImpl->GetImageItemType();
 }
-// void  IImageResItem::SetImageItemType(IMAGE_ITEM_TYPE e)
+// void  IImageResItem::SetImageItemType(eImageItemType e)
 // {
 //     m_pImpl->SetImageItemType(e);
 // }

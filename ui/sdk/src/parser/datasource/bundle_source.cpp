@@ -1,7 +1,6 @@
 #include "bundle_source.h"
 #include "zip/zipdatasource.h"
 #include "file/filedatasource.h"
-#include "file/filebufferreader.h"
 #include "include/interface/ibundlesource.h"
 #include "sdk/include/macro/helper.h"
 #include <memory>
@@ -21,36 +20,17 @@ std::unique_ptr<BundleSource> CreateBundleSource(eBundleFormat e) {
   }
 }
 
-void CreateStreamBuffer(eStreamType e, IStreamBufferReader **pp) {
-  if (nullptr == pp)
-    return;
-
-  IStreamBufferReader *p = nullptr;
-  switch (e) {
-  case eStreamType::File: {
-    p = FileBufferReader::Create();
-  } break;
-
-  case eStreamType::Byte: {
-#if 0
-			p = ByteBufferReader::Create();
-#else
-    UIASSERT(false);
-#endif
-  } break;
-  }
-
-  *pp = p;
-}
-
 IBundleSource::IBundleSource(BundleSource *p) { m_pImpl = p; }
 
 const char *IBundleSource::GetPath() { return m_pImpl->GetPath(); }
-eBundleFormat IBundleSource::GetType() { return m_pImpl->GetType(); }
+eBundleFormat IBundleSource::GetFormat() { return m_pImpl->GetFormat(); }
 
-bool IBundleSource::LoadBuffer(const char *szPath,
+bool IBundleSource::LoadBuffer(const char *path,
                            slot<void(const char *, unsigned int)> &&callback) {
-  return m_pImpl->LoadBuffer(szPath, std::move(callback));
+  return m_pImpl->LoadBuffer(path, std::move(callback));
+}
+bool IBundleSource::LoadBuffer(const char *path, IBufferData **pp) {
+  return m_pImpl->LoadBuffer(path, pp);
 }
 
 #if 0 // defined(OS_WIN)

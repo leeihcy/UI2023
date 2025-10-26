@@ -54,6 +54,8 @@ enum class PaintOpType : unsigned char {
 
 struct PaintOp {
   PaintOp(PaintOpType t) : type(t) {}
+  virtual ~PaintOp() { }
+
   void processOnRenderThread(IRenderTarget* rt);
 
   IRenderTarget *key = nullptr;
@@ -181,7 +183,7 @@ struct DrawStringOp : public PaintOp {
 struct DrawBitmapOp : public PaintOp {
   DrawBitmapOp(std::shared_ptr<IRenderBitmap> _bitmap, DrawBitmapParam *_param)
       : PaintOp(PaintOpType::DrawBitmap), bitmap(_bitmap), param(*_param) {}
-
+  
   std::shared_ptr<IRenderBitmap> bitmap;
   DrawBitmapParam param;
 };

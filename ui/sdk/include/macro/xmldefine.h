@@ -102,14 +102,14 @@ constexpr int AlignVCenter = 0x10;
 #define XML_IMAGE_ITEM_TYPE_IMAGELIST "imagelist"     // 图片列表
 #define XML_IMAGE_ITEM_TYPE_GIF       "gif"           // gif图片
 #define XML_IMAGE_ITEM_TYPE_PNGLISTGIF "pnglistgif"   // png列表形式的gif图片
-enum IMAGE_ITEM_TYPE
+enum class eImageItemType
 {
-    IMAGE_ITEM_TYPE_IMAGE,
-    IMAGE_ITEM_TYPE_ICON,
-    IMAGE_ITEM_TYPE_IMAGE_LIST,
-    IMAGE_ITEM_TYPE_GIF,
-    IMAGE_ITEM_TYPE_PNGLISTGIF,
-    IMAGE_ITEM_TYPE_CURSOR,
+    Image,
+    Icon,
+    ImageList,
+    Gif,
+    PngGif,
+    Cursor,
 };
 
 #define XML_IMAGE_ICON_WIDTH          "width"         // 要加载的图标宽度

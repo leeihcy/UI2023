@@ -40,9 +40,11 @@
           <button class="button button_danger  buttle_circle element_icons" text="&#xe6d7;"/>
         </panel>
       </panel>
-      <panel id="images"  width="100%" padding="10" height="200" layout.type="horz">
+      <panel id="images"  width="100%" padding="10" height="200" layout.type="horz" layout.gap="10">
         <img src="images/qq.png"/>
         <img src="images/nvsheng.png"/>
+        <img src="images/han.gif"/>
+        <img src="images/tuxie.gif"/>
       </panel>
       
     </window>

@@ -42,7 +42,6 @@ public:
   }
 
   void Initialize() override;
-  void Release() override;
   bool Create(CreateWindowParam &param) override;
   WINDOW_HANDLE GetWindowHandle() override;
   void SetTitle(const char *title) override;

@@ -12,7 +12,7 @@ struct ControlMeta : public MetaImpl<IControl> {
 
   Uuid UUID() override { return {0x79B56914, 0xA176, 0x11EE, {0x91, 0x81, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
 
-  const char* Name() override { return "Control"; }
+  const char* Name() override { return "control"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

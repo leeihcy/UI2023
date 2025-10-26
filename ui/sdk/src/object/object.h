@@ -366,7 +366,7 @@ public: // TODO:
   OBJSTYLE m_objStyle;
   OBJSTATE m_objState;
 protected:
-  std::shared_ptr<IAttributeMap> m_pIMapAttributeRemain; // 用于扩展。未解析的属性
+  std::shared_ptr<IAttributeMap> m_attribute_map_remaining; // 用于扩展。未解析的属性
   std::shared_ptr<IRenderBase> m_back_render;           // 背景渲染
   std::shared_ptr<IRenderBase> m_fore_render;         // 前景渲染
   std::shared_ptr<ITextRenderBase> m_text_render; // 文字渲染，由control负责读取该属性

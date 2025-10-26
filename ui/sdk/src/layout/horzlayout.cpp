@@ -297,7 +297,7 @@ void HorzLayoutParam::Serialize(SerializeParam *pData) {
               Slot(&HorzLayoutParam::SaveConfigHeight, this))
       ->SetDefault(XML_AUTO)
       ->SetCompatibleKey(XML_LAYOUT_PREFIX XML_HEIGHT);
-  ;
+  
 
   s.AddFlags(XML_LAYOUT_ITEM_ALIGN, m_nConfigLayoutFlags)
       ->AddFlag(LAYOUT_ITEM_ALIGN_LEFT, XML_LAYOUT_ITEM_ALIGN_LEFT)

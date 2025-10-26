@@ -1,13 +1,20 @@
 #include "src/control/image/image.h"
-#include "include/common/signalslot/slot.h"
-#include "include/macro/msg.h"
 #include "image_meta.h"
+#include "include/common/signalslot/slot.h"
+#include "include/interface/graphics.h"
+#include "include/interface/ibundlesource.h"
+#include "include/macro/msg.h"
+#include "include/macro/xmldefine.h"
 #include "include/uiapi.h"
+#include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
+#include "src/parser/datasource/bundle_source.h"
+
 
 namespace ui {
 
-Image::Image(IImage *p) : Control(p), m_pIImage(p) {
+Image::Image(IImage *p) : Control(p), m_pIImage(p) {}
+Image::~Image() {
 }
 
 void Image::onRouteMessage(ui::Msg *msg) {
@@ -24,7 +31,7 @@ void Image::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == ImageMeta::Get().UUID()) {
-      *(m->pp) = m_pIControl;
+      *(m->pp) = m_pIImage;
       return;
     }
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
@@ -66,33 +73,36 @@ void Image::onSerialize(SerializeParam *pData) {
   Control::onSerialize(pData);
 
   AttributeSerializer s(pData, "Image");
-  s.AddString(XML_SRC, Slot(&Image::loadSrc, this), Slot(&Image::saveSrc, this));
+  s.AddString(XML_SRC, Slot(&Image::loadSrc, this),
+              Slot(&Image::saveSrc, this));
 }
 
 void Image::loadSrc(const char *src) {
-  // UICreateRenderBitmap(IApplication *pUIApp, eGraphicsLibraryType eGraphicsRenderType, IMAGE_ITEM_TYPE eType)
+  if (!src || !src[0]) {
+    return;
+  }
+  m_src = src;
+
+  m_bitmap = GetUIApplication()->CreateRenderBitmap(eGraphicsLibraryType::Skia,
+                                                    eImageItemType::Image);
+  if (!m_resource->LoadRenderBitmap(m_bitmap.get(), src)) {
+    UI_LOG_WARN("[Image] load src failed: %s", src);
+  }
 }
-const char *Image::saveSrc() {
-  return nullptr;
+const char *Image::saveSrc() { 
+  return m_src.c_str(); 
 }
 
 void Image::onGetDesiredSize(Size *size) {
   size->width = size->height = 0;
 
-#if 0 // TODO:
-  ITextRenderBase *pTextRender = m_pIImage->GetTextRenderDefault();
-  if (pTextRender) {
-    LPCTSTR szText = m_strText.c_str();
-    if (0 == szText[0]) {
-      // TBD: 内容为空时，至少保证高度
-      szText = TEXT(" ");
-      *pSize = pTextRender->GetDesiredSize(szText, m_pIImage->GetMaxWidth());
-      pSize->cx = 0;
-    } else {
-      *pSize = pTextRender->GetDesiredSize(szText, m_pIImage->GetMaxWidth());
-    }
+  if (m_bitmap) {
+    size->width = m_bitmap->GetWidth();
+    size->height = m_bitmap->GetHeight();
+
+    // TODO: dpi @ percent
   }
-#endif
+
   REGION4 rcNonClient;
   m_pIImage->GetNonClientRegion(&rcNonClient);
 

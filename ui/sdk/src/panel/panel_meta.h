@@ -33,7 +33,7 @@ struct RoundPanelMeta : public MetaImpl<IRoundPanel> {
 
   Uuid UUID() override { return {0x021AC934, 0x3E6C, 0x11EE, {0x82, 0xD1, 0xF4, 0x5C, 0x89, 0xB0, 0x17, 0x4F}}; }
 
-  const char* Name() override { return "RoundPanel"; }
+  const char* Name() override { return "round-panel"; }
 
   MetaDetail Detail() override {
     MetaDetail param;

@@ -16,6 +16,12 @@
 namespace ui {
 
 FontCache::FontCache(FontRes &res) : m_fontres(res) {}
+FontCache::~FontCache() {
+  if (m_font_data) {
+    m_font_data->Release();
+    m_font_data = nullptr;
+  }
+}
 SkFont &FontCache::LoadSkia(const FontDesc &key) {
   if (m_skia_font) {
     return *m_skia_font;
@@ -35,22 +41,23 @@ SkFont &FontCache::LoadSkia(const FontDesc &key) {
     UIASSERT(bundle_resouce);
 
     std::string font_path;
-    if (bundle_resouce->GetType() == eBundleFormat::Directory &&
+    if (bundle_resouce->GetFormat() == eBundleFormat::Directory &&
         bundle_resouce->loadFullPath(custom_fontface->src.c_str(), font_path)) {
       typeface = SkTypeface::MakeFromFile(font_path.c_str());
       m_skia_font = std::make_unique<SkFont>(typeface, key.size);
     } else {
-      std::vector<unsigned char> buffer;
-      bundle_resouce->loadBuffer(custom_fontface->src.c_str(), buffer);
+      // 需要维持m_font_data的生命周期
+      if (m_font_data) {
+        m_font_data->Release();
+        m_font_data = nullptr;
+      }
+      if (bundle_resouce->LoadBuffer(custom_fontface->src.c_str(), &m_font_data)) {
+        sk_sp<SkData> sk_data =
+            SkData::MakeWithoutCopy(m_font_data->Data(), m_font_data->Size());
 
-      // TODO: reduce the memory alloc
-      // sk_sp<SkData> sk_data =
-      //     SkData::MakeWithoutCopy(buffer.data(), buffer.size());
-      sk_sp<SkData> sk_data =
-          SkData::MakeWithCopy(buffer.data(), buffer.size());
-
-      typeface = SkTypeface::MakeFromData(sk_data);
-      m_skia_font = std::make_unique<SkFont>(typeface, key.size);
+        typeface = SkTypeface::MakeFromData(sk_data);
+        m_skia_font = std::make_unique<SkFont>(typeface, key.size);
+      }
     }
   } else {
     typeface = SkTypeface::MakeFromName(key.face.c_str(), style);

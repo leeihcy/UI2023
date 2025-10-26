@@ -2238,10 +2238,10 @@ void ListCtrlBase::SetItemTypeShareData(int lType, IListItemShareData *pData) {
   // 设置属性
   if (pData) {
     pData->GetImpl()->SetListCtrlBase(this);
-    if (this->m_pIMapAttributeRemain) {
+    if (this->m_attribute_map_remaining) {
       SerializeParam data = {0};
       data.pUIApplication = GetIUIApplication();
-      data.attribute_map = m_pIMapAttributeRemain;
+      data.attribute_map = m_attribute_map_remaining;
       data.nFlags = SERIALIZEFLAG_LOAD;
 
       SerializeMessage msg;

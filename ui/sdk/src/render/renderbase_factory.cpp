@@ -28,7 +28,7 @@ void RenderBaseFactory::Clear() {
 
 bool RenderBaseFactory::RegisterUIRenderBase(IRenderBaseMeta& meta) {
   m_vecUIRenderBase.push_back(&meta);
-  UI_LOG_DEBUG("register render base %s", meta.Name());
+  UI_LOG_DEBUG("Register render base: %s", meta.Name());
   return true;
 }
 

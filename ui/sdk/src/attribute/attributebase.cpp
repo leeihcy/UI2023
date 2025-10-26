@@ -95,13 +95,15 @@ void AttributeBase::Load(SerializeParam *pData) {
     }
   } else {
     const char *szKey = GetKey();
-    const char *szText = pData->attribute_map->GetAttr(nullptr, szKey, bEraseAttr);
-
-    if (!szText) {
-      const char *szCompatibleKey = GetCompatibleKey();
-      if (szCompatibleKey && szCompatibleKey[0])
-        szText =
-            pData->attribute_map->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
+    const char *szText = nullptr;
+    if (pData->attribute_map) {
+      szText = pData->attribute_map->GetAttr(nullptr, szKey, bEraseAttr);
+      if (!szText) {
+        const char *szCompatibleKey = GetCompatibleKey();
+        if (szCompatibleKey && szCompatibleKey[0])
+          szText =
+              pData->attribute_map->GetAttr(nullptr, szCompatibleKey, bEraseAttr);
+      }
     }
 
     if (szText) {

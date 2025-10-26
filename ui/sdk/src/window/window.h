@@ -30,7 +30,6 @@ struct WindowPlatform {
   virtual IGpuCompositorWindow* GetGpuCompositorWindow() = 0;
 
   virtual void Initialize() {};
-  virtual void Release() {};
   virtual bool Create(CreateWindowParam& param) = 0;
   virtual void PostCreate() { }
 

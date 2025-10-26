@@ -129,7 +129,7 @@ std::shared_ptr<ITextRenderBase> Control::CreateDefaultTextRender() {
       m_resource->GetIResource(), TEXTRENDER_TYPE_SIMPLE);
 
   if (m_text_render) {
-    std::shared_ptr<IAttributeMap> pMapAttr = m_pIMapAttributeRemain;
+    std::shared_ptr<IAttributeMap> pMapAttr = m_attribute_map_remaining;
     if (!pMapAttr)
       pMapAttr = UICreateIMapAttribute();
 

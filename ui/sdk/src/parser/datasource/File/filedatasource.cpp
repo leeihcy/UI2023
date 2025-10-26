@@ -1,7 +1,6 @@
 #include "filedatasource.h"
 #include "include/util/path.h"
 #include "sdk/include/macro/helper.h"
-#include "src/parser/datasource/file/filebufferreader.h"
 #include "src/parser/xml/xmlwrap.h"
 #include "src/util/util.h"
 #include <filesystem>
@@ -37,7 +36,7 @@ void FileDataSource::SetPath(const char *path) {
 
 const char *FileDataSource::GetPath() { return m_path.c_str(); }
 
-eBundleFormat FileDataSource::GetType() { return eBundleFormat::Directory; }
+eBundleFormat FileDataSource::GetFormat() { return eBundleFormat::Directory; }
 
 bool FileDataSource::loadFullPath(const char *path, std::string &full_path) {
   std::filesystem::path p(m_path.c_str());
@@ -82,6 +81,11 @@ bool FileDataSource::LoadBuffer(const char *path,
     callback.emit((const char*)buffer.data(), buffer.size());
     return true;
   }
+}
+
+bool FileDataSource::LoadBuffer(const char *path, IBufferData **pp) {
+  UIASSERT(false && "Not Implement");
+  return false;
 }
 
 bool FileDataSource::FileExist(const char *path) {

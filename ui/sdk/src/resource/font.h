@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_SRC_RESOURCE_FONT_H_
 #define _UI_SDK_SRC_RESOURCE_FONT_H_
 #include "include/core/SkFont.h"
+#include "include/interface/ibundlesource.h"
 #include "include/interface/iresbundle.h"
 #include "include/interface/graphics.h"
 #include <functional>
@@ -27,11 +28,14 @@ struct FontFace {
 class FontCache {
 public:
   FontCache(FontRes& res);
+  ~FontCache();
   SkFont &LoadSkia(const FontDesc &key);
 
 private:
   // skia
   std::unique_ptr<SkFont> m_skia_font;
+  IBufferData* m_font_data = nullptr;
+
   // others.. e.g. gdi/gdiplus
 
   FontRes& m_fontres;

@@ -1,4 +1,5 @@
 #include "res_bundle.h"
+#include "include/interface/ibundlesource.h"
 #include "src/resource/resource_manager.h"
 #include "src/parser/datasource/bundle_source.h"
 #include "src/parser/skinparseengine.h"
@@ -179,4 +180,28 @@ ImageRes &ResourceBundle::GetImageRes() { return m_imageres; }
 ColorRes &ResourceBundle::GetColorRes() { return m_mgrColor.GetColorRes(); }
 StyleRes &ResourceBundle::GetStyleRes() { return m_mgrStyle.GetStyleRes(); }
 I18nRes &ResourceBundle::GetI18nRes() { return m_mgrI18n.GetI18nRes(); }
+
+
+bool ResourceBundle::LoadRenderBitmap(IRenderBitmap *pBitmap, const char *path) {
+  if (nullptr == pBitmap || nullptr == path) {
+    return false;
+  }
+
+  if (m_source->GetFormat() == eBundleFormat::Directory) {
+
+    std::string full_path;
+    if (!m_source->loadFullPath(path, full_path)) {
+      return false;
+    }
+    return pBitmap->LoadFromFile(full_path.c_str());
+  } else {
+    IBufferData* buffer = nullptr;
+    if (!m_source->LoadBuffer(path, &buffer)) {
+      return false;
+    }
+    bool ret = pBitmap->LoadFromData(buffer);
+    buffer->Release();
+    return ret;
+  }
+}
 } // namespace ui

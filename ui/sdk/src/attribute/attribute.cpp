@@ -548,8 +548,10 @@ AttributeBase *AttributeSerializer::Add(int eType, const char *szKey,
 // }
 
 void AttributeSerializer::Load() {
-  if (!m_pData->attribute_map)
-    return;
+  // attribute_map为空，表示全部使用默认属性。
+  // 为了节省内省，没有剩余属性时，会清空m_attribute_map_remaining
+  // if (!m_pData->attribute_map)
+  //   return;
 
   _AttrList::iterator iter = m_list.begin();
   for (; iter != m_list.end(); ++iter) {

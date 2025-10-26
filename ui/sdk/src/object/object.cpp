@@ -39,7 +39,7 @@ using namespace ui;
 Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
   m_pIObject = p;
   // m_lCanRedrawRef = 0;
-  m_pIMapAttributeRemain = nullptr;
+  m_attribute_map_remaining = nullptr;
 #if 0 // defined(OS_WIN)
   m_pAccessible = nullptr;
 #endif
@@ -333,27 +333,27 @@ Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
 }
 
 void Object::LoadAttributes(bool bReload) {
-  if (!m_pIMapAttributeRemain)
+  if (!m_attribute_map_remaining)
     return;
 
   std::string strStyle;
   std::string strId;
 
-  const char *szText = m_pIMapAttributeRemain->GetAttr(XML_STYLECLASS, false);
+  const char *szText = m_attribute_map_remaining->GetAttr(XML_STYLECLASS, false);
   if (szText)
     strStyle = szText;
 
-  szText = m_pIMapAttributeRemain->GetAttr(XML_ID, false);
+  szText = m_attribute_map_remaining->GetAttr(XML_ID, false);
   if (szText)
     strId = szText;
 
   StyleRes &styleRes = m_resource->GetStyleRes();
   styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
-                     strId.c_str(), m_pIMapAttributeRemain.get());
+                     strId.c_str(), m_attribute_map_remaining.get());
 
   SerializeParam data = {0};
   data.resource = m_resource->GetIResource();
-  data.attribute_map = m_pIMapAttributeRemain.get();
+  data.attribute_map = m_attribute_map_remaining.get();
   data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
   if (bReload)
     data.nFlags |= SERIALIZEFLAG_RELOAD;
@@ -363,8 +363,8 @@ void Object::LoadAttributes(bool bReload) {
   m_pIObject->RouteMessage(&msg);
 
   // 如果没有多余的属性，直接释放，节省内存
-  if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain.reset();
+  if (m_attribute_map_remaining && 0 == m_attribute_map_remaining->GetAttrCount()) {
+    m_attribute_map_remaining.reset();
   }
 }
 
@@ -373,9 +373,9 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
   if (!pElement)
     return;
 
-  m_pIMapAttributeRemain.reset();
-  m_pIMapAttributeRemain = UICreateIMapAttribute();
-  pElement->GetAttribList(m_pIMapAttributeRemain.get());
+  m_attribute_map_remaining.reset();
+  m_attribute_map_remaining = UICreateIMapAttribute();
+  pElement->GetAttribList(m_attribute_map_remaining.get());
   this->LoadAttributes(bReload); 
 
   // 通知编辑器关联控件和xml结点.
@@ -390,22 +390,22 @@ void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
 
 // 获取一个未解析的属性。如果bErase==true，则将返回一个临时的字符串指针，调用者应该尽快保存或者仅临时使用
 const char *Object::GetAttribute(const char *szKey, bool bErase) {
-  if (nullptr == szKey || nullptr == m_pIMapAttributeRemain)
+  if (nullptr == szKey || nullptr == m_attribute_map_remaining)
     return nullptr;
 
-  return m_pIMapAttributeRemain->GetAttr(szKey, bErase);
+  return m_attribute_map_remaining->GetAttr(szKey, bErase);
 }
 void Object::AddAttribute(const char *szKey, const char *szValue) {
-  if (nullptr == m_pIMapAttributeRemain) {
-    m_pIMapAttributeRemain = UICreateIMapAttribute();
+  if (nullptr == m_attribute_map_remaining) {
+    m_attribute_map_remaining = UICreateIMapAttribute();
   }
-  m_pIMapAttributeRemain->AddAttr(szKey, szValue);
+  m_attribute_map_remaining->AddAttr(szKey, szValue);
 }
 std::shared_ptr<IAttributeMap> Object::GetMapAttribute() {
-  return m_pIMapAttributeRemain;
+  return m_attribute_map_remaining;
 }
 void Object::ClearMapAttribute() {
-  m_pIMapAttributeRemain.reset();
+  m_attribute_map_remaining.reset();
 }
 
 // 设置padding的值，同时更新非客户区的大小
@@ -429,8 +429,8 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 // {
 //     //
 //     在编辑框中创建的对象，也给创建一个空属性列表，用于序列化默认的TEXTSTYLE等。
-//     assert(nullptr == m_pIMapAttributeRemain);
-//     m_pIMapAttributeRemain = UICreateIMapAttribute();
+//     assert(nullptr == m_attribute_map_remaining);
+//     m_attribute_map_remaining = UICreateIMapAttribute();
 // }
 //
 
@@ -1115,8 +1115,8 @@ void Object::SetRejectMouseMsgSelf(bool b) {
 // 当手动创建一个对象（非从xml中加载时，可以调用该函数完全默认属性的加载)
 void Object::InitDefaultAttrib() {
   std::shared_ptr<IAttributeMap> attribute_map;
-  if (m_pIMapAttributeRemain) {
-    attribute_map = m_pIMapAttributeRemain;
+  if (m_attribute_map_remaining) {
+    attribute_map = m_attribute_map_remaining;
   } else {
     attribute_map = UICreateIMapAttribute();
   }
@@ -1142,7 +1142,7 @@ void Object::InitDefaultAttrib() {
   data.attribute_map = attribute_map.get();
   data.nFlags = SERIALIZEFLAG_LOAD;
 
-  m_pIMapAttributeRemain = attribute_map;
+  m_attribute_map_remaining = attribute_map;
   attribute_map = nullptr;
 
   SerializeMessage msg;
@@ -1150,8 +1150,8 @@ void Object::InitDefaultAttrib() {
   m_pIObject->RouteMessage(&msg);
 
   // 如果没有多余的属性，直接释放，节省内存
-  if (m_pIMapAttributeRemain && 0 == m_pIMapAttributeRemain->GetAttrCount()) {
-    m_pIMapAttributeRemain.reset();
+  if (m_attribute_map_remaining && 0 == m_attribute_map_remaining->GetAttrCount()) {
+    m_attribute_map_remaining.reset();
   }
 }
 //

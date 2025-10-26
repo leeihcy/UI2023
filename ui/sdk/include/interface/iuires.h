@@ -67,8 +67,8 @@ struct UIAPI IImageResItem : public IRootInterface {
   void SetUseSkinHLS(bool b);
   void SetNeedAntiAliasing(bool b);
   bool ModifyImage(const char *szPath);
-  IMAGE_ITEM_TYPE GetImageItemType();
-  //        void  SetImageItemType(IMAGE_ITEM_TYPE e);
+  eImageItemType GetImageItemType();
+  //        void  SetImageItemType(eImageItemType e);
 
 private:
   ImageResItem *m_pImpl;
@@ -100,18 +100,6 @@ class ImageRes;
 struct UIAPI IImageRes : public IRootInterface {
   IImageRes(ImageRes *p);
   ImageRes *GetImpl();
-
-  long GetImageCount();
-  IImageResItem *GetImageResItem(long lIndex);
-  IImageResItem *GetImageResItem(const char *szId);
-  bool ModifyImage(const char *szId, const char *szPath);
-  std::shared_ptr<IRenderBitmap> GetBitmap(const char *szImageId,
-                 eGraphicsLibraryType eRenderType);
-#if 0 // defined(OS_WIN)
-  HBITMAP LoadBitmap(const char *szId);
-#endif
-  const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
-
 private:
   ImageRes *m_pImpl;
 };

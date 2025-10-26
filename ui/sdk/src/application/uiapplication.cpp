@@ -10,6 +10,7 @@
 #include "src/animate/animate.h"
 #include "src/control/control_meta.h"
 #include "src/control/text/text_meta.h"
+#include "src/control/image/image_meta.h"
 #include "src/control/button/button_meta.h"
 #include "src/graphics/record/record_render_target.h"
 #include "src/graphics/skia/skia_render.h"
@@ -302,6 +303,8 @@ bool Application::RegisterUIObject(IMeta *pObjDesc) {
     }
   }
 
+  UI_LOG_DEBUG("Register object: %s", pObjDesc->Name());
+
   m_object_meta_array.push_back(pObjDesc);
   return true;
 }
@@ -328,6 +331,7 @@ void Application::RegisterDefaultUIObject() {
   RegisterUIObject(&ControlMeta::Get());
   RegisterUIObject(&RoundPanelMeta::Get());
   RegisterUIObject(&LabelMeta::Get());
+  RegisterUIObject(&ImageMeta::Get());
   RegisterUIObject(&ButtonMeta::Get());
 #if 0
   RegisterUIObject(ScrollPanelMeta::Get());
@@ -550,17 +554,17 @@ const char *Application::GetRenderBaseName(int nType) {
 
 std::shared_ptr<IRenderBitmap> Application::CreateRenderBitmap(
   eGraphicsLibraryType lib_type,
-  IMAGE_ITEM_TYPE eType) {
+  eImageItemType eType) {
 
   switch (lib_type) {
   case eGraphicsLibraryType::Skia: {
-    if (eType == IMAGE_ITEM_TYPE_ICON) {
-      // GdiplusIconRenderBitmap::CreateInstance(ppOut);
-    } else if (eType == IMAGE_ITEM_TYPE_IMAGE_LIST) {
-      // GdiplusImageListRenderBitmap::CreateInstance(ppOut);
-    } else {
+    // if (eType == eImageItemType::Icon) {
+    //   // GdiplusIconRenderBitmap::CreateInstance(ppOut);
+    // } else if (eType == eImageItemType::ImageList) {
+    //   // GdiplusImageListRenderBitmap::CreateInstance(ppOut);
+    // } else {
       return SkiaRenderBitmap::CreateInstance();
-    }
+    // }
   } break;
 
   default:

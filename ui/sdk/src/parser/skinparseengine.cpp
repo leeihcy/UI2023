@@ -63,7 +63,7 @@ bool SkinParseEngine::Parse(BundleSource *pDataSource,
 
 bool SkinParseEngine::loadUIDocument(BundleSource *source,
                                      UIDocument *pDocument, const char *path) {
-  if (source->GetType() == eBundleFormat::Directory) {
+  if (source->GetFormat() == eBundleFormat::Directory) {
     std::string full_path;
     if (!source->loadFullPath(path, full_path)) {
       return false;

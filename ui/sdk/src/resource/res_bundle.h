@@ -56,6 +56,8 @@ public:
   I18nManager &GetI18nManager() { return m_mgrI18n; }
   FontRes& GetFontRes() { return m_fontres; }
 
+  bool LoadRenderBitmap(IRenderBitmap *pBitmap, const char *path);
+
   ImageRes &GetImageRes();
   ColorRes &GetColorRes();
   StyleRes &GetStyleRes();

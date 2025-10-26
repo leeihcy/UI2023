@@ -19,8 +19,8 @@ public:
   ~ImageResItem();
 
   bool ModifyImage(const char *szPath);
-  IMAGE_ITEM_TYPE GetImageItemType();
-  void SetImageItemType(IMAGE_ITEM_TYPE e);
+  eImageItemType GetImageItemType();
+  void SetImageItemType(eImageItemType e);
 
   const char *GetId();
   void SetId(const char *text);
@@ -37,12 +37,17 @@ public:
   bool ModifyHLS(short h, short l, short s, int nFlag);
   bool ModifyHLS(IRenderBitmap *pBitmap, short h, short l, short s, int nFlag);
   bool ModifyAlpha(byte nAlphaPercent);
+
+#if 0
   std::shared_ptr<IRenderBitmap>
   GetImage(ResourceBundle *resource_bundle,
            eGraphicsLibraryType eRenderType,
            bool *pbFirstTimeCreate = nullptr);
+
+
   std::shared_ptr<IRenderBitmap>
   GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCreate = nullptr);
+#endif
 
   bool IsMyRenderBitmap(IRenderBitmap *pRenderBitmap);
 
@@ -76,7 +81,7 @@ protected:
   std::shared_ptr<IAttributeMap> m_pMapAttrib; 
                      
   // 图片类型
-  IMAGE_ITEM_TYPE m_eType; 
+  eImageItemType m_eType; 
 
   // 该图片的原始数据（改变图片色调时使用）
   ImageData *m_pOriginImageData; 
@@ -142,16 +147,19 @@ public:
   const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
 
 public:
+#if 0
   ImageResItem *LoadItem(const char *szType, IAttributeMap *attribute_map,
                          const char *szFullPath);
-
+#endif
   ImageResItem *GetImageItem2(int nIndex);
   ImageResItem *GetImageItem2(const char *szId);
 
-  ImageResItem *InsertImage(IMAGE_ITEM_TYPE eType, const char *szId,
+#if 0
+  ImageResItem *InsertImage(eImageItemType eType, const char *szId,
                             const char *szPath);
   bool RemoveImage(const char *szId);
   bool RemoveImage(IImageResItem *pItem);
+#endif  
   bool Clear();
   bool ChangeSkinHLS(short h, short l, short s, int nFlag);
   bool ModifyImageItemAlpha(const std::string &strID, byte nAlphaPercent);

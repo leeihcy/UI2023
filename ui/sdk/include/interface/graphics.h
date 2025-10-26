@@ -24,6 +24,7 @@ struct Size;
 struct LOGFONT;
 struct FontDesc;
 struct IGpuCompositor;
+struct IBufferData;
 
 // 绘制图片的统一参数，避免需要重写多个DrawBitmap函数
 enum DRAW_BITMAP_FLAG {
@@ -167,20 +168,20 @@ struct IRenderResource {
   virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() = 0;
 };
 
-enum RENDER_BITMAP_LOAD_FLAG {
-  RENDER_BITMAP_LOAD_FLAG_NONE = 0,
-  RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL = 1,
-  RENDER_BITMAP_LOAD_DPI_ADAPT = 2,
+// enum class RENDER_BITMAP_LOAD_FLAG : int {
+//   RENDER_BITMAP_LOAD_FLAG_NONE = 0,
+//   RENDER_BITMAP_LOAD_CREATE_ALPHA_CHANNEL = 1,
+//   RENDER_BITMAP_LOAD_DPI_ADAPT = 2,
 
-  // dpi 文件已经被放大的系数存在高8位上面，例如加载一张@2x的图片时，标志位为
-  // (2 << 24) | DPI_ADAPT
-};
+//   // dpi 文件已经被放大的系数存在高8位上面，例如加载一张@2x的图片时，标志位为
+//   // (2 << 24) | DPI_ADAPT
+// };
+
 struct IRenderBitmap : public IRenderResource {
-  virtual bool LoadFromFile(const char *szPath, RENDER_BITMAP_LOAD_FLAG e) = 0;
-  virtual bool LoadFromData(unsigned char *pData, unsigned int nSize,
-                            RENDER_BITMAP_LOAD_FLAG e) = 0;
+  virtual bool LoadFromFile(const char *szPath) = 0;
+  virtual bool LoadFromData(IBufferData* buffer) = 0;
 
-  virtual IMAGE_ITEM_TYPE GetImageType() = 0;
+  virtual eImageItemType GetImageType() = 0;
   virtual bool Create(int nWidth, int nHeight) = 0;
   virtual void Destroy() = 0;
   virtual int GetWidth() = 0;

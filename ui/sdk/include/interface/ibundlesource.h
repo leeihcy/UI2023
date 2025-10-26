@@ -23,39 +23,24 @@ enum class eStreamType {
   Byte,
 };
 
-struct IStreamBufferReader;
+struct IBufferData {
+  virtual void AddRef() = 0;
+  virtual void Release() = 0;
+  virtual const unsigned char* Data() = 0;
+  virtual unsigned int Size() = 0;
+};
+
 struct BundleSource;
 struct UIAPI IBundleSource {
   IBundleSource(BundleSource *);
 
   const char *GetPath();
-  eBundleFormat GetType();
-  bool LoadBuffer(const char* szPath, slot<void(const char*, unsigned int)>&& callback);
-  bool Load_StreamBuffer(const char *szPath, IStreamBufferReader **pp);
+  eBundleFormat GetFormat();
+  bool LoadBuffer(const char* path, slot<void(const char*, unsigned int)>&& callback);
+  bool LoadBuffer(const char *path, IBufferData **pp);
 
 private:
   BundleSource *m_pImpl;
-};
-
-// 和std的值保持一致。
-enum class eSeekDir : int {
-  Beg = 0,
-  Cur = 1,
-  End = 2
-};
-struct IStreamBufferReader {
-  virtual void Release() = 0;
-  virtual int read(char *pread, int nread) = 0;
-  virtual void seek(int npos, eSeekDir dir) = 0;
-  virtual int tell() = 0;
-  virtual bool save(const char *szPath) = 0;
-};
-
-struct IFileBufferReader : public IStreamBufferReader {
-  virtual bool load(const char *szPath) = 0;
-};
-struct IByteBufferReader : public IStreamBufferReader {
-  virtual bool load(const byte *pdata, int nsize, bool bdeletedata) = 0;
 };
 
 } // namespace ui

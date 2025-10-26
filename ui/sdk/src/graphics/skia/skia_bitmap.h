@@ -1,4 +1,5 @@
 #include "include/interface/graphics.h"
+#include "include/interface/ibundlesource.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include <memory>
 // #include "Src\Util\DPI\dpihelper.h"
@@ -10,16 +11,15 @@ class SkiaRenderBitmap : public IRenderBitmap
 {
 public:
   static std::shared_ptr<IRenderBitmap> CreateInstance();
+  ~SkiaRenderBitmap() override;
 
 public:
   eGraphicsLibraryType GetGraphicsRenderLibraryType() override;
 
-  bool LoadFromFile(const char *szPath,
-                            RENDER_BITMAP_LOAD_FLAG e)override;
-  bool LoadFromData(unsigned char *pData, unsigned int nSize,
-                            RENDER_BITMAP_LOAD_FLAG e)override;
+  bool LoadFromFile(const char *szPath)override;
+  bool LoadFromData(IBufferData* data)override;
 
-  IMAGE_ITEM_TYPE GetImageType()override;
+  eImageItemType GetImageType()override;
   bool Create(int nWidth, int nHeight)override;
   void Destroy()override;
   int GetWidth()override;
@@ -28,6 +28,7 @@ public:
 
 public:
   SkBitmap m_bitmap;
+  IBufferData* m_buffer = nullptr;
 };
 
 // class GDIIconRenderBitmap : public SkiaRenderBitmapImpl<IRenderResourceImpl<IImageIconRenderBitmap > >// : public SkiaRenderBitmap
@@ -39,7 +40,7 @@ public:
 // 	virtual bool  LoadFromFile(const TCHAR* szPath, RENDER_BITMAP_LOAD_FLAG e);
 //     virtual bool  LoadFromData(byte* pData, int nSize, RENDER_BITMAP_LOAD_FLAG e);
     
-//     virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
+//     virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_ICON; }
 
 //     virtual SIZE  GetDrawSize();
 //     virtual void  SetDrawSize(SIZE* ps);
@@ -68,7 +69,7 @@ public:
 // 	virtual bool  virtualLoadImageFromBitmap(
 // 		Gdiplus::Bitmap* pBmp, RENDER_BITMAP_LOAD_FLAG e) override;
 
-//     virtual IMAGE_ITEM_TYPE  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
+//     virtual eImageItemType  GetImageType() { return IMAGE_ITEM_TYPE_IMAGE_LIST; }
 // private:
 // 	IMAGELIST_LAYOUT_TYPE   m_eLayout;
 // 	int     m_nCount;

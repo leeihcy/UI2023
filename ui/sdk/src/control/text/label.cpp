@@ -22,7 +22,7 @@ void Label::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == LabelMeta::Get().UUID()) {
-      *(m->pp) = m_pIControl;
+      *(m->pp) = m_pILabel;
       return;
     }
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
