@@ -12,7 +12,7 @@ protected:
 
 public:
 	~GdiplusRenderFont();
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
+	virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
 	static  void  CreateInstance( IRenderFont** ppOutRef );
 
 public:

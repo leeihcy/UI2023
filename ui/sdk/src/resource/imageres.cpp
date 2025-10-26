@@ -79,13 +79,13 @@ bool ImageResItem::IsMyRenderBitmap(IRenderBitmap *pRenderBitmap) {
 
 std::shared_ptr<IRenderBitmap>
 ImageResItem::GetImage(ResourceBundle *resource_bundle,
-                       GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                       eGraphicsLibraryType eRenderType,
                        bool *pbFirstTimeCreate) {
   if (nullptr == resource_bundle)
     return nullptr;
 
   switch (eRenderType) {
-  case GRAPHICS_RENDER_LIBRARY_TYPE_SKIA:
+  case eGraphicsLibraryType::Skia:
     return GetSkiaImage(resource_bundle, pbFirstTimeCreate);
   default:
     return nullptr;
@@ -128,9 +128,8 @@ ImageResItem::GetSkiaImage(ResourceBundle *resource_bundle,
     return m_render_bitmap;
   }
 
-  m_render_bitmap = RenderBitmapFactory::CreateInstance(
-      resource_bundle->GetUIApplication()->GetIUIApplication(),
-      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA, m_eType);
+  m_render_bitmap = resource_bundle->GetUIApplication()->CreateRenderBitmap(
+      eGraphicsLibraryType::Skia, m_eType);
 
   if (!m_render_bitmap) {
     return m_render_bitmap;
@@ -700,7 +699,7 @@ bool ImageRes::ModifyImageItemAlpha(const std::string &strID,
 
 std::shared_ptr<IRenderBitmap>
 ImageRes::GetBitmap(const char *szImageID,
-                    GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
+                    eGraphicsLibraryType eRenderType) {
   if (!szImageID || !szImageID[0])
     return std::shared_ptr<IRenderBitmap>();
 

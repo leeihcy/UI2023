@@ -21,7 +21,7 @@ public:
  	GdiplusRenderTarget();
 	virtual ~GdiplusRenderTarget();
     virtual void  Release();
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
+	virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
     virtual bool  IsRenderAlphaChannel() { return true; }
 
 	virtual void  BindHDC(HDC hDC);

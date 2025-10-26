@@ -1,5 +1,5 @@
-#ifndef _UI_RENDERLIBRARY_H_
-#define _UI_RENDERLIBRARY_H_
+#ifndef _UI_SDK_INCLUDE_INTERFACE_GRAPHICS_H_
+#define _UI_SDK_INCLUDE_INTERFACE_GRAPHICS_H_
 #include "ui/sdk/include/macro/xmldefine.h"
 #include "ui/sdk/include/util/color.h"
 #include "ui/sdk/include/util/rect.h"
@@ -164,7 +164,7 @@ struct Render2TargetParam {
 
 struct IRenderResource {
   virtual ~IRenderResource(){};
-  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() = 0;
+  virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() = 0;
 };
 
 enum RENDER_BITMAP_LOAD_FLAG {
@@ -216,14 +216,6 @@ struct IImageIconRenderBitmap : public IRenderBitmap {
 public:
   virtual Size GetDrawSize() = 0;
   virtual void SetDrawSize(Size *ps) = 0;
-};
-
-class RenderBitmapFactory {
-public:
-  static std::shared_ptr<IRenderBitmap>
-  CreateInstance(IApplication *pUIApp,
-                 GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
-                 IMAGE_ITEM_TYPE eType);
 };
 
 #define FONTITEM_FLAG_UNDERLINE 0x01
@@ -280,7 +272,7 @@ struct IRenderTarget : public IClipOrigin {
   virtual ~IRenderTarget(){};
   virtual void Release() = 0; // delete this;
 
-  virtual GRAPHICS_RENDER_LIBRARY_TYPE Type() = 0;
+  virtual eGraphicsLibraryType Type() = 0;
 
   virtual bool BeginDraw(float scale) = 0;
   virtual void EndDraw() = 0;

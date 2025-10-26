@@ -1,6 +1,6 @@
 #pragma once
 #include "..\renderresourceimpl.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 
 namespace ui
 {
@@ -13,7 +13,7 @@ public:
 	static   void  CreateInstance(IRenderBrush** ppOut);
 
 public:
-	virtual  GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; }
+	virtual  eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; }
 	virtual  bool  CreateSolidBrush(Color* pColor);
 
 protected:

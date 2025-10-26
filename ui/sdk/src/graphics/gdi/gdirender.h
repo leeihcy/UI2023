@@ -14,7 +14,7 @@ public:
   GdiRenderTarget(bool bNeedAlphaChannel);
   virtual ~GdiRenderTarget();
   virtual void Release();
-  virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() {
+  virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() {
     return GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
   }
   virtual bool IsRenderAlphaChannel() { return m_bNeedAlphaChannel; }

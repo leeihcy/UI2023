@@ -2,7 +2,7 @@
 #include "include/inc.h"
 #include "include/interface/imeta.h"
 #include "include/interface/iuiapplication.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "sdk/include/util/struct.h"
 #include "src/object/object.h"
 #include "src/render/render_meta.h"

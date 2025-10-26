@@ -101,12 +101,12 @@ void onPaintOnRenderThread(std::shared_ptr<::svg::Svg> root, int width,
 }
 
 void Svg::onPaint(ui::IRenderTarget *rt) {
-  if (rt->Type() == GRAPHICS_RENDER_LIBRARY_TYPE_SKIA_RECORD) {
+  if (rt->Type() == eGraphicsLibraryType::SkiaRecord) {
     rt->RenderOnThread(Slot(onPaintOnRenderThread, m_root, m_pISvg->GetWidth(),
                             m_pISvg->GetHeight()));
     return;
   }
-  if (rt->Type() != GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+  if (rt->Type() != eGraphicsLibraryType::Skia) {
     return;
   }
 

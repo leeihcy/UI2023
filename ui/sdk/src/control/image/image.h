@@ -1,7 +1,7 @@
 #ifndef _UI_SDK_SRC_CONTROL_IMAGE_IMAGE_H_
 #define _UI_SDK_SRC_CONTROL_IMAGE_IMAGE_H_
 
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "src/control/control.h"
 
 namespace ui {

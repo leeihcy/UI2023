@@ -17,7 +17,7 @@
 // #include "sdk/include/interface/iobject.h"
 // #include "sdk/include/interface/ipanel.h"
 #include "sdk/include/interface/iresbundle.h"
-#include "sdk/include/interface/renderlibrary.h"
+#include "sdk/include/interface/graphics.h"
 // #include "sdk/include/interface/imeta.h"
 #include "sdk/include/interface/imapattr.h"
 #include "sdk/include/interface/irenderbase.h"

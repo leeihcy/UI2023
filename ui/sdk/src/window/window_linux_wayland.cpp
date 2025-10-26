@@ -380,7 +380,7 @@ void WindowPlatformLinuxWayland::Commit(IRenderTarget *pRT, const Rect *prect,
   // }
 
   if (pRT->GetGraphicsRenderLibraryType() !=
-      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+      eGraphicsLibraryType::Skia) {
     return;
   }
   SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);

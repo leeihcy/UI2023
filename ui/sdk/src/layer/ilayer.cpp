@@ -21,11 +21,11 @@ void  IWindowRender::InvalidateNow()
 {
     m_pWindowRenderImpl->InvalidateNow();
 }
-GRAPHICS_RENDER_LIBRARY_TYPE  IWindowRender::GetGraphicsRenderType()
+eGraphicsLibraryType  IWindowRender::GetGraphicsRenderType()
 {
 	return m_pWindowRenderImpl->GetGraphicsRenderType();
 }
-void  IWindowRender::SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE  eTpye)
+void  IWindowRender::SetGraphicsRenderType(eGraphicsLibraryType  eTpye)
 {
 	return m_pWindowRenderImpl->SetGraphicsRenderType(eTpye);
 }

@@ -4,7 +4,7 @@
 #include "include/common/ptr/weak_ptr.h"
 #include "include/common/signalslot/signal.h"
 #include "include/interface/iuiapplication.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "src/thread/paint_op.h"
 #include "include/util/rect_region.h"
 #include <cstddef>

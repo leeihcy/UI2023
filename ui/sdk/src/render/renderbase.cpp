@@ -1,6 +1,6 @@
 #include "renderbase.h"
 #include "include/interface/iuires.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
 #include "src/attribute/attribute.h"

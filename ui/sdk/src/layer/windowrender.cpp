@@ -1,7 +1,7 @@
 #include "windowrender.h"
 #include "gpu/include/api.h"
 #include "include/common/signalslot/slot.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/helper.h"
 #include "include/util/log.h"
 #include "include/util/rect_region.h"
@@ -46,7 +46,7 @@ void WindowRender::OnSerialize(SerializeParam *pData) {
 
   s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(int *)&m_grl_type)
       ->FillGraphicsRenderLibraryData()
-      ->SetDefault(GRAPHICS_RENDER_LIBRARY_TYPE_SKIA);
+      ->SetDefault((int)eGraphicsLibraryType::Skia);
 
   s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
       ->SetDefault(true);
@@ -85,8 +85,7 @@ bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
     return false;
 
   auto *app = m_window.GetResource().GetUIApplication();
-  *pp = UICreateRenderTarget(app->GetIUIApplication(), m_grl_type,
-                             m_need_alpha_channel);
+  *pp = app->CreateRenderTarget(m_grl_type);
 
   return true;
 }
@@ -113,11 +112,11 @@ void WindowRender::SetCanCommit(bool b) {
 
 bool WindowRender::CanCommit() { return 0 == m_can_commit; }
 
-void WindowRender::SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE type) {
+void WindowRender::SetGraphicsRenderType(eGraphicsLibraryType type) {
   // 仅在窗口创建之前设置有用
   m_grl_type = type;
 }
-GRAPHICS_RENDER_LIBRARY_TYPE WindowRender::GetGraphicsRenderType() {
+eGraphicsLibraryType WindowRender::GetGraphicsRenderType() {
   return m_grl_type;
 }
 bool WindowRender::GetRequireAlphaChannel() { return m_need_alpha_channel; }

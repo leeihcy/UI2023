@@ -164,7 +164,6 @@ shared_library("uisdk") {
         "src/control/control.cpp",
         "src/control/icontrol.cpp",
         "src/graphics/bitmap/skiabitmap.cpp",
-        "src/graphics/renderlibrary.cpp",
         "src/graphics/skia/skia_render.cpp",
         "src/graphics/skia/skia_render.h",
         "src/graphics/skia/skia_bitmap.cpp",

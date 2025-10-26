@@ -1,4 +1,4 @@
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "third_party/skia/src/include/core/SkBitmap.h"
 #include <memory>
 // #include "Src\Util\DPI\dpihelper.h"
@@ -12,7 +12,7 @@ public:
   static std::shared_ptr<IRenderBitmap> CreateInstance();
 
 public:
-  GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() override;
+  eGraphicsLibraryType GetGraphicsRenderLibraryType() override;
 
   bool LoadFromFile(const char *szPath,
                             RENDER_BITMAP_LOAD_FLAG e)override;

@@ -3,7 +3,7 @@
 
 #include "include/common/signalslot/slot.h"
 #include "include/interface/ibundlesource.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include <vector>
 
 namespace ui {

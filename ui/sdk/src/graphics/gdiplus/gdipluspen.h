@@ -12,7 +12,7 @@ public:
 	static   void  CreateInstance(IRenderPen** ppOutRef);
 
 public:
-	virtual  GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
+	virtual  eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
 	virtual  bool  CreateSolidPen(int nWidth, Color* pColor);
 	virtual  bool  CreateDotPen(int nWidth, Color* pColor);
 

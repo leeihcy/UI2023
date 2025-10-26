@@ -39,7 +39,7 @@ public:
   bool ModifyAlpha(byte nAlphaPercent);
   std::shared_ptr<IRenderBitmap>
   GetImage(ResourceBundle *resource_bundle,
-           GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+           eGraphicsLibraryType eRenderType,
            bool *pbFirstTimeCreate = nullptr);
   std::shared_ptr<IRenderBitmap>
   GetSkiaImage(ResourceBundle *resource_bundle, bool *pbFirstTimeCreate = nullptr);
@@ -137,7 +137,7 @@ public:
   bool ModifyImage(const char *szId, const char *szPath);
 
   std::shared_ptr<IRenderBitmap>
-  GetBitmap(const char *image_id, GRAPHICS_RENDER_LIBRARY_TYPE render_type);
+  GetBitmap(const char *image_id, eGraphicsLibraryType render_type);
 
   const char *GetRenderBitmapId(IRenderBitmap *pBitmap);
 

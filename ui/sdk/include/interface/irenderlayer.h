@@ -27,8 +27,8 @@ public:
   // void  Commit(HDC hDC, Rect* prc, int nCount=1);
   void InvalidateNow();
 
-  GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderType();
-  void SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE eTpye);
+  eGraphicsLibraryType GetGraphicsRenderType();
+  void SetGraphicsRenderType(eGraphicsLibraryType eTpye);
   bool GetRequireAlphaChannel();
   // void  SetNeedRebuildCompositingLayerTree();
 

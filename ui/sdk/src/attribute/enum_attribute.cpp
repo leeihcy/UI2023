@@ -107,7 +107,7 @@ void EnumGraphicsRenderLibraryTypeCallback(int lType, const char* szName, llong 
 EnumAttribute*  EnumAttribute::FillGraphicsRenderLibraryData()
 {
 	// EnumGraphicsRenderLibraryType(EnumGraphicsRenderLibraryTypeCallback, (int)this, 0);
-	this->AddOption(GRAPHICS_RENDER_LIBRARY_TYPE_SKIA, "skia");
+	this->AddOption((int)eGraphicsLibraryType::Skia, "skia");
 	return this;
 }
 

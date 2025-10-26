@@ -1,6 +1,6 @@
 #pragma once
 #include "..\renderresourceimpl.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "Src\Atl\image.h"
 #include "Src\Util\DPI\dpihelper.h"
 
@@ -30,7 +30,7 @@ public:
 //		UI_LOG_DEBUG("GDIRenderBitmap Delete. ptr=0x%08X", this);
 	}
 
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; }
+	virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; }
 
 	Image*  GetBitmap() { return &m_image; }
 

@@ -8,8 +8,8 @@ std::shared_ptr<IRenderBitmap> SkiaRenderBitmap::CreateInstance() {
   return std::shared_ptr<IRenderBitmap>(new SkiaRenderBitmap());
 }
 
-GRAPHICS_RENDER_LIBRARY_TYPE SkiaRenderBitmap::GetGraphicsRenderLibraryType() {
-  return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+eGraphicsLibraryType SkiaRenderBitmap::GetGraphicsRenderLibraryType() {
+  return eGraphicsLibraryType::Skia;
 }
 
 bool SkiaRenderBitmap::LoadFromFile(const char * path,

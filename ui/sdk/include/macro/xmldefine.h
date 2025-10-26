@@ -358,15 +358,15 @@ enum WINDOW_TRANSPARENT_TYPE
 #define XML_WINDOW_NEED_ALPHACHANNEL                "needalphachannel"  // 窗口是否需要渲染alpha通道。默认为true
 
 
-enum GRAPHICS_RENDER_LIBRARY_TYPE
+enum class eGraphicsLibraryType : int
 {
-	// GRAPHICS_RENDER_LIBRARY_TYPE_AUTO = 0,   // <- 依据窗口类型决定。分层窗口使用GDIPLUS,普通窗口使用GDI，废弃，逻辑太复杂
-	// GRAPHICS_RENDER_LIBRARY_TYPE_GDI = 1,
-	// GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS,
-	// GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT2D,
-	// GRAPHICS_RENDER_LIBRARY_TYPE_DIRECT3D,
-  GRAPHICS_RENDER_LIBRARY_TYPE_SKIA,
-  GRAPHICS_RENDER_LIBRARY_TYPE_SKIA_RECORD,
+  // AUTO = 0,   // <- 依据窗口类型决定。分层窗口使用GDIPLUS,普通窗口使用GDI，废弃，逻辑太复杂
+  // GDI = 1,
+  // GDIPLUS,
+  // DIRECT2D,
+  // DIRECT3D,
+  Skia,
+  SkiaRecord,
 };
 
 #define XML_TEXTURE_RENDER_PREFIX            "texture."         // customwindow用于支持换肤的皮肤render前缀

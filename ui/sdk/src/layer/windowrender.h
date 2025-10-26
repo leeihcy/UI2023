@@ -59,8 +59,8 @@ public:
   bool CreateRenderTarget(IRenderTarget **pp);
 
   bool GetRequireAlphaChannel();
-  void SetGraphicsRenderType(GRAPHICS_RENDER_LIBRARY_TYPE type);
-  GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderType();
+  void SetGraphicsRenderType(eGraphicsLibraryType type);
+  eGraphicsLibraryType GetGraphicsRenderType();
 
   void SetCanCommit(bool b);
   bool CanCommit();
@@ -88,7 +88,7 @@ public:
 private:
   std::unique_ptr<IWindowRender> m_pIWindowRender;
 
-  GRAPHICS_RENDER_LIBRARY_TYPE m_grl_type = GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+  eGraphicsLibraryType m_grl_type = eGraphicsLibraryType::Skia;
 
   // 阻塞刷新窗口
   long m_can_commit = 0;

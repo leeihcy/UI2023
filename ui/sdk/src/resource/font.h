@@ -2,7 +2,7 @@
 #define _UI_SDK_SRC_RESOURCE_FONT_H_
 #include "include/core/SkFont.h"
 #include "include/interface/iresbundle.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include <functional>
 #include <string>
 #include <map>

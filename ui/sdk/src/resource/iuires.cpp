@@ -132,7 +132,7 @@ bool IImageRes::ModifyImage(const char *szId, const char *szPath) {
 }
 std::shared_ptr<IRenderBitmap>
 IImageRes::GetBitmap(const char *szImageID,
-                     GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
+                     eGraphicsLibraryType eRenderType) {
   return m_pImpl->GetBitmap(szImageID, eRenderType);
 }
 #if 0 // defined(OS_WIN)
@@ -251,11 +251,11 @@ bool IFontRes::GetFontResItem(long lIndex, IFontResItem **ppResItem) {
   return m_pImpl->GetFontResItem(lIndex, ppResItem);
 }
 bool IFontRes::GetFont(const char *szFontId,
-                       GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+                       eGraphicsLibraryType eRenderType,
                        IRenderFont **ppOut) {
   return m_pImpl->GetFont(szFontId, eRenderType, ppOut);
 }
-bool IFontRes::GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+bool IFontRes::GetDefaultFont(eGraphicsLibraryType eRenderType,
                               IRenderFont **ppFont) {
   return m_pImpl->GetDefaultFont(eRenderType, ppFont);
 }

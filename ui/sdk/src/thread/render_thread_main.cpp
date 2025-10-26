@@ -1,4 +1,4 @@
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "render_thread.h"
 #include "src/application/config/config.h"
 #include "src/thread/paint_op.h"

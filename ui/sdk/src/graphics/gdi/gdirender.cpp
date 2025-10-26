@@ -337,7 +337,7 @@ void GdiRenderTarget::DrawString(IRenderFont *pRenderFont,
     }
   }
 
-  GRAPHICS_RENDER_LIBRARY_TYPE eType =
+  eGraphicsLibraryType eType =
       pRenderFont->GetGraphicsRenderLibraryType();
   if (eType != GRAPHICS_RENDER_LIBRARY_TYPE_GDI) {
     if (eType == GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS) {

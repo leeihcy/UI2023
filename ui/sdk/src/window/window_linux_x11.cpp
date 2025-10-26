@@ -400,7 +400,7 @@ void WindowPlatformLinuxX11::Commit(ui::IRenderTarget *pRT, const Rect *prect,
   }
 
   if (pRT->GetGraphicsRenderLibraryType() !=
-      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+      eGraphicsLibraryType::Skia) {
     return;
   }
   SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);

@@ -62,13 +62,8 @@ UIAPI int UICreateIListAttribute(IAttributeList **ppOut);
 struct IRenderBitmap;
 UIAPI std::shared_ptr<IRenderBitmap>
 UICreateRenderBitmap(IApplication *pUIApp,
-                     GRAPHICS_RENDER_LIBRARY_TYPE eGraphicsRenderType,
+                     eGraphicsLibraryType eGraphicsRenderType,
                      IMAGE_ITEM_TYPE eType);
-
-struct IRenderTarget;
-UIAPI IRenderTarget *UICreateRenderTarget(IApplication *pUIApp,
-                                          GRAPHICS_RENDER_LIBRARY_TYPE eType,
-                                          bool bNeedAlphaChannel);
 
 UIAPI int GetDpi();
 UIAPI int ScaleByDpi(int x);

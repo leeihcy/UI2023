@@ -12,6 +12,8 @@
 #include "src/control/text/text_meta.h"
 #include "src/control/button/button_meta.h"
 #include "src/graphics/record/record_render_target.h"
+#include "src/graphics/skia/skia_render.h"
+#include "src/graphics/skia/skia_bitmap.h"
 #include "src/panel/panel_meta.h"
 #include "src/resource/colormanager.h"
 #include "src/resource/layoutmanager.h"
@@ -19,6 +21,7 @@
 #include "src/parser/skinparseengine.h"
 #include "src/window/window_meta.h"
 #include "ui/gpu/include/api.h"
+
 
 #if !defined(OS_WIN)
 #include <libgen.h> // dirname
@@ -543,6 +546,48 @@ Application::CreateRenderBaseByName(IResourceBundle *resource, const char *name)
 
 const char *Application::GetRenderBaseName(int nType) {
   return m_render_base_factory.GetRenderBaseName(nType);
+}
+
+std::shared_ptr<IRenderBitmap> Application::CreateRenderBitmap(
+  eGraphicsLibraryType lib_type,
+  IMAGE_ITEM_TYPE eType) {
+
+  switch (lib_type) {
+  case eGraphicsLibraryType::Skia: {
+    if (eType == IMAGE_ITEM_TYPE_ICON) {
+      // GdiplusIconRenderBitmap::CreateInstance(ppOut);
+    } else if (eType == IMAGE_ITEM_TYPE_IMAGE_LIST) {
+      // GdiplusImageListRenderBitmap::CreateInstance(ppOut);
+    } else {
+      return SkiaRenderBitmap::CreateInstance();
+    }
+  } break;
+
+  default:
+    UIASSERT(0);
+    break;
+  }
+  return std::shared_ptr<IRenderBitmap>();
+}
+
+// IRenderTarget* 没有引用计数机制
+IRenderTarget *Application::CreateRenderTarget(eGraphicsLibraryType lib_type) {
+  IRenderTarget *pRenderTarget = nullptr;
+
+  switch (lib_type) {
+  case eGraphicsLibraryType::Skia: {
+    if (Config::GetInstance().enable_render_thread) {
+      pRenderTarget = new RecordRenderTarget();
+    } else {
+      pRenderTarget = new SkiaRenderTarget();
+    }
+  } break;
+
+  default:
+    UIASSERT(0);
+    break;
+  }
+  return pRenderTarget;
 }
 
 } // namespace ui

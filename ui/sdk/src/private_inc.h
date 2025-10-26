@@ -50,7 +50,7 @@ class Message;
 void UI_SplitW(const std::wstring& str, wchar_t szSep, std::vector<std::wstring>& vRet);
 void UI_Split(const std::string &str, char szSep, std::vector<std::string> &vRet);
 struct IRenderFont;
-// void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
+// void  UI_AttachFont(IRenderFont** pOut, HFONT hFont, eGraphicsLibraryType eRenderType);
 char*  GetTempBuffer(int nMaxSize = 255);
 wchar_t*  GetTempBufferW(int nMaxSize = 255);
 std::string&  GetTempBufferString();

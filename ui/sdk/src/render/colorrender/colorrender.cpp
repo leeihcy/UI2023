@@ -1,7 +1,7 @@
 #include "colorrender.h"
 #include "include/inc.h"
 #include "include/interface/iuires.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/rect_attribute.h"

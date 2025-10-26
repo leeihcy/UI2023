@@ -17,7 +17,7 @@
 #include "src/application/uiapplication.h"
 #include "src/Util\DPI\dpihelper.h"
 #include "src/Layer\compositor.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/interface/iuiapplication.h"
 #include "include/interface/iuiautotest.h"
 

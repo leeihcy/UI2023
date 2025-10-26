@@ -8,7 +8,7 @@
 #include "third_party/skia/src/include/core/SkColorSpace.h"
 #include "third_party/skia/src/include/core/SkSurface.h"
 
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "src/graphics/clip_origin.h"
 
 namespace ui {
@@ -19,8 +19,8 @@ public:
   SkiaRenderTarget();
   ~SkiaRenderTarget();
   void Release() override;
-  GRAPHICS_RENDER_LIBRARY_TYPE Type() override {
-    return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA;
+  eGraphicsLibraryType Type() override {
+    return eGraphicsLibraryType::Skia;
   }
 
   bool BeginDraw(float scale) override;

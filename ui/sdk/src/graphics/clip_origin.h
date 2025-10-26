@@ -1,6 +1,6 @@
 #ifndef _UI_SDK_SRD_GRAPHICS_CLIP_ORIGIN_H_
 #define _UI_SDK_SRD_GRAPHICS_CLIP_ORIGIN_H_
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/util/rect.h"
 #include <vector>
 #include "include/util/rect_region.h"

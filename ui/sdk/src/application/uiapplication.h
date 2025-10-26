@@ -80,6 +80,10 @@ public:
   IObject *CreateUIObjectByName(const char *szXmlName, IResourceBundle *);
   IObject *CreateUIObjectByUUID(const Uuid &clsid, IResourceBundle *);
 
+  IRenderTarget *CreateRenderTarget(eGraphicsLibraryType lib_type);
+  std::shared_ptr<IRenderBitmap>
+  CreateRenderBitmap(eGraphicsLibraryType lib_type, IMAGE_ITEM_TYPE eType);
+
   void LoadUIObjectListToToolBox();
 
   // gpu

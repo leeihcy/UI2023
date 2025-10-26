@@ -106,7 +106,7 @@ struct UIAPI IImageRes : public IRootInterface {
   IImageResItem *GetImageResItem(const char *szId);
   bool ModifyImage(const char *szId, const char *szPath);
   std::shared_ptr<IRenderBitmap> GetBitmap(const char *szImageId,
-                 GRAPHICS_RENDER_LIBRARY_TYPE eRenderType);
+                 eGraphicsLibraryType eRenderType);
 #if 0 // defined(OS_WIN)
   HBITMAP LoadBitmap(const char *szId);
 #endif
@@ -181,9 +181,9 @@ struct UIAPI IFontRes : public IRootInterface {
   long GetFontCount();
   bool GetFontResItem(long lIndex, IFontResItem **ppResItem);
   bool GetFont(const char *szFontId,
-               GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+               eGraphicsLibraryType eRenderType,
                /*__out*/ IRenderFont **ppOut);
-  bool GetDefaultFont(GRAPHICS_RENDER_LIBRARY_TYPE eRenderType,
+  bool GetDefaultFont(eGraphicsLibraryType eRenderType,
                       /*__out*/ IRenderFont **ppFont);
   const char *GetDefaultFontId();
   const char *GetRenderFontId(IRenderFont *pFont);

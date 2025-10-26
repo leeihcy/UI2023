@@ -1,6 +1,6 @@
 #ifndef _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
 #define _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/util/color.h"
 #include "src/graphics/clip_origin.h"
 #include "src/graphics/skia/skia_render.h"
@@ -17,8 +17,8 @@ public:
 
   ~RecordRenderTarget() override;
   void Release() override;
-  GRAPHICS_RENDER_LIBRARY_TYPE Type() override {
-    return GRAPHICS_RENDER_LIBRARY_TYPE_SKIA_RECORD;
+  eGraphicsLibraryType Type() override {
+    return eGraphicsLibraryType::SkiaRecord;
   }
   bool BeginDraw(float scale) override;
   void EndDraw() override;

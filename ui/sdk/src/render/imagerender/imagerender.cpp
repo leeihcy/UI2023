@@ -1,7 +1,7 @@
 #include "imagerender.h"
 #include "include/inc.h"
 #include "include/interface/irenderbase.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/msg.h"
 #include "include/util/struct.h"
 #include "src/attribute/9region_attribute.h"

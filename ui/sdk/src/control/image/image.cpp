@@ -2,6 +2,7 @@
 #include "include/common/signalslot/slot.h"
 #include "include/macro/msg.h"
 #include "image_meta.h"
+#include "include/uiapi.h"
 #include "src/attribute/attribute.h"
 
 namespace ui {
@@ -69,7 +70,7 @@ void Image::onSerialize(SerializeParam *pData) {
 }
 
 void Image::loadSrc(const char *src) {
-
+  // UICreateRenderBitmap(IApplication *pUIApp, eGraphicsLibraryType eGraphicsRenderType, IMAGE_ITEM_TYPE eType)
 }
 const char *Image::saveSrc() {
   return nullptr;

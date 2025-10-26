@@ -21,7 +21,7 @@ public:
 		UI_LOG_DEBUG("GdiplusRenderBitmap Delete. ptr=0x%08X", this);
 	}
 
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
+	virtual eGraphicsLibraryType GetGraphicsRenderLibraryType() { return GRAPHICS_RENDER_LIBRARY_TYPE_GDIPLUS; }
 	Gdiplus::Bitmap*  GetBitmap() { return m_pBitmap; }
 
 public:

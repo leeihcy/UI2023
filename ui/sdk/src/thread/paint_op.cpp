@@ -1,5 +1,5 @@
 #include "src/thread/paint_op.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "paint_op.h"
 #include "src/message_loop/message_loop.h"
 

@@ -12,7 +12,7 @@
 #include "include/core/SkRect.h"
 #include "include/core/SkScalar.h"
 #include "include/gpu/GrTypes.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/log.h"
 #include "include/util/rect.h"
@@ -719,7 +719,7 @@ void SkiaRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> pRenderBitmap,
     return;
 
   if (pRenderBitmap->GetGraphicsRenderLibraryType() !=
-      GRAPHICS_RENDER_LIBRARY_TYPE_SKIA) {
+      eGraphicsLibraryType::Skia) {
     return;
   }
 

@@ -2,7 +2,7 @@
 #define _UI_ITEXTRENDERBASE_H_
 
 #include "irenderbase.h"
-#include "renderlibrary.h"
+#include "graphics.h"
 namespace ui {
 
 enum TEXTRENDER_TYPE {

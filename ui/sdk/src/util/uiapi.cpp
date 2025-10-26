@@ -17,7 +17,7 @@ namespace ui {
 
 /*
 void  UI_AttachFont(IRenderFont** pOut, HFONT hFont,
-GRAPHICS_RENDER_LIBRARY_TYPE eRenderType )
+eGraphicsLibraryType eRenderType )
 {
     if( nullptr == hFont || nullptr == pOut)
         return;
@@ -78,7 +78,7 @@ void UI_ExtendPath(std::string &strPath) {
 }
 #if 0 // defined(OS_WIN)
 void UI_AttachFont(IRenderFont **pOut, HFONT hFont,
-                   GRAPHICS_RENDER_LIBRARY_TYPE eRenderType) {
+                   eGraphicsLibraryType eRenderType) {
   if (nullptr == hFont || nullptr == pOut)
     return;
 

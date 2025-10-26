@@ -2,7 +2,7 @@
 
 #include "include/interface/imapattr.h"
 #include "include/interface/iuires.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/msg.h"
 #include "include/macro/uidefine.h"
 #include "include/macro/xmldefine.h"
@@ -86,7 +86,7 @@ std::shared_ptr<IRenderFont> TextRenderBase::_LoadFont(const char *szFontId) {
     if (!szFontId || !pFontRes)
         return;
 
-	GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
+	eGraphicsLibraryType eType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
 	WindowBase* pWnd = m_pObject->GetWindowObject();
 	if (pWnd)
 	{
@@ -135,7 +135,7 @@ std::shared_ptr<IRenderFont> TextRenderBase::_LoadFont(const char *szFontId) {
 //         listbox或者menu，窗口还没有创建。获取默认字体
 // 		if (pFontRes && m_pObject)
 // 		{
-// 			GRAPHICS_RENDER_LIBRARY_TYPE eType =
+// 			eGraphicsLibraryType eType =
 // GRAPHICS_RENDER_LIBRARY_TYPE_GDI; 			WindowBase* pWnd =
 // m_pObject->GetWindowObject(); 			if (pWnd)
 // 			{
@@ -681,7 +681,7 @@ const char *FontColorListTextRender::GetColor() {
 //       this->SetCount(nCount); //  如果未显示指定count，则自动取这里的大小
 
 // #if 0
-// 		GRAPHICS_RENDER_LIBRARY_TYPE eType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
+// 		eGraphicsLibraryType eType = GRAPHICS_RENDER_LIBRARY_TYPE_GDI;
 // 		WindowBase* pWnd = m_pObject->GetWindowObject();
 // 		if (pWnd)
 // 		{

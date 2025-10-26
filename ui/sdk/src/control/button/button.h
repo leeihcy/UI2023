@@ -3,7 +3,7 @@
 
 #include "include/interface/icontrol.h"
 #include "include/interface/irenderbase.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 #include "include/macro/msg.h"
 #include "include/macro/xmldefine.h"
 #include "include/util/rect.h"

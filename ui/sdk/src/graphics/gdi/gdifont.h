@@ -1,6 +1,6 @@
 #pragma once
 #include "..\renderresourceimpl.h"
-#include "include/interface/renderlibrary.h"
+#include "include/interface/graphics.h"
 
 namespace ui
 {
@@ -13,7 +13,7 @@ protected:
 public:
 	~GDIRenderFont();
 	static  void  CreateInstance( IRenderFont** ppOutRef );
-	virtual GRAPHICS_RENDER_LIBRARY_TYPE 
+	virtual eGraphicsLibraryType 
             GetGraphicsRenderLibraryType() 
     {
             return GRAPHICS_RENDER_LIBRARY_TYPE_GDI; 
