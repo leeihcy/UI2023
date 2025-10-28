@@ -107,9 +107,8 @@ bool SkiaRenderGif::loadBySkData(sk_sp<SkData> data) {
     return false;
   }
 
-  m_frame_infos.reserve(m_frame_count);
+  m_frame_infos.resize(m_frame_count);
   m_frames.reserve(m_frame_count);
-  m_frame_infos = codec->getFrameInfo();
 
   // 解码每一帧
   for (int i = 0; i < m_frame_count; i++) {
@@ -125,6 +124,7 @@ bool SkiaRenderGif::loadBySkData(sk_sp<SkData> data) {
     bitmap.setImmutable();
     m_frames.push_back(bitmap.asImage());
 
+    codec->getFrameInfo(i, &m_frame_infos[i]);
     // 将默认帧延时设置为 0.1 秒。
     if (m_frame_infos[i].fDuration <= 0) {
       m_frame_infos[i].fDuration = 100;
@@ -148,7 +148,8 @@ bool SkiaRenderGif::Tick() {
     advanceFrame();
 
     // 补上误差。
-    m_last_frame_time = now - std::chrono::milliseconds(diff);
+    // 但最大误差限制在1帧(16ms)以内，避免拖拽窗口时阻塞UI后积累了很大的误差。
+    m_last_frame_time = now - std::chrono::milliseconds(std::min(16, diff));
     return true;
   }
   return false;

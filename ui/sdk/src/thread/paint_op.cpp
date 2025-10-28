@@ -9,14 +9,13 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   PaintOp* op = this;
 
   switch (op->type) {
-  case PaintOpType::BeginDraw:
-    rt->BeginDraw(static_cast<BeginDrawOp*>(op)->scale);
+  case PaintOpType::BeginDraw: {
+    auto param = static_cast<BeginDrawOp*>(op);
+    rt->BeginDraw(param->dirty_region, param->clear, param->scale);
     break;
+  }
   case PaintOpType::EndDraw:
     rt->EndDraw();
-    break;
-  case PaintOpType::Clear:
-    rt->Clear(static_cast<ClearOp*>(op)->rect);
     break;
   case PaintOpType::FillRect: {
     auto param = static_cast<FillRectOp*>(op);
@@ -49,10 +48,6 @@ void PaintOp::processOnRenderThread(IRenderTarget* rt) {
   }
   case PaintOpType::Restore: {
     rt->Restore();
-    break;
-  }
-  case PaintOpType::SetDirtyRegion: {
-    rt->SetDirtyRegion(static_cast<SetDirtyRegionOp*>(op)->dirty_region);
     break;
   }
   case PaintOpType::ClipRoundRect: {

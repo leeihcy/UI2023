@@ -20,9 +20,8 @@ public:
   eGraphicsLibraryType Type() override {
     return eGraphicsLibraryType::SkiaRecord;
   }
-  bool BeginDraw(float scale) override;
+  bool BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) override;
   void EndDraw() override;
-  void Clear(const Rect& rect) override;
   bool Resize(unsigned int nWidth, unsigned int nHeight) override;
   void* GetHandle() override;
   
@@ -38,7 +37,6 @@ public:
   bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
 
-  void SetDirtyRegion(const DirtyRegion& dirty_region) override;
   void PushRelativeClipRect(const Rect &rect) override;
   void PopRelativeClipRect() override;
   void SetOrigin(int x, int y) override;

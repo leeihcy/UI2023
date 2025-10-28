@@ -254,7 +254,6 @@ struct FrameBufferWithReadLock : public FrameBuffer {
 };
 
 struct IClipOrigin {
-  virtual void SetDirtyRegion(const DirtyRegion& dirty_region) = 0;
   virtual void PushRelativeClipRect(const Rect& rect) = 0;
   virtual void PopRelativeClipRect() = 0;
 
@@ -275,9 +274,8 @@ struct IRenderTarget : public IClipOrigin {
 
   virtual eGraphicsLibraryType Type() = 0;
 
-  virtual bool BeginDraw(float scale) = 0;
+  virtual bool BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) = 0;
   virtual void EndDraw() = 0;
-  virtual void Clear(const Rect& rect) = 0;
   virtual bool Resize(unsigned int nWidth, unsigned int nHeight) = 0;
   virtual void* GetHandle() = 0;
 

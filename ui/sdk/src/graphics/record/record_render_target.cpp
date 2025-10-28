@@ -39,16 +39,14 @@ void RecordRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
   }
 }
 
-bool RecordRenderTarget::BeginDraw(float scale) {
+bool RecordRenderTarget::BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) {
   m_scale = scale;
-  addPaintOp(std::move(std::make_unique<BeginDrawOp>(scale)));
+  m_clip_origin_impl.SetDirtyRegion(dirty_region);
+  addPaintOp(std::move(std::make_unique<BeginDrawOp>(dirty_region, clear, scale)));
   return true;
 }
 void RecordRenderTarget::EndDraw() {
   addPaintOp(std::move(std::make_unique<EndDrawOp>()));
-}
-void RecordRenderTarget::Clear(const Rect &rect) {
-  addPaintOp(std::move(std::make_unique<ClearOp>(rect)));
 }
 bool RecordRenderTarget::Resize(unsigned int width, unsigned int height) {
   addPaintOp(std::move(std::make_unique<ResizeOp>(width, height)));
@@ -96,10 +94,6 @@ void RecordRenderTarget::RenderOnThread(
       std::move(std::make_unique<RenderOnThreadOp>(std::move(callback))));
 }
 
-void RecordRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
-  m_clip_origin_impl.SetDirtyRegion(dirty_region);
-  addPaintOp(std::move(std::make_unique<SetDirtyRegionOp>(dirty_region)));
-}
 void RecordRenderTarget::PushRelativeClipRect(const Rect &rect) {
   m_clip_origin_impl.PushRelativeClipRect(rect);
 }

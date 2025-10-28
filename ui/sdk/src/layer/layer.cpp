@@ -840,15 +840,7 @@ bool Layer::softwareUpdateDirty() {
   IRenderTarget *pRenderTarget = GetRenderTarget();
 
   float scale = m_pLayerContent->GetLayerScale();
-  pRenderTarget->BeginDraw(scale);
-  pRenderTarget->SetDirtyRegion(m_dirty_region);
-
-  // 先begin draw，设置好缩放比例，再clear，否则clear区域不正确。
-  if (m_need_clear_background) {
-    uint count = m_dirty_region.Count();
-    for (uint i = 0; i < count; i++)
-      pRenderTarget->Clear(*m_dirty_region[i]);
-  }
+  pRenderTarget->BeginDraw(m_dirty_region, m_need_clear_background, scale);
 
   // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
@@ -882,16 +874,8 @@ bool Layer::hardwareUpdateDirty() {
     return false;
 
   IRenderTarget *pRenderTarget = GetRenderTarget();
-  if (m_need_clear_background) {
-    uint count = m_dirty_region.Count();
-    for (uint i = 0; i < count; i++)
-      pRenderTarget->Clear(*m_dirty_region[i]);
-  }
-
   float scale = m_pLayerContent->GetLayerScale();
-  pRenderTarget->BeginDraw(scale);
-
-  pRenderTarget->SetDirtyRegion(m_dirty_region);
+  pRenderTarget->BeginDraw(m_dirty_region, m_need_clear_background, scale);
 
   // 立即销毁无效区域，避免在Draw中再次触发Invalidate逻辑后，dirtyrect又被清空
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate

@@ -23,9 +23,8 @@ public:
     return eGraphicsLibraryType::Skia;
   }
 
-  bool BeginDraw(float scale) override;
+  bool BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) override;
   void EndDraw() override;
-  void Clear(const Rect& rect) override;
   bool Resize(unsigned int nWidth, unsigned int nHeight) override;
   void* GetHandle() override;
 
@@ -39,7 +38,6 @@ public:
   void DumpToImage(const char *szPath) override;
   bool GetFrontFrameBuffer(FrameBufferWithReadLock* fb) override;
   void RenderOnThread(slot<void(IRenderTarget*)>&& callback) override;
-  void SetDirtyRegion(const DirtyRegion& dirty_region) override;
   const DirtyRegion& GetDirtyRegion();
   void PushRelativeClipRect(const Rect&) override;
   void PopRelativeClipRect() override;
@@ -60,12 +58,16 @@ public:
   void drawString2(void* text_blob, const Color& color, float x, float y) override;
 
   bool IsRelativeRectInClip(const Rect& rect) override;
+
 public:
   SkSurface *GetSkiaSurface() { return m_sksurface.get(); }
 
 protected:
+  void setDirtyRegion(const DirtyRegion& dirty);
+  void clear(const Rect &rect);
+
   void frames_sync_size();
-  void frames_sync_dirty();
+  void frames_sync_dirty(const DirtyRegion& dirty_region);
 
   void update_clip_rgn();
   void upload_2_gpu();

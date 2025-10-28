@@ -11,7 +11,7 @@ class ClipOriginImpl : public IClipOrigin {
 public:
   ClipOriginImpl();
   
-  void SetDirtyRegion(const DirtyRegion& dirty_region) override;
+  void SetDirtyRegion(const DirtyRegion& dirty_region);
   const DirtyRegion& GetDirtyRegion() { return m_dirty_region; }
   void PushRelativeClipRect(const Rect& rect) override;
   void PopRelativeClipRect() override;

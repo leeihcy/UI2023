@@ -8,11 +8,6 @@ void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
 
 bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
   // invalidate test
-  auto* label = window->TryFindObject("title");
-  if (label){ 
-    label->Invalidate(); 
-  };
-  
   return true;
 }
 

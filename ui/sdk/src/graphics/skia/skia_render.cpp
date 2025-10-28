@@ -93,7 +93,7 @@ void SkiaRenderTarget::update_clip_rgn() {
   }
 }
 
-void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
+void SkiaRenderTarget::setDirtyRegion(const DirtyRegion &dirty_region) {
   if (Config::GetInstance().debug.log_paint) {
     UI_LOG_DEBUG("[SkiaRenderTarget] SetDirtyRegion count = %d",
                  dirty_region.Count());
@@ -106,11 +106,8 @@ void SkiaRenderTarget::SetDirtyRegion(const DirtyRegion &dirty_region) {
 
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
   update_clip_rgn();
-
-  if (m_enable_software_backend) {
-    frames_sync_dirty();
-  }
 }
+
 const DirtyRegion &SkiaRenderTarget::GetDirtyRegion() {
   return m_clip_origin_impl.GetDirtyRegion();
 }
@@ -277,7 +274,10 @@ void SkiaRenderTarget::ClipRect(const Rect &rect) {
 //   // m_pRenderBuffer->GetImageData(pData);
 // }
 
-bool SkiaRenderTarget::BeginDraw(float scale) {
+// 先begin draw，设置好缩放比例，再clear，否则clear区域不正确。
+  // pRenderTarget->SetDirtyRegion(m_dirty_region);
+
+bool SkiaRenderTarget::BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) {
   if (Config::GetInstance().debug.log_paint) {
     UI_LOG_DEBUG("[SkiaRenderTarget] BeginDraw back surface=0x%08x",
                  m_sksurface.get());
@@ -286,20 +286,34 @@ bool SkiaRenderTarget::BeginDraw(float scale) {
   if (!m_sksurface) {
     return false;
   }
-
-  if (m_enable_software_backend) {
-    frames_sync_size();
-  }
-
   SkCanvas *canvas = m_sksurface->getCanvas();
   if (!canvas) {
     return false;
   }
-  m_save_count = canvas->save();
 
-  canvas->scale(scale, scale);
+  if (m_enable_software_backend) {
+    frames_sync_size();
+  }
+  // 需要在应用剪裁之前更新当前surface，因为上一帧的脏区域有可能在当前剪裁区域外面
+  if (m_enable_software_backend) {
+    frames_sync_dirty(dirty_region);
+  }
+
+  m_save_count = canvas->save();
   m_scale = scale;
 
+  canvas->scale(scale, scale);
+
+  // 先设置好缩放比例，再clip。
+  setDirtyRegion(dirty_region);
+
+  // 先设置好缩放比例，再clear，否则clear区域不正确。
+  if (clear) {
+    uint count = dirty_region.Count();
+    for (uint i = 0; i < count; i++) {
+      this->clear(*dirty_region[i]);
+    }
+  }
   return true;
 }
 
@@ -357,7 +371,7 @@ void SkiaRenderTarget::frames_sync_size() {
 }
 
 
-void SkiaRenderTarget::Clear(const Rect &rect) {
+void SkiaRenderTarget::clear(const Rect &rect) {
   if (!m_sksurface) {
     UI_LOG_WARN(L"no sksurface");
     return;
@@ -1269,7 +1283,7 @@ bool SkiaRenderTarget::SwapChain(slot<void()> &&callback) {
 }
 
 // 将front/back数据内容进行同步，避免使用完back后，再使用front时，丢了一帧内容的问题。
-void SkiaRenderTarget::frames_sync_dirty() {
+void SkiaRenderTarget::frames_sync_dirty(const DirtyRegion& dirty_region) {
   // read lock
   std::shared_lock lock(main.m_mutex);
 
@@ -1278,23 +1292,25 @@ void SkiaRenderTarget::frames_sync_dirty() {
   }
 
   // 优化：如果本次的脏区域范围大于等于上一帧的变动范围，则不需要做帧同步
-  const DirtyRegion &dirty_region_current_frame =
-      m_clip_origin_impl.GetDirtyRegion();
-  if (dirty_region_current_frame.Contains(m_last_dirty_region)) {
-    return;
-  }
-
-  // TODO: 继续优化，不仅仅是Contains，更应该是Sub
   for (unsigned int i = 0; i < m_last_dirty_region.Count(); i++) {
     Rect *rect = m_last_dirty_region[i];
-    Render2TargetParam param = {0};
-    param.xSrc = param.xDst = rect->left;
-    param.ySrc = param.yDst = rect->top;
-    param.wSrc = param.wDst = rect->Width();
-    param.hSrc = param.hDst = rect->Height();
-    render_to_surface(main.m_sksurface_front.get(), m_sksurface.get(), &param, 1);
-    // printf("frames sync dirty: %d,%d,  %d,%d\n", rect->left, rect->top,
-    // rect->Width(), rect->Height());
+    if (dirty_region.Contains(*rect)) {
+      continue;
+    }
+
+    SkCanvas *target_canvas = m_sksurface->getCanvas();
+    SkCanvas *source_canvas = main.m_sksurface_front->getCanvas();
+
+    sk_sp<SkImage> source_image(main.m_sksurface_front->makeImageSnapshot());
+    SkSamplingOptions options;
+    SkPaint paint;
+
+    SkRect skrect =
+        SkRect::MakeXYWH((SkScalar)rect->left, (SkScalar)rect->top,
+                         (SkScalar)rect->Width(), (SkScalar)rect->Height());
+
+    target_canvas->drawImageRect(source_image, skrect, skrect, options, &paint,
+                                 SkCanvas::kFast_SrcRectConstraint);
   }
 }
 

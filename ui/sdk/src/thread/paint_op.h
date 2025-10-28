@@ -22,12 +22,10 @@ enum class PaintOpType : unsigned char {
   Resize,
   Save,
   Restore,
-  SetDirtyRegion,
   SetOrigin,
   OffsetOrigin,
   ClipRoundRect,
   ClipRect,
-  Clear,
   FillRect,
   StrokeRect,
   FillRoundRect,
@@ -68,9 +66,13 @@ struct RenderCommand : public PaintOp {
 
 struct BeginDrawOp : public PaintOp {
 public:
-  BeginDrawOp(float _scale) : PaintOp(PaintOpType::BeginDraw), scale(_scale) {}
+  BeginDrawOp(const DirtyRegion &_dirty, bool _clear, float _scale)
+      : PaintOp(PaintOpType::BeginDraw), dirty_region(_dirty), clear(_clear),
+        scale(_scale) {}
 
-  float scale;
+  DirtyRegion dirty_region;
+  bool clear = false;
+  float scale = 1;
 };
 
 struct EndDrawOp : public PaintOp {
@@ -92,12 +94,6 @@ struct SaveOp : public PaintOp {
 struct RestoreOp : public PaintOp {
   RestoreOp()
       : PaintOp(PaintOpType::Restore){}
-};
-
-struct SetDirtyRegionOp : public PaintOp {
-  SetDirtyRegionOp(const DirtyRegion& _dirty_region)
-      : PaintOp(PaintOpType::SetDirtyRegion), dirty_region(_dirty_region){}
-  DirtyRegion dirty_region;
 };
 
 struct ClipRoundRectOp : public PaintOp {
@@ -122,11 +118,6 @@ struct OffsetOriginOp : public PaintOp {
       : PaintOp(PaintOpType::OffsetOrigin), x(_x), y(_y){}
   int x;
   int y;
-};
-
-struct ClearOp : public PaintOp {
-  ClearOp(const Rect &_rect) : PaintOp(PaintOpType::Clear), rect(_rect) {}
-  Rect rect;
 };
 
 struct FillRectOp : public PaintOp {
