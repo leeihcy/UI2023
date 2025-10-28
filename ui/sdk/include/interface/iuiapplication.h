@@ -38,7 +38,6 @@ struct ITextRenderBase;
 struct IMessageFilterMgr;
 struct TOOLTIPITEM;
 class TimerItem;
-typedef void* TimerID;
 
 using IApplicationPtr =
     std::unique_ptr<ui::IApplication, void (*)(IApplication *)>;
@@ -105,9 +104,6 @@ public:
                       llong lParam);
   bool RegisterLayout(const char *name, pfnUICreateLayoutPtr pfn);
 
-#if 0
-    bool  IsDialogMessage(MSG* pMsg);
-#endif
   void MsgHandleLoop(bool *pbQuitLoopRef = nullptr);
   void RedrawTopWindows();
 
@@ -116,26 +112,12 @@ public:
 
   TimerID SetTimer(int elapse, slot<bool(TimerID)>&& timer_callback);
   void KillTimer(TimerID timer_id);
-  // unsigned int SetTimerById(int nElapse, unsigned int nId, IMessage *pNotify);
-  // unsigned int SetTimer(int nElapse, TimerItem *pTimerItem);
-  // void KillTimerById(int nId, IMessage *pNotify);
-  // void KillTimerByNotify(IMessage *pNotify);
 
-#if 0
-    HDC   GetCacheDC();
-    void  ReleaseCacheDC(HDC hDC);
-    HBITMAP  GetCacheBitmap(int nWidth, int nHeight);  // 注：不要释放该HBITMAP，由内部维护
-    void  ShadowBlur(HBITMAP hBitmap, Color colorShadow, Rect* prcBlur, int nRadius);
-#endif
   bool IsUnderXpOS();
   bool IsVistaOrWin7etc();
   bool IsAeroEnable();
   bool IsHardwareCompositeEnable();
   bool EnableHardwareComposite();
-#if 0
-  HWND GetForwardPostMessageWnd();
-  IWindowBase *GetWindowBaseFromHWND(HWND hWnd);
-#endif
 private:
   Application *m_pImpl;
 };

@@ -36,15 +36,15 @@ protected:
 	virtual void  PostEnd() {};
 
     // 动画响应
-    virtual void  OnEnd(UIA::E_ANIMATE_END_REASON) = 0;
-    virtual UIA::E_ANIMATE_TICK_RESULT  OnTick(UIA::IStoryboard*) = 0;
+    virtual void  OnEnd(UIA::eAnimateEndReason) = 0;
+    virtual UIA::eAnimateTickResult  OnTick(UIA::IStoryboard*) = 0;
 
     // 向派生类获取app接口
     virtual UI::IApplication*  GetUIApplication() = 0;
 
 protected:
-    virtual void  OnAnimateEnd(UIA::IStoryboard*, UIA::E_ANIMATE_END_REASON) override;
-    virtual UIA::E_ANIMATE_TICK_RESULT  OnAnimateTick(UIA::IStoryboard*) override;
+    virtual void  OnAnimateEnd(UIA::IStoryboard*, UIA::eAnimateEndReason) override;
+    virtual UIA::eAnimateTickResult  OnAnimateTick(UIA::IStoryboard*) override;
 
 protected:
     // 动画互斥有两种场景：

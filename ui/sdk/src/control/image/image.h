@@ -16,7 +16,7 @@ typedef void* TimerID;
 // TODO: dpi @percent support
 //
 
-class Image : public Control {
+class Image : public Control, public IAnimateTimer {
 public:
   Image(IImage *p);
   ~Image();
@@ -36,8 +36,10 @@ private:
 
   void startGifTimer();
   void stopGifTimer();
-  bool onTimerTick(TimerID timer_id);
-  
+
+private:
+  void OnTick() override;
+
 private:
   IImage *m_pIImage;
 

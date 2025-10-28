@@ -23,14 +23,14 @@ public:
   void OnAnimateStart(uia::IStoryboard *) override {
     printf("OnAnimateStart\n");
   };
-  void OnAnimateEnd(uia::IStoryboard *, uia::E_ANIMATE_END_REASON e) override {
+  void OnAnimateEnd(uia::IStoryboard *, uia::eAnimateEndReason e) override {
     printf("OnAnimateEnd\n");
   };
-  uia::E_ANIMATE_TICK_RESULT
+  uia::eAnimateTickResult
   OnAnimateTick(uia::IStoryboard *storyboard) override {
     ui::IWindow *window = (ui::IWindow *)storyboard->GetWParam();
     update_rotate(window);
-    return uia::ANIMATE_TICK_RESULT_CONTINUE;
+    return uia::eAnimateTickResult::Continue;
   };
 
   void OnAnimateRepeat(uia::IStoryboard *) override {

@@ -42,7 +42,7 @@ private:
 struct ILayer;
 struct LayerAnimateFinishParam {
   long reversed;
-  uia::E_ANIMATE_END_REASON endreason;
+  uia::eAnimateEndReason endreason;
 };
 typedef void (*pfnLayerAnimateFinish)(LayerAnimateFinishParam *);
 

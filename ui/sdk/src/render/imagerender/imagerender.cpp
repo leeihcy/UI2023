@@ -418,7 +418,7 @@ void ImageListRender::SetIImageListRenderBitmap(
 
 IRenderBitmap *ImageListRender::GetRenderBitmap() { return m_image_list.get(); }
 #if 0
-uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pStoryboard)
+uia::eAnimateTickResult ImageListRender::OnAnimateTick(uia::IStoryboard* pStoryboard)
 {
     m_nCurrentAlpha = pStoryboard->FindTimeline(0)
 		->GetCurrentIntValue();
@@ -430,7 +430,7 @@ uia::E_ANIMATE_TICK_RESULT ImageListRender::OnAnimateTick(uia::IStoryboard* pSto
     if (bFinish)
         m_bIsAnimate = false;
 
-    return uia::ANIMATE_TICK_RESULT_CONTINUE;
+    return uia::eAnimateTickResult::Continue;
 }
 #endif
 void ImageListRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {

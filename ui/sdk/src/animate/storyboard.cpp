@@ -160,7 +160,7 @@ void  Storyboard::BeginFullCpu()
 	m_pAnimateMgr->AddStoryboardFullCpu(this);
 }
 
-// �ӳ�һ��ʱ����ٿ�ʼ������
+// 延迟一段时候后再开始动画。
 void  Storyboard::BeginDelay(long lElapse)
 {
 #if 0 // defined(OS_WIN)
@@ -238,12 +238,12 @@ bool  Storyboard::IsFinish()
 void  Storyboard::Cancel()
 {
     m_pAnimateMgr->CancelStoryboard(this);
-    // this �ѱ�����
+    // this 已被销毁
     return;
 }
 
-// ��ontick�������̵��У������˶������������������ClearStoryboardByNotify�������������ڽ���
-// �е�storyboard�������������޷���ʱ��vector���Ƴ������ȵ�������������Է�Ұָ�����
+// 在ontick遍历过程当中，触发了对象的析构，并调用了ClearStoryboardByNotify方法，其它正在进行
+// 中的storyboard在清理过程中无法及时从vector中移除，就先调用这个方法，以防野指针崩溃
 void  Storyboard::MarkToBeDestroyed()
 {
 	SetEventListener(nullptr);
@@ -257,22 +257,22 @@ bool  Storyboard::OnTick()
         m_listTimeline[i]->OnTick();
     }
 
-    // ��ֹNotify�����ж������٣��ȱ���һ��bFinish
+    // 防止Notify过程中对象被销毁，先保存一份bFinish
     bool bFinish = IsFinish();
 
-	E_ANIMATE_TICK_RESULT eResult = NotifyTick();  
-    if (ANIMATE_TICK_RESULT_CANCEL == eResult)
+	eAnimateTickResult eResult = NotifyTick();  
+    if (eAnimateTickResult::Cancel == eResult)
         bFinish = true;
 
     return bFinish;
 }
 
-E_ANIMATE_TICK_RESULT  Storyboard::NotifyTick()
+eAnimateTickResult  Storyboard::NotifyTick()
 {
 	if (m_pNotify)
 		return m_pNotify->OnAnimateTick(m_pIStoryboard);
 
-    return ANIMATE_TICK_RESULT_CONTINUE;
+    return eAnimateTickResult::Continue;
 }
 void  Storyboard::NotifyStart()
 {
@@ -282,17 +282,17 @@ void  Storyboard::NotifyStart()
 void  Storyboard::NotifyEnd()
 {
 	if (m_pNotify)
-		m_pNotify->OnAnimateEnd(m_pIStoryboard, ANIMATE_END_NORMAL);
+		m_pNotify->OnAnimateEnd(m_pIStoryboard, eAnimateEndReason::Normal);
 }
 void  Storyboard::NotifyCancel()
 {
 	if (m_pNotify)
-		m_pNotify->OnAnimateEnd(m_pIStoryboard, ANIMATE_END_CANCEL);
+		m_pNotify->OnAnimateEnd(m_pIStoryboard, eAnimateEndReason::Cancel);
 }
 void  Storyboard::NotifyDiscard()
 {
 	if (m_pNotify)
-		m_pNotify->OnAnimateEnd(m_pIStoryboard, ANIMATE_END_DISCARD);
+		m_pNotify->OnAnimateEnd(m_pIStoryboard, eAnimateEndReason::Discard);
 }
 void  Storyboard::NotifyReverse()
 {

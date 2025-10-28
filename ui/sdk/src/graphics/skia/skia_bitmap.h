@@ -56,7 +56,9 @@ private:
   std::vector<SkCodec::FrameInfo> m_frame_infos;
   int m_current_frame = 0;
   int m_frame_count = 0;
+
   std::chrono::steady_clock::time_point m_last_frame_time;
+  
 };
 
 // class GDIIconRenderBitmap : public SkiaRenderBitmapImpl<IRenderResourceImpl<IImageIconRenderBitmap > >// : public SkiaRenderBitmap

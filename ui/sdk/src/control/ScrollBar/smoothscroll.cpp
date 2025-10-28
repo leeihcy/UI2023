@@ -251,7 +251,7 @@ void  SmoothScroll::OnScrollStop()
 	}
 }
 
-UIA::E_ANIMATE_TICK_RESULT SmoothScroll::OnAnimateTick(UIA::IStoryboard* pStoryboard)
+UIA::eAnimateTickResult SmoothScroll::OnAnimateTick(UIA::IStoryboard* pStoryboard)
 {
     UIASSERT(pStoryboard == m_pAnimateStoryboard);
 	long  lAnimateId = m_pAnimateStoryboard->GetId();
@@ -264,7 +264,7 @@ UIA::E_ANIMATE_TICK_RESULT SmoothScroll::OnAnimateTick(UIA::IStoryboard* pStoryb
 	else
 		OnTick_ScrollAnimate();
 
-    return UIA::ANIMATE_TICK_RESULT_CONTINUE;
+    return UIA::eAnimateTickResult::Continue;
 }
 
 void  SmoothScroll::OnTick_ScrollAnimate()

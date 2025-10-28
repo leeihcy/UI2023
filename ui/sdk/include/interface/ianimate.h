@@ -3,7 +3,7 @@
 #include "sdk/include/interface.h"
 
 namespace uia {
-enum TIMELINE_TIME_TYPE {
+enum eTimelineTimeType {
   TT_BY_MS,
   TT_BY_SECOND,
   TT_BY_FRAME,
@@ -106,7 +106,7 @@ public:
   ITimeline(Timeline *p);
 
   void SetRepeateCount(int n);
-  void SetTimeType(TIMELINE_TIME_TYPE eType);
+  void SetTimeType(eTimelineTimeType eType);
   void SetAutoReverse(bool b);
   bool IsFinish();
   void SetFinish();
@@ -218,20 +218,20 @@ private:
   Animate *m_pImpl;
 };
 
-enum E_ANIMATE_END_REASON {
-  ANIMATE_END_NORMAL,  // 正常结束
-  ANIMATE_END_CANCEL,  // 被新动画取消
-  ANIMATE_END_DISCARD, // 进程退出，强制结束
+enum class eAnimateEndReason {
+  Normal,  // 正常结束
+  Cancel,  // 被新动画取消
+  Discard, // 进程退出，强制结束
 };
-enum E_ANIMATE_TICK_RESULT {
-  ANIMATE_TICK_RESULT_CONTINUE, // 动画继续
-  ANIMATE_TICK_RESULT_CANCEL,   // 动画取消，立即结束
+enum class eAnimateTickResult {
+  Continue, // 动画继续
+  Cancel,   // 动画取消，立即结束
 };
 struct IAnimateEventCallback {
   virtual void OnAnimateStart(IStoryboard *){};
-  virtual void OnAnimateEnd(IStoryboard *, E_ANIMATE_END_REASON e){};
-  virtual E_ANIMATE_TICK_RESULT OnAnimateTick(IStoryboard *) {
-    return ANIMATE_TICK_RESULT_CONTINUE;
+  virtual void OnAnimateEnd(IStoryboard *, eAnimateEndReason e){};
+  virtual eAnimateTickResult OnAnimateTick(IStoryboard *) {
+    return eAnimateTickResult::Continue;
   };
   virtual void OnAnimateRepeat(IStoryboard *){};
   virtual void OnAnimateReverse(IStoryboard *){};

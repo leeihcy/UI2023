@@ -24,8 +24,8 @@ public:
 
     virtual bool  StartReq(UIA::IStoryboard*) override;
     virtual bool  IsEqual(AnimateImpl* p) override;
-    virtual void  OnEnd(UIA::E_ANIMATE_END_REASON) override;
-    virtual UIA::E_ANIMATE_TICK_RESULT  OnTick(UIA::IStoryboard*) override;
+    virtual void  OnEnd(UIA::eAnimateEndReason) override;
+    virtual UIA::eAnimateTickResult  OnTick(UIA::IStoryboard*) override;
 
 	static void  Cancel(UI::ListItemBase& item);
 protected:

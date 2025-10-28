@@ -106,7 +106,7 @@ public:
   void OnSerialize(SerializeParam *pData);
   void DrawState(RENDERBASE_DRAWSTATE *pDrawStruct);
   void GetDesiredSize(Size *pSize);
-  // virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard*)
+  // virtual uia::eAnimateTickResult OnAnimateTick(uia::IStoryboard*)
   // override;
 
   int GetItemWidth();

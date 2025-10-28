@@ -16,6 +16,11 @@ enum {
   WH_PERCENT = -4
 };
 
+typedef void* TimerID;
+struct IAnimateTimer {
+  virtual void OnTick() = 0;
+};
+
 #define EMPTYTEXT ""
 
 #define __pImpl static_cast<ImplName *>(m_pImpl)

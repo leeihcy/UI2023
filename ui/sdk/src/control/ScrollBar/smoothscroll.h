@@ -105,7 +105,7 @@ protected:
 		BouncyEdgeAnimate_Back, // µØªÿ¿¥
 	};
 
-    virtual UIA::E_ANIMATE_TICK_RESULT  OnAnimateTick(UIA::IStoryboard*) override;
+    virtual UIA::eAnimateTickResult  OnAnimateTick(UIA::IStoryboard*) override;
 	void  OnTick_ScrollAnimate();
 	void  OnTick_BounceEdgeAnimate();
 

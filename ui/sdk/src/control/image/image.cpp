@@ -4,21 +4,19 @@
 #include "include/interface/graphics.h"
 #include "include/interface/ibundlesource.h"
 #include "include/macro/msg.h"
+#include "include/macro/uidefine.h"
 #include "include/macro/xmldefine.h"
 #include "include/uiapi.h"
 #include "src/application/uiapplication.h"
 #include "src/attribute/attribute.h"
-#include "src/parser/datasource/bundle_source.h"
 #include "src/graphics/skia/skia_bitmap.h"
+#include "src/parser/datasource/bundle_source.h"
 #include <cstring>
-
 
 namespace ui {
 
 Image::Image(IImage *p) : Control(p), m_pIImage(p) {}
-Image::~Image() {
-  stopGifTimer();
-}
+Image::~Image() { stopGifTimer(); }
 
 void Image::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_PAINT) {
@@ -105,9 +103,7 @@ void Image::loadSrc(const char *src) {
   }
 }
 
-const char *Image::saveSrc() { 
-  return m_src.c_str(); 
-}
+const char *Image::saveSrc() { return m_src.c_str(); }
 
 void Image::onGetDesiredSize(Size *size) {
   size->width = size->height = 0;
@@ -127,21 +123,17 @@ void Image::onGetDesiredSize(Size *size) {
 }
 
 void Image::startGifTimer() {
-  // TODO: story board or timer?
-  GetUIApplication()->GetTimerHelper().SetTimer(100, 
-    Slot(&Image::onTimerTick, this));
+  GetUIApplication()->GetTimerHelper().SubscribeAnimateTimer(
+      static_cast<IAnimateTimer *>(this));
 }
 void Image::stopGifTimer() {
-  if (m_timer_id) {
-    GetUIApplication()->GetTimerHelper().KillTimer(m_timer_id);
-    m_timer_id = nullptr;
-  }
+  GetUIApplication()->GetTimerHelper().UnsubscribeAnimateTimer(
+      static_cast<IAnimateTimer *>(this));
 }
-bool Image::onTimerTick(TimerID timer_id) {
-  if (static_cast<SkiaRenderGif*>(m_bitmap.get())->Tick()) {
+void Image::OnTick() {
+  if (static_cast<SkiaRenderGif *>(m_bitmap.get())->Tick()) {
     Invalidate();
   }
-  return true;
 }
 
 } // namespace ui

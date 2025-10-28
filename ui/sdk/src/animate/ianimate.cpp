@@ -37,7 +37,7 @@ namespace uia {
 ITimeline::ITimeline(Timeline *p) : m_pTimelineImpl(p) {}
 
 void ITimeline::SetRepeateCount(int n) { m_pTimelineImpl->SetRepeateCount(n); }
-void ITimeline::SetTimeType(TIMELINE_TIME_TYPE eType) {
+void ITimeline::SetTimeType(eTimelineTimeType eType) {
   m_pTimelineImpl->SetTimeType(eType);
 }
 void ITimeline::SetAutoReverse(bool b) { m_pTimelineImpl->SetAutoReverse(b); }

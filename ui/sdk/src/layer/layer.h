@@ -141,9 +141,9 @@ public:
   void MapView2Layer(Point *pPoint);
 
 protected:
-  virtual uia::E_ANIMATE_TICK_RESULT OnAnimateTick(uia::IStoryboard *) override;
+  virtual uia::eAnimateTickResult OnAnimateTick(uia::IStoryboard *) override;
   virtual void OnAnimateEnd(uia::IStoryboard *,
-                            uia::E_ANIMATE_END_REASON e) override;
+                            uia::eAnimateEndReason e) override;
   virtual void virtualOnSize(uint nWidth, uint nHeight){};
 
   Object *GetLayerContentObject();

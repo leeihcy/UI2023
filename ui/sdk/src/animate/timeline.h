@@ -35,7 +35,7 @@ public:
   long GetUserData() { return m_pParam; }
 
   void SetRepeateCount(int n) { m_nRepeatTimes = n; }
-  void SetTimeType(TIMELINE_TIME_TYPE eType) { m_eTimeType = eType; }
+  void SetTimeType(eTimelineTimeType eType) { m_eTimeType = eType; }
   void SetAutoReverse(bool b);
   bool IsAutoReverse();
 
@@ -69,7 +69,7 @@ protected:
   float m_fCurrentValue;
 
   // TODO: 要加上一个delay参数，允许timeline延迟进行，（实现非对称动画）
-  TIMELINE_TIME_TYPE m_eTimeType;
+  eTimelineTimeType m_eTimeType;
   
   // 计时 记录动画开始时的time tick，当时间到达m_nBeginTime+m_nDuretion时，动画结束。
   StopWatch  m_stopWatch;

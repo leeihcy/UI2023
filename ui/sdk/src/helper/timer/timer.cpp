@@ -1,153 +1,21 @@
 #include "timer.h"
+#include "include/interface/ianimate.h"
 #include "sdk/src/application/uiapplication.h"
 #include <utility>
 
 namespace ui {
 
 TimerHelper::TimerHelper(Application &app) : m_app(app) {}
-#if 0
-
-UINT_PTR TimerHelper::SetTimer(int nElapse, IMessage *pNotify) {
-  if (!pNotify)
-    return 0;
-
-  TimerItem ti;
-  ti.pNotify = pNotify;
-  return this->SetTimer(nElapse, &ti);
-}
-
-UINT_PTR
-TimerHelper::SetTimer(int nElapse,
-                      std::function<bool(UINT_PTR, TimerItem *)> func) {
-  if (!func)
-    return 0;
-
-  TimerItem ti;
-  ti.func = func;
-  return this->SetTimer(nElapse, &ti);
-}
-
-UINT_PTR TimerHelper::SetTimerById(int nElapse, UINT_PTR nId,
-                                   IMessage *pNotify) {
-  if (nullptr == pNotify)
-    return 0;
-
-  // ���Ҹ�pNotify��Ӧ��nId�Ƿ��Ѿ�����
-  _MyIter iter = m_mapTimerItem.begin();
-  for (; iter != m_mapTimerItem.end(); iter++) {
-    if (iter->second.nId == nId && iter->second.pNotify == pNotify)
-      return 0;
-  }
-
-  TimerItem ti;
-  ti.nId = nId;
-  ti.pNotify = pNotify;
-  return this->SetTimer(nElapse, &ti);
-}
-
-UINT_PTR TimerHelper::SetTimer(int nElapse, TimerItem *pItem) {
-  if (nullptr == pItem)
-    return 0;
-
-  UINT_PTR nTimerID = ::SetTimer(nullptr, 0, nElapse, TimerHelper::TimerProc);
-  m_mapTimerItem[nTimerID] = *pItem;
-
-  TimerItem &itemRef = m_mapTimerItem[nTimerID];
-  if (itemRef.pNotify)
-    itemRef.pNotify->AddDelayRef((void **)&itemRef.pNotify);
-
-  //    int nCount = m_mapTimerItem.size();
-  //    UI_LOG_DEBUG("%s  timer id:%d, nElapse=%d, id=%d, pNotify=0x%x",
-  //    FUNC_NAME, nTimerID, nElapse, pItem->nId, pItem->pNotify);
-  return nTimerID;
-}
-void TimerHelper::KillTimer(UINT_PTR &nTimerIdRef) {
-  _MyIter iter = m_mapTimerItem.find(nTimerIdRef);
-  if (iter != m_mapTimerItem.end()) {
-    //        UI_LOG_DEBUG("%s timer id:%d", FUNC_NAME, nTimerIdRef);
-
-    if (iter->second.pNotify)
-      iter->second.pNotify->RemoveDelayRef((void **)&iter->second.pNotify);
-
-    ::KillTimer(0, nTimerIdRef);
-
-    m_mapTimerItem.erase(iter);
-    nTimerIdRef = 0;
-    return;
-  }
-}
-
-void TimerHelper::KillTimerById(int nId, IMessage *pNotify) {
-  _MyIter iter = m_mapTimerItem.begin();
-  for (; iter != m_mapTimerItem.end(); iter++) {
-    if (iter->second.nId == nId && iter->second.pNotify == pNotify) {
-      //            UI_LOG_DEBUG("%s timer id:%d, id=%d", FUNC_NAME,
-      //            iter->first, nId);
-      if (iter->second.pNotify)
-        iter->second.pNotify->RemoveDelayRef((void **)&iter->second.pNotify);
-
-      ::KillTimer(nullptr, iter->first);
-      m_mapTimerItem.erase(iter);
-      return;
-    }
-  }
-}
-void TimerHelper::KillTimerByNotify(IMessage *pNotify) {
-  _MyIter iter = m_mapTimerItem.begin();
-  for (; iter != m_mapTimerItem.end();) {
-    if (iter->second.pNotify == pNotify) {
-      if (iter->second.pNotify)
-        iter->second.pNotify->RemoveDelayRef((void **)&iter->second.pNotify);
-
-      //            UI_LOG_DEBUG("%s timer id:%d, id=%d", FUNC_NAME,
-      //            iter->first, nId);
-      ::KillTimer(nullptr, iter->first);
-      iter = m_mapTimerItem.erase(iter);
-    } else {
-      iter++;
-    }
-  }
-}
-
-VOID CALLBACK TimerHelper::TimerProc(HWND hwnd, unsigned int uMsg,
-                                     UINT_PTR idEvent, unsigned int dwTime) {
-  TimerHelper::GetInstance()->OnTimer(idEvent);
-}
-void TimerHelper::OnTimer(UINT_PTR idEvent) {
-  if (0 == m_mapTimerItem.count(idEvent)) {
-    UIASSERT(0);
-    TimerHelper::GetInstance()->KillTimer(idEvent);
-    return;
-  }
-  TimerItem &ti = m_mapTimerItem[idEvent];
-
-  if (-1 != ti.nRepeatCount)
-    ti.nRepeatCount--;
-
-  int nRepeatCount = ti.nRepeatCount;
-  if (ti.pNotify) {
-    ::UISendMessage(ti.pNotify, WM_TIMER, idEvent, (long)&ti);
-  } else if (ti.pProc) {
-    ti.pProc(idEvent, &ti);
-  } else if (ti.func) {
-    if (false == ti.func(idEvent, &ti)) {
-      nRepeatCount = 0;
-    }
-  }
-
-  if (0 == nRepeatCount) {
-    KillTimer(idEvent);
-  }
-}
-#endif
+TimerHelper::~TimerHelper() { stopAnimateTimer(); }
 
 TimerID TimerHelper::SetTimer(int elapse,
-                                   slot<bool(TimerID)> &&timer_callback) {
+                              slot<bool(TimerID)> &&timer_callback) {
   TimerID timer_id = m_app.GetMessageLoop().CreateTimer(elapse);
   m_mapTimerItem[timer_id].connect(
       std::forward<slot<bool(TimerID)>>(timer_callback));
   return timer_id;
 }
+
 void TimerHelper::KillTimer(TimerID timer_id) {
   auto iter = m_mapTimerItem.find(timer_id);
   if (iter != m_mapTimerItem.end()) {
@@ -155,6 +23,7 @@ void TimerHelper::KillTimer(TimerID timer_id) {
     m_mapTimerItem.erase(iter);
   }
 }
+
 void TimerHelper::onTimer(TimerID timer_id) {
   auto iter = m_mapTimerItem.find(timer_id);
   if (iter != m_mapTimerItem.end()) {
@@ -165,6 +34,74 @@ void TimerHelper::onTimer(TimerID timer_id) {
   } else {
     KillTimer(timer_id);
   }
+}
+
+void TimerHelper::SubscribeAnimateTimer(IAnimateTimer *subscriber) {
+  m_animate_timer_subscribers.push_back(subscriber);
+
+  if (m_animate_timer_subscribers.size() == 1) {
+    startAnimateTimer();
+  }
+}
+
+void TimerHelper::UnsubscribeAnimateTimer(IAnimateTimer *subscriber) {
+  auto iter = std::find(m_animate_timer_subscribers.begin(),
+                        m_animate_timer_subscribers.end(), subscriber);
+  if (iter == m_animate_timer_subscribers.end()) {
+    return;
+  }
+  int size = m_animate_timer_subscribers.size();
+  if (m_looping) {
+    *iter = nullptr;
+    return;
+  }
+  
+  m_animate_timer_subscribers.erase(iter);
+  if (size == 1) {
+    stopAnimateTimer();
+  }
+}
+
+uia::eAnimateTickResult TimerHelper::OnAnimateTick(uia::IStoryboard *) {
+  m_looping = true;
+
+  bool dirty = false;
+  auto iter = m_animate_timer_subscribers.begin();
+  for (; iter != m_animate_timer_subscribers.end();) {
+    if (!*iter) {
+      dirty = true;
+      iter = m_animate_timer_subscribers.erase(iter);
+      continue;
+    }
+    (*iter)->OnTick();
+    iter++;
+  }
+  m_looping = false;
+
+  if (dirty && m_animate_timer_subscribers.empty()) {
+    return uia::eAnimateTickResult::Cancel;  
+  }
+  return uia::eAnimateTickResult::Continue;
+}
+
+void TimerHelper::OnAnimateEnd(uia::IStoryboard *, uia::eAnimateEndReason e) {
+  m_storyboard = nullptr;
+}
+
+void TimerHelper::startAnimateTimer() {
+  if (m_storyboard) {
+    return;
+  }
+  m_storyboard = m_app.GetAnimate()->CreateStoryboard(this);
+  m_storyboard->CreateIdleTimeline(0);
+  m_storyboard->Begin();
+}
+void TimerHelper::stopAnimateTimer() {
+  if (!m_storyboard) {
+    return;
+  }
+  m_app.GetAnimate()->RemoveStoryboard(m_storyboard);
+  m_storyboard = nullptr;
 }
 
 } // namespace ui

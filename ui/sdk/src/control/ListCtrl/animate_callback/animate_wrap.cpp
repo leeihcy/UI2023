@@ -170,7 +170,7 @@ void  AnimateImpl::CancelAnimate()
     return;
 }
 
-void  AnimateImpl::OnAnimateEnd(UIA::IStoryboard* p, UIA::E_ANIMATE_END_REASON e)
+void  AnimateImpl::OnAnimateEnd(UIA::IStoryboard* p, UIA::eAnimateEndReason e)
 {
     UIASSERT(m_pStoryboard = p);
 
@@ -181,7 +181,7 @@ void  AnimateImpl::OnAnimateEnd(UIA::IStoryboard* p, UIA::E_ANIMATE_END_REASON e
     delete this;
 }
 
-UIA::E_ANIMATE_TICK_RESULT  AnimateImpl::OnAnimateTick(UIA::IStoryboard* p)
+UIA::eAnimateTickResult  AnimateImpl::OnAnimateTick(UIA::IStoryboard* p)
 {
     UIASSERT (m_pStoryboard = p);
 

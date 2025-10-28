@@ -47,7 +47,7 @@ public:
 
   IStoryboard *GetIStoryboard();
 
-  E_ANIMATE_TICK_RESULT NotifyTick();
+  eAnimateTickResult NotifyTick();
   void NotifyStart();
   void NotifyEnd();
   void NotifyCancel();

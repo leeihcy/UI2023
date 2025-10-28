@@ -306,7 +306,7 @@ void Layer::SetOpacity(byte b, LayerAnimateParam *pParam) {
   if (m_nOpacity == b) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -358,7 +358,7 @@ void Layer::RotateYTo(float f, LayerAnimateParam *pParam) {
   if (m_fyRotate == f) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -409,7 +409,7 @@ void Layer::RotateXTo(float f, LayerAnimateParam *pParam) {
   if (m_fxRotate == f) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -460,7 +460,7 @@ void Layer::RotateZTo(float f, LayerAnimateParam *pParam) {
   if (m_fzRotate == f) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -509,7 +509,7 @@ void Layer::ScaleTo(float x, float y, LayerAnimateParam *pParam) {
   if (fequ(x, m_fxScale) && fequ(y, m_fyScale)) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -567,7 +567,7 @@ void Layer::TranslateTo(float x, float y, float z, LayerAnimateParam *pParam) {
   if (m_xTranslate == x && m_yTranslate == y && m_zTranslate == z) {
     if (pParam && pParam->GetFinishCallback()) {
       LayerAnimateFinishParam info = {0};
-      info.endreason = uia::ANIMATE_END_NORMAL;
+      info.endreason = uia::eAnimateEndReason::Normal;
       pParam->GetFinishCallback()(info);
     }
     return;
@@ -628,7 +628,7 @@ float Layer::GetXTranslate() { return m_xTranslate; }
 float Layer::GetYTranslate() { return m_yTranslate; }
 float Layer::GetZTranslate() { return m_zTranslate; }
 
-uia::E_ANIMATE_TICK_RESULT Layer::OnAnimateTick(uia::IStoryboard *pStoryboard) {
+uia::eAnimateTickResult Layer::OnAnimateTick(uia::IStoryboard *pStoryboard) {
   LayerAnimateParam *pParam = (LayerAnimateParam *)pStoryboard->GetWParam();
   bool isblock = false;
   if (pParam)
@@ -673,11 +673,11 @@ uia::E_ANIMATE_TICK_RESULT Layer::OnAnimateTick(uia::IStoryboard *pStoryboard) {
   } break;
   }
 
-  return uia::ANIMATE_TICK_RESULT_CONTINUE;
+  return uia::eAnimateTickResult::Continue;
 }
 
 void Layer::OnAnimateEnd(uia::IStoryboard *pStoryboard,
-                         uia::E_ANIMATE_END_REASON e) {
+                         uia::eAnimateEndReason e) {
   m_nCurrentStoryboardCount--;
   UIASSERT(m_nCurrentStoryboardCount >= 0);
 
@@ -708,7 +708,7 @@ void Layer::OnAnimateEnd(uia::IStoryboard *pStoryboard,
   }
 
   // !=normal时，可能是当前动画正在被新的动画取代，这个时候不去尝试销毁，由新的动画结束后触发
-  if (e == uia::ANIMATE_END_NORMAL) {
+  if (e == uia::eAnimateEndReason::Normal) {
     TryDestroy();
   }
 }

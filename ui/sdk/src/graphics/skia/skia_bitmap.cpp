@@ -118,12 +118,17 @@ bool SkiaRenderGif::loadBySkData(sk_sp<SkData> data) {
 
     SkCodec::Options options;
     options.fFrameIndex = i;
-    options.fPriorFrame = i - 1; // 用于帧间差异编码
+    options.fPriorFrame = SkCodec::kNoFrame;
 
     codec->getPixels(bitmap.info(), bitmap.getPixels(), bitmap.rowBytes(),
                        &options);
     bitmap.setImmutable();
     m_frames.push_back(bitmap.asImage());
+
+    // 将默认帧延时设置为 0.1 秒。
+    if (m_frame_infos[i].fDuration <= 0) {
+      m_frame_infos[i].fDuration = 100;
+    }
   }
 
   // 使用父类的m_image来指向当前帧。
@@ -138,9 +143,12 @@ bool SkiaRenderGif::Tick() {
                      now - m_last_frame_time)
                      .count();
 
-  if (elapsed >= m_frame_infos[m_current_frame].fDuration) {
+  int diff = elapsed - m_frame_infos[m_current_frame].fDuration;
+  if (diff > 0) {
     advanceFrame();
-    m_last_frame_time = now;
+
+    // 补上误差。
+    m_last_frame_time = now - std::chrono::milliseconds(diff);
     return true;
   }
   return false;

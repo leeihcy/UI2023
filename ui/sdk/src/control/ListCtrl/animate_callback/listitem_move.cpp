@@ -87,7 +87,7 @@ bool ListItemMoveAnimateImpl::StartReq(UIA::IStoryboard* pStoryboard)
     return true;
 }
 
-void ListItemMoveAnimateImpl::OnEnd(UIA::E_ANIMATE_END_REASON)
+void ListItemMoveAnimateImpl::OnEnd(UIA::eAnimateEndReason)
 {
 	// 不处理。被中断的动画应该由中断调用者来负责设置新的位置。否则在这里
 	// 直接到到m_rcTo可能会造成界面闪烁。
@@ -95,10 +95,10 @@ void ListItemMoveAnimateImpl::OnEnd(UIA::E_ANIMATE_END_REASON)
 // 		m_pListItem->SetParentRect(&m_rcTo);
 }
 
-UIA::E_ANIMATE_TICK_RESULT ListItemMoveAnimateImpl::OnTick(UIA::IStoryboard* pStoryboard)
+UIA::eAnimateTickResult ListItemMoveAnimateImpl::OnTick(UIA::IStoryboard* pStoryboard)
 {
     if (!m_pListItem)
-        return UIA::ANIMATE_TICK_RESULT_CANCEL;
+        return UIA::eAnimateTickResult::Cancel;
 
     RECT rect = {0};
     rect.left = pStoryboard->GetTimeline(LEFT)->GetCurrentIntValue();
@@ -123,7 +123,7 @@ UIA::E_ANIMATE_TICK_RESULT ListItemMoveAnimateImpl::OnTick(UIA::IStoryboard* pSt
         m_pListItem->SetParentRectLightly(&rect);
     }
     GetListCtrl()->Invalidate();
-    return UIA::ANIMATE_TICK_RESULT_CONTINUE;
+    return UIA::eAnimateTickResult::Continue;
 }
 
 void ListItemMoveAnimateImpl::Cancel(UI::ListItemBase& item)
