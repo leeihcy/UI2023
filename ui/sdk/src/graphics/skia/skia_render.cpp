@@ -286,17 +286,18 @@ bool SkiaRenderTarget::BeginDraw(const DirtyRegion& dirty_region, bool clear, fl
   if (!m_sksurface) {
     return false;
   }
-  SkCanvas *canvas = m_sksurface->getCanvas();
-  if (!canvas) {
-    return false;
-  }
-
   if (m_enable_software_backend) {
     frames_sync_size();
   }
   // 需要在应用剪裁之前更新当前surface，因为上一帧的脏区域有可能在当前剪裁区域外面
+  // 在scale之前同步两surface。避免两surface scale不一样，导致同步混乱。
   if (m_enable_software_backend) {
     frames_sync_dirty(dirty_region);
+  }
+
+  SkCanvas *canvas = m_sksurface->getCanvas();
+  if (!canvas) {
+    return false;
   }
 
   m_save_count = canvas->save();
@@ -1290,6 +1291,11 @@ void SkiaRenderTarget::frames_sync_dirty(const DirtyRegion& dirty_region) {
   if (!main.m_sksurface_front || !m_sksurface) {
     return;
   }
+  
+  SkCanvas *target_canvas = nullptr;
+  sk_sp<SkImage> source_image;
+  SkSamplingOptions options;
+  SkPaint paint;
 
   // 优化：如果本次的脏区域范围大于等于上一帧的变动范围，则不需要做帧同步
   for (unsigned int i = 0; i < m_last_dirty_region.Count(); i++) {
@@ -1297,18 +1303,20 @@ void SkiaRenderTarget::frames_sync_dirty(const DirtyRegion& dirty_region) {
     if (dirty_region.Contains(*rect)) {
       continue;
     }
+  
+    // 注：此时先别给两个surface设置scale，由我们手动scale。
+    // 否则canvas drawImageRect容易混乱，原因不知。
+    rect->Scale(m_scale, m_scale);
 
-    SkCanvas *target_canvas = m_sksurface->getCanvas();
-    SkCanvas *source_canvas = main.m_sksurface_front->getCanvas();
-
-    sk_sp<SkImage> source_image(main.m_sksurface_front->makeImageSnapshot());
-    SkSamplingOptions options;
-    SkPaint paint;
+    // 延迟初始化
+    if (!target_canvas) {
+      target_canvas = m_sksurface->getCanvas();
+      source_image = main.m_sksurface_front->makeImageSnapshot();
+    }
 
     SkRect skrect =
         SkRect::MakeXYWH((SkScalar)rect->left, (SkScalar)rect->top,
                          (SkScalar)rect->Width(), (SkScalar)rect->Height());
-
     target_canvas->drawImageRect(source_image, skrect, skrect, options, &paint,
                                  SkCanvas::kFast_SrcRectConstraint);
   }
