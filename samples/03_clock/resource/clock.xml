@@ -3,14 +3,14 @@
   <layout>
     <window id="clock" back.render.type="color" back.render.color="gray" layout.left="0" layout.top="0">
       <panel width="360" height="360">
-      <RoundPanel id="panel_clock" width="300" height="300" corner="50" 
+      <round-panel id="panel_clock" width="300" height="300" corner="50" 
         fore.render.type="color" fore.render.color="white" 
         layout.align="center|vcenter" border-radius="50%">
           <Svg file="clock.svg" layout.left="20" layout.top="20" layout.right="20" layout.bottom="20"/>
-          <Control zorder="1" id="hour" class="hand" back.render.image="clock_hour"/>
-          <Control zorder="2" id="min" class="hand" back.render.image="clock_min"/>
-          <Control zorder="3" id="sec" class="hand" back.render.image="clock_sec"/> 
-      </RoundPanel>
+          <control zorder="1" id="hour" class="hand" back.render.image="hourhand.png"/>
+          <control zorder="2" id="min" class="hand" back.render.image="minhand.png"/>
+          <control zorder="3" id="sec" class="hand" back.render.image="sechand.png"/> 
+      </round-panel>
       </panel>
     </window>
   </layout>

@@ -21,12 +21,18 @@ void RenderThread::Main::Stop() {
 }
 
 void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
+  bool is_command = paint_op->type >= PaintOpType::PostCommandStart;
+
   if (!self.m_running) {
     // 没有开启render thread，直接运行
-    paint_op->processOnRenderThread((SkiaRenderTarget*)paint_op->key);
+    // 或者是退出阶段，render thread已经结束了。
+    if (is_command) {
+      self.process_command(paint_op.get());
+    } else {
+      paint_op->processOnRenderThread((SkiaRenderTarget*)paint_op->key);
+    }
     return;
   }
-  bool is_command = paint_op->type >= PaintOpType::PostCommandStart;
 
   std::lock_guard<std::mutex> lock(self.m_paint_op_queue_mutex);
   self.m_paint_op_queue.push_back(std::move(paint_op));

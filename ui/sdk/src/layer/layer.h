@@ -161,7 +161,7 @@ protected:
   WindowRender *m_window_render;
   LayerType m_type;
 
-  IRenderTarget *m_pRenderTarget;
+  std::shared_ptr<IRenderTarget> m_pRenderTarget;
   
   LAYERID m_layer_id = 0;
 

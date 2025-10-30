@@ -85,8 +85,6 @@ Layer::~Layer() {
   //         delete p;
   //     }
 
-  SAFE_RELEASE(m_pRenderTarget);
-
 #ifdef _DEBUG
   UI_LOG_DEBUG(L"Layer Destroy, ptr=0x%08x", this);
 #endif
@@ -740,12 +738,12 @@ IRenderTarget *Layer::GetRenderTarget() {
     if (!m_window_render)
       return nullptr;
 
-    m_window_render->CreateRenderTarget(&m_pRenderTarget);
+    m_pRenderTarget = m_window_render->CreateRenderTarget();
 
     bool is_hardware = m_type == Layer_Hardware;
     m_pRenderTarget->RenderOnThread(ui::Slot(&InitLayerOnRT, m_layer_id, m_window_render->m_rt, is_hardware));
   }
-  return m_pRenderTarget;
+  return m_pRenderTarget.get();
 }
 
 // 强制销毁

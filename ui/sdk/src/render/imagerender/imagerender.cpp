@@ -4,6 +4,7 @@
 #include "include/interface/graphics.h"
 #include "include/macro/msg.h"
 #include "include/util/struct.h"
+#include "src/application/uiapplication.h"
 #include "src/attribute/9region_attribute.h"
 #include "src/attribute/attribute.h"
 #include "src/attribute/bool_attribute.h"
@@ -22,10 +23,10 @@ namespace ui {
 ImageRender::ImageRender(IImageRender *p) : RenderBase(p) {
   m_pIImageRender = p;
   
-  m_pColorBk = nullptr;
+  // m_pColorBk = nullptr;
   m_nImageDrawType = DRAW_BITMAP_BITBLT;
   m_nAlpha = 255;
-  m_rcSrc.SetEmpty();
+  m_src_range.SetEmpty();
   m_eBkColorFillType = BKCOLOR_FILL_ALL;
 }
 ImageRender::~ImageRender() {
@@ -59,12 +60,12 @@ void ImageRender::onRouteMessage(ui::Msg *msg) {
 void ImageRender::SetAlpha(int nAlpha) { m_nAlpha = nAlpha; }
 int ImageRender::GetAlpha() { return m_nAlpha; }
 
-Color ImageRender::GetColor() {
-  if (nullptr == m_pColorBk)
-    return Color::Make(0);
-  else
-    return *m_pColorBk;
-}
+// Color ImageRender::GetColor() {
+//   if (nullptr == m_pColorBk)
+//     return Color::Make(0);
+//   else
+//     return *m_pColorBk;
+// }
 
 void ImageRender::SetImageDrawType(int n) { m_nImageDrawType = n; }
 int ImageRender::GetImageDrawType() { return m_nImageDrawType; }
@@ -73,10 +74,10 @@ void ImageRender::SetImageStretch9Region(const C9Region &r) { m_Region = r; }
 
 void ImageRender::OnSerialize(SerializeParam *pData) {
   AttributeSerializer s(pData, "ImageRender");
-#if 0
-  s.AddString(XML_RENDER_IMAGE, Slot(&ImageRender::LoadBitmap, this),
-              Slot(&ImageRender::GetBitmapId, this));
-#endif
+
+  s.AddString(XML_RENDER_IMAGE, Slot(&ImageRender::loadBitmap, this),
+              Slot(&ImageRender::saveBitmap, this));
+
   // 背景颜色 TODO:
 #if 0
   s.AddString(XML_RENDER_COLOR, Slot(&ImageRender::LoadColor, this),
@@ -89,7 +90,7 @@ void ImageRender::OnSerialize(SerializeParam *pData) {
   s.AddInt(XML_RENDER_IMAGE_ALPHA, m_nAlpha)->SetDefault(255);
 
   // 源区域
-  s.AddRect(XML_RENDER_IMAGE_SRC_REGION, m_rcSrc);
+  s.AddRect(XML_RENDER_IMAGE_SRC_REGION, m_src_range);
 
   // 绘制类型
   s.AddEnum(XML_RENDER_IMAGE_DRAWTYPE, m_nImageDrawType)
@@ -113,14 +114,22 @@ void ImageRender::OnSerialize(SerializeParam *pData) {
       ->SetDefault(DRAW_BITMAP_BITBLT);
 }
 
-// void ImageRender::SetRenderBitmap(IRenderBitmap *pBitmap) {
-//   m_render_bitmap.reset();
-//   m_render_bitmap = pBitmap;
-// }
+void ImageRender::loadBitmap(const char *src) {
+  m_render_bitmap.reset();
+  if (src) {
+    m_image_src = src;
+  } else {
+    m_image_src.clear();
+  }
 
-void ImageRender::SetColor(Color c) {
-  // SAFE_RELEASE(m_pColorBk);
-  // m_pColorBk = Color::CreateInstance(c);
+  m_render_bitmap = m_resouce->GetUIApplication()->CreateRenderBitmap(
+      eGraphicsLibraryType::Skia, eImageType::Image);
+  if (!m_resouce->LoadRenderBitmap(m_render_bitmap.get(), src)) {
+    UI_LOG_WARN("[Image] load src failed: %s", src);
+  }
+}
+const char* ImageRender::saveBitmap() {
+  return m_image_src.c_str();
 }
 
 void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
@@ -141,11 +150,11 @@ void ImageRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
     param.yDest = prc->top;
     param.wDest = prc->right - prc->left;
     param.hDest = prc->bottom - prc->top;
-    if (!m_rcSrc.IsEmpty()) {
-      param.xSrc = m_rcSrc.left;
-      param.ySrc = m_rcSrc.top;
-      param.wSrc = m_rcSrc.right - m_rcSrc.left;
-      param.hSrc = m_rcSrc.bottom - m_rcSrc.top;
+    if (!m_src_range.IsEmpty()) {
+      param.xSrc = m_src_range.left;
+      param.ySrc = m_src_range.top;
+      param.wSrc = m_src_range.right - m_src_range.left;
+      param.hSrc = m_src_range.bottom - m_src_range.top;
     } else if (m_render_bitmap) {
       param.xSrc = 0;
       param.ySrc = 0;
@@ -243,13 +252,13 @@ void ImageListItemRender::OnSerialize(SerializeParam *pData) {
 
       Point pt = {0, 0};
       m_image_list->GetIndexPos(m_nImagelistIndex, &pt);
-      m_rcSrc.left = pt.x;
-      m_rcSrc.top = pt.y;
+      m_src_range.left = pt.x;
+      m_src_range.top = pt.y;
 
       Size s;
       this->GetDesiredSize(&s);
-      m_rcSrc.right = m_rcSrc.left + s.width;
-      m_rcSrc.bottom = m_rcSrc.top + s.height;
+      m_src_range.right = m_src_range.left + s.width;
+      m_src_range.bottom = m_src_range.top + s.height;
     }
   }
 }
@@ -279,7 +288,7 @@ void ImageListItemRender::DrawState(RENDERBASE_DRAWSTATE *pDrawStruct) {
       return;
     this->GetDesiredSize(&s);
 
-    m_rcSrc.Set(pt.x, pt.y, pt.x + s.width, pt.y + s.height);
+    m_src_range.Set(pt.x, pt.y, pt.x + s.width, pt.y + s.height);
   }
   assert(false);
 #if 0 // 废弃，使用RouteMessage代替。

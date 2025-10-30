@@ -18,8 +18,8 @@ public:
 public:
   void SetAlpha(int nAlpha);
   int GetAlpha();
-  void SetColor(Color c);
-  Color GetColor();
+  // void SetColor(Color c);
+  // Color GetColor();
   void SetImageDrawType(int n);
   int GetImageDrawType();
   void SetImageStretch9Region(const C9Region &r);
@@ -30,7 +30,8 @@ public:
   }
 
   IRenderBitmap *GetRenderBitmap() { return m_render_bitmap.get(); }
-  // void SetRenderBitmap(IRenderBitmap *pBitmap);
+  void loadBitmap(const char* src);
+  const char* saveBitmap();
 
 protected:
   void OnSerialize(SerializeParam *pData);
@@ -41,10 +42,14 @@ protected:
   IImageRender *m_pIImageRender;
 
   std::shared_ptr<IRenderBitmap> m_render_bitmap;
-  Color *m_pColorBk;
+  std::string m_image_src;
+
+  // Color *m_pColorBk;
   C9Region m_Region; // 拉伸绘制时才用
+  
   // 绘制区域(为空表示未设置)，有可能只是绘制图片的一部分.子类可以通过修改该值实现某些需求
-  Rect m_rcSrc; 
+  Rect m_src_range;
+
   BKCOLOR_FILL_TYPE m_eBkColorFillType;
   int m_nImageDrawType;
   int m_nAlpha;

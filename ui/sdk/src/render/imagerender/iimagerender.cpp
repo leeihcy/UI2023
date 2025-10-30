@@ -18,14 +18,6 @@ int   IImageRender::GetAlpha()
 {
 	return __pImpl->GetAlpha(); 
 }
-void  IImageRender::SetColor(Color c) 
-{ 
-	__pImpl->SetColor(c); 
-}
-Color IImageRender::GetColor()
-{
-	return __pImpl->GetColor(); 
-}
 void  IImageRender::SetImageDrawType(int n)
 { 
 	__pImpl->SetImageDrawType(n);

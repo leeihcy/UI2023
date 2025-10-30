@@ -80,7 +80,7 @@ public:
   IObject *CreateUIObjectByName(const char *szXmlName, IResourceBundle *);
   IObject *CreateUIObjectByUUID(const Uuid &clsid, IResourceBundle *);
 
-  IRenderTarget *CreateRenderTarget(eGraphicsLibraryType lib_type);
+  std::shared_ptr<IRenderTarget> CreateRenderTarget(eGraphicsLibraryType lib_type);
   std::shared_ptr<IRenderBitmap>
   CreateRenderBitmap(eGraphicsLibraryType lib_type, eImageType eType);
 

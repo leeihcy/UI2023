@@ -394,30 +394,22 @@ shared_library("uisdk") {
 # skia
 # 将依赖库拷贝到out/debug目录下
 copy("copy_skia") {
+  skia_out_dir = "//third_party/skia/src/out"
+  if (is_debug) {
+    skia_out_dir += "/debug"
+  } else {
+    skia_out_dir += "/release"
+  }
+
   if (is_mac) { 
-    if (is_debug) {
-        sources = ["//third_party/skia/src/out/debug/libskia.dylib"]
-    } else {
-        sources = ["//third_party/skia/src/out/release/libskia.dylib"]
-    }
+    sources = [skia_out_dir + "/libskia.dylib"]
   } else if (is_win) {
-    if (is_debug) {
-      sources = [
-          "//third_party\skia\src\out\debug\skia.dll",
-          "//third_party\skia\src\out\debug\skia.dll.lib"
-      ]
-    } else {
-      sources = [
-        "//third_party/skia/src/out/release/skia.dll",
-        "//third_party/skia/src/out/release/skia.dll.lib"
-      ]
-    }
+    sources = [
+      skia_out_dir + "\skia.dll",
+      skia_out_dir + "\skia.dll.lib"
+    ]
   } else if (is_linux) {
-    if (is_debug) {
-      sources = [ "//third_party/skia/src/out/debug/libskia.so" ]
-    } else {
-      sources = [ "//third_party/skia/src/out/release/libskia.so" ]
-    }
+    sources = [ skia_out_dir + "libskia.so" ]
   }
   outputs = ["$root_build_dir/bin/{{source_file_part}}"]
 }

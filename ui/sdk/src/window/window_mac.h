@@ -53,6 +53,9 @@ public:
 protected:
   // IGpuCompositorWindowNSView
   void* GetNSWindowRootView() override;
+  
+  void commitByCoreGraphics(const FrameBuffer& fb, const RectRegion &dirty_region_px);
+  void commitByMetal(const FrameBuffer& fb, const RectRegion &dirty_region_px);
 
 public:
   NSWindow* window() { return m_window; }

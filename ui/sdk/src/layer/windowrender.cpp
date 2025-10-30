@@ -80,14 +80,9 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
 
 // IRenderTarget* 没有引用计数机制
 // 但仍然采用Release进行释放（delete）
-bool WindowRender::CreateRenderTarget(IRenderTarget **pp) {
-  if (!pp)
-    return false;
-
+std::shared_ptr<IRenderTarget> WindowRender::CreateRenderTarget() {
   auto *app = m_window.GetResource().GetUIApplication();
-  *pp = app->CreateRenderTarget(m_grl_type);
-
-  return true;
+  return app->CreateRenderTarget(m_grl_type);
 }
 
 // 逻辑单位

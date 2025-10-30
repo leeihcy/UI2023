@@ -127,7 +127,7 @@ skia_enable_skottie = true
 ```
 
 * mac dylib release:
-
+   
 ```js
 is_official_build = true
 is_component_build = true
@@ -142,6 +142,9 @@ skia_use_system_libwebp = false
 skia_use_system_zlib = false
 skia_enable_tools = true
 ```
+
+Mac TBD:     skia_use_metal=true
+
 
 * linux debug： 
 

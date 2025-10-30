@@ -273,7 +273,18 @@ void WindowPlatformMac::Hide() { [m_window orderOut:nil]; }
 // 它不关心 NSView 的翻转状态，始终按照 左下角原点 绘制。
 // 
 void WindowPlatformMac::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
-int client_width = m_window.contentView.bounds.size.width;
+  commitByCoreGraphics(fb, dirty_region_px);
+
+  // commitByMetal(fb, dirty_region_px);
+} 
+
+void WindowPlatformMac::commitByMetal(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
+
+}
+
+// 使用CG进行数据提交。
+void WindowPlatformMac::commitByCoreGraphics(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
+  int client_width = m_window.contentView.bounds.size.width;
   int client_height = m_window.contentView.bounds.size.height;
 
   CGContext *context = [NSGraphicsContext currentContext].CGContext;
@@ -292,20 +303,13 @@ int client_width = m_window.contentView.bounds.size.width;
     return;
   }
 
-  // CGContextSaveGState(context);
-  // CGContextTranslateCTM(context, 0, m_window.contentView.bounds.size.height);
-  // // 移动到顶部 CGContextScaleCTM(context, 1.0, -1.0); // Y 轴翻转
-
   CGDataProviderRef data_provider_ref = CGDataProviderCreateWithData(
       NULL, (char *)fb.data, fb.rowbytes * fb.height, NULL);
 
   CGImageRef image = CGImageCreate(
       fb.width, fb.height,
-      // client_width, client_height,
       8, 32, fb.rowbytes,
-      // colorspace
       CGColorSpaceCreateWithName(kCGColorSpaceSRGB),
-      // CGBitmapInfo
       kCGBitmapByteOrder32Little | (CGBitmapInfo)kCGImageAlphaNoneSkipFirst,
       data_provider_ref,
       nullptr, // decode
@@ -314,15 +318,13 @@ int client_width = m_window.contentView.bounds.size.width;
   assert(image);
 
   for (int i = 0; i < dirty_region_px.Count(); i++) {
-    const ui::Rect& rc_dirty = dirty_region_px.RectPtr2()[i];
+    const ui::Rect &rc_dirty = dirty_region_px.RectPtr2()[i];
 
     Rect rc_dirty_px = rc_dirty;
 
     ui::Rect rc_dirty_dip = rc_dirty;
     m_ui_window.m_dpi.RestoreRect(&rc_dirty_dip);
 
-#if 1
-    // 效率比使用clip低，废弃
     // 使用子图片实现脏区域提交
     NSRect nsrect = CGRectMake(rc_dirty_px.left, rc_dirty_px.top,
                                rc_dirty_px.width(), rc_dirty_px.height());
@@ -338,51 +340,12 @@ int client_width = m_window.contentView.bounds.size.width;
 
     CGContextDrawImage(context, dirty, part_image);
     CGImageRelease(part_image);
-    
+
     // printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
-    //        dirty.origin.x, dirty.origin.y, dirty.size.width, dirty.size.height);
-
-
-#else
-    // 使用clip实现脏区域提交
-    // CGRect dirty = CGRectMake(rc.left,
-    //                           rc.top,
-    //                           rc.width(),
-    //                           rc.height());
-    int content_height = m_window.contentView.bounds.size.height;
-    NSRect dirty =
-        CGRectMake(rc.left / m_window.backingScaleFactor,
-                   content_height - (rc.bottom / m_window.backingScaleFactor),
-                   rc.width() / m_window.backingScaleFactor,
-                   rc.height() / m_window.backingScaleFactor);
-    CGContextClipToRect(context, dirty);
-
-    printf("commit dirty region: origin: %f,%f,  size: %f,%f)\n",
-           dirty.origin.x, dirty.origin.y, dirty.size.width, dirty.size.height);
-
-    // 注：左下角为原点，图片也是从左下角开始绘制的。
-    // 但缓存的尺寸是2指数倍，与窗口大小不一致。
-    // 因此这里调整纵坐标，减去缓存底部的空闲区域
-    // int image_bottom_offset = m_window.contentView.bounds.size.height -
-    // pm.height()/2; NSRect target_rect = NSMakeRect(
-    //   0,
-    //   image_bottom_offset,
-    //   pm.width()/2, pm.height()/2);
-    NSRect target_rect =
-        NSMakeRect(0, 0, m_window.contentView.bounds.size.width,
-                   m_window.contentView.bounds.size.height);
-
-    CGContextDrawImage(context, target_rect, image);
-    CGContextResetClip(context);
-
-    // CGRect redRect = CGRectMake(50, 50, 200, 200);
-    // CGContextSetFillColorWithColor(context, [NSColor redColor].CGColor);
-    // CGContextFillRect(context, redRect);
-#endif
+    //        dirty.origin.x, dirty.origin.y, dirty.size.width,
+    //        dirty.size.height);
   }
   CGImageRelease(image);
-
-  // CGContextRestoreGState(context);
 }
 
 void WindowPlatformMac::notifySize() {

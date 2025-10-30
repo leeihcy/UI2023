@@ -3,16 +3,6 @@
 	<layout>
 	</layout>
   <include>clock.xml</include>
-	<font>
-		<font id="default" face="微软雅黑" size="10" />
-	</font>
-	<image>
-    <!-- 时钟demo -->
-    <image id="clock_bk"   path="clock.jpg"/>
-    <image id="clock_hour" path="hourhand.png"/>
-    <image id="clock_min"  path="minhand.png"/>
-    <image id="clock_sec"  path="sechand.png"/>
-  </image>
 	<i18n>
 	</i18n>
 	<style>

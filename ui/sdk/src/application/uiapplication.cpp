@@ -577,24 +577,30 @@ std::shared_ptr<IRenderBitmap> Application::CreateRenderBitmap(
   return std::shared_ptr<IRenderBitmap>();
 }
 
+static void DestroyRenderTarget(IRenderTarget* p) {
+  if (p) { delete p; }
+}
+
 // IRenderTarget* 没有引用计数机制
-IRenderTarget *Application::CreateRenderTarget(eGraphicsLibraryType lib_type) {
-  IRenderTarget *pRenderTarget = nullptr;
+std::shared_ptr<IRenderTarget>
+Application::CreateRenderTarget(eGraphicsLibraryType lib_type) {
+  std::shared_ptr<IRenderTarget> rt;
 
   switch (lib_type) {
   case eGraphicsLibraryType::Skia: {
     if (Config::GetInstance().enable_render_thread) {
-      pRenderTarget = new RecordRenderTarget();
+      rt = std::shared_ptr<IRenderTarget>(new RecordRenderTarget,
+                                          DestroyRenderTarget);
     } else {
-      pRenderTarget = new SkiaRenderTarget();
+      rt = std::shared_ptr<IRenderTarget>(new SkiaRenderTarget,
+                                          DestroyRenderTarget);
     }
   } break;
-
   default:
     UIASSERT(0);
     break;
   }
-  return pRenderTarget;
+  return rt;
 }
 
 } // namespace ui

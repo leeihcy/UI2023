@@ -85,20 +85,6 @@ void start_animate(ui::IApplication *app, ui::IWindow *window) {
   story->Begin();
 }
 
-bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
-
-#if 0 // for show/hide test
-  if (window->IsVisible()) {
-    printf("on timer to hide\n");
-    window->Hide();
-  } else {
-    printf("on timer to show\n");
-    window->Show();
-  }
-#endif
-  return true;
-}
-
 int main() {
   bool use_gpu = true;
 
@@ -126,10 +112,6 @@ int main() {
     start_animate(app.get(), window.get());
   }
 
-  ui::TimerID timer_id =
-      app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
-  app->KillTimer(timer_id);
-
   return 0;
 }

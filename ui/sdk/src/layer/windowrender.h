@@ -56,7 +56,7 @@ public:
   void OnSerialize(SerializeParam *pData);
   void OnClientSize(unsigned int nWidth, unsigned int nHeight);
 
-  bool CreateRenderTarget(IRenderTarget **pp);
+  std::shared_ptr<IRenderTarget> CreateRenderTarget();
 
   bool GetRequireAlphaChannel();
   void SetGraphicsRenderType(eGraphicsLibraryType type);

@@ -16,8 +16,6 @@ class ImageRender;
 struct UIAPI IImageRender : public IRenderBase {
   void SetAlpha(int nAlpha);
   int GetAlpha();
-  void SetColor(Color c);
-  Color GetColor();
   void SetImageDrawType(int n);
   int GetImageDrawType();
   void SetImageStretch9Region(const C9Region &r);
