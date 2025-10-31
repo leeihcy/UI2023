@@ -1,5 +1,5 @@
 #pragma once
-#include <d3dx10.h>
+#include "src/d3d10/inc.h"
 
 class Font
 {

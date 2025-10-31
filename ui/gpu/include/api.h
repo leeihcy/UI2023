@@ -96,8 +96,8 @@ public:
   Rect m_rcClip;
   float m_fAlpha;
 
-  // bool m_bTransformValid;
-  // float m_matrixTransform[4][4];
+  bool m_bTransformValid;
+  float m_matrixTransform[4][4];
 };
 
 inline GpuLayerCommitContext::GpuLayerCommitContext() {
@@ -107,10 +107,10 @@ inline GpuLayerCommitContext::GpuLayerCommitContext() {
   m_rcClip.SetEmpty();
 
   m_fAlpha = 1.0f;
-  // m_bTransformValid = false;
-  // memset(&m_matrixTransform, 0, sizeof(m_matrixTransform));
-  // m_matrixTransform[0][0] = m_matrixTransform[1][1] = m_matrixTransform[2][2] =
-  //     m_matrixTransform[3][3] = 1;
+  m_bTransformValid = false;
+  memset(&m_matrixTransform, 0, sizeof(m_matrixTransform));
+  m_matrixTransform[0][0] = m_matrixTransform[1][1] = m_matrixTransform[2][2] =
+      m_matrixTransform[3][3] = 1;
 }
 
 inline GpuLayerCommitContext::~GpuLayerCommitContext() {}

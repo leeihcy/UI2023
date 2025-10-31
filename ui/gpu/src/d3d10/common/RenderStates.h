@@ -1,5 +1,5 @@
 #pragma once
-#include <D3D10.h>
+#include "src/d3d10/inc.h"
 
 class RenderStates
 {

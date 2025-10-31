@@ -1,6 +1,7 @@
 #ifndef _UI_GPU_SRC_D3D10_COMMON_INPUTS_H_
 #define _UI_GPU_SRC_D3D10_COMMON_INPUTS_H_
 #include "src/d3d10/inc.h"
+
 struct ID3D10InputLayout;
 struct ID3D10Device;
 

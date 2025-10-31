@@ -1,8 +1,7 @@
 #include "Effects.h"
+#include "src/d3d10/inc.h"
 #include "src/d3d10/resource.h"
 #include <assert.h>
-#include <d3d10_1.h>
-#include <d3dx10.h>
 
 ID3D10Effect *Effects::m_pEffect = nullptr;
 
@@ -38,7 +37,7 @@ bool Effects::Init(ID3D10Device *pDevice) {
     *(p + 1) = 0;
   }
 
-  wcscat(szPath, TEXT("..\\..\\ui\\gpu\\src\\d3d10\\d3d10.fx"));
+  wcscat(szPath, TEXT("..\\..\\..\\ui\\gpu\\src\\d3d10\\d3d10.fx"));
 
   HRESULT hr = D3DX10CreateEffectFromFile(
       szPath, nullptr, nullptr, "fx_4_0", dwShaderFlags, 0, pDevice, nullptr,

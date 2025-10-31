@@ -1,5 +1,8 @@
 declare_args() {
-  # Debug build
+  win_sdk = "C:/Program Files (x86)/Windows Kits/10"
+  win_sdk_version = "10.0.22621.0"
+  directx_sdk = "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
+
   enable_d3d10 = false
   enable_vulkan = true
 }
@@ -11,17 +14,36 @@ shared_library("uigpu") {
     deps = [
       ":compile_shaders"
     ]
+    include_dirs = [
+        "//",
+        "//ui/",
+        "//ui/gpu/",
+        "//ui/sdk/",
+        "//ui/3rd/skia/src/",
+        "//ui/3rd/skia/src/include/core/"
+    ]
 
-    # if (is_win) {
-    #   enable_d3d10 = true
-    #   enable_vulkan = false
-    # }
+    if (is_win) {
+      enable_d3d10 = true
+      enable_vulkan = false
+    }
     if (enable_d3d10) {
       cflags += [
-        "-DENABLE_D3D10"
+        "-DENABLE_D3D10",
+        "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
+      ]
+      include_dirs += [
+        win_sdk + "/Include/" + win_sdk_version + "/um",
+        directx_sdk + "/Include"
       ]
     }
-    else if (enable_vulkan && (is_linux || is_mac)) {
+    if (enable_vulkan) {
+      cflags += [
+        "-DENABLE_VULKAN"
+      ]
+    }
+
+    if (enable_vulkan && (is_linux || is_mac)) {
       cflags += [
         "-Wno-deprecated-volatile"
       ]
@@ -31,14 +53,7 @@ shared_library("uigpu") {
       cflags += ["-g"]
     }
     
-    include_dirs = [
-        "//",
-        "//ui/",
-        "//ui/gpu/",
-        "//ui/sdk/",
-        "//ui/3rd/skia/src/",
-        "//ui/3rd/skia/src/include/core/"
-    ]
+
     defines = ["UI_EXPORTS"]
     libs = []
     lib_dirs = ["$root_build_dir/bin"]

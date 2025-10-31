@@ -11,9 +11,6 @@ public:
   D3D10GpuLayer();
   ~D3D10GpuLayer();
 
-  void OnBeginCommit(GpuLayerCommitContext *ctx) override {
-
-  }
   void Resize(int nWidth, int nHeight) override;
   void Compositor(GpuLayerCommitContext *pContext, float *pMatrixTransform) override;
   TextureTile* newTile() override;

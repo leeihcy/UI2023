@@ -141,7 +141,7 @@ public:
   virtual TextureTile *newTile() = 0;
 
 public:
-  // void SetGpuCompositor(IGpuCompositor *p);
+  void SetGpuCompositor(IGpuCompositor *p);
 
 protected:
   void doCreateTile(int width, int height);
@@ -155,7 +155,7 @@ protected:
                         /*__out*/ RECTF *prcfOut);
 
 protected:
-  // IGpuCompositor *m_pCompositor;
+  IGpuCompositor *m_pCompositor;
 
   // 纹理大小
   int m_width = 0;

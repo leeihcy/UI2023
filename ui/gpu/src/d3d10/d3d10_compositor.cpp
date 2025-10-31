@@ -2,10 +2,10 @@
 #pragma warning(disable : 4005) // 宏重定义
 
 // #include "stdafx.h"
-#include "src/d3d10/d3d10_compositor.h"
 #include "src/d3d10/D3D10_app.h"
 #include "src/d3d10/common/Effects.h"
 #include "src/d3d10/common/Font.h"
+#include "src/d3d10/d3d10_compositor.h"
 #include "src/d3d10/d3d10_gpu_layer.h"
 #include <D3dx9math.h>
 #include <assert.h>
@@ -14,7 +14,7 @@ using namespace ui;
 //////////////////////////////////////////////////////////////////////////
 
 D3D10Compositor::D3D10Compositor() {
-  m_pRootTexture = nullptr;
+  // m_pRootTexture = nullptr;
 
   m_pSwapChain = nullptr;
   m_pRenderTargetView = nullptr;
@@ -47,22 +47,29 @@ D3D10Compositor::~D3D10Compositor() {
   }
 }
 
-bool D3D10Compositor::Initialize(IGpuCompositorWindow* w) {
+bool D3D10Compositor::Initialize(IGpuCompositorWindow *w) {
   assert(w->GetType() == GpuCompositorWindowType::WindowsHWND);
-  m_hWnd = ((IGpuCompositorWindowHWND*)w)->GetHWND();
+  m_hWnd = (HWND)((IGpuCompositorWindowHWND *)w)->GetHWND();
   CreateSwapChain();
   return true;
 }
 
-IGpuLayer *D3D10Compositor::CreateLayerTexture() {
-  GpuLayer *p = new D3D10GpuLayer;
-  p->SetGpuCompositor(this);
+static void ReleaseGpuLayer(IGpuLayer *p) {
+  if (p) {
+    static_cast<D3D10GpuLayer *>(p)->Release();
+  }
+}
+std::shared_ptr<IGpuLayer> D3D10Compositor::CreateLayerTexture() {
+  auto* layer = new D3D10GpuLayer();
+  layer->SetGpuCompositor(this);
+  auto p = std::shared_ptr<IGpuLayer>(layer, ReleaseGpuLayer);
   return p;
 }
-void D3D10Compositor::SetRootLayerTexture(IGpuLayer *p) {
-  m_pRootTexture = static_cast<GpuLayer *>(p);
-}
-GpuLayer *D3D10Compositor::GetRootLayerTexture() { return m_pRootTexture; }
+
+// void D3D10Compositor::SetRootLayerTexture(IGpuLayer *p) {
+//   m_pRootTexture = static_cast<GpuLayer *>(p);
+// }
+// GpuLayer *D3D10Compositor::GetRootLayerTexture() { return m_pRootTexture; }
 void D3D10Compositor::CreateSwapChain() {
   if (!m_hWnd)
     return;
@@ -109,7 +116,8 @@ void D3D10Compositor::CreateSwapChain() {
   ReCreateRenderTargetView();
   ReCreateStencilView();
 
-  D3D10_VIEWPORT vp = {0, 0, m_sizeBackBuffer.cx, m_sizeBackBuffer.cy, 0, 1};
+  D3D10_VIEWPORT vp = {
+      0, 0, (UINT)m_sizeBackBuffer.cx, (UINT)m_sizeBackBuffer.cy, 0, 1};
   D3D10App::Get()->m_pDevice->RSSetViewports(1, &vp);
 }
 
@@ -206,12 +214,12 @@ void D3D10Compositor::Resize(int nWidth, int nHeight) {
   ReCreateStencilView();
 }
 
-bool D3D10Compositor::BeginCommit(GpuLayerCommitContext*) {
+bool D3D10Compositor::BeginCommit(GpuLayerCommitContext *) {
   if (!m_pSwapChain)
     return false;
 
   if (!D3D10App::Get()->IsActiveSwapChain(m_hWnd)) {
-    D3D10_VIEWPORT vp = {0, 0, m_sizeBackBuffer.cx, m_sizeBackBuffer.cy, 0, 1};
+    D3D10_VIEWPORT vp = {0, 0, (UINT)m_sizeBackBuffer.cx, (UINT)m_sizeBackBuffer.cy, 0, 1};
     D3D10App::Get()->m_pDevice->RSSetViewports(1, &vp);
     D3D10App::Get()->m_pDevice->OMSetRenderTargets(1, &m_pRenderTargetView,
                                                    m_pDepthStencilView);
@@ -240,7 +248,7 @@ bool D3D10Compositor::BeginCommit(GpuLayerCommitContext*) {
 
   return true;
 }
-void D3D10Compositor::EndCommit(GpuLayerCommitContext*) {
+void D3D10Compositor::EndCommit(GpuLayerCommitContext *) {
   Font::DrawDebugFps();
 
   //     if (m_pRootTexture)

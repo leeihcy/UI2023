@@ -55,9 +55,9 @@ IGpuLayer *GpuLayer::GetIGpuLayerTexture() {
 
 void GpuLayer::Release() { delete this; }
 
-// void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
-//   m_pCompositor = p;
-// }
+void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
+  m_pCompositor = p;
+}
 
 //----------------------------------------------------------------------------------------
 //

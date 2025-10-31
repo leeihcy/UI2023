@@ -2,10 +2,10 @@
 #include "d3d10_texture_tile.h"
 #include "d3d10_app.h"
 #include "d3d10_compositor.h"
-#include "src/d3d10/common/RenderStates.h"
-#include "src/d3d10/common/Effects.h"
-// #include <d3d10_1.h>
-#include <dxgi.h>
+#include "src/d3d10/d3d10_compositor.h"
+#include "src/d3d10/inc.h"
+#include "common/RenderStates.h"
+#include "common/Effects.h"
 
 namespace ui
 {
@@ -39,6 +39,7 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
   ID3D10Device *pDevice = D3D10App::Get()->m_pDevice;
 
+#if 1
   // 剪裁stencil应该是用父对象的矩阵，而不应
   // 该包含自己的旋转矩阵。这里在context里将父对象的矩阵脱离出来。
   if (pContext->m_bTransformValid) {
@@ -82,15 +83,18 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
     // 6. 设置模板缓存函数，只允许当前模板值为1的位置通过测试（剪裁）
     pDevice->OMSetDepthStencilState(RenderStates::pStencilStateClip, 1);
-  } else {
+  } else 
+#endif
+  {
     D3D10_RECT rects[1];
     memcpy(rects, &pContext->m_rcClip, sizeof(RECT));
     pDevice->RSSetScissorRects(1, rects);
   }
-
+#if 1
   if (pMatrixTransform) {
     MultiMatrix(*pContext, pMatrixTransform);
   }
+#endif
 
   UINT stride = sizeof(DXUT_SCREEN_VERTEX_10);
   UINT offset = 0;
@@ -111,11 +115,12 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                     pContext);
     }
   }
-
+#if 1
   if (pContext->m_bTransformValid) {
     // 7. 关闭模板缓存
     pDevice->OMSetDepthStencilState(RenderStates::pStencilStateDisable, 0);
   }
+#endif
 }
 
 void D3D10GpuLayer::Resize(int nWidth, int nHeight) {

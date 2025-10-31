@@ -1,12 +1,13 @@
+#include "inc.h"
 #pragma warning(disable : 4005) // 宏重定义
 
-#include <d3d10_1.h>
 #include <windows.h>
+#include "src/d3d10/inc.h"
 
 #include "D3D10_App.h"
-#include "common\Effects.h"
-#include "common\Font.h"
-#include "common\RenderStates.h"
+#include "common/Effects.h"
+#include "common/Font.h"
+#include "common/RenderStates.h"
 #include <assert.h>
 
 D3D10App *D3D10App::s_pApp = nullptr;
@@ -83,7 +84,7 @@ void D3D10App::Destroy() {
 }
 
 HRESULT CreateD3DDevice(IDXGIAdapter *pAdapter, D3D10_DRIVER_TYPE driverType,
-                        UINT flags, ID3D10Device1 **ppDevice) {
+                        UINT flags, ID3D10Device **ppDevice) {
   HRESULT hr = 0;
 
   static const D3D10_FEATURE_LEVEL1 levelAttempts[] = {
@@ -97,7 +98,8 @@ HRESULT CreateD3DDevice(IDXGIAdapter *pAdapter, D3D10_DRIVER_TYPE driverType,
     ID3D10Device1 *pDevice = nullptr;
     hr =
         D3D10CreateDevice1(pAdapter, driverType, nullptr, flags,
-                           levelAttempts[level], D3D10_1_SDK_VERSION, &pDevice);
+                           levelAttempts[level],
+                            D3D10_1_SDK_VERSION, &pDevice);
 
     /* 应用程序请求的操作依赖于已缺失或不匹配的 SDK 组件。
 
@@ -139,7 +141,7 @@ bool D3D10App::Init() {
   nCreateDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
 #endif
 
-  ID3D10Device1 *pDevice = nullptr;
+  ID3D10Device *pDevice = nullptr;
   IDXGIDevice *pDXGIDevice = nullptr;
   IDXGIAdapter *pAdapter = nullptr;
 

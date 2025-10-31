@@ -1,7 +1,7 @@
 #include "d3d10_texture_tile.h"
 #include "src/d3d10/d3d10_app.h"
 #include "src/d3d10/common/Effects.h"
-#include <d3d10.h>
+
 
 namespace ui {
 
@@ -136,9 +136,13 @@ bool D3D10TextureTile::create() {
   textureDesc.Height = TILE_SIZE;
   textureDesc.MipLevels = 1;
   textureDesc.ArraySize = 1;
-  // windows bitmap的RGB排列为BGRA的顺序。
   textureDesc.Format =
-      /*DXGI_FORMAT_R8G8B8A8_UNORM*/ DXGI_FORMAT_B8G8R8A8_UNORM;
+      // DXGI_FORMAT_R8G8B8A8_UNORM
+      
+      // windows bitmap的RGB排列为BGRA的顺序。
+      // 需要在CreateDevice时添加对应的D3D10_CREATE_DEVICE_BGRA_SUPPORT Flag
+      DXGI_FORMAT_B8G8R8A8_UNORM 
+  ;
   textureDesc.SampleDesc.Count = 1;
   textureDesc.SampleDesc.Quality = 0;
   textureDesc.BindFlags = D3D10_BIND_SHADER_RESOURCE;
@@ -148,8 +152,10 @@ bool D3D10TextureTile::create() {
 
   HRESULT hr = D3D10App::Get()->m_pDevice->CreateTexture2D(
       &textureDesc, nullptr, &m_pTextureBuffer);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
+    assert(false);
     return false;
+  }
 
   D3D10_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
   shaderResourceViewDesc.Format = textureDesc.Format;
@@ -183,12 +189,15 @@ void D3D10TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
   Effects::m_pFxVsDestPos->SetFloatVector(pos);
 
   ID3D10EffectTechnique *pTech = nullptr;
+#if 1
   if (pContext->m_bTransformValid) {
     Effects::m_pFxMatrix->SetMatrix(
         (float *)pContext->m_matrixTransform);
 
     pTech = Effects::m_pTechDrawTextureMatrix;
-  } else {
+  } else
+#endif
+   {
     pTech = Effects::m_pTechDrawTexture;
   }
 

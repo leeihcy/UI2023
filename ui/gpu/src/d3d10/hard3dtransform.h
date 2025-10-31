@@ -1,8 +1,9 @@
 #pragma once
+#include "src/d3d10/inc.h"
 #include "sdk/include/common/math/matrix.h"
 #include "sdk/include/common/math/quad.h"
 #include "sdk/include/interface/irenderlayer.h"
-#include <d3dx10.h>
+
 
 namespace ui {
 
