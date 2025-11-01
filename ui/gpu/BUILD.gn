@@ -4,17 +4,22 @@ declare_args() {
   directx_sdk = "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
 
   enable_d3d10 = false
+  enable_d3d11 = false
   enable_vulkan = true
 }
 
 shared_library("uigpu") {
-    output_dir = "$root_out_dir/bin" 
-    cflags = []
+  output_dir = "$root_out_dir/bin" 
+  cflags = []
+  sources = []
+  defines = ["UI_EXPORTS"]
+  libs = []
+  lib_dirs = ["$root_build_dir/bin"]
 
-    deps = [
-      ":compile_shaders"
-    ]
-    include_dirs = [
+  deps = [
+    ":compile_shaders"
+  ]
+  include_dirs = [
         "//",
         "//ui/",
         "//ui/gpu/",
@@ -24,23 +29,41 @@ shared_library("uigpu") {
     ]
 
     if (is_win) {
-      enable_d3d10 = true
+      enable_d3d10 = false
+      enable_d3d11 = true
       enable_vulkan = false
     }
     if (enable_d3d10) {
+      cflags += [ "-DENABLE_D3D10" ]
+    } else if (enable_d3d11) {
+      cflags += [ "-DENABLE_D3D11" ]
+    } else if (enable_vulkan) {
+      cflags += [ "-DENABLE_VULKAN" ]
+    }
+
+    if (enable_d3d10 || enable_d3d11) {
       cflags += [
-        "-DENABLE_D3D10",
         "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
       ]
       include_dirs += [
         win_sdk + "/Include/" + win_sdk_version + "/um",
         directx_sdk + "/Include"
       ]
-    }
-    if (enable_vulkan) {
-      cflags += [
-        "-DENABLE_VULKAN"
+      lib_dirs += [
+        directx_sdk + "\Lib\x64"
       ]
+
+      if (enable_d3d11) {
+        if (is_debug) {
+          lib_dirs += [ "src/d3d11/directx_sdk/Effects11/x64/Debug" ]
+        } else {
+          lib_dirs += [ "src/d3d11/directx_sdk/Effects11/x64/Release" ]
+        }
+      }
+    }
+
+    if (enable_vulkan) {
+      cflags += [ "-DENABLE_VULKAN" ]
     }
 
     if (enable_vulkan && (is_linux || is_mac)) {
@@ -53,12 +76,7 @@ shared_library("uigpu") {
       cflags += ["-g"]
     }
     
-
-    defines = ["UI_EXPORTS"]
-    libs = []
-    lib_dirs = ["$root_build_dir/bin"]
-   
-    sources = [
+    sources += [
       "src/gpu_layer.cpp",
       "src/texture_tile.cpp",
       "src/texture_tile_array.cpp",
@@ -84,13 +102,31 @@ shared_library("uigpu") {
         "d3dx10.lib",
         "D3D10_1.lib",
       ]
-      include_dirs += [
-        "C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include"
+    }
+    if (enable_d3d11) {
+      sources += [
+        "src/d3d11/d3d11_compositor.cpp",
+        "src/d3d11/d3d11_gpu_layer.cpp",
+        "src/d3d11/d3d11_app.cpp",
+        "src/d3d11/d3d11_texture_tile.cpp",
+        "src/d3d11/common/effects.cpp",
+        "src/d3d11/common/font.cpp",
+        "src/d3d11/common/inputs.cpp",
+        "src/d3d11/common/render_states.cpp",
+        "src/d3d11/UICompositor.rc",
+        "src/d3d11/hard3dtransform.cpp",
       ]
-      lib_dirs += [
-        "C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64"
+
+      libs += [
+        "atls.lib",
+        "d3d11.lib",
+        "d3dx11.lib",
+        "d3dcompiler.lib",
+        # 需要单独编译 ui\gpu\src\d3d11\directx_sdk\Effects11工程
+        "Effects11.lib",   
       ]
-    } 
+    }
+
     if (enable_vulkan) {
       sources += [
         "src/vulkan/vkapp.cpp",

@@ -4,7 +4,11 @@
 #include "d3d10/d3d10_compositor.h"
 #include "d3d10/d3d10_app.h"
 #include "d3d10/hard3dtransform.h"
-#else
+#elif defined(ENABLE_D3D11)
+#include "d3d11/d3d11_compositor.h"
+#include "d3d11/d3d11_app.h"
+#include "d3d11/hard3dtransform.h"
+#elif defined(ENABLE_VULKAN)
 #include "vulkan/vkapp.h"
 #include "vulkan/vkcompositor.h"
 #endif
@@ -131,7 +135,9 @@ static void ReleaseGpuCompositorWindow(IGpuCompositor *p) {
   if (p) {
 #if defined(ENABLE_D3D10)
     delete static_cast<D3D10Compositor *>(p);
-#else
+#elif defined(ENABLE_D3D11)
+    delete static_cast<D3D11Compositor *>(p);
+#elif defined (ENABLE_VULKAN)
     delete static_cast<VulkanCompositor *>(p);
 #endif
   }
@@ -143,7 +149,9 @@ CreateGpuComposition(IGpuCompositorWindow *window) {
 
 #if defined(ENABLE_D3D10)
   auto *c = new D3D10Compositor();
-#else
+#elif defined(ENABLE_D3D11)
+  auto *c = new D3D11Compositor();
+#elif defined(ENABLE_VULKAN)
   auto *c = new VulkanCompositor();
 #endif
   if (!c->Initialize(window)) {
@@ -159,7 +167,9 @@ UIGPUAPI bool GpuStartup() {
 
 #if defined(ENABLE_D3D10)
   g_startup = D3D10Application::GetInstance().Startup();
-#else
+#elif defined(ENABLE_D3D11)
+  g_startup = D3D11Application::GetInstance().Startup();
+#elif defined(ENABLE_VULKAN)
   g_startup = VulkanApplication::GetInstance().Startup();
 #endif
   return g_startup;
@@ -168,6 +178,8 @@ UIGPUAPI bool GpuStartup() {
 UIGPUAPI void GpuShutdown() {
 #if defined(ENABLE_D3D10)
   D3D10Application::GetInstance().Shutdown();
+#elif defined(ENABLE_D3D11)
+  D3D11Application::GetInstance().Shutdown();
 #else
   VulkanApplication::GetInstance().Shutdown();
 #endif

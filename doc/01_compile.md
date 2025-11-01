@@ -187,6 +187,14 @@ $ gn gen . --args="is_debug=true"
 $ ninja
 ```
 
+一些args.gn示例：
+```python
+is_debug = true
+
+# 动态链接c运行时库
+static_link_crt = false
+```
+
 
 ### Windows下头文件依赖问题
 在windows下，有时修改头文件或者某个cpp时，不能很好的触发编译。
