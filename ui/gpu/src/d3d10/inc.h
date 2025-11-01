@@ -7,7 +7,7 @@
 #include <d3d10_1.h>
 #include <d3dx10.h>
 
-
+#include <atlbase.h>
 #include <assert.h>
 
 namespace ui

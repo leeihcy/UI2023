@@ -118,7 +118,6 @@ private:
   TimerHelper m_timer_helper;
 
 #if 0 // defined(OS_WIN)
-  GifTimerManager *m_pGifTimerMgr;
   ToolTipManager m_ToolTipMgr;
 #endif
 

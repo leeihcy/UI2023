@@ -158,18 +158,18 @@ UIGPUAPI bool GpuStartup() {
   g_startup = GPU_STARTUP_STATE::STARTING;
 
 #if defined(ENABLE_D3D10)
-  g_startup = D3D10App::Startup();
+  g_startup = D3D10Application::GetInstance().Startup();
 #else
-  g_startup = VulkanApplication::Get().Startup();
+  g_startup = VulkanApplication::GetInstance().Startup();
 #endif
   return g_startup;
 }
 
 UIGPUAPI void GpuShutdown() {
 #if defined(ENABLE_D3D10)
-  D3D10App::Shutdown();
+  D3D10Application::GetInstance().Shutdown();
 #else
-  VulkanApplication::Get().Shutdown();
+  VulkanApplication::GetInstance().Shutdown();
 #endif
 }
 

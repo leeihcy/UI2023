@@ -17,8 +17,7 @@ VulkanApplication::VulkanApplication() {
   m_enable_validation_layers = true;
 #endif
 }
-VulkanApplication::~VulkanApplication() {}
-VulkanApplication &VulkanApplication::Get() { return s_app; }
+VulkanApplication &VulkanApplication::GetInstance() { return s_app; }
 
 VkInstance &VulkanApplication::GetVkInstance() { return m_vk_instance; }
 

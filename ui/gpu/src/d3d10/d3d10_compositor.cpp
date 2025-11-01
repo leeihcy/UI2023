@@ -1,50 +1,27 @@
-#include "gpu/include/api.h"
-#pragma warning(disable : 4005) // 宏重定义
-
-// #include "stdafx.h"
-#include "src/d3d10/D3D10_app.h"
-#include "src/d3d10/common/Effects.h"
-#include "src/d3d10/common/Font.h"
 #include "src/d3d10/d3d10_compositor.h"
+#include "gpu/include/api.h"
+#include "src/d3d10/D3D10_app.h"
 #include "src/d3d10/d3d10_gpu_layer.h"
 #include <D3dx9math.h>
-#include <assert.h>
-using namespace ui;
 
-//////////////////////////////////////////////////////////////////////////
+namespace ui {
 
 D3D10Compositor::D3D10Compositor() {
   // m_pRootTexture = nullptr;
-
-  m_pSwapChain = nullptr;
-  m_pRenderTargetView = nullptr;
-  m_pDepthStencilBuffer = nullptr;
-  m_pDepthStencilView = nullptr;
   m_sizeBackBuffer.cx = m_sizeBackBuffer.cy = 8;
 }
 
 D3D10Compositor::~D3D10Compositor() {
-  if (D3D10App::Get()->IsActiveSwapChain(m_hWnd)) {
-    D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
-    D3D10App::Get()->SetActiveSwapChain(nullptr);
+  if (D3D10Application::GetInstance().IsActiveSwapChain(m_hWnd)) {
+    D3D10Application::GetInstance().m_device->OMSetRenderTargets(0, nullptr,
+                                                                 nullptr);
+    D3D10Application::GetInstance().SetActiveSwapChain(nullptr);
   }
 
-  if (m_pDepthStencilBuffer) {
-    m_pDepthStencilBuffer->Release();
-    m_pDepthStencilBuffer = nullptr;
-  }
-  if (m_pDepthStencilView) {
-    m_pDepthStencilView->Release();
-    m_pDepthStencilView = nullptr;
-  }
-  if (m_pRenderTargetView) {
-    m_pRenderTargetView->Release();
-    m_pRenderTargetView = nullptr;
-  }
-  if (m_pSwapChain) {
-    m_pSwapChain->Release();
-    m_pSwapChain = nullptr;
-  }
+  m_pDepthStencilBuffer.Release();
+  m_pDepthStencilView.Release();
+  m_pRenderTargetView.Release();
+  m_pSwapChain.Release();
 }
 
 bool D3D10Compositor::Initialize(IGpuCompositorWindow *w) {
@@ -60,7 +37,7 @@ static void ReleaseGpuLayer(IGpuLayer *p) {
   }
 }
 std::shared_ptr<IGpuLayer> D3D10Compositor::CreateLayerTexture() {
-  auto* layer = new D3D10GpuLayer();
+  auto *layer = new D3D10GpuLayer();
   layer->SetGpuCompositor(this);
   auto p = std::shared_ptr<IGpuLayer>(layer, ReleaseGpuLayer);
   return p;
@@ -73,7 +50,7 @@ std::shared_ptr<IGpuLayer> D3D10Compositor::CreateLayerTexture() {
 void D3D10Compositor::CreateSwapChain() {
   if (!m_hWnd)
     return;
-  if (!D3D10App::Get()->m_pDXGIFactory)
+  if (!D3D10Application::GetInstance().m_dxgi_factory)
     return;
 
   RECT rc;
@@ -94,7 +71,7 @@ void D3D10Compositor::CreateSwapChain() {
   swapDesc.BufferDesc.RefreshRate.Denominator = 1;
   swapDesc.SampleDesc.Count = 4;
 
-  UINT quality = D3D10App::Get()->GetDeviceMultisampleQuality();
+  UINT quality = D3D10Application::GetInstance().GetDeviceMultisampleQuality();
   if (quality <= 0) {
     swapDesc.SampleDesc.Count = 1;
     swapDesc.SampleDesc.Quality = 0;
@@ -107,8 +84,9 @@ void D3D10Compositor::CreateSwapChain() {
   swapDesc.OutputWindow = m_hWnd;
   swapDesc.Windowed = TRUE;
 
-  /*HRESULT hr = */ D3D10App::Get()->m_pDXGIFactory->CreateSwapChain(
-      D3D10App::Get()->m_pDevice, &swapDesc, &m_pSwapChain);
+  /*HRESULT hr = */ D3D10Application::GetInstance()
+      .m_dxgi_factory->CreateSwapChain(D3D10Application::GetInstance().m_device,
+                                       &swapDesc, &m_pSwapChain);
 
   if (!m_pSwapChain)
     return;
@@ -118,16 +96,14 @@ void D3D10Compositor::CreateSwapChain() {
 
   D3D10_VIEWPORT vp = {
       0, 0, (UINT)m_sizeBackBuffer.cx, (UINT)m_sizeBackBuffer.cy, 0, 1};
-  D3D10App::Get()->m_pDevice->RSSetViewports(1, &vp);
+  D3D10Application::GetInstance().m_device->RSSetViewports(1, &vp);
 }
 
 void D3D10Compositor::ReCreateRenderTargetView() {
   if (m_pRenderTargetView) {
-    D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
-    if (m_pRenderTargetView) {
-      m_pRenderTargetView->Release();
-      m_pRenderTargetView = nullptr;
-    }
+    D3D10Application::GetInstance().m_device->OMSetRenderTargets(0, nullptr,
+                                                                 nullptr);
+    m_pRenderTargetView.Release();
   }
 
   ID3D10Texture2D *pBuffer = nullptr;
@@ -138,21 +114,15 @@ void D3D10Compositor::ReCreateRenderTargetView() {
     // we would like to bind the back buffer
     // of our swap chain as a render target, so that
     // Direct3D 10 can render onto it.
-    hr = D3D10App::Get()->m_pDevice->CreateRenderTargetView(
+    hr = D3D10Application::GetInstance().m_device->CreateRenderTargetView(
         pBuffer, nullptr, &m_pRenderTargetView);
   }
   pBuffer->Release();
 }
 
 void D3D10Compositor::ReCreateStencilView() {
-  if (m_pDepthStencilView) {
-    m_pDepthStencilView->Release();
-    m_pDepthStencilView = nullptr;
-  }
-  if (m_pDepthStencilBuffer) {
-    m_pDepthStencilBuffer->Release();
-    m_pDepthStencilBuffer = nullptr;
-  }
+  m_pDepthStencilView.Release();
+  m_pDepthStencilBuffer.Release();
 
   D3D10_TEXTURE2D_DESC dsDesc;
   dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -163,7 +133,7 @@ void D3D10Compositor::ReCreateStencilView() {
   dsDesc.ArraySize = 1;
   dsDesc.CPUAccessFlags = 0;
   dsDesc.SampleDesc.Count = 4;
-  UINT quality = D3D10App::Get()->GetDeviceMultisampleQuality();
+  UINT quality = D3D10Application::GetInstance().GetDeviceMultisampleQuality();
   if (quality <= 0) {
     dsDesc.SampleDesc.Count = 1;
     dsDesc.SampleDesc.Quality = 0;
@@ -173,12 +143,12 @@ void D3D10Compositor::ReCreateStencilView() {
 
   dsDesc.MiscFlags = 0;
   dsDesc.Usage = D3D10_USAGE_DEFAULT;
-  HRESULT hr = D3D10App::Get()->m_pDevice->CreateTexture2D(
+  HRESULT hr = D3D10Application::GetInstance().m_device->CreateTexture2D(
       &dsDesc, 0, &m_pDepthStencilBuffer);
   assert(SUCCEEDED(hr));
 
-  D3D10App::Get()->m_pDevice->CreateDepthStencilView(m_pDepthStencilBuffer, 0,
-                                                     &m_pDepthStencilView);
+  D3D10Application::GetInstance().m_device->CreateDepthStencilView(
+      m_pDepthStencilBuffer, 0, &m_pDepthStencilView);
 }
 
 void D3D10Compositor::Resize(int nWidth, int nHeight) {
@@ -195,17 +165,15 @@ void D3D10Compositor::Resize(int nWidth, int nHeight) {
   m_sizeBackBuffer.cy = nHeight;
 
   // 如果当前是选中的自己，则下次BeginCommit重新设置
-  if (D3D10App::Get()->IsActiveSwapChain(m_hWnd)) {
-    D3D10App::Get()->m_pDevice->OMSetRenderTargets(0, nullptr, nullptr);
-    D3D10App::Get()->SetActiveSwapChain(nullptr);
+  if (D3D10Application::GetInstance().IsActiveSwapChain(m_hWnd)) {
+    D3D10Application::GetInstance().m_device->OMSetRenderTargets(0, nullptr,
+                                                                 nullptr);
+    D3D10Application::GetInstance().SetActiveSwapChain(nullptr);
   }
 
   // 光ResizeBuffers有问题，还得重新创建rendertargetview
   // Release all outstanding references to the swap chain's buffers.
-  if (m_pRenderTargetView) {
-    m_pRenderTargetView->Release();
-    m_pRenderTargetView = nullptr;
-  }
+  m_pRenderTargetView.Release();
 
   m_pSwapChain->ResizeBuffers(1, nWidth, nHeight, DXGI_FORMAT_B8G8R8A8_UNORM,
                               0);
@@ -218,18 +186,25 @@ bool D3D10Compositor::BeginCommit(GpuLayerCommitContext *) {
   if (!m_pSwapChain)
     return false;
 
-  if (!D3D10App::Get()->IsActiveSwapChain(m_hWnd)) {
-    D3D10_VIEWPORT vp = {0, 0, (UINT)m_sizeBackBuffer.cx, (UINT)m_sizeBackBuffer.cy, 0, 1};
-    D3D10App::Get()->m_pDevice->RSSetViewports(1, &vp);
-    D3D10App::Get()->m_pDevice->OMSetRenderTargets(1, &m_pRenderTargetView,
-                                                   m_pDepthStencilView);
+  if (!D3D10Application::GetInstance().IsActiveSwapChain(m_hWnd)) {
+    D3D10_VIEWPORT vp = {
+        0, 0, (UINT)m_sizeBackBuffer.cx, (UINT)m_sizeBackBuffer.cy, 0, 1};
+    D3D10Application::GetInstance().m_device->RSSetViewports(1, &vp);
+
+    const int size = 1;
+    ID3D10RenderTargetView* array[size] = {
+      m_pRenderTargetView
+    };
+
+    D3D10Application::GetInstance().m_device->OMSetRenderTargets(
+        size, array, m_pDepthStencilView);
 
     D3DXMATRIX matrix;
     D3DXMatrixOrthoOffCenterLH(&matrix, 0, (float)m_sizeBackBuffer.cx,
                                (float)m_sizeBackBuffer.cy, 0, -2000.f, 2000.f);
-    Effects::m_pFxOrthMatrix->SetMatrix((float *)&matrix);
+    Effects::GetInstance().m_pFxOrthMatrix->SetMatrix((float *)&matrix);
 
-    D3D10App::Get()->SetActiveSwapChain(m_hWnd);
+    D3D10Application::GetInstance().SetActiveSwapChain(m_hWnd);
   }
 
   // TBD: 其实大部分情况都不需要CLEAR，但如果背景是透明的，则需要CLEAR，
@@ -237,19 +212,21 @@ bool D3D10Compositor::BeginCommit(GpuLayerCommitContext *) {
 
   // ??? 使用{0,0,0,0}会导致渲染不正常
   FLOAT rgba[4] = {0, 0, 0, 1}; // {1, 0, 0, 1};
-  D3D10App::Get()->m_pDevice->ClearRenderTargetView(m_pRenderTargetView, rgba);
+  D3D10Application::GetInstance().m_device->ClearRenderTargetView(
+      m_pRenderTargetView, rgba);
 
   ClearStencil();
 
   // 还原剪裁区,防止默认全部被剪裁（后期优化），出现过一次由于注释了设置剪裁代码导致的全部不显示问题。
   D3D10_RECT rects;
   SetRect((LPRECT)&rects, 0, 0, m_sizeBackBuffer.cx, m_sizeBackBuffer.cy);
-  D3D10App::Get()->m_pDevice->RSSetScissorRects(1, &rects);
+  D3D10Application::GetInstance().m_device->RSSetScissorRects(1, &rects);
 
   return true;
 }
+
 void D3D10Compositor::EndCommit(GpuLayerCommitContext *) {
-  Font::DrawDebugFps();
+  Font::GetInstance().DrawDebugFps();
 
   //     if (m_pRootTexture)
   //         m_pRootTexture->Commit();
@@ -270,6 +247,8 @@ void D3D10Compositor::EndCommit(GpuLayerCommitContext *) {
 
 void D3D10Compositor::ClearStencil() {
   assert(m_pDepthStencilView);
-  D3D10App::Get()->m_pDevice->ClearDepthStencilView(
+  D3D10Application::GetInstance().m_device->ClearDepthStencilView(
       m_pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);
-}
+} 
+
+} // namespace ui

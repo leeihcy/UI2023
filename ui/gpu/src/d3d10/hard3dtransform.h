@@ -1,9 +1,10 @@
-#pragma once
-#include "src/d3d10/inc.h"
+#ifndef _UI_GPU_SRC_D3D10_HARD3DTRANSFORM_H_
+#define _UI_GPU_SRC_D3D10_HARD3DTRANSFORM_H_
+
 #include "sdk/include/common/math/matrix.h"
 #include "sdk/include/common/math/quad.h"
 #include "sdk/include/interface/irenderlayer.h"
-
+#include "src/d3d10/inc.h"
 
 namespace ui {
 
@@ -93,3 +94,6 @@ private:
 };
 
 } // namespace ui
+
+
+#endif

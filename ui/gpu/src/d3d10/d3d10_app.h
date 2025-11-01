@@ -1,6 +1,10 @@
-#pragma once
-#include "common/Inputs.h"
-#include <windows.h>
+#ifndef UI_GPU_SRC_D3D10_D3D10_APP_H_
+#define UI_GPU_SRC_D3D10_D3D10_APP_H_
+#include "src/d3d10/inc.h"
+#include "src/d3d10/common/inputs.h"
+#include "src/d3d10/common/effects.h"
+#include "src/d3d10/common/font.h"
+#include "src/d3d10/common/render_states.h"
 
 // TODO:
 // 1. 多屏幕下的device要怎么处理？
@@ -32,19 +36,17 @@ class Direct3DRenderTarget;
 struct ID3D10EffectTechnique;
 struct IDXGIFactory;
 
-class D3D10App {
+namespace ui {
+class D3D10Application {
 public:
-  D3D10App();
-  ~D3D10App();
+  static D3D10Application& GetInstance();
 
 public:
-  void AddRef();
-  void Release();
+  bool Startup();
+  void Shutdown();
 
-  bool Init();
-  void Destroy();
-
-  unsigned int GetDeviceMultisampleQuality() { return m_nMultisampleQuality; }
+public:
+  unsigned int GetDeviceMultisampleQuality() { return m_multi_sample_quality; }
 
   bool IsActiveSwapChain(HWND hWnd);
   void SetActiveSwapChain(HWND hWnd);
@@ -54,22 +56,28 @@ public:
   void ApplyTechnique(ID3D10EffectTechnique *pTech, ui::RECTF *prcDraw,
                       ui::RECTF *prcTexture, float fAlpha);
 
+private:
+  HRESULT createDevice(IDXGIAdapter *pAdapter, D3D10_DRIVER_TYPE driverType,
+                       UINT flags, ID3D10Device **ppDevice);
+  void draw(ID3D10EffectTechnique *pTech, DXUT_SCREEN_VERTEX_10 vertices[4]);
+  
+  void reportLiveObjects();
+  
 public:
-  static bool Startup();
-  static void Shutdown();
-  static D3D10App *Get();
+  CComPtr<ID3D10Device> m_device;
+  CComPtr<IDXGIFactory> m_dxgi_factory;
+
+  Inputs m_inputs;
+  Effects m_effects;
+  RenderStates m_render_states;
+  Font m_font;
+
+  // 当前device中被选入的rendertarget所属窗口
+  HWND m_hActiveWnd = nullptr;
 
 private:
-  long m_lRef;
-  static D3D10App *s_pApp;
-
-public:
-  ID3D10Device *m_pDevice;
-  IDXGIFactory *m_pDXGIFactory;
-
-  //  当前device中被选入的rendertarget所属窗口
-  HWND m_hActiveWnd;
-
-private:
-  UINT m_nMultisampleQuality;
+  UINT m_multi_sample_quality = 0;
 };
+
+}
+#endif

@@ -1,6 +1,6 @@
 #include "d3d10_texture_tile.h"
 #include "src/d3d10/d3d10_app.h"
-#include "src/d3d10/common/Effects.h"
+#include "src/d3d10/common/effects.h"
 
 
 namespace ui {
@@ -126,7 +126,7 @@ bool D3D10TextureTile::create() {
   if (m_pTextureBuffer || m_pShaderResourceView)
     return false;
 
-  if (!D3D10App::Get()->m_pDevice)
+  if (!D3D10Application::GetInstance().m_device)
     return false;
 
   D3D10_TEXTURE2D_DESC textureDesc;
@@ -150,7 +150,7 @@ bool D3D10TextureTile::create() {
   textureDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
   textureDesc.MiscFlags = 0;
 
-  HRESULT hr = D3D10App::Get()->m_pDevice->CreateTexture2D(
+  HRESULT hr = D3D10Application::GetInstance().m_device->CreateTexture2D(
       &textureDesc, nullptr, &m_pTextureBuffer);
   if (FAILED(hr)) {
     assert(false);
@@ -163,7 +163,7 @@ bool D3D10TextureTile::create() {
   shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
   shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-  hr = D3D10App::Get()->m_pDevice->CreateShaderResourceView(
+  hr = D3D10Application::GetInstance().m_device->CreateShaderResourceView(
       m_pTextureBuffer, &shaderResourceViewDesc, &m_pShaderResourceView);
   if (FAILED(hr)) {
     if (m_pTextureBuffer) {
@@ -186,34 +186,34 @@ void D3D10TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
     return;
 
   float pos[2] = {(float)(pContext->m_xOffset), (float)(pContext->m_yOffset)};
-  Effects::m_pFxVsDestPos->SetFloatVector(pos);
+  Effects::GetInstance().m_pFxVsDestPos->SetFloatVector(pos);
 
   ID3D10EffectTechnique *pTech = nullptr;
 #if 1
   if (pContext->m_bTransformValid) {
-    Effects::m_pFxMatrix->SetMatrix(
+    Effects::GetInstance().m_pFxMatrix->SetMatrix(
         (float *)pContext->m_matrixTransform);
 
-    pTech = Effects::m_pTechDrawTextureMatrix;
+    pTech = Effects::GetInstance().m_pTechDrawTextureMatrix;
   } else
 #endif
    {
-    pTech = Effects::m_pTechDrawTexture;
+    pTech = Effects::GetInstance().m_pTechDrawTexture;
   }
 
   if (pContext->m_fAlpha != 1.0f)
-    Effects::m_pFxAlpha->SetFloat(pContext->m_fAlpha);
-  Effects::m_pFxTexture10->SetResource(m_pShaderResourceView);
+    Effects::GetInstance().m_pFxAlpha->SetFloat(pContext->m_fAlpha);
+  Effects::GetInstance().m_pFxTexture10->SetResource(m_pShaderResourceView);
 
   D3D10_TECHNIQUE_DESC techDesc;
   pTech->GetDesc(&techDesc);
   for (UINT p = 0; p < techDesc.Passes; ++p) {
     pTech->GetPassByIndex(p)->Apply(0);
-    D3D10App::Get()->m_pDevice->Draw(4, vertexStartIndex);
+    D3D10Application::GetInstance().m_device->Draw(4, vertexStartIndex);
   }
 
   if (pContext->m_fAlpha != 1.0f) {
-    Effects::m_pFxAlpha->SetFloat(1.0f);
+    Effects::GetInstance().m_pFxAlpha->SetFloat(1.0f);
   }
 }
 

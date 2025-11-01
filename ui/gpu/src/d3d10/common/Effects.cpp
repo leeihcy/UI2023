@@ -1,21 +1,13 @@
-#include "Effects.h"
-#include "src/d3d10/inc.h"
+#include "effects.h"
 #include "src/d3d10/resource.h"
-#include <assert.h>
+#include "src/d3d10/d3d10_app.h"
 
-ID3D10Effect *Effects::m_pEffect = nullptr;
+namespace ui {
 
-ID3D10EffectTechnique *Effects::m_pTechDrawTexture = nullptr;
-ID3D10EffectTechnique *Effects::m_pTechDrawRect = nullptr;
-ID3D10EffectTechnique *Effects::m_pTechFillRect = nullptr;
-ID3D10EffectTechnique *Effects::m_pTechFillRectMatrix = nullptr;
-ID3D10EffectTechnique *Effects::m_pTechDrawTextureMatrix = nullptr;
-
-ID3D10EffectShaderResourceVariable *Effects::m_pFxTexture10 = nullptr;
-ID3D10EffectMatrixVariable *Effects::m_pFxMatrix = nullptr;
-ID3D10EffectMatrixVariable *Effects::m_pFxOrthMatrix = nullptr;
-ID3D10EffectVectorVariable *Effects::m_pFxVsDestPos = nullptr;
-ID3D10EffectScalarVariable *Effects::m_pFxAlpha = nullptr;
+// static 
+Effects& Effects::GetInstance() {
+  return D3D10Application::GetInstance().m_effects;
+}
 
 bool Effects::Init(ID3D10Device *pDevice) {
   // Create Effect
@@ -29,6 +21,7 @@ bool Effects::Init(ID3D10Device *pDevice) {
   ID3D10Blob *pCompileBlob = nullptr;
 
   HINSTANCE hInstance = GetModuleHandle(L"uigpu.dll");
+
 #ifdef _DEBUG
   TCHAR szPath[MAX_PATH] = {0};
   GetModuleFileName(hInstance, szPath, MAX_PATH);
@@ -89,8 +82,7 @@ void Effects::Release() {
   m_pFxMatrix = nullptr;
   m_pFxVsDestPos = nullptr;
 
-  if (m_pEffect) {
-    m_pEffect->Release();
-    m_pEffect = nullptr;
-  }
+  m_pEffect.Release();
+}
+
 }

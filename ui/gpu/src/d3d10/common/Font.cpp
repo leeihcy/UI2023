@@ -1,139 +1,103 @@
 #include "font.h"
-// #include "src/stdafx.h"
 #include "src/d3d10/common_def.h"
-#include <assert.h>
-#include <atlbase.h>
-#include <atlcom.h>
+#include "src/d3d10/d3d10_app.h"
 
-// #include "..\UISDK\Src\Util\Stopwatch\stopwatch.h"
-#define SAFE_RELEASE(ptr)   do { if(ptr) { (ptr)->Release(); (ptr) = NULL; } } while(false)
+namespace ui {
 
+static Font s_fontForDebug;
 
-static Font  s_fontForDebug;
-ID3DX10Sprite*  Font::s_pSprite10 = nullptr;
-ID3D10BlendState*  Font::s_pFontBlendState10 = nullptr;
+Font &Font::GetInstance() { return D3D10Application::GetInstance().m_font; }
 
-Font::Font()
-{
+Font::~Font() { destroy(); }
+
+void Font::destroy() { __m_pFont10__.Release(); }
+
+void Font::Init(ID3D10Device *pDevice) {
+  if (!pDevice)
+    return;
+
+  D3DX10CreateSprite(pDevice, 512, &s_pSprite10);
+
+  D3D10_BLEND_DESC StateDesc;
+  ZeroMemory(&StateDesc, sizeof(D3D10_BLEND_DESC));
+  StateDesc.AlphaToCoverageEnable = FALSE;
+  StateDesc.BlendEnable[0] = TRUE;
+  StateDesc.SrcBlend = D3D10_BLEND_SRC_ALPHA;
+  StateDesc.DestBlend = D3D10_BLEND_INV_SRC_ALPHA;
+  StateDesc.BlendOp = D3D10_BLEND_OP_ADD;
+  StateDesc.SrcBlendAlpha = D3D10_BLEND_ZERO;
+  StateDesc.DestBlendAlpha = D3D10_BLEND_ZERO;
+  StateDesc.BlendOpAlpha = D3D10_BLEND_OP_ADD;
+  StateDesc.RenderTargetWriteMask[0] = 0xf;
+  pDevice->CreateBlendState(&StateDesc, &s_pFontBlendState10);
+
+  s_fontForDebug.m_fontInfo.Height = 12;
 }
 
+void Font::Release() {
+  s_pSprite10.Release();
+  s_pFontBlendState10.Release();
 
-Font::~Font()
-{
-	destroy();
+  s_fontForDebug.destroy();
 }
 
-void  Font::destroy()
-{
-	SAFE_RELEASE(__m_pFont10__);
+void Font::DrawDebugFps() {
+  // static StopWatch watch;
+  // static int frames = 0;
+  // static __int64 lastCalcFpsTime = 0;
+  // static float fps = 0;
+  // frames++;
+
+  // __int64 dwTickNow = watch.Now();
+  // if (dwTickNow - lastCalcFpsTime > 1000)
+  // {
+  // 	fps = (float)frames / (float)(dwTickNow-lastCalcFpsTime) * 1000;
+  // 	lastCalcFpsTime = dwTickNow;
+  // 	frames = 0;
+  // }
+
+  // s_fontForDebug.beginDraw();
+
+  // TCHAR buf[64];
+  // wprintf(buf, TEXT("%0.2f fps"), fps);
+
+  // RECT rc = { 0, 0, 0, 0 };
+  // s_fontForDebug.DrawText(buf, -1, &rc, RGB(255, 0, 0), DT_NOCLIP);
+  // s_fontForDebug.endDraw();
 }
 
-void Font::Init(ID3D10Device* pDevice)
-{
-	if (!pDevice)
-		return;
+ID3DX10Font *Font::getFont() {
+  if (__m_pFont10__) {
+    return __m_pFont10__;
+  }
 
-	D3DX10CreateSprite(pDevice, 512, &s_pSprite10);
+  CComPtr<ID3D10Device> pDevice;
+  s_pSprite10->GetDevice(&pDevice);
+  assert(pDevice);
+  if (!pDevice)
+    return nullptr;
 
-	D3D10_BLEND_DESC StateDesc;
-	ZeroMemory(&StateDesc, sizeof(D3D10_BLEND_DESC));
-	StateDesc.AlphaToCoverageEnable = FALSE;
-	StateDesc.BlendEnable[0] = TRUE;
-	StateDesc.SrcBlend = D3D10_BLEND_SRC_ALPHA;
-	StateDesc.DestBlend = D3D10_BLEND_INV_SRC_ALPHA;
-	StateDesc.BlendOp = D3D10_BLEND_OP_ADD;
-	StateDesc.SrcBlendAlpha = D3D10_BLEND_ZERO;
-	StateDesc.DestBlendAlpha = D3D10_BLEND_ZERO;
-	StateDesc.BlendOpAlpha = D3D10_BLEND_OP_ADD;
-	StateDesc.RenderTargetWriteMask[0] = 0xf;
-	pDevice->CreateBlendState(&StateDesc, &s_pFontBlendState10);
+  D3DX10CreateFont(pDevice, m_fontInfo.Height, m_fontInfo.Width,
+                   m_fontInfo.Weight, m_fontInfo.MipLevels, m_fontInfo.Italic,
+                   m_fontInfo.CharSet, m_fontInfo.OutputPrecision,
+                   m_fontInfo.Quality, m_fontInfo.PitchAndFamily,
+                   (LPCWSTR)m_fontInfo.pFaceName, &__m_pFont10__);
 
-	s_fontForDebug.m_fontInfo.Height = 12;
+  return __m_pFont10__;
 }
 
-void Font::Release()
-{
-	SAFE_RELEASE(s_pSprite10);
-	SAFE_RELEASE(s_pFontBlendState10);
+void Font::DrawText(LPCTSTR text, int len, LPCRECT prc, COLORREF color,
+                    DWORD dwFlags) {
+  ID3DX10Font *font = getFont();
+  if (!font)
+    return;
 
-	s_fontForDebug.destroy();
+  D3DXCOLOR dxcolor(D3DCOLOR_COLORREF(color));
+  font->DrawText(s_pSprite10, text, len, (LPRECT)prc, dwFlags, dxcolor);
 }
 
-void Font::DrawDebugFps()
-{
-	// static StopWatch watch;
-	// static int frames = 0; 
-	// static __int64 lastCalcFpsTime = 0;
-	// static float fps = 0;
-	// frames++;
-
-	// __int64 dwTickNow = watch.Now();
-	// if (dwTickNow - lastCalcFpsTime > 1000)
-	// {
-	// 	fps = (float)frames / (float)(dwTickNow-lastCalcFpsTime) * 1000;
-	// 	lastCalcFpsTime = dwTickNow;
-	// 	frames = 0;
-	// }
-
-	// s_fontForDebug.beginDraw();
-
-	// TCHAR buf[64];
-	// wprintf(buf, TEXT("%0.2f fps"), fps);
-
-	// RECT rc = { 0, 0, 0, 0 };
-	// s_fontForDebug.DrawText(buf, -1, &rc, RGB(255, 0, 0), DT_NOCLIP);
-	// s_fontForDebug.endDraw();
-}
-
-ID3DX10Font*  Font::getFont()
-{
-	if (__m_pFont10__)
-	{
-		return __m_pFont10__;
-	}
-
-	CComPtr<ID3D10Device> pDevice;
-	s_pSprite10->GetDevice(&pDevice);
-	assert(pDevice);
-	if (!pDevice)
-		return nullptr;
-
-	D3DX10CreateFont(pDevice,
-		m_fontInfo.Height,
-		m_fontInfo.Width,
-		m_fontInfo.Weight,
-		m_fontInfo.MipLevels,
-		m_fontInfo.Italic,
-		m_fontInfo.CharSet,
-		m_fontInfo.OutputPrecision,
-		m_fontInfo.Quality,
-		m_fontInfo.PitchAndFamily,
-		(LPCWSTR)m_fontInfo.pFaceName,
-		&__m_pFont10__);
-
-	return __m_pFont10__;
-}
-
-void Font::DrawText(
-		LPCTSTR text, int len, LPCRECT prc, COLORREF color, DWORD dwFlags)
-{
-	ID3DX10Font* font = getFont();
-	if (!font)
-		return;
-	
-	D3DXCOLOR dxcolor(D3DCOLOR_COLORREF(color));
-    font->DrawText(
-		s_pSprite10, 
-		text, 
-		len, 
-		(LPRECT)prc, 
-		dwFlags, 
-		dxcolor);
-}
-
-void Font::beginDraw()
-{
-	HRESULT hr = s_pSprite10->Begin(D3DX10_SPRITE_SAVE_STATE);
+void Font::beginDraw() {
+  HRESULT hr = s_pSprite10->Begin(D3DX10_SPRITE_SAVE_STATE);
 
 #if 0
 	D3D10_VIEWPORT VPs[D3D10_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
@@ -154,12 +118,10 @@ void Font::beginDraw()
 		SAFE_RELEASE(pd3dDevice);
 	}
 #endif
-
 }
 
-void Font::endDraw()
-{
-	s_pSprite10->End();
+void Font::endDraw() {
+  s_pSprite10->End();
 #if 0
 	FLOAT OriginalBlendFactor[4];
 	UINT OriginalSampleMask = 0;
@@ -189,3 +151,5 @@ void Font::endDraw()
 	SAFE_RELEASE(pd3dDevice);
 #endif
 }
+
+} // namespace ui

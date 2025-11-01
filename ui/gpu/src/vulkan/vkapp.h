@@ -12,14 +12,13 @@ namespace ui {
 class VulkanApplication {
 public:
   VulkanApplication();
-  ~VulkanApplication();
+  static VulkanApplication &GetInstance();
 
 public:
   bool Startup();
   void Shutdown();
 
 public:
-  static VulkanApplication &Get();
   VkInstance &GetVkInstance();
 
   bool IsValidationLayersEnabled();

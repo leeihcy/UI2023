@@ -116,10 +116,6 @@ void Application::x_Init() {
 #endif
 
 #if 0
-	m_pGifTimerMgr = nullptr;
-	m_pGifTimerMgr = new GifTimerManager();
-	m_pGifTimerMgr->Init(this);
-
     m_ToolTipMgr.Init(this);
 #endif
 
@@ -178,25 +174,14 @@ Application::~Application(void) {
   ClearRegisterUIObject();
 
 #if 0
-	if (m_WndForwardPostMsg.IsWindow())
-	{
+	if (m_WndForwardPostMsg.IsWindow()) {
 		m_WndForwardPostMsg.DestroyWindow();
 	}
 #endif
   m_resource_manager.Destroy();
-
   m_pUIEditor = nullptr;
 
-#if 0
-	SAFE_DELETE(m_pGifTimerMgr);
-    Image::ReleaseGDIPlus();
-    if (m_bGpuEnable)
-    {
-		ShutdownGpuCompositor();
-    }
-    //	::CoUninitialize(); // do not call CoInitialize, CoInitializeEx, or CoUninitialize from the DllMain function. 
-	OleUninitialize();
-#endif
+  ShutdownGpuCompositor();
 }
 
 ITopWindowManager *Application::GetITopWindowMgr() {
