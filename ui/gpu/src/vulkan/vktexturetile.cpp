@@ -79,6 +79,37 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
   vkUnmapMemory(device, stagingBufferMemory);
 
+  
+  // 几种最常用的 Image Layout：
+  //
+  // VK_IMAGE_LAYOUT_UNDEFINED：
+  // 含义：布局未定义，图像内容无保证（可能是垃圾数据）。
+  // 用途：通常用作布局转换的初始状态。因为你不在乎旧数据，所以转换到这种布局开销很小。例如，在开始渲染前，将交换链图像转换到 COLOR_ATTACHMENT_OPTIMAL 时，初始布局常用 UNDEFINED。
+  //
+  // VK_IMAGE_LAYOUT_GENERAL：
+  // 含义：通用布局。对所有操作都“基本可用”，但通常不是性能最优的。
+  // 用途：当图像在单个渲染过程中需要被用于多种不同类型的操作，且没有其他更合适的布局时使用。例如，在计算着色器中写入，然后在片段着色器中采样。
+  // 
+  // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL：
+  // 含义：对作为颜色附件进行写入操作最优的布局。
+  // 用途：在渲染通道中，作为 VK_ATTACHMENT_LOAD_OP_LOAD 或 VK_ATTACHMENT_STORE_OP_STORE 的颜色附件时使用。
+  //
+  // VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL：
+  // 含义：对作为深度/模板附件进行读写操作最优的布局。
+  // 用途：在渲染通道中，作为深度或模板测试的附件时使用。
+  //
+  // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL：
+  // 含义：对在着色器（如片段着色器）中进行采样操作最优的布局。
+  // 用途：将图像作为纹理贴图使用时。
+  //
+  // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL / VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL：
+  // 含义：对作为复制命令的源或目标最优的布局。
+  // 用途：使用 vkCmdCopyImage 等命令进行图像数据拷贝时。
+  //
+  // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR：
+  // 含义：对呈现（Present）到屏幕最优的布局。
+  // 用途：交换链图像在渲染完成后，准备呈现给窗口系统时。
+  //
   transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_UNDEFINED,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -270,7 +301,12 @@ bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
   cb->EndRecordCommand();
 
   m_bridge.GetDeviceQueue().Submit(cb.get());
+
+  // 如果不加wait会报错：
+  // Attempt to free VkCommandBuffer 0x7f885410b4c8[] which is in use.
+  // The Vulkan spec states: All elements of pCommandBuffers must not be in the pending state
   m_bridge.GetDeviceQueue().WaitIdle();
+
   cb->Destroy();
 
   return true;
@@ -292,6 +328,8 @@ bool VkTextureTile::create_texture_image(uint32_t width, uint32_t height,
   imageInfo.arrayLayers = 1;
   imageInfo.format = format;
   imageInfo.tiling = tiling;
+  // initialLayout must be VK_IMAGE_LAYOUT_UNDEFINED or VK_IMAGE_LAYOUT_PREINITIALIZED
+  // (https://vulkan.lunarg.com/doc/view/1.3.261.1/mac/1.3-extensions/vkspec.html#VUID-VkImageCreateInfo-initialLayout-00993)
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   imageInfo.usage = usage;
   imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;

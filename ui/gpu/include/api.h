@@ -34,24 +34,32 @@ struct IGpuCompositorWindow {
 
 #if defined(OS_WIN)
 struct IGpuCompositorWindowHWND : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::WindowsHWND; }
-  virtual void* GetHWND() = 0; // HWND
+  GpuCompositorWindowType GetType() override {
+    return GpuCompositorWindowType::WindowsHWND;
+  }
+  virtual void *GetHWND() = 0; // HWND
 };
 #elif defined(OS_MAC)
 struct IGpuCompositorWindowNSView : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::MacOSNSView; }
-  virtual void* GetNSWindowRootView() = 0; // NSView*
+  GpuCompositorWindowType GetType() override {
+    return GpuCompositorWindowType::MacOSNSView;
+  }
+  virtual void *GetNSWindowRootView() = 0; // NSView*
 };
 #elif defined(OS_LINUX)
 struct IGpuCompositorWindowWayland : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::LinuxWayland; }
+  GpuCompositorWindowType GetType() override {
+    return GpuCompositorWindowType::LinuxWayland;
+  }
 
-  virtual wl_display* GetWaylandDisplay() = 0;
-  virtual wl_surface* GetWaylandSurface() = 0;
+  virtual wl_display *GetWaylandDisplay() = 0;
+  virtual wl_surface *GetWaylandSurface() = 0;
 };
 
 struct IGpuCompositorWindowX11 : public IGpuCompositorWindow {
-  GpuCompositorWindowType GetType() override { return GpuCompositorWindowType::LinuxWayland; }
+  GpuCompositorWindowType GetType() override {
+    return GpuCompositorWindowType::LinuxWayland;
+  }
 };
 #endif
 
@@ -59,8 +67,8 @@ struct IGpuCompositor {
   virtual ~IGpuCompositor() {}
   virtual std::shared_ptr<IGpuLayer> CreateLayerTexture() = 0;
 
-  virtual bool BeginCommit(GpuLayerCommitContext*) = 0;
-  virtual void EndCommit(GpuLayerCommitContext*) = 0;
+  virtual bool BeginCommit(GpuLayerCommitContext *) = 0;
+  virtual void EndCommit(GpuLayerCommitContext *) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
 
@@ -88,7 +96,7 @@ public:
   void MultiAlpha(unsigned char alpha);
 
 public:
-  void* m_data = nullptr;
+  void *m_data = nullptr;
 
   int m_xOffset;
   int m_yOffset;
@@ -182,8 +190,8 @@ UIGPUAPI void GpuShutdown();
 UIGPUAPI GPU_STARTUP_STATE GetGpuStartupState();
 UIGPUAPI void GpuUnitTest();
 }
-UIGPUAPI std::shared_ptr<IGpuCompositor> CreateGpuComposition(IGpuCompositorWindow*);
-
+UIGPUAPI std::shared_ptr<IGpuCompositor>
+CreateGpuComposition(IGpuCompositorWindow *);
 
 } // namespace ui
 

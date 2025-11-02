@@ -6,7 +6,7 @@
 
 namespace vulkan {
 
-static ui::VulkanApplication &application() { return ui::VulkanApplication::Get(); }
+static ui::VulkanApplication &application() { return ui::VulkanApplication::GetInstance(); }
 
 DeviceQueue::DeviceQueue(ui::VulkanCompositor& compositor):m_compositor(compositor) {
 }

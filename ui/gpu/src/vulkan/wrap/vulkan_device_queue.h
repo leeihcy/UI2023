@@ -12,6 +12,7 @@ class VulkanCompositor;
 
 namespace vulkan {
 
+
 class DeviceQueue {
 public:
   DeviceQueue(ui::VulkanCompositor& compositor);

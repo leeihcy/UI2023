@@ -59,7 +59,7 @@ void SwapChain::Destroy() {
 }
 
 bool SwapChain::create_swapchain(VkSurfaceKHR surface, int width, int height) {
-  auto &app = ui::VulkanApplication::Get();
+  auto &app = ui::VulkanApplication::GetInstance();
 
   m_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
   m_info.surface = surface;

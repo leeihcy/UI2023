@@ -24,7 +24,7 @@ void GetNSWindowActureSize(void *window, int *width, int *height);
 
 namespace ui {
 
-static VulkanApplication &application() { return VulkanApplication::Get(); }
+static VulkanApplication &application() { return VulkanApplication::GetInstance(); }
 
 VulkanCompositor::VulkanCompositor()
     : m_device_queue(*this),

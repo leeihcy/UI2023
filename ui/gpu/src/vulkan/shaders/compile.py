@@ -11,7 +11,7 @@ import subprocess
 output_dir = sys.argv[1]
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-def run(commands: [str]):
+def run(commands: list[str]):
     ret = subprocess.run(commands, cwd=script_dir,
                          stdout=subprocess.PIPE, 
                          stderr=subprocess.PIPE)

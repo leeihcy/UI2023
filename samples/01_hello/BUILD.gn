@@ -22,26 +22,49 @@ executable("hello") {
 }
 
 if (is_mac) {
-  executable("hello_mac") {
+  executable("hello_mac_1") {
       output_dir = "$root_out_dir/bin"
-      output_name = "sample_hello_mac"
+      output_name = "sample_hello_mac_1"
+      sources = [ "macos_1.mm" ]
 
+      cflags = []
+      if (is_debug) {
+        cflags += ["-g"]
+      }
+      ldflags = [
+        "-framework", "Cocoa",
+      ]
+  }
+
+  executable("hello_mac_2") {
+      output_dir = "$root_out_dir/bin"
+      output_name = "sample_hello_mac_2"
+      sources = [ "macos_2.mm" ]
+
+      cflags = []
+      if (is_debug) {
+        cflags += ["-g"]
+      }
+      ldflags = [
+        "-framework", "Cocoa",
+      ]
+  }
+
+  executable("hello_mac_3_metal") {
+      output_dir = "$root_out_dir/bin"
+      output_name = "sample_hello_mac_3_metal"
       sources = [
-          "macos.mm"
+          "macos_3_metal.mm"
       ]
 
       cflags = []
       if (is_debug) {
         cflags += ["-g"]
       }
-
       ldflags = [
-        "-framework", "CoreFoundation",
-        "-framework", "CoreGraphics",
-        "-framework", "CoreText",
-        "-framework", "CoreServices",
         "-framework", "Cocoa",
-        "-framework", "QuartzCore",  # Core Animation
+        "-framework", "Metal",
+        "-framework", "MetalKit",
       ]
   }
 }
