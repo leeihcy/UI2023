@@ -5,6 +5,7 @@ declare_args() {
 
   enable_d3d10 = false
   enable_d3d11 = false
+  enable_d3d12 = false
   enable_vulkan = true
 }
 
@@ -30,13 +31,16 @@ shared_library("uigpu") {
 
     if (is_win) {
       enable_d3d10 = false
-      enable_d3d11 = true
+      enable_d3d11 = false
+      enable_d3d12 = true
       enable_vulkan = false
     }
     if (enable_d3d10) {
       cflags += [ "-DENABLE_D3D10" ]
     } else if (enable_d3d11) {
       cflags += [ "-DENABLE_D3D11" ]
+    } else if (enable_d3d12) {
+      cflags += [ "-DENABLE_D3D12" ]
     } else if (enable_vulkan) {
       cflags += [ "-DENABLE_VULKAN" ]
     }
@@ -50,7 +54,7 @@ shared_library("uigpu") {
         directx_sdk + "/Include"
       ]
       lib_dirs += [
-        directx_sdk + "\Lib\x64"
+        directx_sdk + "/Lib/x64"
       ]
 
       if (enable_d3d11) {
@@ -60,6 +64,13 @@ shared_library("uigpu") {
           lib_dirs += [ "src/d3d11/directx_sdk/Effects11/x64/Release" ]
         }
       }
+    }
+
+    # d3d12不依赖于directx sdk!
+    if (enable_d3d12) {
+      include_dirs += [
+        win_sdk + "/Include/" + win_sdk_version + "/um",
+      ]
     }
 
     if (enable_vulkan) {
@@ -124,6 +135,20 @@ shared_library("uigpu") {
         "d3dcompiler.lib",
         # 需要单独编译 ui\gpu\src\d3d11\directx_sdk\Effects11工程
         "Effects11.lib",   
+      ]
+    }
+
+    if (enable_d3d12) {
+      sources += [
+        "src/d3d12/d3d12_app.cpp",
+        "src/d3d12/d3d12_app.h",
+        "src/d3d12/d3d12_compositor.cpp",
+        "src/d3d12/d3d12_compositor.h",
+      ]
+      libs += [
+        "atls.lib",
+        "D3d12.lib", 
+        "dxgi.lib",
       ]
     }
 

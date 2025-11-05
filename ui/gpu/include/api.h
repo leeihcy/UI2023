@@ -14,9 +14,7 @@ struct wl_surface;
 
 namespace ui {
 
-enum {
-  TILE_SIZE = 256, // 纹理分块大小
-};
+#define TILE_SIZE 256 // 纹理分块大小
 
 struct IGpuLayer;
 class GpuLayerCommitContext;
@@ -174,8 +172,6 @@ struct IGpuLayer {
   virtual void UploadBitmap(UploadGpuBitmapInfo &info) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
-
-// extern "C" UICOMPOSITOR_API IRenderLayerTransform2*  CreateHard3DTransform();
 
 enum GPU_STARTUP_STATE {
   NOT_START = -2,

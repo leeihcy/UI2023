@@ -11,7 +11,18 @@ namespace ui {
 
 TextureTile *D3D10GpuLayer::newTile() { return new D3D10TextureTile(); }
 
-void MultiMatrix(GpuLayerCommitContext &c, float *matrix16);
+static void MultiMatrix(GpuLayerCommitContext &c, float *matrix16) {
+  D3DXMATRIX mat1(matrix16);
+  if (D3DXMatrixIsIdentity(&mat1))
+    return;
+
+  D3DXMATRIX mat2((float *)c.m_matrixTransform);
+
+  mat1 *= mat2;
+  memcpy(&c.m_matrixTransform, &mat1, sizeof(mat1));
+
+  c.m_bTransformValid = true;
+}
 
 void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                float *pMatrixTransform) {
