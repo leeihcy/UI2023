@@ -1,7 +1,9 @@
 #ifndef _UI_GPU_SRC_D3D12_D3D12COMPOSITOR_H_
 #define _UI_GPU_SRC_D3D12_D3D12COMPOSITOR_H_
 
+#include "d3d12_swapchain.h"
 #include "include/api.h"
+
 
 namespace ui {
 
@@ -17,8 +19,11 @@ protected:
   bool BeginCommit(GpuLayerCommitContext *) override;
   void EndCommit(GpuLayerCommitContext *) override;
   void Resize(int nWidth, int nHeight) override;
+
+private:
+  D3D12SwapChain m_swapchain;
 };
 
-}
+} // namespace ui
 
 #endif

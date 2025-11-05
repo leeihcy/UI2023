@@ -23,7 +23,7 @@ layout(push_constant) uniform PushData {
   mat4 model;
 } push;
 
-// 顶点缓存数据
+// 顶点缓存数据，在Pipeline::build_vertex_input中定义
 layout(location = 0) in vec2 inPosition;  // 局部坐标(像素坐标)
 layout(location = 1) in vec3 inColor;     //
 layout(location = 2) in vec2 inTexCoord;  // 对象的tile纹理坐标(0~1)
@@ -33,7 +33,7 @@ layout(location = 1) out vec2 fragTexCoord;
 
 void main() {
   gl_Position = ubo.ortho * ubo.view * push.model * vec4(
-    inPosition.x, inPosition.y, 0.0, 1.0);
+    inPosition, 0.0, 1.0);
 
   fragColor = inColor;
   fragTexCoord = inTexCoord;

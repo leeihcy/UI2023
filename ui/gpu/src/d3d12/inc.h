@@ -4,6 +4,7 @@
 #include <D3d12.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
+#include <dxgi1_4.h>
 
 #include <atlbase.h>
 

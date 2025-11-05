@@ -358,7 +358,7 @@ void Pipeline::build_descriptor_set_layout() {
           .binding = 0, // binding的索引
           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
           .descriptorCount = 1,                     // 只有一个ubo
-          .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 哪此着色器阶段可以访问。
+          .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 哪些着色器阶段可以访问。
       }};
 
   VkDescriptorSetLayoutCreateInfo layoutInfo{};

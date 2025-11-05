@@ -12,7 +12,7 @@ bool D3D12CommandQueue::Create() {
   };
   
   HRESULT hr = D3D12Application::GetInstance().m_device->CreateCommandQueue(
-    &desc, IID_ID3D12CommandQueue, (void**)&m_command_queue);
+    &desc, __uuidof(ID3D12CommandQueue), (void**)&m_command_queue);
   if (FAILED(hr)) {
     return false;
   }

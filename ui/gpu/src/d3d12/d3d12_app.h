@@ -12,6 +12,7 @@ public:
   void Shutdown();
 
 public:
+  CComPtr<IDXGIFactory1> m_dxgi_factory;
   CComPtr<ID3D12Device> m_device;
 };
 

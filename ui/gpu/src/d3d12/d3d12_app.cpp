@@ -1,6 +1,4 @@
 #include "src/d3d12/d3d12_app.h"
-#include <D3d12.h>
-#include <dxgi1_3.h>
 
 namespace ui {
 
@@ -29,9 +27,8 @@ bool D3D12Application::Startup() {
 
   HRESULT hr = S_OK;
 
-  CComPtr<IDXGIFactory1> factory;
   hr = CreateDXGIFactory2(dxgiFactoryFlags, __uuidof(IDXGIFactory1),
-                          (void **)&factory);
+                          (void **)&m_dxgi_factory);
   if (FAILED(hr)) {
     return false;
   }
@@ -41,7 +38,7 @@ bool D3D12Application::Startup() {
 
   UINT i = 0;
   CComPtr<IDXGIAdapter1> adapter;
-  while (factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
+  while (m_dxgi_factory->EnumAdapters1(i, &adapter) != DXGI_ERROR_NOT_FOUND) {
     int score = 0;
 
     DXGI_ADAPTER_DESC1 desc;
@@ -83,6 +80,9 @@ bool D3D12Application::Startup() {
 
   return true;
 }
-void D3D12Application::Shutdown() {}
+void D3D12Application::Shutdown() {
+  m_dxgi_factory.Release();
+  m_device.Release();
+}
 
 } // namespace ui

@@ -144,6 +144,10 @@ shared_library("uigpu") {
         "src/d3d12/d3d12_app.h",
         "src/d3d12/d3d12_compositor.cpp",
         "src/d3d12/d3d12_compositor.h",
+        "src/d3d12/d3d12_swapchain.cpp",
+        "src/d3d12/d3d12_swapchain.h",
+        "src/d3d12/d3d12_command_queue.cpp",
+        "src/d3d12/d3d12_command_queue.h",
       ]
       libs += [
         "atls.lib",
