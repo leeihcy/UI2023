@@ -1117,7 +1117,6 @@ void SkiaRenderTarget::DumpToImage(const char *path) {
 void SkiaRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
                                   float scale) {
   if (!m_gpu_texture) {
-    assert(false);
     return;
   }
   SkPixmap pm;
@@ -1161,6 +1160,9 @@ bool SkiaRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
     return false;
   }
   if (m_enable_hardware_backend) {
+    if (!m_gpu_texture) {
+      return false;
+    }
     fb->gpu_layer = m_gpu_texture;
     return true;
   }

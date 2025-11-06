@@ -41,10 +41,6 @@ void Pipeline::UpdateViewportScissor(uint32_t w, uint32_t h,
 }
 
 void Pipeline::Destroy() {
-  if (m_renderpass != VK_NULL_HANDLE) {
-    vkDestroyRenderPass(m_bridge.GetVkDevice(), m_renderpass, nullptr);
-    m_renderpass = VK_NULL_HANDLE;
-  }
   if (m_pipeline_layout != VK_NULL_HANDLE) {
     vkDestroyPipelineLayout(m_bridge.GetVkDevice(), m_pipeline_layout, nullptr);
     m_pipeline_layout = VK_NULL_HANDLE;
@@ -110,9 +106,6 @@ bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h,
     build_color_blend(context);
 
     if (!build_layout()) {
-      break;
-    }
-    if (!create_renderpass(format)) {
       break;
     }
     if (!create_pipeline(context)) {
@@ -527,40 +520,6 @@ bool Pipeline::build_layout() {
   return true;
 }
 
-bool Pipeline::create_renderpass(VkFormat format) {
-  VkAttachmentDescription colorAttachment{};
-  colorAttachment.format = format; // m_swapchain.ImageFormat();
-  colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-  colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-  colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-  colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-  VkAttachmentReference colorAttachmentRef{};
-  colorAttachmentRef.attachment = 0;
-  colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-  VkSubpassDescription subpass{};
-  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-  subpass.colorAttachmentCount = 1;
-  subpass.pColorAttachments = &colorAttachmentRef;
-
-  VkRenderPassCreateInfo renderPassInfo{};
-  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-  renderPassInfo.attachmentCount = 1;
-  renderPassInfo.pAttachments = &colorAttachment;
-  renderPassInfo.subpassCount = 1;
-  renderPassInfo.pSubpasses = &subpass;
-
-  if (vkCreateRenderPass(m_bridge.GetVkDevice(), &renderPassInfo, nullptr,
-                         &m_renderpass) != VK_SUCCESS) {
-    return false;
-  }
-  return true;
-}
-
 bool Pipeline::create_pipeline(Context &ctx) {
   VkPipelineShaderStageCreateInfo shaderStages[] = {ctx.vertex_shader,
                                                     ctx.fragment_shader};
@@ -569,7 +528,7 @@ bool Pipeline::create_pipeline(Context &ctx) {
   ctx.pipeline_info.stageCount = std::size(shaderStages);
   ctx.pipeline_info.pStages = shaderStages;
   ctx.pipeline_info.layout = m_pipeline_layout;
-  ctx.pipeline_info.renderPass = m_renderpass;
+  ctx.pipeline_info.renderPass = m_bridge.GetVkRenderPass();
   ctx.pipeline_info.subpass = 0;
   ctx.pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 

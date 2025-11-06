@@ -156,8 +156,6 @@ bool VkTextureTile::update_texture_descriptorset() {
   return true;
 }
 
-void VkTextureTile::OnBeginCommit(GpuLayerCommitContext *ctx) {}
-
 void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                                ui::GpuLayerCommitContext *pContext) {
   if (m_texture_descriptorset == VK_NULL_HANDLE) {

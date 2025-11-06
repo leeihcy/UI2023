@@ -15,7 +15,6 @@ public:
   ~VkTextureTile();
 
 protected:
-  void OnBeginCommit(GpuLayerCommitContext *ctx) override;
   void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) override;
   void Compositor(long, long, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext) override;

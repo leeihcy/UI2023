@@ -1,5 +1,6 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_COMMAND_BUFFER_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_COMMAND_BUFFER_H_
+#include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 
 namespace vulkan {
@@ -40,7 +41,7 @@ public:
   void BeginRecordCommand();
   void EndRecordCommand();
   
-  void BeginRenderPass(VkFramebuffer framebuffer);
+  void BeginRenderPass(VkFramebuffer framebuffer, VkRenderPass renderpass);
   void BindPipeline(VkPipeline pipe_line);
   void EndRenderPass();
 

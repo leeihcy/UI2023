@@ -7,6 +7,7 @@
 #include "src/vulkan/wrap/vulkan_command_pool.h"
 #include "src/vulkan/wrap/vulkan_device_queue.h"
 #include "src/vulkan/wrap/vulkan_pipe_line.h"
+#include "src/vulkan/wrap/vulkan_renderpass.h"
 #include "src/vulkan/wrap/vulkan_swap_chain.h"
 
 #if defined(OS_WIN)
@@ -62,9 +63,9 @@ private:
   
   bool create_vulkan_surface(IGpuCompositorWindow* window);
 
-  void draw_frame_wait_for_previous_frame_to_finish();
-  void draw_frame_acquire_image_from_swap_chain();
-  vulkan::CommandBuffer *draw_frame_begin_record_command_buffer();
+  void drawFrame_waitForCommandBufferIdle();
+  void drawFrame_acquireImageFromSwapChain();
+  vulkan::CommandBuffer *drawFrame_beginRecordCommandBuffer();
   void draw_frame_end_record_command_buffer(vulkan::CommandBuffer *);
   void draw_frame_submit_command_buffer();
   void draw_frame_present_swap_chain();
@@ -72,17 +73,14 @@ private:
 private:
   int m_width = 0;
   int m_height = 0;
-  // GpuLayer *m_pRootTexture = nullptr;
-
-  // 绑定到一个native窗口。
-  VkSurfaceKHR m_surface;
 
   vulkan::DeviceQueue m_device_queue;
+  VkSurfaceKHR m_surface;
+  
   vulkan::SwapChain m_swapchain;
+  vulkan::RenderPass m_renderpass;
   vulkan::Pipeline m_pipeline;
-
   vulkan::CommandPool m_command_pool;
-  vulkan::CommandBuffer *m_current_command_buffer = nullptr; // raw_ptr
 };
 
 } // namespace ui

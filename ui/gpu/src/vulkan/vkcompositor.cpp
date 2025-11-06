@@ -30,6 +30,7 @@ VulkanCompositor::VulkanCompositor()
     : m_device_queue(*this),
       m_command_pool(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_swapchain(*static_cast<vulkan::IVulkanBridge *>(this)),
+      m_renderpass(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_pipeline(*static_cast<vulkan::IVulkanBridge *>(this)) {
 }
 
@@ -41,6 +42,7 @@ void VulkanCompositor::destory() {
   vkDeviceWaitIdle(m_device_queue.Device());
 
   m_pipeline.Destroy();
+  m_renderpass.Destroy();
   m_swapchain.Destroy();
 
   auto &app = application();
@@ -76,7 +78,7 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
     return false;
   }
 
-  if (!m_device_queue.Initialize()) {
+  if (!m_device_queue.Initialize(window)) {
     printf("m_device_queue initialize failed\n");
     return false;
   }
@@ -99,11 +101,16 @@ void VulkanCompositor::Resize(int width, int height) {
   m_swapchain.DestroyForResize();
 
   if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
-    printf("create_swapchain failed\n");
+    printf("createSwapchain failed\n");
     return /*false*/;
   }
 
   VkFormat image_format = m_swapchain.ImageFormat();
+
+
+  if (m_renderpass.handle() == VK_NULL_HANDLE) {
+    m_renderpass.Create(image_format);
+  }
 
   // pipe line应该只需要创建一次就够了。
   // 和窗口大小相关的viewport/scissor在每次commit时进行设置，参见UpdateViewportScissor
@@ -115,7 +122,7 @@ void VulkanCompositor::Resize(int width, int height) {
     }
   }
 
-  if (!m_swapchain.CreateFrameBuffer()) {
+  if (!m_swapchain.CreateFrameBuffer(GetVkRenderPass())) {
     printf("m_swapchain CreateFramebuffer failed\n");
     return /*false*/;
   }
@@ -143,7 +150,6 @@ bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
   createInfo.pNext = NULL;
   createInfo.flags = 0;
   createInfo.pView = ((IGpuCompositorWindowNSView*)window)->GetNSWindowRootView(); 
-     //GetNSWindowRootView(m_hWnd);
   VkResult err = vkCreateMacOSSurfaceMVK(app.GetVkInstance(), &createInfo,
                                          nullptr, &m_surface);
   if (err != VK_SUCCESS) {
@@ -182,7 +188,7 @@ bool VulkanCompositor::create_vulkan_surface(IGpuCompositorWindow* window) {
   return true;
 }
 
-// bool VulkanCompositor::create_swapchain() {
+// bool VulkanCompositor::createSwapchain() {
 //   auto &app = VulkanApplication::Get();
 
 //   SurfaceInfo surface_info = getSurfaceInfo();
@@ -272,7 +278,7 @@ VkPhysicalDevice VulkanCompositor::GetVkPhysicalDevice() {
   return m_device_queue.PhysicalDevice();
 }
 VkRenderPass VulkanCompositor::GetVkRenderPass() {
-  return m_pipeline.GetVkRenderPass();
+  return m_renderpass.handle();
 }
 VkCommandPool VulkanCompositor::GetVkCommandPool() {
   return m_command_pool.handle();

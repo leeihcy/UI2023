@@ -20,24 +20,22 @@ public:
 
 public:
   VkInstance &GetVkInstance();
-
   bool IsValidationLayersEnabled();
-  
-private:
-  bool create_vulkan_instance();
-  
-  void get_required_extensions(std::vector<const char *> &requiredExtensions);
-  void get_required_layers(std::vector<const char *> &requiredLayers);
 
-  bool is_extension_support(const std::vector<const char *>& extensions);
-  bool is_layer_support(const std::vector<const char *>& layers);
+private:
+  bool createVulkanInstance();
+
+  void getRequiredExtensions(std::vector<const char *> &requiredExtensions);
+  void getRequiredLayers(std::vector<const char *> &requiredLayers);
+
+  bool isExtensionSupport(const std::vector<const char *> &extensions);
+  bool isLayerSupport(const std::vector<const char *> &layers);
 
 private:
   bool m_enable_validation_layers = false;
-  
+
   VkInstance m_vk_instance;
   VkDebugUtilsMessengerEXT m_debug_messenger;
-
 };
 } // namespace ui
 

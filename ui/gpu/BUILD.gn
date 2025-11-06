@@ -6,6 +6,7 @@ declare_args() {
   enable_d3d10 = false
   enable_d3d11 = false
   enable_d3d12 = false
+  enable_metal2 = false
   enable_vulkan = true
 }
 
@@ -16,7 +17,8 @@ shared_library("uigpu") {
   defines = ["UI_EXPORTS"]
   libs = []
   lib_dirs = ["$root_build_dir/bin"]
-
+  ldflags = []
+  
   deps = [
     ":compile_shaders"
   ]
@@ -35,12 +37,19 @@ shared_library("uigpu") {
       enable_d3d12 = true
       enable_vulkan = false
     }
+    else if (is_mac) {
+      # enable_metal2 = true
+      # enable_vulkan = false
+    }
+
     if (enable_d3d10) {
       cflags += [ "-DENABLE_D3D10" ]
     } else if (enable_d3d11) {
       cflags += [ "-DENABLE_D3D11" ]
     } else if (enable_d3d12) {
       cflags += [ "-DENABLE_D3D12" ]
+    } else if (enable_metal2) {
+      cflags += [ "-DENABLE_METAL2" ]
     } else if (enable_vulkan) {
       cflags += [ "-DENABLE_VULKAN" ]
     }
@@ -88,6 +97,8 @@ shared_library("uigpu") {
     }
     
     sources += [
+      "src/util.cpp",
+      "src/util.h",
       "src/gpu_layer.cpp",
       "src/texture_tile.cpp",
       "src/texture_tile_array.cpp",
@@ -156,6 +167,22 @@ shared_library("uigpu") {
       ]
     }
 
+    if (enable_metal2) {
+      sources += [
+        "src/metal2/metal2_app.mm",
+        "src/metal2/metal2_app.h",
+        "src/metal2/metal2_compositor.mm",
+        "src/metal2/metal2_compositor.h",
+        "src/metal2/metal2_texture_tile.mm",
+        "src/metal2/metal2_texture_tile.h",
+      ]
+      # ldflags += [
+      #   "-framework", "CoreGraphics",
+      #   "-framework", "Metal",
+      #   "-framework", "MetalKit",
+      # ]
+    }
+
     if (enable_vulkan) {
       sources += [
         "src/vulkan/vkapp.cpp",
@@ -165,7 +192,10 @@ shared_library("uigpu") {
         "src/vulkan/vklayer.cpp",
         "src/vulkan/vktexturetile.h",
         "src/vulkan/vktexturetile.cpp",
+        "src/vulkan/mac_util.mm",
 
+        "src/vulkan/wrap/vulkan_renderpass.h",
+        "src/vulkan/wrap/vulkan_renderpass.cpp",
         "src/vulkan/wrap/vulkan_command_buffer.h",
         "src/vulkan/wrap/vulkan_command_buffer.cpp",
         "src/vulkan/wrap/vulkan_command_pool.cpp",
@@ -190,9 +220,6 @@ shared_library("uigpu") {
       else if (is_mac) {
         include_dirs += [ VULKAN_SDK_DIR + "/include" ]
         libs += ["vulkan.1.3.261"]
-        print("include dir :" + include_dirs[4])
-        print("include dir :" + include_dirs[5])
-        print("include dir :" + include_dirs[6])
       }
       else if (is_linux) {
         include_dirs += [ VULKAN_SDK_DIR + "/include" ]
@@ -200,18 +227,15 @@ shared_library("uigpu") {
       }
     }
 
-    if (is_mac) {
-      ldflags = [
-            "-framework", "Cocoa",
-            "-framework", "IOKit",
-            "-framework", "QuartzCore",  # Core Animation
-      ]
-    }
-
-    # cflags += [
-    #   "/wd4005",
-    #   "/wd4267",  # 从“size_t”转换到“uint32_t” ，可能丢失数据
-    # ]
+  if (is_mac) {
+    ldflags += [
+      "-framework", "Foundation",
+      "-framework", "CoreGraphics",
+      "-framework", "Metal",
+      "-framework", "MetalKit",
+      "-framework", "AppKit",
+    ]
+  }
 }
 
 action("compile_shaders") {

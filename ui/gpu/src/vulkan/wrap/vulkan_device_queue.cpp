@@ -4,6 +4,10 @@
 #include <cstdint>
 #include <string>
 
+#if defined(OS_MAC) 
+std::string GetNSViewMetalDeviceName(/*NSView*/void *view);
+#endif
+
 namespace vulkan {
 
 static ui::VulkanApplication &application() { return ui::VulkanApplication::GetInstance(); }
@@ -11,10 +15,10 @@ static ui::VulkanApplication &application() { return ui::VulkanApplication::GetI
 DeviceQueue::DeviceQueue(ui::VulkanCompositor& compositor):m_compositor(compositor) {
 }
 
-bool DeviceQueue::Initialize() {
+bool DeviceQueue::Initialize(ui::IGpuCompositorWindow* window) {
   // 选择一块显卡设备
-  if (!pick_physical_device()) {
-    printf("pick_physical_device failed\n");
+  if (!pickPhysicalDevice(window)) {
+    printf("pickPhysicalDevice failed\n");
     return false;
   }
   // 查找相应队列
@@ -63,7 +67,12 @@ bool DeviceQueue::WaitIdle() {
 // 设备名称：Intel(R) Iris(R) Pro Graphics P5200 (HSW GT3)
 //  driver:  /usr/lib/x86_64-linux-gnu/libvulkan_intel_hasvk.so
 //
-bool DeviceQueue::pick_physical_device() {
+// 在macOS上，需要选择view所以屏幕对应的显卡，而不是强制独显。
+// macboolpro 2015测试对比，内置屏幕默认是集显。此时
+// 使用集显CPU消耗是13.0%, GPU 1.5%
+// 使用独显CPU消耗是14.5%, GPU 11.0%
+//
+bool DeviceQueue::pickPhysicalDevice(ui::IGpuCompositorWindow* window) {
   auto &app = application();
   uint32_t count = 0;
   VkResult result =
@@ -83,6 +92,12 @@ bool DeviceQueue::pick_physical_device() {
   required_extensions.push_back(
       VK_KHR_SWAPCHAIN_EXTENSION_NAME); // VK_KHR_swapchain
 
+#if defined(OS_MAC)
+  assert(window->GetType() == ui::GpuCompositorWindowType::MacOSNSView);
+  std::string optimal_device_name = GetNSViewMetalDeviceName(
+      ((ui::IGpuCompositorWindowNSView *)window)->GetNSWindowRootView());
+#endif
+
   bool found = false;
   int highest_score = 0;
   std::string device_name;
@@ -90,9 +105,9 @@ bool DeviceQueue::pick_physical_device() {
   for (auto device : devices) {
     int score = 0;
 
-    VkPhysicalDeviceProperties deviceProperties = {0};
-    vkGetPhysicalDeviceProperties(device, &deviceProperties);
-    printf("found graphics device: %s\n", deviceProperties.deviceName);
+    VkPhysicalDeviceProperties properties = {0};
+    vkGetPhysicalDeviceProperties(device, &properties);
+    printf("found graphics device: %s\n", properties.deviceName);
 
     VkPhysicalDeviceFeatures deviceFeatures = {0};
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
@@ -103,22 +118,30 @@ bool DeviceQueue::pick_physical_device() {
     // }
 
     // 检测这个设备是否支持我们需要的所有扩展
-    if (!is_extension_support(device, required_extensions)) {
+    if (!isExtensionSupport(device, required_extensions)) {
       continue;
     }
 
+#if defined(OS_MAC)
+    // mac上选择当前窗口所在屏幕对应的显卡，才是最合适的。
+    if (!optimal_device_name.empty() &&
+        optimal_device_name == properties.deviceName) {
+      score += 10000;
+    }
+#endif
+
     // 优先选择独显
-    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
       score += 1000;
     }
 
     // Maximum possible size of textures affects graphics quality
-    score += deviceProperties.limits.maxImageDimension2D;
+    score += properties.limits.maxImageDimension2D;
 
 #if defined(OS_LINUX)
     // llvmpipie是Mesa模拟的软件渲染器，是CPU模拟实现的，会消耗大量CPU。
     // 在这里降低它的分数权重。
-    if (strstr(deviceProperties.deviceName, "llvmpipe") != nullptr) {
+    if (strstr(properties.deviceName, "llvmpipe") != nullptr) {
       score = score >> 2;
     }
 #endif
@@ -126,7 +149,7 @@ bool DeviceQueue::pick_physical_device() {
     if (score > highest_score) {
       found = true;
       m_physical_device = device;
-      device_name = deviceProperties.deviceName;
+      device_name = properties.deviceName;
       highest_score = score;
     }
   }
@@ -137,6 +160,15 @@ bool DeviceQueue::pick_physical_device() {
   return found;
 }
 
+
+// Q: 为什么没有VK_QUEUE_PRESENT_BIT?
+// A: present不涉及命令缓存，它只是一个动作，将图像转交给显卡内的Display Controller。
+//    通过vkQueuePresentKHR 单独的API完成 Present，而不是放在CommandBuffer中。
+//    
+//    目前99%的显卡，graphics 和 present 都由同一个硬件队列来完成的。Metal / D3D12中
+//    就不区分 graphics和present。
+//
+//    
 bool DeviceQueue::update_queue_family() {
   auto &app = application();
 
@@ -154,6 +186,7 @@ bool DeviceQueue::update_queue_family() {
       m_graphics_queue_family = i;
     }
 
+    // 查询当前队列族，是否支持present到我们的窗口(surface).
     VkBool32 presentSupport = false;
     vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, m_compositor.Surface(),
                                          &presentSupport);
@@ -235,7 +268,7 @@ bool DeviceQueue::create_logical_device() {
 }
 
 
-bool DeviceQueue::is_extension_support(
+bool DeviceQueue::isExtensionSupport(
     VkPhysicalDevice physical_device,
     const std::vector<const char *> &extensions) {
   uint32_t extensionCount;

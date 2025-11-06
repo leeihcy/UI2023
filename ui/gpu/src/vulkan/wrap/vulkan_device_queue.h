@@ -3,6 +3,7 @@
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
+#include "include/api.h"
 #include <vector>
 #include <set>
 
@@ -12,13 +13,12 @@ class VulkanCompositor;
 
 namespace vulkan {
 
-
 class DeviceQueue {
 public:
   DeviceQueue(ui::VulkanCompositor& compositor);
   
 public:
-  bool Initialize();
+  bool Initialize(ui::IGpuCompositorWindow* window);
   void Destroy();
 
   bool Submit(CommandBuffer* buffer);
@@ -33,11 +33,12 @@ public:
   int PresentQueueFamily() { return m_present_queue_family; }
 
 private:
-  bool pick_physical_device();
+  bool pickPhysicalDevice(ui::IGpuCompositorWindow* window);
+
   bool update_queue_family();
   bool create_logical_device();
 
-  bool is_extension_support(VkPhysicalDevice physical_device, 
+  bool isExtensionSupport(VkPhysicalDevice physical_device, 
     const std::vector<const char *>& extensions);
 
 private:

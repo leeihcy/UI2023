@@ -11,7 +11,6 @@ public:
   
   void SetIndex(int xIndex, int yIndex);
 
-  virtual void OnBeginCommit(GpuLayerCommitContext *ctx) = 0;
   virtual void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) = 0;
   virtual void Compositor(long xOffset, long yOffset, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext) = 0;

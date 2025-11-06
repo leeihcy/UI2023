@@ -1,4 +1,5 @@
 #include "vkapp.h"
+#include "src/util.h"
 #include <cstdio>
 #include <assert.h>
 #include <string.h>
@@ -26,8 +27,8 @@ bool VulkanApplication::IsValidationLayersEnabled() {
 }
 
 bool VulkanApplication::Startup() {
-  if (!create_vulkan_instance()) {
-    printf("create_vulkan_instance failed\n");
+  if (!createVulkanInstance()) {
+    Log("createVulkanInstance failed");
     return false;
   }
   return true;
@@ -60,11 +61,11 @@ vulkanLogCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   } else if (messageSeverity ==
              VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
     level = "WARNING";
-    printf("[%s] [GPU][Validation]: %s\n", level, pCallbackData->pMessage);
+    Log("[%s] [GPU][Validation]: %s", level, pCallbackData->pMessage);
   } else if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
     level = "ERROR";
     raise_exception = true;
-    printf("[%s] [GPU][Validation]: %s\n", level, pCallbackData->pMessage);
+    Log("[%s] [GPU][Validation]: %s", level, pCallbackData->pMessage);
     assert(false);
   }
 
@@ -72,7 +73,7 @@ vulkanLogCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   return raise_exception ? VK_TRUE : VK_FALSE;
 }
 
-bool VulkanApplication::is_extension_support(
+bool VulkanApplication::isExtensionSupport(
     const std::vector<const char *> &extensions) {
 
   uint32_t instance_extension_count = 0;
@@ -98,14 +99,14 @@ bool VulkanApplication::is_extension_support(
     }
 
     if (!layerFound) {
-      printf("vulkan extension %s not found.\n", extension_name);
+      Log("vulkan extension %s not found.", extension_name);
       return false;
     }
   }
   return true;
 }
 
-bool VulkanApplication::is_layer_support(
+bool VulkanApplication::isLayerSupport(
     const std::vector<const char *> &layers) {
   if (layers.empty()) {
     return false;
@@ -137,7 +138,7 @@ bool VulkanApplication::is_layer_support(
   return true;
 }
 
-void VulkanApplication::get_required_layers(
+void VulkanApplication::getRequiredLayers(
     std::vector<const char *> &requiredLayers) {
 
   if (m_enable_validation_layers) {
@@ -148,8 +149,8 @@ void VulkanApplication::get_required_layers(
         // "VK_LAYER_KHRONOS_profiles",
         "VK_LAYER_KHRONOS_synchronization2", "VK_LAYER_KHRONOS_shader_object"};
 
-    if (!is_layer_support(validationLayers)) {
-      printf("debug validation layer not support!\n");
+    if (!isLayerSupport(validationLayers)) {
+      Log("debug validation layer not support!");
       m_enable_validation_layers = false;
     } else {
       requiredLayers.insert(requiredLayers.end(), validationLayers.begin(),
@@ -158,7 +159,7 @@ void VulkanApplication::get_required_layers(
   }
 }
 
-void VulkanApplication::get_required_extensions(
+void VulkanApplication::getRequiredExtensions(
     std::vector<const char *> &required_extensions) {
 
   required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
@@ -180,7 +181,7 @@ void VulkanApplication::get_required_extensions(
   }
 }
 
-bool VulkanApplication::create_vulkan_instance() {
+bool VulkanApplication::createVulkanInstance() {
   VkInstanceCreateInfo create_info = {};
   create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 
@@ -194,12 +195,12 @@ bool VulkanApplication::create_vulkan_instance() {
   create_info.pApplicationInfo = &application_info;
 
   std::vector<const char *> required_layers;
-  get_required_layers(required_layers);
+  getRequiredLayers(required_layers);
 
   std::vector<const char *> required_extensions;
-  get_required_extensions(required_extensions);
-  if (!is_extension_support(required_extensions)) {
-    printf("is_extension_support failed\n");
+  getRequiredExtensions(required_extensions);
+  if (!isExtensionSupport(required_extensions)) {
+    Log("isExtensionSupport failed");
     return false;
   }
 
@@ -263,7 +264,7 @@ bool VulkanApplication::create_vulkan_instance() {
     VkResult result =
         func(m_vk_instance, &debug_create_info, nullptr, &m_debug_messenger);
     if (result != VK_SUCCESS) {
-      printf("vkCreateDebugUtilsMessengerEXT failed, result = %d\n", result);
+      Log("vkCreateDebugUtilsMessengerEXT failed, result = %d", result);
     }
   }
   return true;

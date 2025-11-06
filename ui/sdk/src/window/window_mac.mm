@@ -1,4 +1,5 @@
 #include "window_mac.h"
+#include "include/util/log.h"
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CAMetalLayer.h>
 
@@ -371,11 +372,14 @@ void WindowPlatformMac::onPaint(const Rect &dirty) {
 // 
 void *WindowPlatformMac::GetNSWindowRootView() {
   NSView *view = m_window.contentView;
-  [view setWantsLayer:YES];
-  view.layer = [CAMetalLayer layer];
 
-  // return (void *)(view);
-  return (void*)view.layer;
+  if (!view.layer) {
+    UI_LOG_DEBUG("create CAMetalLayer layer");
+
+    [view setWantsLayer:YES];
+    view.layer = [CAMetalLayer layer];
+  }
+  return (void *)(view);
 };
 
 } // namespace ui

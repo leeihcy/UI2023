@@ -10,23 +10,27 @@ namespace vulkan {
 // swapchain中的一张图片。
 class SwapChainImage {
 public:
-  explicit SwapChainImage(IVulkanBridge& bridge, VkImage image);
+  explicit SwapChainImage(IVulkanBridge& bridge, VkImage swapchain_images);
   ~SwapChainImage();
   SwapChainImage(SwapChainImage &&o);
 
   bool Create(VkFormat imageFormat);
-  bool CreateFrameBuffer(int width, int height);
-
+  bool CreateFrameBuffer(int width, int height, VkRenderPass render_pass);
+  
 public:
   IVulkanBridge& m_bridge;
 
   // swap chain中创建的image，不需要释放
-  VkImage m_image = VK_NULL_HANDLE;
+  // 画布。存储像素数据的内存块。
+  VkImage m_swapchain_image_ref = VK_NULL_HANDLE;
 
-  VkImageLayout image_layout = VK_IMAGE_LAYOUT_UNDEFINED;
-
+  // 画布的一个特定视图，它定义了是用整块画布，还是只用画布的一个角落。
   std::unique_ptr<ImageView> m_image_view;
 
+  // frame buffer是一个包含了多个图像的集合，这此图像可是以颜色、深度或模板缓冲区。
+  // 在这里，我们只包含一个color attachment (image view).
+  //
+  // 需要为SwapChain中的每一个Image创建一个FrameBuffer。
   VkFramebuffer m_frame_buffer = VK_NULL_HANDLE;
 };
 

@@ -413,6 +413,7 @@ void WindowRenderRT::CreateHardwareCompositor(IGpuCompositorWindow *window,
                                               ui::Rect rc) {
   m_gpu_composition = ui::CreateGpuComposition(window);
   if (!m_gpu_composition) {
+    // TODO: 硬件加速失败，进行回退
     return;
   }
   m_gpu_composition->Resize(rc.Width(), rc.Height());

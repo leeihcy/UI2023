@@ -2,6 +2,7 @@
 #include "src/vulkan/vkapp.h"
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "src/vulkan/wrap/vulkan_sync.h"
+#include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 #include <assert.h>
 #include <cstring>
@@ -19,22 +20,25 @@ SwapChain::~SwapChain() {
 }
 
 bool SwapChain::Initialize(VkSurfaceKHR surface, int width, int height) {
-  if (!create_swapchain(surface, width, height)) {
+  if (!createSwapchain(surface, width, height)) {
     return false;
   }
-  if (!init_swap_images()) {
+  if (!initSwapChainImages()) {
     return false;
   }
-  if (!init_sync()) {
+  if (!initInFlightFrames()) {
     return false;
   }
   return true;
 }
 
 // 创建顺序依赖于render pass
-bool SwapChain::CreateFrameBuffer() {
+bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
   for (auto& image : m_images) {
-    image->CreateFrameBuffer(Extent2D().width, Extent2D().height);
+    image->CreateFrameBuffer(
+      Extent2D().width, 
+      Extent2D().height, 
+      render_pass);
   }
   return true;
 }
@@ -48,29 +52,29 @@ void SwapChain::DestroyForResize() {
 }
 
 void SwapChain::Destroy() {
-  m_sync_items.clear();
+  m_inflight_frames.clear();
   m_gpu_semaphores.clear();
-
   m_images.clear();
+  
   if (m_swapchain != VK_NULL_HANDLE) {
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
     m_swapchain = VK_NULL_HANDLE;
   }
 }
 
-bool SwapChain::create_swapchain(VkSurfaceKHR surface, int width, int height) {
+bool SwapChain::createSwapchain(VkSurfaceKHR surface, int width, int height) {
   auto &app = ui::VulkanApplication::GetInstance();
 
   m_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
   m_info.surface = surface;
 
-  if (!query_capabilities(surface, width, height)) {
+  if (!queryCapabilities(surface, width, height)) {
     return false;
   }
-  if (!query_formats(surface)) {
+  if (!queryFormats(surface)) {
     return false;
   }
-  if (!query_present_mode(surface)) {
+  if (!queryPresentMode(surface)) {
     return false;
   }
 
@@ -101,7 +105,7 @@ bool SwapChain::create_swapchain(VkSurfaceKHR surface, int width, int height) {
   return true;
 }
 
-bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
+bool SwapChain::queryCapabilities(VkSurfaceKHR surface, int width,
                                    int height) {
 
   VkSurfaceCapabilitiesKHR capabilities = {0};
@@ -116,11 +120,9 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
   // 三缓冲：3个。
   // Image数量越多，内存占用越多，但可能减少GPU空闲等待。
   const uint32_t desired_image_count = 3;
-  uint32_t count = std::max(desired_image_count, capabilities.minImageCount);
-  if (capabilities.maxImageCount > 0) {
-    count = std::min(count, capabilities.maxImageCount);
-  }
-  m_info.minImageCount = count;
+  m_info.minImageCount =
+      std::clamp(desired_image_count, capabilities.minImageCount,
+                 capabilities.maxImageCount);
 
   // extent
   if (width > 0 && height > 0) {
@@ -146,7 +148,7 @@ bool SwapChain::query_capabilities(VkSurfaceKHR surface, int width,
   return true;
 }
 
-bool SwapChain::query_formats(VkSurfaceKHR surface) {
+bool SwapChain::queryFormats(VkSurfaceKHR surface) {
   std::vector<VkSurfaceFormatKHR> formats;
 
   uint32_t count = 0;
@@ -176,7 +178,7 @@ bool SwapChain::query_formats(VkSurfaceKHR surface) {
   return true;
 }
 
-bool SwapChain::query_present_mode(VkSurfaceKHR surface) {
+bool SwapChain::queryPresentMode(VkSurfaceKHR surface) {
   std::vector<VkPresentModeKHR> modes;
 
   uint32_t count = 0;
@@ -192,6 +194,12 @@ bool SwapChain::query_present_mode(VkSurfaceKHR surface) {
     return false;
   }
 
+  //
+  // FIFO: 垂直同步。如果队列已满，vkQueuePresentKHR将阻塞。
+  // FIFO_RELAXED: 当帧率小于刷新率时，立即显示。大于时垂直同步。
+  // MAILBOX: 垂直同步，并覆盖队列中已有数据（队列长度为1）。追求低延迟的场景。
+  // IMMEDIATE: 立即模式，关闭垂直同步。
+  //
   VkPresentModeKHR selected_mode = VK_PRESENT_MODE_FIFO_KHR;
   for (auto mode : modes) {
     if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
@@ -203,7 +211,7 @@ bool SwapChain::query_present_mode(VkSurfaceKHR surface) {
   return true;
 }
 
-bool SwapChain::init_swap_images() {
+bool SwapChain::initSwapChainImages() {
   assert (m_images.empty());
 
   // 获取swap chain中的image列表
@@ -215,11 +223,9 @@ bool SwapChain::init_swap_images() {
   }
   assert(image_count == m_info.minImageCount);
 
-  // m_images.resize(image_count);
-  std::vector<VkImage> images(image_count);
-
+  std::vector<VkImage> swapchain_images(image_count);
   result = vkGetSwapchainImagesKHR(m_bridge.GetVkDevice(), m_swapchain,
-                                   &image_count, images.data());
+                                   &image_count, swapchain_images.data());
   if (result != VK_SUCCESS) {
     printf("vkGetSwapchainImagesKHR failed, result = %d\n", result);
     return false;
@@ -227,7 +233,7 @@ bool SwapChain::init_swap_images() {
 
   for (uint32_t i = 0; i < image_count; ++i) {
     std::unique_ptr<SwapChainImage> image_item =
-        std::make_unique<SwapChainImage>(m_bridge, images[i]);
+        std::make_unique<SwapChainImage>(m_bridge, swapchain_images[i]);
 
     image_item->Create(m_info.imageFormat);
 
@@ -237,13 +243,22 @@ bool SwapChain::init_swap_images() {
   return true;
 }
 
-bool SwapChain::init_sync() {
-  if (m_sync_items.empty()) {
+//
+// swapchain image count指的是present队列，用于垂直同步。
+// MAX_FRAMES_IN_FLIGHT 指的是渲染队列，这两不需要一致。
+//
+// 最常用的配置为：
+// in flight = 2
+// swap chain image count = 3
+// 这样总能顺利的 vkAcquireNextImageKHR 拿到一个空闲交换链图像。
+//
+bool SwapChain::initInFlightFrames() {
+  if (m_inflight_frames.empty()) {
     for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
       std::unique_ptr<InFlightFrame> item = std::make_unique<InFlightFrame>(m_bridge);
       item->Initialize();
       item->CreateCommandBuffer();
-      m_sync_items.push_back(std::move(item));
+      m_inflight_frames.push_back(std::move(item));
     }
   }
 
@@ -264,12 +279,12 @@ SwapChainImage* SwapChain::GetCurrentImage() {
   return m_images[m_current_image_index].get();
 }
 InFlightFrame* SwapChain::GetCurrentSync() {
-    if (m_current_frame_index >= m_sync_items.size()) {
+    if (m_current_frame_index >= m_inflight_frames.size()) {
         int a = 0;
     }
-  assert(m_current_frame_index < m_sync_items.size());
+  assert(m_current_frame_index < m_inflight_frames.size());
 
-  return m_sync_items[m_current_frame_index].get();
+  return m_inflight_frames[m_current_frame_index].get();
 }
 GpuSemaphores* SwapChain::GetCurrentSemaphores() {
   assert (m_current_semaphore_index < m_images.size());

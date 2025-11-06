@@ -13,15 +13,15 @@ InFlightFrame::~InFlightFrame() { Destroy(); }
 void InFlightFrame::Initialize() {
   VkFenceCreateInfo fenceInfo = {.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
                                  .flags = VK_FENCE_CREATE_SIGNALED_BIT};
-  vkCreateFence(m_bridge.GetVkDevice(), &fenceInfo, nullptr, &m_fence);
+  vkCreateFence(m_bridge.GetVkDevice(), &fenceInfo, nullptr, &m_command_buffer_fence);
 }
 
 void InFlightFrame::Destroy() {
   VkDevice device = m_bridge.GetVkDevice();
 
-  if (VK_NULL_HANDLE != m_fence) {
-    vkDestroyFence(device, m_fence, nullptr);
-    m_fence = VK_NULL_HANDLE;
+  if (VK_NULL_HANDLE != m_command_buffer_fence) {
+    vkDestroyFence(device, m_command_buffer_fence, nullptr);
+    m_command_buffer_fence = VK_NULL_HANDLE;
   }
 }
 

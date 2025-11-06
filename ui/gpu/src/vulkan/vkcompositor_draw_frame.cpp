@@ -1,3 +1,4 @@
+#include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "src/vulkan/wrap/vulkan_swap_chain_image.h"
 #include "src/vulkan/wrap/vulkan_sync.h"
 #include "vkcompositor.h"
@@ -13,28 +14,20 @@ namespace ui {
 // 5. Present the swap chain image
 //
 bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
-  assert(nullptr == m_current_command_buffer);
+  drawFrame_waitForCommandBufferIdle();
+  drawFrame_acquireImageFromSwapChain();
 
-  // 给每个tile一次更新descriptor set机会
-  // if (m_pRootTexture) {
-  //   m_pRootTexture->OnBeginCommit(ctx);
-  // }
+  vulkan::CommandBuffer *current_command_buffer =
+      drawFrame_beginRecordCommandBuffer();
 
-  draw_frame_wait_for_previous_frame_to_finish();
-  draw_frame_acquire_image_from_swap_chain();
-  m_current_command_buffer = draw_frame_begin_record_command_buffer();
-
-  ctx->m_data = m_current_command_buffer;
-
+  ctx->m_data = current_command_buffer;
   return true;
 }
-void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
-  if (!m_current_command_buffer) {
-    return;
-  }
-  draw_frame_end_record_command_buffer(m_current_command_buffer);
-  m_current_command_buffer = nullptr;
 
+void VulkanCompositor::EndCommit(GpuLayerCommitContext *ctx) {
+  vulkan::CommandBuffer* current_command_buffer = (vulkan::CommandBuffer*)ctx->m_data;
+
+  draw_frame_end_record_command_buffer(current_command_buffer);
   draw_frame_submit_command_buffer();
   draw_frame_present_swap_chain();
 
@@ -43,16 +36,16 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *) {
   m_swapchain.IncCurrentSemaphores();
 }
 
-void VulkanCompositor::draw_frame_wait_for_previous_frame_to_finish() {
+void VulkanCompositor::drawFrame_waitForCommandBufferIdle() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentSync();
 
-  vkWaitForFences(GetVkDevice(), 1, &sync->m_fence, VK_TRUE, UINT64_MAX);
+  vkWaitForFences(GetVkDevice(), 1, &sync->m_command_buffer_fence, VK_TRUE, UINT64_MAX);
 
   // lldb调试时会出现exception，先无视，好像无解，等以后SDK更新吧。
-  vkResetFences(m_device_queue.Device(), 1, &sync->m_fence);
+  vkResetFences(m_device_queue.Device(), 1, &sync->m_command_buffer_fence);
 }
 
-void VulkanCompositor::draw_frame_acquire_image_from_swap_chain() {
+void VulkanCompositor::drawFrame_acquireImageFromSwapChain() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentSync();
   vulkan::GpuSemaphores *semaphores = m_swapchain.GetCurrentSemaphores();
 
@@ -87,7 +80,7 @@ void VulkanCompositor::draw_frame_acquire_image_from_swap_chain() {
 }
 
 vulkan::CommandBuffer *
-VulkanCompositor::draw_frame_begin_record_command_buffer() {
+VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentSync();
   vulkan::SwapChainImage *image = m_swapchain.GetCurrentImage();
   VkCommandBuffer command_buffer_handle = sync->m_command_buffer->handle();
@@ -95,7 +88,7 @@ VulkanCompositor::draw_frame_begin_record_command_buffer() {
   sync->m_command_buffer->Reset();
   sync->m_command_buffer->BeginRecordCommand();
 
-  sync->m_command_buffer->BeginRenderPass(image->m_frame_buffer);
+  sync->m_command_buffer->BeginRenderPass(image->m_frame_buffer, GetVkRenderPass());
   sync->m_command_buffer->BindPipeline(GetVkPipeline());
 
   // callback(sync->m_command_buffer->handle(), user_data);
@@ -159,6 +152,7 @@ void VulkanCompositor::draw_frame_submit_command_buffer() {
 
   // 等待 GPU 通知 image_available 之后，GPU 才能进行 vkQueueSubmit 操作
   VkSemaphore waitSemaphores[] = {semaphores->m_semaphore_on_image_available};
+
   // GPU vkQueueSubmit 完成后，激活该信号量，用于同步 vkQueuePresentKHR GPU 操作
   VkSemaphore signalSemaphores[] = {
       semaphores->m_semaphore_on_queue_submit_finish};
@@ -181,12 +175,12 @@ void VulkanCompositor::draw_frame_submit_command_buffer() {
                              .signalSemaphoreCount = 1,
                              .pSignalSemaphores = signalSemaphores};
 
+  // 这是一个异步函数。调用会立即返回，CPU可以继续往下执行。后续的逻辑由GPU异步执行。
   if (vkQueueSubmit(m_device_queue.GraphicsQueue(), 1, &submitInfo,
 
-                    // 当 GPU 执行完成后，fence会被触发（Signaled）。
-                    // 用于控制 CPU 最多绘制2帧图片(MAX_FRAMES_IN_FLIGHT)，
-                    // 避免 CPU 提交过快
-                    sync->m_fence) != VK_SUCCESS) {
+                    // 当 GPU 执行完成 buffer 中所有的指令，已生成最终像素后，fence会被触发（Signaled）。
+                    // 用于控制 CPU 最多绘制2帧图片(MAX_FRAMES_IN_FLIGHT)， 避免 CPU 提交过快。
+                    sync->m_command_buffer_fence) != VK_SUCCESS) {
     printf("failed to submit draw command buffer!\n");
   }
 }

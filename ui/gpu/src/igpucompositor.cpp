@@ -13,6 +13,10 @@
 #include "d3d12/d3d12_app.h"
 #include "d3d12/d3d12_compositor.h"
 
+#elif defined(ENABLE_METAL2)
+#include "metal2/metal2_app.h"
+#include "metal2/metal2_compositor.h"
+
 #elif defined(ENABLE_VULKAN)
 #include "vulkan/vkapp.h"
 #include "vulkan/vkcompositor.h"
@@ -29,6 +33,8 @@ static void ReleaseGpuCompositorWindow(IGpuCompositor *p) {
     delete static_cast<D3D11Compositor *>(p);
 #elif defined(ENABLE_D3D12)
     delete static_cast<D3D12Compositor *>(p);
+#elif defined(ENABLE_METAL2)
+    delete static_cast<Metal2Compositor *>(p);
 #elif defined (ENABLE_VULKAN)
     delete static_cast<VulkanCompositor *>(p);
 #endif
@@ -45,6 +51,8 @@ CreateGpuComposition(IGpuCompositorWindow *window) {
   auto *c = new D3D11Compositor();
 #elif defined(ENABLE_D3D12)
   auto *c = new D3D12Compositor();
+#elif defined(ENABLE_METAL2)
+  auto *c = new Metal2Compositor();
 #elif defined(ENABLE_VULKAN)
   auto *c = new VulkanCompositor();
 #endif
@@ -65,6 +73,8 @@ UIGPUAPI bool GpuStartup() {
   g_startup = D3D11Application::GetInstance().Startup();
 #elif defined(ENABLE_D3D12)
   g_startup = D3D12Application::GetInstance().Startup();
+#elif defined(ENABLE_METAL2)
+  g_startup = Metal2Application::GetInstance().Startup();
 #elif defined(ENABLE_VULKAN)
   g_startup = VulkanApplication::GetInstance().Startup();
 #endif
@@ -78,6 +88,8 @@ UIGPUAPI void GpuShutdown() {
   D3D11Application::GetInstance().Shutdown();
 #elif defined(ENABLE_D3D12)
   D3D12Application::GetInstance().Shutdown();
+#elif defined(ENABLE_METAL2)
+  Metal2Application::GetInstance().Shutdown();
 #else
   VulkanApplication::GetInstance().Shutdown();
 #endif

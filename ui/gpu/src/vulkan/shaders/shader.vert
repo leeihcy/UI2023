@@ -10,6 +10,10 @@
 //    因此没必要再单独加一个layout location 0 out vec4 position。
 //    但是frag步骤没有内置的gl_Position变量，需要自己再加一个out输出color
 
+
+// ------------------------------------------------
+// 每帧更新一次。
+
 // 每帧更新一次。
 layout(binding = 0) uniform UniformBufferObject {
    mat4 view;
@@ -17,11 +21,18 @@ layout(binding = 0) uniform UniformBufferObject {
    mat4 ortho;
 } ubo;
 
+
+// ------------------------------------------------
+// 每个draw call 更新一次。代码中每个layer更新一次
+
 // 极小且高频更新的数据
 layout(push_constant) uniform PushData {
   // 每个对象的转换矩阵
   mat4 model;
 } push;
+
+// ------------------------------------------------
+// 每个顶点更新一次
 
 // 顶点缓存数据，在Pipeline::build_vertex_input中定义
 layout(location = 0) in vec2 inPosition;  // 局部坐标(像素坐标)

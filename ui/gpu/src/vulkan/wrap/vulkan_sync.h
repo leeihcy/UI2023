@@ -10,6 +10,7 @@ namespace vulkan {
 class DeviceQueue;
 
 // CPU最多提交可以提交多少帧给GPU
+// 每套InFlight Frame都需要一套独立的资源，如CommandBuffer、UniformBuffer、DescriptorSets。
 #define MAX_FRAMES_IN_FLIGHT 2
 
 // 绘制一帧，相关的数据。
@@ -32,8 +33,7 @@ public:
   //
   // GPU 把 command buffer 通过 vkQueueSubmit 使用完成后，会将 fence 设置为 
   // Signaled，这时 CPU 可以继续提交下一帧的 command buffer。
-  //
-  VkFence m_fence = VK_NULL_HANDLE;
+  VkFence m_command_buffer_fence = VK_NULL_HANDLE;
 };
 
 class GpuSemaphores {

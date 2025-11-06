@@ -90,15 +90,22 @@ void CommandBuffer::BeginRecordCommand() {
   vkBeginCommandBuffer(m_command_buffer, &beginInfo);
 }
 
-void CommandBuffer::BeginRenderPass(VkFramebuffer framebuffer) {
-  VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+void CommandBuffer::BeginRenderPass(VkFramebuffer framebuffer, VkRenderPass renderpass) {
+  // 背景色定义
+  VkClearValue clearColor = { 
+    .color = {0.0f, 0.0f, 0.0f, 1.0f}  
+  };
 
+  // 屏幕渲染范围（像是剪裁？）
+  VkOffset2D offset = {0, 0};
+  VkExtent2D extent = m_bridge.GetSwapChain().Extent2D();
+  
   VkRenderPassBeginInfo renderPassInfo = {
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-      .renderPass = m_bridge.GetVkRenderPass(),
+      .renderPass = renderpass,
       .framebuffer = framebuffer,
-      .renderArea = {.offset = {0, 0},
-                     .extent = m_bridge.GetSwapChain().Extent2D()},
+      .renderArea = {.offset = offset,
+                     .extent = extent},
       .clearValueCount = 1,
       .pClearValues = &clearColor,
   };

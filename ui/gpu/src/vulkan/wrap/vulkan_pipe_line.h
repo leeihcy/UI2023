@@ -13,7 +13,17 @@ namespace vulkan {
 class DeviceQueue;
 
 //
-// 用于操作VkImage，例如带mipmapping的image
+// Pipeline = vertex shader + 
+//            fragment shader + 
+//            geometry shader + 
+//            rasterization state + 
+//            depth stencil state +
+//            color blend state + 
+//            vertex input layout
+//
+// Vulkan 的设计理念是：在绘制时改变状态很昂贵。所以应该提前创建所有需要的pipeline，
+// 而不是修改已有pipeline的状态。
+// 当有不同的shader程序逻辑或状态配置时，就需要再增加另一个pipeline。
 //
 class Pipeline {
 public:
@@ -36,7 +46,6 @@ public:
   }
   VkSampler texture_sampler() { return m_texture_sampler; }
 
-  VkRenderPass GetVkRenderPass() { return m_renderpass; }
   VkDescriptorSet AllocatateTextureDescriptorSets();
 
 public:
@@ -83,7 +92,6 @@ public:
         .pRasterizationState = &rasterizer,
         .pMultisampleState = &multisampling,
         .pColorBlendState = &color_blending,
-
     };
   };
 
@@ -105,7 +113,6 @@ private:
   void create_descriptor_sets();
   bool create_texture_sampler();
   bool build_layout();
-  bool create_renderpass(VkFormat format);
   bool create_pipeline(Context &ctx);
   void destroy_context(Context &ctx);
 
@@ -121,8 +128,6 @@ private:
 
   VkPipeline m_graphics_pipeline = VK_NULL_HANDLE;
   VkPipelineLayout m_pipeline_layout = VK_NULL_HANDLE;
-
-  VkRenderPass m_renderpass = VK_NULL_HANDLE;
 
   // 只需要一份，作为DescriptorSets的模板。
   VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;

@@ -5,6 +5,7 @@
 #include "src/vulkan/wrap/vulkan_image_view.h"
 #include "src/vulkan/wrap/vulkan_swap_chain_image.h"
 #include "src/vulkan/wrap/vulkan_sync.h"
+#include "vulkan/vulkan_core.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -18,7 +19,7 @@ public:
   ~SwapChain();
 
   bool Initialize(VkSurfaceKHR surface, int width, int height);
-  bool CreateFrameBuffer();
+  bool CreateFrameBuffer(VkRenderPass renderpass);
   void DestroyForResize();
   void Destroy();
 
@@ -37,13 +38,13 @@ public:
   uint32_t Size() { return m_info.minImageCount; }
 
 private:
-  bool create_swapchain(VkSurfaceKHR surface, int width, int height);
-  bool init_swap_images();
-  bool init_sync();
+  bool createSwapchain(VkSurfaceKHR surface, int width, int height);
+  bool initSwapChainImages();
+  bool initInFlightFrames();
 
-  bool query_capabilities(VkSurfaceKHR surface, int width, int height);
-  bool query_formats(VkSurfaceKHR surface);
-  bool query_present_mode(VkSurfaceKHR surface);
+  bool queryCapabilities(VkSurfaceKHR surface, int width, int height);
+  bool queryFormats(VkSurfaceKHR surface);
+  bool queryPresentMode(VkSurfaceKHR surface);
 
 private:
   IVulkanBridge &m_bridge; // raw_ptr<
@@ -76,7 +77,7 @@ private:
 
   // size == MAX_FRAMES_IN_FLIGHT
   // 限制CPU最大并发，避免向GPU提交太多Frame
-  std::vector<std::unique_ptr<InFlightFrame>> m_sync_items;
+  std::vector<std::unique_ptr<InFlightFrame>> m_inflight_frames;
   uint32_t m_current_frame_index = 0;
 
   // VkSemaphore next_present_semaphore_ = VK_NULL_HANDLE;

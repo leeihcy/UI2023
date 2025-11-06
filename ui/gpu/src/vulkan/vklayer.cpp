@@ -90,17 +90,6 @@ void VulkanGpuLayer::createIndexBuffer() {
                        sizeof(uint16_t) * index_array.size());
 }
 
-// void VulkanGpuLayer::OnBeginCommit(GpuLayerCommitContext *ctx) {
-//   int row = m_arrayTile.GetRow();
-//   int col = m_arrayTile.GetCol();
-
-//   for (int y = 0; y < row; y++) {
-//     for (int x = 0; x < col; x++) {
-//       m_arrayTile[y][x]->OnBeginCommit(ctx);
-//     }
-//   }
-// }
-
 void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   if (m_width == (int)nWidth && m_height == (int)nHeight) {
     return;
