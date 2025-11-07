@@ -1,15 +1,10 @@
 #include "src/util.h"
-#include <cstdio>
-#include <cstdlib>
 #include <stdarg.h>
 #include <string>
 #include <iostream>
+#include <assert.h>
 
 namespace ui {
-
-// void Log(const char* text) {
-//   printf("%s\n", text);
-// }
 
 void Log(const char* format, ...) {
   std::string output;

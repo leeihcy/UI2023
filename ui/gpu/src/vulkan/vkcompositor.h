@@ -3,12 +3,13 @@
 #include "gpu/include/api.h"
 #include "gpu/src/gpu_layer.h"
 #include "gpu/src/vulkan/vkapp.h"
+#include "src/vulkan/vkswapchain.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_command_pool.h"
 #include "src/vulkan/wrap/vulkan_device_queue.h"
 #include "src/vulkan/wrap/vulkan_pipe_line.h"
 #include "src/vulkan/wrap/vulkan_renderpass.h"
-#include "src/vulkan/wrap/vulkan_swap_chain.h"
+
 
 #if defined(OS_WIN)
 #include <Windows.h>
@@ -51,6 +52,7 @@ public:
   VkRenderPass GetVkRenderPass() override;
   VkCommandPool GetVkCommandPool() override;
   VkPipeline GetVkPipeline() override;
+  VkCommandBuffer GetCurrentCommandBuffer() override;
   vulkan::CommandPool &GetCommandPool() override;
   vulkan::DeviceQueue &GetDeviceQueue() override;
   vulkan::SwapChain &GetSwapChain() override;
@@ -61,14 +63,14 @@ public:
 private:
   void destory();
   
-  bool create_vulkan_surface(IGpuCompositorWindow* window);
+  bool createVulkanSurface(IGpuCompositorWindow* window);
 
-  void drawFrame_waitForCommandBufferIdle();
-  void drawFrame_acquireImageFromSwapChain();
-  vulkan::CommandBuffer *drawFrame_beginRecordCommandBuffer();
-  void draw_frame_end_record_command_buffer(vulkan::CommandBuffer *);
-  void draw_frame_submit_command_buffer();
-  void draw_frame_present_swap_chain();
+  void drawFrame_acquireNextCommandBuffer();
+  void drawFrame_acquireNextSwapChainImage();
+  void drawFrame_beginRecordCommandBuffer();
+  void drawFrame_endRecordCommandBuffer(vulkan::CommandBuffer *);
+  void drawFrame_submitCommandBuffer();
+  void drawFrame_presentSwapChain();
 
 private:
   int m_width = 0;

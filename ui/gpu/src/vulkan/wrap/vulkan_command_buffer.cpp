@@ -1,5 +1,5 @@
 #include "vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_swap_chain.h"
+#include "src/vulkan/vkswapchain.h"
 #include "vulkan/vulkan_core.h"
 #include "vulkan_command_pool.h"
 

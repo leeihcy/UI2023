@@ -15,7 +15,8 @@ struct IVulkanBridge {
   virtual VkRenderPass GetVkRenderPass() = 0;
   virtual VkCommandPool GetVkCommandPool() = 0;
   virtual VkPipeline GetVkPipeline() = 0;
-  
+  virtual VkCommandBuffer GetCurrentCommandBuffer() = 0;
+
   virtual vulkan::SwapChain& GetSwapChain() = 0;
   virtual vulkan::CommandPool& GetCommandPool() = 0;
   virtual vulkan::DeviceQueue& GetDeviceQueue() = 0;

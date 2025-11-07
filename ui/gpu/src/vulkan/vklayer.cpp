@@ -108,9 +108,7 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   if (m_width == 0 || m_height == 0) {
     return;
   }
-  vulkan::CommandBuffer *command_buffer =
-      (vulkan::CommandBuffer *)pContext->m_data;
-  VkCommandBuffer buffer = command_buffer->handle();
+  VkCommandBuffer buffer = m_bridge.GetCurrentCommandBuffer();
 
   VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
   VkDeviceSize offsets[] = {0};

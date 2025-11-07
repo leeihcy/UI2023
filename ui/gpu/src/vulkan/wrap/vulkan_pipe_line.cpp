@@ -1,12 +1,9 @@
 #include "vulkan_pipe_line.h"
 #include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
-#include "src/vulkan/vkapp.h"
+#include "src/vulkan/vkswapchain.h"
 #include "src/vulkan/wrap/vulkan_bridge.h"
 #include "src/vulkan/wrap/vulkan_buffer.h"
-#include "src/vulkan/wrap/vulkan_swap_chain.h"
-#include "src/vulkan/wrap/vulkan_util.h"
 #include "vulkan_device_queue.h"
 
 #include <cstddef>

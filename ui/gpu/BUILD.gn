@@ -32,10 +32,10 @@ shared_library("uigpu") {
     ]
 
     if (is_win) {
-      enable_d3d10 = false
-      enable_d3d11 = false
-      enable_d3d12 = true
-      enable_vulkan = false
+      #enable_d3d10 = false
+      #enable_d3d11 = false
+      #enable_d3d12 = true
+      #enable_vulkan = false
     }
     else if (is_mac) {
       # enable_metal2 = true
@@ -188,10 +188,12 @@ shared_library("uigpu") {
         "src/vulkan/vkapp.cpp",
         "src/vulkan/vkcompositor.cpp",
         "src/vulkan/vkcompositor.h",
-        "src/vulkan/vkcompositor_draw_frame.cpp",
+        "src/vulkan/vkcompositor_drawframe.cpp",
         "src/vulkan/vklayer.cpp",
         "src/vulkan/vktexturetile.h",
         "src/vulkan/vktexturetile.cpp",
+        "src/vulkan/vkswapchain.cpp",
+        "src/vulkan/vkswapchain.h",
         "src/vulkan/mac_util.mm",
 
         "src/vulkan/wrap/vulkan_renderpass.h",
@@ -200,12 +202,9 @@ shared_library("uigpu") {
         "src/vulkan/wrap/vulkan_command_buffer.cpp",
         "src/vulkan/wrap/vulkan_command_pool.cpp",
         "src/vulkan/wrap/vulkan_device_queue.cpp",
-        "src/vulkan/wrap/vulkan_swap_chain.cpp",
-        "src/vulkan/wrap/vulkan_swap_chain.h",
         "src/vulkan/wrap/vulkan_swap_chain_image.cpp",
         "src/vulkan/wrap/vulkan_image_view.cpp",
         "src/vulkan/wrap/vulkan_pipe_line.cpp",
-        "src/vulkan/wrap/vulkan_sync.cpp",
         "src/vulkan/wrap/vulkan_buffer.cpp",
         "src/vulkan/wrap/vulkan_util.cpp",
       ]

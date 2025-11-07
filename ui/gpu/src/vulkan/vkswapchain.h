@@ -4,7 +4,6 @@
 #include "src/vulkan/wrap/vulkan_command_buffer.h"
 #include "src/vulkan/wrap/vulkan_image_view.h"
 #include "src/vulkan/wrap/vulkan_swap_chain_image.h"
-#include "src/vulkan/wrap/vulkan_sync.h"
 #include "vulkan/vulkan_core.h"
 #include <cstdint>
 #include <memory>
@@ -12,6 +11,55 @@
 #include <vulkan/vulkan.h>
 
 namespace vulkan {
+  
+// CPU最多提交可以提交多少帧给GPU
+// 每套InFlight Frame都需要一套独立的资源，如CommandBuffer、UniformBuffer、DescriptorSets。
+#define MAX_FRAMES_IN_FLIGHT 2
+
+// 绘制一帧，相关的数据。
+class InFlightFrame {
+public:
+  InFlightFrame(IVulkanBridge& bridge);
+  ~InFlightFrame();
+
+  void Initialize();
+  void Destroy();
+  
+  bool CreateCommandBuffer();
+  
+public:
+  IVulkanBridge& m_bridge;
+
+  std::unique_ptr<CommandBuffer> m_command_buffer;
+
+  // Fence，用于 GPU-CPU 同步，实现 MAX_FRAMES_IN_FLIGHT 逻辑。
+  //
+  // GPU 把 command buffer 通过 vkQueueSubmit 使用完成后，会将 fence 设置为 
+  // Signaled，这时 CPU 可以继续提交下一帧的 command buffer。
+  VkFence m_command_buffer_fence = VK_NULL_HANDLE;
+};
+
+
+class GpuSemaphores {
+public:
+  GpuSemaphores(IVulkanBridge& bridge);
+  GpuSemaphores(GpuSemaphores&& o);
+  ~GpuSemaphores();
+
+  void Initialize();
+  void Destroy();
+public:
+  IVulkanBridge& m_bridge;
+
+  // VkSemaphore，用于 GPU-GPU 不同操作之间的同步
+  //
+  // VkSemaphore 不需要手动调用 vkResetSemaphore，完全由 Vulkan 内部自动处理。
+  // 用于同步 acquire -> submit 这两个操作
+  VkSemaphore m_semaphore_on_image_available = VK_NULL_HANDLE;
+  // 用于同步 submit -> Present 这两个操作
+  VkSemaphore m_semaphore_on_queue_submit_finish = VK_NULL_HANDLE;
+};
+
 
 class SwapChain {
 public:
@@ -23,13 +71,13 @@ public:
   void DestroyForResize();
   void Destroy();
 
-  void IncCurrentFrame();
+  void IncCurrentInflightFrame();
   void IncCurrentSemaphores();
   void SetCurrentImageIndex(uint32_t);
   uint32_t GetCurrentImageIndex();
 
   SwapChainImage *GetCurrentImage();
-  InFlightFrame *GetCurrentSync();
+  InFlightFrame *GetCurrentInflightFrame();
   GpuSemaphores *GetCurrentSemaphores();
 
   VkSwapchainKHR handle() { return m_swapchain; }
@@ -56,31 +104,15 @@ private:
   std::vector<std::unique_ptr<SwapChainImage>> m_images;
   uint32_t m_current_image_index = 0;
 
-  // size == m_images.size
-  // 为每个swapchain image分配一个独立的semaphore，见下面的报错log。
-  // 由于调用vkAcquireNextImageKHR时还没有image index，但需要传递一个
-  // semaphore，因此我们再将semaphores index独立出来。
-  //
-  // Here are some common methods to ensure that a semaphore passed
-  // to vkQueuePresentKHR is not in use and can be safely reused:
-  //         a) Use a separate semaphore per swapchain image. Index these
-  //         semaphores using the index of the acquired image. 
-  //         b) Consider the VK_EXT_swapchain_maintenance1 extension. It 
-  //         allows using a VkFence with the presentation operation.
-  // The Vulkan spec states: Each binary semaphore element of the
-  // pSignalSemaphores member of any element of pSubmits must be unsignaled when
-  // the semaphore signal operation it defines is executed on the device
-  // (https://vulkan.lunarg.com/doc/view/1.4.313.2/windows/antora/spec/latest/chapters/cmdbuffers.html#VUID-vkQueueSubmit-pSignalSemaphores-00067)
-  //
+  // 信号量数组，和images数量相同。无法使用image index，
+  // 因为在image index更新前就要决定使用哪个信号量。
   std::vector<std::unique_ptr<GpuSemaphores>> m_gpu_semaphores;
   uint32_t m_current_semaphore_index = 0;
 
   // size == MAX_FRAMES_IN_FLIGHT
   // 限制CPU最大并发，避免向GPU提交太多Frame
   std::vector<std::unique_ptr<InFlightFrame>> m_inflight_frames;
-  uint32_t m_current_frame_index = 0;
-
-  // VkSemaphore next_present_semaphore_ = VK_NULL_HANDLE;
+  uint32_t m_current_inflight_frame_index = 0;
 };
 
 } // namespace vulkan

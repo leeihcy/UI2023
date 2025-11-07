@@ -164,9 +164,7 @@ void VkTextureTile::Compositor(long, long, long vertexStartIndex,
     }
   }
 
-  vulkan::CommandBuffer *command_buffer =
-      (vulkan::CommandBuffer *)pContext->m_data;
-  VkCommandBuffer buffer = command_buffer->handle();
+  VkCommandBuffer buffer = m_bridge.GetCurrentCommandBuffer();
 
   VkDescriptorSet sets[1] = {m_texture_descriptorset};
   vkCmdBindDescriptorSets(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
