@@ -1,8 +1,10 @@
 #include "vulkan_device_queue.h"
-#include "vulkan/vulkan_core.h"
-#include "src/vulkan/vkcompositor.h"
-#include <cstdint>
+#include <vulkan/vulkan_core.h>
 #include <string>
+
+#include "src/util.h"
+#include "src/vulkan/vkcompositor.h"
+
 
 #if defined(OS_MAC) 
 std::string GetNSViewMetalDeviceName(/*NSView*/void *view);
@@ -18,24 +20,29 @@ DeviceQueue::DeviceQueue(ui::VulkanCompositor& compositor):m_compositor(composit
 bool DeviceQueue::Initialize(ui::IGpuCompositorWindow* window) {
   // 选择一块显卡设备
   if (!pickPhysicalDevice(window)) {
-    printf("pickPhysicalDevice failed\n");
+    ui::Log("pickPhysicalDevice failed\n");
     return false;
   }
   // 查找相应队列
   if (!update_queue_family()) {
-    printf("update_queue_family failed\n");
+    ui::Log("update_queue_family failed\n");
     return false;
   }
   // 创建设备对象
   if (!create_logical_device()) {
-    printf("create_logical_device failed\n");
+    ui::Log("create_logical_device failed\n");
     return false;
   }
   return true;
 }
 
 void DeviceQueue::Destroy() {
-  vkDestroyDevice(m_logical_device, nullptr);
+  if (m_logical_device != VK_NULL_HANDLE) {
+    ui::Log("vkDestroyDevice %p", m_logical_device);
+
+    vkDestroyDevice(m_logical_device, nullptr);
+    m_logical_device = VK_NULL_HANDLE;
+  }
 }
 
 bool DeviceQueue::Submit(VkCommandBuffer buffer) {
@@ -255,7 +262,7 @@ bool DeviceQueue::create_logical_device() {
 
   if (vkCreateDevice(m_physical_device, &device_create_info, nullptr,
                      &m_logical_device) != VK_SUCCESS) {
-    printf("vkCreateDevice failed\n");
+    ui::Log("vkCreateDevice failed\n");
     return false;
   }
 
@@ -263,7 +270,8 @@ bool DeviceQueue::create_logical_device() {
                    &m_graphics_queue);
   vkGetDeviceQueue(m_logical_device, m_present_queue_family, 0,
                    &m_present_queue);
-
+  
+  ui::Log("vkCreateDevice %p", m_logical_device);
   return true;
 }
 

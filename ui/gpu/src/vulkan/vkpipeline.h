@@ -2,10 +2,9 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vulkan_buffer.h"
 
 #include <vulkan/vulkan.h>
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
 
@@ -39,21 +38,17 @@ public:
   bool Create(uint32_t w, uint32_t h, VkFormat format);
   void Destroy();
 
+  VkDescriptorSet AllocatateTextureDescriptorSets();
+
 public:
   VkPipelineLayout layout() { return m_pipeline_layout.handle; }
-
-  VkDescriptorSet &descriptor_sets(unsigned int index) {
-    return m_arr_descriptor_sets[index];
+  VkDescriptorSetLayout GetUniformeDescriptorSetLayout() {
+    return m_uniform_descriptor_set_layout;
   }
-  VkDescriptorSetLayout texture_descriptor_set_layout() {
+  VkDescriptorSetLayout GetTextureDescriptorSetLayout() {
     return m_texture_descriptor_set_layout;
   }
-  VkDescriptorPool texture_descriptor_pool() {
-    return m_texture_descriptor_pool;
-  }
   VkSampler texture_sampler() { return m_texture_sampler; }
-
-  VkDescriptorSet AllocatateTextureDescriptorSets();
 
 public:
   // 全局共享矩阵，一帧更新一次。
@@ -114,42 +109,24 @@ private:
   void build_color_blend(Context &ctx);
   bool build_descriptor_set_layout();
   bool build_texture_descriptor_set_layout();
-  bool create_descriptor_pool();
-  void create_texture_descriptor_pool();
-  bool create_descriptor_sets();
   bool create_texture_sampler();
   bool build_layout();
   bool create_pipeline(Context &ctx);
   void destroy_context(Context &ctx);
 
-  void create_uniform_buffers();
-
 public:
   void UpdateViewportScissor(uint32_t w, uint32_t h, VkCommandBuffer command_buffer);
-  void UpdateUniformBuffer(uint32_t currentImage, VkCommandBuffer command_buffer);
-  void UpdatePushData(VkCommandBuffer &command_buffer, glm::mat4 &mat4);
 
 private:
   IVulkanBridge &m_bridge; // raw_ptr
 
   Vk::Pipeline m_graphics_pipeline;
+
   Vk::PipelineLayout m_pipeline_layout;
-
-  // 只需要一份，作为DescriptorSets的模板。
-  Vk::DescriptorSetLayout m_descriptor_set_layout;
-
-  Vk::DescriptorPool m_descriptor_pool;
-
-  // 和swapchain size保持一致。
-  std::vector<VkDescriptorSet> m_arr_descriptor_sets;
-  // 和swapchain size保持一致。
-  std::vector<vulkan::Buffer> m_arr_uniform_buffers;
-
+  Vk::DescriptorSetLayout m_uniform_descriptor_set_layout;
   Vk::DescriptorSetLayout m_texture_descriptor_set_layout;
-  Vk::DescriptorPool m_texture_descriptor_pool;
-
+  
   Vk::Sampler m_texture_sampler;
-
 };
 
 } // namespace vulkan

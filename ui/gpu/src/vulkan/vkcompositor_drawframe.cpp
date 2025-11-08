@@ -13,7 +13,9 @@ namespace ui {
 //
 bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
   drawFrame_acquireNextCommandBuffer();
-  drawFrame_acquireNextSwapChainImage();
+  if (!drawFrame_acquireNextSwapChainImage()) {
+    return false;
+  }
 
   drawFrame_beginRecordCommandBuffer();
   return true;
@@ -38,15 +40,15 @@ void VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
   vkResetFences(m_device_queue.Device(), 1, &sync->m_command_buffer_fence);
 }
 
-void VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
+bool VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
   vulkan::GpuSemaphores *semaphores = m_swapchain.GetCurrentSemaphores();
-
+  VkDevice device = GetVkDevice();
   // 在没有其他操作的情况下，一直调用acquire的话，是按顺序逐个返回image，如[0,1,2,0,1,2,0...]
 
-  uint32_t imageIndex;
-  vkAcquireNextImageKHR(
-      m_device_queue.Device(), m_swapchain.handle(),
+  uint32_t imageIndex = -1;
+  VkResult result = vkAcquireNextImageKHR(
+      device, m_swapchain.handle(),
 
       // timeout, 无限等待，直到图像可用。
       //
@@ -69,12 +71,17 @@ void VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
       // 获取到的图像索引
       &imageIndex);
 
+  if (result != VK_SUCCESS) {
+    ui::Log("vkAcquireNextImageKHR Failed, result=%d: device=%p, m_swapchain=%p", result, device, m_swapchain.handle());
+    return false;
+  }
   m_swapchain.SetCurrentImageIndex(imageIndex);
+  return true;
 }
 
 void VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
-  vulkan::SwapChainImage *image = m_swapchain.GetCurrentImage();
+  vulkan::SwapChainFrame *frame = m_swapchain.GetCurrentFrame();
   VkCommandBuffer command_buffer_handle = sync->m_command_buffer.handle;
 
   sync->m_command_buffer.Reset();
@@ -82,7 +89,7 @@ void VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
 
   VkOffset2D offset = {0, 0};
   VkExtent2D extent = m_swapchain.Extent2D();
-  sync->m_command_buffer.BeginRenderPass(image->m_frame_buffer,
+  sync->m_command_buffer.BeginRenderPass(frame->m_frame_buffer,
                                           GetVkRenderPass(), offset, extent);
                                           
   sync->m_command_buffer.BindPipeline(GetVkPipeline());
@@ -92,7 +99,7 @@ void VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
   m_pipeline.UpdateViewportScissor(m_swapchain.Extent2D().width,
                                    m_swapchain.Extent2D().height,
                                    command_buffer_handle);
-  m_pipeline.UpdateUniformBuffer(currentImage, command_buffer_handle);
+  frame->UpdateUniformBuffer(currentImage, command_buffer_handle);
 }
 
 void VulkanCompositor::drawFrame_endRecordCommandBuffer() {

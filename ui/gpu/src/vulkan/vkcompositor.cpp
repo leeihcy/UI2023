@@ -1,5 +1,6 @@
 #include "vkcompositor.h"
-#include "gpu/include/api.h"
+#include "src/util.h"
+#include "include/api.h"
 #include "src/vulkan/vkbridge.h"
 #include "vkapp.h"
 #include "vklayer.h"
@@ -33,6 +34,9 @@ void VulkanCompositor::destory() {
   VkDevice device = m_device_queue.Device();
   VkPhysicalDevice pysical_device = m_device_queue.PhysicalDevice();
   vkDeviceWaitIdle(m_device_queue.Device());
+
+  m_uniform_descriptor_pool.Destroy(device);
+  m_texture_descriptor_pool.Destroy(device);
 
   m_pipeline.Destroy();
   m_renderpass.Destroy(device);
@@ -74,13 +78,16 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
     printf("create_commandpool failed\n");
     return false;
   }
-
   return true;
 }
 
 void VulkanCompositor::Resize(int width, int height) {
   m_width = width;
   m_height = height;
+
+  if (GetSwapChain().handle()) {
+    return;
+  }
 
   // 等待设备空闲
   vkDeviceWaitIdle(GetVkDevice());
@@ -106,11 +113,34 @@ void VulkanCompositor::Resize(int width, int height) {
       return /*false*/;
     }
   }
+  
+  createUniformDescriptorPool();
+  createTextureDescriptorPool();
 
   if (!m_swapchain.CreateFrameBuffer(GetVkRenderPass())) {
     printf("m_swapchain CreateFramebuffer failed\n");
     return /*false*/;
   }
+}
+
+
+bool VulkanCompositor::createUniformDescriptorPool() {
+  if (m_uniform_descriptor_pool) {
+    return true;
+  }
+  return m_uniform_descriptor_pool.CreateUniformBufferPool(GetVkDevice(), m_swapchain.Size());
+}
+
+bool VulkanCompositor::createTextureDescriptorPool() {
+  if (m_texture_descriptor_pool) {
+    return true;
+  }
+  // TODO:
+  // 分配太多，会直接占用太多内存。
+  // 分配太少，可能会导致pool资源耗尽。
+  // 因此还需要动态管理多个pool
+  const int max_count = 200;
+  return m_texture_descriptor_pool.CreateTextureSamplePool(GetVkDevice(), max_count);
 }
 
 bool VulkanCompositor::createVulkanSurface(IGpuCompositorWindow* window) {
@@ -196,29 +226,15 @@ VkDevice VulkanCompositor::GetVkDevice() { return m_device_queue.Device(); }
 VkPhysicalDevice VulkanCompositor::GetVkPhysicalDevice() {
   return m_device_queue.PhysicalDevice();
 }
-VkRenderPass VulkanCompositor::GetVkRenderPass() {
-  return m_renderpass;
-}
-VkCommandPool VulkanCompositor::GetVkCommandPool() {
-  return m_command_pool;
-}
-VkPipeline VulkanCompositor::GetVkPipeline() { return m_pipeline.handle(); }
 VkCommandBuffer VulkanCompositor::GetCurrentCommandBuffer() {
   return m_swapchain.GetCurrentInflightFrame()->m_command_buffer;
 }
-Vk::CommandPool &VulkanCompositor::GetCommandPool() {
-  return m_command_pool;
-}
-vulkan::DeviceQueue &VulkanCompositor::GetDeviceQueue() {
-  return m_device_queue;
-}
-vulkan::SwapChain &VulkanCompositor::GetSwapChain() { return m_swapchain; }
-vulkan::PipeLine &VulkanCompositor::GetPipeline() { return m_pipeline; }
 int VulkanCompositor::GetGraphicsQueueFamily() {
   return m_device_queue.GraphicsQueueFamily();
 }
 int VulkanCompositor::GetPresentQueueFamily() {
   return m_device_queue.PresentQueueFamily();
 }
+
 
 } // namespace ui

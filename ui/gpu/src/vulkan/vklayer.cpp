@@ -3,6 +3,8 @@
 #include "glm/fwd.hpp"
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkpipeline.h"
+#include "src/vulkan/vulkan_swap_chain_image.h"
+#include "src/vulkan/vkswapchain.h"
 #include "vktexturetile.h"
 #include <vector>
 
@@ -93,6 +95,7 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   if (m_width == 0 || m_height == 0) {
     return;
   }
+  vulkan::SwapChainFrame* frame = m_bridge.GetSwapChain().GetCurrentFrame();
   VkCommandBuffer buffer = m_bridge.GetCurrentCommandBuffer();
 
   VkBuffer vertexBuffers[] = {m_vertexBuffer.handle()};
@@ -110,7 +113,7 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   }
   glm::mat4 model = glm::translate(
       transfrom, glm::vec3(pContext->m_xOffset, pContext->m_yOffset, 0));
-  m_bridge.GetPipeline().UpdatePushData(buffer, model);
+  frame->UpdatePushData(buffer, model);
 
   int row = m_arrayTile.GetRow();
   int col = m_arrayTile.GetCol();

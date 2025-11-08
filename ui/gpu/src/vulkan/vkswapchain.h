@@ -75,7 +75,7 @@ public:
   void SetCurrentImageIndex(uint32_t);
   uint32_t GetCurrentImageIndex();
 
-  SwapChainImage *GetCurrentImage();
+  SwapChainFrame *GetCurrentFrame();
   InFlightFrame *GetCurrentInflightFrame();
   GpuSemaphores *GetCurrentSemaphores();
 
@@ -100,7 +100,7 @@ private:
   VkSwapchainCreateInfoKHR m_info;
 
   // swap chain中的图片列表，以及对应每个图片的其它关联数据
-  std::vector<std::unique_ptr<SwapChainImage>> m_images;
+  std::vector<std::unique_ptr<SwapChainFrame>> m_images;
   uint32_t m_current_image_index = 0;
 
   // 信号量数组，和images数量相同。无法使用image index，

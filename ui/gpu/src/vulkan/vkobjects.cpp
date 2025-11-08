@@ -95,6 +95,43 @@ bool CommandPool::Create(vulkan::IVulkanBridge& bridge) {
   return true;
 }
 
+bool DescriptorPool::CreateUniformBufferPool(VkDevice device, uint32_t size) {
+  return create(device, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, size);
+}
+bool DescriptorPool::CreateTextureSamplePool(VkDevice device, uint32_t size) {
+  return create(device, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, size);
+}
+
+bool DescriptorPool::create(VkDevice device, VkDescriptorType type,
+                            uint32_t size) {
+  VkDescriptorPoolSize poolSizes[] = {{.type = type, .descriptorCount = size}};
+
+  VkDescriptorPoolCreateInfo poolInfo = {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+
+      // * 当设置 VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT 标志时：
+      // 允许显式释放单个描述符集：
+      // 你可以调用 vkFreeDescriptorSets() 主动释放池中的
+      // 特定描述符集，而无需重置或销毁整个池。
+      //
+      // * 未设置时：
+      // 描述符集只能通过 vkResetDescriptorPool()
+      // 批量释放（所有集合一起释放），或随池销毁时自动释放。
+      //
+      .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+
+      .maxSets = static_cast<uint32_t>(size),
+      .poolSizeCount = std::size(poolSizes),
+      .pPoolSizes = poolSizes};
+
+  if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &this->handle) !=
+      VK_SUCCESS) {
+    ui::Log("failed to create descriptor pool!");
+    return false;
+  }
+  return true;
+}
+
 VkCommandBuffer CommandPool::AllocateCommandBuffer(VkDevice device) {
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

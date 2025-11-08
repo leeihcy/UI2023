@@ -6,7 +6,9 @@
 
 namespace Vk {
 class CommandPool;
+class DescriptorPool;
 }
+
 namespace vulkan {
 class CommandPool;
 class SwapChain;
@@ -23,6 +25,9 @@ struct IVulkanBridge {
 
   virtual vulkan::SwapChain& GetSwapChain() = 0;
   virtual Vk::CommandPool& GetCommandPool() = 0;
+  virtual Vk::DescriptorPool& GetUniformDescriptorPool() = 0;
+  virtual Vk::DescriptorPool& GetTextureDescriptorPool() = 0;
+
   virtual vulkan::DeviceQueue& GetDeviceQueue() = 0;
   virtual vulkan::PipeLine& GetPipeline() = 0;
   virtual int GetGraphicsQueueFamily() = 0;

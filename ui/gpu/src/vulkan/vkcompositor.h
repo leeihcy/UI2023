@@ -48,24 +48,30 @@ public:
 public:
   VkDevice GetVkDevice() override;
   VkPhysicalDevice GetVkPhysicalDevice() override;
-  VkRenderPass GetVkRenderPass() override;
-  VkCommandPool GetVkCommandPool() override;
-  VkPipeline GetVkPipeline() override;
+  VkRenderPass GetVkRenderPass() override { return m_renderpass; }
+  VkCommandPool GetVkCommandPool() override { return m_command_pool; }
+  VkPipeline GetVkPipeline() override { return m_pipeline.handle(); }
   VkCommandBuffer GetCurrentCommandBuffer() override;
-  Vk::CommandPool &GetCommandPool() override;
-  vulkan::DeviceQueue &GetDeviceQueue() override;
-  vulkan::SwapChain &GetSwapChain() override;
-  vulkan::PipeLine& GetPipeline() override;
+  Vk::CommandPool &GetCommandPool() override { return m_command_pool; }
+  Vk::DescriptorPool& GetUniformDescriptorPool() override { return m_uniform_descriptor_pool; }
+  Vk::DescriptorPool& GetTextureDescriptorPool() override { return m_texture_descriptor_pool; }
+
+  vulkan::DeviceQueue &GetDeviceQueue() override { return m_device_queue; }
+  vulkan::SwapChain &GetSwapChain() override { return m_swapchain; }
+  vulkan::PipeLine& GetPipeline() override { return m_pipeline; }
   int GetGraphicsQueueFamily() override;
   int GetPresentQueueFamily() override;
+  
 
 private:
   void destory();
   
   bool createVulkanSurface(IGpuCompositorWindow* window);
+  bool createUniformDescriptorPool();
+  bool createTextureDescriptorPool();
 
   void drawFrame_acquireNextCommandBuffer();
-  void drawFrame_acquireNextSwapChainImage();
+  bool drawFrame_acquireNextSwapChainImage();
   void drawFrame_beginRecordCommandBuffer();
   void drawFrame_endRecordCommandBuffer();
   void drawFrame_submitCommandBuffer();
@@ -81,7 +87,10 @@ private:
   vulkan::SwapChain m_swapchain;
   Vk::RenderPass m_renderpass;
   vulkan::PipeLine m_pipeline;
+
   Vk::CommandPool m_command_pool;
+  Vk::DescriptorPool m_uniform_descriptor_pool;
+  Vk::DescriptorPool m_texture_descriptor_pool;
 };
 
 } // namespace ui

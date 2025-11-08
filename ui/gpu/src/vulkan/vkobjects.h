@@ -39,7 +39,6 @@ VK_HANDLE(PipelineLayout);
 VK_HANDLE(Pipeline);
 VK_HANDLE(Sampler);
 VK_HANDLE(DescriptorSetLayout);
-VK_HANDLE(DescriptorPool);
 VK_HANDLE(Image);
 VK_HANDLE(Framebuffer);
 VK_HANDLE(Fence);
@@ -47,6 +46,7 @@ VK_HANDLE(Fence);
 VK_HANDLE2(ImageViewBase, ImageView);
 VK_HANDLE2(RenderPassBase, RenderPass);
 VK_HANDLE2(CommandPoolBase, CommandPool);
+VK_HANDLE2(DescriptorPoolBase, DescriptorPool);
 
 namespace Vk {
 //
@@ -65,8 +65,17 @@ public:
 class CommandPool : public Vk::CommandPoolBase  {
 public:
   bool Create(vulkan::IVulkanBridge& bridge);
+
   VkCommandBuffer AllocateCommandBuffer(VkDevice device);
   void ReleaseCommandBuffer(VkDevice device, VkCommandBuffer command_buffer);
+};
+
+class DescriptorPool : public Vk::DescriptorPoolBase {
+public:
+  bool CreateUniformBufferPool(VkDevice device, uint32_t size);
+  bool CreateTextureSamplePool(VkDevice device, uint32_t size);
+private:
+  bool create(VkDevice device, VkDescriptorType type, uint32_t size);
 };
 
 class CommandBuffer {

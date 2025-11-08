@@ -8,7 +8,6 @@
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/fwd.hpp>
 #include <vulkan/vulkan.h>
 
 namespace vulkan {
@@ -26,24 +25,8 @@ void PipeLine::Destroy() {
   m_pipeline_layout.Destroy(device);
   m_graphics_pipeline.Destroy(device);
   m_texture_sampler.Destroy(device);
-  m_descriptor_set_layout.Destroy(device);
+  m_uniform_descriptor_set_layout.Destroy(device);
   m_texture_descriptor_set_layout.Destroy(device);
-
-  if (m_descriptor_pool != VK_NULL_HANDLE) {
-    if (!m_arr_descriptor_sets.empty()) {
-      // 创建pool时，我们使用了 CREATE_FREE_DESCRIPTOR_SET_BIT，
-      // 这里我们自己释放资源。
-      vkFreeDescriptorSets(device, m_descriptor_pool,
-                           (uint32_t)m_arr_descriptor_sets.size(),
-                           m_arr_descriptor_sets.data());
-      m_arr_descriptor_sets.clear();
-    }
-
-    m_arr_uniform_buffers.clear();
-  }
-
-  m_descriptor_pool.Destroy(device);
-  m_texture_descriptor_pool.Destroy(device);
 }
 
 bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
@@ -70,17 +53,6 @@ bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
     if (!create_texture_sampler()) {
       break;
     }
-
-    create_uniform_buffers();
-    if (!create_descriptor_pool()) {
-      break;
-    }
-    if (!create_descriptor_sets()) {
-      break;
-    }
-
-    create_texture_descriptor_pool();
-
     success = true;
   } while (0);
 
@@ -331,7 +303,7 @@ bool PipeLine::build_descriptor_set_layout() {
   layoutInfo.pBindings = bindings;
 
   if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr,
-                                  &m_descriptor_set_layout) != VK_SUCCESS) {
+                                  &m_uniform_descriptor_set_layout) != VK_SUCCESS) {
     ui::Log("failed to create descriptor set layout!");
     return false;
   }
@@ -364,103 +336,12 @@ bool PipeLine::build_texture_descriptor_set_layout() {
   return true;
 }
 
-bool PipeLine::create_descriptor_pool() {
-  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
-
-  VkDescriptorPoolSize poolSizes[] = {
-      {.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-       .descriptorCount = static_cast<uint32_t>(swapchain.Size())}};
-
-  VkDescriptorPoolCreateInfo poolInfo = {
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-
-      // * 当设置 VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT 标志时：
-      // 允许显式释放单个描述符集：
-      // 你可以调用 vkFreeDescriptorSets() 主动释放池中的
-      // 特定描述符集，而无需重置或销毁整个池。
-      //
-      // * 未设置时：
-      // 描述符集只能通过 vkResetDescriptorPool()
-      // 批量释放（所有集合一起释放），或随池销毁时自动释放。
-      //
-      .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
-
-      .maxSets = static_cast<uint32_t>(swapchain.Size()),
-      .poolSizeCount = std::size(poolSizes),
-      .pPoolSizes = poolSizes};
-
-  if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
-                             &m_descriptor_pool) != VK_SUCCESS) {
-    ui::Log("failed to create descriptor pool!");
-    return false;
-  }
-  return true;
-}
-
-void PipeLine::create_texture_descriptor_pool() {
-  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
-
-  // TODO:
-  // 分配太多，会直接占用太多内存。
-  // 分配太少，可能会导致pool资源耗尽。
-  // 因此还需要动态管理多个pool
-  const int max_count = 200;
-
-  VkDescriptorPoolSize texturePoolSizes[] = {
-      {.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-       .descriptorCount = max_count
-      }
-  };
-
-  VkDescriptorPoolCreateInfo poolInfo = {
-    .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-    .flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
-    .maxSets = max_count,
-    .poolSizeCount = std::size(texturePoolSizes),
-    .pPoolSizes = texturePoolSizes,
-  };
-
-  if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
-                             &m_texture_descriptor_pool) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor pool!");
-  }
-}
-
-//
-// swapchain三缓冲，则需要对应分配三个描述符集。
-//
-bool PipeLine::create_descriptor_sets() {
-  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
-  const uint32_t count = swapchain.Size();
-
-  // 三个descriptor sets，使用三个相同的布局。
-  std::vector<VkDescriptorSetLayout> layouts(count, m_descriptor_set_layout);
-
-  VkDescriptorSetAllocateInfo allocInfo{
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-      .descriptorPool = m_descriptor_pool,
-
-      // vkAllocateDescriptorSets一次性创建count个
-      .descriptorSetCount = count,
-      .pSetLayouts = layouts.data(),
-  };
-
-  m_arr_descriptor_sets.resize(count);
-  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo,
-                               &m_arr_descriptor_sets[0]) != VK_SUCCESS) {
-    ui::Log("failed to allocate descriptor sets!");
-    return false;
-  }
-  return true;
-}
-
 VkDescriptorSet PipeLine::AllocatateTextureDescriptorSets() {
   VkDescriptorSetAllocateInfo textureAllocInfo = {};
   textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  textureAllocInfo.descriptorPool = texture_descriptor_pool();
+  textureAllocInfo.descriptorPool = m_bridge.GetTextureDescriptorPool();
 
-  VkDescriptorSetLayout layouts[1] = {
-      m_bridge.GetPipeline().texture_descriptor_set_layout()};
+  VkDescriptorSetLayout layouts[1] = { m_texture_descriptor_set_layout };
   textureAllocInfo.descriptorSetCount = std::size(layouts);
   textureAllocInfo.pSetLayouts = layouts;
 
@@ -485,7 +366,7 @@ bool PipeLine::build_layout() {
   }
 
   VkDescriptorSetLayout descriptorSetLayouts[2] = {
-      m_descriptor_set_layout, m_texture_descriptor_set_layout};
+      m_uniform_descriptor_set_layout, m_texture_descriptor_set_layout};
   pipelineLayoutInfo.setLayoutCount = std::size(descriptorSetLayouts);
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts;
 
@@ -565,94 +446,6 @@ bool PipeLine::create_shader_module(char *code, int length,
   }
 
   return true;
-}
-
-void PipeLine::create_uniform_buffers() {
-  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-  int size = m_bridge.GetSwapChain().Size();
-
-  for (size_t i = 0; i < size; i++) {
-    m_arr_uniform_buffers.push_back(vulkan::Buffer(m_bridge));
-    m_arr_uniform_buffers[i].CreateBuffer(
-        bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-  }
-}
-
-void PipeLine::UpdateUniformBuffer(uint32_t currentImage,
-                                   VkCommandBuffer command_buffer) {
-  // static auto startTime = std::chrono::high_resolution_clock::now();
-  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
-
-  // auto currentTime = std::chrono::high_resolution_clock::now();
-  // float time = std::chrono::duration<float, std::chrono::seconds::period>(
-  //                  currentTime - startTime)
-  //                  .count();
-
-  UniformBufferObject ubo{};
-  // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
-  //                         glm::vec3(0.0f, 0.0f, 1.0f));
-  ubo.view = glm::mat4(1.0f);
-  // ubo.view =
-  //     glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-  //                 glm::vec3(0.0f, 0.0f, 1.0f));
-  // ubo.proj = glm::perspective(
-  //     glm::radians(45.0f),
-  //     swapchain.Extent2D().width / (float)swapchain.Extent2D().height,
-  //     0.1f, 10.0f);
-  // ubo.proj[1][1] *= -1;
-
-  // ubo.ortho = glm::mat4(1.0);
-  ubo.ortho =
-      glm::orthoLH<float>(0, (float)swapchain.Extent2D().width, 0,
-                          (float)swapchain.Extent2D().height, -2000.f, 2000.f);
-  // ubo.orth = PrepareOrthographicProjectionMatrix(0,
-  // swapchain.Extent2D().width, swapchain.Extent2D().height, 0, -2000.f,
-  // 2000.f);
-
-  void *data;
-  vkMapMemory(m_bridge.GetVkDevice(),
-              m_arr_uniform_buffers[currentImage].memory(), 0, sizeof(ubo), 0,
-              &data);
-  memcpy(data, &ubo, sizeof(ubo));
-  vkUnmapMemory(m_bridge.GetVkDevice(),
-                m_arr_uniform_buffers[currentImage].memory());
-
-  VkDescriptorBufferInfo bufferInfo{};
-  bufferInfo.buffer = m_arr_uniform_buffers[currentImage].handle();
-  bufferInfo.range = sizeof(UniformBufferObject);
-
-  VkWriteDescriptorSet descriptorWrites[1] = {};
-  descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[0].dstSet = m_arr_descriptor_sets[currentImage];
-  descriptorWrites[0].dstBinding = 0;
-  descriptorWrites[0].dstArrayElement = 0;
-  descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-  descriptorWrites[0].descriptorCount = 1;
-  descriptorWrites[0].pBufferInfo = &bufferInfo;
-  vkUpdateDescriptorSets(m_bridge.GetVkDevice(), std::size(descriptorWrites),
-                         descriptorWrites, 0, nullptr);
-
-  vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          m_pipeline_layout, 0, 1, &m_arr_descriptor_sets[currentImage],
-                          0, nullptr);
-}
-
-void PipeLine::UpdatePushData(VkCommandBuffer &command_buffer,
-                              glm::mat4 &mat4) {
-  PushData position;
-  position.model = mat4;
-
-  vkCmdPushConstants(
-      command_buffer,             // 当前命令缓冲区
-      m_pipeline_layout,          // 管线布局（需包含 Push Constants 范围）
-      VK_SHADER_STAGE_VERTEX_BIT, // 生效的着色器阶段（这里是顶点着色器）
-      0,                          // 偏移量（如果 Push Constants 块有多个变量）
-      sizeof(PushData),           // 数据大小
-      &position                   // 数据指针
-  );
 }
 
 } // namespace vulkan

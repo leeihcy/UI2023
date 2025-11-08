@@ -1,7 +1,9 @@
 #include "src/vulkan/vkswapchain.h"
+
 #include <vulkan/vulkan.h>
 #include <assert.h>
 
+#include "src/util.h"
 #include "src/vulkan/vkapp.h"
 
 namespace vulkan {
@@ -96,11 +98,12 @@ bool SwapChain::Initialize(VkSurfaceKHR surface, int width, int height) {
 
 // 创建顺序依赖于render pass
 bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
-  for (auto& image : m_images) {
-    image->CreateFrameBuffer(
-      Extent2D().width, 
-      Extent2D().height, 
-      render_pass);
+  VkExtent2D extent = Extent2D();
+
+  for (auto &image : m_images) {
+    image->CreateFrameBuffer(extent.width, extent.height, render_pass);
+    image->CreateDescriptorSet();
+    image->CreateUniformBuffer();
   }
   return true;
 }
@@ -108,6 +111,8 @@ bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
 void SwapChain::DestroyForResize() {
   m_images.clear();
   if (m_swapchain != VK_NULL_HANDLE) {
+    ui::Log("Destroy Swapchain: %p", m_swapchain);
+    
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
     m_swapchain = VK_NULL_HANDLE;
   }
@@ -119,6 +124,8 @@ void SwapChain::Destroy() {
   m_images.clear();
   
   if (m_swapchain != VK_NULL_HANDLE) {
+    ui::Log("Destroy Swapchain: %p", m_swapchain);
+
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
     m_swapchain = VK_NULL_HANDLE;
   }
@@ -160,9 +167,10 @@ bool SwapChain::createSwapchain(VkSurfaceKHR surface, int width, int height) {
 
   if (vkCreateSwapchainKHR(m_bridge.GetVkDevice(), &m_info, nullptr,
                            &m_swapchain) != VK_SUCCESS) {
-    printf("failed to create swap chain!");
+    ui::Log("failed to create swap chain!");
     return false;
   }
+  ui::Log("Create Swapchain: %p", m_swapchain);
 
   return true;
 }
@@ -294,8 +302,8 @@ bool SwapChain::initSwapChainImages() {
   }
 
   for (uint32_t i = 0; i < image_count; ++i) {
-    std::unique_ptr<SwapChainImage> image_item =
-        std::make_unique<SwapChainImage>(m_bridge, swapchain_images[i]);
+    std::unique_ptr<SwapChainFrame> image_item =
+        std::make_unique<SwapChainFrame>(m_bridge, swapchain_images[i]);
 
     image_item->Create(m_info.imageFormat);
 
@@ -335,7 +343,7 @@ bool SwapChain::initInFlightFrames() {
   return true;
 }
 
-SwapChainImage* SwapChain::GetCurrentImage() {
+SwapChainFrame* SwapChain::GetCurrentFrame() {
   assert(m_current_image_index < m_images.size());
 
   return m_images[m_current_image_index].get();
