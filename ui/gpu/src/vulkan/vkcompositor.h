@@ -32,18 +32,12 @@ public:
   ~VulkanCompositor();
 
   bool Initialize(IGpuCompositorWindow*);
+  VkSurfaceKHR GetSurface() { return m_surface; }
 
   std::shared_ptr<IGpuLayer> CreateLayerTexture() override;
   bool BeginCommit(GpuLayerCommitContext *) override;
   void EndCommit(GpuLayerCommitContext *) override;
   void Resize(int nWidth, int nHeight) override;
-
-  GpuLayer *GetRootLayerTexture();
-
-  VkSurfaceKHR Surface() { return m_surface; }
-
-  void VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
-                        VkDeviceSize size);
 
 public:
   VkDevice GetVkDevice() override;
@@ -82,10 +76,11 @@ private:
   int m_height = 0;
 
   vulkan::DeviceQueue m_device_queue;
-  VkSurfaceKHR m_surface;
   
-  vulkan::SwapChain m_swapchain;
+  VkSurfaceKHR m_surface;
   Vk::RenderPass m_renderpass;
+
+  vulkan::SwapChain m_swapchain;
   vulkan::PipeLine m_pipeline;
 
   Vk::CommandPool m_command_pool;

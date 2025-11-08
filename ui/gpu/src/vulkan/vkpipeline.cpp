@@ -336,23 +336,6 @@ bool PipeLine::build_texture_descriptor_set_layout() {
   return true;
 }
 
-VkDescriptorSet PipeLine::AllocatateTextureDescriptorSets() {
-  VkDescriptorSetAllocateInfo textureAllocInfo = {};
-  textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  textureAllocInfo.descriptorPool = m_bridge.GetTextureDescriptorPool();
-
-  VkDescriptorSetLayout layouts[1] = { m_texture_descriptor_set_layout };
-  textureAllocInfo.descriptorSetCount = std::size(layouts);
-  textureAllocInfo.pSetLayouts = layouts;
-
-  VkDescriptorSet texture_descriptorset = VK_NULL_HANDLE;
-  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &textureAllocInfo,
-                               &texture_descriptorset) != VK_SUCCESS) {
-    ui::Log("failed to allocate descriptor sets");
-  }
-  return texture_descriptorset;
-}
-
 // 构建shader文件中的布局。
 bool PipeLine::build_layout() {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

@@ -195,7 +195,7 @@ bool DeviceQueue::update_queue_family() {
 
     // 查询当前队列族，是否支持present到我们的窗口(surface).
     VkBool32 presentSupport = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, m_compositor.Surface(),
+    vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, m_compositor.GetSurface(),
                                          &presentSupport);
     if (presentSupport) {
       m_present_queue_family = i;

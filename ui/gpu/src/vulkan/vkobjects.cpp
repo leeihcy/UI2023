@@ -33,7 +33,7 @@ bool RenderPass::Create(VkDevice device, VkFormat format) {
   // attachment就是画布，即颜色、深度、模板数据最终要被写入的内存区域，通常是VkImage
 
   VkAttachmentDescription colorAttachment{};
-  colorAttachment.format = format; // m_swapchain.ImageFormat();
+  colorAttachment.format = format;
   colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 
   // 在开始渲染之前，需要如何处理这块画布
@@ -130,6 +130,27 @@ bool DescriptorPool::create(VkDevice device, VkDescriptorType type,
     return false;
   }
   return true;
+}
+
+VkDescriptorSet DescriptorPool::AllocatateDescriptorSet(VkDevice device, VkDescriptorSetLayout layout) {
+  VkDescriptorSetAllocateInfo allocInfo{
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      .descriptorPool = this->handle,
+      .descriptorSetCount = 1,
+      .pSetLayouts = &layout,
+  };
+
+  VkDescriptorSet uniform_descriptorset = VK_NULL_HANDLE;
+  if (vkAllocateDescriptorSets(device, &allocInfo,
+                               &uniform_descriptorset) != VK_SUCCESS) {
+    ui::Log("failed to allocate descriptor sets!");
+    return VK_NULL_HANDLE;
+  }
+  return uniform_descriptorset;
+}
+
+void DescriptorPool::FreeDescriptorSet(VkDevice device, VkDescriptorSet descriptor_set) {
+  vkFreeDescriptorSets(device, this->handle, 1, &descriptor_set);
 }
 
 VkCommandBuffer CommandPool::AllocateCommandBuffer(VkDevice device) {

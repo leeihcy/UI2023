@@ -83,7 +83,7 @@ SwapChain::~SwapChain() {
   Destroy();
 }
 
-bool SwapChain::Initialize(VkSurfaceKHR surface, int width, int height) {
+bool SwapChain::Create(VkSurfaceKHR surface, int width, int height) {
   if (!createSwapchain(surface, width, height)) {
     return false;
   }
@@ -102,7 +102,6 @@ bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
 
   for (auto &image : m_images) {
     image->CreateFrameBuffer(extent.width, extent.height, render_pass);
-    image->CreateDescriptorSet();
     image->CreateUniformBuffer();
   }
   return true;
@@ -121,8 +120,8 @@ void SwapChain::DestroyForResize() {
 void SwapChain::Destroy() {
   m_inflight_frames.clear();
   m_gpu_semaphores.clear();
+
   m_images.clear();
-  
   if (m_swapchain != VK_NULL_HANDLE) {
     ui::Log("Destroy Swapchain: %p", m_swapchain);
 

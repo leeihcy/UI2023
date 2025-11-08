@@ -8,6 +8,7 @@
 #include "src/util.h"
 #include "src/vulkan/vkpipeline.h"
 #include "src/vulkan/vkswapchain.h"
+#include "src/vulkan/vkcompositor.h"
 
 namespace vulkan {
 
@@ -21,12 +22,9 @@ SwapChainFrame::~SwapChainFrame() {
   m_image_view.Destroy(device);
   m_frame_buffer.Destroy(device);
 
-  if (m_uniform_descriptor_sets != VK_NULL_HANDLE) {
-    // 创建pool时，我们使用了 CREATE_FREE_DESCRIPTOR_SET_BIT，
-    // 这里我们自己释放资源。
-    vkFreeDescriptorSets(device, m_bridge.GetUniformDescriptorPool(), 1,
-                        &m_uniform_descriptor_sets);
-    m_uniform_descriptor_sets = VK_NULL_HANDLE;
+  if (m_uniform_descriptor_set != VK_NULL_HANDLE) {
+    m_bridge.GetUniformDescriptorPool().FreeDescriptorSet(device, m_uniform_descriptor_set);
+    m_uniform_descriptor_set = VK_NULL_HANDLE;
   }
   m_uniform_buffer.Destroy();
 }
@@ -39,6 +37,9 @@ bool SwapChainFrame::Create(VkFormat imageFormat) {
 }
 
 bool SwapChainFrame::CreateUniformBuffer() {
+  m_uniform_descriptor_set = m_bridge.GetUniformDescriptorPool().AllocatateDescriptorSet(
+    m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetUniformeDescriptorSetLayout());
+
   VkDeviceSize bufferSize = sizeof(PipeLine::UniformBufferObject);
 
   return m_uniform_buffer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -70,26 +71,6 @@ bool SwapChainFrame::CreateFrameBuffer(int width, int height,
   }
   return true;
 }
-
-bool SwapChainFrame::CreateDescriptorSet() {
-  vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
-  VkDescriptorSetLayout layout = m_bridge.GetPipeline().GetUniformeDescriptorSetLayout();
-
-  VkDescriptorSetAllocateInfo allocInfo{
-      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-      .descriptorPool = m_bridge.GetUniformDescriptorPool(),
-      .descriptorSetCount = 1,
-      .pSetLayouts = &layout,
-  };
-
-  if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo,
-                               &m_uniform_descriptor_sets) != VK_SUCCESS) {
-    ui::Log("failed to allocate descriptor sets!");
-    return false;
-  }
-  return true;
-}
-
 
 void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
                                    VkCommandBuffer command_buffer) {
@@ -136,7 +117,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
   VkWriteDescriptorSet descriptorWrites[1] = {};
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[0].dstSet = m_uniform_descriptor_sets;
+  descriptorWrites[0].dstSet = m_uniform_descriptor_set;
   descriptorWrites[0].dstBinding = 0;
   descriptorWrites[0].dstArrayElement = 0;
   descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -146,7 +127,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
                          descriptorWrites, 0, nullptr);
 
   vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          m_bridge.GetPipeline().layout(), 0, 1, &m_uniform_descriptor_sets,
+                          m_bridge.GetPipeline().layout(), 0, 1, &m_uniform_descriptor_set,
                           0, nullptr);
 }
 

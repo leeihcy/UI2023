@@ -1,6 +1,7 @@
 #include "vktexturetile.h"
 #include "include/api.h"
 #include "src/vulkan/vkpipeline.h"
+#include "src/vulkan/vkcompositor.h"
 #include "src/util.h"
 #include <vulkan/vulkan_core.h>
 #include <memory.h>
@@ -13,8 +14,15 @@ VkTextureTile::VkTextureTile(vulkan::IVulkanBridge &bridge)
 VkTextureTile::~VkTextureTile() {
   auto device = m_bridge.GetVkDevice();
   
+  if (m_texture_descriptorset != VK_NULL_HANDLE) {
+    m_bridge.GetTextureDescriptorPool().FreeDescriptorSet(device, m_texture_descriptorset);
+    m_texture_descriptorset = VK_NULL_HANDLE;
+  }
+
   m_texture_imageview.Destroy(device);
-  vkFreeMemory(device, m_texture_image_memory, nullptr);
+  if (m_texture_image_memory != VK_NULL_HANDLE) {
+    vkFreeMemory(device, m_texture_image_memory, nullptr);
+  }
   m_texture_image.Destroy(device);
 }
 
@@ -130,8 +138,8 @@ bool VkTextureTile::updateTextureDescriptorset() {
     return false;
   }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
-    m_texture_descriptorset =
-        m_bridge.GetPipeline().AllocatateTextureDescriptorSets();
+    m_texture_descriptorset = m_bridge.GetTextureDescriptorPool().AllocatateDescriptorSet(
+      m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetTextureDescriptorSetLayout());
   }
 
   VkDescriptorImageInfo imageInfo = {};

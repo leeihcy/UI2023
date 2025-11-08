@@ -17,7 +17,6 @@ public:
 
   bool Create(VkFormat imageFormat);
   bool CreateFrameBuffer(int width, int height, VkRenderPass render_pass);
-  bool CreateDescriptorSet();
   bool CreateUniformBuffer();
 
   void UpdateUniformBuffer(uint32_t currentImage, VkCommandBuffer command_buffer);
@@ -39,7 +38,7 @@ public:
   // 需要为SwapChain中的每一个Image创建一个FrameBuffer。
   Vk::Framebuffer m_frame_buffer;
 
-  VkDescriptorSet m_uniform_descriptor_sets;
+  VkDescriptorSet m_uniform_descriptor_set;
   vulkan::Buffer m_uniform_buffer;
 };
 

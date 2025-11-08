@@ -35,15 +35,14 @@ void VulkanCompositor::destory() {
   VkPhysicalDevice pysical_device = m_device_queue.PhysicalDevice();
   vkDeviceWaitIdle(m_device_queue.Device());
 
-  m_uniform_descriptor_pool.Destroy(device);
-  m_texture_descriptor_pool.Destroy(device);
-
   m_pipeline.Destroy();
   m_renderpass.Destroy(device);
   m_swapchain.Destroy();
 
   auto &app = application();
 
+  m_uniform_descriptor_pool.Destroy(device);
+  m_texture_descriptor_pool.Destroy(device);
   m_command_pool.Destroy(device);
   m_device_queue.Destroy();
 
@@ -82,22 +81,21 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
 }
 
 void VulkanCompositor::Resize(int width, int height) {
+  if (m_width == width && m_height == height) {
+    return;
+  }
   m_width = width;
   m_height = height;
 
-  if (GetSwapChain().handle()) {
-    return;
-  }
-
-  // 等待设备空闲
+  // 等待设备空闲后才能删除swapchain
   vkDeviceWaitIdle(GetVkDevice());
-  
   m_swapchain.DestroyForResize();
 
-  if (!m_swapchain.Initialize(m_surface, m_width, m_height)) {
-    printf("createSwapchain failed\n");
+  if (!m_swapchain.Create(m_surface, m_width, m_height)) {
+    ui::Log("createSwapchain failed");
     return /*false*/;
   }
+
 
   VkFormat image_format = m_swapchain.ImageFormat();
   if (!m_renderpass) {
@@ -108,17 +106,17 @@ void VulkanCompositor::Resize(int width, int height) {
   // 和窗口大小相关的viewport/scissor在每次commit时进行设置，参见UpdateViewportScissor
   if (m_pipeline.handle() == VK_NULL_HANDLE) {
     if (!m_pipeline.Create(m_swapchain.Extent2D().width,
-                               m_swapchain.Extent2D().height, image_format)) {
-      printf("createGraphicsPipeline failed\n");
+                           m_swapchain.Extent2D().height, image_format)) {
+      ui::Log("createGraphicsPipeline failed");
       return /*false*/;
     }
   }
-  
+
   createUniformDescriptorPool();
   createTextureDescriptorPool();
 
   if (!m_swapchain.CreateFrameBuffer(GetVkRenderPass())) {
-    printf("m_swapchain CreateFramebuffer failed\n");
+    ui::Log("m_swapchain CreateFramebuffer failed");
     return /*false*/;
   }
 }
@@ -201,25 +199,6 @@ bool VulkanCompositor::createVulkanSurface(IGpuCompositorWindow* window) {
 
 #endif
   return true;
-}
-
-void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
-                                        VkDeviceSize size) {
-  Vk::CommandBuffer cb;
-  cb.Attach(m_command_pool.AllocateCommandBuffer(GetVkDevice()));
-
-  cb.BeginRecordCommand();
-  {
-    VkBufferCopy copyRegion{};
-    copyRegion.size = size;
-    vkCmdCopyBuffer(cb, srcBuffer, dstBuffer, 1, &copyRegion);
-  }
-  cb.EndRecordCommand();
-
-  m_device_queue.Submit(cb);
-  m_device_queue.WaitIdle();
-
-  m_command_pool.ReleaseCommandBuffer(GetVkDevice(), cb.Detach());
 }
 
 VkDevice VulkanCompositor::GetVkDevice() { return m_device_queue.Device(); }

@@ -46,7 +46,7 @@ bool VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
   VkDevice device = GetVkDevice();
   // 在没有其他操作的情况下，一直调用acquire的话，是按顺序逐个返回image，如[0,1,2,0,1,2,0...]
 
-  uint32_t imageIndex = -1;
+  uint32_t imageIndex = 0xFFFFFFFF;
   VkResult result = vkAcquireNextImageKHR(
       device, m_swapchain.handle(),
 
@@ -71,10 +71,13 @@ bool VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
       // 获取到的图像索引
       &imageIndex);
 
-  if (result != VK_SUCCESS) {
-    ui::Log("vkAcquireNextImageKHR Failed, result=%d: device=%p, m_swapchain=%p", result, device, m_swapchain.handle());
+  if (imageIndex == 0xFFFFFFFF) {
+    ui::Log(
+        "vkAcquireNextImageKHR Failed, result=%d: device=%p, m_swapchain=%p",
+        result, device, m_swapchain.handle());
     return false;
   }
+
   m_swapchain.SetCurrentImageIndex(imageIndex);
   return true;
 }

@@ -65,7 +65,7 @@ public:
   SwapChain(IVulkanBridge &bridge);
   ~SwapChain();
 
-  bool Initialize(VkSurfaceKHR surface, int width, int height);
+  bool Create(VkSurfaceKHR surface, int width, int height);
   bool CreateFrameBuffer(VkRenderPass renderpass);
   void DestroyForResize();
   void Destroy();

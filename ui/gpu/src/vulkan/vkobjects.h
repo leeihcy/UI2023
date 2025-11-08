@@ -74,6 +74,10 @@ class DescriptorPool : public Vk::DescriptorPoolBase {
 public:
   bool CreateUniformBufferPool(VkDevice device, uint32_t size);
   bool CreateTextureSamplePool(VkDevice device, uint32_t size);
+
+  VkDescriptorSet AllocatateDescriptorSet(VkDevice device, VkDescriptorSetLayout layout);
+  void FreeDescriptorSet(VkDevice device, VkDescriptorSet);
+
 private:
   bool create(VkDevice device, VkDescriptorType type, uint32_t size);
 };
