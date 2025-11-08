@@ -197,12 +197,11 @@ shared_library("uigpu") {
         "src/vulkan/vkobjects.cpp",
         "src/vulkan/vkobjects.h",
         "src/vulkan/mac_util.mm",
+        "src/vulkan/vkpipeline.cpp",
+        "src/vulkan/vkpipeline.h",
 
-        "src/vulkan/vulkan_command_buffer.h",
-        "src/vulkan/vulkan_command_buffer.cpp",
         "src/vulkan/vulkan_device_queue.cpp",
         "src/vulkan/vulkan_swap_chain_image.cpp",
-        "src/vulkan/vulkan_pipe_line.cpp",
         "src/vulkan/vulkan_buffer.cpp",
       ]
 

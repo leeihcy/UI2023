@@ -1,93 +1,52 @@
-#include "vulkan_pipe_line.h"
-#include "glm/ext/matrix_clip_space.hpp"
-#include "glm/fwd.hpp"
+#include "vkpipeline.h"
+#include "src/util.h"
 #include "src/vulkan/vkswapchain.h"
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vulkan_buffer.h"
-#include "vulkan_device_queue.h"
+#include "src/vulkan/vulkan_device_queue.h"
 
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/fwd.hpp>
 #include <vulkan/vulkan.h>
 
 namespace vulkan {
 
-Pipeline::Pipeline(IVulkanBridge &bridge) : m_bridge(bridge) {}
+PipeLine::PipeLine(IVulkanBridge &bridge)
+    : m_bridge(bridge){}
 
-Pipeline::~Pipeline() { Destroy(); }
-
-bool Pipeline::Initialize(uint32_t w, uint32_t h, VkFormat format) {
-  if (!create_graphics_pipeline(w, h, format)) {
-    return false;
-  }
-  return true;
+PipeLine::~PipeLine() {
+  Destroy();
 }
 
-void Pipeline::UpdateViewportScissor(uint32_t w, uint32_t h,
-                                     VkCommandBuffer command_buffer) {
-  Context context;
-  build_viewport_scissor(context, w, h);
+void PipeLine::Destroy() {
+  VkDevice device = m_bridge.GetVkDevice();
 
-  vkCmdSetViewport(command_buffer, 0, 1, &context.viewport);
-  vkCmdSetScissor(command_buffer, 0, 1, &context.scissor);
-
-  destroy_context(context);
-}
-
-void Pipeline::Destroy() {
-  if (m_pipeline_layout != VK_NULL_HANDLE) {
-    vkDestroyPipelineLayout(m_bridge.GetVkDevice(), m_pipeline_layout, nullptr);
-    m_pipeline_layout = VK_NULL_HANDLE;
-  }
-  if (m_graphics_pipeline != VK_NULL_HANDLE) {
-    vkDestroyPipeline(m_bridge.GetVkDevice(), m_graphics_pipeline, nullptr);
-    m_graphics_pipeline = VK_NULL_HANDLE;
-  }
-
-  if (m_texture_sampler != VK_NULL_HANDLE) {
-    vkDestroySampler(m_bridge.GetVkDevice(), m_texture_sampler, nullptr);
-    m_texture_sampler = VK_NULL_HANDLE;
-  }
-
-  if (m_descriptor_set_layout != VK_NULL_HANDLE) {
-    vkDestroyDescriptorSetLayout(m_bridge.GetVkDevice(),
-                                 m_descriptor_set_layout, nullptr);
-    m_descriptor_set_layout = VK_NULL_HANDLE;
-  }
-  if (m_texture_descriptor_set_layout != VK_NULL_HANDLE) {
-    vkDestroyDescriptorSetLayout(m_bridge.GetVkDevice(),
-                                 m_texture_descriptor_set_layout, nullptr);
-    m_texture_descriptor_set_layout = VK_NULL_HANDLE;
-  }
+  m_pipeline_layout.Destroy(device);
+  m_graphics_pipeline.Destroy(device);
+  m_texture_sampler.Destroy(device);
+  m_descriptor_set_layout.Destroy(device);
+  m_texture_descriptor_set_layout.Destroy(device);
 
   if (m_descriptor_pool != VK_NULL_HANDLE) {
     if (!m_arr_descriptor_sets.empty()) {
       // 创建pool时，我们使用了 CREATE_FREE_DESCRIPTOR_SET_BIT，
       // 这里我们自己释放资源。
-      vkFreeDescriptorSets(m_bridge.GetVkDevice(), m_descriptor_pool,
+      vkFreeDescriptorSets(device, m_descriptor_pool,
                            (uint32_t)m_arr_descriptor_sets.size(),
                            m_arr_descriptor_sets.data());
       m_arr_descriptor_sets.clear();
     }
 
     m_arr_uniform_buffers.clear();
-
-    vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_descriptor_pool, nullptr);
-    m_descriptor_pool = VK_NULL_HANDLE;
   }
 
-  if (m_texture_descriptor_pool != VK_NULL_HANDLE) {
-    vkDestroyDescriptorPool(m_bridge.GetVkDevice(), m_texture_descriptor_pool,
-                            nullptr);
-    m_texture_descriptor_pool = VK_NULL_HANDLE;
-  }
+  m_descriptor_pool.Destroy(device);
+  m_texture_descriptor_pool.Destroy(device);
 }
 
-bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h,
-                                        VkFormat format) {
+bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
   Context context;
 
   bool success = false;
@@ -113,8 +72,12 @@ bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h,
     }
 
     create_uniform_buffers();
-    create_descriptor_pool();
-    create_descriptor_sets();
+    if (!create_descriptor_pool()) {
+      break;
+    }
+    if (!create_descriptor_sets()) {
+      break;
+    }
 
     create_texture_descriptor_pool();
 
@@ -127,6 +90,17 @@ bool Pipeline::create_graphics_pipeline(uint32_t w, uint32_t h,
   }
 
   return success;
+}
+
+void PipeLine::UpdateViewportScissor(uint32_t w, uint32_t h,
+                                     VkCommandBuffer command_buffer) {
+  Context context;
+  build_viewport_scissor(context, w, h);
+
+  vkCmdSetViewport(command_buffer, 0, 1, &context.viewport);
+  vkCmdSetScissor(command_buffer, 0, 1, &context.scissor);
+
+  destroy_context(context);
 }
 
 static bool read_spv_file(const char *filename, std::vector<char> &buffer) {
@@ -146,7 +120,7 @@ static bool read_spv_file(const char *filename, std::vector<char> &buffer) {
 }
 
 // 顶点格式设置
-void Pipeline::build_vertex_input(Context &ctx, ShaderVertex shader_vertex) {
+void PipeLine::build_vertex_input(Context &ctx, ShaderVertex shader_vertex) {
   ctx.vertex_input.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -187,7 +161,7 @@ void Pipeline::build_vertex_input(Context &ctx, ShaderVertex shader_vertex) {
 #endif
 }
 
-void Pipeline::build_input_assembly(Context &ctx) {
+void PipeLine::build_input_assembly(Context &ctx) {
   ctx.input_assembly.sType =
       VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 
@@ -197,7 +171,7 @@ void Pipeline::build_input_assembly(Context &ctx) {
   ctx.input_assembly.primitiveRestartEnable = VK_FALSE;
 }
 
-bool Pipeline::build_vertex_shader(Context &ctx) {
+bool PipeLine::build_vertex_shader(Context &ctx) {
   std::vector<char> vertShaderCode;
   if (!read_spv_file("shaders/vert.spv", vertShaderCode)) {
     return false;
@@ -216,7 +190,7 @@ bool Pipeline::build_vertex_shader(Context &ctx) {
 
 // Orthographic Projection Matrix
 // 正交投影矩阵
-void Pipeline::build_viewport_scissor(Context &ctx, uint32_t width,
+void PipeLine::build_viewport_scissor(Context &ctx, uint32_t width,
                                       uint32_t height) {
   ctx.viewport.x = 0.0f;
   ctx.viewport.y = 0.0f;
@@ -236,7 +210,7 @@ void Pipeline::build_viewport_scissor(Context &ctx, uint32_t width,
   ctx.viewport_state.pScissors = &ctx.scissor;
 }
 
-void Pipeline::build_rasterization(Context &ctx) {
+void PipeLine::build_rasterization(Context &ctx) {
   ctx.rasterizer.sType =
       VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
   ctx.rasterizer.depthClampEnable = VK_FALSE;
@@ -256,7 +230,7 @@ void Pipeline::build_rasterization(Context &ctx) {
   ctx.multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 
-bool Pipeline::build_fragment_shader(Context &ctx) {
+bool PipeLine::build_fragment_shader(Context &ctx) {
   std::vector<char> fragShaderCode;
   if (!read_spv_file("shaders/frag.spv", fragShaderCode)) {
     return false;
@@ -275,7 +249,7 @@ bool Pipeline::build_fragment_shader(Context &ctx) {
   return true;
 }
 
-void Pipeline::build_color_blend(Context &ctx) {
+void PipeLine::build_color_blend(Context &ctx) {
   ctx.color_blend_attachment.colorWriteMask =
       VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
       VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
@@ -302,7 +276,7 @@ void Pipeline::build_color_blend(Context &ctx) {
   ctx.color_blending.blendConstants[3] = 0.0f;
 }
 
-bool Pipeline::create_texture_sampler() {
+bool PipeLine::create_texture_sampler() {
   VkPhysicalDeviceProperties properties{};
   vkGetPhysicalDeviceProperties(m_bridge.GetDeviceQueue().PhysicalDevice(),
                                 &properties);
@@ -341,7 +315,7 @@ bool Pipeline::create_texture_sampler() {
 // 目前shader.vert中只有一个binding:
 //  layout(binding = 0) uniform UniformBufferObject
 //
-void Pipeline::build_descriptor_set_layout() {
+bool PipeLine::build_descriptor_set_layout() {
   VkDescriptorSetLayoutBinding bindings[] = {
       // 只有1个ubo binding
       {
@@ -358,14 +332,16 @@ void Pipeline::build_descriptor_set_layout() {
 
   if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr,
                                   &m_descriptor_set_layout) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
+    ui::Log("failed to create descriptor set layout!");
+    return false;
   }
+  return true;
 }
 
 // 对应shader.frag文件
 // layout(set = 1, binding = 0) uniform sampler2D texSampler;
 //
-void Pipeline::build_texture_descriptor_set_layout() {
+bool PipeLine::build_texture_descriptor_set_layout() {
   VkDescriptorSetLayoutBinding textureBindings[] = {{
       .binding = 0, // binding索引
       .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -382,11 +358,13 @@ void Pipeline::build_texture_descriptor_set_layout() {
   if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr,
                                   &m_texture_descriptor_set_layout) !=
       VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor set layout!");
+    ui::Log("failed to create descriptor set layout!");
+    return false;
   }
+  return true;
 }
 
-void Pipeline::create_descriptor_pool() {
+bool PipeLine::create_descriptor_pool() {
   vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
 
   VkDescriptorPoolSize poolSizes[] = {
@@ -413,11 +391,13 @@ void Pipeline::create_descriptor_pool() {
 
   if (vkCreateDescriptorPool(m_bridge.GetVkDevice(), &poolInfo, nullptr,
                              &m_descriptor_pool) != VK_SUCCESS) {
-    throw std::runtime_error("failed to create descriptor pool!");
+    ui::Log("failed to create descriptor pool!");
+    return false;
   }
+  return true;
 }
 
-void Pipeline::create_texture_descriptor_pool() {
+void PipeLine::create_texture_descriptor_pool() {
   vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
 
   // TODO:
@@ -446,8 +426,10 @@ void Pipeline::create_texture_descriptor_pool() {
   }
 }
 
+//
 // swapchain三缓冲，则需要对应分配三个描述符集。
-void Pipeline::create_descriptor_sets() {
+//
+bool PipeLine::create_descriptor_sets() {
   vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
   const uint32_t count = swapchain.Size();
 
@@ -466,11 +448,13 @@ void Pipeline::create_descriptor_sets() {
   m_arr_descriptor_sets.resize(count);
   if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &allocInfo,
                                &m_arr_descriptor_sets[0]) != VK_SUCCESS) {
-    throw std::runtime_error("failed to allocate descriptor sets!");
+    ui::Log("failed to allocate descriptor sets!");
+    return false;
   }
+  return true;
 }
 
-VkDescriptorSet Pipeline::AllocatateTextureDescriptorSets() {
+VkDescriptorSet PipeLine::AllocatateTextureDescriptorSets() {
   VkDescriptorSetAllocateInfo textureAllocInfo = {};
   textureAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
   textureAllocInfo.descriptorPool = texture_descriptor_pool();
@@ -483,18 +467,22 @@ VkDescriptorSet Pipeline::AllocatateTextureDescriptorSets() {
   VkDescriptorSet texture_descriptorset = VK_NULL_HANDLE;
   if (vkAllocateDescriptorSets(m_bridge.GetVkDevice(), &textureAllocInfo,
                                &texture_descriptorset) != VK_SUCCESS) {
-    throw std::runtime_error("failed to allocate descriptor sets");
+    ui::Log("failed to allocate descriptor sets");
   }
   return texture_descriptorset;
 }
 
 // 构建shader文件中的布局。
-bool Pipeline::build_layout() {
+bool PipeLine::build_layout() {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-  this->build_descriptor_set_layout();
-  this->build_texture_descriptor_set_layout();
+  if (!this->build_descriptor_set_layout()) {
+    return false;
+  }
+  if (!this->build_texture_descriptor_set_layout()) {
+    return false;
+  }
 
   VkDescriptorSetLayout descriptorSetLayouts[2] = {
       m_descriptor_set_layout, m_texture_descriptor_set_layout};
@@ -511,13 +499,13 @@ bool Pipeline::build_layout() {
   pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
   if (vkCreatePipelineLayout(m_bridge.GetVkDevice(), &pipelineLayoutInfo,
-                             nullptr, &m_pipeline_layout) != VK_SUCCESS) {
+                             nullptr, &m_pipeline_layout.handle) != VK_SUCCESS) {
     return false;
   }
   return true;
 }
 
-bool Pipeline::create_pipeline(Context &ctx) {
+bool PipeLine::create_pipeline(Context &ctx) {
   VkPipelineShaderStageCreateInfo shaderStages[] = {ctx.vertex_shader,
                                                     ctx.fragment_shader};
 
@@ -550,7 +538,7 @@ bool Pipeline::create_pipeline(Context &ctx) {
   return true;
 }
 
-void Pipeline::destroy_context(Context &ctx) {
+void PipeLine::destroy_context(Context &ctx) {
   if (ctx.vertex_shader.module != VK_NULL_HANDLE) {
     vkDestroyShaderModule(m_bridge.GetVkDevice(), ctx.vertex_shader.module,
                           nullptr);
@@ -564,7 +552,7 @@ void Pipeline::destroy_context(Context &ctx) {
   }
 }
 
-bool Pipeline::create_shader_module(char *code, int length,
+bool PipeLine::create_shader_module(char *code, int length,
                                     VkShaderModule *out_module) {
   VkShaderModuleCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -579,7 +567,7 @@ bool Pipeline::create_shader_module(char *code, int length,
   return true;
 }
 
-void Pipeline::create_uniform_buffers() {
+void PipeLine::create_uniform_buffers() {
   VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
   int size = m_bridge.GetSwapChain().Size();
@@ -593,7 +581,7 @@ void Pipeline::create_uniform_buffers() {
   }
 }
 
-void Pipeline::UpdateUniformBuffer(uint32_t currentImage,
+void PipeLine::UpdateUniformBuffer(uint32_t currentImage,
                                    VkCommandBuffer command_buffer) {
   // static auto startTime = std::chrono::high_resolution_clock::now();
   vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
@@ -648,11 +636,11 @@ void Pipeline::UpdateUniformBuffer(uint32_t currentImage,
                          descriptorWrites, 0, nullptr);
 
   vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          layout(), 0, 1, &m_arr_descriptor_sets[currentImage],
+                          m_pipeline_layout, 0, 1, &m_arr_descriptor_sets[currentImage],
                           0, nullptr);
 }
 
-void Pipeline::UpdatePushData(VkCommandBuffer &command_buffer,
+void PipeLine::UpdatePushData(VkCommandBuffer &command_buffer,
                               glm::mat4 &mat4) {
   PushData position;
   position.model = mat4;

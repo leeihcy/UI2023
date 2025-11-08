@@ -4,12 +4,14 @@
 #include <vulkan/vulkan.h>
 #include "src/vulkan/vulkan_device_queue.h"
 
-
+namespace Vk {
+class CommandPool;
+}
 namespace vulkan {
 class CommandPool;
 class SwapChain;
 class DeviceQueue;
-class Pipeline;
+class PipeLine;
 
 struct IVulkanBridge {
   virtual VkDevice GetVkDevice() = 0;
@@ -20,9 +22,9 @@ struct IVulkanBridge {
   virtual VkCommandBuffer GetCurrentCommandBuffer() = 0;
 
   virtual vulkan::SwapChain& GetSwapChain() = 0;
-  virtual vulkan::CommandPool& GetCommandPool() = 0;
+  virtual Vk::CommandPool& GetCommandPool() = 0;
   virtual vulkan::DeviceQueue& GetDeviceQueue() = 0;
-  virtual vulkan::Pipeline& GetPipeline() = 0;
+  virtual vulkan::PipeLine& GetPipeline() = 0;
   virtual int GetGraphicsQueueFamily() = 0;
   virtual int GetPresentQueueFamily() = 0;
 }; 

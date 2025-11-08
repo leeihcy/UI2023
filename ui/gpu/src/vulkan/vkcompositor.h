@@ -1,12 +1,13 @@
 #ifndef _UI_GPU_SRC_VULKAN_GPU_COMPOSITOR_H_
 #define _UI_GPU_SRC_VULKAN_GPU_COMPOSITOR_H_
-#include "gpu/include/api.h"
-#include "gpu/src/gpu_layer.h"
-#include "gpu/src/vulkan/vkapp.h"
+#include "include/api.h"
+#include "src/gpu_layer.h"
+#include "src/vulkan/vkapp.h"
+#include "src/vulkan/vkobjects.h"
 #include "src/vulkan/vkswapchain.h"
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vulkan_device_queue.h"
-#include "src/vulkan/vulkan_pipe_line.h"
+#include "src/vulkan/vkpipeline.h"
 
 
 #if defined(OS_WIN)
@@ -51,10 +52,10 @@ public:
   VkCommandPool GetVkCommandPool() override;
   VkPipeline GetVkPipeline() override;
   VkCommandBuffer GetCurrentCommandBuffer() override;
-  vulkan::CommandPool &GetCommandPool() override;
+  Vk::CommandPool &GetCommandPool() override;
   vulkan::DeviceQueue &GetDeviceQueue() override;
   vulkan::SwapChain &GetSwapChain() override;
-  vulkan::Pipeline& GetPipeline() override;
+  vulkan::PipeLine& GetPipeline() override;
   int GetGraphicsQueueFamily() override;
   int GetPresentQueueFamily() override;
 
@@ -66,7 +67,7 @@ private:
   void drawFrame_acquireNextCommandBuffer();
   void drawFrame_acquireNextSwapChainImage();
   void drawFrame_beginRecordCommandBuffer();
-  void drawFrame_endRecordCommandBuffer(vulkan::CommandBuffer *);
+  void drawFrame_endRecordCommandBuffer();
   void drawFrame_submitCommandBuffer();
   void drawFrame_presentSwapChain();
 
@@ -78,9 +79,9 @@ private:
   VkSurfaceKHR m_surface;
   
   vulkan::SwapChain m_swapchain;
-  vulkan::RenderPass m_renderpass;
-  vulkan::Pipeline m_pipeline;
-  vulkan::CommandPool m_command_pool;
+  Vk::RenderPass m_renderpass;
+  vulkan::PipeLine m_pipeline;
+  Vk::CommandPool m_command_pool;
 };
 
 } // namespace ui

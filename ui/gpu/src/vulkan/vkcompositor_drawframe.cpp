@@ -1,5 +1,4 @@
 #include "src/vulkan/vkcompositor.h"
-#include "src/vulkan/vulkan_command_buffer.h"
 #include "src/vulkan/vulkan_swap_chain_image.h"
 #include "src/util.h"
 
@@ -21,9 +20,7 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
 }
 
 void VulkanCompositor::EndCommit(GpuLayerCommitContext *ctx) {
-  vulkan::CommandBuffer* cmd_buffer = m_swapchain.GetCurrentInflightFrame()->m_command_buffer.get();  
-
-  drawFrame_endRecordCommandBuffer(cmd_buffer);
+  drawFrame_endRecordCommandBuffer();
   drawFrame_submitCommandBuffer();
   drawFrame_presentSwapChain();
 
@@ -78,13 +75,17 @@ void VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
 void VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
   vulkan::SwapChainImage *image = m_swapchain.GetCurrentImage();
-  VkCommandBuffer command_buffer_handle = sync->m_command_buffer->handle();
+  VkCommandBuffer command_buffer_handle = sync->m_command_buffer.handle;
 
-  sync->m_command_buffer->Reset();
-  sync->m_command_buffer->BeginRecordCommand();
+  sync->m_command_buffer.Reset();
+  sync->m_command_buffer.BeginRecordCommand();
 
-  sync->m_command_buffer->BeginRenderPass(image->m_frame_buffer, GetVkRenderPass());
-  sync->m_command_buffer->BindPipeline(GetVkPipeline());
+  VkOffset2D offset = {0, 0};
+  VkExtent2D extent = m_swapchain.Extent2D();
+  sync->m_command_buffer.BeginRenderPass(image->m_frame_buffer,
+                                          GetVkRenderPass(), offset, extent);
+                                          
+  sync->m_command_buffer.BindPipeline(GetVkPipeline());
 
   uint32_t currentImage = m_swapchain.GetCurrentImageIndex();
 
@@ -94,10 +95,11 @@ void VulkanCompositor::drawFrame_beginRecordCommandBuffer() {
   m_pipeline.UpdateUniformBuffer(currentImage, command_buffer_handle);
 }
 
-void VulkanCompositor::drawFrame_endRecordCommandBuffer(
-    vulkan::CommandBuffer *command_buffer) {
-  command_buffer->EndRenderPass();
-  command_buffer->EndRecordCommand();
+void VulkanCompositor::drawFrame_endRecordCommandBuffer() {
+  Vk::CommandBuffer& command_buffer = m_swapchain.GetCurrentInflightFrame()->m_command_buffer;
+
+  command_buffer.EndRenderPass();
+  command_buffer.EndRecordCommand();
 }
 
 void VulkanCompositor::drawFrame_submitCommandBuffer() {
@@ -108,7 +110,7 @@ void VulkanCompositor::drawFrame_submitCommandBuffer() {
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
   };
   VkCommandBuffer commandBuffers[] = {
-    sync->m_command_buffer->handle()
+    sync->m_command_buffer.handle
   };
 
   // 等待 GPU 通知 image_available 之后，GPU 才能进行 vkQueueSubmit 操作

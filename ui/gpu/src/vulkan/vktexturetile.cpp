@@ -1,21 +1,21 @@
 #include "vktexturetile.h"
 #include "include/api.h"
-#include "src/vulkan/vulkan_command_buffer.h"
-#include "src/vulkan/vulkan_pipe_line.h"
-#include "vulkan/vulkan_core.h"
+#include "src/vulkan/vkpipeline.h"
+#include "src/util.h"
+#include <vulkan/vulkan_core.h>
 #include <memory.h>
 
 namespace ui {
 
 VkTextureTile::VkTextureTile(vulkan::IVulkanBridge &bridge)
-    : m_bridge(bridge), m_texture_imageview(bridge) {}
+    : m_bridge(bridge) {}
 
 VkTextureTile::~VkTextureTile() {
   auto device = m_bridge.GetVkDevice();
   
-  m_texture_imageview.Destroy();
+  m_texture_imageview.Destroy(device);
   vkFreeMemory(device, m_texture_image_memory, nullptr);
-  vkDestroyImage(device, m_texture_image, nullptr);
+  m_texture_image.Destroy(device);
 }
 
 void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
@@ -126,7 +126,7 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 // 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
 // 所以三缓冲理论上都可以共用一个DescriptorSet。
 bool VkTextureTile::updateTextureDescriptorset() {
-  if (!m_texture_imageview.handle()) {
+  if (!m_texture_imageview.handle) {
     return false;
   }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
@@ -136,7 +136,7 @@ bool VkTextureTile::updateTextureDescriptorset() {
 
   VkDescriptorImageInfo imageInfo = {};
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  imageInfo.imageView = m_texture_imageview.handle();
+  imageInfo.imageView = m_texture_imageview;
   imageInfo.sampler = m_bridge.GetPipeline().texture_sampler();
 
   VkWriteDescriptorSet texturedescriptorWrites = {};
@@ -182,7 +182,9 @@ void VkTextureTile::Compositor(long, long, long vertexStartIndex,
 bool VkTextureTile::create() {
   createTextureImage();
   
-  m_texture_imageview.Create(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB);
+  if (!m_texture_imageview.Create(m_bridge.GetVkDevice(), m_texture_image, VK_FORMAT_B8G8R8A8_SRGB)) {
+    return false;
+  }
   return true;
 }
 
@@ -206,9 +208,9 @@ bool VkTextureTile::findMemoryType(uint32_t typeFilter,
 
 void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image,
                                       uint32_t width, uint32_t height) {
-  std::unique_ptr<vulkan::CommandBuffer> cb =
-      m_bridge.GetCommandPool().CreateBuffer();
-  cb->BeginRecordCommand();
+  Vk::CommandBuffer cb;
+  cb.Attach(m_bridge.GetCommandPool().AllocateCommandBuffer(m_bridge.GetVkDevice()));
+  cb.BeginRecordCommand();
 
   VkBufferImageCopy region{};
   region.bufferOffset = 0;
@@ -221,37 +223,42 @@ void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image,
   region.imageOffset = {0, 0, 0};
   region.imageExtent = {width, height, 1};
 
-  vkCmdCopyBufferToImage(cb->handle(), buffer, image,
+  vkCmdCopyBufferToImage(cb, buffer, image,
                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-  cb->EndRecordCommand();
-  m_bridge.GetDeviceQueue().Submit(cb.get());
+  cb.EndRecordCommand();
+  m_bridge.GetDeviceQueue().Submit(cb);
   m_bridge.GetDeviceQueue().WaitIdle();
-  cb->Destroy();
+  m_bridge.GetCommandPool().ReleaseCommandBuffer(m_bridge.GetVkDevice(), cb.Detach());
 }
 
 void VkTextureTile::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                                VkDeviceSize size) {
-  std::unique_ptr<vulkan::CommandBuffer> cb =
-      m_bridge.GetCommandPool().CreateBuffer();
-  cb->BeginRecordCommand();
+  VkDevice device = m_bridge.GetVkDevice();
+
+  Vk::CommandBuffer cb;
+  cb.Attach(m_bridge.GetCommandPool().AllocateCommandBuffer(device));
+  cb.BeginRecordCommand();
 
   VkBufferCopy copyRegion{};
   copyRegion.size = size;
-  vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
+  vkCmdCopyBuffer(cb, srcBuffer, dstBuffer, 1, &copyRegion);
 
-  cb->EndRecordCommand();
-  m_bridge.GetDeviceQueue().Submit(cb.get());
+  cb.EndRecordCommand();
+  m_bridge.GetDeviceQueue().Submit(cb);
   m_bridge.GetDeviceQueue().WaitIdle();
-  cb->Destroy();
+  m_bridge.GetCommandPool().ReleaseCommandBuffer(device, cb.Detach());
 }
 
 bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
                                           VkImageLayout oldLayout,
                                           VkImageLayout newLayout) {
-  std::unique_ptr<vulkan::CommandBuffer> cb =
-      m_bridge.GetCommandPool().CreateBuffer();
-  cb->BeginRecordCommand();
+  VkDevice device = m_bridge.GetVkDevice();
+
+  Vk::CommandBuffer cb;
+  cb.Attach(m_bridge.GetCommandPool().AllocateCommandBuffer(device));
+
+  cb.BeginRecordCommand();
   VkImageMemoryBarrier barrier{};
   barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
   barrier.oldLayout = oldLayout;
@@ -283,22 +290,22 @@ bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
     sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
   } else {
-    return false;
+    assert(false);
   }
 
-  vkCmdPipelineBarrier(cb->handle(), sourceStage, destinationStage, 0, 0,
+  vkCmdPipelineBarrier(cb, sourceStage, destinationStage, 0, 0,
                        nullptr, 0, nullptr, 1, &barrier);
 
-  cb->EndRecordCommand();
+  cb.EndRecordCommand();
 
-  m_bridge.GetDeviceQueue().Submit(cb.get());
+  m_bridge.GetDeviceQueue().Submit(cb);
 
   // 如果不加wait会报错：
   // Attempt to free VkCommandBuffer 0x7f885410b4c8[] which is in use.
   // The Vulkan spec states: All elements of pCommandBuffers must not be in the pending state
   m_bridge.GetDeviceQueue().WaitIdle();
 
-  cb->Destroy();
+  m_bridge.GetCommandPool().ReleaseCommandBuffer(device, cb.Detach());
 
   return true;
 }

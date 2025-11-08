@@ -4,6 +4,7 @@
 namespace ui {
 
 void Log(const char* format, ...);
+
 }
 
 #endif

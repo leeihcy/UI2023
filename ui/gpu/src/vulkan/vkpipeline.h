@@ -1,9 +1,10 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vkobjects.h"
 #include "src/vulkan/vulkan_buffer.h"
-#include "vulkan/vulkan_core.h"
-#include "vulkan/vulkan.h"
+
+#include <vulkan/vulkan.h>
 #include "glm/glm.hpp"
 #include <memory>
 #include <vector>
@@ -25,16 +26,22 @@ class DeviceQueue;
 // 而不是修改已有pipeline的状态。
 // 当有不同的shader程序逻辑或状态配置时，就需要再增加另一个pipeline。
 //
-class Pipeline {
+// Pipeline封装了几乎所有固定的渲染状态，描述的是 “如何绘制” ，而不是 “绘制什么” 或 “绘制到哪里”。
+// 所以无论多少份swapchain image、inflight frame，只需要一份Pipeline就行。
+//
+class PipeLine {
 public:
-  Pipeline(IVulkanBridge &bridge);
-  ~Pipeline();
+  PipeLine(IVulkanBridge &bridge);
+  ~PipeLine();
+  VkPipeline handle() { return m_graphics_pipeline; }
 
-  bool Initialize(uint32_t w, uint32_t h, VkFormat format);
+public:
+  bool Create(uint32_t w, uint32_t h, VkFormat format);
   void Destroy();
 
-  VkPipeline handle() { return m_graphics_pipeline; }
-  VkPipelineLayout layout() { return m_pipeline_layout; }
+public:
+  VkPipelineLayout layout() { return m_pipeline_layout.handle; }
+
   VkDescriptorSet &descriptor_sets(unsigned int index) {
     return m_arr_descriptor_sets[index];
   }
@@ -49,11 +56,11 @@ public:
   VkDescriptorSet AllocatateTextureDescriptorSets();
 
 public:
-  // shader.vert glsl文件中的顶点格式定义
-  struct ShaderVertex {
-    glm::vec2 pos;
-    glm::vec3 color;
-    glm::vec2 texCoord;
+  // 全局共享矩阵，一帧更新一次。
+  struct UniformBufferObject {
+    glm::mat4 view;
+    // glm::mat4 proj;
+    glm::mat4 ortho;
   };
 
   // 轻量级更新的数据
@@ -62,11 +69,11 @@ public:
     glm::mat4 model;
   };
 
-  // 全局共享矩阵，一帧更新一次。
-  struct UniformBufferObject {
-    glm::mat4 view;
-    // glm::mat4 proj;
-    glm::mat4 ortho;
+  // shader.vert glsl文件中的顶点格式定义
+  struct ShaderVertex {
+    glm::vec2 pos;
+    glm::vec3 color;
+    glm::vec2 texCoord;
   };
 
   struct Context {
@@ -96,7 +103,6 @@ public:
   };
 
 private:
-  bool create_graphics_pipeline(uint32_t w, uint32_t h, VkFormat format);
   bool create_shader_module(char *code, int length, VkShaderModule *out);
 
   void build_vertex_input(Context &ctx, ShaderVertex shader_vertex);
@@ -106,11 +112,11 @@ private:
   void build_viewport_scissor(Context &ctx, uint32_t w, uint32_t h);
   void build_rasterization(Context &ctx);
   void build_color_blend(Context &ctx);
-  void build_descriptor_set_layout();
-  void build_texture_descriptor_set_layout();
-  void create_descriptor_pool();
+  bool build_descriptor_set_layout();
+  bool build_texture_descriptor_set_layout();
+  bool create_descriptor_pool();
   void create_texture_descriptor_pool();
-  void create_descriptor_sets();
+  bool create_descriptor_sets();
   bool create_texture_sampler();
   bool build_layout();
   bool create_pipeline(Context &ctx);
@@ -126,23 +132,23 @@ public:
 private:
   IVulkanBridge &m_bridge; // raw_ptr
 
-  VkPipeline m_graphics_pipeline = VK_NULL_HANDLE;
-  VkPipelineLayout m_pipeline_layout = VK_NULL_HANDLE;
+  Vk::Pipeline m_graphics_pipeline;
+  Vk::PipelineLayout m_pipeline_layout;
 
   // 只需要一份，作为DescriptorSets的模板。
-  VkDescriptorSetLayout m_descriptor_set_layout = VK_NULL_HANDLE;
+  Vk::DescriptorSetLayout m_descriptor_set_layout;
 
-  VkDescriptorPool m_descriptor_pool = VK_NULL_HANDLE;
+  Vk::DescriptorPool m_descriptor_pool;
 
   // 和swapchain size保持一致。
   std::vector<VkDescriptorSet> m_arr_descriptor_sets;
   // 和swapchain size保持一致。
   std::vector<vulkan::Buffer> m_arr_uniform_buffers;
 
-  VkDescriptorSetLayout m_texture_descriptor_set_layout = VK_NULL_HANDLE;
-  VkDescriptorPool m_texture_descriptor_pool = VK_NULL_HANDLE;
+  Vk::DescriptorSetLayout m_texture_descriptor_set_layout;
+  Vk::DescriptorPool m_texture_descriptor_pool;
 
-  VkSampler m_texture_sampler = VK_NULL_HANDLE;
+  Vk::Sampler m_texture_sampler;
 
 };
 

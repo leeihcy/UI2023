@@ -2,7 +2,6 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_H_
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vulkan_command_buffer.h"
 #include "src/vulkan/vulkan_swap_chain_image.h"
 #include "vulkan/vulkan_core.h"
 #include <cstdint>
@@ -30,13 +29,13 @@ public:
 public:
   IVulkanBridge& m_bridge;
 
-  std::unique_ptr<CommandBuffer> m_command_buffer;
+  Vk::CommandBuffer m_command_buffer;
 
   // Fence，用于 GPU-CPU 同步，实现 MAX_FRAMES_IN_FLIGHT 逻辑。
   //
   // GPU 把 command buffer 通过 vkQueueSubmit 使用完成后，会将 fence 设置为 
   // Signaled，这时 CPU 可以继续提交下一帧的 command buffer。
-  VkFence m_command_buffer_fence = VK_NULL_HANDLE;
+  Vk::Fence m_command_buffer_fence;
 };
 
 

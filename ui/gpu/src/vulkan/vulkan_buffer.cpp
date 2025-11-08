@@ -1,7 +1,6 @@
 #include "vulkan_buffer.h"
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vulkan_command_buffer.h"
 #include <memory.h>
 #include <string.h>
 
@@ -96,24 +95,26 @@ bool Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
 
 void Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                         VkDeviceSize size) {
-  vulkan::CommandPool &command_pool = m_bridge.GetCommandPool();
+  Vk::CommandPool &command_pool = m_bridge.GetCommandPool();
 
-  std::unique_ptr<vulkan::CommandBuffer> cb = command_pool.CreateBuffer();
-  cb->BeginRecordCommand();
+  Vk::CommandBuffer cb;
+  cb.Attach(command_pool.AllocateCommandBuffer(m_bridge.GetVkDevice()));
+
+  cb.BeginRecordCommand();
   {
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
-    vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
+    vkCmdCopyBuffer(cb, srcBuffer, dstBuffer, 1, &copyRegion);
   }
-  cb->EndRecordCommand();
+  cb.EndRecordCommand();
 
   vulkan::DeviceQueue &device_queue = m_bridge.GetDeviceQueue();
-  device_queue.Submit(cb.get());
+  device_queue.Submit(cb);
   device_queue.WaitIdle();
-  cb->Destroy();
+  command_pool.ReleaseCommandBuffer(m_bridge.GetVkDevice(), cb.Detach());
 }
 
-void Buffer::Create(TYPE type, void *data, int data_size) {
+void Buffer::Create(TYPE type, void *data, size_t data_size) {
   
   // TBD: 优化复用？
   Destroy();

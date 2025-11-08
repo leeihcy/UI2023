@@ -21,7 +21,7 @@ public:
   };
 
 public:
-  void Create(TYPE type, void *data, int data_size);
+  void Create(TYPE type, void *data, size_t data_size);
   void Destroy();
   
   VkBuffer handle() { return m_buffer; }

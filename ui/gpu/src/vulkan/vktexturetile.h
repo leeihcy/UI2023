@@ -39,10 +39,10 @@ private:
 private:
   vulkan::IVulkanBridge& m_bridge;
 
-  VkImage m_texture_image = VK_NULL_HANDLE;
-  VkDeviceMemory m_texture_image_memory = VK_NULL_HANDLE;
-
-  vulkan::ImageView m_texture_imageview;
+  Vk::Image m_texture_image;
+  Vk::ImageView m_texture_imageview;
+  VkDeviceMemory m_texture_image_memory;
+  
 
   // 每个纹理对应一个descriptorset
   VkDescriptorSet m_texture_descriptorset = VK_NULL_HANDLE;

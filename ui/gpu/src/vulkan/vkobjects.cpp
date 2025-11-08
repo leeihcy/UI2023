@@ -1,17 +1,12 @@
 #include "src/vulkan/vkobjects.h"
 #include "src/vulkan/vkbridge.h"
 #include <assert.h>
+#include "src/util.h"
 
-namespace vulkan {
+namespace Vk {
 
-ImageView::ImageView(IVulkanBridge& bridge)
-    : m_bridget(bridge) {}
-
-ImageView::~ImageView() {
-  Destroy();
-}
-
-bool ImageView::Create(VkImage image, VkFormat image_format) {
+bool ImageView::Create(VkDevice device, VkImage image,
+                         VkFormat image_format) {
   VkImageViewCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
   createInfo.image = image;
@@ -27,30 +22,14 @@ bool ImageView::Create(VkImage image, VkFormat image_format) {
   createInfo.subresourceRange.baseArrayLayer = 0;
   createInfo.subresourceRange.layerCount = 1;
 
-  if (vkCreateImageView(m_bridget.GetVkDevice(), &createInfo, nullptr,
-                        &m_image_view) != VK_SUCCESS) {
+  if (vkCreateImageView(device, &createInfo, nullptr, &handle) != VK_SUCCESS) {
     printf("failed to create image views!");
     return false;
   }
   return true;
 }
 
-void ImageView::Destroy() {
-   if (VK_NULL_HANDLE != m_image_view) {
-    vkDestroyImageView(m_bridget.GetVkDevice(), m_image_view, nullptr);
-    // image_type_ = IMAGE_TYPE_INVALID;
-    m_image_view = VK_NULL_HANDLE;
-  }
-
-}
-
-// ----------------------------------------------------------------------------
-
-
-RenderPass::RenderPass(IVulkanBridge& bridge) : m_bridge(bridge) {}
-RenderPass::~RenderPass() { Destroy(); }
-
-bool RenderPass::Create(VkFormat format) {
+bool RenderPass::Create(VkDevice device, VkFormat format) {
   // attachment就是画布，即颜色、深度、模板数据最终要被写入的内存区域，通常是VkImage
 
   VkAttachmentDescription colorAttachment{};
@@ -90,61 +69,143 @@ bool RenderPass::Create(VkFormat format) {
   renderPassInfo.subpassCount = 1;
   renderPassInfo.pSubpasses = &subpass;
 
-  if (vkCreateRenderPass(m_bridge.GetVkDevice(), &renderPassInfo, nullptr,
-                         &m_renderpass) != VK_SUCCESS) {
+  if (vkCreateRenderPass(device, &renderPassInfo, nullptr,
+                         &handle) != VK_SUCCESS) {
     return false;
   }
   return true;
 }
-void RenderPass::Destroy() {
-  if (m_renderpass != VK_NULL_HANDLE) {
-    vkDestroyRenderPass(m_bridge.GetVkDevice(), m_renderpass, nullptr);
-    m_renderpass = VK_NULL_HANDLE;
-  }
-}
 
-// ---------------------------------------------------------------------
-
-
-CommandPool::CommandPool(IVulkanBridge& bridge)
-    : m_bridge(bridge) {}
-
-CommandPool::~CommandPool() {
-  assert(VK_NULL_HANDLE==m_handle);
-}
-
-
-bool CommandPool::Initialize() {
+bool CommandPool::Create(vulkan::IVulkanBridge& bridge) {
   VkCommandPoolCreateInfo command_pool_create_info = {};
   command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
   command_pool_create_info.flags =
       VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
   command_pool_create_info.queueFamilyIndex =
-      m_bridge.GetGraphicsQueueFamily();
+      bridge.GetGraphicsQueueFamily();
 
   VkResult result =
-      vkCreateCommandPool(m_bridge.GetVkDevice(),
-                          &command_pool_create_info, nullptr, &m_handle);
+      vkCreateCommandPool(bridge.GetVkDevice(),
+                          &command_pool_create_info, nullptr, &handle);
   if (VK_SUCCESS != result) {
-    printf("[Error] vkCreateCommandPool() failed: %d\n", result);
+    ui::Log("[Error] vkCreateCommandPool() failed: %d", result);
     return false;
   }
 
   return true;
 }
 
-void CommandPool::Destroy() {
-  if (VK_NULL_HANDLE != m_handle) {
-    vkDestroyCommandPool(m_bridge.GetVkDevice(), m_handle, nullptr);
-    m_handle = VK_NULL_HANDLE;
+VkCommandBuffer CommandPool::AllocateCommandBuffer(VkDevice device) {
+  VkCommandBufferAllocateInfo allocInfo{};
+  allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+  allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+  allocInfo.commandPool = handle;
+  allocInfo.commandBufferCount = 1;
+
+  VkCommandBuffer buffer = VK_NULL_HANDLE;
+  VkResult result = vkAllocateCommandBuffers(device, &allocInfo, &buffer);
+  return buffer;
+}
+
+void CommandPool::ReleaseCommandBuffer(VkDevice device,
+                                       VkCommandBuffer command_buffer) {
+  if (VK_NULL_HANDLE != command_buffer) {
+    vkFreeCommandBuffers(device, handle, 1, &command_buffer);
   }
 }
 
-std::unique_ptr<CommandBuffer> CommandPool::CreateBuffer() {
-  CommandBuffer* command_buffer = new CommandBuffer(m_bridge, true);
-  command_buffer->alloc();
-  return std::unique_ptr<CommandBuffer>(command_buffer);
+CommandBuffer::~CommandBuffer() {
+  assert(VK_NULL_HANDLE == handle);
+  assert(!m_is_recording);
 }
 
+void CommandBuffer::Attach(VkCommandBuffer buffer) {
+  assert(handle == VK_NULL_HANDLE);
+  handle = buffer;
+}
 
-} // namespace vulkan
+VkCommandBuffer CommandBuffer::Detach() {
+  VkCommandBuffer command_buffer = handle;
+  handle = VK_NULL_HANDLE;
+  return command_buffer;
+}
+
+// bool CommandBuffer::Initialize() {
+//   VkResult result = VK_SUCCESS;
+//   VkDevice device = m_bridge.GetVkDevice();
+
+//   VkCommandBufferAllocateInfo command_buffer_info = {
+//       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+//       .pNext = nullptr,
+//       .commandPool = m_bridge.GetVkCommandPool(),
+//       .level = m_is_primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
+//                             : VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+//       .commandBufferCount = 1,
+//   };
+
+//   assert(VK_NULL_HANDLE == handle);
+//   result =
+//       vkAllocateCommandBuffers(device, &command_buffer_info, &handle);
+//   if (VK_SUCCESS != result) {
+//     printf("[Error] vkAllocateCommandBuffers() failed: %d\n", result);
+//     return false;
+//   }
+//
+//   record_type_ = RECORD_TYPE_EMPTY;
+//   return true;
+// }
+
+// void CommandBuffer::Destroy(VkDevice device, VkCommandPool pool) {
+//   if (handle == VK_NULL_HANDLE) {
+//     return;
+//   }
+//
+//   if (VK_NULL_HANDLE != handle) {
+//     vkFreeCommandBuffers(device, pool, 1, &handle);
+//     handle = VK_NULL_HANDLE;
+//   }
+// }
+
+void CommandBuffer::Reset() {
+  vkResetCommandBuffer(handle,
+                       /*VkCommandBufferResetFlagBits*/ 0);
+}
+
+// 开始录制命令
+void CommandBuffer::BeginRecordCommand() {
+  VkCommandBufferBeginInfo beginInfo{};
+  beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+  beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+  vkBeginCommandBuffer(handle, &beginInfo);
+}
+
+void CommandBuffer::BeginRenderPass(VkFramebuffer framebuffer,
+                                    VkRenderPass renderpass,
+                                    VkOffset2D offset,
+                                    VkExtent2D extent) {
+  // 背景色定义
+  VkClearValue clearColor = {.color = {0.0f, 0.0f, 0.0f, 1.0f}};
+
+  VkRenderPassBeginInfo renderPassInfo = {
+      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+      .renderPass = renderpass,
+      .framebuffer = framebuffer,
+      .renderArea = {.offset = offset,
+                     .extent = extent},
+      .clearValueCount = 1,
+      .pClearValues = &clearColor,
+  };
+  vkCmdBeginRenderPass(handle, &renderPassInfo,
+                       VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void CommandBuffer::BindPipeline(VkPipeline pipe_line) {
+  vkCmdBindPipeline(handle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipe_line);
+}
+
+void CommandBuffer::EndRenderPass() { vkCmdEndRenderPass(handle); }
+
+void CommandBuffer::EndRecordCommand() { vkEndCommandBuffer(handle); }
+
+
+}

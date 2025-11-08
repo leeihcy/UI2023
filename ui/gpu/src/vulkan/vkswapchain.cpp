@@ -19,15 +19,13 @@ void InFlightFrame::Initialize() {
 void InFlightFrame::Destroy() {
   VkDevice device = m_bridge.GetVkDevice();
 
-  if (VK_NULL_HANDLE != m_command_buffer_fence) {
-    vkDestroyFence(device, m_command_buffer_fence, nullptr);
-    m_command_buffer_fence = VK_NULL_HANDLE;
-  }
+  m_command_buffer_fence.Destroy(device);
+  m_bridge.GetCommandPool().ReleaseCommandBuffer(device, m_command_buffer.Detach());
 }
 
 bool InFlightFrame::CreateCommandBuffer() {
-  assert (m_command_buffer == VK_NULL_HANDLE);
-  m_command_buffer = m_bridge.GetCommandPool().CreateBuffer();
+  assert (m_command_buffer.handle == VK_NULL_HANDLE);
+  m_command_buffer.Attach(m_bridge.GetCommandPool().AllocateCommandBuffer(m_bridge.GetVkDevice()));
   return true;
 }
 
@@ -360,7 +358,7 @@ void SwapChain::IncCurrentInflightFrame() {
   m_current_inflight_frame_index = (m_current_inflight_frame_index + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 void SwapChain::IncCurrentSemaphores() {
-  uint32_t size = m_gpu_semaphores.size();
+  size_t size = m_gpu_semaphores.size();
   if (0 == size) { 
     return; 
   }

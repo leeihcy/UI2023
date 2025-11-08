@@ -38,11 +38,11 @@ void DeviceQueue::Destroy() {
   vkDestroyDevice(m_logical_device, nullptr);
 }
 
-bool DeviceQueue::Submit(CommandBuffer* buffer) {
-  if (!buffer) { 
+bool DeviceQueue::Submit(VkCommandBuffer buffer) {
+  if (buffer == VK_NULL_HANDLE) { 
     return false;
   }
-  VkCommandBuffer b = buffer->handle();
+  VkCommandBuffer b = {buffer};
   return Submit(&b, 1);
 }
 

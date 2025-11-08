@@ -1,7 +1,6 @@
 #include "vkcompositor.h"
 #include "gpu/include/api.h"
 #include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vulkan_command_buffer.h"
 #include "vkapp.h"
 #include "vklayer.h"
 
@@ -24,9 +23,7 @@ static VulkanApplication &application() { return VulkanApplication::GetInstance(
 
 VulkanCompositor::VulkanCompositor()
     : m_device_queue(*this),
-      m_command_pool(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_swapchain(*static_cast<vulkan::IVulkanBridge *>(this)),
-      m_renderpass(*static_cast<vulkan::IVulkanBridge *>(this)),
       m_pipeline(*static_cast<vulkan::IVulkanBridge *>(this)) {
 }
 
@@ -38,12 +35,12 @@ void VulkanCompositor::destory() {
   vkDeviceWaitIdle(m_device_queue.Device());
 
   m_pipeline.Destroy();
-  m_renderpass.Destroy();
+  m_renderpass.Destroy(device);
   m_swapchain.Destroy();
 
   auto &app = application();
 
-  m_command_pool.Destroy();
+  m_command_pool.Destroy(device);
   m_device_queue.Destroy();
 
   vkDestroySurfaceKHR(app.GetVkInstance(), m_surface, nullptr);
@@ -73,7 +70,7 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
     return false;
   }
 
-  if (!m_command_pool.Initialize()) {
+  if (!m_command_pool.Create(*static_cast<vulkan::IVulkanBridge *>(this))) {
     printf("create_commandpool failed\n");
     return false;
   }
@@ -96,18 +93,16 @@ void VulkanCompositor::Resize(int width, int height) {
   }
 
   VkFormat image_format = m_swapchain.ImageFormat();
-
-
-  if (m_renderpass.handle() == VK_NULL_HANDLE) {
-    m_renderpass.Create(image_format);
+  if (!m_renderpass) {
+    m_renderpass.Create(GetVkDevice(), image_format);
   }
 
   // pipe line应该只需要创建一次就够了。
   // 和窗口大小相关的viewport/scissor在每次commit时进行设置，参见UpdateViewportScissor
   if (m_pipeline.handle() == VK_NULL_HANDLE) {
-    if (!m_pipeline.Initialize(m_swapchain.Extent2D().width,
+    if (!m_pipeline.Create(m_swapchain.Extent2D().width,
                                m_swapchain.Extent2D().height, image_format)) {
-      printf("create_graphics_pipeline failed\n");
+      printf("createGraphicsPipeline failed\n");
       return /*false*/;
     }
   }
@@ -180,18 +175,21 @@ bool VulkanCompositor::createVulkanSurface(IGpuCompositorWindow* window) {
 
 void VulkanCompositor::VulkanCopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
                                         VkDeviceSize size) {
-  std::unique_ptr<vulkan::CommandBuffer> cb = m_command_pool.CreateBuffer();
-  cb->BeginRecordCommand();
+  Vk::CommandBuffer cb;
+  cb.Attach(m_command_pool.AllocateCommandBuffer(GetVkDevice()));
+
+  cb.BeginRecordCommand();
   {
     VkBufferCopy copyRegion{};
     copyRegion.size = size;
-    vkCmdCopyBuffer(cb->handle(), srcBuffer, dstBuffer, 1, &copyRegion);
+    vkCmdCopyBuffer(cb, srcBuffer, dstBuffer, 1, &copyRegion);
   }
-  cb->EndRecordCommand();
+  cb.EndRecordCommand();
 
-  m_device_queue.Submit(cb.get());
+  m_device_queue.Submit(cb);
   m_device_queue.WaitIdle();
-  cb->Destroy();
+
+  m_command_pool.ReleaseCommandBuffer(GetVkDevice(), cb.Detach());
 }
 
 VkDevice VulkanCompositor::GetVkDevice() { return m_device_queue.Device(); }
@@ -199,23 +197,23 @@ VkPhysicalDevice VulkanCompositor::GetVkPhysicalDevice() {
   return m_device_queue.PhysicalDevice();
 }
 VkRenderPass VulkanCompositor::GetVkRenderPass() {
-  return m_renderpass.handle();
+  return m_renderpass;
 }
 VkCommandPool VulkanCompositor::GetVkCommandPool() {
-  return m_command_pool.handle();
+  return m_command_pool;
 }
 VkPipeline VulkanCompositor::GetVkPipeline() { return m_pipeline.handle(); }
 VkCommandBuffer VulkanCompositor::GetCurrentCommandBuffer() {
-  return m_swapchain.GetCurrentInflightFrame()->m_command_buffer->handle();
+  return m_swapchain.GetCurrentInflightFrame()->m_command_buffer;
 }
-vulkan::CommandPool &VulkanCompositor::GetCommandPool() {
+Vk::CommandPool &VulkanCompositor::GetCommandPool() {
   return m_command_pool;
 }
 vulkan::DeviceQueue &VulkanCompositor::GetDeviceQueue() {
   return m_device_queue;
 }
 vulkan::SwapChain &VulkanCompositor::GetSwapChain() { return m_swapchain; }
-vulkan::Pipeline &VulkanCompositor::GetPipeline() { return m_pipeline; }
+vulkan::PipeLine &VulkanCompositor::GetPipeline() { return m_pipeline; }
 int VulkanCompositor::GetGraphicsQueueFamily() {
   return m_device_queue.GraphicsQueueFamily();
 }

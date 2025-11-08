@@ -2,68 +2,96 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_IMAGE_VIEW_H_
 #include <memory>
 #include <vector>
+#include <assert.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 namespace vulkan {
 class DeviceQueue;
 class CommandBuffer;
 struct IVulkanBridge;
+}
 
+#define VK_HANDLE2(ClassName, HandleType)                                      \
+  namespace Vk {                                                               \
+  class ClassName {                                                            \
+    using HandleName = Vk##HandleType;                                         \
+                                                                               \
+  public:                                                                      \
+    ~ClassName() { assert(handle == VK_NULL_HANDLE); }                        \
+    void Destroy(VkDevice device) {                                            \
+      if (handle && device) {                                                  \
+        vkDestroy##HandleType(device, handle, nullptr);                        \
+        handle = VK_NULL_HANDLE;                                               \
+      }                                                                        \
+    }                                                                          \
+    operator HandleName &() { return handle; }                                 \
+    HandleName *operator&() { return &handle; }                                \
+    operator bool() { return handle != VK_NULL_HANDLE; }                       \
+                                                                               \
+    HandleName handle = VK_NULL_HANDLE;                                        \
+  };                                                                           \
+  } // namespace vulkan
+
+#define VK_HANDLE(HandleType)  VK_HANDLE2(HandleType, HandleType)
+
+VK_HANDLE(PipelineLayout);
+VK_HANDLE(Pipeline);
+VK_HANDLE(Sampler);
+VK_HANDLE(DescriptorSetLayout);
+VK_HANDLE(DescriptorPool);
+VK_HANDLE(Image);
+VK_HANDLE(Framebuffer);
+VK_HANDLE(Fence);
+
+VK_HANDLE2(ImageViewBase, ImageView);
+VK_HANDLE2(RenderPassBase, RenderPass);
+VK_HANDLE2(CommandPoolBase, CommandPool);
+
+namespace Vk {
 //
 // 用于操作VkImage，例如带mipmapping的image
 //
-class ImageView {
+class ImageView : public Vk::ImageViewBase {
 public:
-  ImageView(IVulkanBridge& bridge);
-  ~ImageView();
-
-  bool Create(VkImage image, VkFormat image_format);
-  void Destroy();
-
-  VkImageView handle() { return m_image_view; }
-private:
-
-private:
-  IVulkanBridge& m_bridget; // raw_ptr<
-  
-  VkImageView m_image_view = VK_NULL_HANDLE;
-
+  bool Create(VkDevice device, VkImage image, VkFormat image_format);
 };
 
-
-class RenderPass {
+class RenderPass : public Vk::RenderPassBase {
 public:
-  RenderPass(IVulkanBridge& bridge);
-  ~RenderPass();
-
-  bool Create(VkFormat format);
-  void Destroy();
-  
-  VkRenderPass handle() { return m_renderpass; }
-
-private:
-  IVulkanBridge& m_bridge;
-  VkRenderPass m_renderpass = VK_NULL_HANDLE;
+  bool Create(VkDevice device, VkFormat format);
 };
 
-
-class CommandPool {
+class CommandPool : public Vk::CommandPoolBase  {
 public:
-  CommandPool(IVulkanBridge& bridge);
-  ~CommandPool();
+  bool Create(vulkan::IVulkanBridge& bridge);
+  VkCommandBuffer AllocateCommandBuffer(VkDevice device);
+  void ReleaseCommandBuffer(VkDevice device, VkCommandBuffer command_buffer);
+};
 
-  bool Initialize();
-  void Destroy();
+class CommandBuffer {
+public:
+  ~CommandBuffer();
+  operator VkCommandBuffer& () { return handle; }
+  VkCommandBuffer* operator& () { return &handle; }
 
-  std::unique_ptr<CommandBuffer> CreateBuffer();
-
-  VkCommandPool handle() {
-    return m_handle;;
-  }
+public:
+  void Attach(VkCommandBuffer buffer);
+  VkCommandBuffer Detach();
   
-private:
-  IVulkanBridge& m_bridge; // raw_ptr<
-  VkCommandPool m_handle = VK_NULL_HANDLE;
+  void Reset();
+  void BeginRecordCommand();
+  void EndRecordCommand();
+
+  void BeginRenderPass(VkFramebuffer framebuffer, VkRenderPass renderpass,
+                       VkOffset2D offset, VkExtent2D extent);
+  void BindPipeline(VkPipeline pipe_line);
+  void EndRenderPass();
+
+public:
+  VkCommandBuffer handle = VK_NULL_HANDLE;
+private:  
+  bool m_is_recording = false;
 };
 
 }

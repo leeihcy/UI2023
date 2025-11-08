@@ -2,8 +2,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vulkan_command_buffer.h"
-#include "src/vulkan/vulkan_pipe_line.h"
+#include "src/vulkan/vkpipeline.h"
 #include "vktexturetile.h"
 #include <vector>
 
@@ -29,7 +28,7 @@ TextureTile *VulkanGpuLayer::newTile() { return new VkTextureTile(m_bridge); }
 void VulkanGpuLayer::createVertexBuffer() {
 
   glm::vec3 color(1.0f, 1.0f, 1.0f);
-  std::vector<vulkan::Pipeline::ShaderVertex> vertex_array;
+  std::vector<vulkan::PipeLine::ShaderVertex> vertex_array;
 
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
     for (int x = 0; x < m_arrayTile.GetCol(); ++x) {
@@ -49,9 +48,10 @@ void VulkanGpuLayer::createVertexBuffer() {
     }
   }
 
+  size_t data_size = sizeof(vulkan::PipeLine::ShaderVertex) *
+                            vertex_array.size();
   m_vertexBuffer.Create(vulkan::Buffer::VERTEX, (void *)vertex_array.data(),
-                        sizeof(vulkan::Pipeline::ShaderVertex) *
-                            vertex_array.size());
+                       data_size);
 }
 
 void VulkanGpuLayer::createIndexBuffer() {
