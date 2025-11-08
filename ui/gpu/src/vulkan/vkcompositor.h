@@ -4,11 +4,9 @@
 #include "gpu/src/gpu_layer.h"
 #include "gpu/src/vulkan/vkapp.h"
 #include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_command_pool.h"
-#include "src/vulkan/wrap/vulkan_device_queue.h"
-#include "src/vulkan/wrap/vulkan_pipe_line.h"
-#include "src/vulkan/wrap/vulkan_renderpass.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vulkan_device_queue.h"
+#include "src/vulkan/vulkan_pipe_line.h"
 
 
 #if defined(OS_WIN)

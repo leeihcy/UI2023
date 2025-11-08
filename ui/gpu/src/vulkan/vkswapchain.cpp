@@ -3,7 +3,6 @@
 #include <assert.h>
 
 #include "src/vulkan/vkapp.h"
-#include "src/vulkan/wrap/vulkan_command_pool.h"
 
 namespace vulkan {
 
@@ -328,8 +327,8 @@ bool SwapChain::initInFlightFrames() {
   }
 
   if (m_gpu_semaphores.empty()) {
-    uint32_t size = m_images.size();
-    for (int i = 0; i < size; i++) {
+    size_t size = m_images.size();
+    for (size_t i = 0; i < size; i++) {
       auto item = std::make_unique<GpuSemaphores>(m_bridge);
       item->Initialize();
       m_gpu_semaphores.push_back(std::move(item));

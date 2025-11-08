@@ -4,34 +4,27 @@
 namespace vulkan {
 
 SwapChainImage::SwapChainImage(IVulkanBridge &bridge, VkImage swapchain_image)
-    : m_bridge(bridge), m_swapchain_image_ref(swapchain_image) {}
+    : m_bridge(bridge), m_swapchain_image_ref(swapchain_image), m_image_view(bridge) {}
 
 SwapChainImage::~SwapChainImage() {
   VkDevice device = m_bridge.GetVkDevice();
 
+  m_image_view.Destroy();
+  
   if (VK_NULL_HANDLE != m_frame_buffer) {
     vkDestroyFramebuffer(device, m_frame_buffer, nullptr);
     m_frame_buffer = VK_NULL_HANDLE;
   }
 }
 
-SwapChainImage::SwapChainImage(SwapChainImage &&o)
-    : m_bridge(o.m_bridge), m_swapchain_image_ref(o.m_swapchain_image_ref) {
-  this->m_image_view.reset(o.m_image_view.release());
-  this->m_frame_buffer = o.m_frame_buffer;
-  o.m_frame_buffer = VK_NULL_HANDLE;
-}
-
 bool SwapChainImage::Create(VkFormat imageFormat) {
-  m_image_view = std::make_unique<ImageView>(m_bridge);
-  m_image_view->Initialize(m_swapchain_image_ref, imageFormat);
-
+  m_image_view.Create(m_swapchain_image_ref, imageFormat);
   return true;
 }
 
 bool SwapChainImage::CreateFrameBuffer(int width, int height,
                                        VkRenderPass render_pass) {
-  VkImageView attachments[] = {m_image_view->handle()};
+  VkImageView attachments[] = {m_image_view.handle()};
 
   VkFramebufferCreateInfo framebufferInfo{};
   framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

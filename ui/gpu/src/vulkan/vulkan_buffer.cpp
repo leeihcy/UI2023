@@ -1,8 +1,7 @@
 #include "vulkan_buffer.h"
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_command_pool.h"
-#include "vulkan/vulkan_core.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vkobjects.h"
+#include "src/vulkan/vulkan_command_buffer.h"
 #include <memory.h>
 #include <string.h>
 

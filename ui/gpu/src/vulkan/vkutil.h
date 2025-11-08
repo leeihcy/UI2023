@@ -4,7 +4,6 @@
 
 namespace ui {
 
-void vulkan_copy_buffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 }
 #endif

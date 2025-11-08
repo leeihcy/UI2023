@@ -1,6 +1,6 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_DEVIDE_QUEUE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_DEVIDE_QUEUE_H_
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
+#include "src/vulkan/vulkan_command_buffer.h"
 #include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 #include "include/api.h"

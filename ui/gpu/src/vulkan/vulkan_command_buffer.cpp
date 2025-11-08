@@ -1,7 +1,6 @@
 #include "vulkan_command_buffer.h"
 #include "src/vulkan/vkswapchain.h"
 #include "vulkan/vulkan_core.h"
-#include "vulkan_command_pool.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -10,7 +9,6 @@ namespace vulkan {
 
 CommandBuffer::CommandBuffer(IVulkanBridge &bridge, bool primary)
     : m_is_primary(primary), m_bridge(bridge) {
-  m_bridge.GetCommandPool().IncrementCommandBufferCount();
 }
 
 CommandBuffer::~CommandBuffer() {
@@ -19,7 +17,6 @@ CommandBuffer::~CommandBuffer() {
   // assert(!submission_fence_.is_valid());
   assert(VK_NULL_HANDLE == m_command_buffer);
   assert(!m_is_recording);
-  m_bridge.GetCommandPool().DecrementCommandBufferCount();
 }
 
 bool CommandBuffer::Initialize() {

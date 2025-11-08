@@ -1,22 +1,21 @@
 #include "vktexturetile.h"
 #include "include/api.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_command_pool.h"
-#include "src/vulkan/wrap/vulkan_pipe_line.h"
+#include "src/vulkan/vulkan_command_buffer.h"
+#include "src/vulkan/vulkan_pipe_line.h"
 #include "vulkan/vulkan_core.h"
 #include <memory.h>
 
 namespace ui {
 
 VkTextureTile::VkTextureTile(vulkan::IVulkanBridge &bridge)
-    : m_bridge(bridge) {}
+    : m_bridge(bridge), m_texture_imageview(bridge) {}
 
 VkTextureTile::~VkTextureTile() {
   auto device = m_bridge.GetVkDevice();
-
-  vkDestroyImageView(device, m_texture_imageview, nullptr);
-  vkDestroyImage(device, m_texture_image, nullptr);
+  
+  m_texture_imageview.Destroy();
   vkFreeMemory(device, m_texture_image_memory, nullptr);
+  vkDestroyImage(device, m_texture_image, nullptr);
 }
 
 void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
@@ -126,8 +125,8 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
 // 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
 // 所以三缓冲理论上都可以共用一个DescriptorSet。
-bool VkTextureTile::update_texture_descriptorset() {
-  if (!m_texture_imageview) {
+bool VkTextureTile::updateTextureDescriptorset() {
+  if (!m_texture_imageview.handle()) {
     return false;
   }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
@@ -137,7 +136,7 @@ bool VkTextureTile::update_texture_descriptorset() {
 
   VkDescriptorImageInfo imageInfo = {};
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-  imageInfo.imageView = m_texture_imageview;
+  imageInfo.imageView = m_texture_imageview.handle();
   imageInfo.sampler = m_bridge.GetPipeline().texture_sampler();
 
   VkWriteDescriptorSet texturedescriptorWrites = {};
@@ -159,7 +158,7 @@ bool VkTextureTile::update_texture_descriptorset() {
 void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                                ui::GpuLayerCommitContext *pContext) {
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
-    if (!update_texture_descriptorset()) {
+    if (!updateTextureDescriptorset()) {
       return;
     }
   }
@@ -181,25 +180,21 @@ void VkTextureTile::Compositor(long, long, long vertexStartIndex,
 }
 
 bool VkTextureTile::create() {
-
-  create_texture_image(
-      TILE_SIZE, TILE_SIZE, VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-  create_texture_imageview();
+  createTextureImage();
+  
+  m_texture_imageview.Create(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB);
   return true;
 }
 
 bool VkTextureTile::findMemoryType(uint32_t typeFilter,
                                    VkMemoryPropertyFlags properties,
                                    uint32_t *out) {
-  VkPhysicalDeviceMemoryProperties memProperties;
+  VkPhysicalDeviceMemoryProperties memory_properties;
   vkGetPhysicalDeviceMemoryProperties(
-      m_bridge.GetDeviceQueue().PhysicalDevice(), &memProperties);
+      m_bridge.GetDeviceQueue().PhysicalDevice(), &memory_properties);
 
-  for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-    if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags &
+  for (uint32_t i = 0; i < memory_properties.memoryTypeCount; i++) {
+    if ((typeFilter & (1 << i)) && (memory_properties.memoryTypes[i].propertyFlags &
                                     properties) == properties) {
       *out = i;
       return true;
@@ -308,50 +303,69 @@ bool VkTextureTile::transitionImageLayout(VkImage image, VkFormat format,
   return true;
 }
 
-bool VkTextureTile::create_texture_image(uint32_t width, uint32_t height,
-                                         VkFormat format, VkImageTiling tiling,
-                                         VkImageUsageFlags usage,
-                                         VkMemoryPropertyFlags properties) {
+bool VkTextureTile::createTextureImage() {
   VkDevice device = m_bridge.GetVkDevice();
 
   VkImageCreateInfo imageInfo{};
   imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
   imageInfo.imageType = VK_IMAGE_TYPE_2D;
-  imageInfo.extent.width = width;
-  imageInfo.extent.height = height;
+  imageInfo.extent.width = TILE_SIZE;
+  imageInfo.extent.height = TILE_SIZE;
   imageInfo.extent.depth = 1;
   imageInfo.mipLevels = 1;
   imageInfo.arrayLayers = 1;
-  imageInfo.format = format;
-  imageInfo.tiling = tiling;
+  imageInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
+  imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
   // initialLayout must be VK_IMAGE_LAYOUT_UNDEFINED or VK_IMAGE_LAYOUT_PREINITIALIZED
   // (https://vulkan.lunarg.com/doc/view/1.3.261.1/mac/1.3-extensions/vkspec.html#VUID-VkImageCreateInfo-initialLayout-00993)
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  imageInfo.usage = usage;
+  imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
   imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
   imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
+  //
+  // 当你调用 vkCreateImage 时，你并没有为图像数据分配任何实际的GPU内存。你所做的是：
+  //
+  // 向驱动程序描述你想要的图像：
+  //     包括图像的尺寸（宽度、高度、深度）、格式（如VK_FORMAT_R8G8B8A8_SRGB）、
+  //     用途（用作颜色附件、采样器等）、平铺方式（Linear 或 Optimal）等。
+  //
+  // 驱动程序检查需求的合法性：
+  //     驱动程序会检查你请求的图像参数在当前物理设备和逻辑设备上是否支持。
+  //
+  // 获取一个图像句柄：
+  //   如果创建成功，你会得到一个 VkImage 句柄。这个句柄代表了一个图像“对象”，
+  //   但它目前还是一个“空壳”，没有存储像素数据的地方。它知道自己的结构和需求，
+  //   但不知道数据存放在哪里。
+  //
   if (vkCreateImage(device, &imageInfo, nullptr, &m_texture_image) !=
       VK_SUCCESS) {
     return false;
   }
 
+  // 查询：
+  //   需要多少字节的内存 (size)。
+  //   内存对齐要求 (alignment)。
+  //   哪些类型的内存堆是兼容的 (memoryTypeBits)。
+  //
   VkMemoryRequirements memRequirements;
   vkGetImageMemoryRequirements(device, m_texture_image, &memRequirements);
 
   VkMemoryAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
   allocInfo.allocationSize = memRequirements.size;
-  if (!findMemoryType(memRequirements.memoryTypeBits, properties,
+  if (!findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                       &allocInfo.memoryTypeIndex)) {
     return false;
   }
 
+  // 代表了一块实实在在的、已经被分配出来的GPU内存
   if (vkAllocateMemory(device, &allocInfo, nullptr, &m_texture_image_memory) !=
       VK_SUCCESS) {
     return false;
   }
 
+  // vkBindImageMemory 的作用就是在 VkImage 和 VkDeviceMemory 之间建立一对一的绑定关系。
   vkBindImageMemory(device, m_texture_image, m_texture_image_memory, 0);
   return true;
 }
@@ -394,23 +408,5 @@ bool VkTextureTile::create_vulkan_buffer(VkDeviceSize size,
   return true;
 }
 
-bool VkTextureTile::create_texture_imageview() {
-  VkImageViewCreateInfo viewInfo{};
-  viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-  viewInfo.image = m_texture_image;
-  viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-  viewInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
-  viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-  viewInfo.subresourceRange.baseMipLevel = 0;
-  viewInfo.subresourceRange.levelCount = 1;
-  viewInfo.subresourceRange.baseArrayLayer = 0;
-  viewInfo.subresourceRange.layerCount = 1;
-
-  if (vkCreateImageView(m_bridge.GetVkDevice(), &viewInfo, nullptr,
-                        &m_texture_imageview) != VK_SUCCESS) {
-    return false;
-  }
-  return true;
-}
 
 } // namespace ui

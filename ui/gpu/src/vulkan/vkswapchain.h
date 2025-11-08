@@ -1,9 +1,9 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_H_
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_image_view.h"
-#include "src/vulkan/wrap/vulkan_swap_chain_image.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vkobjects.h"
+#include "src/vulkan/vulkan_command_buffer.h"
+#include "src/vulkan/vulkan_swap_chain_image.h"
 #include "vulkan/vulkan_core.h"
 #include <cstdint>
 #include <memory>

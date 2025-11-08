@@ -1,7 +1,7 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_PIPE_LINE_H_
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_buffer.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vulkan_buffer.h"
 #include "vulkan/vulkan_core.h"
 #include "vulkan/vulkan.h"
 #include "glm/glm.hpp"

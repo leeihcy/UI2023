@@ -2,8 +2,8 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/fwd.hpp"
 #include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_buffer.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vulkan_buffer.h"
 #include "vulkan_device_queue.h"
 
 #include <cstddef>

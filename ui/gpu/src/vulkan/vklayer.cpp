@@ -1,38 +1,23 @@
 #include "vklayer.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_pipe_line.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vulkan_command_buffer.h"
+#include "src/vulkan/vulkan_pipe_line.h"
 #include "vktexturetile.h"
 #include <vector>
 
 namespace ui {
 
 //   Vulkan 坐标
-//    ---------------------------------
+//   +---------------------------------+
 //   | -1.0, -1.0            1.0, -1.0 |
 //   |                                 |
 //   |                                 |
 //   | -1.0,  1.0            1.0,  1.0 |
-//    ---------------------------------
+//   +---------------------------------+
 //
-// static const vulkan::Pipeline::ShaderVertex RECT_VERTICES[] = {
-//     {{-1.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} }, // 0
-//     {{1.0f, -1.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },  // 1
-//     {{1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },   // 2
-//     {{-1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }}; // 3
 
-// 加入正交投影后：
-// static const vulkan::Pipeline::ShaderVertex RECT_VERTICES[] = {
-//     {{0, 0}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f} }, // 0
-//     {{0, 256}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f} },  // 1
-//     {{256, 256}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f} },   // 2
-//     {{256, 0}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f} }}; // 3
-
-// static const uint16_t RECT_INDICES[] = {0, 1, 2, 2, 3, 0};
-
-// -------------------------------------
 
 VulkanGpuLayer::VulkanGpuLayer(vulkan::IVulkanBridge &bridge)
     : m_bridge(bridge), m_vertexBuffer(bridge), m_indexBuffer(bridge) {}

@@ -194,19 +194,16 @@ shared_library("uigpu") {
         "src/vulkan/vktexturetile.cpp",
         "src/vulkan/vkswapchain.cpp",
         "src/vulkan/vkswapchain.h",
+        "src/vulkan/vkobjects.cpp",
+        "src/vulkan/vkobjects.h",
         "src/vulkan/mac_util.mm",
 
-        "src/vulkan/wrap/vulkan_renderpass.h",
-        "src/vulkan/wrap/vulkan_renderpass.cpp",
-        "src/vulkan/wrap/vulkan_command_buffer.h",
-        "src/vulkan/wrap/vulkan_command_buffer.cpp",
-        "src/vulkan/wrap/vulkan_command_pool.cpp",
-        "src/vulkan/wrap/vulkan_device_queue.cpp",
-        "src/vulkan/wrap/vulkan_swap_chain_image.cpp",
-        "src/vulkan/wrap/vulkan_image_view.cpp",
-        "src/vulkan/wrap/vulkan_pipe_line.cpp",
-        "src/vulkan/wrap/vulkan_buffer.cpp",
-        "src/vulkan/wrap/vulkan_util.cpp",
+        "src/vulkan/vulkan_command_buffer.h",
+        "src/vulkan/vulkan_command_buffer.cpp",
+        "src/vulkan/vulkan_device_queue.cpp",
+        "src/vulkan/vulkan_swap_chain_image.cpp",
+        "src/vulkan/vulkan_pipe_line.cpp",
+        "src/vulkan/vulkan_buffer.cpp",
       ]
 
       VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")

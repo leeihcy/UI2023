@@ -5,7 +5,6 @@
 
 namespace vulkan {
 class DeviceQueue;
-class CommandPool;
 struct IVulkanBridge;
 
 class CommandBuffer {

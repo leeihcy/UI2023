@@ -1,9 +1,9 @@
 #ifndef _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #define _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #include "src/gpu_layer.h"
-#include "src/vulkan/wrap/vulkan_bridge.h"
+#include "src/vulkan/vkbridge.h"
 #include <vulkan/vulkan.h>
-#include "wrap/vulkan_buffer.h"
+#include "src/vulkan/vulkan_buffer.h"
 
 namespace ui
 {
@@ -17,8 +17,6 @@ public:
   void Resize(int nWidth, int nHeight) override;
   void Compositor(GpuLayerCommitContext *pContext, float *pMatrixTransform) override;
   TextureTile* newTile() override;
-
-  void on_compositor(VkCommandBuffer buffer);
 
 private:
   void createVertexBuffer();

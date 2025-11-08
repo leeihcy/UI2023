@@ -1,6 +1,6 @@
 #include "src/vulkan/vkcompositor.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
-#include "src/vulkan/wrap/vulkan_swap_chain_image.h"
+#include "src/vulkan/vulkan_command_buffer.h"
+#include "src/vulkan/vulkan_swap_chain_image.h"
 #include "src/util.h"
 
 

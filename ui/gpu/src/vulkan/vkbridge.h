@@ -1,7 +1,9 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_BRIDGE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_BRIDGE_H_
-#include "src/vulkan/wrap/vulkan_device_queue.h"
+
 #include <vulkan/vulkan.h>
+#include "src/vulkan/vulkan_device_queue.h"
+
 
 namespace vulkan {
 class CommandPool;

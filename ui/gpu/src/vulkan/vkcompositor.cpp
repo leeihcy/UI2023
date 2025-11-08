@@ -1,7 +1,7 @@
 #include "vkcompositor.h"
 #include "gpu/include/api.h"
-#include "src/vulkan/wrap/vulkan_bridge.h"
-#include "src/vulkan/wrap/vulkan_command_buffer.h"
+#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vulkan_command_buffer.h"
 #include "vkapp.h"
 #include "vklayer.h"
 
