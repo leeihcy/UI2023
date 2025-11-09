@@ -84,19 +84,16 @@ void VulkanCompositor::Resize(int width, int height) {
   if (m_width == width && m_height == height) {
     return;
   }
+
+  ui::Log("VulkanCompositor Resize: width=%d, height=%d", width, height);
+  
   m_width = width;
   m_height = height;
 
-  // 等待设备空闲后才能删除swapchain
-  vkDeviceWaitIdle(GetVkDevice());
-  m_swapchain.DestroyForResize();
+  m_swapchain.MarkNeedReCreate();
+}
 
-  if (!m_swapchain.Create(m_surface, m_width, m_height)) {
-    ui::Log("createSwapchain failed");
-    return /*false*/;
-  }
-
-
+void VulkanCompositor::OnSwapChainCreated() {
   VkFormat image_format = m_swapchain.ImageFormat();
   if (!m_renderpass) {
     m_renderpass.Create(GetVkDevice(), image_format);

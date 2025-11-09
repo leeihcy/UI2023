@@ -76,23 +76,42 @@ void GpuSemaphores::Destroy() {
 // -----------------------------------------------------------------------------------
 
 SwapChain::SwapChain(IVulkanBridge &bridge) : m_bridge(bridge) {
-  memset(&m_info, 0, sizeof(m_info));
+  memset(&m_swapchain_createinfo, 0, sizeof(m_swapchain_createinfo));
 }
 
 SwapChain::~SwapChain() {
   Destroy();
 }
 
+//
+// 要支持重复创建！如窗口Resize逻辑。因此是先创建，再销毁。
+//
 bool SwapChain::Create(VkSurfaceKHR surface, int width, int height) {
+  // 等待设备空闲后才能删除swapchain
+  vkDeviceWaitIdle(m_bridge.GetVkDevice());
+
+  VkSwapchainKHR old_swapchain = m_swapchain;
   if (!createSwapchain(surface, width, height)) {
     return false;
   }
+
+  if (old_swapchain != VK_NULL_HANDLE) {
+    m_images.clear();
+
+    ui::Log("Destroy Swapchain: %p", old_swapchain);
+    vkDestroySwapchainKHR(m_bridge.GetVkDevice(), old_swapchain, nullptr);
+    old_swapchain = VK_NULL_HANDLE;
+  }
+
   if (!initSwapChainImages()) {
     return false;
   }
   if (!initInFlightFrames()) {
     return false;
   }
+
+  m_need_recreate = false;
+  m_bridge.OnSwapChainCreated();
   return true;
 }
 
@@ -105,16 +124,6 @@ bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
     image->CreateUniformBuffer();
   }
   return true;
-}
-
-void SwapChain::DestroyForResize() {
-  m_images.clear();
-  if (m_swapchain != VK_NULL_HANDLE) {
-    ui::Log("Destroy Swapchain: %p", m_swapchain);
-    
-    vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
-    m_swapchain = VK_NULL_HANDLE;
-  }
 }
 
 void SwapChain::Destroy() {
@@ -133,8 +142,8 @@ void SwapChain::Destroy() {
 bool SwapChain::createSwapchain(VkSurfaceKHR surface, int width, int height) {
   auto &app = ui::VulkanApplication::GetInstance();
 
-  m_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-  m_info.surface = surface;
+  m_swapchain_createinfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+  m_swapchain_createinfo.surface = surface;
 
   if (!queryCapabilities(surface, width, height)) {
     return false;
@@ -146,25 +155,27 @@ bool SwapChain::createSwapchain(VkSurfaceKHR surface, int width, int height) {
     return false;
   }
 
-  m_info.imageArrayLayers = 1;
-  m_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-  m_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-  m_info.clipped = VK_TRUE;
-  m_info.oldSwapchain = VK_NULL_HANDLE;
+  m_swapchain_createinfo.imageArrayLayers = 1;
+  m_swapchain_createinfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+  m_swapchain_createinfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+  m_swapchain_createinfo.clipped = VK_TRUE;
+
+  // 传递上一次的句柄，用于内部优化，如复用未被Acquired VkImage
+  m_swapchain_createinfo.oldSwapchain = m_swapchain;  
 
   int graphics_queue_family = m_bridge.GetGraphicsQueueFamily();
   int present_queue_family = m_bridge.GetPresentQueueFamily();
   if (graphics_queue_family != present_queue_family) {
     uint32_t queueFamilyIndices[] = {(uint32_t)graphics_queue_family,
                                      (uint32_t)present_queue_family};
-    m_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-    m_info.queueFamilyIndexCount = std::size(queueFamilyIndices);
-    m_info.pQueueFamilyIndices = queueFamilyIndices;
+    m_swapchain_createinfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+    m_swapchain_createinfo.queueFamilyIndexCount = std::size(queueFamilyIndices);
+    m_swapchain_createinfo.pQueueFamilyIndices = queueFamilyIndices;
   } else {
-    m_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    m_swapchain_createinfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
   }
 
-  if (vkCreateSwapchainKHR(m_bridge.GetVkDevice(), &m_info, nullptr,
+  if (vkCreateSwapchainKHR(m_bridge.GetVkDevice(), &m_swapchain_createinfo, nullptr,
                            &m_swapchain) != VK_SUCCESS) {
     ui::Log("failed to create swap chain!");
     return false;
@@ -189,7 +200,7 @@ bool SwapChain::queryCapabilities(VkSurfaceKHR surface, int width,
   // 三缓冲：3个。
   // Image数量越多，内存占用越多，但可能减少GPU空闲等待。
   const uint32_t desired_image_count = 3;
-  m_info.minImageCount =
+  m_swapchain_createinfo.minImageCount =
       std::clamp(desired_image_count, capabilities.minImageCount,
                  capabilities.maxImageCount);
 
@@ -205,14 +216,14 @@ bool SwapChain::queryCapabilities(VkSurfaceKHR surface, int width,
         std::clamp(actualExtent.height, capabilities.minImageExtent.height,
                    capabilities.maxImageExtent.height);
 
-    m_info.imageExtent = actualExtent;
+    m_swapchain_createinfo.imageExtent = actualExtent;
   } else if (capabilities.currentExtent.width != UINT32_MAX) {
-    m_info.imageExtent = capabilities.currentExtent;
+    m_swapchain_createinfo.imageExtent = capabilities.currentExtent;
   }
 
   // 用于控制交换链图像（Swapchain Images）在呈现（Present）
   // 到屏幕之前的 几何变换，比如旋转、镜像或缩放。
-  m_info.preTransform = capabilities.currentTransform;
+  m_swapchain_createinfo.preTransform = capabilities.currentTransform;
 
   return true;
 }
@@ -241,8 +252,8 @@ bool SwapChain::queryFormats(VkSurfaceKHR surface) {
     }
   }
 
-  m_info.imageFormat = selected_format->format;
-  m_info.imageColorSpace = selected_format->colorSpace;
+  m_swapchain_createinfo.imageFormat = selected_format->format;
+  m_swapchain_createinfo.imageColorSpace = selected_format->colorSpace;
 
   return true;
 }
@@ -276,7 +287,7 @@ bool SwapChain::queryPresentMode(VkSurfaceKHR surface) {
     }
   }
 
-  m_info.presentMode = selected_mode;
+  m_swapchain_createinfo.presentMode = selected_mode;
   return true;
 }
 
@@ -290,7 +301,7 @@ bool SwapChain::initSwapChainImages() {
   if (result != VK_SUCCESS) {
     return false;
   }
-  assert(image_count == m_info.minImageCount);
+  assert(image_count == m_swapchain_createinfo.minImageCount);
 
   std::vector<VkImage> swapchain_images(image_count);
   result = vkGetSwapchainImagesKHR(m_bridge.GetVkDevice(), m_swapchain,
@@ -304,7 +315,7 @@ bool SwapChain::initSwapChainImages() {
     std::unique_ptr<SwapChainFrame> image_item =
         std::make_unique<SwapChainFrame>(m_bridge, swapchain_images[i]);
 
-    image_item->Create(m_info.imageFormat);
+    image_item->Create(m_swapchain_createinfo.imageFormat);
 
     m_images.push_back(std::move(image_item));
   }

@@ -187,18 +187,18 @@ bool DeviceQueue::update_queue_family() {
   vkGetPhysicalDeviceQueueFamilyProperties(m_physical_device, &queueFamilyCount,
                                            queueFamilies.data());
 
-  int i = 0;
-  for (const auto &queueFamily : queueFamilies) {
+  for (size_t i = 0; i < queueFamilies.size(); i++) {
+    auto queueFamily = queueFamilies[i];
     if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-      m_graphics_queue_family = i;
+      m_graphics_queue_family = (int)i;
     }
 
     // 查询当前队列族，是否支持present到我们的窗口(surface).
     VkBool32 presentSupport = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, m_compositor.GetSurface(),
+    vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, (uint32_t)i, m_compositor.GetSurface(),
                                          &presentSupport);
     if (presentSupport) {
-      m_present_queue_family = i;
+      m_present_queue_family = (int)i;
     }
 
     if (m_graphics_queue_family >= 0 && m_present_queue_family >= 0) {

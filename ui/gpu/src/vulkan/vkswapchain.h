@@ -70,6 +70,9 @@ public:
   void DestroyForResize();
   void Destroy();
 
+  void MarkNeedReCreate() { m_need_recreate = true; }
+  bool NeedReCreated() { return m_need_recreate; }
+
   void IncCurrentInflightFrame();
   void IncCurrentSemaphores();
   void SetCurrentImageIndex(uint32_t);
@@ -80,9 +83,9 @@ public:
   GpuSemaphores *GetCurrentSemaphores();
 
   VkSwapchainKHR handle() { return m_swapchain; }
-  VkFormat ImageFormat() { return m_info.imageFormat; }
-  VkExtent2D Extent2D() { return m_info.imageExtent; }
-  uint32_t Size() { return m_info.minImageCount; }
+  VkFormat ImageFormat() { return m_swapchain_createinfo.imageFormat; }
+  VkExtent2D Extent2D() { return m_swapchain_createinfo.imageExtent; }
+  uint32_t Size() { return m_swapchain_createinfo.minImageCount; }
 
 private:
   bool createSwapchain(VkSurfaceKHR surface, int width, int height);
@@ -95,9 +98,13 @@ private:
 
 private:
   IVulkanBridge &m_bridge; // raw_ptr<
+ 
+  // 标记当前swapchain out of date，例如窗口大小改变等。
+  // 需要延迟创建，避免创建出来的不匹配最新的窗口大小，导致vkAcquireNextImageKHR失败。
+  bool m_need_recreate = true;
 
   VkSwapchainKHR m_swapchain = VK_NULL_HANDLE;
-  VkSwapchainCreateInfoKHR m_info;
+  VkSwapchainCreateInfoKHR m_swapchain_createinfo;
 
   // swap chain中的图片列表，以及对应每个图片的其它关联数据
   std::vector<std::unique_ptr<SwapChainFrame>> m_images;

@@ -6,6 +6,7 @@
 #include "src/thread/paint_op.h"
 #include <mutex>
 #include <vector>
+#include <set>
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -37,6 +38,8 @@ void RenderThread::process_command(PaintOp *op) {
   } else if (op->type == PaintOpType::AsyncTask) {
     AsyncTaskCommand* command = static_cast<AsyncTaskCommand*>(op);
     command->callback.emit();
+  } else if (op->type == PaintOpType::Resize) {
+    op->processOnRenderThread(op->key);
   }
 }
 
@@ -64,7 +67,7 @@ void RenderThread::thread_proc() {
       // m_paint_op_queue.clear();
     }
     // 指令优化
-    merge_and_optimize_operations(local_queue);
+    mergeAndOptimizeOperations(local_queue);
     if (m_paint_op_group.empty()) {
       continue;
     }
@@ -96,11 +99,19 @@ RenderThread::PaintOpGroup::PaintOpGroup(void *_key,
 // 针对同一个surface，在begindraw,enddraw之间包围的命令作为一个整体（支持内嵌，如child
 // layer）
 //
-void RenderThread::merge_and_optimize_operations(
+void RenderThread::mergeAndOptimizeOperations(
     std::vector<std::unique_ptr<PaintOp>> &op_queue) {
   // 1. 按照begindraw/enddraw进行分组，以组为单位，将队列中更早的分组移除掉。
   for (auto &cmd : op_queue) {
     void *key = cmd->key;
+
+    // 命令类型的，不要混在PaintOp里，避免被合并 。
+    if (cmd->type >= PaintOpType::PostCommandStart) {
+      auto group = std::make_unique<PaintOpGroup>(key, std::move(cmd));
+      group->is_command = true;
+      m_paint_op_group.push_back(std::move(group));
+      continue;
+    }
 
     // 空队列，直接添加
     if (m_paint_op_group.empty()) {
@@ -125,33 +136,116 @@ void RenderThread::merge_and_optimize_operations(
     }
     group->ops.push_back(std::move(cmd));
   }
+  mergePaintOperations();
+  mergeCommandOperations();
+}
 
-  // 将重复的绘制指令踢除掉
-  if (m_paint_op_group.size() <= 2) {
+//
+// 将重复的绘制指令踢除掉
+// 以BeginDraw，EndDraw为分界线，只要两个Group都是针对同一RenderTarget，则可优化掉前一个。
+//
+void RenderThread::mergePaintOperations() {
+  if (m_paint_op_group.size() <= 1) {
     return;
   }
 
   std::vector<int> remove_index;
 
-  for (int i = 2; i < m_paint_op_group.size() - 1; i++) {
-    auto &group = m_paint_op_group[i];
+  // 记录每个RenderTarget的BeginDraw/EndDraw上一个出现索引。
+  // 再次出现时，将上一个索引添加到移除列表。
+  std::map<void*, int> rt_draw_index_map;
 
-    for (int j = i + 1; j < m_paint_op_group.size(); j++) {
-      auto &group2 = m_paint_op_group[j];
-      if (group2->key != group->key) {
-        continue;
-      }
-      if (group2->ops[0]->type != PaintOpType::BeginDraw) {
-        continue;
-      }
-      remove_index.insert(remove_index.begin(), i);
-      break;
+  // 记录每个RenderTarget的Resize上一个出现索引。
+  // Resize被作为command类型，当独在一个Group里。
+  std::map<void*, int> rt_resize_index_map;
+
+  for (int i = 0; i < m_paint_op_group.size() - 1; i++) {
+    auto &group = m_paint_op_group[i];
+    auto& op = group->ops[0];
+    void* key = op->key;
+    if (!key) {
+      continue;
     }
+
+    if (op->type == PaintOpType::Resize) {
+      auto iter = rt_resize_index_map.find(key);
+      if (iter == rt_resize_index_map.end()) {
+        rt_resize_index_map[key] = i;
+        continue;
+      }
+
+      remove_index.push_back(iter->second);
+      rt_resize_index_map[key] = i;
+      continue;
+    }
+
+    // 当前函数只合并渲染指令
+    if (group->is_command) {
+      continue;
+    }
+    if (!group->end_draw) {
+      continue;
+    }
+
+    auto iter = rt_draw_index_map.find(key);
+    if (iter == rt_draw_index_map.end()) {
+      rt_draw_index_map[key] = i;
+      continue;
+    }
+
+    remove_index.push_back(iter->second);
+    rt_draw_index_map[key] = i;
   }
+  if (remove_index.empty()) {
+    return;
+  }
+
+  std::sort(remove_index.begin(), remove_index.end(), std::greater<int>());
   for (int i : remove_index) {
     m_paint_op_group.erase(m_paint_op_group.begin() + i);
-    UI_LOG_DEBUG("merge paint op group.");
   }
+  UI_LOG_DEBUG("Merge %d paint op groups", remove_index.size());
+}
+
+// 合并 AsyncTask中的冗余命令。例如 窗口变更事件，只需要取最新那个即可。
+void RenderThread::mergeCommandOperations() {
+  if (m_paint_op_group.size() <= 1) {
+    return;
+  }
+
+  std::vector<int> remove_index;
+
+  // 记录每个type类型的上一个出现索引。
+  // 再次出现时，将上一个索引添加到移除列表。
+  std::map<AsyncTaskType, int> type_index_map;
+
+  for (int i = 0; i < m_paint_op_group.size() - 1; i++) {
+    auto& op = m_paint_op_group[i]->ops[0];
+    if (op->type != PaintOpType::AsyncTask) {
+      continue;
+    }
+    AsyncTaskCommand* async_task = static_cast<AsyncTaskCommand*>(op.get());
+    if (async_task->type == AsyncTaskType::Unknown) {
+      continue;
+    }
+
+    auto iter = type_index_map.find(async_task->type);
+    if (iter == type_index_map.end()) {
+      type_index_map[async_task->type] = i;
+      continue;
+    }
+    remove_index.push_back(iter->second);
+    type_index_map[async_task->type] = i;
+  }
+  if (remove_index.empty()) {
+    return;
+  }
+
+  std::sort(remove_index.begin(), remove_index.end(), std::greater<int>());
+  for (int i : remove_index) {
+    m_paint_op_group.erase(m_paint_op_group.begin() + i);
+  }
+  UI_LOG_DEBUG("Merge %d async command task", remove_index.size());
 }
 
 void RenderThread::remove_key(void *key) {

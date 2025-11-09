@@ -32,6 +32,8 @@ struct IVulkanBridge {
   virtual vulkan::PipeLine& GetPipeline() = 0;
   virtual int GetGraphicsQueueFamily() = 0;
   virtual int GetPresentQueueFamily() = 0;
+
+  virtual void OnSwapChainCreated() = 0;
 }; 
 
 }

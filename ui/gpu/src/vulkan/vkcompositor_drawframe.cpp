@@ -12,8 +12,13 @@ namespace ui {
 // 5. Present the swap chain image
 //
 bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
+  if (m_swapchain.NeedReCreated()) {
+    m_swapchain.Create(GetSurface(), m_width, m_height);
+  }
+
   drawFrame_acquireNextCommandBuffer();
   if (!drawFrame_acquireNextSwapChainImage()) {
+    m_swapchain.MarkNeedReCreate();
     return false;
   }
 
@@ -34,7 +39,8 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *ctx) {
 void VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
 
-  vkWaitForFences(GetVkDevice(), 1, &sync->m_command_buffer_fence, VK_TRUE, UINT64_MAX);
+  uint64_t timeout_1s = 1000*1000*1000; // nanoseconds
+  vkWaitForFences(GetVkDevice(), 1, &sync->m_command_buffer_fence, VK_TRUE, timeout_1s);
 
   // lldb调试时会出现exception，先无视，好像无解，等以后SDK更新吧。
   vkResetFences(m_device_queue.Device(), 1, &sync->m_command_buffer_fence);

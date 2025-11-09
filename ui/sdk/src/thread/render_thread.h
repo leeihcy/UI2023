@@ -37,8 +37,8 @@ public:
 
     void AddPaintOp(std::unique_ptr<PaintOp> &&op);
     void Notify();
-    void AddTask(slot<void()> &&callback);
-    static void PostTask(slot<void()> &&callback);
+    void AddTask(slot<void()> &&callback, AsyncTaskType type=AsyncTaskType::Unknown);
+    static void PostTask(slot<void()> &&callback, AsyncTaskType type=AsyncTaskType::Unknown);
 
     void SwapChain(void *key, Window *window, DirtyRegion dirty_region);
     void on_swap_chain(void *key, const DirtyRegion& dirty_region);
@@ -56,7 +56,9 @@ private:
 
   void create_swap_chain(void *key);
   void remove_key(void *key);
-  void merge_and_optimize_operations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
+  void mergeAndOptimizeOperations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
+  void mergePaintOperations();
+  void mergeCommandOperations();
 
 private:
   bool m_running = false;
@@ -77,6 +79,9 @@ private:
     void* key;
     // 该key已调用了EndDraw完全绘制。在end之前，其它子rt的BeginDraw仍然划归该group下。
     bool end_draw = false;
+    
+    // 这是一个命令GROUP。
+    bool is_command = false;
 
     std::vector<std::unique_ptr<PaintOp>> ops;
   };

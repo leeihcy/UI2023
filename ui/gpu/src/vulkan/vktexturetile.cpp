@@ -22,6 +22,7 @@ VkTextureTile::~VkTextureTile() {
   m_texture_imageview.Destroy(device);
   if (m_texture_image_memory != VK_NULL_HANDLE) {
     vkFreeMemory(device, m_texture_image_memory, nullptr);
+    m_texture_image_memory = VK_NULL_HANDLE;
   }
   m_texture_image.Destroy(device);
 }

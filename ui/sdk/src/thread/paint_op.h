@@ -16,10 +16,8 @@ struct IRenderTarget;
 enum class PaintOpType : unsigned char {
   // Render Op
   RenderOpStart,
-
   BeginDraw,
   EndDraw,
-  Resize,
   Save,
   Restore,
   SetOrigin,
@@ -42,9 +40,9 @@ enum class PaintOpType : unsigned char {
   
   // --------------------------
 
-  // post command for thread
   PostCommandStart,
-  AsyncTask,
+  Resize,     // 可Merge
+  AsyncTask,  // 可Merge
   RemoveKey,
   SyncLayerProperties,
   PostCommandEnd,
@@ -204,11 +202,20 @@ struct RenderOnThreadOp : public PaintOp {
   slot<void(IRenderTarget *)> callback;
 };
 
+enum class AsyncTaskType {
+  Unknown,
+
+  // 会对每种async task进行merge合并。只保留最后一个。
+  
+  WindowSizeChanged = 1,
+};
+
 struct AsyncTaskCommand : public PaintOp {
-  AsyncTaskCommand(slot<void()> &&_callback)
-    : PaintOp(PaintOpType::AsyncTask), callback(std::move(_callback)) {}
+  AsyncTaskCommand(slot<void()> &&_callback, AsyncTaskType _type)
+    : PaintOp(PaintOpType::AsyncTask), callback(std::move(_callback)), type(_type) {}
 
   slot<void()> callback;
+  AsyncTaskType type = AsyncTaskType::Unknown;
 };
 
 struct SyncLayerPropertiesCommand : public PaintOp {

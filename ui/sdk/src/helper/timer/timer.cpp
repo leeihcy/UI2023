@@ -50,7 +50,7 @@ void TimerHelper::UnsubscribeAnimateTimer(IAnimateTimer *subscriber) {
   if (iter == m_animate_timer_subscribers.end()) {
     return;
   }
-  int size = m_animate_timer_subscribers.size();
+  size_t size = m_animate_timer_subscribers.size();
   if (m_looping) {
     *iter = nullptr;
     return;

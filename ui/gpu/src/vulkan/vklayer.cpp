@@ -1,12 +1,15 @@
 #include "vklayer.h"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
+
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkpipeline.h"
 #include "src/vulkan/vulkan_swap_chain_image.h"
 #include "src/vulkan/vkswapchain.h"
-#include "vktexturetile.h"
+#include "src/vulkan/vktexturetile.h"
+#include "src/util.h"
 #include <vector>
+
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/fwd.hpp>
 
 namespace ui {
 
@@ -81,6 +84,8 @@ void VulkanGpuLayer::Resize(int nWidth, int nHeight) {
   if (m_width == (int)nWidth && m_height == (int)nHeight) {
     return;
   }
+  ui::Log("VulkanGpuLayer Resize: width=%d, height=%d", nWidth, nHeight);
+
   doCreateTile(nWidth, nHeight);
 
   m_width = nWidth;

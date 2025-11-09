@@ -1,10 +1,5 @@
 #include "gpu_layer.h"
-// #include "D3D10/d3dapp.h"
-// #include "d3d10\common/effects.h"
-// #include "d3d10\common/render_states.h"
-// #include "gpu_compositor.h"
-// #include "hard3dtransform.h"
-// #include "stdafx.h"
+#include "src/util.h"
 #include "texture_tile.h"
 #include <assert.h>
 #include <cmath>
@@ -118,17 +113,20 @@ void GpuLayer::UploadBitmap(UploadGpuBitmapInfo &info) {
   }
 }
 
+// 如果对WindowSizeChange指令进行优化合并，会导致上传的区域，和当前纹理的区域不一致？
 void GpuLayer::upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &source) {
   if (source.bpp != 32) {
     assert(false && "Support 32 bpp only.");
     return;
   }
+  ui::Log("Update Gpu Layer: %d,%d (%d,%d)", rc.left, rc.top, rc.Width(), rc.Height());
+
   // 分析受影响的 tile
   // -1: 例如(0~128)，受影响的就是一个区域0，不影响区域1(128/128=1)
-  int xIndexFrom = rc.left / TILE_SIZE;
-  int xIndexTo = (rc.right - 1) / TILE_SIZE;
-  int yIndexFrom = rc.top / TILE_SIZE;
-  int yIndexTo = (rc.bottom - 1) / TILE_SIZE;
+  int xIndexFrom = std::min(rc.left / TILE_SIZE, m_arrayTile.GetCol()-1);
+  int xIndexTo = std::min((rc.right - 1) / TILE_SIZE, m_arrayTile.GetCol()-1);
+  int yIndexFrom = std::min(rc.top / TILE_SIZE, m_arrayTile.GetRow()-1);
+  int yIndexTo = std::min((rc.bottom - 1) / TILE_SIZE, m_arrayTile.GetRow()-1);
 
 #if ENABLE_TRACE
   char szText[32];

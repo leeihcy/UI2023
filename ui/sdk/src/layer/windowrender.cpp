@@ -94,7 +94,7 @@ void WindowRender::OnClientSize(unsigned int nWidth, unsigned int nHeight) {
 
     RenderThread::Main::PostTask(ui::Slot(
         &WindowRenderRT::Resize, m_rt->m_factory.get(),
-        rc.Width(), rc.Height()));
+        rc.Width(), rc.Height()), AsyncTaskType::WindowSizeChanged);
   }
 }
 

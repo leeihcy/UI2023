@@ -41,7 +41,7 @@ private:
 
   Vk::Image m_texture_image;
   Vk::ImageView m_texture_imageview;
-  VkDeviceMemory m_texture_image_memory;
+  VkDeviceMemory m_texture_image_memory = VK_NULL_HANDLE;
   
 
   // 每个纹理对应一个descriptorset

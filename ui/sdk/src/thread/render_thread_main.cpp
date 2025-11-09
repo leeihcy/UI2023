@@ -42,9 +42,9 @@ void RenderThread::Main::AddPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
   }
 }
 
-void RenderThread::Main::AddTask(slot<void()> &&callback) {
+void RenderThread::Main::AddTask(slot<void()> &&callback, AsyncTaskType type) {
   if (self.m_running) {
-    AddPaintOp(std::make_unique<AsyncTaskCommand>(std::move(callback)));
+    AddPaintOp(std::make_unique<AsyncTaskCommand>(std::move(callback), type));
   } else {
     callback.emit();
   }
@@ -52,9 +52,9 @@ void RenderThread::Main::AddTask(slot<void()> &&callback) {
 
 // 如果启用子多线程渲染，则在render thread上执行。如果没启用，直接执行。
 // static 
-void RenderThread::Main::PostTask(slot<void()> &&callback) {
+void RenderThread::Main::PostTask(slot<void()> &&callback, AsyncTaskType type) {
   if (Config::GetInstance().enable_render_thread) {
-    RenderThread::GetIntance().main.AddTask(std::move(callback));
+    RenderThread::GetIntance().main.AddTask(std::move(callback), type);
   } else {
     callback.emit();
   }

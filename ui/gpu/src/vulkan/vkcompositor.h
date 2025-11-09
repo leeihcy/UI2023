@@ -56,6 +56,7 @@ public:
   int GetGraphicsQueueFamily() override;
   int GetPresentQueueFamily() override;
   
+  void OnSwapChainCreated() override;
 
 private:
   void destory();

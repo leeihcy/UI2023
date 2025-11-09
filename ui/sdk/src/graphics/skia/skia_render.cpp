@@ -167,8 +167,6 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   m_width = width;
   m_height = height;
 
-  resize_gpu_layer(width, height);
-
   // 256的倍数，并且不减
   int fix_width = width;
   if ((fix_width & 0xFF) != 0) {
@@ -202,6 +200,9 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   // m_sksurface = SkSurface::MakeRasterN32Premul(width, height);
   // SkCanvas *canvas = m_sksurface->getCanvas();
 
+  if (m_gpu_texture) {
+    m_gpu_texture->Resize(width, height);
+  }
   return true;
 }
 
@@ -212,13 +213,6 @@ sk_sp<SkSurface> SkiaRenderTarget::create_surface(unsigned int width,
   SkSurfaceProps surfaceProps(0, kUnknown_SkPixelGeometry);
 
   return SkSurface::MakeRaster(info, &surfaceProps);
-}
-
-void SkiaRenderTarget::resize_gpu_layer(unsigned int width,
-                                        unsigned int height) {
-  if (m_gpu_texture) {
-    m_gpu_texture->Resize(width * m_scale, height * m_scale);
-  }
 }
 
 void *SkiaRenderTarget::GetHandle() {
