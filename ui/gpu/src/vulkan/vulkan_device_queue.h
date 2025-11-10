@@ -43,7 +43,10 @@ private:
 private:
   ui::VulkanCompositor& m_compositor;
   
+  // 不需要销毁，由VkInstance释放。
   VkPhysicalDevice m_physical_device;
+
+  // TODO: lost ?
   VkDevice m_logical_device;
 
   int m_graphics_queue_family = -1;

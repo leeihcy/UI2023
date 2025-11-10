@@ -22,13 +22,18 @@ public:
 
 public:
   void Create(TYPE type, void *data, size_t data_size);
-  void Destroy();
+  void Destroy(bool wait);
   
   VkBuffer handle() { return m_buffer; }
   VkDeviceMemory memory() { return m_buffer_memory; }
 
   bool CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                     VkMemoryPropertyFlags properties);
+  
+  bool CreateStaingBuffer(VkDeviceSize size);
+  void* MapMemory(VkDeviceSize offset, VkDeviceSize size);
+  void UnmapMemory();
+  
 private:
   bool createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                     VkMemoryPropertyFlags properties, VkBuffer &buffer,

@@ -1,5 +1,5 @@
-#ifndef _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
-#define _UI_SDK_SRC_GRAPHICS_RECORD_RECORD_RENDER_TARGET_H_
+#ifndef _UI_SDK_SRC_GRAPHICS_ASYNCRENDERTARGET_H_
+#define _UI_SDK_SRC_GRAPHICS_ASYNCRENDERTARGET_H_
 #include "include/interface/graphics.h"
 #include "include/util/color.h"
 #include "src/graphics/clip_origin.h"
@@ -11,11 +11,11 @@ class RenderThread;
 struct PaintOp;
 
 // 只记录渲染操作，将操作转换给RenderThread
-class RecordRenderTarget : public IRenderTarget {
+class AsyncRenderTarget : public IRenderTarget {
 public:
-  RecordRenderTarget();
+  AsyncRenderTarget();
 
-  ~RecordRenderTarget() override;
+  ~AsyncRenderTarget() override;
   void Release() override;
   eGraphicsLibraryType Type() override {
     return eGraphicsLibraryType::SkiaRecord;

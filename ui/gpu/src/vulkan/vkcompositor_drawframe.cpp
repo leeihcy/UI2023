@@ -1,6 +1,7 @@
 #include "src/vulkan/vkcompositor.h"
 #include "src/vulkan/vulkan_swap_chain_image.h"
 #include "src/util.h"
+#include "vulkan/vulkan_core.h"
 
 
 namespace ui {
@@ -16,7 +17,9 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
     m_swapchain.Create(GetSurface(), m_width, m_height);
   }
 
-  drawFrame_acquireNextCommandBuffer();
+  if (!drawFrame_acquireNextCommandBuffer()) {
+    return false;
+  }
   if (!drawFrame_acquireNextSwapChainImage()) {
     m_swapchain.MarkNeedReCreate();
     return false;
@@ -36,14 +39,35 @@ void VulkanCompositor::EndCommit(GpuLayerCommitContext *ctx) {
   m_swapchain.IncCurrentSemaphores();
 }
 
-void VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
+bool VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
 
-  uint64_t timeout_1s = 1000*1000*1000; // nanoseconds
-  vkWaitForFences(GetVkDevice(), 1, &sync->m_command_buffer_fence, VK_TRUE, timeout_1s);
+  // 避免阻塞渲染线程，首先使用0ms进行尝试。
+  const int retry_times = 4;
+  uint64_t timeout[retry_times] = {
+    0,
+    10 * 1000 * 1000, // 10ms
+    100 * 1000 * 1000, // 100ms
+    1000 * 1000 * 1000, // 1m 
+  };
+
+  VkResult result = VK_SUCCESS;
+  for (int i = 0; i < retry_times; i++) {
+    result = vkWaitForFences(GetVkDevice(), 1, &sync->m_command_buffer_fence,
+                             VK_TRUE, timeout[i]);
+    if (result == VK_TIMEOUT && i != 0) {
+      ui::Log("acquireNextCommandBuffer WaitForFences timeout at index: %d", i);
+      continue;
+    }
+  }
+  if (result != VK_SUCCESS) {  // VK_ERROR_DEVICE_LOST
+    ui::Log("acquireNextCommandBuffer WaitForFences failed, result=%d", result);
+    return false;
+  }
 
   // lldb调试时会出现exception，先无视，好像无解，等以后SDK更新吧。
   vkResetFences(m_device_queue.Device(), 1, &sync->m_command_buffer_fence);
+  return true;
 }
 
 bool VulkanCompositor::drawFrame_acquireNextSwapChainImage() {

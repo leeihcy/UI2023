@@ -1,4 +1,4 @@
-#include "src/graphics/record/record_render_target.h"
+#include "src/graphics/async_render_target.h"
 #include "include/macro/xmldefine.h"
 #include "src/resource/font.h"
 #include "src/thread/paint_op.h"
@@ -12,20 +12,20 @@
 
 namespace ui {
 
-RecordRenderTarget::RecordRenderTarget() {
+AsyncRenderTarget::AsyncRenderTarget() {
   m_rt_async = std::make_unique<SkiaRenderTarget>();
 }
-RecordRenderTarget::~RecordRenderTarget() {
+AsyncRenderTarget::~AsyncRenderTarget() {
   SkiaRenderTarget* ptr = m_rt_async.release();
 
   // 交由渲染线程进行安全释放。
   RenderThread::GetIntance().main.RemoveKey(ptr);
 }
 
-void RecordRenderTarget::Release() {
+void AsyncRenderTarget::Release() {
 }
 
-void RecordRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
+void AsyncRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
   paint_op->key = m_rt_async.get();
 
   // 仅在EndDraw时notify，便于优化合并指令
@@ -39,104 +39,104 @@ void RecordRenderTarget::addPaintOp(std::unique_ptr<PaintOp> &&paint_op) {
   }
 }
 
-bool RecordRenderTarget::BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) {
+bool AsyncRenderTarget::BeginDraw(const DirtyRegion& dirty_region, bool clear, float scale) {
   m_scale = scale;
   m_clip_origin_impl.SetDirtyRegion(dirty_region);
   addPaintOp(std::move(std::make_unique<BeginDrawOp>(dirty_region, clear, scale)));
   return true;
 }
-void RecordRenderTarget::EndDraw() {
+void AsyncRenderTarget::EndDraw() {
   addPaintOp(std::move(std::make_unique<EndDrawOp>()));
 }
-bool RecordRenderTarget::Resize(unsigned int width, unsigned int height) {
+bool AsyncRenderTarget::Resize(unsigned int width, unsigned int height) {
   addPaintOp(std::move(std::make_unique<ResizeOp>(width, height)));
   return true;
 }
-void *RecordRenderTarget::GetHandle() {
+void *AsyncRenderTarget::GetHandle() {
   assert(false && "NotImplement");
   return nullptr;
 }
 
-void RecordRenderTarget::Save() {
+void AsyncRenderTarget::Save() {
   addPaintOp(std::move(std::make_unique<SaveOp>()));
 }
-void RecordRenderTarget::Restore() {
+void AsyncRenderTarget::Restore() {
   addPaintOp(std::move(std::make_unique<RestoreOp>()));
 }
-void RecordRenderTarget::ClipRoundRect(const Rect &rect, const CornerRadius& radius) {
+void AsyncRenderTarget::ClipRoundRect(const Rect &rect, const CornerRadius& radius) {
   addPaintOp(std::move(std::make_unique<ClipRoundRectOp>(rect, radius)));
 }
-void RecordRenderTarget::ClipRect(const Rect &rect) {
+void AsyncRenderTarget::ClipRect(const Rect &rect) {
   addPaintOp(std::move(std::make_unique<ClipRectOp>(rect)));
 }
 
-void RecordRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* key) {
+void AsyncRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* key) {
   assert(false && "Should not run by record");
   // addPaintOp(std::move(std::make_unique<CreateSwapChainOp>(is_hardware, key)));
 }
-bool RecordRenderTarget::SwapChain(slot<void()> &&callback) {
+bool AsyncRenderTarget::SwapChain(slot<void()> &&callback) {
   addPaintOp(std::move(std::make_unique<SwapChainOp>(std::move(callback))));
   return true;
 }
 
-void RecordRenderTarget::DumpToImage(const char *path) {
+void AsyncRenderTarget::DumpToImage(const char *path) {
   addPaintOp(std::move(std::make_unique<DumpToImageOp>(path)));
 }
 
-bool RecordRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
+bool AsyncRenderTarget::GetFrontFrameBuffer(FrameBufferWithReadLock *fb) {
   // 在UI线程上触发的，需要同步获取缓存数据。这里带锁进行跨线程获取
   return RenderThread::GetIntance().main.GetFrontFrameBuffer(m_rt_async.get(), fb);
 }
 
-void RecordRenderTarget::RenderOnThread(
+void AsyncRenderTarget::RenderOnThread(
     slot<void(IRenderTarget *)> &&callback) {
   addPaintOp(
       std::move(std::make_unique<RenderOnThreadOp>(std::move(callback))));
 }
 
-void RecordRenderTarget::PushRelativeClipRect(const Rect &rect) {
+void AsyncRenderTarget::PushRelativeClipRect(const Rect &rect) {
   m_clip_origin_impl.PushRelativeClipRect(rect);
 }
-void RecordRenderTarget::PopRelativeClipRect() {
+void AsyncRenderTarget::PopRelativeClipRect() {
   m_clip_origin_impl.PopRelativeClipRect();
 }
-void RecordRenderTarget::SetOrigin(int x, int y) {
+void AsyncRenderTarget::SetOrigin(int x, int y) {
   m_clip_origin_impl.SetOrigin(x, y);
   addPaintOp(std::move(std::make_unique<SetOriginOp>(x, y)));
 }
-void RecordRenderTarget::OffsetOrigin(int x, int y) {
+void AsyncRenderTarget::OffsetOrigin(int x, int y) {
   m_clip_origin_impl.OffsetOrigin(x, y);
   addPaintOp(std::move(std::make_unique<OffsetOriginOp>(x, y)));
 }
 
-bool RecordRenderTarget::IsRelativeRectInClip(const Rect &rect) {
+bool AsyncRenderTarget::IsRelativeRectInClip(const Rect &rect) {
   return m_clip_origin_impl.IsRelativeRectInClip(rect);
 }
 
-void RecordRenderTarget::Render2Target(IRenderTarget *pDst,
+void AsyncRenderTarget::Render2Target(IRenderTarget *pDst,
                                        Render2TargetParam *pParam) {
   // Render this target to another target
 }
 
-void RecordRenderTarget::FillRect(const Rect &rect, const Color &color) {
+void AsyncRenderTarget::FillRect(const Rect &rect, const Color &color) {
   addPaintOp(std::move(std::make_unique<FillRectOp>(rect, color)));
 }
-void RecordRenderTarget::StrokeRect(const Rect &rect, const Color &color,
+void AsyncRenderTarget::StrokeRect(const Rect &rect, const Color &color,
                                     int width, bool dash) {
   addPaintOp(std::move(std::make_unique<StrokeRectOp>(rect, color, width, dash)));
 }
-void RecordRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
+void AsyncRenderTarget::FillRoundRect(const Rect &rect, const Color &color,
                                        const CornerRadius &radius) {
   addPaintOp(std::move(std::make_unique<FillRoundRectOp>(rect, color, radius)));
 }
-void RecordRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
+void AsyncRenderTarget::StrokeRoundRect(const Rect &rect, const Color &color,
                                          const CornerRadius &radius,
                                          int width, bool dash) {
   addPaintOp(
       std::move(std::make_unique<StrokeRoundRectOp>(rect, color, radius, width, dash)));
 }
 
-void RecordRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
+void AsyncRenderTarget::DrawBitmap(std::shared_ptr<IRenderBitmap> bitmap,
                                     DrawBitmapParam *param) {
   // TODO: 支持多线程！
   addPaintOp(std::move(std::make_unique<DrawBitmapOp>(bitmap, param)));
@@ -146,7 +146,7 @@ std::string elideTextWithEllipsis(const char *text, const SkRect &bounds,
                                   const SkFont &font, const SkPaint &paint,
                                   /*out*/ int &measure_width);
 
-void RecordRenderTarget::DrawString(const DrawTextParam &param) {
+void AsyncRenderTarget::DrawString(const DrawTextParam &param) {
   SkFont &font = param.resource->GetImpl()->GetFontRes().GetSkiaFont(param.font_desc);
 
   SkPaint paint;
@@ -203,7 +203,7 @@ void RecordRenderTarget::DrawString(const DrawTextParam &param) {
       std::move(std::make_unique<DrawStringOp>(text_blob, param.color, x, y)));
 }
 
-void RecordRenderTarget::drawString2(void *text_blob, const Color &color,
+void AsyncRenderTarget::drawString2(void *text_blob, const Color &color,
                                       float x, float y) {
   assert(false && "Not Implement");
 }

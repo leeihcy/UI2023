@@ -26,7 +26,7 @@ SwapChainFrame::~SwapChainFrame() {
     m_bridge.GetUniformDescriptorPool().FreeDescriptorSet(device, m_uniform_descriptor_set);
     m_uniform_descriptor_set = VK_NULL_HANDLE;
   }
-  m_uniform_buffer.Destroy();
+  m_uniform_buffer.Destroy(true);
 }
 
 bool SwapChainFrame::Create(VkFormat imageFormat) {

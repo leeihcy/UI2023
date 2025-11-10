@@ -201,7 +201,7 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   // SkCanvas *canvas = m_sksurface->getCanvas();
 
   if (m_gpu_texture) {
-    m_gpu_texture->Resize(width, height);
+    m_gpu_texture->Resize(fix_width, fix_height);
   }
   return true;
 }
@@ -1113,6 +1113,9 @@ void SkiaRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
   if (!m_gpu_texture) {
     return;
   }
+  if (!prcArray || !nCount) {
+    return;
+  }
   SkPixmap pm;
   if (!m_sksurface || !m_sksurface->peekPixels(&pm)) {
     return;
@@ -1213,8 +1216,7 @@ void SkiaRenderTarget::upload_2_gpu() {
   int width = m_sksurface->width();
   int height = m_sksurface->height();
 
-  Rect rc = {0, 0, width, height};
-  Upload2Gpu(&rc, 1, m_scale);
+  Upload2Gpu(m_last_dirty_region.RectPtr(), m_last_dirty_region.Count(), m_scale);
 }
 
 void SkiaRenderTarget::CreateSwapChain(bool is_hardware, IGpuCompositor* compositor) {

@@ -1,6 +1,7 @@
 #include "vulkan_buffer.h"
 #include "src/vulkan/vkbridge.h"
 #include "src/vulkan/vkobjects.h"
+#include "vulkan/vulkan_core.h"
 #include <memory.h>
 #include <string.h>
 
@@ -16,13 +17,16 @@ Buffer::Buffer(Buffer&& o):m_bridge(o.m_bridge) {
 }
 
 Buffer::~Buffer() {
-  Destroy();
+  Destroy(true);
 }
 
-void Buffer::Destroy() {
+void Buffer::Destroy(bool wait) {
   if (m_buffer != VK_NULL_HANDLE || m_buffer_memory != VK_NULL_HANDLE) {
     auto device = m_bridge.GetVkDevice();
-    vkDeviceWaitIdle(device);
+   
+    if (wait) {
+      vkDeviceWaitIdle(device);
+    }
 
     if (m_buffer != VK_NULL_HANDLE) {
       vkDestroyBuffer(device, m_buffer, nullptr);
@@ -56,6 +60,19 @@ bool Buffer::findMemoryType(uint32_t typeFilter,
 bool Buffer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
                           VkMemoryPropertyFlags properties) {
   return createBuffer(size, usage, properties, m_buffer, m_buffer_memory);
+}
+
+bool Buffer::CreateStaingBuffer(VkDeviceSize size) {
+  // 这个Buffer将补用作传输操作的源
+  VkBufferUsageFlags staging_buffer_usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+  // HOST_VISIBLE: 保证了CPU可以映射它并写入数据
+  // HOST_COHERENT: 保证了CPU写入后，GPU能立刻看到这些数据，无需手动刷新缓存。
+  VkMemoryPropertyFlags staging_buffer_flags = 0;
+  staging_buffer_flags |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+  staging_buffer_flags |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+  return CreateBuffer(size, staging_buffer_usage, staging_buffer_flags);
 }
 
 bool Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
@@ -117,7 +134,7 @@ void Buffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer,
 void Buffer::Create(TYPE type, void *data, size_t data_size) {
   
   // TBD: 优化复用？
-  Destroy();
+  Destroy(true);
 
   auto device = m_bridge.GetVkDevice();
 
@@ -153,6 +170,19 @@ void Buffer::Create(TYPE type, void *data, size_t data_size) {
 
   vkDestroyBuffer(device, stagingBuffer, nullptr);
   vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
+
+void *Buffer::MapMemory(VkDeviceSize offset, VkDeviceSize size) {
+  VkDevice device = m_bridge.GetVkDevice();
+
+  void *data = nullptr;
+  vkMapMemory(device, m_buffer_memory, offset, size, 0, &data);
+  return data;
+}
+
+void Buffer::UnmapMemory() {
+  VkDevice device = m_bridge.GetVkDevice();
+  vkUnmapMemory(device, m_buffer_memory);
 }
 
 } // namespace vulkan

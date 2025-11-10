@@ -22,9 +22,6 @@ protected:
 
 private:
   bool create();
-  bool create_vulkan_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                            VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                            VkDeviceMemory &bufferMemory);
   bool createTextureImage();
   bool updateTextureDescriptorset();
 

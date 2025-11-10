@@ -65,7 +65,7 @@ private:
   bool createUniformDescriptorPool();
   bool createTextureDescriptorPool();
 
-  void drawFrame_acquireNextCommandBuffer();
+  bool drawFrame_acquireNextCommandBuffer();
   bool drawFrame_acquireNextSwapChainImage();
   void drawFrame_beginRecordCommandBuffer();
   void drawFrame_endRecordCommandBuffer();

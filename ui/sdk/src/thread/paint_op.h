@@ -2,7 +2,7 @@
 #define _UI_SRK_SRC_THREAD_PAINT_OP_H_
 #include "include/util/color.h"
 #include "include/util/rect.h"
-#include "src/graphics/record/record_render_target.h"
+#include "src/graphics/async_render_target.h"
 #include <memory>
 
 #include "include/util/rect_region.h"

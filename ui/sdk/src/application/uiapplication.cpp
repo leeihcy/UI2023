@@ -13,7 +13,7 @@
 #include "src/control/text/text_meta.h"
 #include "src/control/image/image_meta.h"
 #include "src/control/button/button_meta.h"
-#include "src/graphics/record/record_render_target.h"
+#include "src/graphics/async_render_target.h"
 #include "src/graphics/skia/skia_render.h"
 #include "src/graphics/skia/skia_bitmap.h"
 #include "src/panel/panel_meta.h"
@@ -574,7 +574,7 @@ Application::CreateRenderTarget(eGraphicsLibraryType lib_type) {
   switch (lib_type) {
   case eGraphicsLibraryType::Skia: {
     if (Config::GetInstance().enable_render_thread) {
-      rt = std::shared_ptr<IRenderTarget>(new RecordRenderTarget,
+      rt = std::shared_ptr<IRenderTarget>(new AsyncRenderTarget,
                                           DestroyRenderTarget);
     } else {
       rt = std::shared_ptr<IRenderTarget>(new SkiaRenderTarget,

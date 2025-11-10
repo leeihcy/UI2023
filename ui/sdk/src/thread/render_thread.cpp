@@ -1,7 +1,7 @@
 #include "src/thread/render_thread.h"
 #include "gpu/include/api.h"
 #include "include/util/log.h"
-#include "src/graphics/record/record_render_target.h"
+#include "src/graphics/async_render_target.h"
 #include "src/graphics/skia/skia_render.h"
 #include "src/thread/paint_op.h"
 #include <mutex>
@@ -142,7 +142,9 @@ void RenderThread::mergeAndOptimizeOperations(
 
 //
 // 将重复的绘制指令踢除掉
-// 以BeginDraw，EndDraw为分界线，只要两个Group都是针对同一RenderTarget，则可优化掉前一个。
+// 1. 以BeginDraw，EndDraw为分界线，只要两个Group都是针对同一RenderTarget，则可优化掉前一个。
+// 2. 合并同一个RenderTarget的Resize事件
+// TODO: 需要将Resize之前的BeginDraw、EndDraw也去掉，避免数据不同步。
 //
 void RenderThread::mergePaintOperations() {
   if (m_paint_op_group.size() <= 1) {
@@ -196,6 +198,20 @@ void RenderThread::mergePaintOperations() {
     remove_index.push_back(iter->second);
     rt_draw_index_map[key] = i;
   }
+
+  // 将Resize之前的BeginDraw、EndDraw也去掉，避免数据不同步。
+  // 这里只需要检测最后一个即可，重复的数据在上一轮已经处理了。
+  for (auto iter : rt_resize_index_map) {
+    void* key = iter.first;
+    auto draw_iter = rt_draw_index_map.find(key);
+    if (draw_iter == rt_draw_index_map.end()) {
+      continue;
+    }
+    // 在resize前面的才删除。
+    if (iter.second > draw_iter->second) {
+      remove_index.push_back(draw_iter->second);
+    }
+  }
   if (remove_index.empty()) {
     return;
   }
@@ -204,7 +220,7 @@ void RenderThread::mergePaintOperations() {
   for (int i : remove_index) {
     m_paint_op_group.erase(m_paint_op_group.begin() + i);
   }
-  UI_LOG_DEBUG("Merge %d paint op groups", remove_index.size());
+  UI_LOG_DEBUG("Merge %d paint & resize op groups", remove_index.size());
 }
 
 // 合并 AsyncTask中的冗余命令。例如 窗口变更事件，只需要取最新那个即可。

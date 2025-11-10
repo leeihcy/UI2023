@@ -27,6 +27,12 @@ VkTextureTile::~VkTextureTile() {
   m_texture_image.Destroy(device);
 }
 
+// 使用一个Staging Buffer作为中转站。
+// Staging Buffer的设计目标：让CPU和GPU都各司其职，做自己最擅长的事情，以实现最高的数据传输效率。
+// 它的工作流程通常涉及两次数据拷贝：
+// 1. CPU -> Staging Buffer (慢速)
+// 2. Staging Buffer -> GPU (快速，由GPU执行)
+//
 void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
   if (m_texture_image == VK_NULL_HANDLE) {
     create();
@@ -34,17 +40,10 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
 
   VkDeviceSize imageSize = TILE_SIZE * TILE_SIZE * 4;
 
-  VkBuffer stagingBuffer;
-  VkDeviceMemory stagingBufferMemory;
-  create_vulkan_buffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                           VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                       stagingBuffer, stagingBufferMemory);
+  vulkan::Buffer staging_buffer(m_bridge);
+  staging_buffer.CreateStaingBuffer(imageSize);
 
-  VkDevice device = m_bridge.GetVkDevice();
-
-  void *data;
-  vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+  void *data = staging_buffer.MapMemory(0, imageSize);
   // memcpy(data, pixels, static_cast<size_t>(imageSize));
 
   // 如果本次内容没有填充满Tile，则需要将空白处清0，以防上一次的脏数据干扰
@@ -85,7 +84,7 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
     }
   }
 
-  vkUnmapMemory(device, stagingBufferMemory);
+  staging_buffer.UnmapMemory();
 
   
   // 几种最常用的 Image Layout：
@@ -121,15 +120,14 @@ void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
   transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_UNDEFINED,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-  copyBufferToImage(stagingBuffer, m_texture_image,
+  copyBufferToImage(staging_buffer.handle(), m_texture_image,
                     static_cast<uint32_t>(TILE_SIZE),
                     static_cast<uint32_t>(TILE_SIZE));
   transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-  vkDestroyBuffer(device, stagingBuffer, nullptr);
-  vkFreeMemory(device, stagingBufferMemory, nullptr);
+  staging_buffer.Destroy(false);
 }
 
 // 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
@@ -385,44 +383,5 @@ bool VkTextureTile::createTextureImage() {
   vkBindImageMemory(device, m_texture_image, m_texture_image_memory, 0);
   return true;
 }
-
-bool VkTextureTile::create_vulkan_buffer(VkDeviceSize size,
-                                         VkBufferUsageFlags usage,
-                                         VkMemoryPropertyFlags properties,
-                                         VkBuffer &buffer,
-                                         VkDeviceMemory &bufferMemory) {
-
-  VkDevice device = m_bridge.GetVkDevice();
-
-  VkBufferCreateInfo bufferInfo{};
-  bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-  bufferInfo.size = size;
-  bufferInfo.usage = usage;
-  bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-  if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-    return false;
-  }
-
-  VkMemoryRequirements memRequirements;
-  vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
-
-  VkMemoryAllocateInfo allocInfo{};
-  allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-  allocInfo.allocationSize = memRequirements.size;
-  if (!findMemoryType(memRequirements.memoryTypeBits, properties,
-                      &allocInfo.memoryTypeIndex)) {
-    return false;
-  }
-
-  if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) !=
-      VK_SUCCESS) {
-    return false;
-  }
-
-  vkBindBufferMemory(device, buffer, bufferMemory, 0);
-  return true;
-}
-
 
 } // namespace ui
