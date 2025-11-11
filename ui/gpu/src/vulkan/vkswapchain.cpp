@@ -98,7 +98,7 @@ bool SwapChain::Create(VkSurfaceKHR surface, int width, int height) {
   if (old_swapchain != VK_NULL_HANDLE) {
     m_images.clear();
 
-    ui::Log("Destroy Swapchain: %p", old_swapchain);
+    // ui::Log("Destroy Swapchain: %p", old_swapchain);
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), old_swapchain, nullptr);
     old_swapchain = VK_NULL_HANDLE;
   }
@@ -132,7 +132,7 @@ void SwapChain::Destroy() {
 
   m_images.clear();
   if (m_swapchain != VK_NULL_HANDLE) {
-    ui::Log("Destroy Swapchain: %p", m_swapchain);
+    // ui::Log("Destroy Swapchain: %p", m_swapchain);
 
     vkDestroySwapchainKHR(m_bridge.GetVkDevice(), m_swapchain, nullptr);
     m_swapchain = VK_NULL_HANDLE;
@@ -180,7 +180,7 @@ bool SwapChain::createSwapchain(VkSurfaceKHR surface, int width, int height) {
     ui::Log("failed to create swap chain!");
     return false;
   }
-  ui::Log("Create Swapchain: %p", m_swapchain);
+  // ui::Log("Create Swapchain: %p", m_swapchain);
 
   return true;
 }

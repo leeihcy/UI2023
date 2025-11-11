@@ -212,9 +212,11 @@ void VulkanCompositor::drawFrame_presentSwapChain() {
   // 只有present一个新image时，才会释放上一个image给vkAcquireNextImageKHR用。
   // 因为gpu需要一直需要用一个image来进行渲染，直到提供了新的。
   VkResult result = vkQueuePresentKHR(m_device_queue.PresentQueue(), &presentInfo);
-  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-    assert(result == VK_SUCCESS);
+  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+    m_swapchain.MarkNeedReCreate();
+    return;
   }
+  assert(result == VK_SUCCESS);
 }
 
 } // namespace ui

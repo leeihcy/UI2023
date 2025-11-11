@@ -123,16 +123,15 @@ public:
 
     ui::GpuUploadBitmap info;
     info.bpp = image.GetBPP();
-    info.hasAlphaChannel = false;
     info.width = image.GetWidth();
     info.height = image.GetHeight();
     info.pitch = image.GetPitch();
-    info.pFirstLineBits = (unsigned char *)(image.GetBits());
+    info.bits = (unsigned char *)(image.GetBits());
 
     ui::Rect range =
         ui::Rect::MakeXYWH(0, 0, image.GetWidth(), image.GetHeight());
-    info.prcArray = &range;
-    info.nCount = 1;
+    info.dirty_list = &range;
+    info.dirty_count = 1;
     m_root_layer->UploadBitmap(info);
   }
   void Commit() {

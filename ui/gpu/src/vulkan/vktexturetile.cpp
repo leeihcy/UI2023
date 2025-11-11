@@ -4,7 +4,6 @@
 #include "src/vulkan/vkpipeline.h"
 #include "src/vulkan/vkcompositor.h"
 #include "src/util.h"
-#include <_types/_uint32_t.h>
 #include <vulkan/vulkan_core.h>
 #include <memory.h>
 

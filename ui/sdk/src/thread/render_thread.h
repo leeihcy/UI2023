@@ -56,7 +56,7 @@ private:
 
   void create_swap_chain(void *key);
   void remove_key(void *key);
-  void mergeAndOptimizeOperations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
+  void groupOperations(std::vector<std::unique_ptr<PaintOp>>& op_queue);
   void mergePaintOperations();
   void mergeCommandOperations();
 
@@ -77,7 +77,10 @@ private:
 
     // 同一个key划在同一个group下面。
     void* key;
-    // 该key已调用了EndDraw完全绘制。在end之前，其它子rt的BeginDraw仍然划归该group下。
+
+    // 是否包含了BeginDraw指令
+    bool begin_draw = false;
+    // 是否包含了EndDraw指令 
     bool end_draw = false;
     
     // 这是一个命令GROUP。

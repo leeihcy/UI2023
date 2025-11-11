@@ -166,7 +166,7 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
   m_resized_flags = true;
   m_width = width;
   m_height = height;
-
+#if 1
   // 256的倍数，并且不减
   int fix_width = width;
   if ((fix_width & 0xFF) != 0) {
@@ -186,7 +186,10 @@ bool SkiaRenderTarget::Resize(unsigned int width, unsigned int height) {
     fix_width = std::max(m_sksurface->width(), fix_width);
     fix_height = std::max(m_sksurface->height(), fix_height);
   }
-
+#else
+  int fix_width = width;
+  int fix_height = height;
+#endif
   UI_LOG_INFO("[SkiaRenderTarget] Resize:%d,%d => %d,%d(0x%x, 0x%x)",
               width, height, fix_width, fix_height, fix_width, fix_height);
 

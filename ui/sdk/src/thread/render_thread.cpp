@@ -66,8 +66,13 @@ void RenderThread::thread_proc() {
       //   std::make_move_iterator(m_paint_op_queue.end()));
       // m_paint_op_queue.clear();
     }
-    // 指令优化
-    mergeAndOptimizeOperations(local_queue);
+
+    // 指令分组
+    groupOperations(local_queue);
+    // 指令优化(去重)
+    mergePaintOperations();
+    mergeCommandOperations();
+
     if (m_paint_op_group.empty()) {
       continue;
     }
@@ -95,11 +100,10 @@ RenderThread::PaintOpGroup::PaintOpGroup(void *_key,
   ops.push_back(std::move(op));
 }
 
-// 指令集优化
 // 针对同一个surface，在begindraw,enddraw之间包围的命令作为一个整体（支持内嵌，如child
 // layer）
 //
-void RenderThread::mergeAndOptimizeOperations(
+void RenderThread::groupOperations(
     std::vector<std::unique_ptr<PaintOp>> &op_queue) {
   // 1. 按照begindraw/enddraw进行分组，以组为单位，将队列中更早的分组移除掉。
   for (auto &cmd : op_queue) {
@@ -125,8 +129,9 @@ void RenderThread::mergeAndOptimizeOperations(
     PaintOpGroup *group = m_paint_op_group.back().get();
     if (cmd->type == PaintOpType::BeginDraw) {
       if (group->end_draw) {
-        m_paint_op_group.push_back(
-            std::make_unique<PaintOpGroup>(key, std::move(cmd)));
+        auto new_group = std::make_unique<PaintOpGroup>(key, std::move(cmd));
+        new_group->begin_draw = true;
+        m_paint_op_group.push_back(std::move(new_group));
         continue;
       }
     }
@@ -136,8 +141,6 @@ void RenderThread::mergeAndOptimizeOperations(
     }
     group->ops.push_back(std::move(cmd));
   }
-  mergePaintOperations();
-  mergeCommandOperations();
 }
 
 //
@@ -185,6 +188,12 @@ void RenderThread::mergePaintOperations() {
     if (group->is_command) {
       continue;
     }
+    // 注：没有begindraw表示这个group不是一套完整的渲染。
+    //     begindraw后的一些操作已经被执行完了，后续的操作才到来
+    //     这种group必须继续执行，不能被合并，否则会造成状态异常。
+    if (!group->begin_draw) {
+      continue;
+    }
     if (!group->end_draw) {
       continue;
     }
@@ -199,6 +208,7 @@ void RenderThread::mergePaintOperations() {
     rt_draw_index_map[key] = i;
   }
 
+#if 1
   // 将Resize之前的BeginDraw、EndDraw也去掉，避免数据不同步。
   // 这里只需要检测最后一个即可，重复的数据在上一轮已经处理了。
   for (auto iter : rt_resize_index_map) {
@@ -212,6 +222,7 @@ void RenderThread::mergePaintOperations() {
       remove_index.push_back(draw_iter->second);
     }
   }
+#endif
   if (remove_index.empty()) {
     return;
   }
