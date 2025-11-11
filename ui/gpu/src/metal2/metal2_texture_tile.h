@@ -11,7 +11,7 @@ public:
   ~Metal2TextureTile();
 
 protected:
-  void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) override;
+  void Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source) override;
   void Compositor(long, long, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext) override;
 private:

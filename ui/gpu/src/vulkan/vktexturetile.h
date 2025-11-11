@@ -16,7 +16,8 @@ public:
   ~VkTextureTile();
 
 protected:
-  void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) override;
+  void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
+              ui::GpuUploadBitmap &source) override;
   void Compositor(long, long, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext) override;
 
@@ -28,7 +29,7 @@ private:
   bool findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties,
                       uint32_t *out);
 
-  void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+  void copyBufferToImage(VkBuffer buffer, VkImage image, int left, int top, uint32_t width, uint32_t height);
   void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
   bool transitionImageLayout(VkImage image, VkFormat format,
                            VkImageLayout oldLayout, VkImageLayout newLayout);

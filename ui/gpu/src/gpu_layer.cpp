@@ -94,69 +94,43 @@ void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
 //---------------------------------------------------------------------------------------
 //
 
-void GpuLayer::UploadBitmap(UploadGpuBitmapInfo &info) {
-  int nCount = info.nCount;
-  ui::Rect *prcArray = (ui::Rect *)info.prcArray;
-
-  ui::Rect rcFull = {0, 0, info.width, info.height};
-  if (0 == info.nCount || nullptr == info.prcArray) {
-    nCount = 1;
-    prcArray = &rcFull;
-  }
-
-  for (int i = 0; i < nCount; i++) {
-    ui::Rect rc = rcFull;
-    if (prcArray)
-      rc.Intersect(prcArray[i], &rc);
-
-    upload_bitmap_rect(rc, info);
-  }
-}
-
-// 如果对WindowSizeChange指令进行优化合并，会导致上传的区域，和当前纹理的区域不一致？
-void GpuLayer::upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &source) {
-  if (source.bpp != 32) {
-    assert(false && "Support 32 bpp only.");
+void GpuLayer::UploadBitmap(GpuUploadBitmap &bitmap) {
+   if (bitmap.bpp != 32) {
+    assert(false && "Support 32 bpp B8G8R8A8 only.");
     return;
   }
-  ui::Log("Update Gpu Layer: %d,%d (%d,%d)", rc.left, rc.top, rc.Width(), rc.Height());
 
-  // 分析受影响的 tile
-  // -1: 例如(0~128)，受影响的就是一个区域0，不影响区域1(128/128=1)
-  int xIndexFrom = std::min(rc.left / TILE_SIZE, m_arrayTile.GetCol()-1);
-  int xIndexTo = std::min((rc.right - 1) / TILE_SIZE, m_arrayTile.GetCol()-1);
-  int yIndexFrom = std::min(rc.top / TILE_SIZE, m_arrayTile.GetRow()-1);
-  int yIndexTo = std::min((rc.bottom - 1) / TILE_SIZE, m_arrayTile.GetRow()-1);
+  for (int i = 0; i < bitmap.dirty_count; i++) {
+    const Rect& dirty = bitmap.dirty_list[i];
+    // ui::Log("Update Gpu Layer: %d,%d (%d,%d)", rc.left, rc.top, rc.Width(), rc.Height());
 
-#if ENABLE_TRACE
-  char szText[32];
-  sprintf(szText, "Upload2Gpu: %d,%d  %d,%d\r\n", rc.left, rc.top,
-          rc.right - rc.left, rc.bottom - rc.top);
-  OutputDebugStringA(szText);
-#endif
+    // 分析受影响的 tile
+    int max_x = m_arrayTile.GetCol()-1;
+    int max_y = m_arrayTile.GetRow()-1;
 
-  ui::Rect rcSrc;
-  for (int y = yIndexFrom; y <= yIndexTo; y++) {
-    for (int x = xIndexFrom; x <= xIndexTo; x++) {
-      rcSrc.left = x * TILE_SIZE;
-      rcSrc.top = y * TILE_SIZE;
-      rcSrc.right = rcSrc.left + TILE_SIZE;
-      rcSrc.bottom = rcSrc.top + TILE_SIZE;
+    int x_from = std::min(dirty.left / TILE_SIZE, max_x);
+    int x_to = std::min((dirty.right - 1) / TILE_SIZE, max_x);
+    int y_from = std::min(dirty.top / TILE_SIZE, max_y);
+    int y_to = std::min((dirty.bottom - 1) / TILE_SIZE, max_y);
 
-      // 超出纹理大小的区域直接忽略。这一般是针对于位于右侧和底部的
-      // 那些分块
-      if (rcSrc.right > m_width)
-        rcSrc.right = m_width;
-      if (rcSrc.bottom > m_height)
-        rcSrc.bottom = m_height;
+    ui::Rect tile_rect;
+    ui::Rect dirty_of_tile;
+    ui::Rect dirty_of_layer;
 
-      m_arrayTile[y][x]->Upload(rcSrc, source);
+    for (int y = y_from; y <= y_to; y++) {
+      for (int x = x_from; x <= x_to; x++) {
+        tile_rect.left = x * TILE_SIZE;
+        tile_rect.top = y * TILE_SIZE;
+        tile_rect.right = tile_rect.left + TILE_SIZE;
+        tile_rect.bottom = tile_rect.top + TILE_SIZE;
 
-#if ENABLE_TRACE
-      char szText[32];
-      sprintf(szText, "Update Tile: (%d,%d)\r\n", x, y);
-      OutputDebugStringA(szText);
-#endif
+        dirty.Intersect(tile_rect, &dirty_of_layer);
+
+        dirty_of_tile = dirty_of_layer;
+        dirty_of_tile.Offset(-tile_rect.left, -tile_rect.top);
+
+        m_arrayTile[y][x]->Upload(dirty_of_tile, dirty_of_layer, bitmap);
+      }
     }
   }
 }

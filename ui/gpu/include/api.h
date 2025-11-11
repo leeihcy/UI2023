@@ -70,16 +70,15 @@ struct IGpuCompositor {
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
 
-struct UploadGpuBitmapInfo {
+struct GpuUploadBitmap {
   int width;
   int height;
   int bpp;
   int pitch;
-  unsigned char *pFirstLineBits;
-  bool hasAlphaChannel;
+  unsigned char *bits;
 
-  Rect *prcArray;
-  unsigned int nCount;
+  Rect *dirty_list;
+  unsigned int dirty_count;
 };
 
 class GpuLayerCommitContext {
@@ -169,7 +168,7 @@ struct IGpuLayer {
   virtual void Compositor(GpuLayerCommitContext *pContext,
                           float *pMatrixTransform) = 0;
 
-  virtual void UploadBitmap(UploadGpuBitmapInfo &info) = 0;
+  virtual void UploadBitmap(GpuUploadBitmap &info) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
 };
 

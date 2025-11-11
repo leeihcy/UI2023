@@ -8,12 +8,13 @@ namespace ui {
 class TextureTile {
 public:
   virtual ~TextureTile() {}
-  
+
   void SetIndex(int xIndex, int yIndex);
 
-  virtual void Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) = 0;
+  virtual void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
+                      ui::GpuUploadBitmap &source) = 0;
   virtual void Compositor(long xOffset, long yOffset, long vertexStartIndex,
-                  ui::GpuLayerCommitContext *pContext) = 0;
+                          ui::GpuLayerCommitContext *pContext) = 0;
 
 protected:
   long m_width = 0;

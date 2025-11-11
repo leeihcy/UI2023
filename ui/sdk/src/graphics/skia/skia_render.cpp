@@ -1121,9 +1121,8 @@ void SkiaRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
     return;
   }
 
-  ui::UploadGpuBitmapInfo source = {0};
-  source.hasAlphaChannel = true;
-  source.pFirstLineBits = (byte *)pm.addr();
+  ui::GpuUploadBitmap source = {0};
+  source.bits = (byte *)pm.addr();
   source.pitch = (int)pm.rowBytes();
   source.width = pm.width();
   source.height = pm.height();
@@ -1136,8 +1135,8 @@ void SkiaRenderTarget::Upload2Gpu(Rect *prcArray, int nCount,
     rc.Scale(scale);
     rects.push_back(rc);
   }
-  source.prcArray = rects.data();
-  source.nCount = nCount;
+  source.dirty_list = rects.data();
+  source.dirty_count = nCount;
 
   m_gpu_texture->UploadBitmap(source);
 

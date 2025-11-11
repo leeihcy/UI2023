@@ -172,6 +172,12 @@ void Buffer::Create(TYPE type, void *data, size_t data_size) {
   vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
+//
+// offset is a zero-based byte offset from the beginning of the memory object.
+//
+// size is the size of the memory range to map, or VK_WHOLE_SIZE to map from 
+// offset to the end of the allocation.
+//
 void *Buffer::MapMemory(VkDeviceSize offset, VkDeviceSize size) {
   VkDevice device = m_bridge.GetVkDevice();
 

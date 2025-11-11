@@ -57,7 +57,7 @@ public:
     m_root_layer = m_gpu_composition->CreateLayerTexture();
     m_root_layer->Resize(image.GetWidth(), image.GetHeight());
 
-    ui::UploadGpuBitmapInfo info;
+    ui::GpuUploadBitmap info;
     info.bpp = image.GetBPP();
     info.hasAlphaChannel = false;
     info.width = image.GetWidth();

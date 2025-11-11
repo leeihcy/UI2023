@@ -14,6 +14,7 @@ class CommandPool;
 class SwapChain;
 class DeviceQueue;
 class PipeLine;
+class Buffer;
 
 struct IVulkanBridge {
   virtual VkDevice GetVkDevice() = 0;
@@ -27,6 +28,7 @@ struct IVulkanBridge {
   virtual Vk::CommandPool& GetCommandPool() = 0;
   virtual Vk::DescriptorPool& GetUniformDescriptorPool() = 0;
   virtual Vk::DescriptorPool& GetTextureDescriptorPool() = 0;
+  virtual vulkan::Buffer& GetTextureTileStagingBuffer() = 0;
 
   virtual vulkan::DeviceQueue& GetDeviceQueue() = 0;
   virtual vulkan::PipeLine& GetPipeline() = 0;

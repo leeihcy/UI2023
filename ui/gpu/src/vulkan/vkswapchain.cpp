@@ -359,9 +359,6 @@ SwapChainFrame* SwapChain::GetCurrentFrame() {
   return m_images[m_current_image_index].get();
 }
 InFlightFrame* SwapChain::GetCurrentInflightFrame() {
-    if (m_current_inflight_frame_index >= m_inflight_frames.size()) {
-        int a = 0;
-    }
   assert(m_current_inflight_frame_index < m_inflight_frames.size());
 
   return m_inflight_frames[m_current_inflight_frame_index].get();

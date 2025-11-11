@@ -1,8 +1,10 @@
 #include "vktexturetile.h"
 #include "include/api.h"
+#include "include/interface.h"
 #include "src/vulkan/vkpipeline.h"
 #include "src/vulkan/vkcompositor.h"
 #include "src/util.h"
+#include <_types/_uint32_t.h>
 #include <vulkan/vulkan_core.h>
 #include <memory.h>
 
@@ -33,101 +35,44 @@ VkTextureTile::~VkTextureTile() {
 // 1. CPU -> Staging Buffer (慢速)
 // 2. Staging Buffer -> GPU (快速，由GPU执行)
 //
-void VkTextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
+// Vulkan支持脏区域上传。
+//
+void VkTextureTile::Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
+                           ui::GpuUploadBitmap &bitmap) {
   if (m_texture_image == VK_NULL_HANDLE) {
     create();
   }
 
-  VkDeviceSize imageSize = TILE_SIZE * TILE_SIZE * 4;
+  vulkan::Buffer& staging_buffer = m_bridge.GetTextureTileStagingBuffer();
+ 
+  constexpr int px_size = 4;
+  int w = dirty_of_tile.Width();
+  int h = dirty_of_tile.Height();
 
-  vulkan::Buffer staging_buffer(m_bridge);
-  staging_buffer.CreateStaingBuffer(imageSize);
+  int buffer_size = w * h * px_size;
+  unsigned char *dest_data = (unsigned char*)staging_buffer.MapMemory(0, buffer_size);
 
-  void *data = staging_buffer.MapMemory(0, imageSize);
-  // memcpy(data, pixels, static_cast<size_t>(imageSize));
+  unsigned char* source_data = bitmap.bits + dirty_of_layer.top * bitmap.pitch;
+  source_data += dirty_of_layer.left * px_size;
 
-  // 如果本次内容没有填充满Tile，则需要将空白处清0，以防上一次的脏数据干扰
-  int w = rcSrc.right - rcSrc.left;
-  int h = rcSrc.bottom - rcSrc.top;
-  if (w != TILE_SIZE || h != TILE_SIZE) {
-    memset(data, 0, imageSize);
-  }
-
-  unsigned char *pSrcBits = (unsigned char *)source.pFirstLineBits;
-  unsigned char *pTexels = (unsigned char *)data;
-
-  pSrcBits += rcSrc.top * source.pitch;
-
-  // 创建的VK_FORMAT_B8G8R8A8_SRGB格式image view
-  if (source.hasAlphaChannel) {
-    int w = rcSrc.right - rcSrc.left;
-
-    // 不要使用for{for循环，效率太低。
-    for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
-      memcpy(pTexels, pSrcBits + (rcSrc.left * 4), w * 4);
-      pSrcBits += source.pitch;
-      pTexels += TILE_SIZE * 4;
-    }
-  } else {
-    for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
-      int dstcol = 0;
-      // 创建的VK_FORMAT_B8G8R8A8_SRGB格式image view
-      for (int col = rcSrc.left; col < rcSrc.right; col++, dstcol++) {
-        pTexels[dstcol * 4 + 0] = pSrcBits[col * 4 + 0]; // Blue
-        pTexels[dstcol * 4 + 1] = pSrcBits[col * 4 + 1]; // Green
-        pTexels[dstcol * 4 + 2] = pSrcBits[col * 4 + 2]; // Red
-        pTexels[dstcol * 4 + 3] = 255;
-      }
-
-      pSrcBits += source.pitch;
-      pTexels += TILE_SIZE * 4;
-    }
+  unsigned int buffer_pitch = w * px_size;
+  for (int row = dirty_of_layer.top; row < dirty_of_layer.bottom; row++) {
+    memcpy(dest_data, source_data, buffer_pitch);
+    source_data += bitmap.pitch;
+    dest_data += buffer_pitch;
   }
 
   staging_buffer.UnmapMemory();
 
-  
-  // 几种最常用的 Image Layout：
-  //
-  // VK_IMAGE_LAYOUT_UNDEFINED：
-  // 含义：布局未定义，图像内容无保证（可能是垃圾数据）。
-  // 用途：通常用作布局转换的初始状态。因为你不在乎旧数据，所以转换到这种布局开销很小。例如，在开始渲染前，将交换链图像转换到 COLOR_ATTACHMENT_OPTIMAL 时，初始布局常用 UNDEFINED。
-  //
-  // VK_IMAGE_LAYOUT_GENERAL：
-  // 含义：通用布局。对所有操作都“基本可用”，但通常不是性能最优的。
-  // 用途：当图像在单个渲染过程中需要被用于多种不同类型的操作，且没有其他更合适的布局时使用。例如，在计算着色器中写入，然后在片段着色器中采样。
-  // 
-  // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL：
-  // 含义：对作为颜色附件进行写入操作最优的布局。
-  // 用途：在渲染通道中，作为 VK_ATTACHMENT_LOAD_OP_LOAD 或 VK_ATTACHMENT_STORE_OP_STORE 的颜色附件时使用。
-  //
-  // VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL：
-  // 含义：对作为深度/模板附件进行读写操作最优的布局。
-  // 用途：在渲染通道中，作为深度或模板测试的附件时使用。
-  //
-  // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL：
-  // 含义：对在着色器（如片段着色器）中进行采样操作最优的布局。
-  // 用途：将图像作为纹理贴图使用时。
-  //
-  // VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL / VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL：
-  // 含义：对作为复制命令的源或目标最优的布局。
-  // 用途：使用 vkCmdCopyImage 等命令进行图像数据拷贝时。
-  //
-  // VK_IMAGE_LAYOUT_PRESENT_SRC_KHR：
-  // 含义：对呈现（Present）到屏幕最优的布局。
-  // 用途：交换链图像在渲染完成后，准备呈现给窗口系统时。
-  //
   transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_UNDEFINED,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
   copyBufferToImage(staging_buffer.handle(), m_texture_image,
-                    static_cast<uint32_t>(TILE_SIZE),
-                    static_cast<uint32_t>(TILE_SIZE));
+                    dirty_of_tile.left, dirty_of_tile.top,
+                    dirty_of_tile.Width(), dirty_of_tile.Height());
   transitionImageLayout(m_texture_image, VK_FORMAT_B8G8R8A8_SRGB,
                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                         VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-  staging_buffer.Destroy(false);
 }
 
 // 每次上传纹理数据时，只是更新了VkImage内容，VkImage对象并没有替换。
@@ -213,21 +158,24 @@ bool VkTextureTile::findMemoryType(uint32_t typeFilter,
   return false;
 }
 
-void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image,
-                                      uint32_t width, uint32_t height) {
+void VkTextureTile::copyBufferToImage(VkBuffer buffer, VkImage image, int left,
+                                      int top, uint32_t width,
+                                      uint32_t height) {
   Vk::CommandBuffer cb;
   cb.Attach(m_bridge.GetCommandPool().AllocateCommandBuffer(m_bridge.GetVkDevice()));
   cb.BeginRecordCommand();
 
+  // 缓存从0偏移开始，存储了width*height的脏区域数据。
   VkBufferImageCopy region{};
   region.bufferOffset = 0;
-  region.bufferRowLength = 0;
-  region.bufferImageHeight = 0;
+  region.bufferRowLength = width;  // 不用乘4
+  region.bufferImageHeight = height;
+
   region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
   region.imageSubresource.mipLevel = 0;
   region.imageSubresource.baseArrayLayer = 0;
   region.imageSubresource.layerCount = 1;
-  region.imageOffset = {0, 0, 0};
+  region.imageOffset = {left, top, 0};
   region.imageExtent = {width, height, 1};
 
   vkCmdCopyBufferToImage(cb, buffer, image,

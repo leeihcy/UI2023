@@ -28,7 +28,7 @@ D3D10TextureTile::~D3D10TextureTile() {
 // 注：dx10开始，已经不再支持24位的格式D3DFMT_R8G8B8格式了。
 // 见：https://msdn.microsoft.com/en-us/library/windows/desktop/cc308051(v=vs.85).aspx
 
-void D3D10TextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
+void D3D10TextureTile::Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source) {
   if (!m_pTextureBuffer) {
     create();
   }
@@ -58,46 +58,16 @@ void D3D10TextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) 
     memset(pTexels, 0, mappedTexture.RowPitch * TILE_SIZE);
   }
 
-  BYTE *pSrcBits = (BYTE *)source.pFirstLineBits;
+  BYTE *pSrcBits = (BYTE *)source.bits;
   byte *pTexels = (byte *)mappedTexture.pData;
 
   pSrcBits += rcSrc.top * source.pitch;
 
-  if (source.hasAlphaChannel) {
-    int w = rcSrc.right - rcSrc.left;
-
-    // 不要使用for{for循环，效率太低。
     for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
       memcpy(pTexels, pSrcBits + (rcSrc.left * 4), w * 4);
-
-      /*
-      int dstcol = 0;
-      for (int col = rcSrc.left; col < rcSrc.right; col++, dstcol++)
-      {
-              pTexels[dstcol*4 + 0] = pSrcBits[col*4 + 2]; // Red
-              pTexels[dstcol*4 + 1] = pSrcBits[col*4 + 1]; // Green
-              pTexels[dstcol*4 + 2] = pSrcBits[col*4 + 0]; // Blue
-              pTexels[dstcol*4 + 3] = pSrcBits[col*4 + 3]; // Alpha
-      }
-      */
-
       pSrcBits += source.pitch;
       pTexels += mappedTexture.RowPitch;
     }
-  } else {
-    for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
-      int dstcol = 0;
-      for (int col = rcSrc.left; col < rcSrc.right; col++, dstcol++) {
-        pTexels[dstcol * 4 + 0] = pSrcBits[col * 4 + 2]; // Red
-        pTexels[dstcol * 4 + 1] = pSrcBits[col * 4 + 1]; // Green
-        pTexels[dstcol * 4 + 2] = pSrcBits[col * 4 + 0]; // Blue
-        pTexels[dstcol * 4 + 3] = 255;
-      }
-
-      pSrcBits += source.pitch;
-      pTexels += mappedTexture.RowPitch;
-    }
-  }
 
   m_pTextureBuffer->Unmap(nSub);
 

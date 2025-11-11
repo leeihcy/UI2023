@@ -25,7 +25,9 @@ static VulkanApplication &application() { return VulkanApplication::GetInstance(
 VulkanCompositor::VulkanCompositor()
     : m_device_queue(*this),
       m_swapchain(*static_cast<vulkan::IVulkanBridge *>(this)),
-      m_pipeline(*static_cast<vulkan::IVulkanBridge *>(this)) {
+      m_pipeline(*static_cast<vulkan::IVulkanBridge *>(this)),
+      m_texture_tile_staging_buffer(*static_cast<vulkan::IVulkanBridge *>(this))
+       {
 }
 
 VulkanCompositor::~VulkanCompositor() { destory(); }
@@ -34,6 +36,8 @@ void VulkanCompositor::destory() {
   VkDevice device = m_device_queue.Device();
   VkPhysicalDevice pysical_device = m_device_queue.PhysicalDevice();
   vkDeviceWaitIdle(m_device_queue.Device());
+
+  m_texture_tile_staging_buffer.Destroy(false);
 
   m_pipeline.Destroy();
   m_renderpass.Destroy(device);
@@ -77,6 +81,10 @@ bool VulkanCompositor::Initialize(IGpuCompositorWindow* window) {
     printf("create_commandpool failed\n");
     return false;
   }
+
+  VkDeviceSize imageSize = TILE_SIZE * TILE_SIZE * 4;
+  m_texture_tile_staging_buffer.CreateStaingBuffer(imageSize);
+
   return true;
 }
 

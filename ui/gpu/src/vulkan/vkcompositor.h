@@ -49,6 +49,7 @@ public:
   Vk::CommandPool &GetCommandPool() override { return m_command_pool; }
   Vk::DescriptorPool& GetUniformDescriptorPool() override { return m_uniform_descriptor_pool; }
   Vk::DescriptorPool& GetTextureDescriptorPool() override { return m_texture_descriptor_pool; }
+  vulkan::Buffer& GetTextureTileStagingBuffer() override { return m_texture_tile_staging_buffer; }
 
   vulkan::DeviceQueue &GetDeviceQueue() override { return m_device_queue; }
   vulkan::SwapChain &GetSwapChain() override { return m_swapchain; }
@@ -87,6 +88,9 @@ private:
   Vk::CommandPool m_command_pool;
   Vk::DescriptorPool m_uniform_descriptor_pool;
   Vk::DescriptorPool m_texture_descriptor_pool;
+
+  // 专用用于纹理上传的staging buffer。所有tile共用这一个buffer即可。
+  vulkan::Buffer m_texture_tile_staging_buffer;
 };
 
 } // namespace ui

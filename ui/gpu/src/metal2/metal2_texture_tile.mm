@@ -9,7 +9,7 @@ Metal2TextureTile::~Metal2TextureTile() {
 
 }
 
-void Metal2TextureTile::Upload(ui::Rect &rcSrc, ui::UploadGpuBitmapInfo &source) {
+void Metal2TextureTile::Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source) {
 }
 
 void Metal2TextureTile::Compositor(long, long, long vertexStartIndex,

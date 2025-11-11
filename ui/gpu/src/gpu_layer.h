@@ -133,7 +133,7 @@ public:
   IGpuLayer *GetIGpuLayerTexture();
   void Release();
 
-  void UploadBitmap(UploadGpuBitmapInfo &info);
+  void UploadBitmap(GpuUploadBitmap &bitmap);
 
   virtual void Compositor(GpuLayerCommitContext *pContext,
                           float *pMatrixTransform) = 0;
@@ -146,7 +146,7 @@ public:
 protected:
   void doCreateTile(int width, int height);
 
-  void upload_bitmap_rect(ui::Rect &rc, UploadGpuBitmapInfo &);
+  void upload_bitmap_rect(ui::Rect &rc, GpuUploadBitmap &);
 
   void CalcDrawDestRect(/*__in*/ RECTF *prc, /*__out*/ RECTF *prcfOut);
   void CalcDrawDestRect(int xDest, int yDest, int wDest, int hDest,

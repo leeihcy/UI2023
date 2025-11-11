@@ -184,6 +184,7 @@ void VulkanCompositor::drawFrame_submitCommandBuffer() {
                     // 用于控制 CPU 最多绘制2帧图片(MAX_FRAMES_IN_FLIGHT)， 避免 CPU 提交过快。
                     sync->m_command_buffer_fence) != VK_SUCCESS) {
     Log("failed to submit draw command buffer!");
+    assert(false);
   }
 }
 void VulkanCompositor::drawFrame_presentSwapChain() {
@@ -210,7 +211,10 @@ void VulkanCompositor::drawFrame_presentSwapChain() {
 
   // 只有present一个新image时，才会释放上一个image给vkAcquireNextImageKHR用。
   // 因为gpu需要一直需要用一个image来进行渲染，直到提供了新的。
-  vkQueuePresentKHR(m_device_queue.PresentQueue(), &presentInfo);
+  VkResult result = vkQueuePresentKHR(m_device_queue.PresentQueue(), &presentInfo);
+  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+    assert(result == VK_SUCCESS);
+  }
 }
 
 } // namespace ui
