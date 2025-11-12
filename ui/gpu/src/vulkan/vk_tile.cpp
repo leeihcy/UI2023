@@ -1,8 +1,8 @@
-#include "vktexturetile.h"
+#include "vk_tile.h"
 #include "include/api.h"
 #include "include/interface.h"
-#include "src/vulkan/vkpipeline.h"
-#include "src/vulkan/vkcompositor.h"
+#include "src/vulkan/vk_pipeline.h"
+#include "src/vulkan/vk_compositor.h"
 #include "src/util.h"
 #include <vulkan/vulkan_core.h>
 #include <memory.h>

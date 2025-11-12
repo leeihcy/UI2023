@@ -1,9 +1,9 @@
-#include "vkpipeline.h"
+#include "vk_pipeline.h"
 #include "src/util.h"
-#include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vulkan_buffer.h"
-#include "src/vulkan/vulkan_device_queue.h"
+#include "src/vulkan/vk_swapchain.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_buffer.h"
+#include "src/vulkan/vk_device.h"
 
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>

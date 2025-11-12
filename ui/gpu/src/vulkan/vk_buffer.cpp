@@ -1,6 +1,6 @@
-#include "vulkan_buffer.h"
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vkobjects.h"
+#include "vk_buffer.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_objects.h"
 #include "vulkan/vulkan_core.h"
 #include <memory.h>
 #include <string.h>

@@ -2,7 +2,7 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_BRIDGE_H_
 
 #include <vulkan/vulkan.h>
-#include "src/vulkan/vulkan_device_queue.h"
+#include "src/vulkan/vk_device.h"
 
 namespace Vk {
 class CommandPool;

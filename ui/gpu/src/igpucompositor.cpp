@@ -18,8 +18,8 @@
 #include "metal2/metal2_compositor.h"
 
 #elif defined(ENABLE_VULKAN)
-#include "vulkan/vkapp.h"
-#include "vulkan/vkcompositor.h"
+#include "vulkan/vk_app.h"
+#include "vulkan/vk_compositor.h"
 
 #endif
 

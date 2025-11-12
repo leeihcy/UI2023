@@ -1,9 +1,9 @@
-#include "vulkan_device_queue.h"
+#include "vk_device.h"
 #include <vulkan/vulkan_core.h>
 #include <string>
 
 #include "src/util.h"
-#include "src/vulkan/vkcompositor.h"
+#include "src/vulkan/vk_compositor.h"
 
 
 #if defined(OS_MAC) 

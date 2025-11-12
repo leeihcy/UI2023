@@ -1,5 +1,5 @@
-#include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vk_objects.h"
+#include "src/vulkan/vk_bridge.h"
 #include <assert.h>
 #include "src/util.h"
 

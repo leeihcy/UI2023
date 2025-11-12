@@ -1,8 +1,8 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_IMAGE_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_IMAGE_H_
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vulkan_buffer.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_objects.h"
+#include "src/vulkan/vk_buffer.h"
 
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>

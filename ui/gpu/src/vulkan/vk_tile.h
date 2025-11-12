@@ -1,9 +1,9 @@
 #ifndef _UI_GPU_SRC_VULKAN_TEXTURETILE_H_
 #define _UI_GPU_SRC_VULKAN_TEXTURETILE_H_
 #include "src/texture_tile.h"
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vulkan_buffer.h"
-#include "src/vulkan/vkobjects.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_buffer.h"
+#include "src/vulkan/vk_objects.h"
 
 #include <vulkan/vulkan.h>
 

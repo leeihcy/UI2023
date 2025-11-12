@@ -126,6 +126,11 @@ void RenderThread::groupOperations(
 
     // 对于root surface的新绘制起点，划到新group。
     // sub surface仍然划在root surface下面。
+    // 
+    // TODO: 
+    // 1. 如何确定这是一个root surface。有可能收到了以sub layer的begindraw开始的子数据。
+    // 2. 每次draw的脏区域其实是不一样的，如何合并？
+    //
     PaintOpGroup *group = m_paint_op_group.back().get();
     if (cmd->type == PaintOpType::BeginDraw) {
       if (group->end_draw) {

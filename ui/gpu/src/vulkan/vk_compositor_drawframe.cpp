@@ -1,5 +1,5 @@
-#include "src/vulkan/vkcompositor.h"
-#include "src/vulkan/vulkan_swap_chain_image.h"
+#include "src/vulkan/vk_compositor.h"
+#include "src/vulkan/vk_swapchain_image.h"
 #include "src/util.h"
 #include "vulkan/vulkan_core.h"
 

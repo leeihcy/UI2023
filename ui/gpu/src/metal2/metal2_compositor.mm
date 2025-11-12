@@ -1,10 +1,12 @@
 #include "src/metal2/metal2_compositor.h"
 #include "src/metal2/metal2_app.h"
+#include "src/metal2/metal2_bridge.h"
+#include "src/util.h"
 
 namespace ui {
 
 
-Metal2Compositor::Metal2Compositor() {
+Metal2Compositor::Metal2Compositor() : m_pipeline(*static_cast<IMetal2Bridge*>(this)){
   m_delgate = [[Metal2CompositorDelegate alloc] initWith:this];
 }
 Metal2Compositor::~Metal2Compositor() {
@@ -87,12 +89,27 @@ void Metal2Compositor::onDeviceLost() {
 
 }
 void Metal2Compositor::onDeviceCreate() {
+  m_pipeline.Create();
+}
+
+void Metal2Compositor::OnSwapChainCreated() {
   
 }
 
 bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) { return false; }
 void Metal2Compositor::EndCommit(GpuLayerCommitContext *) {}
-void Metal2Compositor::Resize(int nWidth, int nHeight) {}
+void Metal2Compositor::Resize(int width, int height) {
+  if (m_width == width && m_height == height) {
+    return;
+  }
+
+  ui::Log("Metal2Compositor Resize: width=%d, height=%d", width, height);
+  
+  m_width = width;
+  m_height = height;
+
+  // m_swapchain.MarkNeedReCreate();
+}
 
 }
 

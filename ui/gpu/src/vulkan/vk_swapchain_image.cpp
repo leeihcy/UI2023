@@ -1,4 +1,4 @@
-#include "vulkan_swap_chain_image.h"
+#include "vk_swapchain_image.h"
 
 #include <vulkan/vulkan_core.h>
 #include <glm/fwd.hpp>
@@ -6,9 +6,9 @@
 #include <glm/ext/matrix_clip_space.hpp>
 
 #include "src/util.h"
-#include "src/vulkan/vkpipeline.h"
-#include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/vkcompositor.h"
+#include "src/vulkan/vk_pipeline.h"
+#include "src/vulkan/vk_swapchain.h"
+#include "src/vulkan/vk_compositor.h"
 
 namespace vulkan {
 

@@ -1,4 +1,3 @@
-// 1. 将gpu渲染的所有调用放在单独的线程中进行处理。
 #include "include/api.h"
 #include "matrix.h"
 #include "sdk/include/util/rect.h"

@@ -2,12 +2,12 @@
 #define _UI_GPU_SRC_VULKAN_GPU_COMPOSITOR_H_
 #include "include/api.h"
 #include "src/gpu_layer.h"
-#include "src/vulkan/vkapp.h"
-#include "src/vulkan/vkobjects.h"
-#include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vulkan_device_queue.h"
-#include "src/vulkan/vkpipeline.h"
+#include "src/vulkan/vk_app.h"
+#include "src/vulkan/vk_objects.h"
+#include "src/vulkan/vk_swapchain.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_device.h"
+#include "src/vulkan/vk_pipeline.h"
 
 
 #if defined(OS_WIN)

@@ -18,10 +18,8 @@ shared_library("uigpu") {
   libs = []
   lib_dirs = ["$root_build_dir/bin"]
   ldflags = []
+  deps = []
   
-  deps = [
-    ":compile_shaders"
-  ]
   include_dirs = [
         "//",
         "//ui/",
@@ -38,8 +36,8 @@ shared_library("uigpu") {
       #enable_vulkan = false
     }
     else if (is_mac) {
-      # enable_metal2 = true
-      # enable_vulkan = false
+      enable_metal2 = true
+      enable_vulkan = false
     }
 
     if (enable_d3d10) {
@@ -82,8 +80,11 @@ shared_library("uigpu") {
       ]
     }
 
+    if (enable_metal2) {
+      deps += [ ":compile_metal2_shaders" ]
+    }
     if (enable_vulkan) {
-      cflags += [ "-DENABLE_VULKAN" ]
+      deps += [ ":compile_vulkan_shaders" ]
     }
 
     if (enable_vulkan && (is_linux || is_mac)) {
@@ -173,8 +174,12 @@ shared_library("uigpu") {
         "src/metal2/metal2_app.h",
         "src/metal2/metal2_compositor.mm",
         "src/metal2/metal2_compositor.h",
-        "src/metal2/metal2_texture_tile.mm",
-        "src/metal2/metal2_texture_tile.h",
+        "src/metal2/metal2_tile.mm",
+        "src/metal2/metal2_tile.h",
+        "src/metal2/metal2_objects.mm",
+        "src/metal2/metal2_objects.h",
+        "src/metal2/metal2_pipeline.mm",
+        "src/metal2/metal2_pipeline.h",
       ]
       # ldflags += [
       #   "-framework", "CoreGraphics",
@@ -185,24 +190,24 @@ shared_library("uigpu") {
 
     if (enable_vulkan) {
       sources += [
-        "src/vulkan/vkapp.cpp",
-        "src/vulkan/vkcompositor.cpp",
-        "src/vulkan/vkcompositor.h",
-        "src/vulkan/vkcompositor_drawframe.cpp",
-        "src/vulkan/vklayer.cpp",
-        "src/vulkan/vktexturetile.h",
-        "src/vulkan/vktexturetile.cpp",
-        "src/vulkan/vkswapchain.cpp",
-        "src/vulkan/vkswapchain.h",
-        "src/vulkan/vkobjects.cpp",
-        "src/vulkan/vkobjects.h",
+        "src/vulkan/vk_app.cpp",
+        "src/vulkan/vk_app.h",
+        "src/vulkan/vk_compositor.cpp",
+        "src/vulkan/vk_compositor.h",
+        "src/vulkan/vk_compositor_drawframe.cpp",
+        "src/vulkan/vk_layer.cpp",
+        "src/vulkan/vk_tile.h",
+        "src/vulkan/vk_tile.cpp",
+        "src/vulkan/vk_swapchain.cpp",
+        "src/vulkan/vk_swapchain.h",
+        "src/vulkan/vk_objects.cpp",
+        "src/vulkan/vk_objects.h",
         "src/vulkan/mac_util.mm",
-        "src/vulkan/vkpipeline.cpp",
-        "src/vulkan/vkpipeline.h",
-
-        "src/vulkan/vulkan_device_queue.cpp",
-        "src/vulkan/vulkan_swap_chain_image.cpp",
-        "src/vulkan/vulkan_buffer.cpp",
+        "src/vulkan/vk_pipeline.cpp",
+        "src/vulkan/vk_pipeline.h",
+        "src/vulkan/vk_device.cpp",
+        "src/vulkan/vk_swapchain_image.cpp",
+        "src/vulkan/vk_buffer.cpp",
       ]
 
       VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
@@ -233,8 +238,8 @@ shared_library("uigpu") {
   }
 }
 
-action("compile_shaders") {
-  script = "//ui/gpu/src/vulkan/shaders/compile.py"
+action("compile_vulkan_shaders") {
+  script = "src/vulkan/shaders/compile.py"
   inputs = [
     "src/vulkan/shaders/shader.frag",
     "src/vulkan/shaders/shader.vert",
@@ -245,6 +250,18 @@ action("compile_shaders") {
   ]
   args = [rebase_path("$root_build_dir/bin/shaders")]
 }
+action("compile_metal2_shaders") {
+  script = "src/metal2/shaders/compile.py"
+  inputs = [
+    "src/metal2/shaders/metal2.metal",
+  ]
+  outputs = [
+    "$root_build_dir/bin/shaders/metal2.air",
+    "$root_build_dir/bin/shaders/metal2.metallib",
+  ]
+  args = [rebase_path("$root_build_dir/bin/shaders")]
+}
+
 
 group("gpu") {
   deps = [

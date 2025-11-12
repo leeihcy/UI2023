@@ -1,9 +1,9 @@
 #ifndef _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #define _UI_GPU_SRC_VULKAN_VKLAYER_H_
 #include "src/gpu_layer.h"
-#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vk_bridge.h"
 #include <vulkan/vulkan.h>
-#include "src/vulkan/vulkan_buffer.h"
+#include "src/vulkan/vk_buffer.h"
 
 namespace ui
 {

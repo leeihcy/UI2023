@@ -1,9 +1,9 @@
-#include "vkcompositor.h"
+#include "vk_compositor.h"
 #include "src/util.h"
 #include "include/api.h"
-#include "src/vulkan/vkbridge.h"
-#include "vkapp.h"
-#include "vklayer.h"
+#include "src/vulkan/vk_bridge.h"
+#include "vk_app.h"
+#include "vk_layer.h"
 
 #if defined(OS_WIN)
 #include "vulkan/vulkan_win32.h"

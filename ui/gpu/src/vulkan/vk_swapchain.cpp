@@ -1,10 +1,10 @@
-#include "src/vulkan/vkswapchain.h"
+#include "src/vulkan/vk_swapchain.h"
 
 #include <vulkan/vulkan.h>
 #include <assert.h>
 
 #include "src/util.h"
-#include "src/vulkan/vkapp.h"
+#include "src/vulkan/vk_app.h"
 
 namespace vulkan {
 

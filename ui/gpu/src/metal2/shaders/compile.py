@@ -3,13 +3,10 @@ import sys
 import subprocess
 
 """
- 编译shader文件
+ 编译metal文件
 
- glslc需要包含在当前PATH环境变量中，如先运行script/env.sh
- 参数：编译输出目录
- 
  示例： python3 compile.py /tmp/
- 输出： frag.spv, vert.spv
+ 输出： metal2.air,  metal2.metallib
 """
 
 output_dir = sys.argv[1]
@@ -27,5 +24,14 @@ def run(commands: list[str]):
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-run(["glslc", "shader.vert", "-o", os.path.join(output_dir, "vert.spv")])
-run(["glslc", "shader.frag", "-o", os.path.join(output_dir, "frag.spv")])
+# xcrun -sdk macosx metal metal2.metal -c -o metal2.air
+run(["xcrun", "-sdk", "macosx", "metal", "metal2.metal", 
+     "-c", "-o", 
+     os.path.join(output_dir, "metal2.air")])
+
+# xcrun -sdk macosx metallib YourShader.air -o YourShader.metallib
+run(["xcrun", "-sdk", "macosx", "metallib",
+     os.path.join(output_dir, "metal2.air"), 
+     "-o", 
+     os.path.join(output_dir, "metal2.metallib")])
+

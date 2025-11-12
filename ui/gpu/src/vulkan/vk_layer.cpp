@@ -1,10 +1,10 @@
-#include "vklayer.h"
+#include "vk_layer.h"
 
-#include "src/vulkan/vkbridge.h"
-#include "src/vulkan/vkpipeline.h"
-#include "src/vulkan/vulkan_swap_chain_image.h"
-#include "src/vulkan/vkswapchain.h"
-#include "src/vulkan/vktexturetile.h"
+#include "src/vulkan/vk_bridge.h"
+#include "src/vulkan/vk_pipeline.h"
+#include "src/vulkan/vk_swapchain_image.h"
+#include "src/vulkan/vk_swapchain.h"
+#include "src/vulkan/vk_tile.h"
 #include "src/util.h"
 #include <vector>
 

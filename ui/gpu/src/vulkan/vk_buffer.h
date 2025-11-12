@@ -1,6 +1,6 @@
 #ifndef _UI_GPU_SRC_VULKAN_WRAP_VULKAN_BUFFER_H_
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_BUFFER_H_
-#include "src/vulkan/vkbridge.h"
+#include "src/vulkan/vk_bridge.h"
 #include "vulkan/vulkan_core.h"
 #include <vulkan/vulkan.h>
 

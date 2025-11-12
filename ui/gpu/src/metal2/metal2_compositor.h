@@ -3,6 +3,7 @@
 
 #include "include/api.h"
 #include "src/metal2/import.h"
+#include "src/metal2/metal2_pipeline.h"
 #include "src/metal2/metal2_bridge.h"
 
 namespace ui {
@@ -55,7 +56,8 @@ private:
 
   void onDeviceLost();
   void onDeviceCreate();
-  
+  void OnSwapChainCreated() /*override*/;
+
 public:
 #if defined(__OBJC__)
   Metal2CompositorDelegate* m_delgate = nil;
@@ -66,6 +68,13 @@ public:
   id<MTLCommandQueue> m_command_queue = nil;
   id<MTLCommandBuffer> m_command_buffer = nil;
 #endif
+
+  metal2::PipeLine m_pipeline;
+
+private:
+  int m_width = 0;
+  int m_height = 0;
+
 };
 
 }
