@@ -22,7 +22,9 @@ private:
 private:
   IMetal2Bridge &m_bridge;
 
-  MTLTextureDescriptor *m_texture_descriptorset = nullptr;
+  id<MTLTexture> m_rendertarget_texture = nil;
+
+  MTLTextureDescriptor *m_texture_descriptor = nullptr;
 };
 
 } // namespace ui

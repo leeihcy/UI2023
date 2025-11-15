@@ -121,6 +121,7 @@ void WindowPlatformMac::SetTitle(const char *title) {
   NSString *text = [NSString stringWithUTF8String:title];
   if (text) {
     [m_window setTitle:text];
+    [text release];
   }
 }
 

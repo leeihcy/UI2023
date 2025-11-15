@@ -1,6 +1,7 @@
 #include "sdk/include/util/path.h"
 
 #include <string>
+#include <vector>
 #if defined(OS_MAC)
 #include <mach-o/dyld.h>
 #elif defined(OS_WIN)
@@ -52,13 +53,12 @@ Path Path::ExecutePath() {
   uint32_t executable_length = 0;
   _NSGetExecutablePath(NULL, &executable_length);
 
-  char *buffer = new char[executable_length + 1];
+  std::vector<char> buffer_vec(executable_length + 1);
+  char* buffer = buffer_vec.data();
   _NSGetExecutablePath(buffer, &executable_length);
 
   char real_path[PATH_MAX] = {0};
   realpath(buffer, real_path);
-  delete[] buffer;
-
   return Path(real_path);
 
 #elif defined(OS_LINUX)

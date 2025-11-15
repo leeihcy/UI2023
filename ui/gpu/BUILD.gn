@@ -170,10 +170,15 @@ shared_library("uigpu") {
 
     if (enable_metal2) {
       sources += [
+        "src/igpucompositor_metal2.mm",
+        "src/metal2/inc.cpp",
+        "src/metal2/inc.h",
         "src/metal2/metal2_app.mm",
         "src/metal2/metal2_app.h",
         "src/metal2/metal2_compositor.mm",
         "src/metal2/metal2_compositor.h",
+        "src/metal2/metal2_layer.mm",
+        "src/metal2/metal2_layer.h",
         "src/metal2/metal2_tile.mm",
         "src/metal2/metal2_tile.h",
         "src/metal2/metal2_objects.mm",
@@ -181,11 +186,10 @@ shared_library("uigpu") {
         "src/metal2/metal2_pipeline.mm",
         "src/metal2/metal2_pipeline.h",
       ]
-      # ldflags += [
-      #   "-framework", "CoreGraphics",
-      #   "-framework", "Metal",
-      #   "-framework", "MetalKit",
-      # ]
+      include_dirs += [
+        "src/metal2/third_party/metal-cpp/",
+        "src/metal2/third_party/metal-cpp-extensions/",
+      ]
     }
 
     if (enable_vulkan) {
@@ -200,13 +204,14 @@ shared_library("uigpu") {
         "src/vulkan/vk_tile.cpp",
         "src/vulkan/vk_swapchain.cpp",
         "src/vulkan/vk_swapchain.h",
+        "src/vulkan/vk_swapchain_image.cpp",
+        "src/vulkan/vk_swapchain_image.h",
         "src/vulkan/vk_objects.cpp",
         "src/vulkan/vk_objects.h",
         "src/vulkan/mac_util.mm",
         "src/vulkan/vk_pipeline.cpp",
         "src/vulkan/vk_pipeline.h",
         "src/vulkan/vk_device.cpp",
-        "src/vulkan/vk_swapchain_image.cpp",
         "src/vulkan/vk_buffer.cpp",
       ]
 

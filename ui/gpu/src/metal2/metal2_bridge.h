@@ -6,9 +6,7 @@
 namespace ui {
 
 struct IMetal2Bridge {
-#if defined(__OBJC__)
   virtual id<MTLDevice> GetMetalDevice() = 0;
-#endif
 }; 
 
 }

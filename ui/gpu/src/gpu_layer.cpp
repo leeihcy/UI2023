@@ -100,13 +100,17 @@ void GpuLayer::UploadBitmap(GpuUploadBitmap &bitmap) {
     return;
   }
 
+  // 分析受影响的 tile
+  int max_x = m_arrayTile.GetCol() - 1;
+  int max_y = m_arrayTile.GetRow() - 1;
+  if (max_x < 0 || max_y < 0) {
+    return;
+  }
+
   for (int i = 0; i < bitmap.dirty_count; i++) {
     const Rect& dirty = bitmap.dirty_list[i];
     // ui::Log("Update Gpu Layer: %d,%d (%d,%d)", rc.left, rc.top, rc.Width(), rc.Height());
 
-    // 分析受影响的 tile
-    int max_x = m_arrayTile.GetCol()-1;
-    int max_y = m_arrayTile.GetRow()-1;
 
     int x_from = std::min(dirty.left / TILE_SIZE, max_x);
     int x_to = std::min((dirty.right - 1) / TILE_SIZE, max_x);

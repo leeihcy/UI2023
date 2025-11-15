@@ -11,9 +11,12 @@ public:
   PipeLine(ui::IMetal2Bridge& bridge);
 
   bool Create();
+  bool Destroy();
 
 private:
   ui::IMetal2Bridge& m_bridge;
+public:
+  id <MTLRenderPipelineState> m_state = nil;
 };
 
 }

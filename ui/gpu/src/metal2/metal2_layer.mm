@@ -2,8 +2,4 @@
 
 namespace ui {
 
-bool CommandQueue::Create() {
-  return true;
-}
-
 }
