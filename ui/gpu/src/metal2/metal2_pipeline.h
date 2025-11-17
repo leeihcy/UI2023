@@ -5,7 +5,6 @@
 #include "src/metal2/metal2_bridge.h"
 
 namespace metal2 {
-
 class PipeLine {
 public:
   PipeLine(ui::IMetal2Bridge& bridge);

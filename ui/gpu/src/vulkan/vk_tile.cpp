@@ -106,7 +106,7 @@ bool VkTextureTile::updateTextureDescriptorset() {
   return true;
 }
 
-void VkTextureTile::Compositor(long, long, long vertexStartIndex,
+void VkTextureTile::Compositor(long, long, long vertex_start_index,
                                ui::GpuLayerCommitContext *pContext) {
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
     if (!updateTextureDescriptorset()) {
@@ -122,11 +122,11 @@ void VkTextureTile::Compositor(long, long, long vertexStartIndex,
                           nullptr);
 
   vkCmdDrawIndexed(buffer,
-                   4,                // indexCount
-                   1,                // instanceCount
-                   0,                // firstIndex
-                   vertexStartIndex, // vertexOffset
-                   0                 // firstInstance
+                   4,                  // indexCount
+                   1,                  // instanceCount
+                   0,                  // firstIndex
+                   vertex_start_index, // vertexOffset
+                   0                   // firstInstance
   );
 }
 

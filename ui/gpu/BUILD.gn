@@ -259,6 +259,7 @@ action("compile_metal2_shaders") {
   script = "src/metal2/shaders/compile.py"
   inputs = [
     "src/metal2/shaders/metal2.metal",
+    "src/metal2/shaders/shader_types.h",
   ]
   outputs = [
     "$root_build_dir/bin/shaders/metal2.air",

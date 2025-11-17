@@ -127,7 +127,7 @@ void VulkanGpuLayer::Compositor(GpuLayerCommitContext *pContext,
   for (int y = 0; y < row; y++) {
     for (int x = 0; x < col; x++) {
       // 不需要偏移量，只需要顶点索引。
-      m_arrayTile[y][x]->Compositor(0, 0, index, pContext);
+      static_cast<VkTextureTile*>(m_arrayTile[y][x])->Compositor(index, pContext);
       index += 4;
     }
   }

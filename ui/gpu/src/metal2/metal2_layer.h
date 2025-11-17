@@ -3,23 +3,31 @@
 
 #include "src/gpu_layer.h"
 #include "src/metal2/inc.h"
+#include "src/metal2/metal2_bridge.h"
 #include "src/texture_tile.h"
 
 namespace ui {
-class Metal2GpuLayerTile : public TextureTile {
-
-  void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
-              ui::GpuUploadBitmap &source) override {}
-  void Compositor(long xOffset, long yOffset, long vertexStartIndex,
-                  ui::GpuLayerCommitContext *pContext) override {}
-};
+class TextureTile;
 
 class Metal2GpuLayer : public GpuLayer {
 public:
-  void Resize(int nWidth, int nHeight) override {}
+  Metal2GpuLayer(IMetal2Bridge& bridge);
+  ~Metal2GpuLayer();
+
+  void Resize(int nWidth, int nHeight) override;
   void Compositor(GpuLayerCommitContext *pContext,
-                  float *pMatrixTransform) override {}
-  TextureTile *newTile() override { return new Metal2GpuLayerTile(); }
+                  float *pMatrixTransform) override;
+  TextureTile *newTile() override;
+
+private:
+  void createVertexBuffer();
+  void createIndexBuffer();
+
+private:
+  IMetal2Bridge& m_bridge;
+
+  id <MTLBuffer>  m_vertices_buffer;
+  id <MTLBuffer>  m_index_buffer;
 };
 } // namespace ui
 

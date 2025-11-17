@@ -10,14 +10,15 @@ Metal2TextureTile::~Metal2TextureTile() {
     [m_texture_descriptor release];
     m_texture_descriptor = nullptr;
   }
+  if (m_texture) {
+    [m_texture release];
+    m_texture = nullptr;
+  }
 }
 
-void Metal2TextureTile::Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
- ui::GpuUploadBitmap &source) {
-}
-
-void Metal2TextureTile::Compositor(long, long, long vertexStartIndex,
-                               ui::GpuLayerCommitContext *pContext) {
+void Metal2TextureTile::Upload(ui::Rect &dirty_of_tile,
+                               ui::Rect &dirty_of_layer,
+                               ui::GpuUploadBitmap &source) {
   if (!m_texture_descriptor) {
     m_texture_descriptor = [MTLTextureDescriptor new];
     m_texture_descriptor.textureType = MTLTextureType2D;
@@ -27,10 +28,39 @@ void Metal2TextureTile::Compositor(long, long, long vertexStartIndex,
     m_texture_descriptor.usage =
         MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
   }
-  if (!m_rendertarget_texture) {
-    m_rendertarget_texture = [m_bridge.GetMetalDevice()
+  if (!m_texture) {
+    m_texture = [m_bridge.GetMetalDevice()
         newTextureWithDescriptor:m_texture_descriptor];
   }
+
+  MTLRegion region = { 0 };
+  region.origin.x = dirty_of_tile.left;
+  region.origin.y = dirty_of_tile.top;
+  region.size.width = dirty_of_layer.Width();
+  region.size.height = dirty_of_layer.Height();
+
+  const void *bits = source.bits + (dirty_of_layer.Height() * source.pitch +
+                                    dirty_of_tile.left * 4);
+  [m_texture replaceRegion:region
+                            mipmapLevel:0
+                                  slice:0
+                              withBytes:bits
+                            bytesPerRow:(source.pitch)
+                            bytesPerImage:source.pitch*source.height];
+}
+
+void Metal2TextureTile::Compositor(id<MTLBuffer> index_buffer, long vertex_start_index,
+                               ui::GpuLayerCommitContext *pContext) {
+  id<MTLRenderCommandEncoder> renderEncoder = m_bridge.GetRenderEncoder();
+
+  [renderEncoder setFragmentTexture:m_texture atIndex:0];
+
+  [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangleStrip
+                            indexCount:4
+                             indexType:MTLIndexTypeUInt16
+                           indexBuffer:index_buffer
+                     indexBufferOffset:vertex_start_index*2 // Byte offset 
+                         instanceCount:1];
 }
 
 bool Metal2TextureTile::create() {

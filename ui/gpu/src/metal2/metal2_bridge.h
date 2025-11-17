@@ -7,6 +7,7 @@ namespace ui {
 
 struct IMetal2Bridge {
   virtual id<MTLDevice> GetMetalDevice() = 0;
+  virtual id<MTLRenderCommandEncoder> GetRenderEncoder() = 0;
 }; 
 
 }

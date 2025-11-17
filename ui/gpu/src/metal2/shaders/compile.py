@@ -20,6 +20,8 @@ def run(commands: list[str]):
     output = ret.stdout.decode("utf-8") + ret.stderr.decode("utf-8") 
     if output:
         print(output, end='')
+    if ret.returncode:
+        exit(ret.returncode)
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)

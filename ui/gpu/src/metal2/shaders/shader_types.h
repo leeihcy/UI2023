@@ -1,29 +1,49 @@
-#ifndef _UI_GPU_SRC_METAL2_SHADER_SHADERTYPES_H_
-#define _UI_GPU_SRC_METAL2_SHADER_SHADERTYPES_H_
+#ifndef _UI_GPU_SRC_METAL2_SHADERS_SHADERTYPES_H_
+#define _UI_GPU_SRC_METAL2_SHADERS_SHADERTYPES_H_
 
-// #include <simd/simd.h>
-// 
+#include <simd/matrix_types.h>
+#include <simd/simd.h>
+
+enum class VertexInputIndex: int
+{
+    Vertices = 0,
+    Uniforms = 1,
+};
+
+struct ShaderVertex
+{
+    vector_float2 position;
+    vector_float3 color;
+    vector_float2 texture_coord;
+};
+struct Uniforms
+{
+    matrix_float4x4 view;
+    matrix_float4x4 ortho;
+    float scale;
+    vector_uint2 viewportSize;
+};
+
+
 // typedef enum AAPLVertexInputIndex
 // {
-//     AAPLVertexInputIndexVertices    = 0,
-//     AAPLVertexInputIndexAspectRatio = 1,
+//     AAPLVertexInputIndexVertices = 0,
+//     AAPLVertexInputIndexUniforms = 1,
 // } AAPLVertexInputIndex;
-// 
-// typedef enum AAPLTextureInputIndex
+
+// typedef struct
 // {
-//     AAPLTextureInputIndexColor = 0,
-// } AAPLTextureInputIndex;
+//     // Positions in pixel space (i.e. a value of 100 indicates 100 pixels from the origin/center)
+//     vector_float2 position;
 
-typedef struct
-{
-    vector_float2 position;
-    vector_float4 color;
-} SimpleVertex;
+//     // 2D texture coordinate
+//     vector_float3 color;
+// } AAPLVertex;
 
-typedef struct
-{
-    vector_float2 position;
-    vector_float2 texcoord;
-} TextureVertex;
+// typedef struct
+// {
+//     float scale;
+//     vector_uint2 viewportSize;
+// } AAPLUniforms;
 
 #endif

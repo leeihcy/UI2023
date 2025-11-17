@@ -10,11 +10,12 @@ public:
   Metal2TextureTile(IMetal2Bridge &bridge);
   ~Metal2TextureTile();
 
+  void Compositor(id<MTLBuffer> index_buffer, long vertexStartIndex,
+                  ui::GpuLayerCommitContext *pContext);
+
 protected:
   void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
               ui::GpuUploadBitmap &source) override;
-  void Compositor(long, long, long vertexStartIndex,
-                  ui::GpuLayerCommitContext *pContext) override;
 
 private:
   bool create();
@@ -22,8 +23,7 @@ private:
 private:
   IMetal2Bridge &m_bridge;
 
-  id<MTLTexture> m_rendertarget_texture = nil;
-
+  id<MTLTexture> m_texture = nil;
   MTLTextureDescriptor *m_texture_descriptor = nullptr;
 };
 

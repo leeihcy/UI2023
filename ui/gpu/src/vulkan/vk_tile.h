@@ -15,12 +15,13 @@ public:
   VkTextureTile(vulkan::IVulkanBridge& bridge);
   ~VkTextureTile();
 
+  void Compositor(long vertexStartIndex,
+                  ui::GpuLayerCommitContext *pContext);
+
 protected:
   void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
               ui::GpuUploadBitmap &source) override;
-  void Compositor(long, long, long vertexStartIndex,
-                  ui::GpuLayerCommitContext *pContext) override;
-
+  
 private:
   bool create();
   bool createTextureImage();
