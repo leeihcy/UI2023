@@ -127,9 +127,9 @@ bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
   {
     Uniforms uniforms;
 
-    uniforms.scale = 1.0;
-    uniforms.viewportSize.x = m_width;
-    uniforms.viewportSize.y = m_height;
+    // uniforms.scale = 1.0;
+    // uniforms.viewportSize.x = m_width;
+    // uniforms.viewportSize.y = m_height;
 
     uniforms.view = matrix_identity_float4x4;
 
@@ -173,6 +173,11 @@ void Metal2Compositor::Resize(int width, int height) {
 
   m_width = width;
   m_height = height;
+
+  // drawable size是像素坐标。需要换算成真实的像素。
+  // 默认是view.bounds，会导致最终画面变虚一倍。
+  CGSize size = { static_cast<CGFloat>(m_width), static_cast<CGFloat>(m_height) };
+  [m_bind_layer setDrawableSize:size];
 
   // m_swapchain.MarkNeedReCreate();
 }

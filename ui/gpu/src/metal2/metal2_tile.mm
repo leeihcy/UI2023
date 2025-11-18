@@ -24,29 +24,28 @@ void Metal2TextureTile::Upload(ui::Rect &dirty_of_tile,
     m_texture_descriptor.textureType = MTLTextureType2D;
     m_texture_descriptor.width = TILE_SIZE;
     m_texture_descriptor.height = TILE_SIZE;
+    m_texture_descriptor.storageMode = MTLStorageModeManaged;
     m_texture_descriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    m_texture_descriptor.usage =
-        MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+    m_texture_descriptor.usage = MTLTextureUsageShaderRead;
   }
   if (!m_texture) {
     m_texture = [m_bridge.GetMetalDevice()
         newTextureWithDescriptor:m_texture_descriptor];
   }
 
-  MTLRegion region = { 0 };
+  MTLRegion region = {0};
   region.origin.x = dirty_of_tile.left;
   region.origin.y = dirty_of_tile.top;
-  region.size.width = dirty_of_layer.Width();
-  region.size.height = dirty_of_layer.Height();
+  region.size.width = dirty_of_tile.Width();
+  region.size.height = dirty_of_tile.Height();
+  region.size.depth = 1; // 这里不能写0
 
-  const void *bits = source.bits + (dirty_of_layer.Height() * source.pitch +
-                                    dirty_of_tile.left * 4);
+  const void *bits = source.bits + (dirty_of_layer.top * source.pitch +
+                                    dirty_of_layer.left * 4);
   [m_texture replaceRegion:region
-                            mipmapLevel:0
-                                  slice:0
-                              withBytes:bits
-                            bytesPerRow:(source.pitch)
-                            bytesPerImage:source.pitch*source.height];
+               mipmapLevel:0
+                 withBytes:bits
+               bytesPerRow:source.pitch];
 }
 
 void Metal2TextureTile::Compositor(id<MTLBuffer> index_buffer, long vertex_start_index,
@@ -54,6 +53,10 @@ void Metal2TextureTile::Compositor(id<MTLBuffer> index_buffer, long vertex_start
   id<MTLRenderCommandEncoder> renderEncoder = m_bridge.GetRenderEncoder();
 
   [renderEncoder setFragmentTexture:m_texture atIndex:0];
+
+  //[renderEncoder setCullMode:MTLCullModeBack];
+  //[renderEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
+
 
   [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangleStrip
                             indexCount:4

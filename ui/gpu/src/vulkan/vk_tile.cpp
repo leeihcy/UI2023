@@ -88,7 +88,7 @@ bool VkTextureTile::updateTextureDescriptorset() {
   VkDescriptorImageInfo imageInfo = {};
   imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
   imageInfo.imageView = m_texture_imageview;
-  imageInfo.sampler = m_bridge.GetPipeline().texture_sampler();
+  imageInfo.sampler = m_bridge.GetPipeline().GetTextureSampler();
 
   VkWriteDescriptorSet texturedescriptorWrites = {};
   texturedescriptorWrites.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

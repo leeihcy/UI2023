@@ -48,7 +48,7 @@ public:
   VkDescriptorSetLayout GetTextureDescriptorSetLayout() {
     return m_texture_descriptor_set_layout;
   }
-  VkSampler texture_sampler() { return m_texture_sampler; }
+  VkSampler GetTextureSampler() { return m_texture_sampler; }
 
 public:
   // 全局共享矩阵，一帧更新一次。

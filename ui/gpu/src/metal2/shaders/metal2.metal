@@ -22,6 +22,8 @@ Metal Shader 语言基于 C++ 14，并在此基础上进行了大量的扩展和
   [[texture(1)]]：绑定到索引为 1 的纹理。
   [[sampler(2)]]：绑定到索引为 2 的采样器。
 
+
+half: 16位半精度浮点数，占用内存：2字节。典型用途：颜色、纹理坐标、法线。
 */
 
 #include <metal_stdlib>
@@ -35,32 +37,35 @@ using namespace metal;
 // Vertex shader outputs and per-fragment inputs
 struct RasterizerData
 {
-    float4 clipSpacePosition [[position]];  // 用 [[position]] 标记顶点位置
+    float4 pos [[position]];  // 用 [[position]] 标记顶点位置
+    float2 texcoord;
     float3 color;
 };
 
 vertex RasterizerData
-vertexShader(uint vertexID [[ vertex_id ]],
-             constant ShaderVertex *vertexArray [[ buffer(0) ]],
-             constant Uniforms &uniforms  [[ buffer(1) ]])
-
+vertexShader(uint vertexId [[ vertex_id ]],
+             device const ShaderVertex *vertexArray [[ buffer(0) ]],
+             device const Uniforms &uniforms  [[ buffer(1) ]])
 {
     RasterizerData out;
+    
+    float4 vertex_pos = float4(vertexArray[vertexId].position.xy, 0, 1);
+    out.pos = float4(uniforms.ortho * uniforms.view * vertex_pos);
 
-    float4 position;
-    position.xy = vertexArray[vertexID].position.xy;
-    position.z = 0;
-    position.w = 1;
-
-    out.clipSpacePosition = float4(uniforms.ortho * uniforms.view * position);
-    out.color = vertexArray[vertexID].color;
+    out.color = vertexArray[vertexId].color;
+    out.texcoord = vertexArray[vertexId].texcoord;
     return out;
 }
 
-fragment float4
-fragmentShader(RasterizerData in [[stage_in]])
+fragment half4
+fragmentShader(RasterizerData in [[stage_in]],
+               texture2d< half, access::sample > tex [[texture(0)]])
 {
-    return float4(in.color, 1.0);  // 直接返回顶点着色器传递过来的颜色
+  constexpr sampler s(address::repeat, filter::linear);
+  return tex.sample( s, in.texcoord ); // rgba
+
+  // 直接返回顶点着色器传递过来的颜色
+  // return half4((half3)in.color, 1.0);  
 }
 
 

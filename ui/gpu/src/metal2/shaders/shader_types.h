@@ -14,14 +14,14 @@ struct ShaderVertex
 {
     vector_float2 position;
     vector_float3 color;
-    vector_float2 texture_coord;
+    vector_float2 texcoord;
 };
 struct Uniforms
 {
     matrix_float4x4 view;
     matrix_float4x4 ortho;
-    float scale;
-    vector_uint2 viewportSize;
+    // float scale;
+    // vector_uint2 viewportSize;
 };
 
 

@@ -37,7 +37,16 @@ bool PipeLine::Create() {
 
   desc.vertexFunction = [shader_lib newFunctionWithName:@"vertexShader"];
   desc.fragmentFunction = [shader_lib newFunctionWithName:@"fragmentShader"];
+
   desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+  desc.colorAttachments[0].blendingEnabled = YES;
+  desc.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+  desc.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+  desc.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+  desc.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+  desc.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorZero;
+  desc.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
 
   m_state = [device newRenderPipelineStateWithDescriptor:desc error:&error];
 
