@@ -44,16 +44,18 @@ struct RasterizerData
 
 vertex RasterizerData
 vertexShader(uint vertexId [[ vertex_id ]],
-             device const ShaderVertex *vertexArray [[ buffer(0) ]],
-             device const Uniforms &uniforms  [[ buffer(1) ]])
+             device const VertexData *vertices [[ buffer(0) ]],
+             device const LayerData &layer [[ buffer(1) ]],
+             device const FrameData &frame  [[ buffer(2) ]]
+             )
 {
     RasterizerData out;
     
-    float4 vertex_pos = float4(vertexArray[vertexId].position.xy, 0, 1);
-    out.pos = float4(uniforms.ortho * uniforms.view * vertex_pos);
+    float4 vertex_pos = float4(vertices[vertexId].position.xy, 0, 1);
+    out.pos = float4(frame.ortho * frame.view * layer.model * vertex_pos);
 
-    out.color = vertexArray[vertexId].color;
-    out.texcoord = vertexArray[vertexId].texcoord;
+    out.color = vertices[vertexId].color;
+    out.texcoord = vertices[vertexId].texcoord;
     return out;
 }
 

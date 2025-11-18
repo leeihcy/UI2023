@@ -4,46 +4,33 @@
 #include <simd/matrix_types.h>
 #include <simd/simd.h>
 
-enum class VertexInputIndex: int
-{
-    Vertices = 0,
-    Uniforms = 1,
+enum class VertexShaderInput : int {
+  VertexData = 0,
+  LayerData = 1,
+  FrameData = 2,
 };
 
-struct ShaderVertex
-{
-    vector_float2 position;
-    vector_float3 color;
-    vector_float2 texcoord;
-};
-struct Uniforms
-{
-    matrix_float4x4 view;
-    matrix_float4x4 ortho;
-    // float scale;
-    // vector_uint2 viewportSize;
+enum class FragmentShaderInput : int {
+  Texture = 0,
 };
 
+// 每个Layer对应一系列的顶点
+struct VertexData {
+  vector_float2 position;
+  vector_float3 color;
+  vector_float2 texcoord;
+};
 
-// typedef enum AAPLVertexInputIndex
-// {
-//     AAPLVertexInputIndexVertices = 0,
-//     AAPLVertexInputIndexUniforms = 1,
-// } AAPLVertexInputIndex;
+// 每个Layer更新一次的数据
+struct LayerData {
+  matrix_float4x4 model;
+};
 
-// typedef struct
-// {
-//     // Positions in pixel space (i.e. a value of 100 indicates 100 pixels from the origin/center)
-//     vector_float2 position;
+// 每帧更新一次的数据。
+struct FrameData {
+  matrix_float4x4 view;
+  matrix_float4x4 ortho;
+};
 
-//     // 2D texture coordinate
-//     vector_float3 color;
-// } AAPLVertex;
-
-// typedef struct
-// {
-//     float scale;
-//     vector_uint2 viewportSize;
-// } AAPLUniforms;
 
 #endif

@@ -2,6 +2,7 @@
 #include "src/metal2/metal2_pipeline.h"
 #include "src/metal2/metal2_tile.h"
 #include "src/metal2/shaders/shader_types.h"
+#include <simd/matrix.h>
 #include <vector>
 #include "src/util.h"
 
@@ -43,7 +44,21 @@ void Metal2GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
   [renderEncoder setVertexBuffer:m_vertices_buffer
                             offset:0
-                           atIndex: (int)VertexInputIndex::Vertices];
+                           atIndex: (int)VertexShaderInput::VertexData];
+
+  // 更新layer在世界坐标转换矩阵。
+  LayerData layer_data;
+  layer_data.model = matrix_identity_float4x4;
+  if (pMatrixTransform) {
+    memcpy(&layer_data.model.columns[0], pMatrixTransform, sizeof(layer_data.model));
+  }
+  simd::float4x4 matrix_translate = matrix_identity_float4x4;
+  matrix_translate.columns[3][0] = pContext->m_xOffset;
+  matrix_translate.columns[3][1] = pContext->m_yOffset;
+  layer_data.model = matrix_multiply(layer_data.model, matrix_translate);
+  [renderEncoder setVertexBytes:&layer_data.model
+                         length:sizeof(simd_float4x4)
+                        atIndex:(int)VertexShaderInput::LayerData];
 
   int row = m_arrayTile.GetRow();
   int col = m_arrayTile.GetCol();
@@ -63,7 +78,7 @@ TextureTile *Metal2GpuLayer::newTile() {
 }
 
 void Metal2GpuLayer::createVertexBuffer() {
-  std::vector<ShaderVertex> vertex_array;
+  std::vector<VertexData> vertex_array;
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
     for (int x = 0; x < m_arrayTile.GetCol(); ++x) {
       int x1 = x + 1;
@@ -84,7 +99,7 @@ void Metal2GpuLayer::createVertexBuffer() {
   // Create a vertex buffer, and initialize it with the vertex data.
   m_vertices_buffer = [m_bridge.GetMetalDevice()
       newBufferWithBytes:vertex_array.data()
-                  length:vertex_array.size() * sizeof(ShaderVertex)
+                  length:vertex_array.size() * sizeof(VertexData)
                  options:MTLResourceStorageModeShared];
 }
 

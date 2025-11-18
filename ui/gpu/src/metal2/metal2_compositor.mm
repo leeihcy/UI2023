@@ -113,9 +113,19 @@ bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
   if (!m_currentDrawable) {
     return false;
   }
-  // Create a new command buffer for each render pass to the current drawable.
-  m_commandBuffer = [m_command_queue commandBuffer];
+  
+  // TODO: AutoReleasePool...
 
+  // if (m_commandBuffer) {
+  //   [m_commandBuffer release];
+  //   m_commandBuffer = nullptr;
+  // }
+  // if (m_renderEncoder) {
+  //   [m_renderEncoder release];
+  //   m_renderEncoder = nullptr;
+  // }
+
+  m_commandBuffer = [m_command_queue commandBuffer];
   m_render_pass.SetTexture(m_currentDrawable.texture);
 
   m_renderEncoder = [m_commandBuffer
@@ -125,13 +135,8 @@ bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
 
   // pipe line ... frame ...
   {
-    Uniforms uniforms;
-
-    // uniforms.scale = 1.0;
-    // uniforms.viewportSize.x = m_width;
-    // uniforms.viewportSize.y = m_height;
-
-    uniforms.view = matrix_identity_float4x4;
+    FrameData frame_data;
+    frame_data.view = matrix_identity_float4x4;
 
     float left = 0;
     float right = m_width;
@@ -140,17 +145,17 @@ bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
     float near = 2000.f;
     float far = -2000.f;
 
-    uniforms.ortho = matrix_identity_float4x4;
-    uniforms.ortho.columns[0][0] = 2.0f / (right - left);
-		uniforms.ortho.columns[1][1] = 2.0f / (top - bottom);
-		uniforms.ortho.columns[2][2] = 1.0f / (far - near);
-		uniforms.ortho.columns[3][0] = - (right + left) / (right - left);
-		uniforms.ortho.columns[3][1] = - (top + bottom) / (top - bottom);
-		uniforms.ortho.columns[3][2] = - near / (far - near);
+    frame_data.ortho = matrix_identity_float4x4;
+    frame_data.ortho.columns[0][0] = 2.0f / (right - left);
+		frame_data.ortho.columns[1][1] = 2.0f / (top - bottom);
+		frame_data.ortho.columns[2][2] = 1.0f / (far - near);
+		frame_data.ortho.columns[3][0] = - (right + left) / (right - left);
+		frame_data.ortho.columns[3][1] = - (top + bottom) / (top - bottom);
+		frame_data.ortho.columns[3][2] = - near / (far - near);
 
-    [m_renderEncoder setVertexBytes:&uniforms
-                             length:sizeof(uniforms)
-                            atIndex: (int)VertexInputIndex::Uniforms];
+    [m_renderEncoder setVertexBytes:&frame_data
+                             length:sizeof(frame_data)
+                            atIndex:(int)VertexShaderInput::FrameData];
   }
 
   return true;

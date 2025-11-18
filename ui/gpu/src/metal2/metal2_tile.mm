@@ -1,5 +1,6 @@
 #include "metal2_tile.h"
 #import "src/metal2/import.h"
+#include "src/metal2/shaders/shader_types.h"
 
 namespace ui {
 
@@ -48,21 +49,18 @@ void Metal2TextureTile::Upload(ui::Rect &dirty_of_tile,
                bytesPerRow:source.pitch];
 }
 
-void Metal2TextureTile::Compositor(id<MTLBuffer> index_buffer, long vertex_start_index,
-                               ui::GpuLayerCommitContext *pContext) {
+void Metal2TextureTile::Compositor(id<MTLBuffer> index_buffer,
+                                   long vertex_start_index,
+                                   ui::GpuLayerCommitContext *pContext) {
   id<MTLRenderCommandEncoder> renderEncoder = m_bridge.GetRenderEncoder();
-
-  [renderEncoder setFragmentTexture:m_texture atIndex:0];
-
-  //[renderEncoder setCullMode:MTLCullModeBack];
-  //[renderEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
-
+  [renderEncoder setFragmentTexture:m_texture
+                            atIndex:(int)FragmentShaderInput::Texture];
 
   [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangleStrip
                             indexCount:4
                              indexType:MTLIndexTypeUInt16
                            indexBuffer:index_buffer
-                     indexBufferOffset:vertex_start_index*2 // Byte offset 
+                     indexBufferOffset:vertex_start_index * 2 // Byte offset
                          instanceCount:1];
 }
 
