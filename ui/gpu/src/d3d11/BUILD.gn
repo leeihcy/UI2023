@@ -1,0 +1,41 @@
+source_set("d3d11") {
+  sources = [
+    "d3d11_compositor.cpp",
+    "d3d11_gpu_layer.cpp",
+    "d3d11_app.cpp",
+    "d3d11_texture_tile.cpp",
+    "common/effects.cpp",
+    "common/font.cpp",
+    "common/inputs.cpp",
+    "common/render_states.cpp",
+    "UICompositor.rc",
+    "hard3dtransform.cpp",
+  ]
+
+  cflags = [ "-DENABLE_D3D11" ]
+  cflags += [
+    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
+  ]
+  include_dirs = [
+    win_sdk + "/Include/" + win_sdk_version + "/um",
+    directx_sdk + "/Include"
+  ]
+  lib_dirs = [
+    directx_sdk + "/Lib/x64"
+  ]
+
+  if (is_debug) {
+    lib_dirs += [ "directx_sdk/Effects11/x64/Debug" ]
+  } else {
+    lib_dirs += [ "directx_sdk/Effects11/x64/Release" ]
+  }
+
+  libs = [
+    "atls.lib",
+    "d3d11.lib",
+    "d3dx11.lib",
+    "d3dcompiler.lib",
+    # 需要单独编译 ui\gpu\src\d3d11\directx_sdk\Effects11工程
+    "Effects11.lib",   
+  ]
+}

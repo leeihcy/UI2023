@@ -1,0 +1,64 @@
+source_set("vulkan") {
+  cflags = [ "-DENABLE_VULKAN" ]
+
+  sources = [
+    "vk_app.cpp",
+    "vk_app.h",
+    "vk_compositor.cpp",
+    "vk_compositor.h",
+    "vk_compositor_drawframe.cpp",
+    "vk_layer.cpp",
+    "vk_tile.h",
+    "vk_tile.cpp",
+    "vk_swapchain.cpp",
+    "vk_swapchain.h",
+    "vk_swapchain_image.cpp",
+    "vk_swapchain_image.h",
+    "vk_objects.cpp",
+    "vk_objects.h",
+    "mac_util.mm",
+    "vk_pipeline.cpp",
+    "vk_pipeline.h",
+    "vk_device.cpp",
+    "vk_buffer.cpp",
+  ]
+  include_dirs = [
+    "//ui/",
+    "//ui/gpu/",
+  ]
+
+  VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
+  print("VULKAN_SDK_DIR: " + VULKAN_SDK_DIR)
+  if (is_win) {
+    include_dirs += [ VULKAN_SDK_DIR + "\\include" ]
+    lib_dirs = [ VULKAN_SDK_DIR + "\\Lib" ]
+    libs = [ "vulkan-1.lib" ]
+  }
+  else if (is_mac) {
+    include_dirs += [ VULKAN_SDK_DIR + "/include" ]
+    libs = ["vulkan.1.3.261"]
+  }
+  else if (is_linux) {
+    include_dirs += [ VULKAN_SDK_DIR + "/include" ]
+    libs = ["vulkan"]
+  }
+
+  if (is_linux || is_mac) {
+    cflags += [
+      "-Wno-deprecated-volatile"
+    ]
+  }
+}
+
+action("compile_vulkan_shaders") {
+  script = "shaders/compile.py"
+  inputs = [
+    "shaders/shader.frag",
+    "shaders/shader.vert",
+  ]
+  outputs = [
+    "$root_build_dir/bin/shaders/vert.spv",
+    "$root_build_dir/bin/shaders/frag.spv",
+  ]
+  args = [rebase_path("$root_build_dir/bin/shaders")]
+}

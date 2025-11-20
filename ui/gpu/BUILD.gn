@@ -15,222 +15,63 @@ shared_library("uigpu") {
   cflags = []
   sources = []
   defines = ["UI_EXPORTS"]
-  libs = []
   lib_dirs = ["$root_build_dir/bin"]
   ldflags = []
   deps = []
   
   include_dirs = [
-        "//",
-        "//ui/",
-        "//ui/gpu/",
-        "//ui/sdk/",
-        "//ui/3rd/skia/src/",
-        "//ui/3rd/skia/src/include/core/"
+    "//",
+    "//ui/",
+    "//ui/gpu/",
+    "//ui/sdk/",
+    "//ui/3rd/skia/src/",
+    "//ui/3rd/skia/src/include/core/"
+  ]
+
+  if (is_win) {
+    enable_d3d10 = true
+    enable_d3d11 = true
+    enable_d3d12 = true
+    enable_vulkan = true
+  }
+  else if (is_mac) {
+    enable_metal2 = true
+    enable_vulkan = true
+  }
+
+  if (enable_d3d10) {
+    deps += ["src/d3d10"]
+  }
+  if (enable_d3d11) {
+    deps += ["src/d3d11"]
+  }
+  if (enable_d3d12) {
+    deps += ["src/d3d12"]
+  }
+  if (enable_metal2) {
+    deps += [ 
+      "src/metal2",
+      "src/metal2:compile_metal2_shaders" 
     ]
-
-    if (is_win) {
-      #enable_d3d10 = false
-      #enable_d3d11 = false
-      #enable_d3d12 = true
-      #enable_vulkan = false
-    }
-    else if (is_mac) {
-      enable_metal2 = true
-      enable_vulkan = true
-    }
-
-    if (enable_d3d10) {
-      cflags += [ "-DENABLE_D3D10" ]
-    } if (enable_d3d11) {
-      cflags += [ "-DENABLE_D3D11" ]
-    } if (enable_d3d12) {
-      cflags += [ "-DENABLE_D3D12" ]
-    } if (enable_metal2) {
-      cflags += [ "-DENABLE_METAL2" ]
-    } if (enable_vulkan) {
-      cflags += [ "-DENABLE_VULKAN" ]
-    }
-
-    if (enable_d3d10 || enable_d3d11) {
-      cflags += [
-        "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
-      ]
-      include_dirs += [
-        win_sdk + "/Include/" + win_sdk_version + "/um",
-        directx_sdk + "/Include"
-      ]
-      lib_dirs += [
-        directx_sdk + "/Lib/x64"
-      ]
-
-      if (enable_d3d11) {
-        if (is_debug) {
-          lib_dirs += [ "src/d3d11/directx_sdk/Effects11/x64/Debug" ]
-        } else {
-          lib_dirs += [ "src/d3d11/directx_sdk/Effects11/x64/Release" ]
-        }
-      }
-    }
-
-    # d3d12不依赖于directx sdk!
-    if (enable_d3d12) {
-      include_dirs += [
-        win_sdk + "/Include/" + win_sdk_version + "/um",
-      ]
-    }
-
-    if (enable_metal2) {
-      deps += [ ":compile_metal2_shaders" ]
-    }
-    if (enable_vulkan) {
-      deps += [ ":compile_vulkan_shaders" ]
-    }
-
-    if (enable_vulkan && (is_linux || is_mac)) {
-      cflags += [
-        "-Wno-deprecated-volatile"
-      ]
-    }
-
-    if (is_debug && (is_mac || is_linux)) {
-      cflags += ["-g"]
-    }
-    
-    sources += [
-      "src/util.cpp",
-      "src/util.h",
-      "src/gpu_layer.cpp",
-      "src/texture_tile.cpp",
-      "src/texture_tile_array.cpp",
-      "src/gpu.cpp",
+  }
+  if (enable_vulkan) {
+    deps += [
+      "src/vulkan",
+      "src/vulkan:compile_vulkan_shaders"
     ]
-    if (enable_d3d10) {
-      sources += [
-        "src/d3d10/d3d10_compositor.cpp",
-        "src/d3d10/d3d10_gpu_layer.cpp",
-        "src/d3d10/d3d10_app.cpp",
-        "src/d3d10/d3d10_texture_tile.cpp",
-        "src/d3d10/common/effects.cpp",
-        "src/d3d10/common/font.cpp",
-        "src/d3d10/common/inputs.cpp",
-        "src/d3d10/common/render_states.cpp",
-        "src/d3d10/UICompositor.rc",
-        "src/d3d10/hard3dtransform.cpp",
-      ]
+  }
 
-      libs += [
-        "atls.lib",
-        "d3d10.lib",
-        "d3dx10.lib",
-        "D3D10_1.lib",
-      ]
-    }
-    if (enable_d3d11) {
-      sources += [
-        "src/d3d11/d3d11_compositor.cpp",
-        "src/d3d11/d3d11_gpu_layer.cpp",
-        "src/d3d11/d3d11_app.cpp",
-        "src/d3d11/d3d11_texture_tile.cpp",
-        "src/d3d11/common/effects.cpp",
-        "src/d3d11/common/font.cpp",
-        "src/d3d11/common/inputs.cpp",
-        "src/d3d11/common/render_states.cpp",
-        "src/d3d11/UICompositor.rc",
-        "src/d3d11/hard3dtransform.cpp",
-      ]
-
-      libs += [
-        "atls.lib",
-        "d3d11.lib",
-        "d3dx11.lib",
-        "d3dcompiler.lib",
-        # 需要单独编译 ui\gpu\src\d3d11\directx_sdk\Effects11工程
-        "Effects11.lib",   
-      ]
-    }
-
-    if (enable_d3d12) {
-      sources += [
-        "src/d3d12/d3d12_app.cpp",
-        "src/d3d12/d3d12_app.h",
-        "src/d3d12/d3d12_compositor.cpp",
-        "src/d3d12/d3d12_compositor.h",
-        "src/d3d12/d3d12_swapchain.cpp",
-        "src/d3d12/d3d12_swapchain.h",
-        "src/d3d12/d3d12_command_queue.cpp",
-        "src/d3d12/d3d12_command_queue.h",
-      ]
-      libs += [
-        "atls.lib",
-        "D3d12.lib", 
-        "dxgi.lib",
-      ]
-    }
-
-    if (enable_metal2) {
-      sources += [
-        "src/metal2/inc.cpp",
-        "src/metal2/inc.h",
-        "src/metal2/metal2_app.mm",
-        "src/metal2/metal2_app.h",
-        "src/metal2/metal2_compositor.mm",
-        "src/metal2/metal2_compositor.h",
-        "src/metal2/metal2_layer.mm",
-        "src/metal2/metal2_layer.h",
-        "src/metal2/metal2_tile.mm",
-        "src/metal2/metal2_tile.h",
-        "src/metal2/metal2_objects.mm",
-        "src/metal2/metal2_objects.h",
-        "src/metal2/metal2_pipeline.mm",
-        "src/metal2/metal2_pipeline.h",
-      ]
-      include_dirs += [
-        "src/metal2/third_party/metal-cpp/",
-        "src/metal2/third_party/metal-cpp-extensions/",
-      ]
-    }
-
-    if (enable_vulkan) {
-      sources += [
-        "src/vulkan/vk_app.cpp",
-        "src/vulkan/vk_app.h",
-        "src/vulkan/vk_compositor.cpp",
-        "src/vulkan/vk_compositor.h",
-        "src/vulkan/vk_compositor_drawframe.cpp",
-        "src/vulkan/vk_layer.cpp",
-        "src/vulkan/vk_tile.h",
-        "src/vulkan/vk_tile.cpp",
-        "src/vulkan/vk_swapchain.cpp",
-        "src/vulkan/vk_swapchain.h",
-        "src/vulkan/vk_swapchain_image.cpp",
-        "src/vulkan/vk_swapchain_image.h",
-        "src/vulkan/vk_objects.cpp",
-        "src/vulkan/vk_objects.h",
-        "src/vulkan/mac_util.mm",
-        "src/vulkan/vk_pipeline.cpp",
-        "src/vulkan/vk_pipeline.h",
-        "src/vulkan/vk_device.cpp",
-        "src/vulkan/vk_buffer.cpp",
-      ]
-
-      VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
-      print("VULKAN_SDK_DIR: " + VULKAN_SDK_DIR)
-      if (is_win) {
-        include_dirs += [ VULKAN_SDK_DIR + "\\include" ]
-        lib_dirs += [ VULKAN_SDK_DIR + "\\Lib" ]
-        libs += [ "vulkan-1.lib" ]
-      }
-      else if (is_mac) {
-        include_dirs += [ VULKAN_SDK_DIR + "/include" ]
-        libs += ["vulkan.1.3.261"]
-      }
-      else if (is_linux) {
-        include_dirs += [ VULKAN_SDK_DIR + "/include" ]
-        libs += ["vulkan"]
-      }
-    }
-
+  if (is_debug && (is_mac || is_linux)) {
+    cflags += ["-g"]
+  }
+  sources += [
+    "src/util.cpp",
+    "src/util.h",
+    "src/gpu_layer.cpp",
+    "src/texture_tile.cpp",
+    "src/texture_tile_array.cpp",
+    "src/gpu.cpp",
+  ]
   if (is_mac) {
     sources += [
       "src/gpu1.mm",
@@ -244,32 +85,6 @@ shared_library("uigpu") {
     ]
   }
 }
-
-action("compile_vulkan_shaders") {
-  script = "src/vulkan/shaders/compile.py"
-  inputs = [
-    "src/vulkan/shaders/shader.frag",
-    "src/vulkan/shaders/shader.vert",
-  ]
-  outputs = [
-    "$root_build_dir/bin/shaders/vert.spv",
-    "$root_build_dir/bin/shaders/frag.spv",
-  ]
-  args = [rebase_path("$root_build_dir/bin/shaders")]
-}
-action("compile_metal2_shaders") {
-  script = "src/metal2/shaders/compile.py"
-  inputs = [
-    "src/metal2/shaders/metal2.metal",
-    "src/metal2/shaders/shader_types.h",
-  ]
-  outputs = [
-    "$root_build_dir/bin/shaders/metal2.air",
-    "$root_build_dir/bin/shaders/metal2.metallib",
-  ]
-  args = [rebase_path("$root_build_dir/bin/shaders")]
-}
-
 
 group("gpu") {
   deps = [

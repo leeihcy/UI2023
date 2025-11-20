@@ -1,0 +1,39 @@
+source_set("metal2") {
+  cflags = [ "-DENABLE_METAL2" ]
+
+  sources = [
+    "inc.cpp",
+    "inc.h",
+    "metal2_app.mm",
+    "metal2_app.h",
+    "metal2_compositor.mm",
+    "metal2_compositor.h",
+    "metal2_layer.mm",
+    "metal2_layer.h",
+    "metal2_tile.mm",
+    "metal2_tile.h",
+    "metal2_objects.mm",
+    "metal2_objects.h",
+    "metal2_pipeline.mm",
+    "metal2_pipeline.h",
+  ]
+  include_dirs = [
+    "//ui/",
+    "//ui/gpu/",
+    "third_party/metal-cpp/",
+    "src/metal2/third_party/metal-cpp-extensions/",
+  ]
+}
+
+action("compile_metal2_shaders") {
+  script = "shaders/compile.py"
+  inputs = [
+    "shaders/metal2.metal",
+    "shaders/shader_types.h",
+  ]
+  outputs = [
+    "$root_build_dir/bin/shaders/metal2.air",
+    "$root_build_dir/bin/shaders/metal2.metallib",
+  ]
+  args = [rebase_path("$root_build_dir/bin/shaders")]
+}
