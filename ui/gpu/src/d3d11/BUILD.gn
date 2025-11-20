@@ -1,21 +1,6 @@
-source_set("d3d11") {
-  sources = [
-    "d3d11_compositor.cpp",
-    "d3d11_gpu_layer.cpp",
-    "d3d11_app.cpp",
-    "d3d11_texture_tile.cpp",
-    "common/effects.cpp",
-    "common/font.cpp",
-    "common/inputs.cpp",
-    "common/render_states.cpp",
-    "UICompositor.rc",
-    "hard3dtransform.cpp",
-  ]
+config("d3d11_config") {
+  defines = [ "ENABLE_D3D11" ]
 
-  cflags = [ "-DENABLE_D3D11" ]
-  cflags += [
-    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
-  ]
   include_dirs = [
     win_sdk + "/Include/" + win_sdk_version + "/um",
     directx_sdk + "/Include"
@@ -37,5 +22,26 @@ source_set("d3d11") {
     "d3dcompiler.lib",
     # 需要单独编译 ui\gpu\src\d3d11\directx_sdk\Effects11工程
     "Effects11.lib",   
+  ]
+}
+
+source_set("d3d11") {
+  public_configs = [":d3d11_config"]
+
+  sources = [
+    "d3d11_compositor.cpp",
+    "d3d11_gpu_layer.cpp",
+    "d3d11_app.cpp",
+    "d3d11_texture_tile.cpp",
+    "common/effects.cpp",
+    "common/font.cpp",
+    "common/inputs.cpp",
+    "common/render_states.cpp",
+    "UICompositor.rc",
+    "hard3dtransform.cpp",
+  ]
+
+  cflags += [
+    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
   ]
 }

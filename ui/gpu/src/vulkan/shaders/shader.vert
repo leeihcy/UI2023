@@ -15,7 +15,7 @@
 // 每帧更新一次。
 
 // 每帧更新一次。
-layout(binding = 0) uniform UniformBufferObject {
+layout(binding = 0) uniform FrameData {
    mat4 view;
    mat4 ortho;
 } ubo;
@@ -25,7 +25,7 @@ layout(binding = 0) uniform UniformBufferObject {
 // 每个draw call 更新一次。代码中每个layer更新一次
 
 // 极小且高频更新的数据
-layout(push_constant) uniform PushData {
+layout(push_constant) uniform LayerData {
   // 每个对象的转换矩阵
   mat4 model;
 } push;
@@ -33,11 +33,12 @@ layout(push_constant) uniform PushData {
 // ------------------------------------------------
 // 每个顶点更新一次
 
-// 顶点缓存数据，在Pipeline::build_vertex_input中定义
+// 顶点数据，在Pipeline::buildVertexInput 中由我们自己进行定义，作为外部数据传递给Vertex Shader。
 layout(location = 0) in vec2 inPosition;  // 局部坐标(像素坐标)
 layout(location = 1) in vec3 inColor;     //
 layout(location = 2) in vec2 inTexCoord;  // 对象的tile纹理坐标(0~1)
 
+// 
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 

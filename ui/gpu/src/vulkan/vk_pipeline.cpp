@@ -25,8 +25,8 @@ void PipeLine::Destroy() {
   m_pipeline_layout.Destroy(device);
   m_graphics_pipeline.Destroy(device);
   m_texture_sampler.Destroy(device);
-  m_uniform_descriptor_set_layout.Destroy(device);
-  m_texture_descriptor_set_layout.Destroy(device);
+  m_uniform_layout.Destroy(device);
+  m_texture_layout.Destroy(device);
 }
 
 bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
@@ -34,7 +34,7 @@ bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
 
   bool success = false;
   do {
-    build_vertex_input(context, ShaderVertex());
+    buildVertexInput(context, VertexData());
     build_input_assembly(context);
     if (!build_vertex_shader(context))
       break;
@@ -75,7 +75,7 @@ void PipeLine::UpdateViewportScissor(uint32_t w, uint32_t h,
   destroy_context(context);
 }
 
-static bool read_spv_file(const char *filename, std::vector<char> &buffer) {
+static bool readSpvFile(const char *filename, std::vector<char> &buffer) {
   std::ifstream file(filename, std::ios::ate | std::ios::binary);
   if (!file.is_open()) {
     return false;
@@ -92,7 +92,7 @@ static bool read_spv_file(const char *filename, std::vector<char> &buffer) {
 }
 
 // 顶点格式设置
-void PipeLine::build_vertex_input(Context &ctx, ShaderVertex shader_vertex) {
+void PipeLine::buildVertexInput(Context &ctx, VertexData shader_vertex) {
   ctx.vertex_input.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -113,18 +113,18 @@ void PipeLine::build_vertex_input(Context &ctx, ShaderVertex shader_vertex) {
   ctx.vertex_input_attribute_descriptions[0].format =
       VK_FORMAT_R32G32B32_SFLOAT;
   ctx.vertex_input_attribute_descriptions[0].offset =
-      offsetof(ShaderVertex, pos);
+      offsetof(VertexData, pos);
   ctx.vertex_input_attribute_descriptions[1].binding = 0;
   ctx.vertex_input_attribute_descriptions[1].location = 1;
   ctx.vertex_input_attribute_descriptions[1].format =
       VK_FORMAT_R32G32B32_SFLOAT;
   ctx.vertex_input_attribute_descriptions[1].offset =
-      offsetof(ShaderVertex, color);
+      offsetof(VertexData, color);
   ctx.vertex_input_attribute_descriptions[2].binding = 0;
   ctx.vertex_input_attribute_descriptions[2].location = 2;
   ctx.vertex_input_attribute_descriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
   ctx.vertex_input_attribute_descriptions[2].offset =
-      offsetof(ShaderVertex, texCoord);
+      offsetof(VertexData, texCoord);
 
   ctx.vertex_input.vertexAttributeDescriptionCount =
       (uint32_t)std::size(ctx.vertex_input_attribute_descriptions);
@@ -145,7 +145,7 @@ void PipeLine::build_input_assembly(Context &ctx) {
 
 bool PipeLine::build_vertex_shader(Context &ctx) {
   std::vector<char> vertShaderCode;
-  if (!read_spv_file("shaders/vert.spv", vertShaderCode)) {
+  if (!readSpvFile("shaders/vert.spv", vertShaderCode)) {
     return false;
   }
   if (!create_shader_module(vertShaderCode.data(),
@@ -204,7 +204,7 @@ void PipeLine::build_rasterization(Context &ctx) {
 
 bool PipeLine::build_fragment_shader(Context &ctx) {
   std::vector<char> fragShaderCode;
-  if (!read_spv_file("shaders/frag.spv", fragShaderCode)) {
+  if (!readSpvFile("shaders/frag.spv", fragShaderCode)) {
     return false;
   }
   if (!create_shader_module(fragShaderCode.data(),
@@ -282,16 +282,21 @@ bool PipeLine::create_texture_sampler() {
   return true;
 }
 
+//
+// Uniform 的核心思想是 “一致” 或 “统一”。
+// 它指的是在着色器程序的一次绘制调用（Draw Call）期间，对所有顶点、
+// 片段或其他着色器线程来说，其值都保持恒定不变的数据。
+//
 // 对应shader.vert文件
 // 每个绑定(Binding)需要定义一个VkDescriptorSetLayoutBinding。
 // 目前shader.vert中只有一个binding:
-//  layout(binding = 0) uniform UniformBufferObject
+//  layout(binding = 0) uniform FrameData
 //
-bool PipeLine::build_descriptor_set_layout() {
+bool PipeLine::buildUniformLayout() {
   VkDescriptorSetLayoutBinding bindings[] = {
       // 只有1个ubo binding
       {
-          .binding = 0, // binding的索引
+          .binding = 0,
           .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
           .descriptorCount = 1,                     // 只有一个ubo
           .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 哪些着色器阶段可以访问。
@@ -303,7 +308,7 @@ bool PipeLine::build_descriptor_set_layout() {
   layoutInfo.pBindings = bindings;
 
   if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr,
-                                  &m_uniform_descriptor_set_layout) != VK_SUCCESS) {
+                                  &m_uniform_layout) != VK_SUCCESS) {
     ui::Log("failed to create descriptor set layout!");
     return false;
   }
@@ -313,13 +318,12 @@ bool PipeLine::build_descriptor_set_layout() {
 // 对应shader.frag文件
 // layout(set = 1, binding = 0) uniform sampler2D texSampler;
 //
-bool PipeLine::build_texture_descriptor_set_layout() {
+bool PipeLine::buildTextureLayout() {
   VkDescriptorSetLayoutBinding textureBindings[] = {{
-      .binding = 0, // binding索引
+      .binding = 0,
       .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-      .descriptorCount = 1, // 目前只有一个纹理，没用数组。
-      .stageFlags =
-          VK_SHADER_STAGE_FRAGMENT_BIT, // 指定在frag shader中使用sampler
+      .descriptorCount = 1,
+      .stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT, 
   }};
 
   VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -328,7 +332,7 @@ bool PipeLine::build_texture_descriptor_set_layout() {
   layoutInfo.pBindings = textureBindings;
 
   if (vkCreateDescriptorSetLayout(m_bridge.GetVkDevice(), &layoutInfo, nullptr,
-                                  &m_texture_descriptor_set_layout) !=
+                                  &m_texture_layout) !=
       VK_SUCCESS) {
     ui::Log("failed to create descriptor set layout!");
     return false;
@@ -341,19 +345,19 @@ bool PipeLine::build_layout() {
   VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
   pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-  if (!this->build_descriptor_set_layout()) {
+  if (!this->buildUniformLayout()) {
     return false;
   }
-  if (!this->build_texture_descriptor_set_layout()) {
+  if (!this->buildTextureLayout()) {
     return false;
   }
 
   VkDescriptorSetLayout descriptorSetLayouts[2] = {
-      m_uniform_descriptor_set_layout, m_texture_descriptor_set_layout};
+      m_uniform_layout, m_texture_layout};
   pipelineLayoutInfo.setLayoutCount = std::size(descriptorSetLayouts);
   pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts;
 
-  // push constant，见struct PushData
+  // push constant，见struct LayerData
   VkPushConstantRange pushConstantRange = {
       .stageFlags = VK_SHADER_STAGE_VERTEX_BIT, // 在顶点着色器中使用
       .offset = 0,

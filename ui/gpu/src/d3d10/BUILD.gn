@@ -1,21 +1,5 @@
-source_set("d3d10") {
-  sources = [
-    "d3d10_compositor.cpp",
-    "d3d10_gpu_layer.cpp",
-    "d3d10_app.cpp",
-    "d3d10_texture_tile.cpp",
-    "common/effects.cpp",
-    "common/font.cpp",
-    "common/inputs.cpp",
-    "common/render_states.cpp",
-    "UICompositor.rc",
-    "hard3dtransform.cpp",
-  ]
-  
-  cflags = [ "-DENABLE_D3D10" ]
-  cflags += [
-    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
-  ]
+config("d3d10_config") {
+  defines = [ "ENABLE_D3D10" ]
 
   include_dirs = [
     win_sdk + "/Include/" + win_sdk_version + "/um",
@@ -29,5 +13,26 @@ source_set("d3d10") {
     "d3d10.lib",
     "d3dx10.lib",
     "D3D10_1.lib",
+  ]
+}
+
+source_set("d3d10") {
+  public_configs = [":d3d10_config"]
+
+  sources = [
+    "d3d10_compositor.cpp",
+    "d3d10_gpu_layer.cpp",
+    "d3d10_app.cpp",
+    "d3d10_texture_tile.cpp",
+    "common/effects.cpp",
+    "common/font.cpp",
+    "common/inputs.cpp",
+    "common/render_states.cpp",
+    "UICompositor.rc",
+    "hard3dtransform.cpp",
+  ]
+  
+  cflags += [
+    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
   ]
 }

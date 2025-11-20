@@ -14,7 +14,7 @@ enum class FragmentShaderInput : int {
   Texture = 0,
 };
 
-// 每个Layer对应一系列的顶点
+// 每个Layer中的一系列顶点
 struct VertexData {
   vector_float2 position;
   vector_float3 color;

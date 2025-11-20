@@ -43,12 +43,8 @@ public:
 
 public:
   VkPipelineLayout layout() { return m_pipeline_layout.handle; }
-  VkDescriptorSetLayout GetUniformeDescriptorSetLayout() {
-    return m_uniform_descriptor_set_layout;
-  }
-  VkDescriptorSetLayout GetTextureDescriptorSetLayout() {
-    return m_texture_descriptor_set_layout;
-  }
+  VkDescriptorSetLayout GetUniformLayout() { return m_uniform_layout; }
+  VkDescriptorSetLayout GetTextureLayout() { return m_texture_layout; }
   VkSampler GetTextureSampler() { return m_texture_sampler; }
 
 public:
@@ -81,15 +77,15 @@ public:
 private:
   bool create_shader_module(char *code, int length, VkShaderModule *out);
 
-  void build_vertex_input(Context &ctx, ShaderVertex shader_vertex);
+  void buildVertexInput(Context &ctx, VertexData shader_vertex);
   void build_input_assembly(Context &ctx);
   bool build_vertex_shader(Context &ctx);
   bool build_fragment_shader(Context &ctx);
   void build_viewport_scissor(Context &ctx, uint32_t w, uint32_t h);
   void build_rasterization(Context &ctx);
   void build_color_blend(Context &ctx);
-  bool build_descriptor_set_layout();
-  bool build_texture_descriptor_set_layout();
+  bool buildUniformLayout();
+  bool buildTextureLayout();
   bool create_texture_sampler();
   bool build_layout();
   bool create_pipeline(Context &ctx);
@@ -104,8 +100,8 @@ private:
   Vk::Pipeline m_graphics_pipeline;
 
   Vk::PipelineLayout m_pipeline_layout;
-  Vk::DescriptorSetLayout m_uniform_descriptor_set_layout;
-  Vk::DescriptorSetLayout m_texture_descriptor_set_layout;
+  Vk::DescriptorSetLayout m_uniform_layout;
+  Vk::DescriptorSetLayout m_texture_layout;
   
   Vk::Sampler m_texture_sampler;
 };

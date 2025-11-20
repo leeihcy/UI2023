@@ -14,6 +14,41 @@ bool PipeLine::Create() {
   desc.sampleCount = 1;
 
   id<MTLDevice> device = m_bridge.GetMetalDevice();
+  id<MTLLibrary> shader_lib = loadShaderLibrary();
+  if (!shader_lib) {
+    return false;
+  }
+  desc.vertexFunction = [shader_lib newFunctionWithName:@"vertexShader"];
+  desc.fragmentFunction = [shader_lib newFunctionWithName:@"fragmentShader"];
+
+  desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+  desc.colorAttachments[0].blendingEnabled = YES;
+  desc.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+  desc.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+  desc.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+  desc.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+  desc.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorZero;
+  desc.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+
+  NSError *error = nil;
+  m_state = [device newRenderPipelineStateWithDescriptor:desc error:&error];
+
+  [shader_lib release];
+  [desc release];
+  return true;
+}
+
+bool PipeLine::Destroy() {
+  if (m_state) {
+    [m_state release];
+    m_state = nil;
+  }
+  return true;
+}
+
+id<MTLLibrary> PipeLine::loadShaderLibrary() {
+  id<MTLDevice> device = m_bridge.GetMetalDevice();
 
   // 加载库文件
   uint32_t executable_length = 0;
@@ -31,34 +66,7 @@ bool PipeLine::Create() {
   id<MTLLibrary> shader_lib = [device newLibraryWithFile:library_path error:&error];
   [library_path release];
 
-  if (!shader_lib) {
-    return false;
-  }
-
-  desc.vertexFunction = [shader_lib newFunctionWithName:@"vertexShader"];
-  desc.fragmentFunction = [shader_lib newFunctionWithName:@"fragmentShader"];
-
-  desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-
-  desc.colorAttachments[0].blendingEnabled = YES;
-  desc.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-  desc.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
-  desc.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-  desc.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-  desc.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorZero;
-  desc.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-
-  m_state = [device newRenderPipelineStateWithDescriptor:desc error:&error];
-
-  [desc release];
-  return true;
+  return shader_lib;
 }
 
-bool PipeLine::Destroy() {
-  if (m_state) {
-    [m_state release];
-    m_state = nil;
-  }
-  return true;
-}
 }

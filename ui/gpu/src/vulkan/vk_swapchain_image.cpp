@@ -39,9 +39,9 @@ bool SwapChainFrame::Create(VkFormat imageFormat) {
 
 bool SwapChainFrame::CreateUniformBuffer() {
   m_uniform_descriptor_set = m_bridge.GetUniformDescriptorPool().AllocatateDescriptorSet(
-    m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetUniformeDescriptorSetLayout());
+    m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetUniformLayout());
 
-  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+  VkDeviceSize bufferSize = sizeof(FrameData);
 
   return m_uniform_buffer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -83,7 +83,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
   //                  currentTime - startTime)
   //                  .count();
 
-  UniformBufferObject ubo{};
+  FrameData ubo{};
   // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
   //                         glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view = glm::mat4(1.0f);
@@ -114,7 +114,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
   VkDescriptorBufferInfo bufferInfo{};
   bufferInfo.buffer = m_uniform_buffer.handle();
-  bufferInfo.range = sizeof(UniformBufferObject);
+  bufferInfo.range = sizeof(FrameData);
 
   VkWriteDescriptorSet descriptorWrites[1] = {};
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -134,7 +134,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
 void SwapChainFrame::UpdatePushData(VkCommandBuffer &command_buffer,
                               glm::mat4 &mat4) {
-  PushData position;
+  LayerData position;
   position.model = mat4;
 
   vkCmdPushConstants(
@@ -142,7 +142,7 @@ void SwapChainFrame::UpdatePushData(VkCommandBuffer &command_buffer,
       m_bridge.GetPipeline().layout(),          // 管线布局（需包含 Push Constants 范围）
       VK_SHADER_STAGE_VERTEX_BIT, // 生效的着色器阶段（这里是顶点着色器）
       0,                          // 偏移量（如果 Push Constants 块有多个变量）
-      sizeof(PushData),           // 数据大小
+      sizeof(LayerData),           // 数据大小
       &position                   // 数据指针
   );
 }

@@ -1,5 +1,32 @@
+
+# 直接在source_set中配置 -DENABLE_VULKAN 只是针对当前source_set生效，
+# 为了让整个gpu工程都定义该宏，需要将这些配置放在config中，同时给source_set和
+# gpu工程配置上依赖。也可以在source_set中使用public_configs，这样外部依赖
+# 该source_set时，也会自动依赖这些configs
+
+config("vulkan_config") {
+  defines = [ "ENABLE_VULKAN" ]
+
+  VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
+  print("VULKAN_SDK_DIR: " + VULKAN_SDK_DIR)
+  if (is_win) {
+    include_dirs = [ VULKAN_SDK_DIR + "\\include" ]
+    lib_dirs = [ VULKAN_SDK_DIR + "\\Lib" ]
+    libs = [ "vulkan-1.lib" ]
+  }
+  else if (is_mac) {
+    include_dirs = [ VULKAN_SDK_DIR + "/include" ]
+    libs = ["vulkan.1.3.261"]
+  }
+  else if (is_linux) {
+    include_dirs = [ VULKAN_SDK_DIR + "/include" ]
+    libs = ["vulkan"]
+  }
+}
+
 source_set("vulkan") {
-  cflags = [ "-DENABLE_VULKAN" ]
+  # 让gpu工程也能继承这些config配置。
+  public_configs = [":vulkan_config"]
 
   sources = [
     "vk_app.cpp",
@@ -26,25 +53,8 @@ source_set("vulkan") {
     "//ui/",
     "//ui/gpu/",
   ]
-
-  VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
-  print("VULKAN_SDK_DIR: " + VULKAN_SDK_DIR)
-  if (is_win) {
-    include_dirs += [ VULKAN_SDK_DIR + "\\include" ]
-    lib_dirs = [ VULKAN_SDK_DIR + "\\Lib" ]
-    libs = [ "vulkan-1.lib" ]
-  }
-  else if (is_mac) {
-    include_dirs += [ VULKAN_SDK_DIR + "/include" ]
-    libs = ["vulkan.1.3.261"]
-  }
-  else if (is_linux) {
-    include_dirs += [ VULKAN_SDK_DIR + "/include" ]
-    libs = ["vulkan"]
-  }
-
   if (is_linux || is_mac) {
-    cflags += [
+    cflags = [
       "-Wno-deprecated-volatile"
     ]
   }

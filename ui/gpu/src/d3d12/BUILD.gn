@@ -1,16 +1,5 @@
-source_set("d3d12") {
-  sources = [
-    "d3d12_app.cpp",
-    "d3d12_app.h",
-    "d3d12_compositor.cpp",
-    "d3d12_compositor.h",
-    "d3d12_swapchain.cpp",
-    "d3d12_swapchain.h",
-    "d3d12_command_queue.cpp",
-    "d3d12_command_queue.h",
-  ]
-
-  cflags = [ "-DENABLE_D3D12" ]
+config("d3d12_config") {
+  defines = [ "ENABLE_D3D12" ]
 
   # d3d12不依赖于directx sdk!
   include_dirs = [
@@ -20,5 +9,20 @@ source_set("d3d12") {
     "atls.lib",
     "D3d12.lib", 
     "dxgi.lib",
+  ]
+}
+
+source_set("d3d12") {
+  public_configs = [":d3d12_config"]
+
+  sources = [
+    "d3d12_app.cpp",
+    "d3d12_app.h",
+    "d3d12_compositor.cpp",
+    "d3d12_compositor.h",
+    "d3d12_swapchain.cpp",
+    "d3d12_swapchain.h",
+    "d3d12_command_queue.cpp",
+    "d3d12_command_queue.h",
   ]
 }

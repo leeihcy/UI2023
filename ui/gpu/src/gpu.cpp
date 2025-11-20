@@ -143,7 +143,7 @@ UIGPUAPI bool GpuStartup() {
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)
-    g_startup = VulkanApplication::GetInstance().Startup();
+   g_startup = VulkanApplication::GetInstance().Startup();
 #endif
   }
   return g_startup;

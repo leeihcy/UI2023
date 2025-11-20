@@ -82,7 +82,7 @@ bool VkTextureTile::updateTextureDescriptorset() {
   }
   if (m_texture_descriptorset == VK_NULL_HANDLE) {
     m_texture_descriptorset = m_bridge.GetTextureDescriptorPool().AllocatateDescriptorSet(
-      m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetTextureDescriptorSetLayout());
+      m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetTextureLayout());
   }
 
   VkDescriptorImageInfo imageInfo = {};

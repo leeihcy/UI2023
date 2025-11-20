@@ -1,5 +1,9 @@
+config("metal2_config") {
+  defines = [ "ENABLE_METAL2" ]
+}
+
 source_set("metal2") {
-  cflags = [ "-DENABLE_METAL2" ]
+  public_configs = [":metal2_config"]
 
   sources = [
     "inc.cpp",

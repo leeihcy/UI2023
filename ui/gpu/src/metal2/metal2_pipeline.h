@@ -12,7 +12,7 @@ public:
   bool Create();
   bool Destroy();
 private:
-  void loadShader();
+  id<MTLLibrary> loadShaderLibrary();
   
 private:
   ui::IMetal2Bridge& m_bridge;
