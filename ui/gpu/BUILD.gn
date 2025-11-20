@@ -37,18 +37,18 @@ shared_library("uigpu") {
     }
     else if (is_mac) {
       enable_metal2 = true
-      enable_vulkan = false
+      enable_vulkan = true
     }
 
     if (enable_d3d10) {
       cflags += [ "-DENABLE_D3D10" ]
-    } else if (enable_d3d11) {
+    } if (enable_d3d11) {
       cflags += [ "-DENABLE_D3D11" ]
-    } else if (enable_d3d12) {
+    } if (enable_d3d12) {
       cflags += [ "-DENABLE_D3D12" ]
-    } else if (enable_metal2) {
+    } if (enable_metal2) {
       cflags += [ "-DENABLE_METAL2" ]
-    } else if (enable_vulkan) {
+    } if (enable_vulkan) {
       cflags += [ "-DENABLE_VULKAN" ]
     }
 
@@ -103,7 +103,7 @@ shared_library("uigpu") {
       "src/gpu_layer.cpp",
       "src/texture_tile.cpp",
       "src/texture_tile_array.cpp",
-      "src/igpucompositor.cpp",
+      "src/gpu.cpp",
     ]
     if (enable_d3d10) {
       sources += [
@@ -170,7 +170,6 @@ shared_library("uigpu") {
 
     if (enable_metal2) {
       sources += [
-        "src/igpucompositor_metal2.mm",
         "src/metal2/inc.cpp",
         "src/metal2/inc.h",
         "src/metal2/metal2_app.mm",
@@ -233,6 +232,9 @@ shared_library("uigpu") {
     }
 
   if (is_mac) {
+    sources += [
+      "src/gpu1.mm",
+    ]
     ldflags += [
       "-framework", "Foundation",
       "-framework", "CoreGraphics",

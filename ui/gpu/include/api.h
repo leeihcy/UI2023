@@ -16,6 +16,16 @@ namespace ui {
 
 #define TILE_SIZE 256 // 纹理分块大小
 
+enum class GpuApi {
+  Unknown = 0,
+  D3d10,
+  D3d11,
+  D3d12,
+  Metal2,
+  Vulkan,
+};
+
+
 struct IGpuLayer;
 class GpuLayerCommitContext;
 

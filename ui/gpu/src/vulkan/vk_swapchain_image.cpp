@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 
+#include "src/vulkan/shaders/shader_types.h"
 #include "src/util.h"
 #include "src/vulkan/vk_pipeline.h"
 #include "src/vulkan/vk_swapchain.h"
@@ -40,7 +41,7 @@ bool SwapChainFrame::CreateUniformBuffer() {
   m_uniform_descriptor_set = m_bridge.GetUniformDescriptorPool().AllocatateDescriptorSet(
     m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetUniformeDescriptorSetLayout());
 
-  VkDeviceSize bufferSize = sizeof(PipeLine::UniformBufferObject);
+  VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
   return m_uniform_buffer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -82,7 +83,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
   //                  currentTime - startTime)
   //                  .count();
 
-  PipeLine::UniformBufferObject ubo{};
+  UniformBufferObject ubo{};
   // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
   //                         glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view = glm::mat4(1.0f);
@@ -113,7 +114,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
   VkDescriptorBufferInfo bufferInfo{};
   bufferInfo.buffer = m_uniform_buffer.handle();
-  bufferInfo.range = sizeof(PipeLine::UniformBufferObject);
+  bufferInfo.range = sizeof(UniformBufferObject);
 
   VkWriteDescriptorSet descriptorWrites[1] = {};
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -133,7 +134,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
 void SwapChainFrame::UpdatePushData(VkCommandBuffer &command_buffer,
                               glm::mat4 &mat4) {
-  PipeLine::PushData position;
+  PushData position;
   position.model = mat4;
 
   vkCmdPushConstants(
@@ -141,7 +142,7 @@ void SwapChainFrame::UpdatePushData(VkCommandBuffer &command_buffer,
       m_bridge.GetPipeline().layout(),          // 管线布局（需包含 Push Constants 范围）
       VK_SHADER_STAGE_VERTEX_BIT, // 生效的着色器阶段（这里是顶点着色器）
       0,                          // 偏移量（如果 Push Constants 块有多个变量）
-      sizeof(PipeLine::PushData),           // 数据大小
+      sizeof(PushData),           // 数据大小
       &position                   // 数据指针
   );
 }

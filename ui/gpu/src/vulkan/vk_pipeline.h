@@ -3,6 +3,7 @@
 #include "src/vulkan/vk_bridge.h"
 #include "src/vulkan/vk_objects.h"
 
+#include "src/vulkan/shaders/shader_types.h"
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 #include <memory>
@@ -51,26 +52,6 @@ public:
   VkSampler GetTextureSampler() { return m_texture_sampler; }
 
 public:
-  // 全局共享矩阵，一帧更新一次。
-  struct UniformBufferObject {
-    glm::mat4 view;
-    // glm::mat4 proj;
-    glm::mat4 ortho;
-  };
-
-  // 轻量级更新的数据
-  struct PushData {
-    // 每个模型的世界坐标转换矩阵
-    glm::mat4 model;
-  };
-
-  // shader.vert glsl文件中的顶点格式定义
-  struct ShaderVertex {
-    glm::vec2 pos;
-    glm::vec3 color;
-    glm::vec2 texCoord;
-  };
-
   struct Context {
     VkPipelineInputAssemblyStateCreateInfo input_assembly{};
     VkPipelineVertexInputStateCreateInfo vertex_input{};

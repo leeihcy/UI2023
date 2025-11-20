@@ -33,7 +33,7 @@ TextureTile *VulkanGpuLayer::newTile() { return new VkTextureTile(m_bridge); }
 void VulkanGpuLayer::createVertexBuffer() {
 
   glm::vec3 color(1.0f, 1.0f, 1.0f);
-  std::vector<vulkan::PipeLine::ShaderVertex> vertex_array;
+  std::vector<vulkan::ShaderVertex> vertex_array;
 
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
     for (int x = 0; x < m_arrayTile.GetCol(); ++x) {
@@ -53,7 +53,7 @@ void VulkanGpuLayer::createVertexBuffer() {
     }
   }
 
-  size_t data_size = sizeof(vulkan::PipeLine::ShaderVertex) *
+  size_t data_size = sizeof(vulkan::ShaderVertex) *
                             vertex_array.size();
   m_vertexBuffer.Create(vulkan::Buffer::VERTEX, (void *)vertex_array.data(),
                        data_size);

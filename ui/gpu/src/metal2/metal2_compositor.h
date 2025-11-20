@@ -67,6 +67,7 @@ public:
   id<CAMetalDrawable> m_currentDrawable;
   id<MTLCommandBuffer> m_commandBuffer;
   id<MTLRenderCommandEncoder> m_renderEncoder;
+  NSAutoreleasePool* m_auto_pool = nullptr;
 
 private:
   int m_width = 0;

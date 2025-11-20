@@ -108,14 +108,13 @@ void Metal2Compositor::OnSwapChainCreated() {}
 
 
 bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
+  m_auto_pool = [[NSAutoreleasePool alloc] init];
+
   m_currentDrawable = [m_bind_layer nextDrawable];
-  // If the current drawable is nil, skip rendering this frame
   if (!m_currentDrawable) {
     return false;
   }
   
-  // TODO: AutoReleasePool...
-
   // if (m_commandBuffer) {
   //   [m_commandBuffer release];
   //   m_commandBuffer = nullptr;
@@ -163,10 +162,11 @@ bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
 
 void Metal2Compositor::EndCommit(GpuLayerCommitContext *) {
   [m_renderEncoder endEncoding];
-
   [m_commandBuffer presentDrawable:m_currentDrawable];
-
   [m_commandBuffer commit];
+
+  [m_auto_pool release];
+  m_auto_pool = nullptr;
 }
 
 void Metal2Compositor::Resize(int width, int height) {

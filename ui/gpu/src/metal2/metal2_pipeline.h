@@ -11,7 +11,9 @@ public:
 
   bool Create();
   bool Destroy();
-
+private:
+  void loadShader();
+  
 private:
   ui::IMetal2Bridge& m_bridge;
 public:

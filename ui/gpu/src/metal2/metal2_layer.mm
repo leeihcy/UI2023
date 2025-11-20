@@ -26,7 +26,7 @@ void Metal2GpuLayer::Resize(int nWidth, int nHeight) {
   if (m_width == (int)nWidth && m_height == (int)nHeight) {
     return;
   }
-  ui::Log("VulkanGpuLayer Resize: width=%d, height=%d", nWidth, nHeight);
+  ui::Log("Metal2GpuLayer Resize: width=%d, height=%d", nWidth, nHeight);
 
   doCreateTile(nWidth, nHeight);
 
@@ -56,6 +56,7 @@ void Metal2GpuLayer::Compositor(GpuLayerCommitContext *pContext,
   matrix_translate.columns[3][0] = pContext->m_xOffset;
   matrix_translate.columns[3][1] = pContext->m_yOffset;
   layer_data.model = matrix_multiply(layer_data.model, matrix_translate);
+
   [renderEncoder setVertexBytes:&layer_data.model
                          length:sizeof(simd_float4x4)
                         atIndex:(int)VertexShaderInput::LayerData];
