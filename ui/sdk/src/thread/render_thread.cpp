@@ -77,16 +77,18 @@ void RenderThread::thread_proc() {
       continue;
     }
 
-    auto &op_group = m_paint_op_group.front();
-    for (auto &cmd : op_group->ops) {
-      PaintOp *op = cmd.get();
-      if (op->type > PaintOpType::PostCommandStart) {
-        process_command(op);
-        continue;
+    for (auto iter = m_paint_op_group.begin(); iter != m_paint_op_group.end();
+         ++iter) {
+      for (auto &cmd : (*iter)->ops) {
+        PaintOp *op = cmd.get();
+        if (op->type > PaintOpType::PostCommandStart) {
+          process_command(op);
+          continue;
+        }
+        op->processOnRenderThread((SkiaRenderTarget *)op->key);
       }
-      op->processOnRenderThread((SkiaRenderTarget*)op->key);
     }
-    m_paint_op_group.pop_front();
+    m_paint_op_group.clear();
   }
 
   // 释放其它数据

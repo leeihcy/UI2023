@@ -40,31 +40,35 @@ struct RasterizerData
     float4 pos [[position]];  // 用 [[position]] 标记顶点位置
     float2 texcoord;
     float3 color;
+    uint instance_id [[flat]];
 };
 
 vertex RasterizerData
-vertexShader(uint vertexId [[ vertex_id ]],
+vertexShader(uint vid [[ vertex_id ]],
+             uint iid [[ instance_id ]],
              device const VertexData *vertices [[ buffer(0) ]],
-             device const LayerData &layer [[ buffer(1) ]],
-             device const FrameData &frame  [[ buffer(2) ]]
+             device const TileData *tiles [[ buffer(1) ]],
+             device const LayerData &layer [[ buffer(2) ]],
+             device const FrameData &frame  [[ buffer(3) ]]
              )
 {
     RasterizerData out;
     
-    float4 vertex_pos = float4(vertices[vertexId].position.xy, 0, 1);
+    float4 vertex_pos = float4(vertices[vid].position.xy + tiles[iid].offset, 0, 1);
     out.pos = float4(frame.ortho * frame.view * layer.model * vertex_pos);
 
-    out.color = vertices[vertexId].color;
-    out.texcoord = vertices[vertexId].texcoord;
+    out.color = vertices[vid].color;
+    out.texcoord = vertices[vid].texcoord;
+    out.instance_id = iid;
     return out;
 }
 
 fragment half4
 fragmentShader(RasterizerData in [[stage_in]],
-               texture2d< half, access::sample > tex [[texture(0)]])
+               texture2d_array< half, access::sample > tex [[texture(0)]])
 {
-  constexpr sampler s(address::repeat, filter::linear);
-  return tex.sample( s, in.texcoord ); // rgba
+  constexpr sampler s(address::mirrored_repeat, filter::linear);
+  return tex.sample( s, in.texcoord, in.instance_id ); // rgba
 
   // 直接返回顶点着色器传递过来的颜色
   // return half4((half3)in.color, 1.0);  

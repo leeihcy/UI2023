@@ -1,7 +1,7 @@
 #pragma once
 #include "gpu/include/api.h"
 #include "sdk/include/common/math/rect.h"
-#include "texture_tile_array.h"
+#include "src/texture_tile.h"
 #include <list>
 
 class TextureTile;
@@ -22,16 +22,6 @@ struct SOURCE_BITMAP_DATA;
 // 可能比显示窗口还大，这样可以规避纹理过大的纹理。但是这又引起新的问题，每
 // 次显示窗口发生变化我们都必须重新绘制和上传纹理。这将导致速度非常慢。
 //
-// 通过分块可以完美解决这个问题。每一个层会被切割为几个256*256的小块。我们
-// 只绘制和上传GPU需要的块。我们把这些块保存在起来：只需要上传可见的和被用
-// 户操作的块。而且，我们可以通过不上传被遮住的块来优化渲染。一旦所需的块
-// 上传完成，我们就可以将这些块合成到一张图片中。
-//
-// 纹理分块带来的好处是：纹理流。当有一个很大的纹理需要被上传时，为了节省内
-// 存带宽我们只需要上传所需的几个小块。对于一个很长的纹理GPU不用一直等着：
-// 因为上传的内容被拆分成了许多块。
-
-//
 // 总结：从DOM到屏幕
 // Chrome是如何将DOM转换为屏幕上的图像的呢？从概念上讲，它：
 //
@@ -49,7 +39,7 @@ struct SOURCE_BITMAP_DATA;
 //   完成后重新上载至GPU中。如果其内容仍然不变，只是其组合属性发生了变化
 //  （比如它的位置或者透明度改变了），Chrome就不会对GPU中该层的位图做任何
 //   处理，只是通过重新进行组合来生成新的帧。
-
+//
 //
 // 纹理的最大尺寸在GPU中是有限定的。就目前主流的显卡来说，这个值一般是2048
 // 或者4096每个维度，值得提醒大家的就是：一块显卡，虽然理论上讲它可以支持
@@ -61,7 +51,12 @@ struct SOURCE_BITMAP_DATA;
 // 屏幕回扫，这两个缓存都变得不可写。有人为了节约这一丁点时间，
 // 就在第三个缓存上作图，然后让这三个缓存轮转，这就是三缓存技术。
 //
-
+// TODO: 
+// 现在将Layer进行分块，主要目的不是为了解决纹理上传的尺寸限制问题，
+// 而是解决大页面滚动的场景。
+// Layer的尺寸将大于屏幕尺寸，但只需要将屏幕内的部分做渲染呈现。
+// 
+//
 //
 // 怎么使对象绕自身的中心旋转，而不是坐标轴的原点？
 /*
@@ -139,6 +134,9 @@ public:
                           float *pMatrixTransform) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
   virtual TextureTile *newTile() = 0;
+  virtual void UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+                                ui::Rect &dirty_of_layer,
+                                ui::GpuUploadBitmap &source);
 
 public:
   void SetGpuCompositor(IGpuCompositor *p);

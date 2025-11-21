@@ -69,7 +69,6 @@ shared_library("uigpu") {
     "src/util.h",
     "src/gpu_layer.cpp",
     "src/texture_tile.cpp",
-    "src/texture_tile_array.cpp",
     "src/gpu.cpp",
   ]
   if (is_mac) {

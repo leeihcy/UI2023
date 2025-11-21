@@ -78,19 +78,6 @@ void GpuLayer::SetGpuCompositor(IGpuCompositor *p) {
 // 因此你也不能对这块buffer使用脏矩形了，必须完整更新整个buffer. <<--
 //    怪不得用脏区域更新会出现脏区域之外的数据花屏、内容丢失的问题了
 //
-// --> 解决方案：使用分块机制，将脏区域所在的块更新即可。
-//
-// To receive a performance improvement when you use dynamic vertex buffers,
-// your app must call Map with the appropriate D3D11_MAP values. c
-// D3D11_MAP_WRITE_DISCARD indicates that the app doesn't need to keep the old
-// vertex or index data in the buffer. If the GPU is still using the buffer
-// when you call Map with D3D11_MAP_WRITE_DISCARD, the runtime returns a
-// pointer to a new region of memory instead of the old buffer data. This
-// allows the GPU to continue using the old data while the app places data in
-// the new buffer. No additional memory management is required in the app; the
-// old buffer is reused or destroyed automatically when the GPU is finished
-// with it.
-//
 //---------------------------------------------------------------------------------------
 //
 
@@ -133,10 +120,15 @@ void GpuLayer::UploadBitmap(GpuUploadBitmap &bitmap) {
         dirty_of_tile = dirty_of_layer;
         dirty_of_tile.Offset(-tile_rect.left, -tile_rect.top);
 
-        m_arrayTile[y][x]->Upload(dirty_of_tile, dirty_of_layer, bitmap);
+        this->UpdateTileBitmap(y, x, dirty_of_tile, dirty_of_layer, bitmap);
       }
     }
   }
+}
+void GpuLayer::UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+                                ui::Rect &dirty_of_layer,
+                                ui::GpuUploadBitmap &source) {
+  m_arrayTile[row][col]->Upload(dirty_of_tile, dirty_of_layer, source);
 }
 
 //
@@ -200,8 +192,13 @@ void GpuLayer::doCreateTile(int width, int height) {
   std::list<TextureTile *>::iterator iter = m_listTile.begin();
   for (int y = 0; y < row; y++) {
     for (int x = 0; x < col; x++) {
-      m_arrayTile[y][x] = (*iter);
-      (*iter)->SetIndex(x, y);
+      // 有些实现类直接在layer层实现了tile逻辑，没有具体的tile类。
+      TextureTile* tile = (*iter);
+      if (tile) {
+        tile->SetIndex(x, y);
+      }
+
+      m_arrayTile[y][x] = tile;
       ++iter;
     }
   }

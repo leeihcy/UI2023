@@ -14,8 +14,6 @@ source_set("metal2") {
     "metal2_compositor.h",
     "metal2_layer.mm",
     "metal2_layer.h",
-    "metal2_tile.mm",
-    "metal2_tile.h",
     "metal2_objects.mm",
     "metal2_objects.h",
     "metal2_pipeline.mm",

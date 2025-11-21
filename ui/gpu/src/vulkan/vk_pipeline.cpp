@@ -92,14 +92,13 @@ static bool readSpvFile(const char *filename, std::vector<char> &buffer) {
 }
 
 // 顶点格式设置
+// layout(location = 0) in vec2 inPosition;
+// layout(location = 1) in vec3 inColor;   
+// layout(location = 2) in vec2 inTexCoord;
 void PipeLine::buildVertexInput(Context &ctx, VertexData shader_vertex) {
   ctx.vertex_input.sType =
       VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-#if 0 // 直接在shader中写死顶点的版本
-  ctx.vertex_input.vertexBindingDescriptionCount = 0;
-  ctx.vertex_input.vertexAttributeDescriptionCount = 0;
-#else
   ctx.vertex_input_binding_description.binding = 0;
   ctx.vertex_input_binding_description.stride = sizeof(shader_vertex);
   ctx.vertex_input_binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -130,7 +129,6 @@ void PipeLine::buildVertexInput(Context &ctx, VertexData shader_vertex) {
       (uint32_t)std::size(ctx.vertex_input_attribute_descriptions);
   ctx.vertex_input.pVertexAttributeDescriptions =
       ctx.vertex_input_attribute_descriptions;
-#endif
 }
 
 void PipeLine::build_input_assembly(Context &ctx) {

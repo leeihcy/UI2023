@@ -4,7 +4,6 @@
 #include "gpu/include/api.h"
 
 namespace ui {
-
 class TextureTile {
 public:
   virtual ~TextureTile() {}
@@ -13,8 +12,6 @@ public:
 
   virtual void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer,
                       ui::GpuUploadBitmap &source) = 0;
-  // virtual void Compositor(long xOffset, long yOffset, long vertexStartIndex,
-  //                         ui::GpuLayerCommitContext *pContext) = 0;
 
 protected:
   long m_width = 0;
@@ -22,6 +19,29 @@ protected:
   long m_xIndex = 0;
   long m_yIndex = 0;
 };
+typedef TextureTile *TextureTilePtr;
 
+class TextureTile2DArray {
+public:
+  TextureTile2DArray();
+  ~TextureTile2DArray();
+
+  void Create(int row, int col);
+  void Destroy();
+
+  int GetRow();
+  int GetCol();
+  int GetCount();
+
+  TextureTilePtr *&operator[](int row) { return m_ppArray[row]; }
+
+protected:
+  TextureTilePtr ** doCreate(int row, int col);
+
+private:
+  TextureTilePtr **m_ppArray;
+  int m_row;
+  int m_col;
+};
 }
 #endif
