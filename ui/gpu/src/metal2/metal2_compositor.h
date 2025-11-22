@@ -6,6 +6,8 @@
 #include "src/metal2/metal2_objects.h"
 #include "src/metal2/metal2_pipeline.h"
 #include "src/metal2/metal2_bridge.h"
+#include "src/metal2/metal2_swapchain.h"
+#include "src/metal2/shaders/shader_types.h"
 
 namespace ui {
 class Metal2Compositor;
@@ -40,39 +42,40 @@ protected:
 
 public:
   id<MTLDevice> GetMetalDevice() override { return m_device; }
-  id<MTLRenderCommandEncoder> GetRenderEncoder() override { return m_renderEncoder; }
+  id<MTLCommandQueue> GetCommandQueue() override { return m_command_queue; }
+
+  metal2::PipeLine& GetPipeline() override { return m_pipeline; }
+  metal2::RenderPass& GetRenderPass() override { return m_render_pass; }
+  metal2::SwapChain& GetSwapchain() override { return m_swapchain; }
+
   void Present();
   
 private:
   id<MTLDevice> fetchDevice(NSView* view);
+  void buildFrameData();
 
   void onDeviceLost();
   void onDeviceCreate();
-  void OnSwapChainCreated() /*override*/;
 
-public:
+private:
+  int m_width = 0;
+  int m_height = 0;
+  metal2::FrameData m_frame_data;
+
+  id<MTLDevice> m_device = nil;
+  id<MTLCommandQueue> m_command_queue = nil;
   Metal2CompositorDelegate* m_delgate = nil;
 
   NSView*  m_bind_view = nullptr;
   // CAMetalLayer 本质上就是一个内置了交换链的图层，不需要我们再实现swapchain
   CAMetalLayer* m_bind_layer = nullptr;
-
-  id<MTLDevice> m_device = nil;
-  id<MTLCommandQueue> m_command_queue = nil;
-
-  // metal2::CommandBuffer m_command_buffer;
+  
   metal2::PipeLine m_pipeline;
   metal2::RenderPass m_render_pass;
+  metal2::SwapChain m_swapchain;
 
-  id<CAMetalDrawable> m_currentDrawable;
-  id<MTLCommandBuffer> m_commandBuffer;
-  id<MTLRenderCommandEncoder> m_renderEncoder;
   NSAutoreleasePool* m_auto_pool = nullptr;
-
-private:
-  int m_width = 0;
-  int m_height = 0;
-
+  id<CAMetalDrawable> m_currentDrawable;
 };
 
 }

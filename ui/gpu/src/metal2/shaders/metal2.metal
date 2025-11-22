@@ -46,10 +46,10 @@ struct RasterizerData
 vertex RasterizerData
 vertexShader(uint vid [[ vertex_id ]],
              uint iid [[ instance_id ]],
-             device const VertexData *vertices [[ buffer(0) ]],
-             device const TileData *tiles [[ buffer(1) ]],
-             device const LayerData &layer [[ buffer(2) ]],
-             device const FrameData &frame  [[ buffer(3) ]]
+             device const metal2::VertexData *vertices [[ buffer(0) ]],
+             device const metal2::TileData *tiles [[ buffer(1) ]],
+             device const metal2::LayerData &layer [[ buffer(2) ]],
+             device const metal2::FrameData &frame  [[ buffer(3) ]]
              )
 {
     RasterizerData out;

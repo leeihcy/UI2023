@@ -4,8 +4,9 @@
 #include "src/gpu_layer.h"
 #include "src/metal2/inc.h"
 #include "src/metal2/metal2_bridge.h"
+#include "src/metal2/shaders/shader_types.h"
 #include "src/texture_tile.h"
-#include <objc/objc.h>
+#include <vector>
 
 namespace ui {
 class TextureTile;
@@ -29,8 +30,8 @@ private:
   void createTextures();
 private:
   IMetal2Bridge& m_bridge;
-
-  id <MTLBuffer>  m_vertices_buffer = nil;
+  
+  std::vector<metal2::VertexData> m_vertex_data;
   id <MTLBuffer>  m_tiles_buffer = nil;
   id <MTLTexture> m_texture_arr = nil;
 };

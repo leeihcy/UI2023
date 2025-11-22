@@ -1,5 +1,6 @@
 #include "src/metal2/metal2_layer.h"
 #include "src/metal2/metal2_pipeline.h"
+#include "src/metal2/metal2_swapchain.h"
 #include "src/metal2/shaders/shader_types.h"
 #include "src/util.h"
 #include <simd/matrix.h>
@@ -7,12 +8,11 @@
 
 namespace ui {
 
-Metal2GpuLayer::Metal2GpuLayer(IMetal2Bridge &bridge) : m_bridge(bridge) {}
+Metal2GpuLayer::Metal2GpuLayer(IMetal2Bridge &bridge) : m_bridge(bridge) {
+  createVertexBuffer();
+}
+
 Metal2GpuLayer::~Metal2GpuLayer() {
-  if (m_vertices_buffer) {
-    [m_vertices_buffer release];
-    m_vertices_buffer = nullptr;
-  }
   if (m_tiles_buffer) {
     [m_tiles_buffer release];
     m_tiles_buffer = nullptr;
@@ -30,7 +30,6 @@ void Metal2GpuLayer::Resize(int nWidth, int nHeight) {
   m_width = nWidth;
   m_height = nHeight;
 
-  createVertexBuffer();
   createTileBuffer();
   createTextures();
 }
@@ -59,17 +58,21 @@ void Metal2GpuLayer::UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
 
 void Metal2GpuLayer::Compositor(GpuLayerCommitContext *pContext,
                                 float *pMatrixTransform) {
-  id<MTLRenderCommandEncoder> renderEncoder = m_bridge.GetRenderEncoder();
+  metal2::InFlightFrame * frame = m_bridge.GetSwapchain().GetCurrentInflightFrame();
+  id<MTLRenderCommandEncoder> renderEncoder = frame->m_renderEncoder;
 
-  [renderEncoder setVertexBuffer:m_vertices_buffer
-                          offset:0
-                         atIndex:(int)VertexShaderInput::VertexData];
+  // 少量数据，用setVertexBytes 比 setVertexBuffer更合适
+  [renderEncoder
+      setVertexBytes:m_vertex_data.data()
+              length:m_vertex_data.size() * sizeof(metal2::VertexData)
+             atIndex:(int)metal2::VertexShaderInput::VertexData];
+
   [renderEncoder setVertexBuffer:m_tiles_buffer
                           offset:0
-                         atIndex:(int)VertexShaderInput::TileData];
+                         atIndex:(int)metal2::VertexShaderInput::TileData];
 
   // 更新layer在世界坐标转换矩阵。
-  LayerData layer_data;
+  metal2::LayerData layer_data;
   layer_data.model = matrix_identity_float4x4;
   if (pMatrixTransform) {
     memcpy(&layer_data.model.columns[0], pMatrixTransform,
@@ -82,10 +85,10 @@ void Metal2GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
   [renderEncoder setVertexBytes:&layer_data.model
                          length:sizeof(simd_float4x4)
-                        atIndex:(int)VertexShaderInput::LayerData];
+                        atIndex:(int)metal2::VertexShaderInput::LayerData];
 
   [renderEncoder setFragmentTexture:m_texture_arr
-                            atIndex:(int)FragmentShaderInput::Texture];
+                            atIndex:(int)metal2::FragmentShaderInput::Texture];
 
   // 采用instance的方式，一次性绘制所有的tile，减少CPU/GPU指令交互
   [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip
@@ -101,18 +104,13 @@ TextureTile *Metal2GpuLayer::newTile() {
 // 绘制每个tile需要4个顶点（triangle strip)
 void Metal2GpuLayer::createVertexBuffer() {
   float s = (float)TILE_SIZE;
-  std::vector<VertexData> vertex_array = {
+  m_vertex_data = {
   // position,  color (not used) , texture coord
   // -------------------------------------------
       {{0, 0}, {0.0f, 0.0f, 1.0f}, {0, 0}},
       {{s, 0}, {0.0f, 1.0f, 0.0f}, {1, 0}},
       {{0, s}, {1.0f, 0.0f, 0.0f}, {0, 1}},
       {{s, s}, {0.0f, 1.0f, 1.0f}, {1, 1}}};
-
-  m_vertices_buffer = [m_bridge.GetMetalDevice()
-      newBufferWithBytes:vertex_array.data()
-                  length:vertex_array.size() * sizeof(VertexData)
-                 options:MTLResourceStorageModeShared];
 }
 
 // 每个tile，作为一个instance，重复利用vertex buffer数据，
@@ -122,7 +120,7 @@ void Metal2GpuLayer::createTileBuffer() {
   int col = m_arrayTile.GetCol();
   int count = row * col;
 
-  std::vector<TileData> tile_array;
+  std::vector<metal2::TileData> tile_array;
   tile_array.reserve(count);
 
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
@@ -130,14 +128,14 @@ void Metal2GpuLayer::createTileBuffer() {
     for (int x = 0; x < m_arrayTile.GetCol(); ++x) {
       float x_offset = x * TILE_SIZE;
 
-      TileData tile = {.offset = {x_offset, y_offset}};
+      metal2::TileData tile = {.offset = {x_offset, y_offset}};
       tile_array.push_back(tile);
     }
   }
 
   m_tiles_buffer = [m_bridge.GetMetalDevice()
       newBufferWithBytes:tile_array.data()
-                  length:tile_array.size() * sizeof(TileData)
+                  length:tile_array.size() * sizeof(metal2::TileData)
                  options:MTLResourceStorageModeShared];
 }
 // 将所有tile texture做为数组进行创建，直接在shader中使用索引进行引用。

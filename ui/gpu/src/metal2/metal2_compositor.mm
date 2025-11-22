@@ -9,7 +9,8 @@
 namespace ui {
 
 Metal2Compositor::Metal2Compositor()
-    : m_pipeline(*static_cast<IMetal2Bridge *>(this)) {
+    : m_pipeline(*static_cast<IMetal2Bridge *>(this)),
+      m_swapchain(*static_cast<IMetal2Bridge *>(this)) {
   m_delgate = [[Metal2CompositorDelegate alloc] initWith:this];
 }
 Metal2Compositor::~Metal2Compositor() {
@@ -40,7 +41,7 @@ bool Metal2Compositor::Initialize(IGpuCompositorWindow *window) {
   m_device = device;
 
   [m_delgate registerScreenNotification:nswindow];
-
+  
   onDeviceCreate();
 
   return true;
@@ -102,68 +103,43 @@ void Metal2Compositor::onDeviceCreate() {
   // m_command_buffer.Create(m_command_queue);
   m_pipeline.Create();
   m_render_pass.Create();
+  m_swapchain.Create();
 }
 
-void Metal2Compositor::OnSwapChainCreated() {}
-
-
 bool Metal2Compositor::BeginCommit(GpuLayerCommitContext *) {
+  if (!m_swapchain.WaitforNextFrame()) {
+    return false;
+  }
+  
+  // 每一帧的command buffer/render encoder/drawable
+  // 由 release pool 进行释放。
   m_auto_pool = [[NSAutoreleasePool alloc] init];
 
   m_currentDrawable = [m_bind_layer nextDrawable];
   if (!m_currentDrawable) {
+    [m_auto_pool release];
+    m_auto_pool = nil;
     return false;
   }
-  
-  // if (m_commandBuffer) {
-  //   [m_commandBuffer release];
-  //   m_commandBuffer = nullptr;
-  // }
-  // if (m_renderEncoder) {
-  //   [m_renderEncoder release];
-  //   m_renderEncoder = nullptr;
-  // }
 
-  m_commandBuffer = [m_command_queue commandBuffer];
   m_render_pass.SetTexture(m_currentDrawable.texture);
 
-  m_renderEncoder = [m_commandBuffer
-      renderCommandEncoderWithDescriptor:m_render_pass.m_descriptor];
+  metal2::InFlightFrame* inflight_frame = m_swapchain.GetCurrentInflightFrame();
+  inflight_frame->BeginCommit(m_render_pass.m_descriptor);
 
-  [m_renderEncoder setRenderPipelineState:m_pipeline.m_state];
-
-  // pipe line ... frame ...
-  {
-    FrameData frame_data;
-    frame_data.view = matrix_identity_float4x4;
-
-    float left = 0;
-    float right = m_width;
-    float top = 0;
-    float bottom = m_height;
-    float near = 2000.f;
-    float far = -2000.f;
-
-    frame_data.ortho = matrix_identity_float4x4;
-    frame_data.ortho.columns[0][0] = 2.0f / (right - left);
-		frame_data.ortho.columns[1][1] = 2.0f / (top - bottom);
-		frame_data.ortho.columns[2][2] = 1.0f / (far - near);
-		frame_data.ortho.columns[3][0] = - (right + left) / (right - left);
-		frame_data.ortho.columns[3][1] = - (top + bottom) / (top - bottom);
-		frame_data.ortho.columns[3][2] = - near / (far - near);
-
-    [m_renderEncoder setVertexBytes:&frame_data
-                             length:sizeof(frame_data)
-                            atIndex:(int)VertexShaderInput::FrameData];
-  }
-
+  id<MTLRenderCommandEncoder> renderEncoder = inflight_frame->m_renderEncoder;
+  [renderEncoder setRenderPipelineState:m_pipeline.m_state];
+  [renderEncoder setVertexBytes:&m_frame_data
+                         length:sizeof(m_frame_data)
+                        atIndex:(int)metal2::VertexShaderInput::FrameData];
   return true;
 }
 
 void Metal2Compositor::EndCommit(GpuLayerCommitContext *) {
-  [m_renderEncoder endEncoding];
-  [m_commandBuffer presentDrawable:m_currentDrawable];
-  [m_commandBuffer commit];
+  metal2::InFlightFrame *inflight_frame = m_swapchain.GetCurrentInflightFrame();
+  inflight_frame->EndCommit(m_currentDrawable);
+
+  m_swapchain.IncCurrentInflightFrame();
 
   [m_auto_pool release];
   m_auto_pool = nullptr;
@@ -184,9 +160,28 @@ void Metal2Compositor::Resize(int width, int height) {
   CGSize size = { static_cast<CGFloat>(m_width), static_cast<CGFloat>(m_height) };
   [m_bind_layer setDrawableSize:size];
 
+  buildFrameData();
   // m_swapchain.MarkNeedReCreate();
 }
 
+void Metal2Compositor::buildFrameData() {
+  m_frame_data.view = matrix_identity_float4x4;
+
+  float left = 0;
+  float right = m_width;
+  float top = 0;
+  float bottom = m_height;
+  float near = 2000.f;
+  float far = -2000.f;
+
+  m_frame_data.ortho = matrix_identity_float4x4;
+  m_frame_data.ortho.columns[0][0] = 2.0f / (right - left);
+  m_frame_data.ortho.columns[1][1] = 2.0f / (top - bottom);
+  m_frame_data.ortho.columns[2][2] = 1.0f / (far - near);
+  m_frame_data.ortho.columns[3][0] = -(right + left) / (right - left);
+  m_frame_data.ortho.columns[3][1] = -(top + bottom) / (top - bottom);
+  m_frame_data.ortho.columns[3][2] = -near / (far - near);
+}
 }
 
 @implementation Metal2CompositorDelegate {

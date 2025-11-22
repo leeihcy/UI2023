@@ -4,6 +4,8 @@
 #include <simd/matrix_types.h>
 #include <simd/simd.h>
 
+namespace metal2 {
+
 enum class VertexShaderInput : int {
   VertexData = 0,
   TileData = 1,
@@ -37,6 +39,6 @@ struct FrameData {
   matrix_float4x4 view;
   matrix_float4x4 ortho;
 };
-
+}
 
 #endif

@@ -18,6 +18,8 @@ source_set("metal2") {
     "metal2_objects.h",
     "metal2_pipeline.mm",
     "metal2_pipeline.h",
+    "metal2_swapchain.mm",
+    "metal2_swapchain.h",
   ]
   include_dirs = [
     "//ui/",
