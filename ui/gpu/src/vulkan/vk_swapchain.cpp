@@ -121,7 +121,7 @@ bool SwapChain::CreateFrameBuffer(VkRenderPass render_pass) {
 
   for (auto &image : m_images) {
     image->CreateFrameBuffer(extent.width, extent.height, render_pass);
-    image->CreateUniformBuffer();
+    image->CreateFrameDataUniformBuffer();
   }
   return true;
 }
@@ -246,7 +246,7 @@ bool SwapChain::queryFormats(VkSurfaceKHR surface) {
 
   const VkSurfaceFormatKHR *selected_format = &formats[0];
   for (const auto &format : formats) {
-    if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+    if (format.format == VK_FORMAT_B8G8R8A8_UNORM &&
         format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
       selected_format = &format;
     }

@@ -1,4 +1,4 @@
-#include "vk_swapchain_image.h"
+#include "vk_swapchain_frame.h"
 
 #include <vulkan/vulkan_core.h>
 #include <glm/fwd.hpp>
@@ -15,7 +15,7 @@ namespace vulkan {
 
 SwapChainFrame::SwapChainFrame(IVulkanBridge &bridge, VkImage swapchain_image)
     : m_bridge(bridge), m_swapchain_image_ref(swapchain_image),
-    m_uniform_buffer(bridge) {}
+    m_framedata_buffer(bridge) {}
 
 SwapChainFrame::~SwapChainFrame() {
   VkDevice device = m_bridge.GetVkDevice();
@@ -23,11 +23,11 @@ SwapChainFrame::~SwapChainFrame() {
   m_image_view.Destroy(device);
   m_frame_buffer.Destroy(device);
 
-  if (m_uniform_descriptor_set != VK_NULL_HANDLE) {
-    m_bridge.GetUniformDescriptorPool().FreeDescriptorSet(device, m_uniform_descriptor_set);
-    m_uniform_descriptor_set = VK_NULL_HANDLE;
+  if (m_frame_descriptorset != VK_NULL_HANDLE) {
+    m_bridge.GetUniformDescriptorPool().FreeDescriptorSet(device, m_frame_descriptorset);
+    m_frame_descriptorset = VK_NULL_HANDLE;
   }
-  m_uniform_buffer.Destroy(true);
+  m_framedata_buffer.Destroy(true);
 }
 
 bool SwapChainFrame::Create(VkFormat imageFormat) {
@@ -37,13 +37,13 @@ bool SwapChainFrame::Create(VkFormat imageFormat) {
   return true;
 }
 
-bool SwapChainFrame::CreateUniformBuffer() {
-  m_uniform_descriptor_set = m_bridge.GetUniformDescriptorPool().AllocatateDescriptorSet(
+bool SwapChainFrame::CreateFrameDataUniformBuffer() {
+  m_frame_descriptorset = m_bridge.GetUniformDescriptorPool().AllocatateDescriptorSet(
     m_bridge.GetVkDevice(), m_bridge.GetPipeline().GetUniformLayout());
 
   VkDeviceSize bufferSize = sizeof(FrameData);
 
-  return m_uniform_buffer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+  return m_framedata_buffer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 }
@@ -106,19 +106,19 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
 
   void *data;
   vkMapMemory(m_bridge.GetVkDevice(),
-              m_uniform_buffer.memory(), 0, sizeof(ubo), 0,
+              m_framedata_buffer.memory(), 0, sizeof(ubo), 0,
               &data);
   memcpy(data, &ubo, sizeof(ubo));
   vkUnmapMemory(m_bridge.GetVkDevice(),
-                m_uniform_buffer.memory());
+                m_framedata_buffer.memory());
 
   VkDescriptorBufferInfo bufferInfo{};
-  bufferInfo.buffer = m_uniform_buffer.handle();
+  bufferInfo.buffer = m_framedata_buffer.handle();
   bufferInfo.range = sizeof(FrameData);
 
   VkWriteDescriptorSet descriptorWrites[1] = {};
   descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-  descriptorWrites[0].dstSet = m_uniform_descriptor_set;
+  descriptorWrites[0].dstSet = m_frame_descriptorset;
   descriptorWrites[0].dstBinding = 0;
   descriptorWrites[0].dstArrayElement = 0;
   descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -128,7 +128,7 @@ void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
                          descriptorWrites, 0, nullptr);
 
   vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          m_bridge.GetPipeline().layout(), 0, 1, &m_uniform_descriptor_set,
+                          m_bridge.GetPipeline().layout(), 0, 1, &m_frame_descriptorset,
                           0, nullptr);
 }
 

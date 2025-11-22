@@ -134,7 +134,7 @@ public:
                           float *pMatrixTransform) = 0;
   virtual void Resize(int nWidth, int nHeight) = 0;
   virtual TextureTile *newTile() = 0;
-  virtual void UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+  virtual void UploadTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
                                 ui::Rect &dirty_of_layer,
                                 ui::GpuUploadBitmap &source);
 

@@ -2,7 +2,7 @@
 #define _UI_GPU_SRC_VULKAN_WRAP_VULKAN_SWAP_CHAIN_H_
 #include "src/vulkan/vk_bridge.h"
 #include "src/vulkan/vk_objects.h"
-#include "src/vulkan/vk_swapchain_image.h"
+#include "src/vulkan/vk_swapchain_frame.h"
 #include "vulkan/vulkan_core.h"
 #include <cstdint>
 #include <memory>

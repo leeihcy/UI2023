@@ -95,9 +95,9 @@ bool DeviceQueue::pickPhysicalDevice(ui::IGpuCompositorWindow* window) {
     return false;
   }
 
-  std::vector<const char *> required_extensions;
-  required_extensions.push_back(
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME); // VK_KHR_swapchain
+  std::vector<const char *> required_extensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME, // VK_KHR_swapchain
+  };
 
 #if defined(OS_MAC)
   assert(window->GetType() == ui::GpuCompositorWindowType::MacOSNSView);

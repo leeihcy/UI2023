@@ -5,11 +5,17 @@
 namespace vulkan {
 
 // shader.vert glsl文件中的顶点格式定义
-// 每个Layer中的一系列顶点
+
+// 每个Tile的顶点
 struct VertexData {
   glm::vec2 pos;
   glm::vec3 color;
   glm::vec2 texCoord;
+};
+
+// Layer的每个分块
+struct TileData {
+  glm::vec2 offset; // _in_layer;
 };
 
 // 轻量级更新的数据

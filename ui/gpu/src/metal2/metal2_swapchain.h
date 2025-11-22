@@ -10,7 +10,8 @@ namespace metal2 {
 
 // CPU最多提交可以提交多少帧给GPU
 // 每套InFlight Frame都需要一套独立的资源，如CommandBuffer、UniformBuffer、DescriptorSets。
-#define MAX_FRAMES_IN_FLIGHT 2
+// 设置为2的时候，很容易出现cpu等待gpu。修改为3
+#define MAX_FRAMES_IN_FLIGHT 3
 
 // Inflight Frames：
 // ✅ CPU 提交速度限制器（防止 GPU 过载）

@@ -120,12 +120,12 @@ void GpuLayer::UploadBitmap(GpuUploadBitmap &bitmap) {
         dirty_of_tile = dirty_of_layer;
         dirty_of_tile.Offset(-tile_rect.left, -tile_rect.top);
 
-        this->UpdateTileBitmap(y, x, dirty_of_tile, dirty_of_layer, bitmap);
+        this->UploadTileBitmap(y, x, dirty_of_tile, dirty_of_layer, bitmap);
       }
     }
   }
 }
-void GpuLayer::UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+void GpuLayer::UploadTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
                                 ui::Rect &dirty_of_layer,
                                 ui::GpuUploadBitmap &source) {
   m_arrayTile[row][col]->Upload(dirty_of_tile, dirty_of_layer, source);

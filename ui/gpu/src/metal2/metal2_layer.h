@@ -20,13 +20,13 @@ public:
   void Compositor(GpuLayerCommitContext *pContext,
                   float *pMatrixTransform) override;
   TextureTile *newTile() override;
-  void UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+  void UploadTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
                         ui::Rect &dirty_of_layer,
                         ui::GpuUploadBitmap &source) override;
 
 private:
-  void createVertexBuffer();
-  void createTileBuffer();
+  void createVertexDataBuffer();
+  void createTileDataBuffer();
   void createTextures();
 private:
   IMetal2Bridge& m_bridge;

@@ -1,5 +1,5 @@
 #include "src/vulkan/vk_compositor.h"
-#include "src/vulkan/vk_swapchain_image.h"
+#include "src/vulkan/vk_swapchain_frame.h"
 #include "src/util.h"
 #include "vulkan/vulkan_core.h"
 
@@ -48,7 +48,7 @@ bool VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
     0,
     10 * 1000 * 1000, // 10ms
     100 * 1000 * 1000, // 100ms
-    1000 * 1000 * 1000, // 1m 
+    1000 * 1000 * 1000, // 1s
   };
 
   VkResult result = VK_SUCCESS;

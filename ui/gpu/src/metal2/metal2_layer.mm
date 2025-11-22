@@ -9,7 +9,7 @@
 namespace ui {
 
 Metal2GpuLayer::Metal2GpuLayer(IMetal2Bridge &bridge) : m_bridge(bridge) {
-  createVertexBuffer();
+  createVertexDataBuffer();
 }
 
 Metal2GpuLayer::~Metal2GpuLayer() {
@@ -30,11 +30,11 @@ void Metal2GpuLayer::Resize(int nWidth, int nHeight) {
   m_width = nWidth;
   m_height = nHeight;
 
-  createTileBuffer();
+  createTileDataBuffer();
   createTextures();
 }
 
-void Metal2GpuLayer::UpdateTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
+void Metal2GpuLayer::UploadTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
                                       ui::Rect &dirty_of_layer,
                                       ui::GpuUploadBitmap &source) {
   MTLRegion region = {0};
@@ -102,7 +102,7 @@ TextureTile *Metal2GpuLayer::newTile() {
 }
 
 // 绘制每个tile需要4个顶点（triangle strip)
-void Metal2GpuLayer::createVertexBuffer() {
+void Metal2GpuLayer::createVertexDataBuffer() {
   float s = (float)TILE_SIZE;
   m_vertex_data = {
   // position,  color (not used) , texture coord
@@ -115,7 +115,7 @@ void Metal2GpuLayer::createVertexBuffer() {
 
 // 每个tile，作为一个instance，重复利用vertex buffer数据，
 // 只需要让每个顶面的坐标再加上偏移量即可
-void Metal2GpuLayer::createTileBuffer() {
+void Metal2GpuLayer::createTileDataBuffer() {
   int row = m_arrayTile.GetRow();
   int col = m_arrayTile.GetCol();
   int count = row * col;

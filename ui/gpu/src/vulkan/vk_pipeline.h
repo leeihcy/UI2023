@@ -49,11 +49,25 @@ public:
 
 public:
   struct Context {
-    VkPipelineInputAssemblyStateCreateInfo input_assembly{};
-    VkPipelineVertexInputStateCreateInfo vertex_input{};
-    VkVertexInputBindingDescription vertex_input_binding_description{};
-    VkVertexInputAttributeDescription vertex_input_attribute_descriptions[3] =
-        {};
+    VkVertexInputBindingDescription vertex_input_binding_description[2]{
+      {0, sizeof(VertexData), VK_VERTEX_INPUT_RATE_VERTEX},
+      {1, sizeof(TileData),   VK_VERTEX_INPUT_RATE_INSTANCE},
+    };
+    VkVertexInputAttributeDescription vertex_input_attribute_descriptions[4] = {
+      {0, 0, VK_FORMAT_R32G32_SFLOAT,     offsetof(VertexData, pos)},
+      {1, 0, VK_FORMAT_R32G32B32_SFLOAT,  offsetof(VertexData, color)},
+      {2, 0, VK_FORMAT_R32G32_SFLOAT,     offsetof(VertexData, texCoord)},
+      {3, 1, VK_FORMAT_R32G32_SFLOAT,     offsetof(TileData, offset)},
+    };
+    VkPipelineVertexInputStateCreateInfo vertex_input{
+      VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO, 0, 0,
+      2, vertex_input_binding_description,
+      4, vertex_input_attribute_descriptions
+    };
+    VkPipelineInputAssemblyStateCreateInfo input_assembly{
+      VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, 0, 0,
+      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, VK_FALSE
+    };
     VkPipelineShaderStageCreateInfo vertex_shader{};
     VkPipelineShaderStageCreateInfo fragment_shader{};
     VkPipelineViewportStateCreateInfo viewport_state{};
@@ -77,7 +91,6 @@ public:
 private:
   bool create_shader_module(char *code, int length, VkShaderModule *out);
 
-  void buildVertexInput(Context &ctx, VertexData shader_vertex);
   void build_input_assembly(Context &ctx);
   bool build_vertex_shader(Context &ctx);
   bool build_fragment_shader(Context &ctx);

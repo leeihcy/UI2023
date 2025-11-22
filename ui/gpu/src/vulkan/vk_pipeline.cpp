@@ -34,8 +34,6 @@ bool PipeLine::Create(uint32_t w, uint32_t h, VkFormat format) {
 
   bool success = false;
   do {
-    buildVertexInput(context, VertexData());
-    build_input_assembly(context);
     if (!build_vertex_shader(context))
       break;
     build_viewport_scissor(context, w, h);
@@ -91,55 +89,6 @@ static bool readSpvFile(const char *filename, std::vector<char> &buffer) {
   return true;
 }
 
-// 顶点格式设置
-// layout(location = 0) in vec2 inPosition;
-// layout(location = 1) in vec3 inColor;   
-// layout(location = 2) in vec2 inTexCoord;
-void PipeLine::buildVertexInput(Context &ctx, VertexData shader_vertex) {
-  ctx.vertex_input.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
-  ctx.vertex_input_binding_description.binding = 0;
-  ctx.vertex_input_binding_description.stride = sizeof(shader_vertex);
-  ctx.vertex_input_binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-  ctx.vertex_input.vertexBindingDescriptionCount = 1;
-  ctx.vertex_input.pVertexBindingDescriptions =
-      &ctx.vertex_input_binding_description;
-
-  ctx.vertex_input_attribute_descriptions[0].binding = 0;
-  ctx.vertex_input_attribute_descriptions[0].location = 0;
-  ctx.vertex_input_attribute_descriptions[0].format =
-      VK_FORMAT_R32G32B32_SFLOAT;
-  ctx.vertex_input_attribute_descriptions[0].offset =
-      offsetof(VertexData, pos);
-  ctx.vertex_input_attribute_descriptions[1].binding = 0;
-  ctx.vertex_input_attribute_descriptions[1].location = 1;
-  ctx.vertex_input_attribute_descriptions[1].format =
-      VK_FORMAT_R32G32B32_SFLOAT;
-  ctx.vertex_input_attribute_descriptions[1].offset =
-      offsetof(VertexData, color);
-  ctx.vertex_input_attribute_descriptions[2].binding = 0;
-  ctx.vertex_input_attribute_descriptions[2].location = 2;
-  ctx.vertex_input_attribute_descriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-  ctx.vertex_input_attribute_descriptions[2].offset =
-      offsetof(VertexData, texCoord);
-
-  ctx.vertex_input.vertexAttributeDescriptionCount =
-      (uint32_t)std::size(ctx.vertex_input_attribute_descriptions);
-  ctx.vertex_input.pVertexAttributeDescriptions =
-      ctx.vertex_input_attribute_descriptions;
-}
-
-void PipeLine::build_input_assembly(Context &ctx) {
-  ctx.input_assembly.sType =
-      VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-
-  // VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; 需要6个索引
-  ctx.input_assembly.topology =
-      VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; // 只需要4个索引
-  ctx.input_assembly.primitiveRestartEnable = VK_FALSE;
-}
 
 bool PipeLine::build_vertex_shader(Context &ctx) {
   std::vector<char> vertShaderCode;

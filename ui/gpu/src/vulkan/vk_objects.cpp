@@ -29,6 +29,31 @@ bool ImageView::Create(VkDevice device, VkImage image,
   return true;
 }
 
+
+bool ImageView::CreateArray(VkDevice device, VkImage image,
+                         VkFormat image_format, int layer_count) {
+  VkImageViewCreateInfo createInfo{};
+  createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+  createInfo.image = image;
+  createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+  createInfo.format = image_format;
+  createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+  createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+  createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+  createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+  createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+  createInfo.subresourceRange.baseMipLevel = 0;
+  createInfo.subresourceRange.levelCount = 1;
+  createInfo.subresourceRange.baseArrayLayer = 0;
+  createInfo.subresourceRange.layerCount = layer_count;
+
+  if (vkCreateImageView(device, &createInfo, nullptr, &handle) != VK_SUCCESS) {
+    printf("failed to create image views!");
+    return false;
+  }
+  return true;
+}
+
 bool RenderPass::Create(VkDevice device, VkFormat format) {
   // attachment就是画布，即颜色、深度、模板数据最终要被写入的内存区域，通常是VkImage
 

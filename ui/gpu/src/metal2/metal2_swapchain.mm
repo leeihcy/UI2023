@@ -99,7 +99,7 @@ bool SwapChain::WaitforNextFrame() {
       0,
       10 * 1000 * 1000,   // 10ms
       100 * 1000 * 1000,  // 100ms
-      1000 * 1000 * 1000, // 1m,
+      1000 * 1000 * 1000, // 1s,
       DISPATCH_TIME_FOREVER,
   };
 

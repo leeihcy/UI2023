@@ -55,6 +55,7 @@ namespace Vk {
 class ImageView : public Vk::ImageViewBase {
 public:
   bool Create(VkDevice device, VkImage image, VkFormat image_format);
+  bool CreateArray(VkDevice device, VkImage image, VkFormat image_format, int layer_count);
 };
 
 class RenderPass : public Vk::RenderPassBase {
