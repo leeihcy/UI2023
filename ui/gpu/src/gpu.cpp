@@ -84,7 +84,7 @@ CreateGpuComposition(IGpuCompositorWindow *window) {
 #endif
   } else if (api == GpuApi::Metal2) {
 #if defined(ENABLE_METAL2)
-    compositor = meta2::CreateCompsitor(window);
+    compositor = metal2::CreateCompsitor(window);
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)
@@ -141,7 +141,7 @@ UIGPUAPI void GpuShutdown() {
 #endif
   } else if (api == GpuApi::Metal2) {
 #if defined(ENABLE_METAL2)
-    meta2::Shutdown();
+    metal2::Shutdown();
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)

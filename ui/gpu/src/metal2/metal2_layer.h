@@ -2,7 +2,6 @@
 #define _UI_GPU_SRC_METAL2_METAL2_LAYER_H_
 
 #include "src/gpu_layer.h"
-#include "src/metal2/inc.h"
 #include "src/metal2/metal2_bridge.h"
 #include "src/metal2/shaders/shader_types.h"
 #include "src/texture_tile.h"

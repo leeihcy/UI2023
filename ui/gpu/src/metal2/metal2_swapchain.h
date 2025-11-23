@@ -1,7 +1,6 @@
 #ifndef _UI_GPU_SRC_METAL2_METAL2_SWAPCHAIN_QUEUE_H_
 #define _UI_GPU_SRC_METAL2_METAL2_SWAPCHAIN_QUEUE_H_
 
-#include "src/metal2/inc.h"
 #include "src/metal2/metal2_bridge.h"
 #include <memory>
 #include <vector>
