@@ -7,7 +7,9 @@
 
 
 #if defined(OS_MAC) 
+namespace ui {
 std::string GetNSViewMetalDeviceName(/*NSView*/void *view);
+}
 #endif
 
 namespace vulkan {
@@ -101,7 +103,7 @@ bool DeviceQueue::pickPhysicalDevice(ui::IGpuCompositorWindow* window) {
 
 #if defined(OS_MAC)
   assert(window->GetType() == ui::GpuCompositorWindowType::MacOSNSView);
-  std::string optimal_device_name = GetNSViewMetalDeviceName(
+  std::string optimal_device_name = ui::GetNSViewMetalDeviceName(
       ((ui::IGpuCompositorWindowNSView *)window)->GetNSWindowRootView());
 #endif
 

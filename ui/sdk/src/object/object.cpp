@@ -823,22 +823,20 @@ bool Object::IsSelfVisible() {
 }
 
 bool Object::IsVisible() {
-  bool bVisible = m_objState.visibility_ == VISIBILITY_VISIBLE ? true : false;
+  bool bVisible = m_objState.visibility_ == VISIBILITY_VISIBLE;
   if (false == bVisible || nullptr == m_pParent) {
     return bVisible;
   }
   // 判断父对象不可见的情况
-  else {
-    // 注：在这里不对最外层的窗口进行判断的原因是：在类似于窗口初始化的函数里面，
-    // 虽然窗口暂时是不可见的，但里面的对象的IsVisible应该是返回true才好处理
-    if (m_pParent->GetMeta() &&
-        OBJ_WINDOW == m_pParent->GetMeta()->Detail().major_type) {
-      return true;
-    } else {
-      return m_pParent->IsVisible();
-    }
+
+  // 注：在这里不对最外层的窗口进行判断的原因是：在类似于窗口初始化的函数里面，
+  // 虽然窗口暂时是不可见的，但里面的对象的IsVisible应该是返回true才好处理
+  if (m_pParent->m_meta &&
+      OBJ_WINDOW == m_pParent->m_meta->Detail().major_type) {
+    return true;
+  } else {
+    return m_pParent->IsVisible();
   }
-  return true;
 }
 
 bool Object::IsCollapsed() {

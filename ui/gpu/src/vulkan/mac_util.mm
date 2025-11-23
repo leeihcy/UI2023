@@ -4,6 +4,8 @@
 #import "Metal/MTLDevice.h"
 #include <string>
 
+namespace ui {
+
 // 获取窗口所以屏幕对应的显卡名称。
 std::string GetNSViewMetalDeviceName(/*NSView*/void *view) {
   NSWindow* window = ((NSView*)view).window;
@@ -26,4 +28,5 @@ std::string GetNSViewMetalDeviceName(/*NSView*/void *view) {
   std::string name(device.name.UTF8String);
   [device release];
   return name;
+}
 }

@@ -83,10 +83,17 @@ SwapChain::~SwapChain() {
   Destroy();
 }
 
+void SwapChain::MarkNeedReCreate() { 
+  m_need_recreate = true; 
+  ui::Log("[vulkan] MarkNeedReCreate");
+}
+
 //
 // 要支持重复创建！如窗口Resize逻辑。因此是先创建，再销毁。
 //
 bool SwapChain::Create(VkSurfaceKHR surface, int width, int height) {
+  ui::Log("[vulkan] SwapChain::Create");
+  
   // 等待设备空闲后才能删除swapchain
   vkDeviceWaitIdle(m_bridge.GetVkDevice());
 

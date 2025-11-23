@@ -13,9 +13,13 @@
 #include <processthreadsapi.h>
 #endif
 
+#define QUEUE_CAPACITY 256
+
 namespace ui {
 
-RenderThread::RenderThread() : m_running(false), main(*this) {}
+RenderThread::RenderThread() : m_running(false), main(*this) {
+  m_paint_op_queue.reserve(QUEUE_CAPACITY);
+}
 
 RenderThread &RenderThread::GetIntance() {
   static RenderThread s;
@@ -46,6 +50,9 @@ void RenderThread::process_command(PaintOp *op) {
 void RenderThread::thread_proc() {
   set_thread_name("RenderThread");
 
+  std::vector<std::unique_ptr<PaintOp>> local_queue;
+  local_queue.reserve(QUEUE_CAPACITY);
+  
   while (m_running) {
     if (m_paint_op_group.empty()) {
       std::unique_lock<std::mutex> lock(m_paint_op_queue_mutex);
@@ -57,7 +64,7 @@ void RenderThread::thread_proc() {
     }
 
     // 转移指令队列中的元素
-    std::vector<std::unique_ptr<PaintOp>> local_queue;
+    local_queue.clear();
     {
       std::lock_guard<std::mutex> lock(m_paint_op_queue_mutex);
       local_queue.swap(m_paint_op_queue);

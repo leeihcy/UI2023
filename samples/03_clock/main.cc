@@ -20,6 +20,22 @@ void on_window_paint(ui::Event *e) {
 
 class ClockAnimate : public uia::IAnimateEventCallback {
 public:
+  void StartAnimate(ui::IApplication *app, ui::IWindow *window) {
+    ui::IObject *hour = window->FindObject("hour");
+    ui::IObject *min = window->FindObject("min");
+    ui::IObject *sec = window->FindObject("sec");
+
+    hour_layer = hour->GetLayer();
+    min_layer = min->GetLayer();
+    sec_layer = sec->GetLayer();
+
+    uia::IAnimate *animate = app->GetAnimate();
+    uia::IStoryboard *story = animate->CreateStoryboard(this);
+    story->SetWParam((ui::llong)window);
+    story->CreateIdleTimeline(0);
+    story->Begin();
+  }
+
   void OnAnimateStart(uia::IStoryboard *) override {
     printf("OnAnimateStart\n");
   };
@@ -29,7 +45,7 @@ public:
   uia::eAnimateTickResult
   OnAnimateTick(uia::IStoryboard *storyboard) override {
     ui::IWindow *window = (ui::IWindow *)storyboard->GetWParam();
-    update_rotate(window);
+    UpdateRotate(window);
     return uia::eAnimateTickResult::Continue;
   };
 
@@ -40,15 +56,7 @@ public:
     printf("OnAnimateReverse\n");
   };
 
-  void update_rotate(ui::IWindow *window) {
-    ui::IObject *hour = window->FindObject("hour");
-    ui::IObject *min = window->FindObject("min");
-    ui::IObject *sec = window->FindObject("sec");
-
-    ui::ILayer *hour_layer = hour->GetLayer();
-    ui::ILayer *min_layer = min->GetLayer();
-    ui::ILayer *sec_layer = sec->GetLayer();
-
+  void UpdateRotate(ui::IWindow *window) {
     auto clock_now = std::chrono::system_clock::now();
     time_t now = std::chrono::system_clock::to_time_t(clock_now);
     // std::time_t now = std::time(nullptr);
@@ -74,16 +82,12 @@ public:
       sec_layer->RotateZTo(local_time->tm_sec * 6.0f);
     }
   }
+private:
+    ui::ILayer *hour_layer;
+    ui::ILayer *min_layer;
+    ui::ILayer *sec_layer;
 };
 ClockAnimate g_clock_animate;
-
-void start_animate(ui::IApplication *app, ui::IWindow *window) {
-  uia::IAnimate *animate = app->GetAnimate();
-  uia::IStoryboard *story = animate->CreateStoryboard(&g_clock_animate);
-  story->SetWParam((ui::llong)window);
-  story->CreateIdleTimeline(0);
-  story->Begin();
-}
 
 int main() {
   bool use_gpu = true;
@@ -108,8 +112,8 @@ int main() {
   window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
   if (use_gpu) {
-    g_clock_animate.update_rotate(window.get());
-    start_animate(app.get(), window.get());
+    g_clock_animate.StartAnimate(app.get(), window.get());
+    g_clock_animate.UpdateRotate(window.get());
   }
 
   app->Run();

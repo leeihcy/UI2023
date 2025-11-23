@@ -70,7 +70,7 @@ public:
   void DestroyForResize();
   void Destroy();
 
-  void MarkNeedReCreate() { m_need_recreate = true; }
+  void MarkNeedReCreate();
   bool NeedReCreated() { return m_need_recreate; }
 
   void IncCurrentInflightFrame();

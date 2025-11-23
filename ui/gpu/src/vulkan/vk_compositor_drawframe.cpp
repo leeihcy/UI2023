@@ -1,3 +1,4 @@
+#include "src/vulkan/vk_bridge.h"
 #include "src/vulkan/vk_compositor.h"
 #include "src/vulkan/vk_swapchain_frame.h"
 #include "src/util.h"
@@ -14,6 +15,7 @@ namespace ui {
 //
 bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
   if (m_swapchain.NeedReCreated()) {
+    ui::Log("ReCreated swapchain");
     m_swapchain.Create(GetSurface(), m_width, m_height);
   }
 
@@ -212,8 +214,14 @@ void VulkanCompositor::drawFrame_presentSwapChain() {
   // 只有present一个新image时，才会释放上一个image给vkAcquireNextImageKHR用。
   // 因为gpu需要一直需要用一个image来进行渲染，直到提供了新的。
   VkResult result = vkQueuePresentKHR(m_device_queue.PresentQueue(), &presentInfo);
-  if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+  if (result == VK_ERROR_OUT_OF_DATE_KHR) {
     m_swapchain.MarkNeedReCreate();
+    return;
+  }
+  if (result == VK_SUBOPTIMAL_KHR) {
+    // TODO：目前macos上的尺寸还是相差了200%，导致一会报_SUBOPTIMAL_
+    // 需要将swapchain尺寸、视口尺寸都缩小为100%才正常。
+    // ui::Log("vkQueuePresentKHR return VK_SUBOPTIMAL_KHR, check this");
     return;
   }
   assert(result == VK_SUCCESS);
