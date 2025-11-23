@@ -3,7 +3,6 @@
 #include "sdk/include/common/math/rect.h"
 
 #include <d3dcommon.h>
-#include <d3d11_1.h>
 #include <d3dx11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
@@ -14,12 +13,12 @@
 namespace ui
 {
 
-typedef struct _D3DCOLORVALUE {
+typedef struct _D3D11COLORVALUE {
 	float r;
 	float g;
 	float b;
 	float a;
-} D3DCOLORVALUE;
+} D3D11COLORVALUE;
 
 } // namespace ui
 

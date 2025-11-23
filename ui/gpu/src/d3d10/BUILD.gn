@@ -1,3 +1,5 @@
+import("//ui/gpu/gpu.gni")
+
 config("d3d10_config") {
   defines = [ "ENABLE_D3D10" ]
 
@@ -14,12 +16,17 @@ config("d3d10_config") {
     "d3dx10.lib",
     "D3D10_1.lib",
   ]
+  cflags = [
+    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
+  ]
 }
 
 source_set("d3d10") {
   public_configs = [":d3d10_config"]
 
   sources = [
+    "d3d10_gpu.cpp",
+    "d3d10_gpu.h",
     "d3d10_compositor.cpp",
     "d3d10_gpu_layer.cpp",
     "d3d10_app.cpp",
@@ -28,11 +35,13 @@ source_set("d3d10") {
     "common/font.cpp",
     "common/inputs.cpp",
     "common/render_states.cpp",
-    "UICompositor.rc",
+    # "UICompositor.rc",
     "hard3dtransform.cpp",
   ]
   
-  cflags += [
-    "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
+  include_dirs = [
+    "//ui/",
+    "//ui/gpu/",
   ]
+
 }

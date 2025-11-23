@@ -2,10 +2,10 @@
 #include "src/d3d11/D3D11_app.h"
 #include <d3d11.h>
 
-namespace ui {
+namespace d3d11 {
 
 RenderStates &RenderStates::GetInstance() {
-  return D3D11Application::GetInstance().m_render_states;
+  return ui::D3D11Application::GetInstance().m_render_states;
 }
 
 //

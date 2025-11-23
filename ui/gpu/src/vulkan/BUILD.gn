@@ -29,6 +29,8 @@ source_set("vulkan") {
   public_configs = [":vulkan_config"]
 
   sources = [
+    "vk_gpu.cpp",
+    "vk_gpu.h",
     "vk_app.cpp",
     "vk_app.h",
     "vk_compositor.cpp",

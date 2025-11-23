@@ -170,7 +170,7 @@ void D3D11Application::reportLiveObjects() {
 }
 
 void D3D11Application::draw(ID3DX11EffectTechnique *pTech,
-                     DXUT_SCREEN_VERTEX_10 vertices[4]) {
+                     d3d11::DXUT_SCREEN_VERTEX_11 vertices[4]) {
   // TODO:    Inputs::SetVertex4(vertices);
 
   D3DX11_TECHNIQUE_DESC techDesc;
@@ -183,8 +183,8 @@ void D3D11Application::draw(ID3DX11EffectTechnique *pTech,
 
 void D3D11Application::ApplyTechnique(ID3DX11EffectTechnique *pTech,
                                       ui::RECTF *prcDraw,
-                                      ui::D3DCOLORVALUE color) {
-  DXUT_SCREEN_VERTEX_10 vertices[4] = {
+                                      ui::D3D11COLORVALUE color) {
+  d3d11::DXUT_SCREEN_VERTEX_11 vertices[4] = {
       {prcDraw->left, prcDraw->top, 0, color, 0.0f, 0.0f},
       {prcDraw->right, prcDraw->top, 0, color, 1.0f, 0.0f},
       {prcDraw->left, prcDraw->bottom, 0, color, 0.0f, 1.0f},
@@ -196,9 +196,9 @@ void D3D11Application::ApplyTechnique(ID3DX11EffectTechnique *pTech,
                                       ui::RECTF *prcDraw, ui::RECTF *prcTexture,
                                       float fAlpha) {
   // {1,1,1, fAlpha},然后预乘后的结果
-  ui::D3DCOLORVALUE color = {fAlpha, fAlpha, fAlpha, fAlpha};
+  ui::D3D11COLORVALUE color = {fAlpha, fAlpha, fAlpha, fAlpha};
 
-  DXUT_SCREEN_VERTEX_10 vertices[4] = {
+  d3d11::DXUT_SCREEN_VERTEX_11 vertices[4] = {
       {prcDraw->left, prcDraw->top, 0.f, color, prcTexture->left,
        prcTexture->top},
       {prcDraw->right, prcDraw->top, 0.f, color, prcTexture->right,

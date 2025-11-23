@@ -1,23 +1,11 @@
 #include "gpu/include/api.h"
 #include "base/command_line.h"
 
-#if defined(ENABLE_D3D10)
-#include "d3d10/d3d10_app.h"
-#include "d3d10/d3d10_compositor.h"
-
-#elif defined(ENABLE_D3D11)
-#include "d3d11/d3d11_app.h"
-#include "d3d11/d3d11_compositor.h"
-
-#elif defined(ENABLE_D3D12)
-#include "d3d12/d3d12_app.h"
-#include "d3d12/d3d12_compositor.h"
-
-#elif defined(ENABLE_VULKAN)
-#include "vulkan/vk_app.h"
-#include "vulkan/vk_compositor.h"
-
-#endif
+#include "d3d10/d3d10_gpu.h"
+#include "d3d11/d3d11_gpu.h"
+#include "d3d12/d3d12_gpu.h"
+#include "vulkan/vk_gpu.h"
+#include "metal2/metal2_gpu.h"
 
 namespace ui {
 
@@ -84,35 +72,23 @@ CreateGpuComposition(IGpuCompositorWindow *window) {
 
   if (api == GpuApi::D3d10) {
 #if defined(ENABLE_D3D10)
-    std::unique_ptr<D3D10Compositor> c = std::make_unique<D3D10Compositor>();
-    if (c->Initialize(window)) {
-      compositor.reset(c.release());
-    }
+    compositor = d3d10::CreateCompsitor(window);
 #endif
   } else if (api == GpuApi::D3d11) {
 #if defined(ENABLE_D3D11)
-    std::unique_ptr<D3D11Compositor> c = std::make_unique<D3D11Compositor>();
-    if (c->Initialize(window)) {
-      compositor.reset(c.release());
-    }
+    compositor = d3d11::CreateCompsitor(window);
 #endif
   } else if (api == GpuApi::D3d12) {
 #if defined(ENABLE_D3D12)
-    std::unique_ptr<D3D12Compositor> c = std::make_unique<D3D12Compositor>();
-    if (c->Initialize(window)) {
-      compositor.reset(c.release());
-    }
+    compositor = d3d12::CreateCompsitor(window);
 #endif
   } else if (api == GpuApi::Metal2) {
 #if defined(ENABLE_METAL2)
-    compositor = Metal2CreateGpuComposition(window);
+    compositor = meta2::CreateCompsitor(window);
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)
-    std::unique_ptr<VulkanCompositor> c = std::make_unique<VulkanCompositor>();
-    if (c->Initialize(window)) {
-      compositor.reset(c.release());
-    }
+    compositor = vulkan::CreateCompsitor(window);
 #endif
   }
   return std::shared_ptr<IGpuCompositor>(compositor.release(),
@@ -127,23 +103,23 @@ UIGPUAPI bool GpuStartup() {
   GpuApi api = GetGpuApi();
   if (api == GpuApi::D3d10) {
 #if defined(ENABLE_D3D10)
-    g_startup = D3D10Application::GetInstance().Startup();
+    g_startup = d3d10::Startup();
 #endif
   } else if (api == GpuApi::D3d11) {
 #if defined(ENABLE_D3D11)
-    g_startup = D3D11Application::GetInstance().Startup();
+    g_startup = d3d11::Startup();
 #endif
   } else if (api == GpuApi::D3d12) {
 #if defined(ENABLE_D3D12)
-    g_startup = D3D12Application::GetInstance().Startup();
+    g_startup = d3d12::Startup();
 #endif
   } else if (api == GpuApi::Metal2) {
 #if defined(ENABLE_METAL2)
-    g_startup = Metal2GpuStartup();
+    g_startup = metal2::Startup();
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)
-   g_startup = VulkanApplication::GetInstance().Startup();
+   g_startup = vulkan::Startup();
 #endif
   }
   return g_startup;
@@ -153,23 +129,23 @@ UIGPUAPI void GpuShutdown() {
   GpuApi api = GetGpuApi();
   if (api == GpuApi::D3d10) {
 #if defined(ENABLE_D3D10)
-    D3D10Application::GetInstance().Shutdown();
+    d3d10::Shutdown();
 #endif
   } else if (api == GpuApi::D3d11) {
 #if defined(ENABLE_D3D11)
-    D3D11Application::GetInstance().Shutdown();
+    d3d11::Shutdown();
 #endif
   } else if (api == GpuApi::D3d12) {
 #if defined(ENABLE_D3D12)
-    D3D12Application::GetInstance().Shutdown();
+    d3d12::Shutdown();
 #endif
   } else if (api == GpuApi::Metal2) {
 #if defined(ENABLE_METAL2)
-    Metal2GpuShutdown();
+    meta2::Shutdown();
 #endif
   } else if (api == GpuApi::Vulkan) {
 #if defined(ENABLE_VULKAN)
-    VulkanApplication::GetInstance().Shutdown();
+    vulkan::Shutdown();
 #endif
   }
   g_startup = GPU_STARTUP_STATE::NOT_START;

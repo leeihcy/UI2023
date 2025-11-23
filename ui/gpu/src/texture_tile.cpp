@@ -1,4 +1,5 @@
 #include "texture_tile.h"
+#include <assert.h>
 
 namespace ui {
 

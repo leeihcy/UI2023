@@ -2,11 +2,11 @@
 #include "effects.h"
 #include "src/d3d11/d3d11_app.h"
 
-namespace ui {
+namespace d3d11 {
 
 //static 
 Inputs& Inputs::GetInstance() {
-  return D3D11Application::GetInstance().m_inputs;
+  return ui::D3D11Application::GetInstance().m_inputs;
 }
 
 bool Inputs::Init(ID3D11Device *pDevice, ID3D11DeviceContext *pDeviceContent) {
@@ -27,7 +27,7 @@ bool Inputs::Init(ID3D11Device *pDevice, ID3D11DeviceContext *pDeviceContent) {
                              PassDesc.IAInputSignatureSize, &m_pInputLayout);
 
   D3D11_BUFFER_DESC BufDesc;
-  BufDesc.ByteWidth = sizeof(DXUT_SCREEN_VERTEX_10) * 4;
+  BufDesc.ByteWidth = sizeof(d3d11::DXUT_SCREEN_VERTEX_11) * 4;
   BufDesc.Usage = D3D11_USAGE_DYNAMIC;
   BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
   BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;

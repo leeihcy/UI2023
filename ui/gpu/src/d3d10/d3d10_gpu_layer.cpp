@@ -55,14 +55,14 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     ID3D10BlendState *pOldBlendState = nullptr;
     pDevice->OMGetBlendState(&pOldBlendState, 0, 0);
     pDevice->OMSetBlendState(
-        RenderStates::GetInstance().pBlendStateDisableWriteRenderTarget, 0,
+        d3d10::RenderStates::GetInstance().pBlendStateDisableWriteRenderTarget, 0,
         0xFFFFFFFF);
 
     // 4. 按pContext->m_rcClip填充模板缓存为1
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateCreateClip, 1);
+        d3d10::RenderStates::GetInstance().pStencilStateCreateClip, 1);
 
-    Effects::GetInstance().m_pFxMatrix->SetMatrix(
+    d3d10::Effects::GetInstance().m_pFxMatrix->SetMatrix(
         (float *)pContext->m_matrixTransform);
     RECTF rcTextArg = {0, 0, 1, 1};
     RECTF rcDraw;
@@ -71,7 +71,7 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     rcDraw.right = (float)pContext->m_rcClip.right;
     rcDraw.bottom = (float)pContext->m_rcClip.bottom;
     D3D10Application::GetInstance().ApplyTechnique(
-        Effects::GetInstance().m_pTechFillRectMatrix, &rcDraw, &rcTextArg, 1);
+        d3d10::Effects::GetInstance().m_pTechFillRectMatrix, &rcDraw, &rcTextArg, 1);
 
     // 5. 恢复back buffer写入
     pDevice->OMSetBlendState(pOldBlendState, 0, 0xFFFFFFFF);
@@ -82,7 +82,7 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
     // 6. 设置模板缓存函数，只允许当前模板值为1的位置通过测试（剪裁）
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateClip, 1);
+        d3d10::RenderStates::GetInstance().pStencilStateClip, 1);
   } else {
     D3D10_RECT rects[1];
     memcpy(rects, &pContext->m_rcClip, sizeof(RECT));
@@ -94,7 +94,7 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
   const int size = 1;
   ID3D10Buffer* buffers[size] = { m_pVertexBuffer };
-  UINT stride[size] = { sizeof(DXUT_SCREEN_VERTEX_10) };
+  UINT stride[size] = { sizeof(d3d10::DXUT_SCREEN_VERTEX_10) };
   UINT offset[size] = { 0 };
   D3D10Application::GetInstance().m_device->IASetVertexBuffers(
       0, size, buffers, stride, offset);
@@ -109,14 +109,14 @@ void D3D10GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     for (ULONG x = 0; x < col; x++) {
       xOffset = x * TILE_SIZE;
 
-      m_arrayTile[y][x]->Compositor(xOffset, yOffset, (y * col + x) * 4,
-                                    pContext);
+      static_cast<D3D10TextureTile *>(m_arrayTile[y][x])
+          ->Compositor(xOffset, yOffset, (y * col + x) * 4, pContext);
     }
   }
   if (pContext->m_bTransformValid) {
     // 7. 关闭模板缓存
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateDisable, 0);
+        d3d10::RenderStates::GetInstance().pStencilStateDisable, 0);
   }
 }
 
@@ -136,7 +136,7 @@ void D3D10GpuLayer::Resize(int nWidth, int nHeight) {
   m_pVertexBuffer.Release();
 
   D3D10_BUFFER_DESC BufDesc;
-  BufDesc.ByteWidth = sizeof(DXUT_SCREEN_VERTEX_10) * 4 * row * col;
+  BufDesc.ByteWidth = sizeof(d3d10::DXUT_SCREEN_VERTEX_10) * 4 * row * col;
   BufDesc.Usage = D3D10_USAGE_DYNAMIC;
   BufDesc.BindFlags = D3D10_BIND_VERTEX_BUFFER;
   BufDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
@@ -147,7 +147,7 @@ void D3D10GpuLayer::Resize(int nWidth, int nHeight) {
 
   // 上传一个纹理所要用的顶点数据。批处理
 
-  DXUT_SCREEN_VERTEX_10 *pVB = nullptr;
+  d3d10::DXUT_SCREEN_VERTEX_10 *pVB = nullptr;
   if (SUCCEEDED(
           m_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (LPVOID *)&pVB))) {
     for (int y = 0; y < row; ++y) {
@@ -155,15 +155,15 @@ void D3D10GpuLayer::Resize(int nWidth, int nHeight) {
         int x1 = x + 1;
         int y1 = y + 1;
 
-        ui::D3DCOLORVALUE color = {1, 1, 1, 1};
-        DXUT_SCREEN_VERTEX_10 vertices[4] = {
+        ui::D3D10COLORVALUE color = {1, 1, 1, 1};
+        d3d10::DXUT_SCREEN_VERTEX_10 vertices[4] = {
             {(float)TILE_SIZE * x, (float)TILE_SIZE * y, 0.f, color, 0, 0},
             {(float)TILE_SIZE * x1, (float)TILE_SIZE * y, 0.f, color, 1, 0},
             {(float)TILE_SIZE * x, (float)TILE_SIZE * y1, 0.f, color, 0, 1},
             {(float)TILE_SIZE * x1, (float)TILE_SIZE * y1, 0.f, color, 1, 1},
         };
 
-        CopyMemory(pVB, vertices, sizeof(DXUT_SCREEN_VERTEX_10) * 4);
+        CopyMemory(pVB, vertices, sizeof(d3d10::DXUT_SCREEN_VERTEX_10) * 4);
         pVB += 4;
       }
     }

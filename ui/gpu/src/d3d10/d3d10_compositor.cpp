@@ -202,7 +202,7 @@ bool D3D10Compositor::BeginCommit(GpuLayerCommitContext *) {
     D3DXMATRIX matrix;
     D3DXMatrixOrthoOffCenterLH(&matrix, 0, (float)m_sizeBackBuffer.cx,
                                (float)m_sizeBackBuffer.cy, 0, -2000.f, 2000.f);
-    Effects::GetInstance().m_pFxOrthMatrix->SetMatrix((float *)&matrix);
+    d3d10::Effects::GetInstance().m_pFxOrthMatrix->SetMatrix((float *)&matrix);
 
     D3D10Application::GetInstance().SetActiveSwapChain(m_hWnd);
   }
@@ -226,7 +226,7 @@ bool D3D10Compositor::BeginCommit(GpuLayerCommitContext *) {
 }
 
 void D3D10Compositor::EndCommit(GpuLayerCommitContext *) {
-  Font::GetInstance().DrawDebugFps();
+  d3d10::Font::GetInstance().DrawDebugFps();
 
   //     if (m_pRootTexture)
   //         m_pRootTexture->Commit();

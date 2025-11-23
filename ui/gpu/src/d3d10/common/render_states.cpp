@@ -1,10 +1,10 @@
 #include "render_states.h"
 #include "src/d3d10/D3D10_app.h"
 
-namespace ui {
+namespace d3d10 {
 
 RenderStates &RenderStates::GetInstance() {
-  return D3D10Application::GetInstance().m_render_states;
+  return ui::D3D10Application::GetInstance().m_render_states;
 }
 
 //

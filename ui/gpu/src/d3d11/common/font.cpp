@@ -2,11 +2,11 @@
 #include "src/d3d11/common_def.h"
 #include "src/d3d11/d3d11_app.h"
 
-namespace ui {
+namespace d3d11 {
 
 static Font s_fontForDebug;
 
-Font &Font::GetInstance() { return D3D11Application::GetInstance().m_font; }
+Font &Font::GetInstance() { return ui::D3D11Application::GetInstance().m_font; }
 
 Font::~Font() { destroy(); }
 

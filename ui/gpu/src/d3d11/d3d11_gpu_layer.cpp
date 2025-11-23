@@ -56,14 +56,14 @@ void D3D11GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     ID3D11BlendState *pOldBlendState = nullptr;
     pDevice->OMGetBlendState(&pOldBlendState, 0, 0);
     pDevice->OMSetBlendState(
-        RenderStates::GetInstance().pBlendStateDisableWriteRenderTarget, 0,
+        d3d11::RenderStates::GetInstance().pBlendStateDisableWriteRenderTarget, 0,
         0xFFFFFFFF);
 
     // 4. 按pContext->m_rcClip填充模板缓存为1
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateCreateClip, 1);
+        d3d11::RenderStates::GetInstance().pStencilStateCreateClip, 1);
 
-    Effects::GetInstance().m_pFxMatrix->SetMatrix(
+    d3d11::Effects::GetInstance().m_pFxMatrix->SetMatrix(
         (float *)pContext->m_matrixTransform);
     RECTF rcTextArg = {0, 0, 1, 1};
     RECTF rcDraw;
@@ -72,7 +72,7 @@ void D3D11GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     rcDraw.right = (float)pContext->m_rcClip.right;
     rcDraw.bottom = (float)pContext->m_rcClip.bottom;
     D3D11Application::GetInstance().ApplyTechnique(
-        Effects::GetInstance().m_pTechFillRectMatrix, &rcDraw, &rcTextArg, 1);
+        d3d11::Effects::GetInstance().m_pTechFillRectMatrix, &rcDraw, &rcTextArg, 1);
 
     // 5. 恢复back buffer写入
     pDevice->OMSetBlendState(pOldBlendState, 0, 0xFFFFFFFF);
@@ -83,7 +83,7 @@ void D3D11GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
     // 6. 设置模板缓存函数，只允许当前模板值为1的位置通过测试（剪裁）
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateClip, 1);
+        d3d11::RenderStates::GetInstance().pStencilStateClip, 1);
   } else {
     D3D11_RECT rects[1];
     memcpy(rects, &pContext->m_rcClip, sizeof(RECT));
@@ -95,7 +95,7 @@ void D3D11GpuLayer::Compositor(GpuLayerCommitContext *pContext,
 
   const int size = 1;
   ID3D11Buffer* buffers[size] = { m_pVertexBuffer };
-  UINT stride[size] = { sizeof(DXUT_SCREEN_VERTEX_10) };
+  UINT stride[size] = { sizeof(d3d11::DXUT_SCREEN_VERTEX_11) };
   UINT offset[size] = { 0 };
   D3D11Application::GetInstance().m_device_context->IASetVertexBuffers(
       0, size, buffers, stride, offset);
@@ -110,14 +110,14 @@ void D3D11GpuLayer::Compositor(GpuLayerCommitContext *pContext,
     for (ULONG x = 0; x < col; x++) {
       xOffset = x * TILE_SIZE;
 
-      m_arrayTile[y][x]->Compositor(xOffset, yOffset, (y * col + x) * 4,
+      static_cast<D3D11TextureTile*>(m_arrayTile[y][x])->Compositor(xOffset, yOffset, (y * col + x) * 4,
                                     pContext);
     }
   }
   if (pContext->m_bTransformValid) {
     // 7. 关闭模板缓存
     pDevice->OMSetDepthStencilState(
-        RenderStates::GetInstance().pStencilStateDisable, 0);
+        d3d11::RenderStates::GetInstance().pStencilStateDisable, 0);
   }
 }
 
@@ -137,7 +137,7 @@ void D3D11GpuLayer::Resize(int nWidth, int nHeight) {
   m_pVertexBuffer.Release();
 
   D3D11_BUFFER_DESC BufDesc;
-  BufDesc.ByteWidth = sizeof(DXUT_SCREEN_VERTEX_10) * 4 * row * col;
+  BufDesc.ByteWidth = sizeof(d3d11::DXUT_SCREEN_VERTEX_11) * 4 * row * col;
   BufDesc.Usage = D3D11_USAGE_DYNAMIC;
   BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
   BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -158,16 +158,16 @@ void D3D11GpuLayer::Resize(int nWidth, int nHeight) {
         int x1 = x + 1;
         int y1 = y + 1;
 
-        ui::D3DCOLORVALUE color = {1, 1, 1, 1};
-        DXUT_SCREEN_VERTEX_10 vertices[4] = {
+        ui::D3D11COLORVALUE color = {1, 1, 1, 1};
+        d3d11::DXUT_SCREEN_VERTEX_11 vertices[4] = {
             {(float)TILE_SIZE * x, (float)TILE_SIZE * y, 0.f, color, 0, 0},
             {(float)TILE_SIZE * x1, (float)TILE_SIZE * y, 0.f, color, 1, 0},
             {(float)TILE_SIZE * x, (float)TILE_SIZE * y1, 0.f, color, 0, 1},
             {(float)TILE_SIZE * x1, (float)TILE_SIZE * y1, 0.f, color, 1, 1},
         };
 
-        CopyMemory(mapped_subresource.pData, vertices, sizeof(DXUT_SCREEN_VERTEX_10) * 4);
-        mapped_subresource.pData = (byte*)mapped_subresource.pData + sizeof(DXUT_SCREEN_VERTEX_10) * 4;
+        CopyMemory(mapped_subresource.pData, vertices, sizeof(d3d11::DXUT_SCREEN_VERTEX_11) * 4);
+        mapped_subresource.pData = (byte*)mapped_subresource.pData + sizeof(d3d11::DXUT_SCREEN_VERTEX_11) * 4;
       }
     }
 

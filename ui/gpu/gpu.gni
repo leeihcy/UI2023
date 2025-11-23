@@ -1,0 +1,6 @@
+
+declare_args() {
+  win_sdk = "C:/Program Files (x86)/Windows Kits/10"
+  win_sdk_version = "10.0.22621.0"
+  directx_sdk = "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
+}

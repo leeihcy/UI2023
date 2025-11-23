@@ -94,7 +94,7 @@ void GpuLayer::UploadBitmap(GpuUploadBitmap &bitmap) {
     return;
   }
 
-  for (int i = 0; i < bitmap.dirty_count; i++) {
+  for (unsigned int i = 0; i < bitmap.dirty_count; i++) {
     const Rect& dirty = bitmap.dirty_list[i];
     // ui::Log("Update Gpu Layer: %d,%d (%d,%d)", rc.left, rc.top, rc.Width(), rc.Height());
 

@@ -52,14 +52,14 @@ public:
   void SetActiveSwapChain(HWND hWnd);
 
   void ApplyTechnique(ID3DX11EffectTechnique *pTech, ui::RECTF *prcDraw,
-                      ui::D3DCOLORVALUE color);
+                      ui::D3D11COLORVALUE color);
   void ApplyTechnique(ID3DX11EffectTechnique *pTech, ui::RECTF *prcDraw,
                       ui::RECTF *prcTexture, float fAlpha);
 
 private:
   HRESULT createDevice(IDXGIAdapter *pAdapter, D3D_DRIVER_TYPE driverType,
                        UINT flags, ID3D11Device **ppDevice);
-  void draw(ID3DX11EffectTechnique *pTech, DXUT_SCREEN_VERTEX_10 vertices[4]);
+  void draw(ID3DX11EffectTechnique *pTech, d3d11::DXUT_SCREEN_VERTEX_11 vertices[4]);
   
   void reportLiveObjects();
   
@@ -68,10 +68,10 @@ public:
   CComPtr<ID3D11DeviceContext> m_device_context;
   CComPtr<IDXGIFactory> m_dxgi_factory;
 
-  Inputs m_inputs;
-  Effects m_effects;
-  RenderStates m_render_states;
-  Font m_font;
+  d3d11::Inputs m_inputs;
+  d3d11::Effects m_effects;
+  d3d11::RenderStates m_render_states;
+  d3d11::Font m_font;
 
   // 当前device中被选入的rendertarget所属窗口
   HWND m_hActiveWnd = nullptr;

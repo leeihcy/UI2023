@@ -1,6 +1,7 @@
 #include "hard3dtransform.h"
 using namespace DirectX;
 using namespace ui;
+namespace d3d11 {
 
 Hard3DTransform::Hard3DTransform() { identity(); }
 Hard3DTransform::~Hard3DTransform() {}
@@ -346,4 +347,6 @@ void Hard3DTransform::GetWorldMatrix(DirectX::XMMATRIX *pMatrix) {
 
   *pMatrix = matrixRotateCenter * m_matrix;
   *pMatrix = (*pMatrix) * matrixRotateBack;
+}
+
 }

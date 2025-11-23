@@ -2,11 +2,11 @@
 #include "src/d3d11/resource.h"
 #include "src/d3d11/d3d11_app.h"
 
-namespace ui {
+namespace d3d11 {
 
 // static 
 Effects& Effects::GetInstance() {
-  return D3D11Application::GetInstance().m_effects;
+  return ui::D3D11Application::GetInstance().m_effects;
 }
 
 bool Effects::Init(ID3D11Device *pDevice) {

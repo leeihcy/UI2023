@@ -64,9 +64,9 @@ void VulkanGpuLayer::createTileDataBuffer() {
   tile_array.reserve(count);
 
   for (int y = 0; y < m_arrayTile.GetRow(); ++y) {
-    float y_offset = y * TILE_SIZE;
+    float y_offset = (float)(y * TILE_SIZE);
     for (int x = 0; x < m_arrayTile.GetCol(); ++x) {
-      float x_offset = x * TILE_SIZE;
+      float x_offset = (float)(x * TILE_SIZE);
 
       vulkan::TileData tile = {.offset = {x_offset, y_offset}};
       tile_array.push_back(tile);

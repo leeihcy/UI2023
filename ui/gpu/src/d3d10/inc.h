@@ -13,12 +13,12 @@
 namespace ui
 {
 
-typedef struct _D3DCOLORVALUE {
+typedef struct _D3D10COLORVALUE {
 	float r;
 	float g;
 	float b;
 	float a;
-} D3DCOLORVALUE;
+} D3D10COLORVALUE;
 
 } // namespace ui
 

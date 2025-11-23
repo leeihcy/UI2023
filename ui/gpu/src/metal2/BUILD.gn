@@ -6,8 +6,8 @@ source_set("metal2") {
   public_configs = [":metal2_config"]
 
   sources = [
-    "inc.cpp",
-    "inc.h",
+    "metal2_gpu.mm",
+    "metal2_gpu.h",
     "metal2_app.mm",
     "metal2_app.h",
     "metal2_compositor.mm",

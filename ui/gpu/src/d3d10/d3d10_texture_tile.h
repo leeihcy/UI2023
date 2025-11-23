@@ -16,7 +16,7 @@ public:
   D3D10TextureTile();
   ~D3D10TextureTile();
 
-  void Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source);
+  void Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer, ui::GpuUploadBitmap &source);
   void Compositor(long xOffset, long yOffset, long vertexStartIndex,
                   ui::GpuLayerCommitContext *pContext);
 

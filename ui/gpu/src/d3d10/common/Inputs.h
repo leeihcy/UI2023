@@ -2,12 +2,12 @@
 #define _UI_GPU_SRC_D3D10_COMMON_INPUTS_H_
 #include "src/d3d10/inc.h"
 
-namespace ui {
+namespace d3d10 {
 
 // 对应fx文件中的VS()参数
 struct DXUT_SCREEN_VERTEX_10 {
   float x, y, z;
-  ui::D3DCOLORVALUE color;
+  ui::D3D10COLORVALUE color;
   float tu, tv;
 };
 

@@ -6,9 +6,9 @@
 #include "sdk/include/interface/irenderlayer.h"
 #include "src/d3d11/inc.h"
 
-namespace ui {
+namespace d3d11 {
 
-class Hard3DTransform : public IRenderLayerTransform3D {
+class Hard3DTransform : public ui::IRenderLayerTransform3D {
 public:
   Hard3DTransform();
   ~Hard3DTransform();
@@ -17,23 +17,23 @@ public:
   static Hard3DTransform *CreateInstance();
 
   virtual void Release() override;
-  virtual TRANSFORM_TYPE get_type() override;
+  virtual ui::TRANSFORM_TYPE get_type() override;
 
   // anchorPoint
-  virtual void set_transform_rotate_origin(TRANSFORM_ROTATE_ORIGIN eX, float fX,
-                                           TRANSFORM_ROTATE_ORIGIN eY, float fY,
+  virtual void set_transform_rotate_origin(ui::TRANSFORM_ROTATE_ORIGIN eX, float fX,
+                                           ui::TRANSFORM_ROTATE_ORIGIN eY, float fY,
                                            float fZ) override;
   virtual void set_pos(int x, int y) override;
   virtual void set_size(int w, int h) override;
   void mappoint_layer_2_view(__inout ui::Point *ptInLayer) override;
   void mappoint_view_2_layer(__inout ui::Point *ptInLayer) override;
-  virtual void maprect_layer_2_view(__in RECT *rcInLayer, __out QUAD *pqInView);
+  virtual void maprect_layer_2_view(__in RECT *rcInLayer, __out ui::QUAD *pqInView);
 
   virtual void set_backface_visibility(bool b) override;
   virtual bool get_backface_visibility() override;
   virtual bool is_visible() override;
 
-  virtual void get_matrix(MATRIX44 *pMatrix) override;
+  virtual void get_matrix(ui::MATRIX44 *pMatrix) override;
   virtual void translate3d(float x, float y, float z) override;
   virtual void translateX(float x) override;
   virtual void translateY(float y) override;
@@ -49,7 +49,7 @@ public:
   virtual void perspective(float n) override;
 
 public:
-  void GetLocalPos(RECTF *prcLocal);
+  void GetLocalPos(ui::RECTF *prcLocal);
   void GetWorldMatrix(DirectX::XMMATRIX *);
 
 protected:
@@ -68,8 +68,8 @@ private:
   bool m_backface_visibility;
 
   // 旋转中心相关数据
-  TRANSFORM_ROTATE_ORIGIN m_eOriginTypeX;
-  TRANSFORM_ROTATE_ORIGIN m_eOriginTypeY;
+  ui::TRANSFORM_ROTATE_ORIGIN m_eOriginTypeX;
+  ui::TRANSFORM_ROTATE_ORIGIN m_eOriginTypeY;
   float m_fAnchorPointX; // 旋转中心
   float m_fAnchorPointY;
   float m_fAnchorPointZ;

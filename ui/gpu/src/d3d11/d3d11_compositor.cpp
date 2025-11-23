@@ -202,7 +202,7 @@ bool D3D11Compositor::BeginCommit(GpuLayerCommitContext *) {
 
     DirectX::XMMATRIX matrix = DirectX::XMMatrixOrthographicOffCenterLH(0, (float)m_sizeBackBuffer.cx,
                                (float)m_sizeBackBuffer.cy, 0, -2000.f, 2000.f);
-    Effects::GetInstance().m_pFxOrthMatrix->SetMatrix((float *)&matrix);
+    d3d11::Effects::GetInstance().m_pFxOrthMatrix->SetMatrix((float *)&matrix);
 
     D3D11Application::GetInstance().SetActiveSwapChain(m_hWnd);
   }
@@ -226,7 +226,7 @@ bool D3D11Compositor::BeginCommit(GpuLayerCommitContext *) {
 }
 
 void D3D11Compositor::EndCommit(GpuLayerCommitContext *) {
-  Font::GetInstance().DrawDebugFps();
+  d3d11::Font::GetInstance().DrawDebugFps();
 
   //     if (m_pRootTexture)
   //         m_pRootTexture->Commit();

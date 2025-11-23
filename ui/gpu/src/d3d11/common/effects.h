@@ -1,10 +1,10 @@
-#ifndef _UI_GPU_SRC_D3d10_COMMON_EFFECTS_H_
-#define _UI_GPU_SRC_D3d10_COMMON_EFFECTS_H_
+#ifndef _UI_GPU_SRC_D3d11_COMMON_EFFECTS_H_
+#define _UI_GPU_SRC_D3d11_COMMON_EFFECTS_H_
 
 #include "src/d3d11/inc.h"
 #include "src/d3d11/directx_sdk/Effects11/Inc/d3dx11effect.h"
 
-namespace ui {
+namespace d3d11 {
 
 class Effects {
 public:

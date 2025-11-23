@@ -1,10 +1,12 @@
 #ifndef _UI_GPU_SRC_D3D12_INC_H_
 #define _UI_GPU_SRC_D3D12_INC_H_
 
+#include <d3dcommon.h>
+#include <dxgi1_4.h>
 #include <D3d12.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
-#include <dxgi1_4.h>
+
 
 #include <atlbase.h>
 

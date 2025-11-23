@@ -1,8 +1,4 @@
 declare_args() {
-  win_sdk = "C:/Program Files (x86)/Windows Kits/10"
-  win_sdk_version = "10.0.22621.0"
-  directx_sdk = "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)"
-
   enable_d3d10 = false
   enable_d3d11 = false
   enable_d3d12 = false
@@ -29,8 +25,8 @@ shared_library("uigpu") {
   ]
 
   if (is_win) {
-    enable_d3d10 = true
-    enable_d3d11 = true
+    #enable_d3d10 = true
+    #enable_d3d11 = true
     enable_d3d12 = true
     enable_vulkan = true
   }
@@ -72,9 +68,6 @@ shared_library("uigpu") {
     "src/gpu.cpp",
   ]
   if (is_mac) {
-    sources += [
-      "src/gpu1.mm",
-    ]
     ldflags += [
       "-framework", "Foundation",
       "-framework", "CoreGraphics",

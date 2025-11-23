@@ -28,7 +28,7 @@ D3D11TextureTile::~D3D11TextureTile() {
 // 注：dx10开始，已经不再支持24位的格式D3DFMT_R8G8B8格式了。
 // 见：https://msdn.microsoft.com/en-us/library/windows/desktop/cc308051(v=vs.85).aspx
 
-void D3D11TextureTile::Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source) {
+void D3D11TextureTile::Upload(ui::Rect &dirty_of_tile, ui::Rect &dirty_of_layer, ui::GpuUploadBitmap &source) {
   if (!m_pTextureBuffer) {
     create();
   }
@@ -46,25 +46,25 @@ void D3D11TextureTile::Upload(ui::Rect &rcSrc, ui::GpuUploadBitmap &source) {
   m_pTextureBuffer->GetDesc(&desc);
 
   // 如果本次内容没有填充满Tile，则需要将空白处清0，以防上一次的脏数据干扰
-  int w = rcSrc.right - rcSrc.left;
-  int h = rcSrc.bottom - rcSrc.top;
-  if (w != TILE_SIZE || h != TILE_SIZE) {
-    byte *pTexels = (byte *)mappedTexture.pData;
-    /* for (int y = 0; y < TILE_SIZE; y++)
-    {
-        memset(pTexels, 0, 4 * TILE_SIZE);
-        pTexels += mappedTexture.RowPitch;
-    } */
-    memset(pTexels, 0, mappedTexture.RowPitch * TILE_SIZE);
-  }
+  int w = dirty_of_tile.right - dirty_of_tile.left;
+  int h = dirty_of_tile.bottom - dirty_of_tile.top;
+  // if (w != TILE_SIZE || h != TILE_SIZE) {
+  //   byte *pTexels = (byte *)mappedTexture.pData;
+  //   /* for (int y = 0; y < TILE_SIZE; y++)
+  //   {
+  //       memset(pTexels, 0, 4 * TILE_SIZE);
+  //       pTexels += mappedTexture.RowPitch;
+  //   } */
+  //   memset(pTexels, 0, mappedTexture.RowPitch * TILE_SIZE);
+  // }
 
   BYTE *pSrcBits = (BYTE *)source.bits;
   byte *pTexels = (byte *)mappedTexture.pData;
 
-  pSrcBits += rcSrc.top * source.pitch;
+  pSrcBits += dirty_of_layer.top * source.pitch;
 
-    for (int row = rcSrc.top; row < rcSrc.bottom; row++) {
-      memcpy(pTexels, pSrcBits + (rcSrc.left * 4), w * 4);
+    for (int row = dirty_of_layer.top; row < dirty_of_layer.bottom; row++) {
+      memcpy(pTexels, pSrcBits + (dirty_of_layer.left * 4), w * 4);
 
       pSrcBits += source.pitch;
       pTexels += mappedTexture.RowPitch;
@@ -157,24 +157,24 @@ void D3D11TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
     return;
 
   float pos[2] = {(float)(pContext->m_xOffset), (float)(pContext->m_yOffset)};
-  Effects::GetInstance().m_pFxVsDestPos->SetFloatVector(pos);
+  d3d11::Effects::GetInstance().m_pFxVsDestPos->SetFloatVector(pos);
 
   ID3DX11EffectTechnique *pTech = nullptr;
 #if 1
   if (pContext->m_bTransformValid) {
-    Effects::GetInstance().m_pFxMatrix->SetMatrix(
+    d3d11::Effects::GetInstance().m_pFxMatrix->SetMatrix(
         (float *)pContext->m_matrixTransform);
 
-    pTech = Effects::GetInstance().m_pTechDrawTextureMatrix;
+    pTech = d3d11::Effects::GetInstance().m_pTechDrawTextureMatrix;
   } else
 #endif
    {
-    pTech = Effects::GetInstance().m_pTechDrawTexture;
+    pTech = d3d11::Effects::GetInstance().m_pTechDrawTexture;
   }
 
   if (pContext->m_fAlpha != 1.0f)
-    Effects::GetInstance().m_pFxAlpha->SetFloat(pContext->m_fAlpha);
-  Effects::GetInstance().m_pFxTexture10->SetResource(m_pShaderResourceView);
+    d3d11::Effects::GetInstance().m_pFxAlpha->SetFloat(pContext->m_fAlpha);
+  d3d11::Effects::GetInstance().m_pFxTexture10->SetResource(m_pShaderResourceView);
 
   D3DX11_TECHNIQUE_DESC techDesc;
   pTech->GetDesc(&techDesc);
@@ -184,7 +184,7 @@ void D3D11TextureTile::Compositor(long xOffset, long yOffset, long vertexStartIn
   }
 
   if (pContext->m_fAlpha != 1.0f) {
-    Effects::GetInstance().m_pFxAlpha->SetFloat(1.0f);
+    d3d11::Effects::GetInstance().m_pFxAlpha->SetFloat(1.0f);
   }
 }
 

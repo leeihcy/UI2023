@@ -3,7 +3,7 @@
 
 #include "src/d3d11/inc.h"
 
-namespace ui {
+namespace d3d11 {
 
 class RenderStates {
 public:

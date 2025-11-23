@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <string>
 #include <vector>
+#include <assert.h>
 #include <map>
 
 // ----------------------------
@@ -29,14 +30,14 @@ extern "C" {
 namespace ui {
 
 constexpr const char* g_switch_prefixes[] = { "--", "-", "/" };
-constexpr int g_switch_prefix_count = std::size(g_switch_prefixes);
+constexpr size_t g_switch_prefix_count = std::size(g_switch_prefixes);
 
 class CommandLine {
 public:
   void InitForCurrentProcess() {
 #if defined(OS_WIN)
-    assert(false); 
-    // GetCommandLineA
+    assert(false);
+    // const char* ptr = ::GetCommandLineA();
 #elif defined (OS_LINUX)
     assert(false);
     // read from "/proc/self/cmdline"
@@ -72,7 +73,7 @@ public:
 private:
   void parse(const std::vector<std::string>& arg_vec) {
     for (const std::string& arg : arg_vec) {
-      int prefix_length = getSwitchPrefixLength(arg);
+      size_t prefix_length = getSwitchPrefixLength(arg);
       if (prefix_length == 0 || prefix_length == arg.length()) {
         // not a switch
         continue;
@@ -87,10 +88,10 @@ private:
     }
   }
 
-  int getSwitchPrefixLength(const std::string& args) {
+  size_t getSwitchPrefixLength(const std::string& args) {
     for (size_t i = 0; i < g_switch_prefix_count; i++) {
       const char* prefix = g_switch_prefixes[i];
-      int prefix_len = strlen(prefix);
+      size_t prefix_len = strlen(prefix);
       if (args.substr(0, prefix_len) == prefix) {
         return prefix_len;
       }
