@@ -34,10 +34,10 @@ void Svg::calcViewPort(RenderContext &ctx) {
   ctx.view_port.x = 0;
   ctx.view_port.y = 0;
   if (tan_view_port > tan_canvas) {
-    ctx.view_port.width = ctx.canvas_size.width;
+    ctx.view_port.width = (float)ctx.canvas_size.width;
     ctx.view_port.height = ctx.canvas_size.width / tan_view_port;
   } else {
-    ctx.view_port.height = ctx.canvas_size.height;
+    ctx.view_port.height = (float)ctx.canvas_size.height;
     ctx.view_port.width = ctx.canvas_size.height * tan_view_port;
   }
 
@@ -131,10 +131,10 @@ void Svg::SetAttribute(ui::SerializeParam &data) {
       ui::util::SplitString(text, ' ', &penum);
       if (penum) {
         if (penum->GetCount() == 4) {
-          m_view_box.x = atof(penum->GetText(0));
-          m_view_box.y = atof(penum->GetText(1));
-          m_view_box.width = atof(penum->GetText(2));
-          m_view_box.height = atof(penum->GetText(3));
+          m_view_box.x = (float)atof(penum->GetText(0));
+          m_view_box.y = (float)atof(penum->GetText(1));
+          m_view_box.width = (float)atof(penum->GetText(2));
+          m_view_box.height = (float)atof(penum->GetText(3));
           m_view_box_configed = true;
         }
         penum->Release();

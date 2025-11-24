@@ -5,6 +5,18 @@
 #include <vector>
 #include <assert.h>
 #include <map>
+#if defined(OS_WIN)
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
+#if defined(OS_MAC)
+extern "C" {
+  extern const char*** _NSGetArgv(void);
+  extern int* _NSGetArgc();
+}
+#endif
+
 
 // ----------------------------
 // sdk模块参数定义
@@ -20,12 +32,6 @@
 
 
 
-#if defined(OS_MAC)
-extern "C" {
-  extern const char*** _NSGetArgv(void);
-  extern int* _NSGetArgc();
-}
-#endif
 
 namespace ui {
 
@@ -36,8 +42,24 @@ class CommandLine {
 public:
   void InitForCurrentProcess() {
 #if defined(OS_WIN)
-    assert(false);
-    // const char* ptr = ::GetCommandLineA();
+    wchar_t* *warg_list = nullptr;
+    int args = 0;
+    warg_list = CommandLineToArgvW(GetCommandLineW(), &args);
+    std::vector<const char*> arg_vec;
+    std::vector<std::string> arg_str_vec;
+    for (int i = 0; i < args; i++) {
+      int size = WideCharToMultiByte(CP_UTF8, 0, warg_list[i],
+                                     (int)wcslen(warg_list[i]), nullptr, 0,
+                                     nullptr, nullptr);
+
+      std::string result(size, 0);
+      WideCharToMultiByte(CP_UTF8, 0, warg_list[i], (int)wcslen(warg_list[i]),
+                          &result[0], size, nullptr, nullptr);
+
+      arg_str_vec.emplace_back(result);
+      arg_vec.push_back(arg_str_vec.back().c_str());
+    }
+    Init(args, arg_vec.data());
 #elif defined (OS_LINUX)
     assert(false);
     // read from "/proc/self/cmdline"

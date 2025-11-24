@@ -16,14 +16,14 @@ void Use::PrepareRender(RenderContext &ctx) {
   target->PrepareRender(ctx);
   Element::PrepareRender(ctx);
 
-  int x = ctx.ResolveX(m_x);
-  int y = ctx.ResolveY(m_y);
+  int x = (int)ctx.ResolveX(m_x);
+  int y = (int)ctx.ResolveY(m_y);
   if (x == 0 && y == 0) {
     return;
   }
 
   SkMatrix matrix;
-  matrix.setTranslate(x, y);
+  matrix.setTranslate((float)x, (float)y);
   ctx.matrix.preConcat(matrix);
 
   ctx.canvas->setMatrix(ctx.matrix);
