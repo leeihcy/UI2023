@@ -20,8 +20,8 @@ public:
 
   void PostTask(PostTaskType &&task) override;
   int  ScheduleTask(ScheduleTaskType &&task, int delay_ms) override;
-  int CreateTimer(int interval) override {assert(false); return 0;}
-  void DestroyTimer(int timer_fd) { assert(false); }
+  TimerID CreateTimer(int interval) override {assert(false); return 0;}
+  void DestroyTimer(TimerID timer_fd) override { assert(false); }
   void CreateAnimateTimer(int fps) override;
   void DestroyAnimateTimer() override;
   

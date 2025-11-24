@@ -1,6 +1,8 @@
 #include "gpu/include/api.h"
 #include "base/command_line.h"
 
+#include <atomic>
+
 #include "d3d10/d3d10_gpu.h"
 #include "d3d11/d3d11_gpu.h"
 #include "d3d12/d3d12_gpu.h"

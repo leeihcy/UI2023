@@ -39,6 +39,7 @@ shared_library("uisvg") {
       ]
     } else if (is_linux) {
       libs = ["skia"]
+      cflags+= [ "-Wno-attributes" ]
     }
 
     sources = [

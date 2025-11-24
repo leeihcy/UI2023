@@ -43,12 +43,14 @@ source_set("vulkan") {
     "vk_swapchain_frame.h",
     "vk_objects.cpp",
     "vk_objects.h",
-    "mac_util.mm",
     "vk_pipeline.cpp",
     "vk_pipeline.h",
     "vk_device.cpp",
     "vk_buffer.cpp",
   ]
+  if (is_mac) {
+    sources += ["mac_util.mm"]
+  }
   include_dirs = [
     "//ui/",
     "//ui/gpu/",

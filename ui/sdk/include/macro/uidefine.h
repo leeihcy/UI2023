@@ -48,8 +48,8 @@ protected:                                                                     \
 //   那么在T构造函数中调用Ixxx类的方法时，Ixxx的m_pImpl还没有
 //   被赋值。因此将该操作分解成两步：malloc + construct
 #define UI_IMPLEMENT_INTERFACE(T, SUPER)                                       \
-  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::False) {           \
-    if (b == ui::eCreateImpl::True) {                                          \
+  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::No_) {           \
+    if (b == ui::eCreateImpl::Yes_) {                                          \
       m_pImpl = (T *)operator new(sizeof(T));                                  \
       new (m_pImpl) T(this);                                                   \
     } else {                                                                   \
@@ -70,8 +70,8 @@ protected:                                                                     \
       m_pImpl = nullptr;                                                       \
     }                                                                          \
   }                                                                            \
-  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::True) {            \
-    if (b == eCreateImpl::True) {                                              \
+  I##T::I##T(ui::eCreateImpl b) : I##SUPER(ui::eCreateImpl::Yes_) {            \
+    if (b == eCreateImpl::Yes_) {                                              \
       m_pImpl = (T *)operator new(sizeof(T));                                  \
       new (m_pImpl) T(this);                                                   \
     } else {                                                                   \

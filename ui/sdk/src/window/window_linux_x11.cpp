@@ -393,47 +393,32 @@ int get_window_depth(Display *display, ::Window window) {
   return attr.depth;
 }
 
-void WindowPlatformLinuxX11::Commit(ui::IRenderTarget *pRT, const Rect *prect,
-                                    int count) {
+void WindowPlatformLinuxX11::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
   if (!m_gc) {
     return;
   }
-
-  if (pRT->GetGraphicsRenderLibraryType() !=
-      eGraphicsLibraryType::Skia) {
-    return;
-  }
-  SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
-  SkSurface *surface = skiaRT->GetSkiaSurface();
-  if (!surface) {
-    return;
-  }
-
-  SkPixmap pm;
-  if (!surface->peekPixels(&pm)) {
-    return;
-  }
-
-  int bitsPerPixel = pm.info().bytesPerPixel() * 8;
+  
+  int bitsPerPixel = 4 * 8;
   XImage image;
   memset(&image, 0, sizeof(image));
-  image.width = pm.width();
-  image.height = pm.height();
+  image.width = fb.width;
+  image.height = fb.height;
   image.format = ZPixmap;
-  image.data = (char *)pm.addr();
+  image.data = (char *)fb.data;
   image.byte_order = LSBFirst;
   image.bitmap_unit = bitsPerPixel;
   image.bitmap_bit_order = LSBFirst;
   image.bitmap_pad = bitsPerPixel;
   image.depth = get_window_depth(m_display, m_window);
-  image.bytes_per_line = pm.rowBytes() - pm.width() * pm.info().bytesPerPixel();
+  // image.bytes_per_line = pm.rowBytes() - pm.width() * pm.info().bytesPerPixel();
+  image.bytes_per_line = fb.rowbytes;
   image.bits_per_pixel = bitsPerPixel;
   if (!XInitImage(&image)) {
     return;
   }
 
-  XPutImage(m_display, m_window, m_gc, &image, 0, 0, 0, 0, pm.width(),
-            pm.height());
+  XPutImage(m_display, m_window, m_gc, &image, 0, 0, 0, 0, fb.width,
+            fb.height);
 }
 
 void WindowPlatformLinuxX11::OnXEvent(const XEvent &event) {

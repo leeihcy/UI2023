@@ -7,7 +7,7 @@
 namespace ui {
 
 IMessage::IMessage(eCreateImpl b) {
-  if (b == eCreateImpl::True)
+  if (b == eCreateImpl::Yes_)
     m_pImpl = new Message(this);
   else
     m_pImpl = nullptr;

@@ -78,8 +78,8 @@ enum RENDER_BASE_TYPE {
 };
 
 enum class eCreateImpl {
-  False = 0,
-  True = 1,
+  No_ = 0,
+  Yes_ = 1,
 };
 
 #define CATEGORY_CONTROL  "Control";
@@ -128,7 +128,7 @@ struct MetaImpl : public Super {
   using This = MetaImpl<Ixx, Super>;
 
   Ixx* create(IResourceBundle *resource) {
-    Ixx *p = new Ixx(eCreateImpl::True);
+    Ixx *p = new Ixx(eCreateImpl::Yes_);
 
     FinalConstructMessage msg;
     msg.resource = resource;

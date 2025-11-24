@@ -1,6 +1,9 @@
 #include "message_loop_linux_wayland.h"
+#include "include/macro/uidefine.h"
 #include "src/message_loop/message_loop.h"
 
+#include <fcntl.h>              /* Definition of O_* constants */
+#include <memory>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 #include <sys/timerfd.h>
@@ -9,11 +12,16 @@
 
 namespace ui {
 
+
+// 其它线程向ui线程发送消息[0read, 1write]
+static int s_uithread_pipe[2] = {-1, -1};
+
+
 void MessageLoopPlatformLinuxWayland::Initialize(MessageLoop *message_loop) {
   m_message_loop = message_loop;
   m_epoll_fd = epoll_create1(0);
   
-  pipe2(s_uithread_pipe, 0, O_NONBLOCK);
+  pipe2(s_uithread_pipe, O_NONBLOCK);
 }
 void MessageLoopPlatformLinuxWayland::Release() {}
 
@@ -65,7 +73,7 @@ void MessageLoopPlatformLinuxWayland::Run() {
         int fd = events[i].data.fd;
         uint64_t exp;
         read(fd, &exp, sizeof(exp));
-        m_message_loop->OnTimer(fd);
+        m_message_loop->OnTimer(reinterpret_cast<TimerID>(fd));
       }
     }
   }
@@ -113,10 +121,10 @@ int MessageLoopPlatformLinuxWayland::ScheduleTask(ScheduleTaskType &&task,
 
 TimerID MessageLoopPlatformLinuxWayland::CreateTimer(int interval_ms) {
   long long period = ((long long)interval_ms)* 1000 * 1000; // 转换为纳秒
-  return create_timer(period);
+  return reinterpret_cast<TimerID>(create_timer(period));
 }
 
-TimerID MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
+int MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
   long long period = interval_ns;
   int sec = period / 1000000000;
   long long ns = period % 1000000000;
@@ -133,7 +141,8 @@ TimerID MessageLoopPlatformLinuxWayland::create_timer(long long interval_ns) {
   return timer_fd;
 }
 
-void MessageLoopPlatformLinuxWayland::DestroyTimer(TimerID timer_fd) {
+void MessageLoopPlatformLinuxWayland::DestroyTimer(TimerID timer_fd_) {
+  int timer_fd = (int)(long)(timer_fd_);
   if (timer_fd <= -1) {
     return;
   }
@@ -160,22 +169,19 @@ void MessageLoopPlatformLinuxWayland::CreateAnimateTimer(int fps) {
 
 void MessageLoopPlatformLinuxWayland::DestroyAnimateTimer() {
   if (m_animate_timer_fd > -1) {
-    DestroyTimer(m_animate_timer_fd);
+    DestroyTimer(reinterpret_cast<TimerID>(m_animate_timer_fd));
     m_animate_timer_fd = -1;
   }
 }
 
-//static 
-int MessageLoopPlatformLinuxWayland::s_uithread_pipe = {-1, -1};
-
 void PostTaskToUIThread(PostTaskType &&task) {
   PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
-  write(MessageLoopPlatformLinuxWayland::s_uithread_pipe[1], p, sizeof(p));
+  write(s_uithread_pipe[1], p, sizeof(p));
 }
 
 void MessageLoopPlatformLinuxWayland::process_uithread_pipe_messasge()
 {
-  PostTaskType * ptr = nullptr
+  PostTaskType * ptr = nullptr;
   while (read(s_uithread_pipe[0], &ptr, sizeof(ptr)) == sizeof(void*)) {
     ptr->emit();
     delete ptr;

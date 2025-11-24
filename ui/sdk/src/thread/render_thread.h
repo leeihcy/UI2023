@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <map>
 #include <shared_mutex>
+#include <condition_variable>
 #include <thread>
 #include <vector>
 #include <deque>

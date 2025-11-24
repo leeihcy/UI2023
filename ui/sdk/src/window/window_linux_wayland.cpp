@@ -369,44 +369,25 @@ bool WindowPlatformLinuxWayland::IsChildWindow() { return false; }
 bool WindowPlatformLinuxWayland::IsWindowVisible() {
   return m_visible >= WaylandVisibleState::Visible;
 }
-void WindowPlatformLinuxWayland::Commit(IRenderTarget *pRT, const Rect *prect,
-                                        int count) {
+
+void WindowPlatformLinuxWayland::Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) {
+
   if (m_shm.data() == nullptr) {
     return;
   }
-  // if (!IsWindowVisible()) {
-  //   return;
-  // }
-
-  if (pRT->GetGraphicsRenderLibraryType() !=
-      eGraphicsLibraryType::Skia) {
-    return;
-  }
-  SkiaRenderTarget *skiaRT = static_cast<SkiaRenderTarget *>(pRT);
-  SkSurface *surface = skiaRT->GetSkiaSurface();
-  if (!surface) {
-    return;
-  }
-
-  SkPixmap pm;
-  if (!surface->peekPixels(&pm)) {
-    return;
-  }
-
   // memcpy(m_shm.data(), pm.addr(), m_shm.size());
   // wl_surface_commit(m_surface);
 
-  for (int i = 0; i < count; i++) {
-    Rect rcItem = prect[i];
-    m_ui_window.m_dpi.ScaleRect(&rcItem);
-
+  for (int i = 0; i < dirty_region_px.Count(); i++) {
+    const Rect& rcItem = *dirty_region_px[i];
+    
     int dst_stride = m_bound_px.Width() * 4;
-    int src_stride = pm.rowBytes();
+    int src_stride = fb.rowbytes;
 
     byte *pixelDest =
         (byte *)m_shm.data() + rcItem.top * dst_stride + rcItem.left * 4;
     byte *pixelSrc =
-        (byte *)pm.addr() + rcItem.top * src_stride + rcItem.left * 4;
+        (byte *)fb.data + rcItem.top * src_stride + rcItem.left * 4;
 
     int height = rcItem.Height();
     for (int y = 0; y < height; y++) {

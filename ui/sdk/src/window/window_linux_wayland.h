@@ -57,7 +57,7 @@ public:
   // void Invalidate(const Rect *prect) override;
   bool IsChildWindow() override;
   bool IsWindowVisible() override;
-  void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) override;
 
 public:
   void Destroy();

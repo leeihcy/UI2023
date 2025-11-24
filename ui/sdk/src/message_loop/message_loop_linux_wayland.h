@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_WAYLAND_H_
 #define _UI_SDK_SRC_BASE_MSG_LOOP_MESSAGE_LOOP_LINUX_WAYLAND_H_
 
+#include "include/macro/uidefine.h"
 #include "message_loop.h"
 #include "src/window/linux/display_wayland.h"
 
@@ -36,9 +37,7 @@ private:
   int m_epoll_fd = -1;
   // 定时器
   int m_animate_timer_fd = -1;
-  // 其它线程向ui线程发送消息[0read, 1write]
-  static int s_uithread_pipe[2];
-
+  
   WaylandDisplay m_display;
 };
 

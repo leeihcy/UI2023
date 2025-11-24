@@ -40,6 +40,9 @@ shared_library("uisdk") {
         "/wd4244",  # conversion from 'int32_t' to 'SkScalar', possible loss of data
       ]
     }
+    if (is_linux) {
+      cflags+= [ "-Wno-attributes" ]
+    }
 
     if (is_debug && (is_mac || is_linux)) {
       cflags += ["-g", "-O0"]
@@ -409,7 +412,7 @@ copy("copy_skia") {
       skia_out_dir + "\skia.dll.lib"
     ]
   } else if (is_linux) {
-    sources = [ skia_out_dir + "libskia.so" ]
+    sources = [ skia_out_dir + "/libskia.so" ]
   }
   outputs = ["$root_build_dir/bin/{{source_file_part}}"]
 }

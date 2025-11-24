@@ -49,7 +49,7 @@ public:
   void Show(bool active=true) override;
   void Hide() override;
 
-  void Commit(IRenderTarget *pRT, const Rect *prect, int count) override;
+  void Commit2(const FrameBuffer& fb, const RectRegion &dirty_region_px) override;
 
   void Invalidate();
 

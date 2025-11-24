@@ -6,6 +6,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "include/core/SkBitmap.h"
 #include "include/core/SkPoint.h"

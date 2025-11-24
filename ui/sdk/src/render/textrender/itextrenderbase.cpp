@@ -19,7 +19,7 @@ UI_IMPLEMENT_INTERFACE(SimpleTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(ContrastColorListTextRender, TextRenderBase)
 // UI_IMPLEMENT_INTERFACE(FontColorListTextRender, TextRenderBase)
 
-ITextRenderBase::ITextRenderBase() : IMessage(eCreateImpl::False) {
+ITextRenderBase::ITextRenderBase() : IMessage(eCreateImpl::No_) {
   m_pImpl = new TextRenderBase(this);
 }
 
