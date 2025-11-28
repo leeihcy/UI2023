@@ -1,6 +1,5 @@
 #ifndef _UI_BASE_COMMAND_LINE_H_
 #define _UI_BASE_COMMAND_LINE_H_
-#include <cstddef>
 #include <string>
 #include <vector>
 #include <assert.h>
@@ -35,7 +34,12 @@ extern "C" {
 
 namespace ui {
 
-constexpr const char* g_switch_prefixes[] = { "--", "-", "/" };
+constexpr const char* g_switch_prefixes[] = { 
+  "--", "-", 
+#if defined(OS_WIN)
+  "/" 
+#endif
+};
 constexpr size_t g_switch_prefix_count = std::size(g_switch_prefixes);
 
 class CommandLine {
@@ -61,8 +65,30 @@ public:
     }
     Init(args, arg_vec.data());
 #elif defined (OS_LINUX)
-    assert(false);
-    // read from "/proc/self/cmdline"
+    std::string args;
+
+    FILE* fd = fopen("/proc/self/cmdline", "rb");
+    char temp_buffer[128] = {0};
+    int size = 0;
+    do {
+      size = fread(temp_buffer, 1, 128, fd);
+      args.append(temp_buffer, size);
+    } while(size >= 128);
+    fclose(fd);
+
+    std::vector<const char*> arg_vec;
+
+    // 每个参数以\0分隔的。
+    const char* start = args.c_str();
+    const char* end = start + size;
+    for (const char* p = start; p < end; p++) {
+      if (*p != 0) {
+        continue;
+      }
+      arg_vec.push_back(start);
+      start = p+1;
+    }
+    Init(arg_vec.size(), arg_vec.data());
 #elif defined(OS_MAC)
     Init(*_NSGetArgc(), *_NSGetArgv());
 #endif

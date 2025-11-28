@@ -176,7 +176,7 @@ void MessageLoopPlatformLinuxWayland::DestroyAnimateTimer() {
 
 void PostTaskToUIThread(PostTaskType &&task) {
   PostTaskType *p = new PostTaskType(std::forward<PostTaskType>(task));
-  write(s_uithread_pipe[1], p, sizeof(p));
+  write(s_uithread_pipe[1], &p, sizeof(p));
 }
 
 void MessageLoopPlatformLinuxWayland::process_uithread_pipe_messasge()
