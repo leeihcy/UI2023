@@ -44,12 +44,12 @@ Application& WindowRender::GetUIApplication() {
 void WindowRender::OnSerialize(SerializeParam *pData) {
   AttributeSerializer s(pData, "WindowRender");
 
-  s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(int *)&m_grl_type)
-      ->FillGraphicsRenderLibraryData()
-      ->SetDefault((int)eGraphicsLibraryType::Skia);
-
-  s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
-      ->SetDefault(true);
+  // s.AddEnum(XML_WINDOW_GRAPHICS_RENDER_LIBRARY, *(int *)&m_grl_type)
+  //     ->FillGraphicsRenderLibraryData()
+  //     ->SetDefault((int)eGraphicsLibraryType::Skia);
+  // 
+  // s.AddBool(XML_WINDOW_NEED_ALPHACHANNEL, m_need_alpha_channel)
+  //     ->SetDefault(true);
 }
 
 bool WindowRender::IsHardwareComposite() { 
@@ -82,7 +82,7 @@ void WindowRender::AddInvalidateRect(const Rect *dirty) {
 // 但仍然采用Release进行释放（delete）
 std::shared_ptr<IRenderTarget> WindowRender::CreateRenderTarget() {
   auto *app = m_window.GetResource().GetUIApplication();
-  return app->CreateRenderTarget(m_grl_type);
+  return app->CreateRenderTarget(eGraphicsLibraryType::Skia);
 }
 
 // 逻辑单位
@@ -106,15 +106,6 @@ void WindowRender::SetCanCommit(bool b) {
 }
 
 bool WindowRender::CanCommit() { return 0 == m_can_commit; }
-
-void WindowRender::SetGraphicsRenderType(eGraphicsLibraryType type) {
-  // 仅在窗口创建之前设置有用
-  m_grl_type = type;
-}
-eGraphicsLibraryType WindowRender::GetGraphicsRenderType() {
-  return m_grl_type;
-}
-bool WindowRender::GetRequireAlphaChannel() { return m_need_alpha_channel; }
 
 Layer* WindowRender::GetRootLayer() {
   return m_window.GetRootObject().GetLayer();

@@ -288,21 +288,6 @@ void Window::onPaint(const Rect *commit_rect_px) {
 // void Window::swap_buffer() { m_platform->Submit(m_sksurface); }
 
 void Window::postCreate(CreateWindowParam &param) {
-
-#if 0
-  	//
-	//  有可能m_strID为空（不加载资源，例如临时的popupconotrolwindow）
-	//	因此没有将AddTopWindowObject、OnInitWindow放在CreateUI中执行
-	//
-	// if (!IsChildWindow())--子窗口也是一个UI窗口，也维护起来
-	{
-		TopWindowManager* pTopWndMgr = 
-            GetUIApplication()->GetTopWindowMgr();
-		if (pTopWndMgr)
-			pTopWndMgr->AddTopWindowObject(this);
-	}
-#endif
-
   // 布局
   if (m_window_style.attach) // attach的窗口直接使用外部的大小
   {

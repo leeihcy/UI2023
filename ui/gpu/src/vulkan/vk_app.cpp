@@ -10,6 +10,9 @@
 #include <vulkan/vulkan_wayland.h>
 #endif
 
+
+// 使用 vulkaninfo 命令，可以查询当前支持的extention/layer进行对比。
+
 namespace ui {
 static VulkanApplication s_app;
 
@@ -73,6 +76,9 @@ vulkanLogCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   return raise_exception ? VK_TRUE : VK_FALSE;
 }
 
+// 注：linux wayland场景下，如果使用LD_PRELOAD 加载了librenderdoc.so
+//    可能会造成wayland extension枚举失败!
+//    renderdoc不兼容wayland，只能使用x11
 bool VulkanApplication::isExtensionSupport(
     const std::vector<const char *> &extensions) {
 
@@ -106,6 +112,13 @@ bool VulkanApplication::isExtensionSupport(
   return true;
 }
 
+
+// 在ubuntu上，只有这4个：
+// "VK_LAYER_RENDERDOC_Capture"
+// "VK_LAYER_MESA_device_select"
+// "VK_LAYER_INTEL_nullhw"
+// "VK_LAYER_MESA_overlay"
+//
 bool VulkanApplication::isLayerSupport(
     const std::vector<const char *> &layers) {
   if (layers.empty()) {
@@ -144,10 +157,9 @@ void VulkanApplication::getRequiredLayers(
   if (m_enable_validation_layers) {
     std::vector<const char *> validationLayers = {
         "VK_LAYER_KHRONOS_validation",
-        // "VK_LAYER_LUNARG_monitor",  // 在mac上没找到
-        // "VK_LAYER_LUNARG_api_dump",
-        // "VK_LAYER_KHRONOS_profiles",
-        "VK_LAYER_KHRONOS_synchronization2", "VK_LAYER_KHRONOS_shader_object"};
+        // "VK_LAYER_KHRONOS_synchronization2", 
+        // "VK_LAYER_KHRONOS_shader_object"
+      };
 
     if (!isLayerSupport(validationLayers)) {
       Log("debug validation layer not support!");
@@ -162,6 +174,7 @@ void VulkanApplication::getRequiredLayers(
 void VulkanApplication::getRequiredExtensions(
     std::vector<const char *> &required_extensions) {
 
+  // required_extensions.push_back("VK_EXT_debug_utils");
   required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
 #if defined(OS_WIN)
@@ -200,8 +213,8 @@ bool VulkanApplication::createVulkanInstance() {
   std::vector<const char *> required_extensions;
   getRequiredExtensions(required_extensions);
   if (!isExtensionSupport(required_extensions)) {
-    Log("isExtensionSupport failed");
-    return false;
+   Log("isExtensionSupport failed");
+   return false;
   }
 
   create_info.enabledLayerCount = (uint32_t)required_layers.size();

@@ -33,7 +33,7 @@ int main() {
   ui::SDKVersion::GetVersionText(version, 32);
 
   ui::ApplicationPtr app;
-  app->EnableHardwareComposite();
+  // app->EnableHardwareComposite();
   ui::IResourceBundle *resource = app->LoadResource("bundle/control");
 
   ui::WindowPtr window(resource);

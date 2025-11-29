@@ -522,7 +522,7 @@ void WindowPlatformWin::GetMonitorWorkArea(Rect *rect) {
   rect->Set(rcLimit.left, rcLimit.top, rcLimit.right, rcLimit.bottom);
 }
 
-void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h,
+void WindowPlatformWin::SetWindowPos(int x_px, int y_px, int w_px, int h_px,
                                      SetPositionFlags flags) {
   int windows_flags = 0;
   if (flags.move == false) {
@@ -534,7 +534,7 @@ void WindowPlatformWin::SetWindowPos(int x, int y, int w, int h,
   if (!flags.activate) {
     windows_flags |= SWP_NOACTIVATE;
   }
-  ::SetWindowPos(m_hWnd, HWND_TOP, x, y, w, h, windows_flags);
+  ::SetWindowPos(m_hWnd, HWND_TOP, x_px, y_px, w_px, h_px, windows_flags);
 }
 
 void WindowPlatformWin::CenterWindow() {

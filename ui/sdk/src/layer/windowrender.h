@@ -58,10 +58,6 @@ public:
 
   std::shared_ptr<IRenderTarget> CreateRenderTarget();
 
-  bool GetRequireAlphaChannel();
-  void SetGraphicsRenderType(eGraphicsLibraryType type);
-  eGraphicsLibraryType GetGraphicsRenderType();
-
   void SetCanCommit(bool b);
   bool CanCommit();
   void SoftwareCommit(IRenderTarget* pRT, const RectRegion & dirty_region_px);
@@ -87,8 +83,6 @@ public:
   
 private:
   std::unique_ptr<IWindowRender> m_pIWindowRender;
-
-  eGraphicsLibraryType m_grl_type = eGraphicsLibraryType::Skia;
 
   // 阻塞刷新窗口
   long m_can_commit = 0;

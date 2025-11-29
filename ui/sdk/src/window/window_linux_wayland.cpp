@@ -9,11 +9,22 @@
 
 #include "include/interface.h"
 #include "include/interface/iwindow.h"
-#include "include/macro/uidefine.h"
 #include "include/util/rect.h"
-#include "src/graphics/skia/skia_render.h"
 #include "src/window/linux/xdg-activation-v1-client-protocol.h"
 #include "src/window/linux/xdg-shell-client-protocol.h"
+
+//
+// 1. xdg_surface_set_window_geometry并不是用来设置窗口在屏幕上的位置的，而是用于设置client region 在surface上的范围。
+//    类似于windows上是non-client / client的概念。例如窗口标题栏高50,边框是2,那么可以这么调用：
+//    xdg_surface_set_window_geometry(xdg_surface, 2, 50, width, height);
+//
+//    目前wayland并没有提供设置窗口坐标的接口。
+//
+// 2. 🔧 窗口大小由什么决定？
+//    窗口大小 = 表面(wl_surface)大小 + 几何设置 + compositor 窗口装饰
+// 
+//
+
 
 namespace ui {
 
@@ -119,9 +130,6 @@ void WindowPlatformLinuxWayland::create_toplevel() {
 
   // 设置窗口大小
   if (!m_bound_dip.IsEmpty()) {
-    xdg_surface_set_window_geometry(m_xdg_surface, m_bound_dip.left,
-                                    m_bound_dip.top, m_bound_dip.Width(),
-                                    m_bound_dip.Height());
     on_size();
   }
 
@@ -334,29 +342,24 @@ void WindowPlatformLinuxWayland::GetMonitorWorkArea(Rect *rect) {
 }
 
 // xywh 乘以了缩放系数，是像素坐标
-void WindowPlatformLinuxWayland::SetWindowPos(int x, int y, int w, int h,
+void WindowPlatformLinuxWayland::SetWindowPos(int x_px, int y_px, int w_px, int h_px,
                                               SetPositionFlags flags) {
   float scale = m_ui_window.m_dpi.GetScaleFactor();
 
   if (flags.move) {
-    m_bound_px.left = x;
-    m_bound_px.top = y;
+    m_bound_px.left = x_px;
+    m_bound_px.top = y_px;
 
-    m_bound_dip.left = x / scale;
-    m_bound_dip.top = y / scale;
+    m_bound_dip.left = x_px / scale;
+    m_bound_dip.top = y_px / scale;
   }
   if (flags.size) {
 
-    m_bound_px.right = m_bound_px.left + w;
-    m_bound_px.bottom = m_bound_px.top + h;
+    m_bound_px.right = m_bound_px.left + w_px;
+    m_bound_px.bottom = m_bound_px.top + h_px;
 
-    m_bound_dip.right = m_bound_dip.left + (w / scale);
-    m_bound_dip.bottom = m_bound_dip.top + (h / scale);
-  }
-  if (m_xdg_surface) {
-    xdg_surface_set_window_geometry(m_xdg_surface, m_bound_dip.left,
-                                    m_bound_dip.top, m_bound_dip.Width(),
-                                    m_bound_dip.Height());
+    m_bound_dip.right = m_bound_dip.left + (w_px / scale);
+    m_bound_dip.bottom = m_bound_dip.top + (h_px / scale);
   }
   on_size();
 }

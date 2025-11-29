@@ -19,14 +19,12 @@ bool VulkanCompositor::BeginCommit(GpuLayerCommitContext *ctx) {
     m_swapchain.Create(GetSurface(), m_width, m_height);
   }
 
+  if (!drawFrame_acquireNextSwapChainImage()) {
+    return false;
+  }
   if (!drawFrame_acquireNextCommandBuffer()) {
     return false;
   }
-  if (!drawFrame_acquireNextSwapChainImage()) {
-    m_swapchain.MarkNeedReCreate();
-    return false;
-  }
-
   drawFrame_beginRecordCommandBuffer();
   return true;
 }
@@ -73,6 +71,9 @@ bool VulkanCompositor::drawFrame_acquireNextCommandBuffer() {
 }
 
 bool VulkanCompositor::drawFrame_acquireNextSwapChainImage() {
+  if (0 == m_swapchain.Size()) {
+    return false;
+  }
   vulkan::InFlightFrame *sync = m_swapchain.GetCurrentInflightFrame();
   vulkan::GpuSemaphores *semaphores = m_swapchain.GetCurrentSemaphores();
   VkDevice device = GetVkDevice();

@@ -173,7 +173,7 @@ void WindowPlatformMac::UpdateNonClientRegion(Rect *pregion) {
 }
 
 // xywh 乘以了缩放系数
-void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h,
+void WindowPlatformMac::SetWindowPos(int x_px, int y_px, int w_px, int h_px,
                                      SetPositionFlags flags) {
   // printf("SetWindowPos %d,%d  %d,%d \n", x,y,w,h);
   if (!flags.move && !flags.size) {
@@ -181,7 +181,12 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h,
   }
 
   CGFloat factor = m_window.backingScaleFactor;
-  NSRect rect = NSMakeRect(0, 0, w / factor, h / factor);
+  int x = x_px/factor;
+  int y = y_px/factor;
+  int w = w_px/factor;
+  int h = h_px/factor;
+
+  NSRect rect = NSMakeRect(0, 0, w, h);
 
   NSUInteger windowStyle =
       (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
@@ -199,9 +204,9 @@ void WindowPlatformMac::SetWindowPos(int x, int y, int w, int h,
   //   frame_rect.size.width, frame_rect.size.height);
 
   if (flags.size && flags.move) {
-    //[m_window setFrame:NSMakeRect(x/factor, y/factor, w/factor, h/factor)
+    //[m_window setFrame:NSMakeRect(x, y, w, h)
     // display:(true)];
-    [m_window setFrame:NSMakeRect(x / factor, y / factor, frame_rect.size.width,
+    [m_window setFrame:NSMakeRect(x, y, frame_rect.size.width,
                                   frame_rect.size.height)
                display:(true)];
     return;
