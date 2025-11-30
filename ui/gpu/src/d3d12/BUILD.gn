@@ -11,6 +11,7 @@ config("d3d12_config") {
     "atls.lib",
     "D3d12.lib", 
     "dxgi.lib",
+    "D3DCompiler.lib",
   ]
 }
 
@@ -26,8 +27,10 @@ source_set("d3d12") {
     "d3d12_compositor.h",
     "d3d12_swapchain.cpp",
     "d3d12_swapchain.h",
-    "d3d12_command_queue.cpp",
-    "d3d12_command_queue.h",
+    "d3d12_pipeline.cpp",
+    "d3d12_pipeline.h",
+    "d3d12_layer.cpp",
+    "d3d12_layer.h",
   ]
 
   include_dirs = [
@@ -36,5 +39,14 @@ source_set("d3d12") {
   ]  
   cflags = [
     "/wd4005",  # 'DXGI_STATUS_OCCLUDED': macro redefinition
+  ]
+}
+
+copy("copy_shader") {
+  sources = [
+   "shader/shaders.hlsl"
+  ]
+  outputs = [
+    "$root_build_dir/bin/shaders/{{source_file_part}}"
   ]
 }

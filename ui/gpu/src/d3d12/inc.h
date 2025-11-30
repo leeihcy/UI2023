@@ -7,7 +7,6 @@
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 
-
 #include <atlbase.h>
 
 #endif

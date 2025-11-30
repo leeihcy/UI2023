@@ -2,6 +2,7 @@
 #define _UI_GPU_SRC_D3D12_D3D12COMPOSITOR_H_
 
 #include "d3d12_swapchain.h"
+#include "d3d12_pipeline.h"
 #include "include/api.h"
 
 
@@ -21,7 +22,12 @@ protected:
   void Resize(int nWidth, int nHeight) override;
 
 private:
-  D3D12SwapChain m_swapchain;
+  bool createCommandQueue();
+
+private:
+  CComPtr<ID3D12CommandQueue> m_command_queue;
+  d3d12::SwapChain m_swapchain;
+  d3d12::Pipeline m_pipeline;
 };
 
 } // namespace ui

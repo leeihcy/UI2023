@@ -3,16 +3,25 @@
 
 #include "src/d3d12/inc.h"
 
-namespace ui {
+namespace d3d12 {
 
-class D3D12Pipeline {
+class Pipeline {
 public:
-  
-  bool createDescriptorHeap();
+  bool Create();
+
+  // bool createDescriptorHeap();
+
+private:
+  bool createRootSignature(ID3D12Device* device);
+  bool createPipelineState(ID3D12Device* device);
+  bool loadAssets();
 
 public:
   // render target view (RTV) descriptor heap
   CComPtr<ID3D12DescriptorHeap> m_rtv_descriptor_heap;
+
+  CComPtr<ID3D12RootSignature> m_root_signature;
+  CComPtr<ID3D12PipelineState> m_pipeline_state;
 };
 
 }

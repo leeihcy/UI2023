@@ -123,8 +123,8 @@ if (is_win) {
     ]
 
     sources = [
-      # "sample/sample.cpp",
-      "sample/sample_thread.cpp",
+      "sample/sample.cpp",
+      #"sample/sample_thread.cpp",
     ]
   }
 }

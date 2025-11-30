@@ -55,7 +55,7 @@ bool D3D12Application::Startup() {
       score += 1000;
     }
 
-    if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0,
+    if (SUCCEEDED(D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_2,
                                     _uuidof(ID3D12Device), nullptr))) {
       // 是否支持D3D12
       score += 10000;
@@ -72,7 +72,7 @@ bool D3D12Application::Startup() {
   if (!highest_score_adapter) {
     return false;
   }
-  hr = D3D12CreateDevice(highest_score_adapter, D3D_FEATURE_LEVEL_11_0,
+  hr = D3D12CreateDevice(highest_score_adapter, D3D_FEATURE_LEVEL_12_2,
                          IID_PPV_ARGS(&m_device));
   if (FAILED(hr)) {
     return false;
