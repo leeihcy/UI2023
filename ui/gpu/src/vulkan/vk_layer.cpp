@@ -87,7 +87,7 @@ bool VulkanGpuLayer::createTextureImage() {
   imageInfo.extent.height = TILE_SIZE;
   imageInfo.extent.depth = 1;
   imageInfo.mipLevels = 1;
-  imageInfo.arrayLayers = m_arrayTile.GetCount();
+  imageInfo.arrayLayers = m_arrayTile.GetCount();  // <<-- 纹理数组
   imageInfo.format = VK_FORMAT_B8G8R8A8_UNORM;
   imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
   imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;

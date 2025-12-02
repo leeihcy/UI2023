@@ -82,7 +82,17 @@ bool D3D12Application::Startup() {
 }
 void D3D12Application::Shutdown() {
   m_dxgi_factory.Release();
+
+#if defined(_DEBUG)
+  ID3D12DebugDevice* debugDevice = nullptr;
+  if (SUCCEEDED(m_device->QueryInterface(&debugDevice))) {
+      debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+      debugDevice->Release();
+  }
+#endif
+
   m_device.Release();
 }
+
 
 } // namespace ui

@@ -62,6 +62,7 @@ bool Pipeline::createPipelineState(ID3D12Device *device) {
 
   CComPtr<ID3DBlob> vertexShader;
   CComPtr<ID3DBlob> pixelShader;
+  CComPtr<ID3DBlob> errorMsgs;
 
 #if defined(_DEBUG)
   // Enable better shader debugging with the graphics debugging tools.
@@ -70,17 +71,35 @@ bool Pipeline::createPipelineState(ID3D12Device *device) {
   UINT compileFlags = 0;
 #endif
 
-  D3DCompileFromFile(L"shaders/shaders.hlsl", nullptr, nullptr, "VSMain",
-                     "vs_5_0", compileFlags, 0, &vertexShader, nullptr);
-  D3DCompileFromFile(L"shaders/shaders.hlsl", nullptr, nullptr, "PSMain",
-                     "ps_5_0", compileFlags, 0, &pixelShader, nullptr);
+  HRESULT hr1 =
+      D3DCompileFromFile(L"shaders/vert.hlsl", nullptr, nullptr, "VSMain",
+                         "vs_5_0", compileFlags, 0, &vertexShader, &errorMsgs);
+  if (FAILED(hr1)) {
+    if (errorMsgs != NULL) {
+      OutputDebugStringA((char *)errorMsgs->GetBufferPointer());
+    }
+    assert(false);
+    return false;
+  }
+  HRESULT hr2 =
+      D3DCompileFromFile(L"shaders/frag.hlsl", nullptr, nullptr, "PSMain",
+                         "ps_5_0", compileFlags, 0, &pixelShader, &errorMsgs);
+  if (FAILED(hr2)) {
+    if (errorMsgs != NULL) {
+      OutputDebugStringA((char *)errorMsgs->GetBufferPointer());
+    }
+    assert(false);
+    return false;
+  }
 
   // Define the vertex input layout.
   D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-      {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+      {"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0,
        D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-      {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
-       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}};
+      {"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 8,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+      {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 20,
+       D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},};
 
   // Describe and create the graphics pipeline state object (PSO).
   D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};

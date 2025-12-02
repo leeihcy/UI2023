@@ -2,6 +2,7 @@
 #define _UI_GPU_SRC_D3D12_D3D12_SWAPCHAIN_H_
 
 #include "src/d3d12/inc.h"
+#include "src/d3d12/d3d12_bridge.h"
 
 namespace d3d12 {
 
@@ -10,7 +11,15 @@ constexpr int INFLIGHT_FRAMES = 2;
 
 class InFlightFrame {
 public:
-  bool Create(ID3D12CommandAllocator* allocator, ID3D12PipelineState* pipeline_state);
+  bool Create(ID3D12PipelineState* pipeline_state);
+  void BeginDraw(ID3D12PipelineState* pipeline_state);
+  void EndDraw(ID3D12CommandQueue*);
+
+private:
+  // 每个帧在GPU上执行时都需要独立的CommandAllocator
+  // CommandAllocator在GPU执行命令列表期间不能被重置
+  CComPtr<ID3D12CommandAllocator> m_command_allocator;
+
 public:
   CComPtr<ID3D12GraphicsCommandList> m_command_list;
 };
@@ -18,18 +27,26 @@ public:
 
 class SwapChainFrame {
 public:
-  bool Create();
+  bool Destroy();
+
   void IncFenceValue() { m_fence_values++; }
   UINT64 GetFenceValue() { return m_fence_values; }
 
 public:
   CComPtr<ID3D12Resource> m_render_target;
-  UINT64 m_fence_values = 0;
+  UINT64 m_fence_values = 1;
 };
 
 class SwapChain {
 public:
+  SwapChain(IBridge& bridge);
+  ~SwapChain();
+  
   bool Create(HWND hwnd, ID3D12CommandQueue* command_queue, ID3D12PipelineState* pipeline_state);
+  void DestroyImages();
+  void Resize(int width, int height);
+  void MarkNeedReCreate();
+  bool NeedReCreated() { return m_need_recreate; }
 
   void IncCurrentInflightFrame();
   void IncCurrentSemaphores();
@@ -40,22 +57,26 @@ public:
   InFlightFrame& GetCurrentInflightFrame();
   // GpuSemaphores *GetCurrentSemaphores();
 
+  void SetCurrentRenderTarget(ID3D12GraphicsCommandList* command_list);
+  void EndDraw();
   void WaitForPreviousFrame(ID3D12CommandQueue* command_queue);
 
 private:
   bool createSwapChain(HWND hwnd, ID3D12CommandQueue* command_queue);
   bool createDescriptorHeap();
   bool createFrameResources();
-  bool createCommandAllocator();
   bool createInfightFrames(ID3D12PipelineState* pipeline_state);
   bool createFence();
 
+  void destroyFrameResources();
+
 public:
+  IBridge& m_bridge;
+  bool m_need_recreate = true;
+
   CComPtr<IDXGISwapChain3>  m_swapchain;
   CComPtr<ID3D12DescriptorHeap> m_rtv_heap;
   UINT m_rtv_descriptor_size = 0;
-
-  CComPtr<ID3D12CommandAllocator> m_command_allocator;
 
   SwapChainFrame m_swap_frames[SWAPCHAIN_FRAMES];
   UINT m_swap_frame_index = 0;

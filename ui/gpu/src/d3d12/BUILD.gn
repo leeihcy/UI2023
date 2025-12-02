@@ -31,6 +31,8 @@ source_set("d3d12") {
     "d3d12_pipeline.h",
     "d3d12_layer.cpp",
     "d3d12_layer.h",
+    "d3d12_objects.cpp",
+    "d3d12_objects.h",
   ]
 
   include_dirs = [
@@ -44,7 +46,8 @@ source_set("d3d12") {
 
 copy("copy_shader") {
   sources = [
-   "shader/shaders.hlsl"
+    "shader/vert.hlsl",
+    "shader/frag.hlsl"
   ]
   outputs = [
     "$root_build_dir/bin/shaders/{{source_file_part}}"
