@@ -1,10 +1,26 @@
 #include "display_wayland.h"
 #include "src/window/linux/xdg-activation-v1-client-protocol.h"
+#include "include/util/log.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <wayland-client-protocol.h>
+
+namespace {
+void OnRegistryHandleGlobal(void *data, struct wl_registry *registry,
+                               uint32_t id, const char *interface,
+                               uint32_t version) {
+  ((ui::WaylandDisplayPrivate *)data)
+      ->onRegistryHandleGlobal(registry, id, interface, version);
+}
+
+void OnXdgWmbasePing(void *data, struct xdg_wm_base *xdg_wm_base,
+                             uint32_t serial) {
+  xdg_wm_base_pong(xdg_wm_base, serial);
+}
+
+}
 
 namespace ui {
 
@@ -13,36 +29,15 @@ WaylandDisplayPrivate &WaylandDisplayPrivate::getInstance() {
   return s;
 }
 
-void on_registry_handle_global(void *data, struct wl_registry *registry,
-                               uint32_t id, const char *interface,
-                               uint32_t version) {
 
-  ((WaylandDisplayPrivate *)data)
-      ->on_registry_handle_global(registry, id, interface, version);
-}
-
-static const struct wl_registry_listener registry_listener = {
-    .global = on_registry_handle_global,
-    .global_remove = NULL,
-};
-
-static void xdg_wm_base_ping(void *data, struct xdg_wm_base *xdg_wm_base,
-                             uint32_t serial) {
-  xdg_wm_base_pong(xdg_wm_base, serial);
-}
-
-static const struct xdg_wm_base_listener xdg_wm_base_listener = {
-    .ping = xdg_wm_base_ping,
-};
-
-static void pointer_enter(void *data, struct wl_pointer *pointer,
+static void OnPointerEnter(void *data, struct wl_pointer *pointer,
                           uint32_t serial, struct wl_surface *surface,
                           wl_fixed_t surface_x, wl_fixed_t surface_y) {
 
   ((WaylandDisplayPrivate *)data)
-      ->on_pointer_enter(surface, surface_x, surface_y);
+      ->onPointerEnter(surface, surface_x, surface_y);
 }
-void WaylandDisplayPrivate::on_pointer_enter(struct wl_surface *surface,
+void WaylandDisplayPrivate::onPointerEnter(struct wl_surface *surface,
                                              wl_fixed_t surface_x,
                                              wl_fixed_t surface_y) {
 
@@ -55,15 +50,15 @@ void WaylandDisplayPrivate::on_pointer_enter(struct wl_surface *surface,
   m_last_pointer_x = surface_x;
   m_last_pointer_y = surface_y;
 
-  callback->on_pointer_enter(surface_x, surface_y);
+  callback->OnPointerEnter(surface_x, surface_y);
 }
 
-static void pointer_leave(void *data, struct wl_pointer *pointer,
+static void OnPointerLeave(void *data, struct wl_pointer *pointer,
                           uint32_t serial, struct wl_surface *surface) {
-  ((WaylandDisplayPrivate *)data)->on_pointer_leave(surface);
+  ((WaylandDisplayPrivate *)data)->onPointerLeave(surface);
 }
 
-void WaylandDisplayPrivate::on_pointer_leave(struct wl_surface *surface) {
+void WaylandDisplayPrivate::onPointerLeave(struct wl_surface *surface) {
   if (m_hover_surface == surface) {
     m_hover_surface = nullptr;
   }
@@ -72,15 +67,15 @@ void WaylandDisplayPrivate::on_pointer_leave(struct wl_surface *surface) {
   if (!callback) {
     return;
   }
-  callback->on_pointer_leave();
+  callback->OnPointerLeave();
 }
 
-static void pointer_motion(void *data, struct wl_pointer *pointer,
+static void OnPointerMotion(void *data, struct wl_pointer *pointer,
                            uint32_t time, wl_fixed_t x, wl_fixed_t y) {
-  ((WaylandDisplayPrivate *)data)->on_pointer_motion(time, x, y);
+  ((WaylandDisplayPrivate *)data)->onPointerMotion(time, x, y);
 }
 
-void WaylandDisplayPrivate::on_pointer_motion(uint32_t time, wl_fixed_t x,
+void WaylandDisplayPrivate::onPointerMotion(uint32_t time, wl_fixed_t x,
                                               wl_fixed_t y) {
   if (!m_hover_surface) {
     return;
@@ -93,17 +88,17 @@ void WaylandDisplayPrivate::on_pointer_motion(uint32_t time, wl_fixed_t x,
 
   m_last_pointer_x = x;
   m_last_pointer_y = y;
-  callback->on_pointer_motion(time, x, y);
+  callback->OnPointerMotion(time, x, y);
 }
 
-static void pointer_button(void *data, struct wl_pointer *pointer,
+static void OnPointerButton(void *data, struct wl_pointer *pointer,
                            uint32_t serial, uint32_t time, uint32_t button,
                            uint32_t state) {
   ((WaylandDisplayPrivate *)data)
-      ->on_pointer_button(serial, time, button, state);
+      ->onPointerButton(serial, time, button, state);
 }
 
-void WaylandDisplayPrivate::on_pointer_button(uint32_t serial, uint32_t time,
+void WaylandDisplayPrivate::onPointerButton(uint32_t serial, uint32_t time,
                                               uint32_t button, uint32_t state) {
   if (!m_hover_surface) {
     return;
@@ -113,16 +108,9 @@ void WaylandDisplayPrivate::on_pointer_button(uint32_t serial, uint32_t time,
   if (!callback) {
     return;
   }
-  callback->on_pointer_button(serial, time, button, state, m_last_pointer_x,
+  callback->OnPointerButton(serial, time, button, state, m_last_pointer_x,
                               m_last_pointer_y);
 }
-
-static struct wl_pointer_listener pointer_listener = {
-    .enter = &pointer_enter,
-    .leave = &pointer_leave,
-    .motion = &pointer_motion,
-    .button = &pointer_button,
-};
 
 // 输出信息回调
 static void handle_xdg_output_logical_position(
@@ -209,13 +197,6 @@ static void handle_wl_output_scale(void *data, struct wl_output *wl_output,
   ((WaylandDisplayPrivate *)data)->on_wl_output_scale(wl_output, factor);
 }
 
-static const struct wl_output_listener wl_output_listener_ = {
-    .geometry = handle_wl_output_geometry,
-    .mode = handle_wl_output_mode,
-    .done = handle_wl_output_done,
-    // 注意：scale回调必须在wl_output版本≥3时才能收到。
-    .scale = handle_wl_output_scale,
-};
 
 bool WaylandDisplayPrivate::Init() {
   if (m_display) {
@@ -223,13 +204,17 @@ bool WaylandDisplayPrivate::Init() {
   }
 
   // 连接到 Wayland 服务器
-  m_display = wl_display_connect(NULL);
+  m_display = wl_display_connect(nullptr);
   if (!m_display) {
-    printf("wl_display_connect failed.\n");
-    assert(false && "无法连接到 Wayland 显示服务器");
+    UI_LOG_ERROR("[wayland] display connect failed.");
+    assert(false);
     return false;
   }
 
+  static const struct wl_registry_listener registry_listener = {
+      .global = OnRegistryHandleGlobal,
+      .global_remove = nullptr,
+  };
   struct wl_registry *registry = wl_display_get_registry(m_display);
   wl_registry_add_listener(registry, &registry_listener, this);
 
@@ -254,50 +239,102 @@ bool WaylandDisplayPrivate::Init() {
     return false;
   }
 
+  initDefaultAppId();
+
   return true;
 }
 
 void WaylandDisplayPrivate::Destroy() {
+  // TODO: 
+  
   // wl_display_disconnect(m_display);
+  // m_display = nullptr;
+  // UI_LOG_INFO("wl_display_disconnect");
 }
 
-void WaylandDisplayPrivate::on_registry_handle_global(
+void WaylandDisplayPrivate::initDefaultAppId() {
+  // 将app id默认设置为程序名称
+  char path[PATH_MAX] = {0};
+  ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+  if (len != -1) {
+    path[len] = '\0';
+    m_default_appid = basename(path);
+  } else {
+    // todo: random
+    m_default_appid = "ui";
+  }
+}
+const char* WaylandDisplayPrivate::GetDefaultAppId() {
+  return m_default_appid.c_str();
+}
+
+//
+// z开头的接口，表示不稳定版本，尽量不使用。
+//
+void WaylandDisplayPrivate::onRegistryHandleGlobal(
     struct wl_registry *registry, uint32_t id, const char *interface,
     uint32_t version) {
+  UI_LOG_DEBUG("[wayland] registry global interface: %s", interface);
 
   bool bind_xdg_output = false;
 
-  if (strcmp(interface, "wl_compositor") == 0) {
+  if (strcmp(interface, wl_compositor_interface.name) == 0) {
     m_wl_compositor = (struct wl_compositor *)wl_registry_bind(
         registry, id, &wl_compositor_interface, 4);
-  } else if (strcmp(interface, "xdg_wm_base") == 0) {
+  } 
+  else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
     m_xdg_wm_base = (struct xdg_wm_base *)wl_registry_bind(
         registry, id, &xdg_wm_base_interface, 1);
-    xdg_wm_base_add_listener(m_xdg_wm_base, &xdg_wm_base_listener, NULL);
-  } else if (strcmp(interface, "wl_shm") == 0) {
+
+    static const struct xdg_wm_base_listener listener = {
+      .ping = OnXdgWmbasePing,
+    };
+    xdg_wm_base_add_listener(m_xdg_wm_base, &listener, NULL);
+  }
+  else if (strcmp(interface, wl_shm_interface.name) == 0) {
     m_wl_shm =
         (struct wl_shm *)wl_registry_bind(registry, id, &wl_shm_interface, 1);
-  } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+  } 
+  else if (strcmp(interface, wl_seat_interface.name) == 0) {
     m_wl_seat =
         (struct wl_seat *)wl_registry_bind(registry, id, &wl_seat_interface, 1);
     m_wl_pointer = (struct wl_pointer *)wl_seat_get_pointer(m_wl_seat);
+
+    static struct wl_pointer_listener pointer_listener = {
+        .enter = &OnPointerEnter,
+        .leave = &OnPointerLeave,
+        .motion = &OnPointerMotion,
+        .button = &OnPointerButton,
+    };
     wl_pointer_add_listener(m_wl_pointer, &pointer_listener, this);
-  } else if (strcmp(interface, "zxdg_output_manager_v1") == 0) {
+  } 
+  else if (strcmp(interface, zxdg_output_manager_v1_interface.name) == 0) {
     bind_xdg_output = true;
     m_zxdg_output_manager_v1 =
         (struct zxdg_output_manager_v1 *)wl_registry_bind(
             registry, id, &zxdg_output_manager_v1_interface, 1);
-  } else if (strcmp(interface, "wl_output") == 0) {
+  } 
+  else if (strcmp(interface, wl_output_interface.name) == 0) {
     bind_xdg_output = true;
 
     // 关键：版本必须 ≥ 3，否则收不到scale回调。
     m_wl_output = (struct wl_output *)wl_registry_bind(registry, id,
                                                        &wl_output_interface, 3);
+    
+    static const struct wl_output_listener wl_output_listener_ = {
+        .geometry = handle_wl_output_geometry,
+        .mode = handle_wl_output_mode,
+        .done = handle_wl_output_done,
+        // 注意：scale回调必须在wl_output版本≥3时才能收到。
+        .scale = handle_wl_output_scale,
+    };
     wl_output_add_listener(m_wl_output, &wl_output_listener_, this);
-  } else if (strcmp(interface, "xdg_activation_v1") == 0) {
+  } 
+  else if (strcmp(interface, xdg_activation_v1_interface.name) == 0) {
     m_xdg_activation_v1 = (struct xdg_activation_v1 *)wl_registry_bind(
         registry, id, &xdg_activation_v1_interface, 1);
-  } else if (strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
+  } 
+  else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0) {
     m_zxdg_decoration_manager_v1 =
         (struct zxdg_decoration_manager_v1 *)wl_registry_bind(
             registry, id, &zxdg_decoration_manager_v1_interface, 1);
@@ -393,6 +430,10 @@ void WaylandDisplay::GetOutputSize(int *width, int *height) const {
 }
 float WaylandDisplay::GetOutputScale() const {
   return WaylandDisplayPrivate::getInstance().m_scale;
+}
+
+const char* WaylandDisplay::GetDefaultAppId() {
+  return WaylandDisplayPrivate::getInstance().GetDefaultAppId();
 }
 
 } // namespace ui

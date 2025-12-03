@@ -8,6 +8,13 @@ void on_window_destroy(ui::IApplication *uiapp, ui::Event *) {
 
 bool on_test_timer(ui::IWindow *window,  ui::TimerID timer_id) {
   // invalidate test
+
+  // wayland show/hide test:
+  // if (window->IsVisible()) {
+  //   window->Hide();
+  // } else {
+  //   window->Show();
+  // }
   return true;
 }
 
@@ -45,7 +52,7 @@ int main() {
   bind_controls(window.get());
 
   ui::TimerID timer_id =
-      app->SetTimer(2000, ui::Slot(&on_test_timer, window.get()));
+      app->SetTimer(3000, ui::Slot(&on_test_timer, window.get()));
   app->Run();
   app->KillTimer(timer_id);
 

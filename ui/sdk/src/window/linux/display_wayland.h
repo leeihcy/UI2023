@@ -7,18 +7,21 @@
 #include "xdg-decoration-client-protocol.h"
 #include <map>
 #include <memory>
+#include <string>
 #include <wayland-client.h>
 
 namespace ui {
 
+// 鼠标消息回调。
 struct ISurfacePointerCallback {
-  virtual void on_pointer_enter(wl_fixed_t surface_x, wl_fixed_t surface_y) {}
-  virtual void on_pointer_leave() {}
-  virtual void on_pointer_motion(uint32_t time, wl_fixed_t x, wl_fixed_t y) {}
-  virtual void on_pointer_button(uint32_t serial, uint32_t time, uint32_t button, uint32_t state,
+  virtual void OnPointerEnter(wl_fixed_t surface_x, wl_fixed_t surface_y) {}
+  virtual void OnPointerLeave() {}
+  virtual void OnPointerMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y) {}
+  virtual void OnPointerButton(uint32_t serial, uint32_t time, uint32_t button, uint32_t state,
                                  wl_fixed_t x, wl_fixed_t y) {}
 };
 
+// 外部使用 WaylandDisplay 类，避免调用者维护display生命周期。
 class WaylandDisplayPrivate {
 public:
   static WaylandDisplayPrivate &getInstance();
@@ -30,18 +33,24 @@ public:
   void UnbindSurface(struct wl_surface *);
   ISurfacePointerCallback *MapSurface(struct wl_surface *);
 
+  const char* GetDefaultAppId();
+  
 public:
-  void on_registry_handle_global(struct wl_registry *registry, uint32_t id,
+  void onRegistryHandleGlobal(struct wl_registry *registry, uint32_t id,
                                  const char *interface, uint32_t version);
-  void on_pointer_enter(struct wl_surface *surface, wl_fixed_t surface_x,
+  void onPointerEnter(struct wl_surface *surface, wl_fixed_t surface_x,
                         wl_fixed_t surface_y);
-  void on_pointer_leave(struct wl_surface *surface);
-  void on_pointer_motion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
-  void on_pointer_button(uint32_t serial, uint32_t time, uint32_t button, uint32_t state);
+  void onPointerLeave(struct wl_surface *surface);
+  void onPointerMotion(uint32_t time, wl_fixed_t x, wl_fixed_t y);
+  void onPointerButton(uint32_t serial, uint32_t time, uint32_t button, uint32_t state);
 
   void on_wl_output_mode(struct wl_output *wl_output, uint32_t flags, int32_t width,
                          int32_t height, int32_t refresh);
   void on_wl_output_scale(struct wl_output *wl_output, int32_t factor);
+
+
+private:
+  void initDefaultAppId();
 
 protected:
   struct wl_display *m_display = nullptr;
@@ -62,8 +71,11 @@ private:
   std::map<wl_surface *, ISurfacePointerCallback *> m_map_window;
   // 记录当前鼠标下的窗口。因为鼠标移动和点击时没有返回窗口参数。
   struct wl_surface *m_hover_surface = nullptr;
-  int m_last_pointer_x = 0;
-  int m_last_pointer_y = 0;
+  wl_fixed_t m_last_pointer_x = 0;
+  wl_fixed_t m_last_pointer_y = 0;
+
+  // 默认将程序名作为app id，用于操作系统taskbar分组。
+  std::string m_default_appid;
 
 public:
   int m_output_width = 0;
@@ -91,6 +103,8 @@ public:
 
   void GetOutputSize(int* width, int* height) const;
   float GetOutputScale() const;
+
+  const char* GetDefaultAppId();
 };
 
 } // namespace ui

@@ -15,6 +15,10 @@ namespace vulkan {
 // 每套InFlight Frame都需要一套独立的资源，如CommandBuffer、UniformBuffer、DescriptorSets。
 #define MAX_FRAMES_IN_FLIGHT 2
 
+// swapchain一般设置为3张：
+// 在启用垂直同步时，一张用于显示，一张用于等待显示，第三张用于渲染。从而避免GPU阻塞CPU的情况。
+
+
 // 绘制一帧，相关的数据。
 class InFlightFrame {
 public:
