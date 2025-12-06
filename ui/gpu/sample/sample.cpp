@@ -77,6 +77,7 @@ public:
     m_gpu_composition->BeginCommit(&context);
 
     // 绘制每一个layer
+    if (1)
     {
         context.SetOffset(200, 200);
         int rotate_center_x = (m_root_size.cx)/2  + context.m_xOffset;
@@ -92,6 +93,8 @@ public:
         matrix.Translate(-rotate_center_x, -rotate_center_y, 0);
         
         m_root_layer->Compositor(&context, (float*)&matrix);
+    } else {
+        m_root_layer->Compositor(&context, nullptr);
     }
 
     m_gpu_composition->EndCommit(&context);

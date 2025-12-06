@@ -46,8 +46,7 @@ source_set("d3d12") {
 
 copy("copy_shader") {
   sources = [
-    "shader/vert.hlsl",
-    "shader/frag.hlsl"
+    "shader/d3d12.hlsl",
   ]
   outputs = [
     "$root_build_dir/bin/shaders/{{source_file_part}}"

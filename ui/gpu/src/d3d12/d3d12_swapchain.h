@@ -3,6 +3,7 @@
 
 #include "src/d3d12/inc.h"
 #include "src/d3d12/d3d12_bridge.h"
+#include "src/d3d12/d3dx12.h"
 
 namespace d3d12 {
 
@@ -27,6 +28,7 @@ public:
 
 class SwapChainFrame {
 public:
+  bool Create(IBridge& bridge, int width, int height, int index);
   bool Destroy();
 
   void IncFenceValue() { m_fence_values++; }
@@ -34,7 +36,10 @@ public:
 
 public:
   CComPtr<ID3D12Resource> m_render_target;
+  CD3DX12_CPU_DESCRIPTOR_HANDLE m_heap_ptr;
   UINT64 m_fence_values = 1;
+
+  CComPtr<ID3D12Resource> m_frame_buffer;
 };
 
 class SwapChain {
@@ -60,6 +65,8 @@ public:
   void SetCurrentRenderTarget(ID3D12GraphicsCommandList* command_list);
   void EndDraw();
   void WaitForPreviousFrame(ID3D12CommandQueue* command_queue);
+  
+  bool createShaderResourceViewHeap();
 
 private:
   bool createSwapChain(HWND hwnd, ID3D12CommandQueue* command_queue);
@@ -72,11 +79,19 @@ private:
 
 public:
   IBridge& m_bridge;
+  int m_width = 0;
+  int m_height = 0;
   bool m_need_recreate = true;
 
   CComPtr<IDXGISwapChain3>  m_swapchain;
+
   CComPtr<ID3D12DescriptorHeap> m_rtv_heap;
-  UINT m_rtv_descriptor_size = 0;
+  // 记录heap下一个可使用的内存位置
+  CD3DX12_CPU_DESCRIPTOR_HANDLE m_rtv_heap_handle_tail;
+
+  CComPtr<ID3D12DescriptorHeap> m_srv_heap;  // Shader Resource View
+  // 记录heap下一个可使用的内存位置
+  CD3DX12_CPU_DESCRIPTOR_HANDLE m_srv_heap_handle_tail;
 
   SwapChainFrame m_swap_frames[SWAPCHAIN_FRAMES];
   UINT m_swap_frame_index = 0;

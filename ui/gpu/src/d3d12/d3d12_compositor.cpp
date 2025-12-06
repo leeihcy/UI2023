@@ -1,13 +1,16 @@
 #include "src/d3d12/d3d12_compositor.h"
 #include "src/d3d12/d3d12_app.h"
 #include "src/d3d12/d3d12_layer.h"
+#include "src/d3d12/shader/shader_types.h"
 
 namespace ui {
 static ID3D12Device *GetDevice() {
   return ui::D3D12Application::GetInstance().m_device;
 }
 
-D3D12Compositor::D3D12Compositor() : m_swapchain(*static_cast<d3d12::IBridge*>(this)) {
+D3D12Compositor::D3D12Compositor() : 
+  m_pipeline(*static_cast<d3d12::IBridge*>(this)),
+  m_swapchain(*static_cast<d3d12::IBridge*>(this)) {
 
 }
 D3D12Compositor::~D3D12Compositor() {}
@@ -30,6 +33,10 @@ bool D3D12Compositor::Initialize(IGpuCompositorWindow *window) {
   createCommandQueue();
   m_pipeline.Create();
 
+  // TODO：不依赖于swapchain images.
+  // 但是否需要放在inflight frames中呢？
+  // layer创建texture需要这个对象，所以还得提前创建。
+  m_swapchain.createShaderResourceViewHeap();
   return true;
 }
 
@@ -69,6 +76,9 @@ bool D3D12Compositor::BeginCommit(GpuLayerCommitContext *) {
   command_list->RSSetViewports(1, &m_viewport);
   command_list->RSSetScissorRects(1, &m_scissor_rect);
 
+  command_list->SetGraphicsRootConstantBufferView(SHADER_REGISTER_INDEX_CONSTAT_BUFFER, 
+    swapchain_frame.m_frame_buffer->GetGPUVirtualAddress());
+
   // Indicate that the back buffer will be used as a render target.
   auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
       swapchain_frame.m_render_target, D3D12_RESOURCE_STATE_PRESENT,
@@ -76,6 +86,20 @@ bool D3D12Compositor::BeginCommit(GpuLayerCommitContext *) {
   command_list->ResourceBarrier(1, &barrier);
 
   m_swapchain.SetCurrentRenderTarget(command_list);
+
+    // 设置描述符堆
+  ID3D12DescriptorHeap *heaps[] = {m_swapchain.m_srv_heap, m_pipeline.m_samplerHeap};
+  command_list->SetDescriptorHeaps(2, heaps);
+
+  // 绑定 SRV 描述符表
+  CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(
+      m_swapchain.m_srv_heap->GetGPUDescriptorHandleForHeapStart());
+  command_list->SetGraphicsRootDescriptorTable(1, srvGpuHandle); // rootSignature 1
+
+  // 绑定采样器描述符表
+  CD3DX12_GPU_DESCRIPTOR_HANDLE samplerGpuHandle(
+      m_pipeline.m_samplerHeap->GetGPUDescriptorHandleForHeapStart());
+  command_list->SetGraphicsRootDescriptorTable(2, samplerGpuHandle);  // rootSignature 2
 
   command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
   return true;
@@ -110,6 +134,10 @@ ID3D12CommandQueue* D3D12Compositor::GetCommandQueue() {
 ID3D12GraphicsCommandList* D3D12Compositor::GetCurrentCommandList() {
   return m_swapchain.GetCurrentInflightFrame().m_command_list;
 }
+d3d12::InFlightFrame& D3D12Compositor::GetCurrentInflightFrame() {
+  return m_swapchain.GetCurrentInflightFrame();
+}
+d3d12::SwapChain& D3D12Compositor::GetSwapChain() { return m_swapchain; }
 
 void D3D12Compositor::DeviceWaitIdle() {
   ID3D12Fence *pFence = nullptr;

@@ -23,9 +23,10 @@ struct LayerData {
 };
 
 // 每帧更新一次的数据。
+#define SHADER_REGISTER_INDEX_CONSTAT_BUFFER 0
 struct FrameData {
-  float4x4 view;
-  float4x4 ortho;
+  DirectX::XMMATRIX view;
+  DirectX::XMMATRIX ortho;
 };
 
 } // namespace d3d12

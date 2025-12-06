@@ -27,7 +27,9 @@ protected:
   void DeviceWaitIdle() override;
   ID3D12CommandQueue* GetCommandQueue() override;
   ID3D12GraphicsCommandList* GetCurrentCommandList() override;
-  
+  d3d12::InFlightFrame& GetCurrentInflightFrame() override;
+  d3d12::SwapChain& GetSwapChain() override;
+
 private:
   bool createCommandQueue();
 
@@ -40,6 +42,8 @@ private:
 
   CD3DX12_VIEWPORT m_viewport;
   CD3DX12_RECT m_scissor_rect;
+
+
 };
 
 } // namespace ui

@@ -1,6 +1,7 @@
 #include "src/d3d12/d3d12_swapchain.h"
 #include "src/d3d12/d3d12_app.h"
 #include "src/d3d12/d3d12_objects.h"
+#include "src/d3d12/shader/shader_types.h"
 #include "src/util.h"
 
 namespace d3d12 {
@@ -10,7 +11,7 @@ static ID3D12Device* GetDevice() {
 }
 
 SwapChain::SwapChain(IBridge& bridge) : m_bridge(bridge) {
-  
+  memset(&m_srv_heap_handle_tail, 0, sizeof(m_srv_heap_handle_tail));
 }
 SwapChain::~SwapChain() {
   DestroyImages();
@@ -35,6 +36,9 @@ void SwapChain::Resize(int width, int height) {
   if (!m_swapchain) {
     return;
   }
+  m_width = width;
+  m_height = height;
+
   // 释放旧后台缓冲区资源
   destroyFrameResources();
 
@@ -79,7 +83,7 @@ bool SwapChain::Create(HWND hwnd, ID3D12CommandQueue *command_queue,
   if (!createFence()) {
     return false;
   }
-
+  
   m_need_recreate = false;
   return true;
 }
@@ -94,11 +98,13 @@ bool SwapChain::createSwapChain(HWND hwnd, ID3D12CommandQueue* command_queue) {
 
   RECT rc;
   ::GetClientRect(hwnd, &rc);
+  m_width = rc.right - rc.left;
+  m_height = rc.bottom - rc.top;
 
   DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     swapChainDesc.BufferCount = SWAPCHAIN_FRAMES;
-    swapChainDesc.BufferDesc.Width =  (UINT)(rc.right - rc.left);
-    swapChainDesc.BufferDesc.Height = (UINT)(rc.bottom - rc.top);
+    swapChainDesc.BufferDesc.Width =  (UINT)m_width;
+    swapChainDesc.BufferDesc.Height = (UINT)m_height;
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -132,27 +138,28 @@ bool SwapChain::createDescriptorHeap() {
   rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
   
   GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtv_heap));
-  m_rtv_descriptor_size = GetDevice()->GetDescriptorHandleIncrementSize(
-      D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
+  m_rtv_heap_handle_tail = m_rtv_heap->GetCPUDescriptorHandleForHeapStart();
   return true;
 }
 
 bool SwapChain::createFrameResources() {
   CComPtr<ID3D12Device> device = GetDevice();
-  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtv_heap->GetCPUDescriptorHandleForHeapStart());
+
+  UINT rtv_descriptor_size =
+      device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
   // Create a RTV for each frame.
   for (UINT n = 0; n < SWAPCHAIN_FRAMES; n++) {
-    m_swapchain->GetBuffer(n, IID_PPV_ARGS(&m_swap_frames[n].m_render_target));
-    device->CreateRenderTargetView(m_swap_frames[n].m_render_target, nullptr,
-                                     rtvHandle);
-    rtvHandle.Offset(1, m_rtv_descriptor_size);
+    SwapChainFrame& frame = m_swap_frames[n];
 
-    // 为资源命名便于调试
-    wchar_t name[25];
-    swprintf_s(name, L"Render Target %d", n);
-    m_swap_frames[n].m_render_target->SetName(name);
+    m_swapchain->GetBuffer(n, IID_PPV_ARGS(&frame.m_render_target));
+    frame.m_heap_ptr = m_rtv_heap_handle_tail;
+    device->CreateRenderTargetView(frame.m_render_target, nullptr,
+                                   frame.m_heap_ptr);
+ 
+    m_rtv_heap_handle_tail.Offset(1, rtv_descriptor_size);
+
+    m_swap_frames[n].Create(m_bridge, m_width, m_height, n);
   }
 
   return true;
@@ -201,6 +208,22 @@ bool InFlightFrame::Create(ID3D12PipelineState* pipeline_state) {
   return true;
 }
 
+bool SwapChain::createShaderResourceViewHeap() {
+  ID3D12Device* device = GetDevice();
+
+  // 创建描述符堆
+  D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+  srvHeapDesc.NumDescriptors = 1;
+  srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+  srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+  srvHeapDesc.NodeMask = 0;
+
+  HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srv_heap));
+  m_srv_heap_handle_tail = m_srv_heap->GetCPUDescriptorHandleForHeapStart();
+
+  return SUCCEEDED(hr);
+}
+
 void SwapChain::IncCurrentInflightFrame() {
     m_inflight_frame_index = (m_inflight_frame_index + 1) % INFLIGHT_FRAMES;
 }
@@ -229,9 +252,7 @@ bool SwapChain::createFence() {
 }
 
 void SwapChain::SetCurrentRenderTarget(ID3D12GraphicsCommandList *command_list) {
-  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
-      m_rtv_heap->GetCPUDescriptorHandleForHeapStart(), m_swap_frame_index,
-      m_rtv_descriptor_size);
+  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(GetCurrentFrame().m_heap_ptr);
   command_list->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
   const float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};  // r g b [a]
@@ -260,6 +281,63 @@ void SwapChain::WaitForPreviousFrame(ID3D12CommandQueue *command_queue) {
     m_fence->SetEventOnCompletion(fence_value, m_fence_event);
     WaitForSingleObject(m_fence_event, INFINITE);
   }
+}
+
+bool SwapChainFrame::Create(IBridge& bridge, int width, int height, int index) {
+  if (m_frame_buffer) {
+    m_frame_buffer.Release();
+  }
+
+  // 在C++端填充矩阵后，必须转置（XMMatrixTranspose）后再传入，
+  // 因为HLSL默认期望列优先矩阵，
+  // 而DirectXMath库的矩阵默认是行优先。
+  d3d12::FrameData constants;
+  constants.view = DirectX::XMMatrixIdentity();
+  
+  // XMMatrixOrthographicLH: 创建以原点为中心的正交投影
+  //   X轴：[-ViewWidth/2, ViewWidth/2]
+  //   Y轴：[-ViewHeight/2, ViewHeight/2]
+  //   Z轴：[NearZ, FarZ]
+  //
+  // XMMatrixOrthographicOffCenterLH: 分别指定左、右、上、下边界, 可以创建不以原点为中心的投影
+  //
+  // 投影矩阵的核心作用，就是将顶点从观察空间（View Space） 转换到裁剪空间（Clip Space）。
+  // 而裁剪空间经过透视除法后，就得到了归一化设备坐标（Normalized Device Coordinates, NDC）。
+  // NDC: 
+  // X轴: [-1.0, 1.0]
+  // Y轴: [-1.0, 1.0]
+  // Z轴: [0.0, 1.0]
+  //
+  // 即使顶点在NDC空间，最终在渲染目标（如屏幕）上的位置还需要经过视口变换。
+  // 通过 RSSetViewports 设置一个视口，它将NDC的 [-1, 1] 范围映射到你指定的屏幕矩形区域。
+  // 这是将NDC坐标与最终显示窗口连接起来的关键步骤。
+  //
+
+  // 2D坐标（0，0）映射为NDC的（-1.0，1.0），
+  // 2D坐标（w，h）映射为NDC的（1.0，-1.0）
+  constants.ortho = DirectX::XMMatrixOrthographicOffCenterLH(
+          0, (float)width, (float)height,0,  0.f, 2000.f);
+  constants.ortho = DirectX::XMMatrixTranspose(constants.ortho);
+  const UINT buffer_size = sizeof(constants);
+
+  // DEFAULT: GPU专用
+  CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+  auto desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+  GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
+                                       D3D12_RESOURCE_STATE_COMMON, nullptr,
+                                       IID_PPV_ARGS(&m_frame_buffer));
+
+  d3d12::UploadContext upload_context(bridge);
+  upload_context.UploadResource(
+      m_frame_buffer, &constants, buffer_size, D3D12_RESOURCE_STATE_COMMON,
+      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+  // 为资源命名便于调试
+  wchar_t name[25];
+  swprintf_s(name, L"Render Target %d", index);
+  m_render_target->SetName(name);
+
+  return true;
 }
 
 } // namespace ui

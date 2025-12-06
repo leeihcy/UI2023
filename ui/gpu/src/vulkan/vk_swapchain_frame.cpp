@@ -75,35 +75,12 @@ bool SwapChainFrame::CreateFrameBuffer(int width, int height,
 
 void SwapChainFrame::UpdateUniformBuffer(uint32_t currentImage,
                                    VkCommandBuffer command_buffer) {
-  // static auto startTime = std::chrono::high_resolution_clock::now();
   vulkan::SwapChain &swapchain = m_bridge.GetSwapChain();
 
-  // auto currentTime = std::chrono::high_resolution_clock::now();
-  // float time = std::chrono::duration<float, std::chrono::seconds::period>(
-  //                  currentTime - startTime)
-  //                  .count();
-
   FrameData ubo{};
-  // ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f),
-  //                         glm::vec3(0.0f, 0.0f, 1.0f));
   ubo.view = glm::mat4(1.0f);
-  // ubo.view =
-  //     glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-  //                 glm::vec3(0.0f, 0.0f, 1.0f));
-  // ubo.proj = glm::perspective(
-  //     glm::radians(45.0f),
-  //     swapchain.Extent2D().width / (float)swapchain.Extent2D().height,
-  //     0.1f, 10.0f);
-  // ubo.proj[1][1] *= -1;
-
-  // ubo.ortho = glm::mat4(1.0);
-  ubo.ortho =
-      glm::orthoLH<float>(0, (float)swapchain.Extent2D().width, 0,
+  ubo.ortho = glm::orthoLH<float>(0, (float)swapchain.Extent2D().width, 0,
                           (float)swapchain.Extent2D().height, -2000.f, 2000.f);
-  // ubo.orth = PrepareOrthographicProjectionMatrix(0,
-  // swapchain.Extent2D().width, swapchain.Extent2D().height, 0, -2000.f,
-  // 2000.f);
-
   void *data;
   vkMapMemory(m_bridge.GetVkDevice(),
               m_framedata_buffer.memory(), 0, sizeof(ubo), 0,

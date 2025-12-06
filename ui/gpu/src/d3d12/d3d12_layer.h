@@ -24,14 +24,16 @@ private:
   bool createVertexBuffer();
   void createTileDataBuffer();
   void createTextures();
-  
+  void createShaderResourceView();
+
 private:
   d3d12::IBridge& m_bridge;
   
-  CComPtr<ID3D12Resource> m_vertexBuffer;
-  D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-
+  CComPtr<ID3D12Resource> m_vertex_buffer;
   CComPtr<ID3D12Resource> m_tile_buffer;
+
+  // vertex buffer + tile buffer
+  D3D12_VERTEX_BUFFER_VIEW m_input_buffer_view[2];
 
   CComPtr<ID3D12Resource> m_texture;
   D3D12_RESOURCE_STATES m_texture_state = D3D12_RESOURCE_STATE_COMMON;

@@ -82,11 +82,11 @@ float3 operator / (const float3& a, const float3& b)
     return float3{ a.x / b.x, a.y / b.y, a.z / b.z };
 }
 
-inline
-float3 abs(const float3& a)
-{
-    return float3{ std::abs(a.x), std::abs(a.y), std::abs(a.z) };
-}
+// inline
+// float3 abs(const float3& a)
+// {
+//     return float3{ std::abs(a.x), std::abs(a.y), std::abs(a.z) };
+// }
 
 // inline
 // float min(float a, float b)

@@ -3,6 +3,7 @@
 #include "src/d3d12/d3d12_objects.h"
 #include "src/d3d12/d3dx12.h"
 #include "src/d3d12/inc.h"
+#include "src/d3d12/d3d12_swapchain.h"
 #include "src/d3d12/shader/shader_types.h"
 #include "src/util.h"
 
@@ -22,7 +23,7 @@ D3D12Layer::~D3D12Layer() {
 void D3D12Layer::Destroy() {
   m_bridge.DeviceWaitIdle(); // <<
 
-  m_vertexBuffer.Release();
+  m_vertex_buffer.Release();
   m_tile_buffer.Release();
   m_texture.Release();
 }
@@ -40,15 +41,17 @@ void D3D12Layer::Resize(int nWidth, int nHeight) {
 
   createTileDataBuffer();
   createTextures();
+  createShaderResourceView();
 }
 
 void D3D12Layer::Compositor(GpuLayerCommitContext *pContext,
                             float *pMatrixTransform) {
   ID3D12GraphicsCommandList *command_list = m_bridge.GetCurrentCommandList();
 
-  command_list->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+  command_list->IASetVertexBuffers(0, 2, m_input_buffer_view);
+
   command_list->DrawInstanced(4, // vertex count
-                              1, // instance count
+                              m_arrayTile.GetCount(), // instance count
                               0, 0);
 }
 TextureTile *D3D12Layer::newTile() { return nullptr; }
@@ -103,7 +106,6 @@ m_uploaded = true;
     m_texture_state = D3D12_RESOURCE_STATE_COPY_DEST;
   }
 
-  UINT64 sizeInBytes;
   D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {0};
   footprint.Footprint.Width = w;
   footprint.Footprint.Height = h;
@@ -141,42 +143,43 @@ m_uploaded = true;
 
 bool D3D12Layer::createVertexBuffer() {
 
-  float s = 0.5f;// (float)TILE_SIZE;
+  float s =(float)TILE_SIZE;
 
   // Define the geometry for a triangle.
   d3d12::VertexData triangleVertices[] = {
       // position,  color (not used) , texture coord
       // -------------------------------------------
-      // {{0, 0}, {0.0f, 0.0f, 1.0f}, {0, 0}},
-      // {{s, 0}, {0.0f, 1.0f, 0.0f}, {1, 0}},
-      // {{0, s}, {1.0f, 0.0f, 0.0f}, {0, 1}},
-      // {{s, s}, {0.0f, 1.0f, 1.0f}, {1, 1}}
+      {{0, 0}, {0.0f, 0.0f, 0.0f}, {0, 0}},
+      {{s, 0}, {1.0f, 0.0f, 0.0f}, {1, 0}},
+      {{0, s}, {1.0f, 0.0f, 0.0f}, {0, 1}},
+      {{s, s}, {1.0f, 1.0f, 1.0f}, {1, 1}}
 
-      {{0.0f, 0.25f}, {0.0f, 0.0f, 1.0f}, {0, 0}},
-      {{0.25f, -0.25f}, {0.0f, 1.0f, 0.0f}, {1, 0}},
-      {{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}, {0, 1}},
-      {{0, -0.75f}, {1.0f, 0.0f, 0.0f}, {0, 1}},
+      // {{0.0f, 0.25f}, {0.0f, 0.0f, 1.0f}, {0, 0}},
+      // {{0.25f, -0.25f}, {0.0f, 1.0f, 0.0f}, {1, 0}},
+      // {{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}, {0, 1}},
+      // {{0, -0.75f}, {1.0f, 0.0f, 0.0f}, {0, 1}},
     };
 
-  const UINT vertexBufferSize = sizeof(triangleVertices);
+  const UINT buffer_size = sizeof(triangleVertices);
 
   // DEFAULT: GPU专用
   CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
-  auto desc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+  auto desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
   GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
                                        D3D12_RESOURCE_STATE_COMMON, nullptr,
-                                       IID_PPV_ARGS(&m_vertexBuffer));
+                                       IID_PPV_ARGS(&m_vertex_buffer));
 
   d3d12::UploadContext upload_context(m_bridge);
   upload_context.UploadResource(
-      m_vertexBuffer, triangleVertices, vertexBufferSize,
+      m_vertex_buffer, triangleVertices, buffer_size,
       D3D12_RESOURCE_STATE_COMMON,
       D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 
   // Initialize the vertex buffer view.
-  m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-  m_vertexBufferView.StrideInBytes = sizeof(d3d12::VertexData);
-  m_vertexBufferView.SizeInBytes = vertexBufferSize;
+  m_input_buffer_view[0].BufferLocation = m_vertex_buffer->GetGPUVirtualAddress();
+  m_input_buffer_view[0].StrideInBytes = sizeof(d3d12::VertexData);
+  m_input_buffer_view[0].SizeInBytes = buffer_size;
+
   return true;
 }
 
@@ -200,10 +203,25 @@ void D3D12Layer::createTileDataBuffer() {
     }
   }
 
-  // m_tiles_buffer = [m_bridge.GetMetalDevice()
-  //     newBufferWithBytes:tile_array.data()
-  //                 length:tile_array.size() * sizeof(metal2::TileData)
-  //                options:MTLResourceStorageModeShared];
+  const UINT buffer_size = (UINT)(tile_array.size() * sizeof(d3d12::TileData));
+
+  // DEFAULT: GPU专用
+  CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+  auto desc = CD3DX12_RESOURCE_DESC::Buffer(buffer_size);
+  GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc,
+                                       D3D12_RESOURCE_STATE_COMMON, nullptr,
+                                       IID_PPV_ARGS(&m_tile_buffer));
+
+  d3d12::UploadContext upload_context(m_bridge);
+  upload_context.UploadResource(
+      m_tile_buffer, tile_array.data(), buffer_size,
+      D3D12_RESOURCE_STATE_COMMON,
+      D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+
+  m_input_buffer_view[1].BufferLocation = m_tile_buffer->GetGPUVirtualAddress();
+  m_input_buffer_view[1].StrideInBytes = sizeof(d3d12::TileData);
+  m_input_buffer_view[1].SizeInBytes = buffer_size;
+
 }
 // 将所有tile texture做为数组进行创建，直接在shader中使用索引进行引用。
 void D3D12Layer::createTextures() {
@@ -241,6 +259,35 @@ void D3D12Layer::createTextures() {
 
   // 5. 设置调试名称（便于调试）
   m_texture->SetName(L"D3D12Layer-Texture");
+}
+
+void D3D12Layer::createShaderResourceView() {
+  d3d12::InFlightFrame& inflight_frame = m_bridge.GetCurrentInflightFrame();
+  d3d12::SwapChain& swapchain = m_bridge.GetSwapChain();
+  
+  // 获取描述符大小
+  UINT srvDescriptorSize = GetDevice()->GetDescriptorHandleIncrementSize(
+      D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+  // 创建 SRV 描述
+  D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+  srvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+  srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+  srvDesc.Texture2DArray.MostDetailedMip = 0;
+  srvDesc.Texture2DArray.MipLevels = 1;
+  srvDesc.Texture2DArray.FirstArraySlice = 0;
+  srvDesc.Texture2DArray.ArraySize = m_arrayTile.GetCount();
+  srvDesc.Texture2DArray.PlaneSlice = 0;
+  srvDesc.Texture2DArray.ResourceMinLODClamp = 0.0f;
+
+  // 创建 SRV
+  int srv_descriptor_size = GetDevice()->GetDescriptorHandleIncrementSize(
+      D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+  GetDevice()->CreateShaderResourceView(m_texture, &srvDesc, swapchain.m_srv_heap_handle_tail);
+  swapchain.m_srv_heap_handle_tail.Offset(srv_descriptor_size);
 }
 
 } // namespace ui
