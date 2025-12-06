@@ -76,7 +76,7 @@ bool D3D12Compositor::BeginCommit(GpuLayerCommitContext *) {
   command_list->RSSetViewports(1, &m_viewport);
   command_list->RSSetScissorRects(1, &m_scissor_rect);
 
-  command_list->SetGraphicsRootConstantBufferView(SHADER_REGISTER_INDEX_CONSTAT_BUFFER, 
+  command_list->SetGraphicsRootConstantBufferView(ROOT_PARAMETER_FRAMEDATA, 
     swapchain_frame.m_frame_buffer->GetGPUVirtualAddress());
 
   // Indicate that the back buffer will be used as a render target.
@@ -94,12 +94,12 @@ bool D3D12Compositor::BeginCommit(GpuLayerCommitContext *) {
   // 绑定 SRV 描述符表
   CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(
       m_swapchain.m_srv_heap->GetGPUDescriptorHandleForHeapStart());
-  command_list->SetGraphicsRootDescriptorTable(1, srvGpuHandle); // rootSignature 1
+  command_list->SetGraphicsRootDescriptorTable(ROOT_PARAMETER_TEXTURE, srvGpuHandle); 
 
   // 绑定采样器描述符表
   CD3DX12_GPU_DESCRIPTOR_HANDLE samplerGpuHandle(
       m_pipeline.m_samplerHeap->GetGPUDescriptorHandleForHeapStart());
-  command_list->SetGraphicsRootDescriptorTable(2, samplerGpuHandle);  // rootSignature 2
+  command_list->SetGraphicsRootDescriptorTable(ROOT_PARAMETER_SAMPLE, samplerGpuHandle);
 
   command_list->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
   return true;

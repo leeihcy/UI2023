@@ -3,6 +3,11 @@
 
 #include "HlslCompat.h"
 
+#define ROOT_PARAMETER_FRAMEDATA 0
+#define ROOT_PARAMETER_LAYERDATA 1
+#define ROOT_PARAMETER_TEXTURE 2
+#define ROOT_PARAMETER_SAMPLE 3
+
 namespace d3d12 {
 
 // 每个Tile的顶点
@@ -19,11 +24,10 @@ struct TileData {
 
 // 每个Layer更新一次的数据
 struct LayerData {
-  float4x4 model;
+  DirectX::XMMATRIX model;
 };
 
 // 每帧更新一次的数据。
-#define SHADER_REGISTER_INDEX_CONSTAT_BUFFER 0
 struct FrameData {
   DirectX::XMMATRIX view;
   DirectX::XMMATRIX ortho;

@@ -50,6 +50,28 @@ void D3D12Layer::Compositor(GpuLayerCommitContext *pContext,
 
   command_list->IASetVertexBuffers(0, 2, m_input_buffer_view);
 
+  // 更新模型参数LayerData，layer在世界坐标转换矩阵。
+  DirectX::XMMATRIX transfrom;
+  if (pMatrixTransform) {
+    transfrom = DirectX::XMMATRIX(pMatrixTransform);
+  } else {
+    transfrom = DirectX::XMMatrixIdentity();
+  }
+
+  DirectX::XMMATRIX translation = DirectX::XMMatrixTranslation(
+      (float)pContext->m_xOffset, (float)pContext->m_yOffset, 0);
+
+  d3d12::LayerData layer_data;
+  layer_data.model = DirectX::XMMatrixTranspose(
+    DirectX::XMMatrixMultiply(translation, transfrom));
+
+  command_list->SetGraphicsRoot32BitConstants(
+      ROOT_PARAMETER_LAYERDATA,                 // 根参数索引
+      16,                // 32位值数量 (4x4矩阵=16个float)
+      &layer_data.model, // 数据指针
+      0                  // 偏移（以32位值计）
+  );
+
   command_list->DrawInstanced(4, // vertex count
                               m_arrayTile.GetCount(), // instance count
                               0, 0);

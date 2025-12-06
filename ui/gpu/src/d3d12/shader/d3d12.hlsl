@@ -22,6 +22,11 @@ struct VSInput
     uint instanceId : SV_InstanceID;  
 };
 
+cbuffer LayerData : register(b1)
+{
+    float4x4 model;
+};
+
 cbuffer FrameData : register(b0)
 {
     float4x4 view;
@@ -52,7 +57,7 @@ PSInput VSMain(VSInput input)
     PSInput result;
     float4 pos = float4(input.position + input.offset, 0, 1);
 
-    result.position = mul(pos, mul(view, ortho));
+    result.position = mul(pos, mul(model, mul(view, ortho)));
     result.color = float4(input.color, 1.0);
     result.texcoord = input.texcoord;
     result.instanceId = input.instanceId;

@@ -85,13 +85,16 @@ void D3D12Application::Shutdown() {
 
 #if defined(_DEBUG)
   ID3D12DebugDevice* debugDevice = nullptr;
-  if (SUCCEEDED(m_device->QueryInterface(&debugDevice))) {
-      debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+  m_device->QueryInterface(&debugDevice);
+  m_device.Release();
+
+  if (debugDevice) {
+      debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL);
       debugDevice->Release();
   }
-#endif
-
+#else
   m_device.Release();
+#endif
 }
 
 

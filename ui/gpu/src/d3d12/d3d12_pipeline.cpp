@@ -35,13 +35,19 @@ bool Pipeline::Create() {
 
 // RootSignature 和 VkPipelineLayout 对应。
 bool Pipeline::createRootSignature(ID3D12Device *device) {
-  CD3DX12_ROOT_PARAMETER parameters[3];
+  CD3DX12_ROOT_PARAMETER parameters[4];
 
   // 将索引为0的根参数，定义为绑定到寄存器 b0 的常量缓冲区视图 (CBV)
   // 第一个参数0：绑定到 b0 寄存器（b 表示 Constant Buffer）
   // 第二个参数0：空间索引为 space0
   // 第三个参数表示只对顶点着色器可见
-  parameters[0].InitAsConstantBufferView(SHADER_REGISTER_INDEX_CONSTAT_BUFFER, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+  parameters[ROOT_PARAMETER_FRAMEDATA].InitAsConstantBufferView(ROOT_PARAMETER_FRAMEDATA, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
+  // 使用根常量，最多只能传递64Byte内容。
+  // LayerData
+  CD3DX12_ROOT_CONSTANTS rc;
+  rc.Num32BitValues = 16; // 4x4 矩阵 = 16 个 float
+  parameters[ROOT_PARAMETER_LAYERDATA].InitAsConstants(16, ROOT_PARAMETER_LAYERDATA);
 
   // 纹理数组（SRV）
   CD3DX12_DESCRIPTOR_RANGE texRange;
@@ -49,7 +55,7 @@ bool Pipeline::createRootSignature(ID3D12Device *device) {
                 1,                                 // 数量：1个纹理
                 0,                                 // 基础寄存器：t0
                 0);                                // 空间：space0
-  parameters[1].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
+  parameters[ROOT_PARAMETER_TEXTURE].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
   // 采样器
   CD3DX12_DESCRIPTOR_RANGE samplerRange;
@@ -57,7 +63,7 @@ bool Pipeline::createRootSignature(ID3D12Device *device) {
                     1,                                     // 数量：1个采样器
                     0,                                     // 基础寄存器：s0
                     0);                                    // 空间：space0
-  parameters[2].InitAsDescriptorTable(1, &samplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
+  parameters[ROOT_PARAMETER_SAMPLE].InitAsDescriptorTable(1, &samplerRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
   CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
   rootSignatureDesc.Init(
@@ -66,8 +72,14 @@ bool Pipeline::createRootSignature(ID3D12Device *device) {
 
   CComPtr<ID3DBlob> signature;
   CComPtr<ID3DBlob> error;
-  D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+  HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1,
                               &signature, &error);
+  if (FAILED(hr)) {
+    if (error) {
+      ui::Log((char *)error->GetBufferPointer());
+    }
+    return false;
+  }
   device->CreateRootSignature(0, signature->GetBufferPointer(),
                               signature->GetBufferSize(),
                               IID_PPV_ARGS(&m_root_signature));
@@ -135,7 +147,7 @@ bool Pipeline::createPipelineState(ID3D12Device *device) {
                 pixelShader->GetBufferSize()};
   
   psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-  // psoDesc.RasterizerState.CullMode =D3D12_CULL_MODE_NONE;
+  psoDesc.RasterizerState.CullMode =D3D12_CULL_MODE_NONE;
 
   psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
   psoDesc.DepthStencilState.DepthEnable = FALSE;
