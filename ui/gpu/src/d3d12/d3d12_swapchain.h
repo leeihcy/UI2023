@@ -4,6 +4,7 @@
 #include "src/d3d12/inc.h"
 #include "src/d3d12/d3d12_bridge.h"
 #include "src/d3d12/d3dx12.h"
+#include "src/d3d12/d3d12_objects.h"
 
 namespace d3d12 {
 
@@ -36,7 +37,8 @@ public:
 
 public:
   CComPtr<ID3D12Resource> m_render_target;
-  CD3DX12_CPU_DESCRIPTOR_HANDLE m_heap_ptr;
+  UINT m_descriptor_heap_index = -1;
+
   UINT64 m_fence_values = 1;
 
   CComPtr<ID3D12Resource> m_frame_buffer;
@@ -85,13 +87,11 @@ public:
 
   CComPtr<IDXGISwapChain3>  m_swapchain;
 
-  CComPtr<ID3D12DescriptorHeap> m_rtv_heap;
-  // 记录heap下一个可使用的内存位置
-  CD3DX12_CPU_DESCRIPTOR_HANDLE m_rtv_heap_handle_tail;
+  // Render Target View
+  DescriptorHeapStack m_rtv_heap;
 
-  CComPtr<ID3D12DescriptorHeap> m_srv_heap;  // Shader Resource View
-  // 记录heap下一个可使用的内存位置
-  CD3DX12_CPU_DESCRIPTOR_HANDLE m_srv_heap_handle_tail;
+  // Shader Resource View
+  DescriptorHeapStack m_srv_heap;
 
   SwapChainFrame m_swap_frames[SWAPCHAIN_FRAMES];
   UINT m_swap_frame_index = 0;

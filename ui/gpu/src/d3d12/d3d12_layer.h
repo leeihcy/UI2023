@@ -37,6 +37,8 @@ private:
 
   CComPtr<ID3D12Resource> m_texture;
   D3D12_RESOURCE_STATES m_texture_state = D3D12_RESOURCE_STATE_COMMON;
+  UINT m_descriptor_handle_index = -1;
+
   bool m_uploaded = false;
 };
 

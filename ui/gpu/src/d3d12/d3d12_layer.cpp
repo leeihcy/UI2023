@@ -63,14 +63,22 @@ void D3D12Layer::Compositor(GpuLayerCommitContext *pContext,
 
   d3d12::LayerData layer_data;
   layer_data.model = DirectX::XMMatrixTranspose(
-    DirectX::XMMatrixMultiply(translation, transfrom));
+      DirectX::XMMatrixMultiply(translation, transfrom));
 
   command_list->SetGraphicsRoot32BitConstants(
-      ROOT_PARAMETER_LAYERDATA,                 // 根参数索引
-      16,                // 32位值数量 (4x4矩阵=16个float)
-      &layer_data.model, // 数据指针
-      0                  // 偏移（以32位值计）
+      ROOT_PARAMETER_LAYERDATA, // 根参数索引
+      16,                       // 32位值数量 (4x4矩阵=16个float)
+      &layer_data.model,        // 数据指针
+      0                         // 偏移（以32位值计）
   );
+
+  // 切换绑定的纹理资源
+  d3d12::SwapChain &swapchain = m_bridge.GetSwapChain();
+
+  CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(
+      swapchain.m_srv_heap.GetGpuHandle(m_descriptor_handle_index));
+  command_list->SetGraphicsRootDescriptorTable(ROOT_PARAMETER_TEXTURE,
+                                               srvGpuHandle);
 
   command_list->DrawInstanced(4, // vertex count
                               m_arrayTile.GetCount(), // instance count
@@ -82,12 +90,12 @@ void D3D12Layer::UploadTileBitmap(int row, int col, ui::Rect &dirty_of_tile,
                                   ui::Rect &dirty_of_layer,
                                   ui::GpuUploadBitmap &bitmap) {
 
-m_uploaded = true;
+  m_uploaded = true;
   if (!m_texture) {
     assert(false);
     return;
   }
-  
+
   constexpr int px_size = 4;
   int w = dirty_of_tile.Width();
   int h = dirty_of_tile.Height();
@@ -95,10 +103,11 @@ m_uploaded = true;
 
   d3d12::UploadContext upload_context(m_bridge);
   upload_context.Create();
-  CComPtr<ID3D12Resource> uploadBuffer = upload_context.CreateUploadBuffer(buffer_size);
+  CComPtr<ID3D12Resource> uploadBuffer =
+      upload_context.CreateUploadBuffer(buffer_size);
 
   char *dest_data = nullptr;
-  uploadBuffer->Map(0, nullptr, (void**)&dest_data);
+  uploadBuffer->Map(0, nullptr, (void **)&dest_data);
 
   unsigned char *source_data = bitmap.bits + dirty_of_layer.top * bitmap.pitch;
   source_data += dirty_of_layer.left * px_size;
@@ -113,7 +122,6 @@ m_uploaded = true;
 
   int tile_index = row * m_arrayTile.GetCol() + col;
 
-  
   D3D12_RESOURCE_BARRIER barrier_desc;
   ZeroMemory(&barrier_desc, sizeof(barrier_desc));
   barrier_desc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -132,13 +140,13 @@ m_uploaded = true;
   footprint.Footprint.Width = w;
   footprint.Footprint.Height = h;
   footprint.Footprint.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-  footprint.Footprint.RowPitch = 4*w;
+  footprint.Footprint.RowPitch = 4 * w;
   footprint.Footprint.Depth = 1;
   // D3D12_RESOURCE_DESC texture_desc = m_texture->GetDesc();
-  // GetDevice()->GetCopyableFootprints(&texture_desc, 0, 1, 0, &footprint, nullptr, nullptr, &sizeInBytes);
+  // GetDevice()->GetCopyableFootprints(&texture_desc, 0, 1, 0, &footprint,
+  // nullptr, nullptr, &sizeInBytes);
 
-
-  CD3DX12_TEXTURE_COPY_LOCATION dst(m_texture, tile_index);  // ⭐ 目标slice索引
+  CD3DX12_TEXTURE_COPY_LOCATION dst(m_texture, tile_index); // ⭐ 目标slice索引
   CD3DX12_TEXTURE_COPY_LOCATION src(uploadBuffer, footprint);
 
   D3D12_BOX sourceRegion;
@@ -147,12 +155,10 @@ m_uploaded = true;
   sourceRegion.front = 0;
   sourceRegion.right = w;
   sourceRegion.bottom = h;
-  sourceRegion.back = 1;    // 对于2D纹理，深度为1
+  sourceRegion.back = 1; // 对于2D纹理，深度为1
 
   upload_context.GetCommandList()->CopyTextureRegion(
-    &dst, 
-    dirty_of_tile.left, dirty_of_tile.top, 0, 
-    &src, &sourceRegion);
+      &dst, dirty_of_tile.left, dirty_of_tile.top, 0, &src, &sourceRegion);
 
   D3D12_RESOURCE_STATES old_state = m_texture_state;
   m_texture_state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
@@ -305,11 +311,9 @@ void D3D12Layer::createShaderResourceView() {
   srvDesc.Texture2DArray.ResourceMinLODClamp = 0.0f;
 
   // 创建 SRV
-  int srv_descriptor_size = GetDevice()->GetDescriptorHandleIncrementSize(
-      D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-  GetDevice()->CreateShaderResourceView(m_texture, &srvDesc, swapchain.m_srv_heap_handle_tail);
-  swapchain.m_srv_heap_handle_tail.Offset(srv_descriptor_size);
+  D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle;
+  swapchain.m_srv_heap.AllocateDescriptor(cpu_handle, m_descriptor_handle_index);
+  GetDevice()->CreateShaderResourceView(m_texture, &srvDesc, cpu_handle);
 }
 
 } // namespace ui

@@ -88,13 +88,9 @@ bool D3D12Compositor::BeginCommit(GpuLayerCommitContext *) {
   m_swapchain.SetCurrentRenderTarget(command_list);
 
     // 设置描述符堆
-  ID3D12DescriptorHeap *heaps[] = {m_swapchain.m_srv_heap, m_pipeline.m_samplerHeap};
+  ID3D12DescriptorHeap *heaps[] = {m_swapchain.m_srv_heap.GetHeap(), 
+    m_pipeline.m_samplerHeap};
   command_list->SetDescriptorHeaps(2, heaps);
-
-  // 绑定 SRV 描述符表
-  CD3DX12_GPU_DESCRIPTOR_HANDLE srvGpuHandle(
-      m_swapchain.m_srv_heap->GetGPUDescriptorHandleForHeapStart());
-  command_list->SetGraphicsRootDescriptorTable(ROOT_PARAMETER_TEXTURE, srvGpuHandle); 
 
   // 绑定采样器描述符表
   CD3DX12_GPU_DESCRIPTOR_HANDLE samplerGpuHandle(

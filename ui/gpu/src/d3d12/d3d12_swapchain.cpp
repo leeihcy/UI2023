@@ -10,9 +10,10 @@ static ID3D12Device* GetDevice() {
   return ui::D3D12Application::GetInstance().m_device;
 }
 
-SwapChain::SwapChain(IBridge& bridge) : m_bridge(bridge) {
-  memset(&m_srv_heap_handle_tail, 0, sizeof(m_srv_heap_handle_tail));
+SwapChain::SwapChain(IBridge& bridge) : m_bridge(bridge),
+  m_rtv_heap(*GetDevice()), m_srv_heap(*GetDevice()) {
 }
+
 SwapChain::~SwapChain() {
   DestroyImages();
   if (m_fence_event) {
@@ -132,13 +133,10 @@ bool SwapChain::createSwapChain(HWND hwnd, ID3D12CommandQueue* command_queue) {
 
 bool SwapChain::createDescriptorHeap() {
   // Describe and create a render target view (RTV) descriptor heap.
-  D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-  rtvHeapDesc.NumDescriptors = SWAPCHAIN_FRAMES;
-  rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-  rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-  
-  GetDevice()->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtv_heap));
-  m_rtv_heap_handle_tail = m_rtv_heap->GetCPUDescriptorHandleForHeapStart();
+  m_rtv_heap.Create(SWAPCHAIN_FRAMES, 
+    D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+    D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+    0);
   return true;
 }
 
@@ -153,12 +151,11 @@ bool SwapChain::createFrameResources() {
     SwapChainFrame& frame = m_swap_frames[n];
 
     m_swapchain->GetBuffer(n, IID_PPV_ARGS(&frame.m_render_target));
-    frame.m_heap_ptr = m_rtv_heap_handle_tail;
-    device->CreateRenderTargetView(frame.m_render_target, nullptr,
-                                   frame.m_heap_ptr);
- 
-    m_rtv_heap_handle_tail.Offset(1, rtv_descriptor_size);
+    
+    D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle;
+    m_rtv_heap.AllocateDescriptor(cpu_handle, frame.m_descriptor_heap_index);
 
+    device->CreateRenderTargetView(frame.m_render_target, nullptr, cpu_handle);
     m_swap_frames[n].Create(m_bridge, m_width, m_height, n);
   }
 
@@ -209,19 +206,12 @@ bool InFlightFrame::Create(ID3D12PipelineState* pipeline_state) {
 }
 
 bool SwapChain::createShaderResourceViewHeap() {
-  ID3D12Device* device = GetDevice();
+  // TODO:动态扩展
+  const int max_count = 100;
+  m_srv_heap.Create(max_count, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+     D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE, 0);
 
-  // 创建描述符堆
-  D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-  srvHeapDesc.NumDescriptors = 1;
-  srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-  srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-  srvHeapDesc.NodeMask = 0;
-
-  HRESULT hr = device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srv_heap));
-  m_srv_heap_handle_tail = m_srv_heap->GetCPUDescriptorHandleForHeapStart();
-
-  return SUCCEEDED(hr);
+  return true;
 }
 
 void SwapChain::IncCurrentInflightFrame() {
@@ -252,7 +242,8 @@ bool SwapChain::createFence() {
 }
 
 void SwapChain::SetCurrentRenderTarget(ID3D12GraphicsCommandList *command_list) {
-  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(GetCurrentFrame().m_heap_ptr);
+  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(
+      m_rtv_heap.GetCpuHandle(GetCurrentFrame().m_descriptor_heap_index));
   command_list->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
   const float clearColor[] = {0.0f, 0.0f, 0.0f, 0.0f};  // r g b [a]
