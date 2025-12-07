@@ -56,6 +56,12 @@ public:
     m_descriptorHeapCpuBase =
         m_pDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
   }
+  void Destroy() {
+    m_pDescriptorHeap.Release();
+    m_descriptorsAllocated = 0;
+    m_descriptorSize = 0;
+    m_descriptorHeapCpuBase.ptr = 0;
+  }
 
   ID3D12DescriptorHeap &GetDescriptorHeap() { return *m_pDescriptorHeap; }
 

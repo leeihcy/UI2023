@@ -77,6 +77,7 @@ private:
   bool createInfightFrames(ID3D12PipelineState* pipeline_state);
   bool createFence();
 
+  void destroyDescriptorHeap();
   void destroyFrameResources();
 
 public:

@@ -42,6 +42,12 @@ void SwapChain::Resize(int width, int height) {
 
   // 释放旧后台缓冲区资源
   destroyFrameResources();
+  destroyDescriptorHeap();
+
+  if (!createDescriptorHeap()) {
+    ui::Log("SwapChain::Resize createDescriptorHeap failed");
+    return;
+  }
 
   //  调整交换链缓冲区
   // 当调用 ResizeBuffers 时：
@@ -71,7 +77,7 @@ bool SwapChain::Create(HWND hwnd, ID3D12CommandQueue *command_queue,
                             ID3D12PipelineState *pipeline_state) {
   if (!createSwapChain(hwnd, command_queue)) {
     return false;
-  }
+  }  
   if (!createDescriptorHeap()) {
     return false;
   }
@@ -138,6 +144,9 @@ bool SwapChain::createDescriptorHeap() {
     D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
     0);
   return true;
+}
+void SwapChain::destroyDescriptorHeap() {
+  m_rtv_heap.Destroy();
 }
 
 bool SwapChain::createFrameResources() {
