@@ -9,6 +9,7 @@ void weakptr_unittest();
 void rect_region_unittest();
 void uuid_unittest();
 void color_unittest();
+void property_unittest();
 
 namespace ui {
 
@@ -18,8 +19,9 @@ void _UIUnitTest() {
   weakptr_unittest();
   rect_region_unittest();
   uuid_unittest();
-#endif
   color_unittest();
+#endif
+  property_unittest();
 }
 
 UIAPI void UIUnitTest() {

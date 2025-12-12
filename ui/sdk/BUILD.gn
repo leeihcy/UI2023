@@ -164,6 +164,14 @@ shared_library("uisdk") {
         "src/attribute/size_attribute.cpp",
         "src/attribute/string_attribute.cpp",
         "src/attribute/textrenderbase_attribute.cpp",
+        
+        "src/property/property.cpp",
+        "src/property/property.h",
+        "src/property/property_store.cpp",
+        "src/property/property_store.h",
+        "src/property/property_id.h",
+        "src/property/iproperty.cpp",
+
         "src/control/control.cpp",
         "src/control/icontrol.cpp",
         "src/graphics/skia/skia_render.cpp",
@@ -352,45 +360,41 @@ shared_library("uisdk") {
             "wayland-client",
         ]
     }
-    if (is_mac) {
-        sources += [
-            "src/window/window_mac.mm",
-            "src/window/window_mac.h",
-            "src/window/window_mac_keyboard.mm",
-            "src/message_loop/message_loop_mac.mm",
-        ]
-    }
-
-    if (is_mac) {
-        sources += [
-            "src/application/application_mac.mm",
-        ]
-        # skia Mac 依赖
-        ldflags += [
-            "-framework", "CoreFoundation",
-            "-framework", "CoreGraphics",
-            "-framework", "CoreText",
-            "-framework", "CoreServices",
-            "-framework", "Cocoa",
-            "-framework", "Carbon",
-            "-framework", "QuartzCore",  # Core Animation
-        ]
-    }
+  if (is_mac) {
+    sources += [
+        "src/application/application_mac.mm",
+        "src/window/window_mac.mm",
+        "src/window/window_mac.h",
+        "src/window/window_mac_keyboard.mm",
+        "src/message_loop/message_loop_mac.mm",
+    ]
+    # skia Mac 依赖
+    ldflags += [
+        "-framework", "CoreFoundation",
+        "-framework", "CoreGraphics",
+        "-framework", "CoreText",
+        "-framework", "CoreServices",
+        "-framework", "Cocoa",
+        "-framework", "Carbon",
+        "-framework", "QuartzCore",  # Core Animation
+    ]
+  }
 
 
-    # 单元测试
-    if (is_debug) {
-      defines += ["UI_UNITTEST"]
-      sources += [
-        "test/test_entry.cpp",
-        "include/common/signalslot/signalslot_unittest.cpp",
-        "include/common/ptr/weakptr_unittest.cpp",
-        "src/message_loop/message_loop_unittest.cpp",
-        "src/util/rectregion/rectregion_unittest.cpp",
-        "include/common/uuid/uuid_unittest.cpp",
-        "src/util/color_test.cpp",
-      ]
-    }
+  # 单元测试
+  if (is_debug) { 
+    defines += ["UI_UNITTEST"]
+    sources += [
+      "test/test_entry.cpp",
+      "include/common/signalslot/signalslot_unittest.cpp",
+      "include/common/ptr/weakptr_unittest.cpp",
+      "src/message_loop/message_loop_unittest.cpp",
+      "src/util/rectregion/rectregion_unittest.cpp",
+      "include/common/uuid/uuid_unittest.cpp",
+      "src/util/color_test.cpp",
+      "src/property/property_unittest.cpp",
+    ]
+  }
 }
 
 

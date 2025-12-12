@@ -2,6 +2,7 @@
 #define _UI_SDK_SRC_OBJECT_LAYOUT_LAYOUT_OBJECT_H_
 
 #include "include/util/rect.h"
+#include <memory>
 
 namespace ui {
 class Object;
@@ -57,8 +58,9 @@ public:
 protected:
   Object &m_object;
 
-// ui::unique_ptr<ILayoutParam> m_pLayoutParam; // 布局参数。由Object负责释放
   ILayoutParam* m_pLayoutParam = nullptr;
+  // std::unique_ptr<ILayoutParam> m_layout_param;
+  // std::unique_ptr<ILayout> m_layout;
 
   int m_lzOrder; // 控件z序，用于实现控件重叠时的刷新判断依据
 

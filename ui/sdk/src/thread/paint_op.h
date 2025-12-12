@@ -54,8 +54,9 @@ struct PaintOp {
 
   void processOnRenderThread(IRenderTarget* rt);
 
-  IRenderTarget *key = nullptr;
   PaintOpType type;
+  IRenderTarget *key = nullptr;
+  
 };
 
 struct RenderCommand : public PaintOp {
