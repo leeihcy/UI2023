@@ -3,6 +3,7 @@
 
 #include <string>
 #include "include/interface/iproperty.h"
+#include "include/util/rect.h"
 
 namespace ui {
 
@@ -17,7 +18,8 @@ T* mallocValue(Types... args) {
 enum class PropertyValueType : int {
   Int = 1 << 0,
   Bool = 1 << 1,
-  String = 1 << 2
+  String = 1 << 2,
+  Rect = 1 << 3,
 };
 
 // 属性值基类
@@ -92,6 +94,19 @@ struct StringValue : public PropertyValue  {
   std::string value;
 };
 
+struct RectValue : public PropertyValue {
+  RectValue(const Rect& rect) : value(rect) {}
+  static PropertyValueType Type() { return PropertyValueType::Rect; }
+  
+  static RectValue* s_empty() { 
+    static RectValue v(ui::Rect::MakeLTRB(0, 0, 0, 0)); 
+    return &v;
+  }
+
+  static RectValue* Parse(const char* text);
+
+  Rect value;
+};
 
 }
 

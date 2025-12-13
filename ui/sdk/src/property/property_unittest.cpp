@@ -121,7 +121,7 @@ void test2_3rd_module() {
 void test0_sizeof() {
   // 2025.12.12 属性改造前：（mac）
   //   sizeof(ui::Object) == 408
-  //   sizeof(ui::Button) == 424
+  //   sizeof(ui::Control) == 424
   //   sizeof(ui::Button) == 512
   //   sizeof(ui::Window) == 344
   //

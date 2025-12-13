@@ -32,18 +32,10 @@ void Object::onSerialize(SerializeParam *pData) {
 
   {
     AttributeSerializer s(pData, "Object");
-    //- s.AddString(XML_ID, m_strId)->AsData();
 
     // styelclass被修改时，应该重新解析所有属性
     // s.AddString(XML_STYLECLASS, m_strStyleClass)->ReloadOnChanged();
     // s.AddString(XML_TOOLTIP, m_strTooltip);
-
-    s.AddRect(XML_MARGIN, Slot(&Object::LoadMargin, this),
-              Slot(&Object::SaveMargin, this));
-    s.AddRect(XML_PADDING, Slot(&Object::LoadPadding, this),
-              Slot(&Object::SavePadding, this));
-    s.AddRect(XML_BORDER, Slot(&Object::LoadBorder, this),
-              Slot(&Object::SaveBorder, this));
 
     s.AddEnum(XML_VISIBLE, Slot(&Object::LoadVisibleEx, this),
               Slot(&Object::SaveVisibleEx, this))
@@ -137,7 +129,11 @@ void Object::onSerialize(SerializeParam *pData) {
     // TODO: 
     // m_property_store->ClearAndPreserveData();
   }
+
   m_property_store.RegisterString(OBJECT_ID, XML_ID).AsData();
+  m_property_store.RegisterRect(OBJECT_PADDING, XML_PADDING);
+  m_property_store.RegisterRect(OBJECT_MARGIN, XML_MARGIN);
+  m_property_store.RegisterRect(OBJECT_BORDER, XML_BORDER);
 
   // 将xml attribute全灌输给property store
   m_property_store.Serialize(pData->attribute_map);

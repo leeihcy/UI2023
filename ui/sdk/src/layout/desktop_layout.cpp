@@ -82,15 +82,17 @@ void DesktopLayout::Arrange(Window *window) {
     size_window.height = max_height;
 #endif
 
+  const Rect& margin = root_object.GetMargin();
+
   // 计算出坐标
   if (left != NDEF) {
     x = rc_parent.left + left;
-    x += root_object.GetMarginL();
+    x += margin.left;
   } else {
     if (right != NDEF) {
       x = rc_parent.right - right -
           size_window.width; // right是指窗口右侧距离屏幕右侧的距离
-      x -= root_object.GetMarginR();
+      x -= margin.right;
     } else {
       // 居中
       x = rc_parent.left + (rc_parent.Width() - size_window.width) / 2;
@@ -98,11 +100,11 @@ void DesktopLayout::Arrange(Window *window) {
   }
   if (top != NDEF) {
     y = rc_parent.top + top;
-    y += root_object.GetMarginT();
+    y += margin.top;
   } else {
     if (bottom != NDEF) {
       y = rc_parent.bottom - bottom - size_window.height; // 同right
-      y -= root_object.GetMarginB();
+      y -= margin.bottom;
     } else {
       // 居中
       y = rc_parent.top + (rc_parent.Height() - size_window.height) / 2;

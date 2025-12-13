@@ -389,75 +389,6 @@ void Object::ClearMapAttribute() {
   m_attribute_map_remaining.reset();
 }
 
-// 设置padding的值，同时更新非客户区的大小
-void Object::SetPaddingRegion(REGION4 *prc) { m_rcPadding.CopyFrom(*prc); }
-
-void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
-
-// void*  Object::QueryInterface(const IID* pIID)
-// {
-//     if (IsEqualIID(*pIID, uiiidof(IObject)) ||
-//         IsEqualIID(*pIID, uiiidof(IMessage)) )
-//     {
-//         return m_pIObject;
-//     }
-//
-//     return nullptr;
-// }
-//
-//
-// void  Object::OnCreateByEditor(CREATEBYEDITORDATA* pData)
-// {
-//     //
-//     在编辑框中创建的对象，也给创建一个空属性列表，用于序列化默认的TEXTSTYLE等。
-//     assert(nullptr == m_attribute_map_remaining);
-//     m_attribute_map_remaining = UICreateIMapAttribute();
-// }
-//
-
-// TODO: 优化
-//
-//	设置Object的默认鼠标样式
-//
-//	Remark:
-//		如果不实现该消息，可能导致鼠标移动到一个Object上面时，仍然显示的是Window的OnSetCursor
-//
-//
-// bool Object::OnSetCursor(HWND hWnd, unsigned int nHitTest, unsigned int
-// message)
-// {
-// 	if (nullptr == m_pCursor || nullptr == m_pCursor->GetCursor())
-// 	{
-// 		::SetCursor(::LoadCursor(nullptr, IDC_ARROW));
-//  		return true;
-// 	}
-//
-// 	::SetCursor(m_pCursor->GetCursor());
-// 	return true;
-// }
-
-//	获取自己的字体,这里返回的对象只是一个临时对象，
-//	如果需要保存使用，则需要调用AddRef
-// IRenderFont* Object::GetRenderFont()
-// {
-//     IRenderFont* pRenderFont = nullptr;
-//
-//     // 向自己的textrender获取
-//     if (m_text_render)
-//         pRenderFont = m_text_render->GetRenderFont();
-//
-//     if (pRenderFont)
-//         return pRenderFont;
-//
-//     // 向窗口获取默认
-//     WindowBase* pWindow = GetWindow();
-//     if (pWindow)
-//         return pWindow->GetWindowDefaultRenderFont();
-//
-//     return nullptr;
-// }
-
-//
 //	[public] [virtual]  unsigned int HitTest( Point* ptInParent )
 //
 //	Parameters
@@ -472,17 +403,8 @@ void Object::SetBorderRegion(Rect *prc) { m_rcBorder.CopyFrom(*prc); }
 //		由于RGN更加消耗内存，而有时候就得使用RGN来实现某些功能，因此在这里用这个函数来告诉调用者，
 //		你这个位置处于我什么部位。同时给Object配备一个RECT，来表示每一个对象的范围，因为大部分时候使用的都是RECT区域。
 //
-
 eHitTest Object::OnHitTest(const Point& ptInParent, Point& ptInChild) {
   bool bIn = false;
-
-  // 	if (this->m_hRgn)
-  // 	{
-  //      UIASSERT(0);  // 未实现
-  // 		bIn = ::PtInRegion(m_hRgn, ptInParent->x, ptInParent->y);
-  //      if (bIn)
-  // 		    return HTCLIENT;
-  // 	}
 
   Layer *layer = GetSelfLayer();
   if (layer) {

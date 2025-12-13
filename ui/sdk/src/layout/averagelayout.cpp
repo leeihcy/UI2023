@@ -141,10 +141,11 @@ void AverageLayout::ArrangeObject_H(Object *pChildObj, Rect *prc) {
   flags.update_layout_pos = false;
   flags.force_send_size_message = true;
 
+  const Rect& child_margin = pChildObj->GetMargin();
   pChildObj->SetObjectPos(
-      prc->left + pChildObj->GetMarginL(), prc->top + m_pPanel->GetPaddingT(),
-      prc->Width() - pChildObj->GetMarginW(),
-      prc->Height() - pChildObj->GetMarginH(),
+      prc->left + child_margin.left, prc->top + child_margin.top,
+      prc->Width() - (child_margin.left+child_margin.right),
+      prc->Height() - (child_margin.top+child_margin.bottom),
       flags);
 }
 
@@ -153,10 +154,12 @@ void AverageLayout::ArrangeObject_V(Object *pChildObj, Rect *prc) {
   flags.update_layout_pos = false;
   flags.force_send_size_message = true;
 
+  const Rect& child_margin = pChildObj->GetMargin();
+
   pChildObj->SetObjectPos(
-      prc->left + pChildObj->GetMarginL(), prc->top + m_pPanel->GetPaddingT(),
-      prc->Width() - pChildObj->GetMarginW(),
-      prc->Height() - pChildObj->GetMarginH(),
+      prc->left + child_margin.left, prc->top + child_margin.top,
+      prc->Width() - (child_margin.left+child_margin.right),
+      prc->Height() - (child_margin.top+child_margin.bottom),
       flags);
 }
 

@@ -43,9 +43,7 @@ Size HorzLayout::Measure() {
       s.width += pParam->m_nConfigWidth;
     }
 
-    Rect rMargin = {0};
-    pChild->GetMarginRegion(&rMargin);
-
+    const Rect& rMargin = pChild->GetMargin();
     s.width += rMargin.left + rMargin.right;
 
     int nHeight = rMargin.top + rMargin.bottom;
@@ -83,10 +81,6 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
   if (nChildCount <= 0)
     return;
 
-  // 父控件内间距
-  Rect rcPadding = {0};
-  m_pPanel->GetPaddingRegion(&rcPadding);
-
   Rect rcParent;
   m_pPanel->GetClientRectWithZeroOffset(&rcParent);
 
@@ -109,6 +103,8 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
 
     if (pChild->IsSelfCollapsed())
       continue;
+
+    const Rect& child_margin = pChild->GetMargin();
 
     //  计算布局顺序
     int nIndex = nLeftCursor;
@@ -159,7 +155,7 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
     vecInfo[nIndex].width = nObjWidth;
     vecInfo[nIndex].height = nObjHeight;
 
-    nNeedWidth += nObjWidth + pChild->GetMarginW();
+    nNeedWidth += nObjWidth + child_margin.left + child_margin.right;
   }
 
   // 计算平均宽度
@@ -188,9 +184,7 @@ void HorzLayout::DoArrange(ArrangeParam& param) {
     if (pChild->IsSelfCollapsed())
       continue;
 
-    Rect rMargin = {0};
-    pChild->GetMarginRegion(&rMargin);
-
+    const Rect& rMargin = pChild->GetMargin();
     Rect rcObj;
 
     // 如果是平均宽度，为其宽度赋值

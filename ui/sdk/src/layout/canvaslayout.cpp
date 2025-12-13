@@ -20,8 +20,10 @@ Size CanvasLayout::Measure() {
       continue;
     }
     Size s = pChild->GetDesiredSize();
-    s.width += pChild->GetMarginW();
-    s.height += pChild->GetMarginH();
+    const Rect& child_margin = pChild->GetMargin();
+
+    s.width += child_margin.left + child_margin.right;
+    s.height += child_margin.top + child_margin.bottom;
 
     if (NDEF != pParam->GetConfigLeft()) {
       s.width += pParam->GetConfigLeft();
@@ -123,6 +125,8 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   int nChildH = s.height; // - pChild->GetMarginH();
   rcChildObj.Set(0, 0, nChildW, nChildH);
 
+  const Rect& child_margin = pChild->GetMargin();
+
   // 计算出坐标，若left/right,top/bottom中有一个未指定的，那么取0（但在DesktopLayout中是取居中）
   if (nConfigFlag & LAYOUT_ITEM_ALIGN_CENTER) {
     x = (nWidth - s.width) / 2; // 居中
@@ -133,14 +137,14 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   } else {
     if (left != NDEF) {
       x = left;
-      x += pChild->GetMarginL();
+      x += child_margin.left;
     } else {
       if (right != NDEF) {
         x = nWidth - right - nChildW;
-        x -= pChild->GetMarginR();
+        x -= child_margin.right;
       } else {
         x = 0;
-        x += pChild->GetMarginL();
+        x += child_margin.left;
       }
     }
   }
@@ -154,14 +158,14 @@ void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
   } else {
     if (top != NDEF) {
       y = top;
-      y += pChild->GetMarginT();
+      y += child_margin.top;
     } else {
       if (bottom != NDEF) {
         y = nHeight - bottom - nChildH;
-        y -= pChild->GetMarginB();
+        y -= child_margin.bottom;
       } else {
         y = 0;
-        y += pChild->GetMarginT();
+        y += child_margin.top;
       }
     }
   }

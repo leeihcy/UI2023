@@ -35,6 +35,7 @@ public:
   IProperty& RegisterBool(int id, const std::string& key, bool default_value);
   IProperty& RegisterString(int id, const std::string &key,
                       const char *default_value = nullptr);
+  IProperty& RegisterRect(int id, const std::string& key);
 
   static int MapKeyToId(const std::string& key);
 private:
@@ -63,6 +64,7 @@ public:
   void SetInt(int id, int n);
   void SetBool(int id, bool b);
   void SetString(int id, const char* text);
+  void SetRect(int id, const Rect& rect);
 
   void SetValue(int id, PropertyValue* value);
 
@@ -95,6 +97,7 @@ public:
   int GetInt(int id) const;
   bool GetBool(int id) const;
   const std::string& GetString(int id) const;
+  const Rect& GetRect(int id) const;
 
   void Serialize(IAttributeMap* attr_map);
 

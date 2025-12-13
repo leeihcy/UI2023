@@ -63,6 +63,10 @@ IProperty& DefaultPropertyStore::RegisterString(int id, const std::string &key,
   }
 }
 
+IProperty& DefaultPropertyStore::RegisterRect(int id, const std::string& key) {
+  return Register(id, key, RectValue::s_empty()); 
+}
+
 // --------------------------------------------------------------------------------
 
 ConfigPropertyStore::~ConfigPropertyStore() {
@@ -125,6 +129,15 @@ void ConfigPropertyStore::SetString(int id, const char *text) {
   }
 }
 
+void ConfigPropertyStore::SetRect(int id, const Rect& rect) {
+  PropertyValue *cur = GetConfigValue(id);
+  if (!cur) {
+    setValue(id, mallocValue<RectValue>(rect));
+  } else {
+    static_cast<RectValue *>(cur)->value = rect;
+  }
+}
+
 // --------------------------------------------------------------------------------
 
 PropertyValue *
@@ -172,6 +185,9 @@ bool PropertyStore::GetBool(int id) const {
 }
 const std::string& PropertyStore::GetString(int id) const {
   return static_cast<StringValue *>(GetValue(id))->value;
+}
+const Rect& PropertyStore::GetRect(int id) const {
+  return static_cast<RectValue *>(GetValue(id))->value;
 }
 
 void PropertyStore::Serialize(IAttributeMap* attr_map) {

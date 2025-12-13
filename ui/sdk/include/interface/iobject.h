@@ -171,11 +171,11 @@ struct UIAPI IObject : public IMessage {
   ILayoutParam *GetLayoutParam();
 #endif
   void SetLayoutParam(ILayoutParam *);
-  void SetPaddingRegion(REGION4 *prc);
-  void GetPaddingRegion(REGION4 *prc);
-  void SetMarginRegion(REGION4 *prc);
-  void GetMarginRegion(REGION4 *prc);
-  void GetBorderRegion(REGION4 *prc);
+  void SetPadding(const REGION4& rect);
+  void SetMargin(const REGION4& rect);
+  const REGION4& GetPadding();
+  const REGION4& GetMargin();
+  const REGION4& GetBorder();
   void GetNonClientRegion(REGION4 *prc);
   void SetExtNonClientRegion(REGION4 *prc);
   void GetExtNonClientRegion(REGION4 *prc);

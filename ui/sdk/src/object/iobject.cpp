@@ -567,13 +567,12 @@ void IObject::GetExtNonClientRegion(REGION4 *prc) {
   __pImpl->GetExtNonClientRegion(prc);
 }
 
-void IObject::GetBorderRegion(REGION4 *prc) { __pImpl->GetBorderRegion(prc); }
-// void  IObject::SetBorderRegion(REGION4* prc) { __pImpl->SetBorderRegion(prc);
-// }
-void IObject::GetPaddingRegion(REGION4 *prc) { __pImpl->GetPaddingRegion(prc); }
-void IObject::SetPaddingRegion(REGION4 *prc) { __pImpl->SetPaddingRegion(prc); }
-void IObject::SetMarginRegion(REGION4 *prc) { __pImpl->SetMarginRegion(prc); }
-void IObject::GetMarginRegion(REGION4 *prc) { __pImpl->GetMarginRegion(prc); }
+const REGION4& IObject::GetBorder() { return __pImpl->GetBorder(); }
+const REGION4& IObject::GetPadding() { return __pImpl->GetPadding(); }
+const REGION4& IObject::GetMargin() { return __pImpl->GetMargin(); }
+void IObject::SetPadding(const REGION4& rect) { __pImpl->SetPadding(rect); }
+void IObject::SetMargin(const REGION4& rect) { __pImpl->SetMargin(rect); }
+
 void IObject::GetClientRectInObject(Rect *prc) {
   __pImpl->GetClientRectInObject(prc);
 }
@@ -652,15 +651,6 @@ int IObject::GetMinHeight() { return __pImpl->GetMaxHeight(); }
 void IObject::SetMinWidth(int n) { __pImpl->SetMinWidth(n); }
 void IObject::SetMinHeight(int n) { __pImpl->SetMinHeight(n); }
 #endif
-
-// int  IObject::GetWidthWithMargins()
-// {
-// 	return __pImpl->GetWidthWithMargins();
-// }
-// int  IObject::GetHeightWithMargins()
-// {
-// 	return __pImpl->GetHeightWithMargins();
-// }
 
 #if 0
 ILayoutParam *IObject::GetSafeLayoutParam() {

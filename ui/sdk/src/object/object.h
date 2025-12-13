@@ -179,36 +179,12 @@ public:
   int GetParentRectR() { return m_rcParent.right; }
   int GetParentRectB() { return m_rcParent.bottom; }
 
-  void LoadBorder(REGION4 *prc);
-  void SaveBorder(REGION4 *prc);
-  int GetBorderL() { return m_rcBorder.left; }
-  int GetBorderT() { return m_rcBorder.top; }
-  int GetBorderR() { return m_rcBorder.right; }
-  int GetBorderB() { return m_rcBorder.bottom; }
-  void SetBorderRegion(Rect *prc);
-  void GetBorderRegion(REGION4 *prc) { prc->CopyFrom(m_rcBorder); }
-
-  void LoadPadding(REGION4 *prc);
-  void SavePadding(REGION4 *prc);
-  int GetPaddingL() { return m_rcPadding.left; }
-  int GetPaddingT() { return m_rcPadding.top; }
-  int GetPaddingR() { return m_rcPadding.right; }
-  int GetPaddingB() { return m_rcPadding.bottom; }
-  int GetPaddingW() { return m_rcPadding.left + m_rcPadding.right; }
-  int GetPaddingH() { return m_rcPadding.top + m_rcPadding.bottom; }
-  void GetPaddingRegion(REGION4 *prc) { prc->CopyFrom(m_rcPadding); }
-  void SetPaddingRegion(REGION4 *prc);
-
-  void LoadMargin(REGION4 *prc);
-  void SaveMargin(REGION4 *prc);
-  void SetMarginRegion(REGION4 *prc) { m_rcMargin.CopyFrom(*prc); }
-  void GetMarginRegion(REGION4 *prc) { prc->CopyFrom(m_rcMargin); }
-  int GetMarginL() { return m_rcMargin.left; }
-  int GetMarginT() { return m_rcMargin.top; }
-  int GetMarginR() { return m_rcMargin.right; }
-  int GetMarginB() { return m_rcMargin.bottom; }
-  int GetMarginW() { return m_rcMargin.left + m_rcMargin.right; }
-  int GetMarginH() { return m_rcMargin.top + m_rcMargin.bottom; }
+  const Rect& GetPadding();
+  const Rect& GetMargin();
+  const Rect& GetBorder();
+  void SetPadding(const Rect&);
+  void SetMargin(const Rect&);
+  void SetBorder(const Rect&);
 
   void GetNonClientRegion(REGION4 *prc);
   void SetExtNonClientRegion(REGION4 *prc) { m_rcExtNonClient.CopyFrom(*prc); }
@@ -218,8 +194,6 @@ public:
   void GetClientRectInWindow(Rect *prc);
   int GetWidth();
   int GetHeight();
-  int GetWidthWithMargins();
-  int GetHeightWithMargins();
   
 
   bool IntersectWindowRect(const Rect *prcWindow, Rect *prcIntersectWnd,
@@ -335,6 +309,7 @@ public:
 
 protected:
   IObject *m_pIObject;
+
   // 用于支持多皮肤包共存（插件模式）
   ResourceBundle *m_resource = nullptr; 
 
@@ -355,9 +330,6 @@ protected:
   // 对于窗口类型，这个值会动态计算，带上边框、标题栏范围。
   Rect m_rcExtNonClient = { 0 }; 
 
-  Rect m_rcMargin = { 0 };
-  Rect m_rcPadding = { 0 };
-  Rect m_rcBorder = { 0 };
 #pragma endregion
 
 public: // TODO:

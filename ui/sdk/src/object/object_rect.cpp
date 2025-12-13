@@ -1,6 +1,7 @@
 #include "include/interface/ilayout.h"
 #include "include/macro/msg.h"
 #include "object.h"
+#include "src/property/property_id.h"
 #include "src/window/window.h"
 #include "src/util/windows.h"
 // #include "src/UIObject\HwndHost\HwndHost.h"
@@ -33,8 +34,9 @@ void Object::ObjectPoint2ObjectClientPoint(Object *pObj, const Point *pt,
 }
 void Object::ObjectPoint2ObjectNonClientPoint(Object *pObj, const Point *pt,
                                               Point *pOut) {
-  pOut->x = pt->x - pObj->m_rcBorder.left;
-  pOut->y = pt->y - pObj->m_rcBorder.left;
+  const Rect& obj_border = pObj->GetBorder();
+  pOut->x = pt->x - obj_border.left;
+  pOut->y = pt->y - obj_border.top;
 }
 void Object::ObjectRect2ObjectClientRect(Object *pObj, const Rect *prc,
                                          Rect *pOut) {
@@ -464,10 +466,13 @@ void Object::GetClientRectWithZeroOffset(Rect *prc) {
 }
 
 void Object::GetNonClientRegion(REGION4 *prc) {
-  prc->Set(m_rcExtNonClient.left + m_rcPadding.left + m_rcBorder.left,
-           m_rcExtNonClient.top + m_rcPadding.top + m_rcBorder.top,
-           m_rcExtNonClient.right + m_rcPadding.right + m_rcBorder.right,
-           m_rcExtNonClient.bottom + m_rcPadding.bottom + m_rcBorder.bottom);
+  const Rect& padding = GetPadding();
+  const Rect& border = GetBorder();
+
+  prc->Set(m_rcExtNonClient.left + padding.left + border.left,
+           m_rcExtNonClient.top + padding.top + border.top,
+           m_rcExtNonClient.right + padding.right + border.right,
+           m_rcExtNonClient.bottom + padding.bottom + border.bottom);
 }
 
 void Object::GetClientRectInParent(Rect *prc) {
@@ -785,14 +790,6 @@ int Object::GetWidth() { return m_rcParent.width(); }
 
 int Object::GetHeight() { return m_rcParent.height(); }
 
-int Object::GetWidthWithMargins() {
-  return m_rcParent.Width() + m_rcMargin.left + m_rcMargin.right;
-}
-
-int Object::GetHeightWithMargins() {
-  return m_rcParent.Height() + m_rcMargin.top + m_rcMargin.bottom;
-}
-
 //
 // 遍历自己的nc object来更新自己的non client region
 //
@@ -823,45 +820,23 @@ void Object::GetParentRect(Rect *prc) {
   prc->CopyFrom(m_rcParent);
 }
 
-void Object::LoadBorder(REGION4 *prc) {
-  m_rcBorder.left = ScaleByDpi(prc->left);
-  m_rcBorder.top = ScaleByDpi(prc->top);
-  m_rcBorder.right = ScaleByDpi(prc->right);
-  m_rcBorder.bottom = ScaleByDpi(prc->bottom);
+const Rect& Object::GetPadding() {
+  return m_property_store.GetRect(OBJECT_PADDING);
 }
-void Object::SaveBorder(REGION4 *prc) {
-  prc->left = ScaleByDpi(m_rcBorder.left);
-  prc->top = ScaleByDpi(m_rcBorder.top);
-  prc->right = ScaleByDpi(m_rcBorder.right);
-  prc->bottom = ScaleByDpi(m_rcBorder.bottom);
+const Rect& Object::GetMargin() {
+  return m_property_store.GetRect(OBJECT_MARGIN);
 }
-
-void Object::SavePadding(REGION4 *prc) {
-  prc->left = ScaleByDpi(m_rcPadding.left);
-  prc->top = ScaleByDpi(m_rcPadding.top);
-  prc->right = ScaleByDpi(m_rcPadding.right);
-  prc->bottom = ScaleByDpi(m_rcPadding.bottom);
+const Rect& Object::GetBorder() {
+  return m_property_store.GetRect(OBJECT_BORDER);
 }
-
-void Object::LoadPadding(REGION4 *prc) {
-  m_rcPadding.left = ScaleByDpi(prc->left);
-  m_rcPadding.top = ScaleByDpi(prc->top);
-  m_rcPadding.right = ScaleByDpi(prc->right);
-  m_rcPadding.bottom = ScaleByDpi(prc->bottom);
+void Object::SetPadding(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_PADDING, rect);
 }
-
-void Object::LoadMargin(REGION4 *prc) {
-  m_rcMargin.left = ScaleByDpi(prc->left);
-  m_rcMargin.top = ScaleByDpi(prc->top);
-  m_rcMargin.right = ScaleByDpi(prc->right);
-  m_rcMargin.bottom = ScaleByDpi(prc->bottom);
+void Object::SetMargin(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_MARGIN, rect);
 }
-
-void Object::SaveMargin(REGION4 *prc) {
-  prc->left = ScaleByDpi(m_rcMargin.left);
-  prc->top = ScaleByDpi(m_rcMargin.top);
-  prc->right = ScaleByDpi(m_rcMargin.right);
-  prc->bottom = ScaleByDpi(m_rcMargin.bottom);
+void Object::SetBorder(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_BORDER, rect);
 }
 
 } // namespace ui

@@ -43,8 +43,7 @@ Size VertLayout::Measure() {
       s.height += pParam->m_nConfigHeight;
     }
 
-    Rect rMargin = {0};
-    pChild->GetMarginRegion(&rMargin);
+    const Rect& rMargin = pChild->GetMargin();
     s.height += rMargin.top + rMargin.bottom;
 
     int nWidth = rMargin.left + rMargin.right;
@@ -76,9 +75,6 @@ void VertLayout::DoArrange(ArrangeParam& param) {
     return;
 
   // 父控件内间距
-  Rect rcPadding = {0};
-  m_pPanel->GetPaddingRegion(&rcPadding);
-
   Rect rcParent;
   m_pPanel->GetClientRectWithZeroOffset(&rcParent);
 
@@ -149,7 +145,8 @@ void VertLayout::DoArrange(ArrangeParam& param) {
     info.width = nObjWidth;
     info.height = nObjHeight;
 
-    nNeedHeight += nObjHeight + pChild->GetMarginH();
+    const Rect& child_margin = pChild->GetMargin();
+    nNeedHeight += nObjHeight + child_margin.top + child_margin.bottom;
   }
 
   // 计算平均宽度
@@ -179,8 +176,7 @@ void VertLayout::DoArrange(ArrangeParam& param) {
     if (pChild->IsSelfCollapsed())
       continue;
 
-    Rect rMargin = {0};
-    pChild->GetMarginRegion(&rMargin);
+    const Rect& rMargin = pChild->GetMargin();
 
     Rect rcObj;
 

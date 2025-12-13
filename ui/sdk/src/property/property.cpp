@@ -1,6 +1,7 @@
 #include "src/property/property.h"
 
 #include "include/macro/xmldefine.h"
+#include "src/util/util.h"
 
 namespace ui {
 
@@ -41,7 +42,6 @@ bool Property::CanInherit() { return flags & (int)PropertyFlags::Inheritable; }
 bool Property::NeedsFree() { return flags & (int)PropertyFlags::ToFree; }
 
 
-
 PropertyValue* PropertyValue::Parse(PropertyValueType type, const char* text) {
   switch (type) {
   case PropertyValueType::Int:
@@ -50,6 +50,8 @@ PropertyValue* PropertyValue::Parse(PropertyValueType type, const char* text) {
     return BoolValue::Parse(text);
   case PropertyValueType::String:
     return StringValue::Parse(text);
+  case PropertyValueType::Rect:
+    return RectValue::Parse(text);
   default:
     assert(false && "TODO: Not implement");
     return nullptr;
@@ -72,6 +74,12 @@ BoolValue* BoolValue::Parse(const char* text) {
 
 StringValue* StringValue::Parse(const char* text) {
   return mallocValue<StringValue>(text);
+}
+
+RectValue* RectValue::Parse(const char* text) {
+  Rect rc = {0};
+  util::TranslateRECT(text, &rc, XML_SEPARATOR);
+  return mallocValue<RectValue>(rc);
 }
 
 } // namespace ui

@@ -474,10 +474,11 @@ void GridLayout::DoArrange(ArrangeParam& param) {
 
     Rect rc;
     rc.CopyFrom(rcObjectInGrid);
-    rc.Offset(this->m_pPanel->GetPaddingL(), this->m_pPanel->GetPaddingT());
 
-    Rect rcMargin;
-    pChild->GetMarginRegion(&rcMargin);
+    const Rect& panel_padding = m_pPanel->GetPadding();
+    rc.Offset(panel_padding.left, panel_padding.top);
+
+    const Rect& rcMargin = pChild->GetMargin();
     util::DeflatRect(&rc, &rcMargin);
 
     int nConfigW = pParam->GetConfigWidth();
