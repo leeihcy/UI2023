@@ -4,7 +4,7 @@
 #include "src/window/window.h"
 #include "src/util/windows.h"
 // #include "src/UIObject\HwndHost\HwndHost.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "object_layer.h"
 #include "src/layer/layer.h"
 #include "src/util/DPI/dpihelper.h"

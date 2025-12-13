@@ -1,6 +1,6 @@
 #include "mapattr.h"
 #include "include/inc.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/iuiapplication.h"
 #include "include/interface/iuires.h"
 #include "src/application/uiapplication.h"

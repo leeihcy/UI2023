@@ -7,16 +7,10 @@
 #include "object_layer.h"
 #include "include/interface/ilayout.h"
 #include "include/interface/iwindow.h"
-// #include "include/interface/ipanel.h"
 #include "src/layout/canvaslayout.h"
 #include "src/object/layout/layout_object.h"
+#include "src/property/property.h"
 #include "src/resource/uiresource.h"
-// #include "src/Renderbase\renderbase\renderbase.h"
-// #include "src/Renderbase\textrenderbase\textrender.h"
-// #include "src/UIObject\Window\windowbase.h"
-// #include "src/UIObject\HwndHost\HwndHost.h"
-// #include "src/resource/uicursor.h"
-// #include "src/layout/layout.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
 #include "src/application/uiapplication.h"
@@ -26,23 +20,19 @@
 #include "src/resource/cursorres.h"
 #include "src/resource/res_bundle.h"
 #include "src/resource/stylemanager.h"
-// #include "src/Atl\image.h"
-#include "include/interface/imapattr.h"
+#include "src/property/property_id.h"
+#include "include/interface/iattributemap.h"
 #include <algorithm>
 #include <memory>
-// #include "..\Accessible\accessibleimpl.h"
-// #include "..\Accessible\object_accessible.h"
 #include "object_meta.h"
 
 using namespace ui;
+extern Property* uisdk_property_register;
 
-Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
+Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this), 
+  m_property_store(uisdk_property_register, this) {
   m_pIObject = p;
-  // m_lCanRedrawRef = 0;
   m_attribute_map_remaining = nullptr;
-#if 0 // defined(OS_WIN)
-  m_pAccessible = nullptr;
-#endif
 
   memset(&m_objStyle, 0, sizeof(m_objStyle));
   memset(&m_objState, 0, sizeof(m_objState));
@@ -52,13 +42,6 @@ Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this) {
 // 注意：不要在构造或者析构函数中调用虚函数
 
 Object::~Object(void) {
-  if (m_ppOutRef)
-    *m_ppOutRef = nullptr;
-
-#if 0 // defined(OS_WIN)
-  if (m_pAccessible)
-    SAFE_RELEASE(m_pAccessible);
-#endif
 }
 
 void Object::onRouteMessage(ui::Msg *msg) {
@@ -118,13 +101,12 @@ void Object::FinalRelease() {
 IObject *Object::GetIObject() { return m_pIObject; }
 
 // 注：如果在其它模块直接调用 pCtrl->m_strID=L"..."的话，在对象释放时将会崩溃
-void Object::SetId(const char *szText) {
-  if (szText)
-    m_strId = szText;
-  else
-    m_strId.clear();
+void Object::SetId(const char *text) {
+  m_property_store.SetString(OBJECT_ID, text);
 }
-const char *Object::GetId() { return m_strId.c_str(); }
+const char *Object::GetId() { 
+  return m_property_store.GetString(OBJECT_ID).c_str();
+}
 
 Layer *Object::GetSelfLayer() const { return m_objLayer.GetLayer(); }
 
@@ -227,8 +209,7 @@ Object *Object::FindObject(const char *szObjId) {
 
   Object *pRet = this->find_child_object(szObjId, true);
   if (!pRet) {
-    UI_LOG_WARN("Find \"%s\" from \"%s\" failed.", szObjId,
-                this->m_strId.c_str());
+    UI_LOG_WARN("Find \"%s\" from \"%s\" failed.", szObjId, GetId());
     UIASSERT(0);
   }
   return pRet;
@@ -1119,7 +1100,7 @@ void Object::InitDefaultAttrib() {
     attribute_map = UICreateIMapAttribute();
   }
 
-  UIASSERT(m_strId.empty() && "将setid放在该函数之后调用，避免覆盖");
+  // UIASSERT(m_strId.empty() && "将setid放在该函数之后调用，避免覆盖");
   // attribute_map->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
 
   // 解析样式
@@ -1162,8 +1143,6 @@ void Object::InitDefaultAttrib() {
 // {
 // 	return m_pUserData;
 // }
-
-void Object::SetOutRef(void **ppOutRef) { m_ppOutRef = ppOutRef; }
 
 ResourceBundle *Object::GetResource() { return m_resource; }
 

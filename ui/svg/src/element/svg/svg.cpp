@@ -1,6 +1,6 @@
 #include "svg.h"
 #include "sdk/include/interface/iattribute.h"
-#include "sdk/include/interface/imapattr.h"
+#include "sdk/include/interface/iattributemap.h"
 #include "sdk/include/util/util.h"
 
 namespace svg {

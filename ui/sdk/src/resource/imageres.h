@@ -5,6 +5,7 @@ namespace ui {
 struct IImageResItem;
 struct IRenderBitmap;
 struct IImageRes;
+struct IAttributeMap;
 class ImageData;
 class GDIRenderBitmap;
 class GdiplusRenderBitmap;

@@ -2,7 +2,7 @@
 #include "HwndHost.h"
 #include "src/UIObject\Window\windowbase.h"
 #include "hwndhost_desc.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 
 HwndHost::HwndHost(IHwndHost* p):Control(p)
 {

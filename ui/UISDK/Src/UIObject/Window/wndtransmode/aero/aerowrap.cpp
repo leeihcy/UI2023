@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "aerowrap.h"
 #include "src/UIObject\Window\customwindow.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 
 namespace ui
 {

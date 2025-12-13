@@ -77,8 +77,6 @@ IResourceBundle *IObject::GetResource() {
   return p->GetIResource();
 }
 
-void IObject::SetOutRef(void **ppOutRef) { __pImpl->SetOutRef(ppOutRef); }
-
 void IObject::InitDefaultAttrib() { __pImpl->InitDefaultAttrib(); }
 void IObject::SetObjectPos(int x, int y, int cx, int cy,
                            SetPositionFlags nFlag) {

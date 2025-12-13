@@ -2,7 +2,7 @@
 #include "src/resource/res_bundle.h"
 #include "src/util/gif/gifImage.h"
 #include "include/interface/iuires.h"
-#include "Inc/Interface/imapattr.h"
+#include "Inc/Interface/iattributemap.h"
 #include "src/parser/datasource/bundle_source.h"
 
 namespace ui

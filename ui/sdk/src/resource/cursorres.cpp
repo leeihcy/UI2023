@@ -3,7 +3,7 @@
 #include "src/resource/res_bundle.h"
 #include "src/resource/uicursor.h"
 #include "include/interface/iuires.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 //#include "other/resource.h"
 
 namespace ui

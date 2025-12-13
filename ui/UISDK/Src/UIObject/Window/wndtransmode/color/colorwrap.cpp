@@ -2,7 +2,7 @@
 #include "colorwrap.h"
 #include "Src/UIObject/Window/customwindow.h"
 #include "include/interface/iuires.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/resource/colorres.h"
 #include "src/resource/res_bundle.h"
 

@@ -18,15 +18,15 @@ void PropertyStoreWrap::FreeRegister(void* register_buffer) {
   delete[] (Property*)register_buffer;
 }
 
-bool PropertyStoreWrap::RegisterInt(int id, const std::string& key, int default_value, int flags) {
-  return m_pImpl->RegisterInt(id, key, default_value, flags);
+IProperty& PropertyStoreWrap::RegisterInt(int id, const std::string& key, int default_value) {
+  return m_pImpl->RegisterInt(id, key, default_value);
 }
-bool PropertyStoreWrap::RegisterBool(int id, const std::string& key, bool default_value, int flags) {
-  return m_pImpl->RegisterBool(id, key, default_value, flags);
+IProperty& PropertyStoreWrap::RegisterBool(int id, const std::string& key, bool default_value) {
+  return m_pImpl->RegisterBool(id, key, default_value);
 }
-bool PropertyStoreWrap::RegisterString(int id, const std::string &key,
-                    const char *default_value, int flags) {
-  return m_pImpl->RegisterString(id, key, default_value, flags);
+IProperty& PropertyStoreWrap::RegisterString(int id, const std::string &key,
+                    const char *default_value) {
+  return m_pImpl->RegisterString(id, key, default_value);
 }
 
 int PropertyStoreWrap::GetInt(int id) const {

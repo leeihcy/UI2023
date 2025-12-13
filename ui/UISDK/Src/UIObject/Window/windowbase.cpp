@@ -4,7 +4,7 @@
 
 #include "include/interface/ixmlwrap.h"
 #include "include/interface/iuires.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/Atl\image.h"
 #include "src/layout/layout.h"
 #include "src/Helper\topwindow\topwindowmanager.h"

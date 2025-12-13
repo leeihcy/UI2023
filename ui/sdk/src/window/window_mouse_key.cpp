@@ -429,13 +429,6 @@ void WindowMouseKey::OnLButtonDown(int x, int y) {
     checkDefPushButton(m_pObjHover);
   }
 
-  // TODO: 事件冒泡逻辑？
-  // LButtonDownEvent event;
-  // event.obj = m_window.GetRootObject().GetIObject();
-  // event.x = x;
-  // event.y = y;
-  // m_window.emit(LBUTTON_DOWN_EVENT, &event);
-
   // 保存本次点击位于，用于过滤双击事件
   // m_posPrevClick = l;
 
@@ -466,6 +459,11 @@ void WindowMouseKey::_OnLButtonDown(Point pt) {
       msg.pt_in_window = pt;
       m_pObjHover->RouteMessage(&msg); // 有可能导致m_pObjPress为nullptr了
     }
+  } else {
+    LButtonDownEvent event;
+    event.x = pt.x;
+    event.y = pt.y;
+    m_window.emit(&event);
   }
 }
 

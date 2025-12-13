@@ -171,7 +171,7 @@ void Object::Invalidate(const Rect *prcObj) {
 
   if (Config::GetInstance().debug.log_paint) {
     UI_LOG_DEBUG("[Object] Invalidate id=%s, rect=%d,%d (%d,%d)",
-      m_strId.c_str(), rc.left, rc.top, rc.Width(), rc.Height());
+      GetId(), rc.left, rc.top, rc.Width(), rc.Height());
   }
   pLayer->GetLayer()->Invalidate(&rc);
 }

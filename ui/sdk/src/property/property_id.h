@@ -21,7 +21,6 @@ enum UI_SDK_PROPERTY_ID {
   UI_SDK_PROPERTY_COUNT,
 };
 
-
 }
 
 #endif

@@ -1,6 +1,12 @@
 #include "property_store.h"
 #include "property_id.h"
 #include "include/interface/iproperty.h"
+#include "src/object/object.h"
+#include "src/control/button/button.h"
+#include "src/window/window.h"
+
+#include <cstddef>
+#include <iostream>
 
 using namespace ui;
 
@@ -12,15 +18,15 @@ public:
     RegisterProperties(); 
   }
   void RegisterProperties() {
-    m_property_store.RegisterString(OBJECT_ID, "id", nullptr);
+    m_property_store.RegisterString(OBJECT_ID, "id", nullptr).AsData();
     m_property_store.RegisterString(OBJECT_CLASS, "class", nullptr);
     m_property_store.RegisterString(OBJECT_STYLE, "style", nullptr);
 
     m_property_store.RegisterInt(OBJECT_WIDTH, "width", 0);
     m_property_store.RegisterInt(OBJECT_WIDTH, "height", 0);
 
-    m_property_store.RegisterString(OBJECT_FONT_NAME, "font-name", nullptr, PF_Inherit);
-    m_property_store.RegisterInt(OBJECT_FONT_SIZE, "font-size", 10, PF_Inherit);
+    m_property_store.RegisterString(OBJECT_FONT_NAME, "font-name", nullptr).Inheritable();
+    m_property_store.RegisterInt(OBJECT_FONT_SIZE, "font-size", 10).Inheritable();
   }
 
   std::string GetId() { return m_property_store.GetString(OBJECT_ID); }
@@ -33,7 +39,7 @@ public:
   void SetFontSize(int n) { m_property_store.SetInt(OBJECT_FONT_SIZE, n); }
 
 protected:
-  PropertyStore* GetInheritStore() override {
+  PropertyStore* GetInheritPropertyStore() override {
     if (m_parent) {
       return &m_parent->m_property_store;
     }
@@ -112,9 +118,26 @@ void test2_3rd_module() {
 
 
 // -------------------------------------------
+void test0_sizeof() {
+  // 2025.12.12 属性改造前：（mac）
+  //   sizeof(ui::Object) == 408
+  //   sizeof(ui::Button) == 424
+  //   sizeof(ui::Button) == 512
+  //   sizeof(ui::Window) == 344
+  //
+  //   408 --> 424
+  std::cout << "sizeof Object: " << sizeof(ui::Object) << std::endl;
+  std::cout << "sizeof Control: " << sizeof(ui::Control) << std::endl;
+  std::cout << "sizeof Button: " << sizeof(ui::Button) << std::endl;
+  std::cout << "sizeof Window: " << sizeof(ui::Window) << std::endl;
 
+  std::cout << "sizeof std::string: " << sizeof(std::string) << std::endl;
+  std::cout << "sizeof std::shared_ptr<IRenderBase>: " << sizeof(std::shared_ptr<IRenderBase>) << std::endl;
+}
 
 void property_unittest() {
+  test0_sizeof();
+
   test1_basic();  
   test2_3rd_module();
 }

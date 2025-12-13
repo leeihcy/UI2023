@@ -84,7 +84,6 @@ struct UIAPI IObject : public IMessage {
   void InitDefaultAttrib();
   std::shared_ptr<IAttributeMap> GetMapAttribute();
   void ClearMapAttribute();
-  void SetOutRef(void **ppOutRef);
   // void LoadAttributeFromMap(IAttributeMap *pMatAttrib, bool bReload);
   void LoadAttributeFromXml(IUIElement *pXmlElement, bool bReload);
   const char *GetAttribute(const char *szKey, bool bErase);

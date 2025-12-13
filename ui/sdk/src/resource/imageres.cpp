@@ -7,7 +7,7 @@
 #include "include/interface/ibundlesource.h"
 #include "src/resource/res_bundle.h"
 // #include "Inc\Util\iimage.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/iuires.h"
 #include "include/macro/xmldefine.h"
 #include "src/application/uiapplication.h"

@@ -15,6 +15,8 @@ struct IRenderFont;
 struct IUIElement;
 struct IMessage;
 struct IObject;
+struct IAttributeMap;
+struct IAttributeList;
 
 struct UIAPI IColorManager : public IRootInterface {
   IColorManager(ColorManager *p);

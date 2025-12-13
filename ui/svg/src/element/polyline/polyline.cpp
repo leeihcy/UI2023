@@ -1,6 +1,6 @@
 #include "polyline.h"
 #include "sdk/include/util/util.h"
-#include "sdk/include/interface/imapattr.h"
+#include "sdk/include/interface/iattributemap.h"
 
 namespace svg {
 

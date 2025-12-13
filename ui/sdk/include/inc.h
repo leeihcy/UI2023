@@ -19,7 +19,7 @@
 #include "sdk/include/interface/iresbundle.h"
 #include "sdk/include/interface/graphics.h"
 // #include "sdk/include/interface/imeta.h"
-#include "sdk/include/interface/imapattr.h"
+#include "sdk/include/interface/iattributemap.h"
 #include "sdk/include/interface/irenderbase.h"
 #include "sdk/include/interface/itextrenderbase.h"
 // #include "sdk/include/interface/iattribute.h"

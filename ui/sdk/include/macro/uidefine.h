@@ -112,63 +112,6 @@ public:
 #define EDITOR_MODE
 #endif
 
-// 对象序列化消息。用于取代WM_SETATTRIBUTE
-enum SERIALIZEFLAG {
-  SERIALIZEFLAG_LOAD = 0x01,
-  SERIALIZEFLAG_RELOAD = 0x03, // reload也是load
-  SERIALIZEFLAG_SAVE = 0x04,
-  SERIALIZEFLAG_EDITOR = 0x08, // 获取属性列表和提示信息
-
-  // load 标识
-  SERIALIZEFLAG_LOAD_ERASEATTR =
-      0x0200, // 获取到属性后，将该属性从mapattr中删除
-
-  // save 标识
-};
-struct IAttributeMap;
-struct IAttributeList;
-struct IAttributeEditorProxy;
-struct IApplication;
-struct IResourceBundle;
-
-struct SerializeParam {
-  union {
-    IAttributeMap *attribute_map;                    // load [in] / getlist [out]
-    IAttributeList *attribute_list;                  // save [out]
-    IAttributeEditorProxy *attribute_editor_proxy;   // editor [in]
-  };
-
-  // IApplication *pUIApplication; // TODO: 废弃该变量，只使用pSkinRes
-  IResourceBundle *resource;
-  const char *szPrefix;    // 属性前缀
-  const char *szParentKey; // 父属性（仅用于editor），如bkg.render.type
-  unsigned int nFlags;
-
-  bool IsReload() {
-    return ((nFlags & SERIALIZEFLAG_RELOAD) == SERIALIZEFLAG_RELOAD) ? true
-                                                                     : false;
-  }
-  bool IsLoad() {
-    return ((nFlags & SERIALIZEFLAG_LOAD) == SERIALIZEFLAG_LOAD) ? true : false;
-  }
-  bool IsSave() {
-    return ((nFlags & SERIALIZEFLAG_SAVE) == SERIALIZEFLAG_SAVE) ? true : false;
-  }
-  bool IsEditor() {
-    return ((nFlags & SERIALIZEFLAG_EDITOR) == SERIALIZEFLAG_EDITOR) ? true
-                                                                     : false;
-  }
-  bool NeedErase() {
-    return (nFlags & SERIALIZEFLAG_LOAD_ERASEATTR) ? true : false;
-  }
-  void SetErase(bool b) {
-    if (b) {
-      nFlags |= SERIALIZEFLAG_LOAD_ERASEATTR;
-    } else {
-      nFlags &= ~SERIALIZEFLAG_LOAD_ERASEATTR;
-    }
-  }
-};
 
 // object的state bit，状态位
 enum OBJECT_STATE_BIT {

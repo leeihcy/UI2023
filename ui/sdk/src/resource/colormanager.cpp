@@ -1,5 +1,5 @@
 #include "colormanager.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/iuires.h"
 #include "include/interface/ixmlwrap.h"
 #include "include/util/log.h"

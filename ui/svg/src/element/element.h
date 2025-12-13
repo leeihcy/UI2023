@@ -5,8 +5,11 @@
 #include "sdk/include/macro/uidefine.h"
 #include "sdk/include/util/color.h"
 
+namespace ui {
+  struct SerializeParam;
+}
 namespace svg {
-  
+
 class Element {
 public:
   virtual ~Element() {}

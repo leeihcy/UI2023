@@ -6,6 +6,19 @@
 
 namespace ui {
 
+struct IProperty {
+  // flags相关操作
+  virtual IProperty& AsData() = 0;
+  virtual IProperty& Inheritable() = 0;
+  virtual IProperty& ToFree() = 0;
+
+  virtual bool IsData() = 0;
+  virtual bool CanInherit() = 0;
+  virtual bool NeedsFree() = 0;
+
+  // virtual 
+};
+
 class PropertyStore;
 struct UIAPI PropertyStoreWrap {
   PropertyStoreWrap(void* property_register_buffer);
@@ -15,10 +28,10 @@ struct UIAPI PropertyStoreWrap {
   static void FreeRegister(void* register_buffer);
 
   // Register
-  bool RegisterInt(int id, const std::string& key, int default_value = 0, int flags = 0);
-  bool RegisterBool(int id, const std::string& key, bool default_value, int flags = 0);
-  bool RegisterString(int id, const std::string &key,
-                      const char *default_value = nullptr, int flags = 0);
+  IProperty& RegisterInt(int id, const std::string& key, int default_value = 0);
+  IProperty& RegisterBool(int id, const std::string& key, bool default_value);
+  IProperty& RegisterString(int id, const std::string &key,
+                      const char *default_value = nullptr);
   // Get
   int GetInt(int id) const;
   bool GetBool(int id) const;
@@ -33,6 +46,7 @@ struct UIAPI PropertyStoreWrap {
 private:
   PropertyStore *m_pImpl;
 };
+
 
 
 }

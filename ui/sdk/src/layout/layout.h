@@ -2,7 +2,7 @@
 #define LAYOUT_H_70402CBF_A4C2_4a35_AA14_829F26BA9A5C
 
 #include "include/interface/ilayout.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/object/object.h"
 
 namespace ui {

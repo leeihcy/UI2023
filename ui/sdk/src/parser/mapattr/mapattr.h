@@ -1,5 +1,5 @@
 #pragma once
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/private_inc.h"
 
 namespace ui {

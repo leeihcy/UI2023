@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_SRC_PROPERTY_PROPERTYSTORE_H_
 #define _UI_SDK_SRC_PROPERTY_PROPERTYSTORE_H_
 
+#include "include/interface/iattributemap.h"
 #include "property.h"
 
 #include <map>
@@ -17,7 +18,7 @@ class PropertyStore;
 class PropertyStoreDelegate {
 public:
   // 外部返回当前对象的父结点的属性库，用于实现属性继承。
-  virtual PropertyStore* GetInheritStore() = 0;
+  virtual PropertyStore* GetInheritPropertyStore() = 0;
 };
 
 
@@ -30,13 +31,19 @@ public:
   PropertyValue *GetDefaultValue(int id) const { return m_properties[id].value; }
   Property& GetDefaultData(int id) const { return m_properties[id]; }
 
-  bool RegisterInt(int id, const std::string& key, int default_value = 0, int flags = 0);
-  bool RegisterBool(int id, const std::string& key, bool default_value, int flags = 0);
-  bool RegisterString(int id, const std::string &key,
-                      const char *default_value = nullptr, int flags = 0);
+  IProperty& RegisterInt(int id, const std::string& key, int default_value = 0);
+  IProperty& RegisterBool(int id, const std::string& key, bool default_value);
+  IProperty& RegisterString(int id, const std::string &key,
+                      const char *default_value = nullptr);
 
+  static int MapKeyToId(const std::string& key);
 private:
-  bool Register(int id, std::string key, PropertyValue* value, int flags);
+  template <class T>
+  inline IProperty &Register(int id, const std::string &key, T *value) {
+    return Register2(id, key, T::Type(), value);
+  }
+  IProperty &Register2(int id, const std::string &key, PropertyValueType type,
+                       PropertyValue *value);
 
 private:
   // 外部传递进来的属性数组内存。
@@ -57,8 +64,10 @@ public:
   void SetBool(int id, bool b);
   void SetString(int id, const char* text);
 
-private:
   void SetValue(int id, PropertyValue* value);
+
+private:
+  void setValue(int id, PropertyValue* value);
 
 private:
   // TODO: 这里的每个value暂时规定得是malloc出来的，不使用static分配
@@ -85,7 +94,9 @@ public:
 
   int GetInt(int id) const;
   bool GetBool(int id) const;
-  std::string GetString(int id) const;
+  const std::string& GetString(int id) const;
+
+  void Serialize(IAttributeMap* attr_map);
 
 protected:
   PropertyValue *GetValue(int id) const;

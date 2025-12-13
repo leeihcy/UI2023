@@ -17,6 +17,7 @@ struct ITextRenderBase;
 struct IUIEditor;
 struct C9Region;
 
+
 // 属性类型枚举，默认支持的一些属性类型。
 // 对于外部自定义的属性类型，可以用一个大数字来定义(int)
 enum DEFAULT_ATTRIBUTE_TYPE {

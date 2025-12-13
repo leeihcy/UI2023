@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "customwindow.h"
 #include "src/Renderbase\renderbase\renderbase.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/UIObject\Window\wndtransmode\layered\layeredwrap.h"
 #include "src/UIObject\Window\wndtransmode\aero\aerowrap.h"
 #include "src/attribute/attribute.h"

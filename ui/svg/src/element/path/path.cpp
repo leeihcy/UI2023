@@ -1,7 +1,7 @@
 #include "path.h"
 #include "include/utils/SkParsePath.h"
 #include "sdk/include/interface/iattribute.h"
-#include "sdk/include/interface/imapattr.h"
+#include "sdk/include/interface/iattributemap.h"
 
 namespace svg {
 

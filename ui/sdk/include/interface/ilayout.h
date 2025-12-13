@@ -10,6 +10,7 @@ namespace ui {
 class Object;
 struct IObject;
 struct IAttributeMap;
+struct SerializeParam;
 
 struct ILayoutParam {
   // 取代layout type

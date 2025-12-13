@@ -5,6 +5,7 @@
 
 namespace ui {
 struct IAttributeMap;
+struct IAttributeList;
 struct IUIElement;
 struct IUIDocument;
 

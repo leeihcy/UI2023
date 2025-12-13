@@ -1,6 +1,6 @@
 #include "pugixmlwrap.h"
 #include "include/inc.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/util/util.h"
 
 namespace ui {

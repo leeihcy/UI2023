@@ -1,54 +1,65 @@
 #include "src/property/property_store.h"
+#include "include/util/log.h"
+#include "src/property/property.h"
 
 namespace ui {
+
+static std::map<std::string, int> g_key_id_map;
 
 DefaultPropertyStore::DefaultPropertyStore(Property *property_register_buffer)
     : m_properties(property_register_buffer) {}
 
-bool DefaultPropertyStore::Register(int id, std::string key,
-                                    PropertyValue *value, int flags) {
-  if (!value) {
-    return false;
+
+int DefaultPropertyStore::MapKeyToId(const std::string& key) {
+  auto iter = g_key_id_map.find(key);
+  if (iter == g_key_id_map.end()) {
+    UI_LOG_WARN("[Property] MapKeyToId failed, key is not registered: %s", key.c_str());
+    return -1;
   }
+  return iter->second;
+}
+
+IProperty &DefaultPropertyStore::Register2(int id, const std::string& key,
+                                          PropertyValueType type,
+                                          PropertyValue *value) {
+  assert(value);
 
   Property &detail = m_properties[id];
-  detail.id = id;
-  detail.key = key;
+  // detail.id = id;
+  detail.type = type;
   detail.value = value;
-  detail.flags = flags;
-  return true;
+
+  g_key_id_map[key] = id;
+  return detail;
 }
 
-bool DefaultPropertyStore::RegisterInt(int id, const std::string &key,
-                                       int default_value, int flags) {
+IProperty& DefaultPropertyStore::RegisterInt(int id, const std::string &key,
+                                       int default_value) {
   if (default_value == 0) {
-    return Register(id, key, IntValue::s_0(), flags);
+    return Register(id, key, IntValue::s_0());
   } else if (default_value == -1) {
-    return Register(id, key, IntValue::s_minus1(), flags);
+    return Register(id, key, IntValue::s_minus1());
   } else if (default_value == 1) {
-    return Register(id, key, IntValue::s_1(), flags);
+    return Register(id, key, IntValue::s_1());
   }
-  return Register(id, key, mallocValue<IntValue>(default_value),
-                  flags | PF_MallocValue);
+  return Register(id, key, mallocValue<IntValue>(default_value)).ToFree();
 }
 
-bool DefaultPropertyStore::RegisterBool(int id, const std::string &key,
-                                        bool default_value, int flags) {
+IProperty& DefaultPropertyStore::RegisterBool(int id, const std::string &key,
+                                        bool default_value) {
   if (default_value) {
-    return Register(id, key, BoolValue::s_true(), flags);
+    return Register(id, key, BoolValue::s_true());
   } else {
-    return Register(id, key, BoolValue::s_false(), flags);
+    return Register(id, key, BoolValue::s_false());
   }
 }
 
-bool DefaultPropertyStore::RegisterString(int id, const std::string &key,
-                                          const char *default_value,
-                                          int flags) {
+IProperty& DefaultPropertyStore::RegisterString(int id, const std::string &key,
+                                          const char *default_value) {
   if (default_value) {
-    return Register(id, key, mallocValue<StringValue>(default_value),
-                    flags | PF_MallocValue);
+    return Register(id, key, mallocValue<StringValue>(default_value)).ToFree();
   } else {
-    return Register(id, key, StringValue::s_empty(), flags);
+    return Register(id, key, StringValue::s_empty());
   }
 }
 
@@ -68,14 +79,29 @@ PropertyValue *ConfigPropertyStore::GetConfigValue(int id) const {
   }
   return (*iter).second;
 }
-void ConfigPropertyStore::SetValue(int id, PropertyValue *value) {
+
+void ConfigPropertyStore::SetValue(int id, PropertyValue* value) {
+  if (!value) {
+    return;
+  }
+
+  auto iter = m_map.find(id);
+  if (iter == m_map.end()) {
+    m_map[id] = value;
+    return;
+  }
+  free((*iter).second);
+  iter->second = value;
+}
+
+void ConfigPropertyStore::setValue(int id, PropertyValue *value) {
   m_map[id] = value;
 }
 
 void ConfigPropertyStore::SetInt(int id, int n) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
-    SetValue(id, mallocValue<IntValue>(n));
+    setValue(id, mallocValue<IntValue>(n));
   } else {
     static_cast<IntValue *>(cur)->value = n;
   }
@@ -84,7 +110,7 @@ void ConfigPropertyStore::SetInt(int id, int n) {
 void ConfigPropertyStore::SetBool(int id, bool b) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
-    SetValue(id, mallocValue<BoolValue>(b));
+    setValue(id, mallocValue<BoolValue>(b));
   } else {
     static_cast<BoolValue *>(cur)->value = b;
   }
@@ -93,7 +119,7 @@ void ConfigPropertyStore::SetBool(int id, bool b) {
 void ConfigPropertyStore::SetString(int id, const char *text) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
-    SetValue(id, mallocValue<StringValue>(text));
+    setValue(id, mallocValue<StringValue>(text));
   } else {
     static_cast<StringValue *>(cur)->Set(text);
   }
@@ -107,7 +133,7 @@ InheritPropertyStore::GetInheritValue(PropertyStoreDelegate *delegate,
   if (!delegate) {
     return nullptr;
   }
-  PropertyStore *store = delegate->GetInheritStore();
+  PropertyStore *store = delegate->GetInheritPropertyStore();
   if (!store) {
     return nullptr;
   }
@@ -127,7 +153,7 @@ PropertyValue *PropertyStore::GetValue(int id) const {
   if (!value) {
     Property &default_data = GetDefaultData(id);
 
-    if (default_data.flags & PF_Inherit) {
+    if (default_data.CanInherit()) {
       value = GetInheritValue(m_delegate, id);
     }
 
@@ -144,8 +170,30 @@ int PropertyStore::GetInt(int id) const {
 bool PropertyStore::GetBool(int id) const {
   return static_cast<BoolValue *>(GetValue(id))->value;
 }
-std::string PropertyStore::GetString(int id) const {
+const std::string& PropertyStore::GetString(int id) const {
   return static_cast<StringValue *>(GetValue(id))->value;
+}
+
+void PropertyStore::Serialize(IAttributeMap* attr_map) {
+  // 需要将 attribute key --> property id
+  attr_map->BeginEnum();
+
+  const char* key = nullptr;
+  const char* value = nullptr;
+  while (attr_map->EnumNext(&key, &value)) {
+    if (!value) {
+      return;
+    }
+
+    int id = MapKeyToId(key);
+    if (id < 0) {
+      continue;
+    }
+    Property &default_data = GetDefaultData(id);
+    ConfigPropertyStore::SetValue(
+        id, PropertyValue::Parse(default_data.type, value));
+  }
+  attr_map->EndEnum();
 }
 
 } // namespace ui

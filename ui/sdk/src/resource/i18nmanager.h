@@ -6,6 +6,7 @@ namespace ui
 {
 struct UIElement;
 struct IUIElement;
+struct IResourceBundle;
 
 class I18nManager
 {

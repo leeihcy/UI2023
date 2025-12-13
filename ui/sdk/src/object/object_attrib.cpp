@@ -1,7 +1,7 @@
 #include "include/interface/ilayout.h"
 #include "object.h"
 
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/irenderbase.h"
 #include "include/interface/itextrenderbase.h"
 #include "include/interface/iuiapplication.h"
@@ -9,6 +9,7 @@
 #include "src/attribute/bool_attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/stringselect_attribute.h"
+#include "src/property/property_id.h"
 
 namespace ui {
 // 将xml用的配置转成对象的属性，注意，子类重载该函数时，必须先调用父类的该方法
@@ -31,21 +32,7 @@ void Object::onSerialize(SerializeParam *pData) {
 
   {
     AttributeSerializer s(pData, "Object");
-    s.AddString(XML_ID, m_strId)->AsData();
-
-// #ifdef EDITOR_MODE
-//     s.AddString(
-//          XML_STYLECLASS,
-//          [this](const char *t) {
-//            if (t) {
-//              m_strStyle = t;
-//            } else {
-//              m_strStyle.clear();
-//            }
-//          },
-//          [this]() -> const char * { return m_strStyle.c_str(); })
-//         ->ReloadOnChanged();
-// #endif
+    //- s.AddString(XML_ID, m_strId)->AsData();
 
     // styelclass被修改时，应该重新解析所有属性
     // s.AddString(XML_STYLECLASS, m_strStyleClass)->ReloadOnChanged();
@@ -143,6 +130,18 @@ void Object::onSerialize(SerializeParam *pData) {
   }
 
   layout.onSerialize(pData);
+
+  // 属性逻辑重构：
+#if 1
+  if (pData->IsReload()) {
+    // TODO: 
+    // m_property_store->ClearAndPreserveData();
+  }
+  m_property_store.RegisterString(OBJECT_ID, XML_ID).AsData();
+
+  // 将xml attribute全灌输给property store
+  m_property_store.Serialize(pData->attribute_map);
+#endif
 }
 
 void Object::virtualOnLoad() {
@@ -150,6 +149,13 @@ void Object::virtualOnLoad() {
   if (m_objStyle.layer && !GetSelfLayer()) {
     m_objLayer.CreateLayer();
   }
+}
+
+PropertyStore* Object::GetInheritPropertyStore() {
+  if (!m_pParent) {
+    return nullptr;
+  }
+  return &m_pParent->m_property_store;
 }
 
 } // namespace ui

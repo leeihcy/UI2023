@@ -1,7 +1,7 @@
 #include "panel.h"
 #include "panel_meta.h"
 #include "include/interface/ilayout.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/irenderbase.h"
 #include "include/interface/iwindow.h"
 #include "src/application/uiapplication.h"

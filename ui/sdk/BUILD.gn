@@ -169,6 +169,7 @@ shared_library("uisdk") {
         "src/property/property.h",
         "src/property/property_store.cpp",
         "src/property/property_store.h",
+        "src/property/property_id.cpp",
         "src/property/property_id.h",
         "src/property/iproperty.cpp",
 

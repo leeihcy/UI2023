@@ -1,6 +1,6 @@
 #include "averagelayout.h"
 #include "include/inc.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "src/object/object.h"
 
 namespace ui {

@@ -5,6 +5,7 @@
 #include "objtree.h"
 #include "src/private_inc.h"
 #include "src/object/layout/layout_object.h"
+#include "src/property/property_store.h"
 
 namespace ui {
 class ResourceBundle;
@@ -18,7 +19,7 @@ struct ILayoutParam;
 class ObjectLayer;
 struct IRenderTarget;
 
-class Object : public ObjTree {
+class Object : public ObjTree, PropertyStoreDelegate {
   friend class ObjTree;
 
 public:
@@ -132,7 +133,6 @@ public:
   void ClearMapAttribute();
   void InitDefaultAttrib();
    
-  void SetOutRef(void **ppOutRef);
   Object *GetObjectByPos(Point *pt);
   bool SetMouseCapture(int nNotifyMsgId);
   bool ReleaseMouseCapture();
@@ -307,6 +307,8 @@ protected:
   const char *get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender);
 
   void load_layer_config(bool b);
+  
+  PropertyStore* GetInheritPropertyStore() override;
 
 public:
   void notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
@@ -331,20 +333,19 @@ public:
   static void ForwardMessageToChildObject(Object *pParent, ui::Msg *pMsg);
   static void ForwardInitializeMessageToDecendant(Object *pParent);
 
-public:
-  LayoutObject layout;
-
 protected:
   IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
   ResourceBundle *m_resource = nullptr; 
 
-  std::string m_strId; // 该对象在XML中的标识
-#ifdef EDITOR_MODE
-  std::string m_strStyle; // 控件样式
-#endif
+  PropertyStore m_property_store;
 
+  // std::string m_strId; // 该对象在XML中的标识
   ObjectLayer m_objLayer;
+
+public:
+  LayoutObject layout;
+protected:
 
 #pragma region //坐标相关数据
 // 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
@@ -357,9 +358,6 @@ protected:
   Rect m_rcMargin = { 0 };
   Rect m_rcPadding = { 0 };
   Rect m_rcBorder = { 0 };
-  // HRGN     m_hRgn;                  //
-  // （未使用）如果该对象是一个不规则区域，必须设置该值，该值对window类型对象无效.
-  // rgn是相对于窗口左上角的。
 #pragma endregion
 
 public: // TODO:
@@ -374,9 +372,6 @@ protected:
 #if 0 // defined(OS_WIN)
   IAccessible *m_pAccessible;
 #endif
-  
-  // 为了解决一个类成员对象，有可能被自己的父对象删除后，这个类却不知道，再删除该对象时崩溃了.
-  void ** m_ppOutRef = nullptr; 
 
   friend class ObjectAccessible;
 };

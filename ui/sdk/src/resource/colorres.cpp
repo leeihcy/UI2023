@@ -1,5 +1,5 @@
 #include "colorres.h"
-#include "include/interface/imapattr.h"
+#include "include/interface/iattributemap.h"
 #include "include/interface/iuires.h"
 #include "include/util/log.h"
 #include "src/util/util.h"

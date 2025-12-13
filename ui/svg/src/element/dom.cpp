@@ -11,7 +11,7 @@
 #include "src/element/text/text.h"
 
 #include "3rd/pugixml/pugixml.hpp"
-#include "sdk/include/interface/imapattr.h"
+#include "sdk/include/interface/iattributemap.h"
 #include "sdk/include/macro/helper.h"
 #include "sdk/include/uiapi.h"
 
