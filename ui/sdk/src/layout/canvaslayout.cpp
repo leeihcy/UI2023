@@ -73,7 +73,7 @@ void CanvasLayout::DoArrange(ArrangeParam& param) {
       continue;
     }
 
-    this->ArrangeObject(pChild, nWidth, nHeight, param.scale);
+    this->ArrangeObject(pChild, nWidth, nHeight);
 
     if (pObjToArrage && pObjToArrage == pChild)
       break;
@@ -81,7 +81,7 @@ void CanvasLayout::DoArrange(ArrangeParam& param) {
 }
 
 void CanvasLayout::ArrangeObject(Object *pChild, const int &nWidth,
-                                 const int &nHeight, float scale) {
+                                 const int &nHeight) {
   int x = 0, y = 0; // pChild最终在parent中的坐标
 
   CanvasLayoutParam *pParam = GetObjectLayoutParam(pChild);

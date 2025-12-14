@@ -29,7 +29,9 @@ IProperty &DefaultPropertyStore::Register2(int id, const std::string& key,
   detail.type = type;
   detail.value = value;
 
-  g_key_id_map[key] = id;
+  if (!key.empty()) {
+    g_key_id_map[key] = id;
+  }
   return detail;
 }
 

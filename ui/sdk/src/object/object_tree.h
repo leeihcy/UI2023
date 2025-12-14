@@ -1,5 +1,5 @@
-#pragma once
-#include "src/object/message.h"
+#ifndef _UI_SDK_SRC_OBJECT_OBJECTTREE_H_
+#define _UI_SDK_SRC_OBJECT_OBJECTTREE_H_
 
 //
 //	使用Tree结构实现Object之间的层次关系
@@ -7,19 +7,8 @@
 namespace ui {
 class Object;
 
-class ObjTree : public Message {
+class ObjectTree {
 public:
-  ObjTree(IMessage *p) : Message(p) {
-    m_pParent = m_pChild = m_pNcChild = m_pNext = m_pPrev = nullptr;
-  }
-  ~ObjTree() {}
-
-public:
-  virtual bool IsNcObject() { return false; } // 由继承者来扩展实现
-  virtual void SetAsNcObject(bool b) {}
-  virtual bool CanTabstop() { return false; }
-  virtual int GetZorder() { return 0; }
-
   void AddChild(Object *pObj);
   void InsertChild(Object *pObj, Object *pInsertAfter);
   void AddNcChild(Object *pObj);
@@ -70,11 +59,13 @@ public:
   void DestroyChildObject();
 
 protected:
-  Object *m_pParent;
-  Object *m_pChild;
-  Object *m_pNcChild; // 非客户区的子对象，主要用于实现滚动时，不跟随偏移
-  Object *m_pNext;
-  Object *m_pPrev;
+  Object *m_pParent = nullptr;
+  Object *m_pChild = nullptr;
+  Object *m_pNcChild = nullptr; // 非客户区的子对象，主要用于实现滚动时，不跟随偏移
+  Object *m_pNext = nullptr;
+  Object *m_pPrev = nullptr;
 };
 
 } // namespace ui
+
+#endif

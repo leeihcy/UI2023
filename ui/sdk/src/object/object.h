@@ -1,72 +1,55 @@
 #pragma once
 #include "include/interface/iobject.h"
 #include "include/macro/msg.h"
+#include "src/object/message.h"
 #include "object_layer.h"
-#include "objtree.h"
+#include "object_tree.h"
+#include "object_state.h"
+#include "object_style.h"
+#include "object_rect.h"
+#include "object_animate.h"
+#include "object_layout.h"
+#include "src/object/object_prop.h"
 #include "src/private_inc.h"
-#include "src/object/layout/layout_object.h"
-#include "src/property/property_store.h"
+
 
 namespace ui {
 class ResourceBundle;
 class Application;
 class Window;
 class Layer;
-struct UIElement;
-struct IRenderBase;
-struct ITextRenderBase;
-struct ILayoutParam;
 class ObjectLayer;
 struct IRenderTarget;
 
-class Object : public ObjTree, PropertyStoreDelegate {
-  friend class ObjTree;
-
+class Object : 
+  public Message,
+  public ObjectTree, 
+  public ObjectState,
+  public ObjectStyle,
+  public ObjectRect,
+  public ObjectProp,
+  public ObjectLayer,
+  public ObjectLayout,
+  public ObjectAnimate
+{
 public:
   Object(IObject *);
   virtual ~Object();
-
-  // UI_BEGIN_MSG_MAP()
-  // UIMSG_ERASEBKGND(OnEraseBkgnd)
-  // UIMSG_VISIBLE_CHANGED(OnVisibleChanged)
-  // UI_END_MSG_MAP()
-  
   void onRouteMessage(ui::Msg *msg);
 
 public:
   IObject *GetIObject();
 
-  const char *GetId();
-  void SetId(const char *szText);
-
-#if 0 // defined(OS_WIN)
-  bool CreateAccesible(IAccessible **pp);
-#endif
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
   ResourceBundle *GetResource();
   IResourceBundle *GetIResource();
   Window *GetWindow();
   Message *GetWindow2();
+  IMKMgr *GetIMKMgr();
   Object* GetRootObject();
-#if 0 // defined(OS_WIN)
-  HWND GetHWND();
-#endif
-  Layer *GetLayer();
-  Layer *GetLayerForAnimate();
-  Object *GetLayerCreator();
-  Layer *GetSelfLayer() const;
-  ObjectLayer *GetLayerEx();
-  bool HasLayer();
-  void OnLayerDestory();
-  void OnLayerCreate();
 
-  void Invalidate();
-  void Invalidate(const Rect *prcObj);
-  void Invalidate(Rect *prcObjArray, int nCount);
-  void DrawToLayer__(IRenderTarget *pRenderTarget);
-  void DrawChildObject__(IRenderTarget *pRenderTarget, Object *pChildStart);
-
+public:
   Object *FindObject(const char *szObjId);
   Object *TryFindObject(const char *szObjId);
   Object *FindNcObject(const char *szobjId);
@@ -76,276 +59,95 @@ public:
   Object *GetChildObjectByIndex(unsigned int lIndex);
   unsigned int GetChildObjectIndex(Object *pChild);
 
-  bool IsTransparent();
-  void SetTransparent(bool b);
-  bool IsNoClip();
-  bool NeedClip();
-  void SetNoClip(bool b);
-  void SetClipClient(bool b);
-  bool NeedClipClient();
-  bool IsFocus();
+public:
+  Layer *GetLayer();
+  Object *GetLayerCreator();
+  Layer *GetSelfLayer() const;
+  ObjectLayer *GetLayerEx();
+  void OnLayerDestory();
+  void OnLayerCreate();
+  void OnLayerStyleChanged(bool);
+
+  void Invalidate();
+  void Invalidate(const Rect *prcObj);
+  void Invalidate(Rect *prcObjArray, int nCount);
+  void DrawToLayer__(IRenderTarget *pRenderTarget);
+  void DrawChildObject__(IRenderTarget *pRenderTarget, Object *pChildStart);
+
+public:
   void SetFocus(bool b, bool bNoitfy = true);
   bool SetFocusInWindow();
-  bool IsTabstop();
-  bool CanTabstop() override;
-  void SetTabstop(bool b);
-  bool IsSelfVisible();
+  bool CanTabstop();
   virtual bool IsVisible();
   bool IsCollapsed();
   bool IsSelfCollapsed();
-  virtual bool IsEnable();
-  void LoadVisibleEx(int l);
-  int SaveVisibleEx();
   void SetVisible(bool b);
   void SetVisibleEx(VISIBILITY_TYPE eType);
-  void SetDisableDirect(bool b);
-  bool IsSelfDisable();
-  void SetEnable(bool b, bool bNoitfy = true);
-  bool IsDefault();
-  bool IsHover();
-  bool IsPress();
-  bool IsForceHover();
-  bool IsForcePress();
-  bool IsSelected();
-  void SetDefault(bool b, bool bNotify = true);
-  void SetSelected(bool b, bool bNotify = true);
-  void SetForceHover(bool b, bool bNotify = true);
-  void SetForcePress(bool b, bool bNotify = true);
-  void SetHover(bool b, bool bNotify = true);
-  void SetPress(bool b, bool bNotify = true);
-  void SetAsNcObject(bool b) override;
-  bool IsNcObject() override;
-  bool IsRejectMouseMsgAll();
-  bool IsRejectMouseMsgSelf();
-  void SetRejectMouseMsgAll(bool b);
-  void SetRejectMouseMsgSelf(bool b);
   void SortChildByZorder();
 
-  void ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove);
-  bool TestObjectStyle(const OBJSTYLE &test);
-
-  void LoadAttributes(bool bReload);
-  void LoadAttributeFromXml(UIElement *pElement, bool bReload);
-
-  const char *GetAttribute(const char *szKey, bool bErase);
-  void AddAttribute(const char *szKey, const char *szValue);
-  std::shared_ptr<IAttributeMap> GetMapAttribute();
-  void ClearMapAttribute();
-  void InitDefaultAttrib();
-   
   Object *GetObjectByPos(Point *pt);
   bool SetMouseCapture(int nNotifyMsgId);
   bool ReleaseMouseCapture();
   bool SetKeyboardCapture(int nNotifyMsgId);
   bool ReleaseKeyboardCapture();
 
-  void SetBackRender(std::shared_ptr<IRenderBase> p);
-  void SetForegndRender(std::shared_ptr<IRenderBase> p);
-  void SetTextRender(std::shared_ptr<ITextRenderBase> p);
-  std::shared_ptr<ITextRenderBase> GetTextRender();
-  std::shared_ptr<IRenderBase> GetBackRender();
-  std::shared_ptr<IRenderBase> GetForeRender();
-  IRenderFont *GetRenderFont();
+  ObjectLayout* GetLayoutObject();
 
-  void LoadBkgndRender(const char *szName);
-  void LoadForegndRender(const char *szName);
-  void LoadTextRender(const char *szName);
-  const char *SaveBkgndRender();
-  const char *SaveForegndRender();
-  const char *SaveTextRender();
-
-  LayoutObject* GetLayoutObject();
   Size GetDesiredSize();
   void UpdateLayout();
-  // void  UpdateMyLayout();
   void UpdateLayoutPos();
   void UpdateObjectNonClientRegion();
   virtual void SetObjectPos(int x, int y, int cx, int cy, SetPositionFlags flags);
   void SetObjectPos(const Rect *prc, SetPositionFlags flags);
 
-  void GetParentRect(Rect *prc);
-  Point GetWindowPoint();
-  void GetWindowRect(Rect *lprc);
-  bool GetRectInWindow(Rect *prc, bool bOnlyVisiblePart);
-  void GetClientRectInObject(Rect *prc);
-  void GetClientRectWithZeroOffset(Rect *prc);
-  bool CalcRectInAncestor(Object *pObjAncestor, const Rect *prcObjPart,
-                          bool bCalcVisible, Rect *prcOut);
-  bool GetScrollOffset(int *pxOffset, int *pyOffset);
-  bool GetScrollRange(int *pxRange, int *pyRange);
-
-  int GetParentRectL() { return m_rcParent.left; }
-  int GetParentRectT() { return m_rcParent.top; }
-  int GetParentRectR() { return m_rcParent.right; }
-  int GetParentRectB() { return m_rcParent.bottom; }
-
-  const Rect& GetPadding();
-  const Rect& GetMargin();
-  const Rect& GetBorder();
-  void SetPadding(const Rect&);
-  void SetMargin(const Rect&);
-  void SetBorder(const Rect&);
-
   void GetNonClientRegion(REGION4 *prc);
-  void SetExtNonClientRegion(REGION4 *prc) { m_rcExtNonClient.CopyFrom(*prc); }
-  void GetExtNonClientRegion(REGION4 *prc) { prc->CopyFrom(m_rcExtNonClient); }
-
   void GetClientRectInParent(Rect *prc);
   void GetClientRectInWindow(Rect *prc);
-  int GetWidth();
-  int GetHeight();
-  
 
-  bool IntersectWindowRect(const Rect *prcWindow, Rect *prcIntersectWnd,
-                           Rect *prcIntersectObj);
-  void WindowPoint2ObjectPoint(const Point *ptWindow, Point *ptObj,
-                               bool bCalcTransform);
-  void WindowPoint2ObjectClientPoint(const Point *ptWindow, Point *ptClient,
-                                     bool bCalcTransform);
-  void WindowRect2ObjectClientRect(const Rect *rcWindow, Rect *rcObj);
-  void WindowRect2ObjectRect(const Rect *rcWindow, Rect *rcObj);
-
-  static void ParentClientPoint2ChildPoint(Object *pObjChild, const Point *pt,
-                                           Point *pOut);
-
-  static void ObjectPoint2ObjectClientPoint(Object *pObj, const Point *pt,
-                                            Point *pOut);
-  static void ObjectPoint2ObjectNonClientPoint(Object *pObj, const Point *pt,
-                                               Point *pOut);
-  static void ObjectRect2ObjectClientRect(Object *pObj, const Rect *prc,
-                                          Rect *pOut);
-  static void ObjectClientRect2WindowRect(Object *pObj, const Rect *prcClient,
-                                          Rect *prcWnd);
-  static void ObjectRect2WindowRect(Object *pObj, const Rect *prcObj,
-                                    Rect *prcWnd);
-
-  static void ParentClientPoint2ChildClientPoint(Object *pObjChild,
-                                                 const Point *pt, Point *pOut);
-  static void ParentClientRect2ChildClientRect(Object *pObjChild,
-                                               const Rect *prc, Rect *pOut);
-
-  static void ParentPoint2ChildPoint(Object *pObjChild, const Point *pt,
-                                     Point *pOut);
-  static void ParentRect2ChildRect(Object *pObjChild, const Rect *prc,
-                                   Rect *pOut);
-
-  static void ChildPoint2ParentClientPoint(Object *pObjChild,
-                                           const Point *ptChild, Point *ptOut);
-  static void ChildRect2ParentClientRect(Object *pObjChild, const Rect *prc,
-                                         Rect *pOut);
-
-  static void ObjectClientPoint2ObjectPoint(Object *pObj, const Point *ptChild,
-                                            Point *ptOut);
-  static void ObjectClientRect2ObjectRect(Object *pObj, const Rect *prc,
-                                          Rect *pOut);
-
-  static void ChildPoint2ParentPoint(Object *pObjChild, const Point *ptChild,
-                                     Point *ptOut);
-  static void ChildRect2ParentRect(Object *pObjChild, const Rect *prc,
-                                   Rect *pOut);
-
-  // 动画属性
-  unsigned char GetOpacity() const;
-  void SetOpacity(const unsigned char alpha, LayerAnimateParam *param);
-
-  void TranslateBy(float x, float y, float z, LayerAnimateParam *param);
-  void TranslateTo(float x, float y, float z, LayerAnimateParam *param);
-  void TranslateXTo(float x, LayerAnimateParam *param);
-  void TranslateYTo(float y, LayerAnimateParam *param);
-  void TranslateToParent(int x, int y, LayerAnimateParam *param);
-
-  void RotateXTo(float degree, LayerAnimateParam *param);
-  void RotateXBy(float degree, LayerAnimateParam *param);
-  void RotateYTo(float degree, LayerAnimateParam *param);
-  void RotateYBy(float degree, LayerAnimateParam *param);
-  void RotateZTo(float degree, LayerAnimateParam *param);
-  void RotateZBy(float degree, LayerAnimateParam *param);
-
-  void ScaleTo(float x, float y, LayerAnimateParam *param = nullptr);
+  bool GetScrollOffset(int *pxOffset, int *pyOffset);
+  bool GetScrollRange(int *pxRange, int *pyRange);
+public:
+  void ForwardMessageToChildren(ui::Msg *pMsg);
+  void ForwardInitializeMessageToDecendant();
 
 protected:
   int FinalConstruct(IResourceBundle *resource_bundle);
   void FinalRelease();
   eHitTest OnHitTest(const Point& ptInParent, Point& ptInChild);
   void OnVisibleChanged(bool bVisible, IObject *pObjChanged);
+  void onLoaded();
   void onSerialize(SerializeParam *pData);
-  void OnEraseBkgnd(IRenderTarget *pRenderTarget);
-
+  
 protected:
   Object *find_child_object(const char *szobjId, bool bFindDecendant);
   Object *find_child_object(Uuid uuid, bool bFindDecendant);
   Object *find_ncchild_object(Uuid uuid, bool bFindDecendant);
-  void load_renderbase(const char *szName, std::shared_ptr<IRenderBase> &pRender);
-  void load_textrender(const char *szName, std::shared_ptr<ITextRenderBase> &pTextRender);
-  const char *get_renderbase_name(std::shared_ptr<IRenderBase> &pRender);
-  const char *get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender);
-
-  void load_layer_config(bool b);
-  
-  PropertyStore* GetInheritPropertyStore() override;
 
 public:
   void notify_WM_SIZE(unsigned int nType, unsigned int nWidth,
                       unsigned int nHeight, float scale);
   void notify_WM_MOVE(int x, int y);
 
-  IMKMgr *GetIMKMgr();
-
 protected: // virtual
   virtual IMKMgr *virtualGetIMKMgr() { return nullptr; }
   virtual void virtualSetVisibleEx(VISIBILITY_TYPE eType);
-  virtual void virtualSetEnable(bool b);
-  virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
-                             unsigned int nHeight, float scale);
-  virtual void virtualOnMove();
   virtual void virtualOnPostDrawObjectErasebkgnd(){};
-
-public:
-  virtual void virtualOnLoad();
-
-public:
-  static void ForwardMessageToChildObject(Object *pParent, ui::Msg *pMsg);
-  static void ForwardInitializeMessageToDecendant(Object *pParent);
 
 protected:
   IObject *m_pIObject;
-
   // 用于支持多皮肤包共存（插件模式）
   ResourceBundle *m_resource = nullptr; 
-
-  PropertyStore m_property_store;
-
-  // std::string m_strId; // 该对象在XML中的标识
-  ObjectLayer m_objLayer;
-
-public:
-  LayoutObject layout;
-protected:
-
-#pragma region //坐标相关数据
-// 该对象的范围，相对于parent的client区域.对于Window对象是客户区域位置，即左上角为0，0
-  Rect m_rcParent = { 0 }; 
-
-  // 扩展的非客户区，与border、padding共同做为对象的非客户区。
-  // 对于窗口类型，这个值会动态计算，带上边框、标题栏范围。
-  Rect m_rcExtNonClient = { 0 }; 
-
-#pragma endregion
-
-public: // TODO:
-  OBJSTYLE m_objStyle;
-  OBJSTATE m_objState;
-protected:
-  std::shared_ptr<IAttributeMap> m_attribute_map_remaining; // 用于扩展。未解析的属性
-  std::shared_ptr<IRenderBase> m_back_render;           // 背景渲染
-  std::shared_ptr<IRenderBase> m_fore_render;         // 前景渲染
-  std::shared_ptr<ITextRenderBase> m_text_render; // 文字渲染，由control负责读取该属性
-  
-#if 0 // defined(OS_WIN)
+ 
+#if 0
+  bool CreateAccesible(IAccessible **pp);
   IAccessible *m_pAccessible;
-#endif
-
   friend class ObjectAccessible;
+#endif
+  friend class ObjectTree;
+  friend class ObjectRect;
+  friend class ObjectProp;
+  friend class ObjectAnimate;
+  friend class ObjectLayout;
 };
 
 } // namespace ui

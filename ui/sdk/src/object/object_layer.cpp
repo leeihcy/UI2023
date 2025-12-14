@@ -1,4 +1,5 @@
 #include "object_layer.h"
+#include "include/interface/iobject.h"
 #include "include/macro/msg.h"
 #include "object.h"
 // #include "src/layer/windowrender.h"
@@ -7,17 +8,16 @@
 
 namespace ui {
 
-ObjectLayer::ObjectLayer(Object &o) : m_obj(o) { m_pLayer = nullptr; }
-
 ObjectLayer::~ObjectLayer() { DestroyLayer(); }
 
 void ObjectLayer::CreateLayer() {
+  Object& self = *static_cast<Object*>(this);
   if (m_pLayer)
     return;
 
   WindowRender *pWndRender = nullptr;
 
-  Window *pWindow = m_obj.GetWindow();
+  Window *pWindow = self.GetWindow();
   if (pWindow)
     pWndRender = &pWindow->GetWindowRender();
 
@@ -26,19 +26,19 @@ void ObjectLayer::CreateLayer() {
         pWndRender->CreateLayer(static_cast<IObjectLayerContent *>(this));
 
     Rect rcParent;
-    m_obj.GetParentRect(&rcParent);
+    self.GetParentRect(&rcParent);
     if (!rcParent.IsEmpty()) {
       m_pLayer->OnSize(rcParent.Width(), rcParent.Height(), pWindow->m_dpi.GetScaleFactor());
     }
 
     SerializeParam data = {0};
-    data.resource = m_obj.GetIResource();
+    data.resource = self.GetIResource();
     data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-    data.attribute_map = m_obj.GetMapAttribute().get();
+    data.attribute_map = self.GetMapAttribute().get();
 
     m_pLayer->Serialize(&data);
 
-    m_obj.OnLayerCreate();
+    self.OnLayerCreate();
   } else {
     // 在resize的时候创建
     // UIASSERT(0);// 有可能窗口正在退了销毁期间，逻辑又调用了一次动画。
@@ -63,15 +63,24 @@ void ObjectLayer::DestroyLayer() {
     p->Destroy();
 }
 
-void ObjectLayer::Draw(IRenderTarget *pRenderTarget) {
-  m_obj.DrawToLayer__(pRenderTarget);
+Object& ObjectLayer::GetLayerContentObject() {
+  return *static_cast<Object*>(this);
 }
 
-void ObjectLayer::GetWindowRect(Rect *prcOut) { m_obj.GetWindowRect(prcOut); }
+void ObjectLayer::LayerDraw(IRenderTarget *pRenderTarget) {
+  Object& self = *static_cast<Object*>(this);
+  self.DrawToLayer__(pRenderTarget);
+}
 
-void ObjectLayer::GetParentWindowRect(Rect *prcOut) {
-  if (m_obj.GetParentObject())
-    m_obj.GetParentObject()->GetWindowRect(
+void ObjectLayer::GetLayerWindowRect(Rect *prcOut) { 
+  Object& self = *static_cast<Object*>(this);
+  self.GetWindowRect(prcOut); 
+}
+
+void ObjectLayer::GetLayerParentWindowRect(Rect *prcOut) {
+  Object& self = *static_cast<Object*>(this);
+  if (self.GetParentObject())
+    self.GetParentObject()->GetWindowRect(
         prcOut); // TODO: -->> visible part only
 }
 
@@ -82,15 +91,17 @@ void ObjectLayer::OnSize(uint width, uint height, float scale) {
 }
 
 bool ObjectLayer::IsChildOf(ILayerContent *pParentLayer) {
+  Object& self = *static_cast<Object*>(this);
+
   if (!pParentLayer)
     return false;
 
-  if (pParentLayer->Type() == LayerContentTypeObject) {
+  if (pParentLayer->GetLayerContentType() == LayerContentTypeObject) {
     Object &parentObject =
-        static_cast<ObjectLayer *>(pParentLayer)->GetObject();
+        *static_cast<Object*>(static_cast<ObjectLayer *>(pParentLayer));
 
-    return parentObject.IsMyChild(&m_obj, true);
-  } else if (pParentLayer->Type() == LayerContentTypeListItem) {
+    return parentObject.IsMyChild(&self, true);
+  } else if (pParentLayer->GetLayerContentType() == LayerContentTypeListItem) {
     assert(false);
 #if 0 // TODO:
     Panel *panel = static_cast<IListItemLayerContent *>(pParentLayer)
@@ -107,11 +118,16 @@ bool ObjectLayer::IsChildOf(ILayerContent *pParentLayer) {
   return false;
 }
 
-bool ObjectLayer::IsVisible() { return m_obj.IsVisible(); }
+bool ObjectLayer::IsLayerVisible() { 
+  Object& self = *static_cast<Object*>(this);
+  return self.IsVisible(); 
+}
 
 float ObjectLayer::GetLayerScale() {
+  Object& self = *static_cast<Object*>(this);
+
   float scale = 1.0f;
-  Window *window = m_obj.GetWindow();
+  Window *window = self.GetWindow();
   if (window) {
     scale = window->m_dpi.GetScaleFactor();
   }
@@ -130,15 +146,17 @@ void ObjectLayer::OnObjPosInTreeChanged() {
 }
 
 void ObjectLayer::OnLayerDestory() {
+  Object& self = *static_cast<Object*>(this);
   if (m_pLayer) // 由ObjectLayer::~ObjectLayer()触发的，不通知
   {
     m_pLayer = nullptr;
-    m_obj.OnLayerDestory();
+    self.OnLayerDestory();
   }
 }
 
 Layer *ObjectLayer::GetParentLayer() {
-  Object *parent = m_obj.GetParentObject();
+  Object& self = *static_cast<Object*>(this);
+  Object *parent = self.GetParentObject();
   if (!parent)
     return nullptr;
 
@@ -193,9 +211,10 @@ Layer *ObjectLayer::GetParentLayer() {
 
 // 判断思路：这个对象的下一个层，只会在这个对象的下一个Object中出现。
 Layer *ObjectLayer::GetNextLayer() {
+  Object& self = *static_cast<Object*>(this);
   Layer *pParentLayer = GetParentLayer();
 
-  Object *pNextTreeObject = m_obj.GetNextTreeItemObject();
+  Object *pNextTreeObject = self.GetNextTreeItemObject();
   while (pNextTreeObject) {
     Layer *pThisLayer = pNextTreeObject->GetSelfLayer();
 

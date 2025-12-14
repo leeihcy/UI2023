@@ -120,12 +120,12 @@ void test2_3rd_module() {
 // -------------------------------------------
 void test0_sizeof() {
   // 2025.12.12 属性改造前：（mac）
-  //   sizeof(ui::Object) == 408
+  //   sizeof(ui::Object) == 408  
   //   sizeof(ui::Control) == 424
   //   sizeof(ui::Button) == 512
   //   sizeof(ui::Window) == 344
   //
-  //   408 --> 424
+  //   408 --> 336
   std::cout << "sizeof Object: " << sizeof(ui::Object) << std::endl;
   std::cout << "sizeof Control: " << sizeof(ui::Control) << std::endl;
   std::cout << "sizeof Button: " << sizeof(ui::Button) << std::endl;

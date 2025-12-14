@@ -24,7 +24,6 @@ public:
 
 private:
   void FinalConstruct();
-  // void recursion_on_load_notify(Object *pParent);
   void onPaintBkgnd(IRenderTarget *);
   
 private:

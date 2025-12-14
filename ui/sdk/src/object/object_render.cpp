@@ -128,13 +128,6 @@ void Object::DoPostPaint(IRenderTarget* pRenderTarget, RenderContext context)
 
 #endif
 
-void Object::OnEraseBkgnd(IRenderTarget *pRenderTarget) {
-  if (m_back_render) {
-    Rect rc = {0, 0, this->GetWidth(), this->GetHeight()};
-    m_back_render->DrawState(pRenderTarget, &rc, 0);
-  }
-}
-
 // 从上到下刷新方式(更简单),但对分层窗口无效。
 // 分层窗口BeginPaint之后，拿到的ps.rcPaint为空
 //
@@ -163,7 +156,7 @@ void Object::Invalidate(const Rect *prcObj) {
   if (!pLayer) // 刚创建，还未初始化layer阶段
     return;
 
-  Object &layerObj = pLayer->GetObject();
+  Object &layerObj = *static_cast<Object*>(pLayer);
 
   Rect rc = {0};
   if (!CalcRectInAncestor(&layerObj, prcObj, true, &rc))

@@ -59,15 +59,15 @@ bool RootObject::LoadLayout(const char *layout_id) {
 void RootObject::onWindowCreate() {
   // 窗口作为根结点，一定会创建一个缓存
   m_objStyle.layer = 1;
-  this->virtualOnLoad();
 
   m_objStyle.initialized = 1;
   RouteMessage(UI_MSG_INITIALIZE);
-  ForwardInitializeMessageToDecendant(this);
+  ForwardInitializeMessageToDecendant();
   RouteMessage(UI_MSG_INITIALIZE2);
 
-  // 窗口加载即将完成，在内部调用所有
-  // recursion_on_load_notify(this);
+  ui::Msg msg = { .message = UI_MSG_LOADED };
+  RouteMessage(&msg);
+  ForwardMessageToChildren(&msg);
 }
 
 void RootObject::syncWindowSize() {

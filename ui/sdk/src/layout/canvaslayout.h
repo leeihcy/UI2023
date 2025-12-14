@@ -89,7 +89,7 @@ public:
 
 public:
   void ArrangeObject(Object *pChild, const int &nWidth,
-                            const int &nHeight, float scale);
+                            const int &nHeight);
 };
 
 } // namespace ui

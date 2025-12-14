@@ -66,7 +66,7 @@ void Button::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
     onFinalConstruct(static_cast<FinalConstructMessage *>(msg));
     return;
-  } else if (msg->message == UI_MSG_DOBINDPLZ) {
+  } else if (msg->message == UI_MSG_LOADED) {
     onBind();
   } 
   else if (msg->message == UI_MSG_LBUTTONDOWN) {

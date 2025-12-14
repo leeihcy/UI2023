@@ -46,7 +46,7 @@ public:
       Object *pChild = nullptr;
 
       while ((pChild = this->m_pPanel->EnumChildObject(pChild))) {
-        pChild->layout.SetLayoutParam(nullptr);
+        pChild->SetLayoutParam(nullptr);
       }
     }
   }
@@ -100,13 +100,13 @@ public:
     if (!pObj)
       return nullptr;
 
-    ILayoutParam *pParam = pObj->layout.GetLayoutParam();
+    ILayoutParam *pParam = pObj->GetLayoutParam();
     if (pParam && pParam->UUID() == T::UUID()) {
       return static_cast<TParam *>(pParam);
     }
 
     pParam = CreateLayoutParam(pObj->GetIObject());
-    pObj->layout.SetLayoutParam(pParam);
+    pObj->SetLayoutParam(pParam);
     return static_cast<TParam *>(pParam);
   }
 

@@ -161,10 +161,10 @@ void Layer::Invalidate(const Rect *prcDirtyInLayer) {
   if (m_pParent && GetType() == Layer_Software) {
     // rcDirty 转换成 父layer位置，并由父layer去请求合成
     Rect rcParent = {0};
-    m_pParent->m_pLayerContent->GetParentWindowRect(&rcParent);
+    m_pParent->m_pLayerContent->GetLayerParentWindowRect(&rcParent);
 
     Rect rcSelf = {0};
-    m_pLayerContent->GetWindowRect(&rcSelf);
+    m_pLayerContent->GetLayerWindowRect(&rcSelf);
 
     rcDirty.Offset(rcSelf.left - rcParent.left, rcSelf.top - rcParent.top);
 
@@ -797,10 +797,10 @@ Object *Layer::GetLayerContentObject() {
   if (!m_pLayerContent)
     return nullptr;
 
-  if (m_pLayerContent->Type() != LayerContentTypeObject)
+  if (m_pLayerContent->GetLayerContentType() != LayerContentTypeObject)
     return nullptr;
 
-  return &static_cast<IObjectLayerContent *>(m_pLayerContent)->GetObj();
+  return &static_cast<IObjectLayerContent *>(m_pLayerContent)->GetLayerContentObject();
 }
 
 // 本类中所有的创建动画都走这里，用于数量统计
@@ -847,7 +847,7 @@ bool Layer::softwareUpdateDirty() {
     UI_LOG_DEBUG("[layer] dirty region clear");
   }
 
-  m_pLayerContent->Draw(pRenderTarget);
+  m_pLayerContent->LayerDraw(pRenderTarget);
   pRenderTarget->EndDraw();
 
   if (!Config::GetInstance().enable_render_thread &&
@@ -879,7 +879,7 @@ bool Layer::hardwareUpdateDirty() {
   // 例如listitem.draw->listitem.delayop->listitem.onsize->invalidate
   m_dirty_region.Destroy();
 
-  m_pLayerContent->Draw(pRenderTarget);
+  m_pLayerContent->LayerDraw(pRenderTarget);
   pRenderTarget->EndDraw();
 
   hardwareSyncLayerProperties();
@@ -889,8 +889,8 @@ bool Layer::hardwareUpdateDirty() {
 // 与LayerRT同步属性。
 void Layer::hardwareSyncLayerProperties() {
   LayerTreeProperties properties;
-  properties.visible = m_pLayerContent->IsVisible();
-  m_pLayerContent->GetWindowRect(&properties.rect_in_window);
+  properties.visible = m_pLayerContent->IsLayerVisible();
+  m_pLayerContent->GetLayerWindowRect(&properties.rect_in_window);
   properties.dpi_scale = m_pLayerContent->GetLayerScale();
   properties.opacity = m_nOpacity;
   properties.m_fxRotate = m_fxRotate;
@@ -903,9 +903,9 @@ void Layer::hardwareSyncLayerProperties() {
   properties.m_zTranslate = m_zTranslate;
 
   if (m_bClipLayerInParentObj && m_window_render->GetRootLayer() != this) {
-    m_pLayerContent->GetParentWindowRect(&properties.clip_rect);
+    m_pLayerContent->GetLayerParentWindowRect(&properties.clip_rect);
   } else {
-    m_window_render->GetRootLayer()->GetContent()->GetWindowRect(&properties.clip_rect);
+    m_window_render->GetRootLayer()->GetContent()->GetLayerWindowRect(&properties.clip_rect);
   }
 
   RenderThread::Main::PostTask(ui::Slot(

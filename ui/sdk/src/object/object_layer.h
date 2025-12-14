@@ -7,7 +7,6 @@ class Layer;
 
 class ObjectLayer : public IObjectLayerContent {
 public:
-  ObjectLayer(Object &o);
   ~ObjectLayer();
 
   void CreateLayer();
@@ -15,27 +14,25 @@ public:
   void DestroyLayer();
 
   Layer *GetLayer() const { return m_pLayer; }
-  Object &GetObject() { return m_obj; }
 
   void OnSize(uint width, uint height, float scale);
   void OnObjPosInTreeChanged();
 
 protected:
-  Object &GetObj() override { return m_obj; }
-
   bool IsChildOf(ILayerContent *) override;
-  bool IsVisible() override;
+  bool IsLayerVisible() override;
   float GetLayerScale() override;
-  void Draw(ui::IRenderTarget *) override;
-  void GetWindowRect(Rect *prcOut) override;
-  void GetParentWindowRect(Rect *prcOut) override;
+  void LayerDraw(ui::IRenderTarget *) override;
+  void GetLayerWindowRect(Rect *prcOut) override;
+  void GetLayerParentWindowRect(Rect *prcOut) override;
   void OnLayerDestory() override;
   Layer *GetParentLayer() override;
   Layer *GetNextLayer() override;
 
-private:
-  Object &m_obj;
-  Layer *m_pLayer;
+  Object& GetLayerContentObject() override;
+
+protected:
+  Layer *m_pLayer = nullptr;
 };
 
 } // namespace ui

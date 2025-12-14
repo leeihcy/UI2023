@@ -168,16 +168,9 @@ struct TextRenderDrawStateMessage : public Msg {
 // void  OnInitialize();
 // void  OnInitialize2();
 
-
-#define UI_MSG_DOBINDPLZ 174191106
-// void  DoBindPlz(bool bind);
-struct DoBindPlzMessage : public ui::Msg {
-  DoBindPlzMessage() { message = UI_MSG_DOBINDPLZ; }
-
-  // true绑定， false取消绑定
-  bool bind = true;
-};
-
+// 所有对象Initialize完毕
+#define UI_MSG_LOADED 174191106
+#define UI_MSG_UNLOADED 250741309
 
 //	祖、父对象中的可见状态发生了改变（主要是用于在父对象隐藏时，能自动将HwndObj对象也隐藏）
 #define UI_MSG_VISIBLE_CHANGED 168261620

@@ -98,7 +98,7 @@ struct ArrangeParam {
   IObject * obj_to_arrange = nullptr;
   ArrangeReason reason = ArrangeReason::NoReason;
 
-  float scale = 1.0f;
+  // float scale = 1.0f;
 };
 
 struct ILayout {

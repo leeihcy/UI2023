@@ -68,7 +68,6 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
     ArrangeParam param = {
       pFirstChild->GetIObject(), 
       ArrangeReason::VisibleChanged,
-      scale
     };
     pLayout->Arrange(param);
   }
@@ -78,7 +77,7 @@ Object *LayoutManager::LoadPluginLayout(const char *szWndId,
   Object *p = pFirstChild;
   {
     p->RouteMessage(UI_MSG_INITIALIZE);
-    Object::ForwardInitializeMessageToDecendant(p);
+    p->ForwardInitializeMessageToDecendant();
     p->RouteMessage(UI_MSG_INITIALIZE2);
   }
 

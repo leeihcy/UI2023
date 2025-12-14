@@ -1,15 +1,15 @@
-#include "objtree.h"
+#include "object_tree.h"
 #include "include/inc.h"
 #include "object.h"
 
 namespace ui {
 // 将自己（包括自己的子结点）在树结构中移除
-void ObjTree::RemoveMeInTheTree() {
+void ObjectTree::RemoveMeInTheTree() {
   if (m_pPrev) {
     m_pPrev->m_pNext = this->m_pNext;
   } else {
     if (m_pParent) {
-      if (this->IsNcObject())
+      if (static_cast<Object*>(this)->IsNcObject())
         m_pParent->m_pNcChild = this->m_pNext;
       else
         m_pParent->m_pChild = this->m_pNext;
@@ -25,7 +25,7 @@ void ObjTree::RemoveMeInTheTree() {
 
 // 目前仅是在换肤时被调用
 // 将所有树指针重置
-void ObjTree::ClearMyTreeRelationOnly() {
+void ObjectTree::ClearMyTreeRelationOnly() {
   this->m_pParent = nullptr;
   this->m_pNext = nullptr;
   this->m_pPrev = nullptr;
@@ -36,7 +36,7 @@ void ObjTree::ClearMyTreeRelationOnly() {
 // 调用情况：
 // 1. WindowBase::_OnNcDestroy
 // 2. Object::FinalRelease
-void ObjTree::DestroyChildObject() {
+void ObjectTree::DestroyChildObject() {
   // 1. Client Object
   Object *pObj = nullptr;
   while ((pObj = EnumChildObject(pObj))) {
@@ -72,7 +72,7 @@ void ObjTree::DestroyChildObject() {
 }
 
 // 直接插入一个子对象，先不考虑 nc obj, sort值
-// void ObjTree::AddChild_Direct(Object* pObj)
+// void ObjectTree::AddChild_Direct(Object* pObj)
 // {
 // 	if (nullptr == pObj)
 // 		return;
@@ -101,7 +101,7 @@ void ObjTree::DestroyChildObject() {
 // 在加载布局时，zorder/ncobj属性还没有拿到
 // 1. 根据ncchild属性，将其放到ncobject中
 // 2. 根据zorder进行排序
-// void  ObjTree::ArrangeChild()
+// void  ObjectTree::ArrangeChild()
 // {
 // 	Object* pLastNcObj = GetLastChildObject();
 //
@@ -116,7 +116,7 @@ void ObjTree::DestroyChildObject() {
 // }
 
 // 添加时，按zorder值决定其位置
-void ObjTree::AddChild(Object *pObj) {
+void ObjectTree::AddChild(Object *pObj) {
   if (nullptr == pObj)
     return;
   if (pObj->m_pParent == this)
@@ -166,7 +166,7 @@ void ObjTree::AddChild(Object *pObj) {
   pObj->SetAsNcObject(false);
 }
 
-void ObjTree::InsertChild(Object *pObj, Object *pInsertAfter) {
+void ObjectTree::InsertChild(Object *pObj, Object *pInsertAfter) {
 #ifdef _DEBUG
   if (pInsertAfter) {
     UIASSERT(IsMyChild(pInsertAfter, false));
@@ -196,10 +196,10 @@ void ObjTree::InsertChild(Object *pObj, Object *pInsertAfter) {
   pObj->SetAsNcObject(false);
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-    pObj->layout.position_in_tree_changed();
+  static_cast<ObjectLayout*>(pObj)->position_in_tree_changed();
 }
 
-void ObjTree::AddNcChild(Object *pObj) {
+void ObjectTree::AddNcChild(Object *pObj) {
   if (nullptr == pObj)
     return;
   if (pObj->m_pParent == static_cast<Object *>(this))
@@ -225,7 +225,7 @@ void ObjTree::AddNcChild(Object *pObj) {
   pObj->SetAsNcObject(true);
 }
 
-void ObjTree::InsertAfter(Object *pInsertAfter) {
+void ObjectTree::InsertAfter(Object *pInsertAfter) {
   if (nullptr == pInsertAfter)
     return;
 
@@ -240,13 +240,13 @@ void ObjTree::InsertAfter(Object *pInsertAfter) {
   if (pNextSave)
     pNextSave->m_pPrev = obj;
 
-  this->SetAsNcObject(pInsertAfter->IsNcObject());
+  static_cast<Object*>(this)->SetAsNcObject(pInsertAfter->IsNcObject());
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-  obj->layout.position_in_tree_changed();
+  static_cast<ObjectLayout*>(obj)->position_in_tree_changed();
 }
 
-void ObjTree::InsertBefore(Object *pInsertBefore) {
+void ObjectTree::InsertBefore(Object *pInsertBefore) {
   if (nullptr == pInsertBefore)
     return;
 
@@ -268,13 +268,13 @@ void ObjTree::InsertBefore(Object *pInsertBefore) {
     else
       this->m_pParent->m_pChild = obj;
   }
-  this->SetAsNcObject(bNcObj);
+  static_cast<Object*>(this)->SetAsNcObject(bNcObj);
 
   // 用于将自己挪到别的结点下面时，修正一些依赖父结点的参数
-  obj->layout.position_in_tree_changed();
+  static_cast<ObjectLayout*>(obj)->position_in_tree_changed();
 }
 
-bool ObjTree::SwapObject(Object *pObj1, Object *pObj2) {
+bool ObjectTree::SwapObject(Object *pObj1, Object *pObj2) {
   if (nullptr == pObj1 || nullptr == pObj2)
     return false;
 
@@ -320,7 +320,7 @@ bool ObjTree::SwapObject(Object *pObj1, Object *pObj2) {
   return true;
 }
 
-bool ObjTree::IsMyChild(Object *pChild, bool bFindInGrand) {
+bool ObjectTree::IsMyChild(Object *pChild, bool bFindInGrand) {
   if (nullptr == pChild)
     return false;
 
@@ -342,7 +342,7 @@ bool ObjTree::IsMyChild(Object *pChild, bool bFindInGrand) {
   return false;
 }
 
-bool ObjTree::RemoveChildInTree(Object *pChild) {
+bool ObjectTree::RemoveChildInTree(Object *pChild) {
   if (nullptr == pChild)
     return false;
 
@@ -390,14 +390,14 @@ bool ObjTree::RemoveChildInTree(Object *pChild) {
 //		}
 //
 
-Object *ObjTree::EnumChildObject(Object *pObj) {
+Object *ObjectTree::EnumChildObject(Object *pObj) {
   if (nullptr == pObj)
     return this->m_pChild;
   else
     return pObj->m_pNext;
 }
 
-Object *ObjTree::REnumChildObject(Object *pObj) {
+Object *ObjectTree::REnumChildObject(Object *pObj) {
   if (nullptr == pObj) {
     Object *pChild = nullptr;
     while ((pChild = this->EnumChildObject(pChild))) {
@@ -410,14 +410,14 @@ Object *ObjTree::REnumChildObject(Object *pObj) {
   }
 }
 
-Object *ObjTree::EnumNcChildObject(Object *pObj) {
+Object *ObjectTree::EnumNcChildObject(Object *pObj) {
   if (nullptr == pObj)
     return this->m_pNcChild;
   else
     return pObj->m_pNext;
 }
 
-Object *ObjTree::REnumNcChildObject(Object *pObj) {
+Object *ObjectTree::REnumNcChildObject(Object *pObj) {
   if (nullptr == pObj) {
     Object *pChild = nullptr;
     while ((pChild = this->EnumNcChildObject(pChild))) {
@@ -430,7 +430,7 @@ Object *ObjTree::REnumNcChildObject(Object *pObj) {
   }
 }
 
-Object *ObjTree::EnumAllChildObject(Object *pObj) {
+Object *ObjectTree::EnumAllChildObject(Object *pObj) {
   if (!pObj) {
     if (m_pNcChild)
       return this->m_pNcChild;
@@ -445,7 +445,7 @@ Object *ObjTree::EnumAllChildObject(Object *pObj) {
 }
 
 // 先反向枚举非客户区，再反向枚举客户区
-Object *ObjTree::REnumAllChildObject(Object *pObj) {
+Object *ObjectTree::REnumAllChildObject(Object *pObj) {
   if (!pObj) {
     if (m_pNcChild)
       return GetLastNcChildObject();
@@ -461,7 +461,7 @@ Object *ObjTree::REnumAllChildObject(Object *pObj) {
 
 // 从自己的parent开始往上枚举自己的祖宗
 
-Object *ObjTree::EnumParentObject(Object *pObj) {
+Object *ObjectTree::EnumParentObject(Object *pObj) {
   if (nullptr == pObj)
     return this->m_pParent;
   else
@@ -470,7 +470,7 @@ Object *ObjTree::EnumParentObject(Object *pObj) {
 
 // 从自己的祖宗开始往下枚举，直到枚举到自己的parent
 
-Object *ObjTree::REnumParentObject(Object *pObj) {
+Object *ObjectTree::REnumParentObject(Object *pObj) {
   if (nullptr == pObj) {
     Object *pParent = nullptr;
     while ((pParent = this->EnumParentObject(pParent))) {
@@ -492,18 +492,18 @@ Object *ObjTree::REnumParentObject(Object *pObj) {
   return nullptr;
 }
 
-Object *ObjTree::GetParentObject() { return this->m_pParent; }
-Object *ObjTree::GetChildObject() { return this->m_pChild; }
-Object *ObjTree::GetNcChildObject() { return this->m_pNcChild; }
-Object *ObjTree::GetLastChildObject() {
+Object *ObjectTree::GetParentObject() { return this->m_pParent; }
+Object *ObjectTree::GetChildObject() { return this->m_pChild; }
+Object *ObjectTree::GetNcChildObject() { return this->m_pNcChild; }
+Object *ObjectTree::GetLastChildObject() {
   return this->REnumChildObject(nullptr);
 }
-Object *ObjTree::GetLastNcChildObject() {
+Object *ObjectTree::GetLastNcChildObject() {
   return this->REnumNcChildObject(nullptr);
 }
-Object *ObjTree::GetNextObject() { return this->m_pNext; }
-Object *ObjTree::GetPrevObject() { return this->m_pPrev; }
-Object *ObjTree::GetRootObject() {
+Object *ObjectTree::GetNextObject() { return this->m_pNext; }
+Object *ObjectTree::GetPrevObject() { return this->m_pPrev; }
+Object *ObjectTree::GetRootObject() {
   Object *p = static_cast<Object *>(this);
   Object *pRet = nullptr;
   while ((pRet = p->m_pParent)) {
@@ -513,15 +513,15 @@ Object *ObjTree::GetRootObject() {
   return p;
 }
 
-void ObjTree::SetParentObjectDirect(Object *p) { this->m_pParent = p; }
-void ObjTree::SetChildObjectDirect(Object *p) { this->m_pChild = p; }
-void ObjTree::SetNcChildObjectDirect(Object *p) { this->m_pNcChild = p; }
-void ObjTree::SetNextObjectDirect(Object *p) { this->m_pNext = p; }
-void ObjTree::SetPrevObjectDirect(Object *p) { this->m_pPrev = p; }
+void ObjectTree::SetParentObjectDirect(Object *p) { this->m_pParent = p; }
+void ObjectTree::SetChildObjectDirect(Object *p) { this->m_pChild = p; }
+void ObjectTree::SetNcChildObjectDirect(Object *p) { this->m_pNcChild = p; }
+void ObjectTree::SetNextObjectDirect(Object *p) { this->m_pNext = p; }
+void ObjectTree::SetPrevObjectDirect(Object *p) { this->m_pPrev = p; }
 
 // 按钮父->左->右的顺序获取遍历下一个结点
 
-Object *ObjTree::GetNextTreeItemObject() {
+Object *ObjectTree::GetNextTreeItemObject() {
   Object *p = (Object *)this;
 
   // 有子结点
@@ -549,7 +549,7 @@ Object *ObjTree::GetNextTreeItemObject() {
 
 // 按钮右->左->父的顺序获取遍历下一个结点
 
-Object *ObjTree::GetPrevTreeItemObject() {
+Object *ObjectTree::GetPrevTreeItemObject() {
   Object *p = (Object *)this;
 
   // 获取左侧结点的最后一个子结点
@@ -570,7 +570,7 @@ Object *ObjTree::GetPrevTreeItemObject() {
   return nullptr;
 }
 
-Object *ObjTree::GetNextTreeTabstopItemObject() {
+Object *ObjectTree::GetNextTreeTabstopItemObject() {
   Object *p = (Object *)this;
 
   Object *pRet = nullptr;
@@ -590,7 +590,7 @@ Object *ObjTree::GetNextTreeTabstopItemObject() {
   return p->GetNextTreeTabstopItemObject();
 }
 
-Object *ObjTree::GetPrevTreeTabstopItemObject() {
+Object *ObjectTree::GetPrevTreeTabstopItemObject() {
   Object *p = (Object *)this;
 
   Object *pRet = nullptr;
@@ -617,7 +617,7 @@ Object *ObjTree::GetPrevTreeTabstopItemObject() {
   return p->GetPrevTreeTabstopItemObject();
 }
 
-void ObjTree::MoveToAsFirstChild() {
+void ObjectTree::MoveToAsFirstChild() {
   Object *pParent = this->m_pParent;
   if (nullptr == pParent)
     return;
@@ -640,7 +640,7 @@ void ObjTree::MoveToAsFirstChild() {
   pParent->m_pChild = pThis;
 }
 
-void ObjTree::MoveToAsLastChild() {
+void ObjectTree::MoveToAsLastChild() {
   Object *pParent = this->m_pParent;
   if (nullptr == pParent)
     return;

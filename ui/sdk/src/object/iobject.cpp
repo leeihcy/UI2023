@@ -560,18 +560,14 @@ void IObject::UpdateLayout() { __pImpl->UpdateLayout(); }
 void IObject::GetNonClientRegion(REGION4 *prc) {
   __pImpl->GetNonClientRegion(prc);
 }
-void IObject::SetExtNonClientRegion(REGION4 *prc) {
-  __pImpl->SetExtNonClientRegion(prc);
-}
-void IObject::GetExtNonClientRegion(REGION4 *prc) {
-  __pImpl->GetExtNonClientRegion(prc);
-}
 
 const REGION4& IObject::GetBorder() { return __pImpl->GetBorder(); }
 const REGION4& IObject::GetPadding() { return __pImpl->GetPadding(); }
 const REGION4& IObject::GetMargin() { return __pImpl->GetMargin(); }
+const REGION4&  IObject::GetExtNonClient() { return __pImpl->GetExtNonClient(); }
 void IObject::SetPadding(const REGION4& rect) { __pImpl->SetPadding(rect); }
 void IObject::SetMargin(const REGION4& rect) { __pImpl->SetMargin(rect); }
+void IObject::SetExtNonClient(const REGION4& rect) { __pImpl->SetExtNonClient(rect); }
 
 void IObject::GetClientRectInObject(Rect *prc) {
   __pImpl->GetClientRectInObject(prc);
@@ -809,10 +805,10 @@ IObject *IObject::AddNcChild(IObject *p) {
 void IObject::RemoveMeInTheTree() { __pImpl->RemoveMeInTheTree(); }
 
 void IObject::ForwardMessageToChildObject(ui::Msg *pMsg) {
-  Object::ForwardMessageToChildObject(__pImpl, pMsg);
+  __pImpl->ForwardMessageToChildren(pMsg);
 }
 void IObject::ForwardInitializeMessageToDecendant() {
-  Object::ForwardInitializeMessageToDecendant(__pImpl);
+  __pImpl->ForwardInitializeMessageToDecendant();
 }
 
 unsigned char IObject::GetOpacity() const { return __pImpl->GetOpacity(); }

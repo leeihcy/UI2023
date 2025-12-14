@@ -109,8 +109,6 @@ private:
   // prop
 
 private:
-  void recursion_on_load_notify(Object* pParent);
-
   void postCreate(CreateWindowParam& param);
 
 protected:

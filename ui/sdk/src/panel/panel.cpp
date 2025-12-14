@@ -10,7 +10,6 @@
 #include "src/attribute/stringselect_attribute.h"
 #include "src/helper/scale/scale_factor.h"
 #include "src/layout/layout.h"
-#include "src/object/layout/layout_object.h"
 #include "src/window/window.h"
 #include <memory>
 
@@ -50,6 +49,10 @@ void Panel::onRouteMessage(ui::Msg *msg) {
   else if (msg->message == UI_MSG_GETLAYOUT) {
     static_cast<GetLayoutMessage*>(msg)->layout = m_pLayout;
     return;
+  }
+  else if (msg->message == UI_MSG_SIZE) {
+    SizeMessage* size_msg = static_cast<SizeMessage*>(msg);
+    onSize(size_msg->width, size_msg->height);
   }
   if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto* m = static_cast<QueryInterfaceMessage*>(msg);
@@ -94,7 +97,7 @@ void Panel::SetLayout(ILayout *p) {
   // 子结点的布局类型全部跟着变
   Object *pChild = nullptr;
   while ((pChild = EnumChildObject(pChild))) {
-    LayoutObject* layout_object = pChild->GetLayoutObject();
+    ObjectLayout* layout_object = pChild->GetLayoutObject();
     if (!layout_object) {
       continue;
     }
@@ -102,15 +105,11 @@ void Panel::SetLayout(ILayout *p) {
     layout_object->GetSafeLayoutParam();
   }
 }
-
-void Panel::virtualOnSize(unsigned int nType, unsigned int cx,
-                          unsigned int cy, float scale) {
-  Object::virtualOnSize(nType, cx, cy, scale);
+void Panel::onSize(int width, int height) {
   if (m_pLayout) {
     ArrangeParam param = {
       .obj_to_arrange = nullptr,
       .reason = ArrangeReason::NoReason,
-      .scale = scale,
     };
     m_pLayout->Arrange(param);
   }
@@ -181,7 +180,6 @@ void Panel::onPaintBkgnd(IRenderTarget *pRenderTarget) {
     ArrangeParam param = {
       .obj_to_arrange = nullptr,
       .reason = ArrangeReason::NoReason,
-      .scale = scale,
     };
 
     m_pLayout->Arrange(param);

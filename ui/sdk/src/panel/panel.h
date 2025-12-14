@@ -28,14 +28,16 @@ public:
   std::shared_ptr<IRenderBase> GetTextureRender();
 
 protected:
-  virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
-                             unsigned int nHeight, float scale) override;
+  // virtual void virtualOnSize(unsigned int nType, unsigned int nWidth,
+  //                            unsigned int nHeight, float scale) override;
 
   void onPaintBkgnd(IRenderTarget *);
   void onPaint(IRenderTarget *pRenderTarget);
   void onPostPaint(IRenderTarget *pRenderTarget);
   void onSerialize(SerializeParam *pData);
   void onGetDesiredSize(Size *pSize); 
+  void onSize(int width, int height);
+  
 protected:
   IPanel *m_pIPanel = nullptr;
   ILayout *m_pLayout = nullptr;

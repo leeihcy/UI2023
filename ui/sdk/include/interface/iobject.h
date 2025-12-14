@@ -55,22 +55,6 @@ typedef struct tagObjStyle {
 
 } OBJSTYLE;
 
-typedef struct tagObjState {
-  unsigned char visibility_ : 2; // 0:collapsed 1:visible 2:hidden
-  bool disable : 1;
-  bool press : 1;
-  bool hover : 1;
-  bool force_press : 1;
-  bool force_hover : 1;
-  bool focus : 1;
-  bool default_ : 1;
-  bool selected : 1;
-  bool checked : 1;
-  bool radio_checked : 1; // ??
-  bool readonly : 1;
-  bool activate : 1; // 给窗口使用
-} OBJSTATE;
-
 // struct DECLSPEC_UUID(x);
 
 class Object;
@@ -173,12 +157,13 @@ struct UIAPI IObject : public IMessage {
   void SetLayoutParam(ILayoutParam *);
   void SetPadding(const REGION4& rect);
   void SetMargin(const REGION4& rect);
+  void SetExtNonClient(const REGION4& rect);
   const REGION4& GetPadding();
   const REGION4& GetMargin();
   const REGION4& GetBorder();
-  void GetNonClientRegion(REGION4 *prc);
-  void SetExtNonClientRegion(REGION4 *prc);
-  void GetExtNonClientRegion(REGION4 *prc);
+  const REGION4& GetExtNonClient();
+
+  void GetNonClientRegion(REGION4*);
   void GetClientRectInObject(Rect *prc);
   void GetClientRectWithZeroOffset(Rect *prc);
   void GetClientRectInWindow(Rect *prc);

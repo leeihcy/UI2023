@@ -26,7 +26,7 @@ enum LayerContentType {
 
 };
 struct ILayerContent {
-  virtual LayerContentType Type() = 0;
+  virtual LayerContentType GetLayerContentType() = 0;
 
   // layer析构了
   virtual void OnLayerDestory() = 0;
@@ -35,17 +35,17 @@ struct ILayerContent {
   virtual bool IsChildOf(ILayerContent *) = 0;
 
   // 如果不可见，则不进行合成操作
-  virtual bool IsVisible() = 0;
+  virtual bool IsLayerVisible() = 0;
   // 获取当前缩放比例
   virtual float GetLayerScale() = 0;
 
   // 内容绘制
-  virtual void Draw(ui::IRenderTarget *) = 0;
+  virtual void LayerDraw(ui::IRenderTarget *) = 0;
 
   // 获取自己的窗口坐标，用于合成
-  virtual void GetWindowRect(Rect *prcOut) = 0;
+  virtual void GetLayerWindowRect(Rect *prcOut) = 0;
   // 获取layer对象的父控件（不是父layer）的窗口坐标。例如要将layer剪裁到父控件以内
-  virtual void GetParentWindowRect(Rect *prcOut) = 0;
+  virtual void GetLayerParentWindowRect(Rect *prcOut) = 0;
 
   // 用于获取自己在Object tree中的位置，对应到Layer tree中的位置
   virtual Layer *GetParentLayer() = 0;
@@ -53,13 +53,13 @@ struct ILayerContent {
 };
 
 struct IObjectLayerContent : public ILayerContent {
-  virtual LayerContentType Type() { return LayerContentTypeObject; }
-  virtual Object &GetObj() = 0;
+  virtual LayerContentType GetLayerContentType() { return LayerContentTypeObject; }
+  virtual Object &GetLayerContentObject() = 0;
 };
 
 struct IListItemLayerContent : public ILayerContent {
-  virtual LayerContentType Type() { return LayerContentTypeListItem; }
-  virtual ListItemBase &GetListItem() = 0;
+  virtual LayerContentType GetLayerContentType() { return LayerContentTypeListItem; }
+  virtual ListItemBase &GetLayerContentListItem() = 0;
 };
 
 enum LayerType {

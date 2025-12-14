@@ -8,7 +8,7 @@
 #include "include/interface/ilayout.h"
 #include "include/interface/iwindow.h"
 #include "src/layout/canvaslayout.h"
-#include "src/object/layout/layout_object.h"
+#include "src/object/object_prop.h"
 #include "src/property/property.h"
 #include "src/resource/uiresource.h"
 #include "include/interface/iuires.h"
@@ -27,10 +27,9 @@
 #include "object_meta.h"
 
 using namespace ui;
-extern Property* uisdk_property_register;
 
-Object::Object(IObject *p) : ObjTree(p), m_objLayer(*this), layout(*this), 
-  m_property_store(uisdk_property_register, this) {
+Object::Object(IObject *p) : Message(p)
+{
   m_pIObject = p;
   m_attribute_map_remaining = nullptr;
 
@@ -54,6 +53,10 @@ void Object::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_FINALCONSTRUCT) {
     Message::onRouteMessage(msg);
     FinalConstruct(static_cast<FinalConstructMessage*>(msg)->resource);
+    return;
+  }
+  if (msg->message == UI_MSG_LOADED) {
+    onLoaded();
     return;
   }
   if (msg->message == UI_MSG_FINALRELEASE) {
@@ -95,20 +98,12 @@ void Object::FinalRelease() {
   m_text_render.reset();
 
   // 在析构之前销毁，避免窗口的window compositor已经销毁了，但layer还没有被销毁
-  m_objLayer.DestroyLayer();
+  ObjectLayer::DestroyLayer();
 }
 
 IObject *Object::GetIObject() { return m_pIObject; }
 
-// 注：如果在其它模块直接调用 pCtrl->m_strID=L"..."的话，在对象释放时将会崩溃
-void Object::SetId(const char *text) {
-  m_property_store.SetString(OBJECT_ID, text);
-}
-const char *Object::GetId() { 
-  return m_property_store.GetString(OBJECT_ID).c_str();
-}
-
-Layer *Object::GetSelfLayer() const { return m_objLayer.GetLayer(); }
+Layer *Object::GetSelfLayer() const { return ObjectLayer::GetLayer(); }
 
 // 获取对象所在Layer
 Layer *Object::GetLayer() {
@@ -117,16 +112,6 @@ Layer *Object::GetLayer() {
     return pLayer->GetLayer();
 
   return nullptr;
-}
-
-// 为动画准备一个layer，如果没有则创建layer
-Layer *Object::GetLayerForAnimate() {
-  Layer *layer = GetSelfLayer();
-  if (layer)
-    return layer;
-
-  m_objLayer.CreateLayer();
-  return GetSelfLayer();
 }
 
 // 获取一个控件所在窗口句炳
@@ -161,21 +146,11 @@ Message *Object::GetWindow2() {
   return static_cast<Message*>(GetWindow());
 }
 
-#if 0 // defined(OS_WIN)
-HWND Object::GetHWND() {
-  WindowBase *pWindow = this->GetWindow();
-  if (!pWindow)
-    return nullptr;
-
-  return pWindow->GetHWND();
-}
-#endif
-
 ObjectLayer *Object::GetLayerEx() {
   Object *pObj = this;
   while (pObj) {
     if (pObj->GetSelfLayer())
-      return &pObj->m_objLayer;
+      return static_cast<ObjectLayer*>(pObj);
 
     pObj = pObj->m_pParent;
   }
@@ -187,7 +162,7 @@ ObjectLayer *Object::GetLayerEx() {
 Object *Object::GetLayerCreator() {
   ObjectLayer *p = GetLayerEx();
   if (p)
-    return &p->GetObject();
+    return static_cast<Object*>(p);
 
   return nullptr;
 }
@@ -313,82 +288,6 @@ Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   return nullptr;
 }
 
-void Object::LoadAttributes(bool bReload) {
-  if (!m_attribute_map_remaining)
-    return;
-
-  std::string strStyle;
-  std::string strId;
-
-  const char *szText = m_attribute_map_remaining->GetAttr(XML_STYLECLASS, false);
-  if (szText)
-    strStyle = szText;
-
-  szText = m_attribute_map_remaining->GetAttr(XML_ID, false);
-  if (szText)
-    strId = szText;
-
-  StyleRes &styleRes = m_resource->GetStyleRes();
-  styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(),
-                     strId.c_str(), m_attribute_map_remaining.get());
-
-  SerializeParam data = {0};
-  data.resource = m_resource->GetIResource();
-  data.attribute_map = m_attribute_map_remaining.get();
-  data.nFlags = SERIALIZEFLAG_LOAD | SERIALIZEFLAG_LOAD_ERASEATTR;
-  if (bReload)
-    data.nFlags |= SERIALIZEFLAG_RELOAD;
-
-  SerializeMessage msg;
-  msg.param = &data;
-  m_pIObject->RouteMessage(&msg);
-
-  // 如果没有多余的属性，直接释放，节省内存
-  if (m_attribute_map_remaining && 0 == m_attribute_map_remaining->GetAttrCount()) {
-    m_attribute_map_remaining.reset();
-  }
-}
-
-// 从xml获取自己的属性
-void Object::LoadAttributeFromXml(UIElement *pElement, bool bReload) {
-  if (!pElement)
-    return;
-
-  m_attribute_map_remaining.reset();
-  m_attribute_map_remaining = UICreateIMapAttribute();
-  pElement->GetAttribList(m_attribute_map_remaining.get());
-  this->LoadAttributes(bReload); 
-
-  // 通知编辑器关联控件和xml结点.
-  // 将通知放在这里，而不是layoutmanager中，是为了解决复合控件中的子控件加载问题
-  // 这种子控件不会在layoutmanager中被加载属性，而是由复合控件自己解决，最终调用
-  // 到子控件的SetAttributeFromXmlElement函数，因此将通知放在这里。
-  IUIEditor *pEditor = GetUIApplication()->GetUIEditorPtr();
-  if (pEditor) {
-    pEditor->OnObjectAttributeLoad(m_pIObject, pElement->GetIUIElement());
-  }
-}
-
-// 获取一个未解析的属性。如果bErase==true，则将返回一个临时的字符串指针，调用者应该尽快保存或者仅临时使用
-const char *Object::GetAttribute(const char *szKey, bool bErase) {
-  if (nullptr == szKey || nullptr == m_attribute_map_remaining)
-    return nullptr;
-
-  return m_attribute_map_remaining->GetAttr(szKey, bErase);
-}
-void Object::AddAttribute(const char *szKey, const char *szValue) {
-  if (nullptr == m_attribute_map_remaining) {
-    m_attribute_map_remaining = UICreateIMapAttribute();
-  }
-  m_attribute_map_remaining->AddAttr(szKey, szValue);
-}
-std::shared_ptr<IAttributeMap> Object::GetMapAttribute() {
-  return m_attribute_map_remaining;
-}
-void Object::ClearMapAttribute() {
-  m_attribute_map_remaining.reset();
-}
-
 //	[public] [virtual]  unsigned int HitTest( Point* ptInParent )
 //
 //	Parameters
@@ -455,7 +354,6 @@ IMKMgr *Object::GetIMKMgr() {
   Object *pParent = m_pParent;
   while (pParent) {
     pMKMgr = pParent->virtualGetIMKMgr();
-    ;
     if (pMKMgr)
       return pMKMgr;
 
@@ -486,204 +384,6 @@ void Object::OnVisibleChanged(bool bVisible, IObject *pObjChanged) {
   }
 }
 
-void Object::ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove) {
-
-#define __REMOVE(x)                                                            \
-  if (remove->x)                                                               \
-    m_objStyle.x = 0;
-#define __ADD(x)                                                               \
-  if (add->x)                                                                  \
-    m_objStyle.x = 1;
-
-  if (add) {
-    __ADD(initialized);
-    __ADD(transparent);
-    __ADD(float_on_parent_content);
-    __ADD(post_paint);
-    __ADD(hscroll);
-    __ADD(vscroll);
-    __ADD(ncobject);
-    __ADD(reject_all_mouse_msg);
-    __ADD(reject_self_mouse_msg);
-    __ADD(receive_dragdrop_event);
-    __ADD(enable_ime);
-    __ADD(zindex_overlap);
-    __ADD(noclip);
-    __ADD(clip_client);
-    __ADD(tabstop)
-    __ADD(want_tab)
-    __ADD(want_return)
-
-    if (add->layer)
-      m_objLayer.CreateLayer();
-      
-    // 默认值为1时，如果没有在xml中配置，不会触发setter函数
-    // 因此在设置默认值的时候，应该同步一次该值
-    if (add->default_ncobject) {
-      m_objStyle.default_ncobject = 1;
-      m_objStyle.ncobject = 1;
-    }
-    if (add->default_reject_all_mouse_msg) {
-      m_objStyle.default_reject_all_mouse_msg = 1;
-      m_objStyle.reject_all_mouse_msg = 1;
-    }
-    if (add->default_reject_self_mouse_msg) {
-      m_objStyle.default_reject_self_mouse_msg = 1;
-      m_objStyle.reject_self_mouse_msg = 1;
-    }
-    if (add->default_transparent) {
-      m_objStyle.default_transparent = 1;
-      m_objStyle.transparent = 1;
-    }
-    if (add->default_tabstop) {
-      m_objStyle.default_tabstop = 1;
-      m_objStyle.tabstop = 1;
-    }
-  }
-
-  if (remove) {
-    __REMOVE(initialized);
-    __REMOVE(transparent);
-    __REMOVE(float_on_parent_content);
-    __REMOVE(post_paint);
-    __REMOVE(hscroll);
-    __REMOVE(vscroll);
-    __REMOVE(ncobject);
-    __REMOVE(reject_all_mouse_msg);
-    __REMOVE(reject_self_mouse_msg);
-    __REMOVE(receive_dragdrop_event);
-    __REMOVE(enable_ime);
-    __REMOVE(zindex_overlap);
-    __REMOVE(noclip);
-    __REMOVE(clip_client);
-    __REMOVE(tabstop);
-    __REMOVE(want_tab)
-    __REMOVE(want_return)
-
-    if (remove->layer) {
-      m_objLayer.TryDestroyLayer();
-    }
-
-    if (remove->default_ncobject) {
-      m_objStyle.default_ncobject = 0;
-      m_objStyle.ncobject = 0;
-    }
-    if (remove->default_reject_all_mouse_msg) {
-      m_objStyle.default_reject_all_mouse_msg = 0;
-      m_objStyle.reject_all_mouse_msg = 0;
-    }
-    if (remove->default_reject_self_mouse_msg) {
-      m_objStyle.default_reject_self_mouse_msg = 0;
-      m_objStyle.reject_self_mouse_msg = 0;
-    }
-    if (remove->default_transparent) {
-      m_objStyle.default_transparent = 0;
-      m_objStyle.transparent = 0;
-    }
-    if (remove->default_tabstop) {
-      m_objStyle.default_tabstop = 0;
-      m_objStyle.tabstop = 0;
-    }
-  }
-}
-
-bool Object::TestObjectStyle(const OBJSTYLE &test) {
-
-#define TEST(x)                                                                \
-  if (test.x && !m_objStyle.x)                                                 \
-    return false;
-
-  TEST(transparent);
-  TEST(float_on_parent_content);
-  TEST(post_paint);
-  TEST(hscroll);
-  TEST(vscroll);
-  TEST(ncobject);
-  TEST(reject_all_mouse_msg);
-  TEST(reject_self_mouse_msg);
-  TEST(receive_dragdrop_event);
-  TEST(enable_ime);
-  TEST(zindex_overlap);
-  TEST(noclip);
-  TEST(clip_client);
-  TEST(tabstop);
-  TEST(want_tab);
-  TEST(want_return);
-  TEST(layer);
-
-  return true;
-}
-
-// void Object::ModifyStyleEx(unsigned int nStyleAdd, unsigned int nStyleRemove,
-// bool bNotify)
-// {
-//     STYLESTRUCT s;
-//     s.styleOld = m_nStyle2;
-//     s.styleNew = m_nStyle2;
-//
-//     if (nStyleAdd != 0)
-//     {
-//         s.styleNew |= nStyleAdd;
-//     }
-//     if (nStyleRemove != 0)
-//     {
-//         s.styleNew &= ~nStyleRemove;
-//     }
-//
-//     if (s.styleNew == s.styleOld)
-//         return;
-//
-//     if (bNotify)
-//     {
-//         ::UISendMessage(this, WM_STYLECHANGING, (int)GWL_EXSTYLE, (int)&s);
-//     }
-//
-//     m_nStyle2 = s.styleNew;
-//
-//     if (bNotify)
-//     {
-//         s.styleOld = s.styleOld;
-//         ::UISendMessage(this, WM_STYLECHANGED, (int)GWL_EXSTYLE, (int)&s);
-//     }
-// }
-
-bool Object::IsTransparent() {
-  if (m_objStyle.transparent)
-    return true;
-
-  return false;
-}
-void Object::SetTransparent(bool b) { m_objStyle.transparent = b; }
-
-bool Object::IsNoClip() { return !NeedClip(); }
-
-bool Object::NeedClip() {
-  if (m_objStyle.noclip)
-    return false;
-
-  //  TODO: 需要重写。
-  // 	//
-  // 如果子对象是一个层，并且有变换，则不更新剪裁区域，而是切换到父对象的剪裁区域
-  // 	// 2015.9.23 add
-  // 如果是硬件合成模式，则不用管，层与层之间的数据没有关联。 	if
-  // (m_pRenderLayer
-  // && m_pRenderLayer->HasTransform())
-  // 	{
-  // 		WindowBase* pWindow = GetWindow();
-  // 		if (!pWindow || !pWindow->IsGpuComposite())
-  // 			return false;
-  // 	}
-  //
-  return true;
-}
-
-void Object::SetNoClip(bool b) { m_objStyle.noclip = b; }
-
-void Object::SetClipClient(bool b) { m_objStyle.clip_client = b; }
-bool Object::NeedClipClient() { return m_objStyle.clip_client; }
-
-bool Object::IsFocus() { return m_objState.focus; }
-
 void Object::SetFocus(bool b, bool bNoitfy) {
   if (m_objState.focus == b)
     return;
@@ -712,17 +412,8 @@ bool Object::SetFocusInWindow() {
   return true;
 }
 
-bool Object::IsTabstop() { return m_objStyle.tabstop; }
-
 bool Object::CanTabstop() {
   return this->IsTabstop() && this->IsEnable() && this->IsVisible();
-}
-
-void Object::SetTabstop(bool b) { m_objStyle.tabstop = b; }
-
-bool Object::IsSelfVisible() {
-  bool bVisible = m_objState.visibility_ == VISIBILITY_VISIBLE ? true : false;
-  return bVisible;
 }
 
 bool Object::IsVisible() {
@@ -762,34 +453,23 @@ bool Object::IsSelfCollapsed() {
   return false;
 }
 
-bool Object::IsEnable() { return !m_objState.disable; }
-
-void Object::LoadVisibleEx(int l) {
-  m_objState.visibility_ = static_cast<VISIBILITY_TYPE>(l);
-}
-int Object::SaveVisibleEx() { return m_objState.visibility_; }
-
 void Object::SetVisible(bool b) {
   SetVisibleEx(b ? VISIBILITY_VISIBLE : VISIBILITY_COLLAPSED);
 }
 
 void Object::virtualSetVisibleEx(VISIBILITY_TYPE eType) {}
 
-//
-//	[static]
-//   给pParent的子孙对象递归转发消息
-//
-void Object::ForwardMessageToChildObject(Object *pParent, ui::Msg *message) {
+void Object::ForwardMessageToChildren(ui::Msg *message) {
   Object *pChild = nullptr;
-  while ((pChild = pParent->EnumChildObject(pChild))) {
+  while ((pChild = EnumChildObject(pChild))) {
     pChild->RouteMessage(message);
-    Object::ForwardMessageToChildObject(pChild, message);
+    pChild->ForwardMessageToChildren(message);
   }
 
   Object *pNcChild = nullptr;
-  while ((pNcChild = pParent->EnumNcChildObject(pNcChild))) {
+  while ((pNcChild = EnumNcChildObject(pNcChild))) {
     pNcChild->RouteMessage(message);
-    Object::ForwardMessageToChildObject(pNcChild, message);
+    pNcChild->ForwardMessageToChildren(message);
   }
 }
 
@@ -797,26 +477,19 @@ void Object::ForwardMessageToChildObject(Object *pParent, ui::Msg *message) {
 // 应用场景：UI_WM_INITIALIZE/UI_WM_INITIALIZE2
 // 注：如果已经初始化过了的控件，不再发送消息，如换肤（换布局）过程中有些控件不重新创建，
 //    但是还会发送一个bindind通知，用于重新绑定新的子控件，例如重新绑定滚动条
-void Object::ForwardInitializeMessageToDecendant(Object *pObj) {
-  DoBindPlzMessage bind_message;
-  bind_message.bind = true;
-
+void Object::ForwardInitializeMessageToDecendant() {
   Object *pChild = nullptr;
-  while ((pChild = pObj->EnumAllChildObject(pChild))) {
+  while ((pChild = EnumAllChildObject(pChild))) {
 
     if (pChild->m_objStyle.initialized) {
-      Object::ForwardInitializeMessageToDecendant(pChild);
+      pChild->ForwardInitializeMessageToDecendant();
     } else {
       pChild->m_objStyle.initialized = 1;
 
-      pChild->virtualOnLoad();
-
       pChild->RouteMessage(UI_MSG_INITIALIZE);
-      Object::ForwardInitializeMessageToDecendant(pChild);
+      pChild->ForwardInitializeMessageToDecendant();
       pChild->RouteMessage(UI_MSG_INITIALIZE2);
     }
-
-    pChild->RouteMessage(&bind_message);
   }
 }
 
@@ -837,7 +510,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
 
   // 通知子对象
   RouteMessage(&message);
-  Object::ForwardMessageToChildObject(this, &message);
+  Object::ForwardMessageToChildren(&message);
 
   if (m_pParent) {
     GetLayoutMessage msg;
@@ -852,7 +525,6 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
       ArrangeParam param = {
         m_pIObject, 
         ArrangeReason::VisibleChanged,
-        scale
       };
       msg.layout->Arrange(param);
     }
@@ -878,194 +550,6 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
   }
 }
 
-void Object::SetDisableDirect(bool b) { m_objState.disable = b; }
-bool Object::IsSelfDisable() { return m_objState.disable; }
-
-void Object::virtualSetEnable(bool b) { SetDisableDirect(!b); }
-
-void Object::SetEnable(bool b, bool bNoitfy) {
-  bool bOld = IsEnable();
-
-  virtualSetEnable(b);
-
-  if (bNoitfy && b != bOld) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_DISABLE;
-    RouteMessage(&message);
-  }
-
-  if (b != bOld) {
-    // [注] 如果没有指定刷新，则需要外部显示调用UpdateObject，因为该控件所在层
-    //      并没有设置为dirty，直接刷新整个窗口也不会更新该控件
-    this->Invalidate();
-
-#if 0 // defined(OS_WIN)
-    // 重新发送鼠标消息，例如鼠标正好位于该控件上面，则需要将该控件设置为hover，否则点击无效
-    Point pt = {0, 0};
-    ::GetCursorPos(&pt);
-    HWND hWnd = GetHWND();
-    ::MapWindowPoints(nullptr, hWnd, &pt, 1);
-    ::PostMessage(hWnd, WM_MOUSEMOVE, 0, MAKELPARAM(pt.x, pt.y));
-#endif
-  }
-}
-
-bool Object::IsDefault() { return m_objState.default_; }
-
-// bool Object::IsReadonly()
-// {
-// 	return this->testStateBit(OSB_READONLY);
-// }
-
-bool Object::IsHover() { return m_objState.force_hover || m_objState.hover; }
-
-bool Object::IsPress() { return m_objState.force_press || m_objState.press; }
-
-bool Object::IsForceHover() { return m_objState.force_hover; }
-
-bool Object::IsForcePress() { return m_objState.force_press; }
-bool Object::IsSelected() { return m_objState.selected; }
-
-void Object::SetDefault(bool b, bool bNotify) {
-  if (m_objState.default_ == b)
-    return;
-
-  m_objState.default_ = b;
-  if (bNotify) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_DEFAULT;
-    RouteMessage(&message);
-  }
-}
-
-void Object::SetSelected(bool b, bool bNotify) {
-  if (m_objState.selected == b)
-    return;
-
-  m_objState.selected = b;
-  if (bNotify) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_SELECTED;
-    RouteMessage(&message);
-  }
-}
-
-void Object::SetForceHover(bool b, bool bNotify) {
-  if (m_objState.force_hover == b)
-    return;
-
-  bool bOldHover = IsHover();
-
-  m_objState.force_hover = b;
-  if (bNotify && IsHover() != bOldHover) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_HOVER;
-    RouteMessage(&message);
-  }
-}
-
-void Object::SetForcePress(bool b, bool bNotify) {
-  if (m_objState.force_press == b)
-    return;
-
-  bool bOldPress = IsPress();
-
-  m_objState.force_press = b;
-  if (bNotify && IsPress() != bOldPress) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_PRESS;
-    RouteMessage(&message);    
-  }
-}
-
-void Object::SetHover(bool b, bool bNotify) {
-  if (m_objState.hover == b)
-    return;
-
-  m_objState.hover = b;
-  if (bNotify) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_HOVER;
-    RouteMessage(&message);  
-  }
-}
-
-void Object::SetPress(bool b, bool bNotify) {
-  if (m_objState.press == b)
-    return;
-
-  m_objState.press = b;
-  if (bNotify) {
-    StateChangedMessage message;
-    message.state_changed_mask = OSB_PRESS;
-    RouteMessage(&message);  
-  }
-}
-
-void Object::SetAsNcObject(bool b) { m_objStyle.ncobject = b; }
-bool Object::IsNcObject() { return m_objStyle.ncobject; }
-bool Object::IsRejectMouseMsgAll() { return m_objStyle.reject_all_mouse_msg; }
-bool Object::IsRejectMouseMsgSelf() { return m_objStyle.reject_self_mouse_msg; }
-void Object::SetRejectMouseMsgAll(bool b) {
-  m_objStyle.reject_all_mouse_msg = b;
-}
-void Object::SetRejectMouseMsgSelf(bool b) {
-  m_objStyle.reject_self_mouse_msg = b;
-}
-
-// 当手动创建一个对象（非从xml中加载时，可以调用该函数完全默认属性的加载)
-void Object::InitDefaultAttrib() {
-  std::shared_ptr<IAttributeMap> attribute_map;
-  if (m_attribute_map_remaining) {
-    attribute_map = m_attribute_map_remaining;
-  } else {
-    attribute_map = UICreateIMapAttribute();
-  }
-
-  // UIASSERT(m_strId.empty() && "将setid放在该函数之后调用，避免覆盖");
-  // attribute_map->AddAttr(XML_ID, m_strId.c_str()); // 防止id被覆盖??
-
-  // 解析样式
-  UIASSERT(m_resource);
-
-  StyleRes &styleRes = m_resource->GetStyleRes();
-
-  const char *szStyle = attribute_map->GetAttr(nullptr, XML_STYLE, true);
-  std::string strStyle;
-  if (szStyle)
-    strStyle = szStyle;
-
-  styleRes.LoadStyle(m_meta->Name(), strStyle.c_str(), nullptr,
-                     attribute_map.get());
-
-  SerializeParam data = {0};
-  data.resource = m_resource->GetIResource();
-  data.attribute_map = attribute_map.get();
-  data.nFlags = SERIALIZEFLAG_LOAD;
-
-  m_attribute_map_remaining = attribute_map;
-  attribute_map = nullptr;
-
-  SerializeMessage msg;
-  msg.param = &data;
-  m_pIObject->RouteMessage(&msg);
-
-  // 如果没有多余的属性，直接释放，节省内存
-  if (m_attribute_map_remaining && 0 == m_attribute_map_remaining->GetAttrCount()) {
-    m_attribute_map_remaining.reset();
-  }
-}
-//
-// void Object::SetUserData(LPVOID p)
-// {
-// 	m_pUserData = p;
-// }
-//
-// LPVOID Object::GetUserData()
-// {
-// 	return m_pUserData;
-// }
-
 ResourceBundle *Object::GetResource() { return m_resource; }
 
 IResourceBundle *Object::GetIResource() {
@@ -1087,6 +571,18 @@ IApplication *Object::GetIUIApplication() {
   UIASSERT(m_resource->GetUIApplication());
 
   return m_resource->GetUIApplication()->GetIUIApplication();
+}
+
+void Object::onSerialize(SerializeParam *data) {
+  ObjectProp::SerializeProperty(data);
+  ObjectLayout::SerializeLayout(data);
+}
+
+void Object::onLoaded() {
+  // 等对象在树中位置确定了，相关属性确定了之后，再创建layer
+  if (m_objStyle.layer && !GetSelfLayer()) {
+    ObjectLayer::CreateLayer();
+  }
 }
 
 bool SortByZorder(Object *p1, Object *p2) {
@@ -1119,109 +615,6 @@ void Object::SortChildByZorder() {
   }
 }
 
-void Object::SetBackRender(std::shared_ptr<IRenderBase> p) {
-  m_back_render = p;
-}
-
-void Object::SetForegndRender(std::shared_ptr<IRenderBase> p) {
-  m_fore_render = p;
-}
-
-void Object::SetTextRender(std::shared_ptr<ITextRenderBase> p) {
-  m_text_render = p;
-}
-
-std::shared_ptr<ITextRenderBase> Object::GetTextRender() { return m_text_render; }
-std::shared_ptr<IRenderBase> Object::GetBackRender() { return m_back_render; }
-std::shared_ptr<IRenderBase> Object::GetForeRender() { return m_fore_render; }
-
-//	获取自己的字体,这里返回的对象只是一个临时对象，
-//	如果需要保存使用，则需要调用AddRef
-IRenderFont *Object::GetRenderFont() {
-  IRenderFont *pRenderFont = nullptr;
-
-  // 向自己的textrender获取
-  if (m_text_render)
-    pRenderFont = m_text_render->GetRenderFont();
-
-  if (pRenderFont)
-    return pRenderFont;
-
-#if 0 // defined(OS_WIN)
-  // 向窗口获取默认
-  Window *pWindow = GetWindow();
-  if (pWindow)
-    return pWindow->GetWindowDefaultRenderFont();
-#else
-  UIASSERT(0);
-#endif
-  return nullptr;
-}
-
-void Object::load_renderbase(const char *szName, std::shared_ptr<IRenderBase> &pRender) {
-  UIASSERT(false);
-//   SAFE_RELEASE(pRender);
-//   if (szName) {
-// #if 0 // defined(OS_WIN)
-//     GetUIApplication()->GetRenderBaseFactory().CreateRenderBaseByName(
-//         m_resource->GetIResource(), szName, m_pIObject, &pRender);
-// #else
-//     UIASSERT(false);
-// #endif
-  // }
-}
-
-void Object::load_textrender(const char *szName,
-                             std::shared_ptr<ITextRenderBase> &pTextRender) {
-                              UIASSERT(false);
-//   SAFE_RELEASE(pTextRender);
-//   if (szName) {
-// #if 0 // defined(OS_WIN)
-//     GetUIApplication()->GetTextRenderFactroy().CreateTextRenderBaseByName(
-//         m_resource->GetIResource(), szName, m_pIObject, &pTextRender);
-// #endif
-//   }
-}
-
-const char *Object::get_renderbase_name(std::shared_ptr<IRenderBase> &pRender) {
-  if (!pRender)
-    return nullptr;
-#if 0 // defined(OS_WIN)
-  return GetUIApplication()->GetRenderBaseFactory().GetRenderBaseName(
-      pRender->GetType());
-#else
-  return nullptr;
-#endif
-}
-const char *Object::get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender) {
-  if (!pTextRender)
-    return nullptr;
-#if 0 // defined(OS_WIN)
-  return GetUIApplication()->GetTextRenderFactroy().GetTextRenderBaseName(
-      pTextRender->GetType());
-#else
-  return nullptr;
-#endif
-}
-
-void Object::LoadBkgndRender(const char *szName) {
-  load_renderbase(szName, m_back_render);
-}
-void Object::LoadForegndRender(const char *szName) {
-  load_renderbase(szName, m_fore_render);
-}
-void Object::LoadTextRender(const char *szName) {
-  load_textrender(szName, m_text_render);
-}
-const char *Object::SaveBkgndRender() {
-  return get_renderbase_name(m_back_render);
-}
-const char *Object::SaveForegndRender() {
-  return get_renderbase_name(m_fore_render);
-}
-const char *Object::SaveTextRender() {
-  return get_textrender_name(m_text_render);
-}
 
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
@@ -1402,10 +795,6 @@ bool Object::ReleaseKeyboardCapture() {
 #endif
 }
 
-void Object::load_layer_config(bool b) { m_objStyle.layer = b; }
-
-bool Object::HasLayer() { return m_objStyle.layer; }
-
 void Object::OnLayerDestory() {
   m_objStyle.layer = false;
 
@@ -1421,39 +810,13 @@ void Object::OnLayerCreate() {
   }
 }
 
-// 序列化辅助函数
-/*
-void  Object::LoadColor(const char* szColorId, Color*& pColor)
-{
-    SAFE_RELEASE(pColor);
-    if (!szColorId || !m_pUIApplication)
-        return;
-
-    ColorRes* pColorRes = m_pUIApplication->GetActiveSkinColorRes();
-    if (!pColorRes)
-        return;
-
-    pColorRes->GetColor(szColorId, &pColor);
+void Object::OnLayerStyleChanged(bool new_layer_style) {
+  if (new_layer_style) {
+    ObjectLayer::CreateLayer();
+  } else {
+    ObjectLayer::TryDestroyLayer();
+  }
 }
-
-const char*  Object::SaveColor(Color*& pColor)
-{
-    if (!pColor || !m_pUIApplication)
-        return nullptr;
-
-    ColorRes* pColorRes = m_pUIApplication->GetActiveSkinColorRes();
-    if (pColorRes)
-    {
-        const char* szId = pColorRes->GetColorId(pColor);
-        if (szId)
-            return szId;
-    }
-
-    char* szBuffer = GetTempBuffer();
-    pColor->ToHexString(szBuffer);
-    return szBuffer;
-}
-*/
 
 // 辅助函数
 unsigned int Object::GetChildCount() {
@@ -1513,6 +876,75 @@ unsigned int Object::GetChildObjectIndex(Object *pChild) {
 
   return 0;
 }
+
+const Rect& ObjectProp::GetPadding() {
+  return m_property_store.GetRect(OBJECT_PADDING);
+}
+const Rect& ObjectProp::GetMargin() {
+  return m_property_store.GetRect(OBJECT_MARGIN);
+}
+const Rect& ObjectProp::GetBorder() {
+  return m_property_store.GetRect(OBJECT_BORDER);
+}
+const Rect& ObjectProp::GetExtNonClient() { 
+  return m_property_store.GetRect(OBJECT_EXT_NONCLIENT);
+}
+
+void ObjectProp::SetPadding(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_PADDING, rect);
+}
+void ObjectProp::SetMargin(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_MARGIN, rect);
+}
+void ObjectProp::SetBorder(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_BORDER, rect);
+}
+void ObjectProp::SetExtNonClient(const Rect&  rect) { 
+  m_property_store.SetRect(OBJECT_EXT_NONCLIENT, rect);
+}
+
+//
+// 获取该对象的偏移量
+//
+// ReturnQ
+//		返回false表示该对象无滚动数据
+//
+bool Object::GetScrollOffset(int *pxOffset, int *pyOffset) {
+  if (nullptr == pxOffset || nullptr == pyOffset)
+    return false;
+
+  *pxOffset = 0;
+  *pyOffset = 0;
+
+  if (m_objStyle.hscroll || m_objStyle.vscroll) {
+    GetScrollOffsetMessage msg;
+    RouteMessage(&msg);
+
+    *pxOffset = msg.x_offset;
+    *pyOffset = msg.x_offset;
+    return true;
+  }
+  return false;
+}
+
+bool Object::GetScrollRange(int *pxRange, int *pyRange) {
+  if (nullptr == pxRange || nullptr == pyRange)
+    return false;
+
+  *pxRange = 0;
+  *pyRange = 0;
+
+  if (m_objStyle.hscroll || m_objStyle.vscroll) {
+    GetScrollRangeMessage msg;
+    RouteMessage(&msg);
+    
+    *pxRange = msg.x_range;
+    *pyRange = msg.y_range;
+    return true;
+  }
+  return false;
+}
+
 
 #if 0 // defined(OS_WIN)
 // 外部添加IUIAccessible的接口实现类

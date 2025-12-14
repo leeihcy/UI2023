@@ -115,7 +115,7 @@ Layer *WindowRender::CreateLayer(IObjectLayerContent *pContent) {
   if (!pContent)
     return nullptr;
 
-  Object &obj = pContent->GetObj();
+  Object &obj = pContent->GetLayerContentObject();
   Layer *pNewLayer = nullptr;
   if (IsHardwareComposite()) {
     pNewLayer = new Layer(Layer_Hardware);
@@ -159,7 +159,7 @@ Layer *WindowRender::CreateLayer(IListItemLayerContent *pContent) {
   if (!pContent)
     return nullptr;
 
-  ListItemBase &item = pContent->GetListItem();
+  ListItemBase &item = pContent->GetLayerContentListItem();
   Layer *pNewLayer = nullptr;
   if (IsHardwareComposite()) {
     pNewLayer = new Layer(Layer_Hardware);
