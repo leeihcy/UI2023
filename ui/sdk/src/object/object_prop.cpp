@@ -20,6 +20,10 @@ ObjectProp::ObjectProp() : m_property_store(uisdk_property_register, this) {
   
 }
 
+Object& ObjectProp::self() {
+  return *static_cast<Object*>(this);
+}
+
 // 将xml用的配置转成对象的属性，注意，子类重载该函数时，必须先调用父类的该方法
 // bReload表示为换肤时调用，此时不能再给某些属性赋值，例如text属性
 void ObjectProp::SerializeProperty(SerializeParam *pData) {
@@ -151,9 +155,84 @@ void ObjectProp::SerializeProperty(SerializeParam *pData) {
   // 不需要在xml中配置，由代码自行配置。
   m_property_store.RegisterRect(OBJECT_EXT_NONCLIENT, "");
 
-  // 将xml attribute全灌输给property store
+  // 控件z序，用于实现控件重叠时的刷新判断依据
+  m_property_store.RegisterInt(OBJECT_Z_ORDER, XML_ZORDER);
+
+  // 控件的最大尺寸限制
+  m_property_store.RegisterInt(OBJECT_MIN_WIDTH, XML_MINWIDTH, NDEF);
+  m_property_store.RegisterInt(OBJECT_MAX_WIDTH, XML_MAXWIDTH, NDEF);
+  m_property_store.RegisterInt(OBJECT_MIN_HEIGHT, XML_MINHEIGHT, NDEF);
+  m_property_store.RegisterInt(OBJECT_MAX_HEIGHT, XML_MAXHEIGHT, NDEF);
+
+
+  // 将xml attribute全灌输给config property store
   m_property_store.Serialize(pData->attribute_map);
 #endif
+}
+
+
+const Rect& ObjectProp::GetPadding() {
+  return m_property_store.GetRect(OBJECT_PADDING);
+}
+const Rect& ObjectProp::GetMargin() {
+  return m_property_store.GetRect(OBJECT_MARGIN);
+}
+const Rect& ObjectProp::GetBorder() {
+  return m_property_store.GetRect(OBJECT_BORDER);
+}
+const Rect& ObjectProp::GetExtNonClient() { 
+  return m_property_store.GetRect(OBJECT_EXT_NONCLIENT);
+}
+
+void ObjectProp::SetPadding(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_PADDING, rect);
+}
+void ObjectProp::SetMargin(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_MARGIN, rect);
+}
+void ObjectProp::SetBorder(const Rect& rect) {
+  m_property_store.SetRect(OBJECT_BORDER, rect);
+}
+void ObjectProp::SetExtNonClient(const Rect&  rect) { 
+  m_property_store.SetRect(OBJECT_EXT_NONCLIENT, rect);
+}
+
+int ObjectProp::GetZOrder() {
+  return m_property_store.GetInt(OBJECT_Z_ORDER);
+}
+void ObjectProp::SetZOrder(int n) {
+  int old = GetZOrder();
+  if (old == n) {
+    return;
+  }
+
+  m_property_store.SetInt(OBJECT_Z_ORDER, n);
+  self().onZOrderChanged(n);
+}
+
+int ObjectProp::GetMaxWidth() {
+  return m_property_store.GetInt(OBJECT_MAX_WIDTH);
+}
+int ObjectProp::GetMaxHeight() { 
+  return m_property_store.GetInt(OBJECT_MAX_HEIGHT);
+}
+void ObjectProp::SetMaxWidth(int n) {
+  m_property_store.SetInt(OBJECT_MAX_WIDTH, n);
+}
+void ObjectProp::SetMaxHeight(int n) {
+  m_property_store.SetInt(OBJECT_MAX_HEIGHT, n);
+}
+int ObjectProp::GetMinWidth() {
+  return m_property_store.GetInt(OBJECT_MIN_WIDTH);
+}
+int ObjectProp::GetMinHeight() {
+  return m_property_store.GetInt(OBJECT_MIN_HEIGHT);
+}
+void ObjectProp::SetMinWidth(int n) {
+  m_property_store.SetInt(OBJECT_MIN_WIDTH, n);
+}
+void ObjectProp::SetMinHeight(int n) {
+  m_property_store.SetInt(OBJECT_MIN_HEIGHT, n);
 }
 
 
@@ -181,7 +260,7 @@ void ObjectProp::InitDefaultAttrib() {
   if (szStyle)
     strStyle = szStyle;
 
-  styleRes.LoadStyle(self.m_meta->Name(), strStyle.c_str(), nullptr,
+  styleRes.LoadStyle(self.Meta().Name(), strStyle.c_str(), nullptr,
                      attribute_map.get());
 
   SerializeParam data = {0};
@@ -239,7 +318,7 @@ void ObjectProp::LoadAttributes(bool bReload) {
     strId = szText;
 
   StyleRes &styleRes = self.m_resource->GetStyleRes();
-  styleRes.LoadStyle(self.m_meta->Name(), strStyle.c_str(),
+  styleRes.LoadStyle(self.Meta().Name(), strStyle.c_str(),
                      strId.c_str(), m_attribute_map_remaining.get());
 
   SerializeParam data = {0};

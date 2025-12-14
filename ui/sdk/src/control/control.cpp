@@ -14,7 +14,6 @@
 namespace ui {
 
 Control::Control(IControl *p) : Object(p) {
-  m_pIControl = p;
   memset(&m_controlStyle, 0, sizeof(m_controlStyle));
   m_objStyle.tabstop = 1;
   m_objStyle.default_tabstop = 1;
@@ -38,7 +37,7 @@ void Control::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == ControlMeta::Get().UUID()) {
-      *(m->pp) = m_pIControl;
+      *(m->pp) = GetIControl();
       return;
     }
   }

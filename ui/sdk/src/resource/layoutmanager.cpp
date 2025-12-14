@@ -374,9 +374,7 @@ Object *LayoutManager::ParseElement(UIElement *pUIElement, Object *pParent,
 // TODO: 新增的控件，没有机会收到INITIALIZE消息？
 bool LayoutManager::ReLoadLayout(Object *pRootObj, const char *szNewLayoutId,
                                  std::map<std::string, Object *> &mapNamedChildren) {
-  const char *szObjName = "";
-  if (pRootObj->GetMeta())
-    szObjName = pRootObj->GetMeta()->Name();
+  const char *szObjName = pRootObj->Meta().Name();
 
   UIElementProxy objUIElem = this->FindWindowElement(szObjName, szNewLayoutId);
 
@@ -422,10 +420,7 @@ void LayoutManager::ReloadChildObjects(
       if (iter != mapNamedChildren.end()) {
         Object *pTempObj = iter->second;
 
-        const char *szObjName = "";
-        if (pTempObj->GetMeta())
-          szObjName = pTempObj->GetMeta()->Name();
-
+        const char *szObjName = pTempObj->Meta().Name();
         if (szObjName && 0 == strcmp(szObjName, szTagName)) {
           pObj = pTempObj;
           mapNamedChildren.erase(iter);

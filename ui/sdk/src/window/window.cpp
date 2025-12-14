@@ -268,12 +268,12 @@ void Window::onClose() {}
 void Window::onDestroy() {
   WindowDestroyEvent event;
   event.window = m_pIWindow;
-  emit(&event);
+  Emit(&event);
 
   // 释放资源
   m_root->GetImpl()->DestroyChildObject();
   // events中slot可能绑定了一些参数对象，需要释放掉。
-  clear_events();
+  ClearEvents();
 }
 
 // commit_rect是逻辑坐标，不是像素坐标。

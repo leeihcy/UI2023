@@ -35,7 +35,7 @@ const uint  BUTTON_ICON_RENDER_STATE_SELECTED_PRESS = RENDER_STATE_PRESS | RENDE
 const uint  BUTTON_ICON_RENDER_STATE_SELECTED_DISABLE = RENDER_STATE_DISABLE | RENDER_STATE_SELECTED | 7;
 
 
-Button::Button(IButton *p) : Control(p), m_pIButton(p) {
+Button::Button(IButton *p) : Control(p) {
   	memset(&m_button_style, 0, sizeof(ButtonStyle));
 }
 
@@ -60,7 +60,7 @@ void Button::onRouteMessage(ui::Msg *msg) {
   } else if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto *m = static_cast<QueryInterfaceMessage *>(msg);
     if (m->uuid == ButtonMeta::Get().UUID()) {
-      *(m->pp) = m_pIButton;
+      *(m->pp) = GetIButton();
       return;
     }
   } else if (msg->message == UI_MSG_FINALCONSTRUCT) {
@@ -196,10 +196,10 @@ bool Button::IsAutoDefault() {
 }
 
 void Button::setWindowDefaultButton() {
-  Message* wnd = GetWindow2();
+  Message* wnd = GetWindowMessagePtr();
   if (wnd) {
     SetDefaultButtonMessage msg;
-    msg.default_button = m_pIButton;
+    msg.default_button = GetIButton();
     wnd->RouteMessage(&msg);
   }
 }

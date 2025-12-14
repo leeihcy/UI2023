@@ -26,7 +26,7 @@ void on_button_click(ui::Event* e) {
 void bind_controls(ui::IWindow *window) {
   // 通过冒泡
   ui::IRootObject* root = window->GetRootObject();
-  root->connect(BUTTON_CLICK_EVENT,ui::Slot(on_button_click));
+  root->Connect(BUTTON_CLICK_EVENT,ui::Slot(on_button_click));
 
   ui::IObject *btn = nullptr;
   btn = window->TryFindObject("btn_8");
@@ -48,7 +48,7 @@ int main() {
   window->Create("control", nullptr);
   window->SetTitle("Control Demo");
   window->Show();
-  window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
+  window->Connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
   bind_controls(window.get());
 
   ui::TimerID timer_id =

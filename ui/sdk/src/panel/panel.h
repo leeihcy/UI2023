@@ -14,7 +14,7 @@ public:
 
   void onRouteMessage(ui::Msg *msg);
 
-  IPanel *GetIPanel() { return m_pIPanel; }
+  IPanel *GetIPanel() { return static_cast<IPanel*>(m_imessage); }
 
 public:
   ILayout *GetLayout();
@@ -39,7 +39,6 @@ protected:
   void onSize(int width, int height);
   
 protected:
-  IPanel *m_pIPanel = nullptr;
   ILayout *m_pLayout = nullptr;
 
   // 用于支持换肤功能的皮肤图片

@@ -1,6 +1,7 @@
 #ifndef UI_SDK_SRC_OBJECT_OBJECTATTRIB_H_
 #define UI_SDK_SRC_OBJECT_OBJECTATTRIB_H_
 
+#include "include/interface/iobject.h"
 #include "src/property/property_store.h"
 
 namespace ui {
@@ -10,6 +11,7 @@ struct IRenderFont;
 class ObjectProp : public PropertyStoreDelegate{
 public:
   ObjectProp();
+  Object& self();
 
   const char *GetId();
   void SetId(const char *szText);
@@ -22,6 +24,18 @@ public:
   void SetMargin(const Rect&);
   void SetBorder(const Rect&);
   void SetExtNonClient(const Rect&);
+
+  int GetZOrder();
+  void SetZOrder(int n);
+
+  int GetMaxWidth();
+  int GetMaxHeight();
+  void SetMaxWidth(int);
+  void SetMaxHeight(int);
+  int GetMinWidth();
+  int GetMinHeight();
+  void SetMinWidth(int);
+  void SetMinHeight(int);
   
   void LoadAttributes(bool bReload);
   void LoadAttributeFromXml(UIElement *pElement, bool bReload);

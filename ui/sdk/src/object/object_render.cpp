@@ -181,7 +181,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   // 1. 非客户区，不受padding scroll影响
   PaintBkgndMessage message;
   message.rt = pRenderTarget;
-  m_pIObject->RouteMessage(&message);
+  RouteMessage(&message);
   
   this->virtualOnPostDrawObjectErasebkgnd();
 
@@ -206,7 +206,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
     {
       PaintMessage msg;
       msg.rt = pRenderTarget;
-      m_pIObject->RouteMessage(&msg);
+      RouteMessage(&msg);
 
       if (m_pChild) {
         this->DrawChildObject__(pRenderTarget, m_pChild);
@@ -225,7 +225,7 @@ void Object::DrawToLayer__(IRenderTarget *pRenderTarget) {
   if (m_objStyle.post_paint) {
     PostPaintMessage msg;
     msg.rt = pRenderTarget;
-    m_pIObject->RouteMessage(&msg);
+    RouteMessage(&msg);
   }
 }
 

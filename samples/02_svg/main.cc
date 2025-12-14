@@ -31,9 +31,9 @@ public:
     load_next();
 
     m_window->Show();
-    m_window->connect("destroy", ui::Slot(&MainWindow::on_window_destroy, this,
+    m_window->Connect("destroy", ui::Slot(&MainWindow::on_window_destroy, this,
                                           res->GetUIApplication()));
-    m_window->connect("lbutton_down",
+    m_window->Connect("lbutton_down",
                       ui::Slot(&MainWindow::on_lbutton_down, this));
   }
 

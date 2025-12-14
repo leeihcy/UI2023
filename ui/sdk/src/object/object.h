@@ -1,7 +1,5 @@
 #pragma once
-#include "include/interface/iobject.h"
-#include "include/macro/msg.h"
-#include "src/object/message.h"
+#include "message.h"
 #include "object_layer.h"
 #include "object_tree.h"
 #include "object_state.h"
@@ -9,7 +7,10 @@
 #include "object_rect.h"
 #include "object_animate.h"
 #include "object_layout.h"
-#include "src/object/object_prop.h"
+#include "object_prop.h"
+
+#include "include/interface/iobject.h"
+#include "include/macro/msg.h"
 #include "src/private_inc.h"
 
 
@@ -23,29 +24,28 @@ struct IRenderTarget;
 
 class Object : 
   public Message,
-  public ObjectTree, 
-  public ObjectState,
-  public ObjectStyle,
-  public ObjectRect,
-  public ObjectProp,
+  public ObjectAnimate,
   public ObjectLayer,
   public ObjectLayout,
-  public ObjectAnimate
+  public ObjectProp,
+  public ObjectRect,
+  public ObjectState,
+  public ObjectStyle,
+  public ObjectTree
 {
 public:
   Object(IObject *);
   virtual ~Object();
-  void onRouteMessage(ui::Msg *msg);
 
-public:
   IObject *GetIObject();
-
+  void onRouteMessage(ui::Msg *msg);
+public:
   Application *GetUIApplication();
   IApplication *GetIUIApplication();
   ResourceBundle *GetResource();
   IResourceBundle *GetIResource();
   Window *GetWindow();
-  Message *GetWindow2();
+  Message *GetWindowMessagePtr();
   IMKMgr *GetIMKMgr();
   Object* GetRootObject();
 
@@ -134,7 +134,6 @@ protected: // virtual
   virtual void virtualOnPostDrawObjectErasebkgnd(){};
 
 protected:
-  IObject *m_pIObject;
   // 用于支持多皮肤包共存（插件模式）
   ResourceBundle *m_resource = nullptr; 
  

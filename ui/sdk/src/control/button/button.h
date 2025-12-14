@@ -17,7 +17,7 @@ public:
   Button(IButton *p);
 
   void onRouteMessage(ui::Msg *msg);
-  IButton *GetIButton() { return m_pIButton; }
+  IButton *GetIButton() { return static_cast<IButton*>(m_imessage); }
 
 public:
   const char *GetText();
@@ -61,7 +61,6 @@ protected:
   void setWindowDefaultButton();
 
 private:
-  IButton *m_pIButton;
   ButtonStyle m_button_style;
 
   std::string m_text; // utf8

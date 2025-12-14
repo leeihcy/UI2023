@@ -23,6 +23,9 @@ struct ObjState {
 
 class ObjectState {
 public:
+  ObjectState();
+
+public:
   bool IsFocus() { return m_objState.focus; }
 
   bool IsSelfVisible() { return m_objState.visibility_ == VISIBILITY_VISIBLE; }

@@ -6,6 +6,11 @@
 
 namespace ui {
 
+ObjectState::ObjectState() {
+  memset(&m_objState, 0, sizeof(m_objState));
+  m_objState.visibility_ = VISIBILITY_VISIBLE;
+}
+
 void ObjectState::SetEnable(bool b, bool bNoitfy) {
   bool bOld = IsEnable();
 

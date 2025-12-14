@@ -33,6 +33,7 @@ public:                                                                        \
   I##T(ui::eCreateImpl);                                                       \
   void onRouteMessage(ui::Msg *msg);                                           \
   static Uuid UUID();                                                          \
+  IMeta& Meta() override;                                                      \
   T *GetImpl();
 
 // 跨模块时，作为本模块的根对象，需要增加成员变量及销毁该变量
@@ -61,6 +62,7 @@ protected:                                                                     \
     return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
   Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
+  IMeta& I##T::Meta() { return T##Meta::Get(); }                               \
   void I##T::onRouteMessage(ui::Msg *msg) { __pImpl->onRouteMessage(msg); }
 
 #define UI_IMPLEMENT_INTERFACE_ACROSSMODULE(T, SUPER)                          \
@@ -79,10 +81,11 @@ protected:                                                                     \
     }                                                                          \
   }                                                                            \
   T *I##T::GetImpl() { return static_cast<T *>(m_pImpl); }                     \
+  Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
+  IMeta& I##T::Meta() { return T##Meta::Get(); }                               \
   std::unique_ptr<I##T, void (*)(I##T *)> I##T::create(IResourceBundle *res) {       \
     return T##Meta::Get().CreateUnique(res);                                   \
   }                                                                            \
-  Uuid I##T::UUID() { return T##Meta::Get().UUID(); }                          \
   void I##T::onRouteMessage(ui::Msg *msg) {                                    \
     static_cast<T *>(m_pImpl)->onRouteMessage(msg);                            \
   }

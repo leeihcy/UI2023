@@ -17,8 +17,6 @@
 namespace ui {
 
 Panel::Panel(IPanel *p) : Object(p) {
-  m_pIPanel = p;
-
   OBJSTYLE s = {0};
   s.default_transparent = 1;
   s.default_reject_self_mouse_msg = 1;
@@ -57,7 +55,7 @@ void Panel::onRouteMessage(ui::Msg *msg) {
   if (msg->message == UI_MSG_QUERYINTERFACE) {
     auto* m = static_cast<QueryInterfaceMessage*>(msg);
     if (m->uuid == PanelMeta::Get().UUID()) {
-      *(m->pp) = m_pIPanel;
+      *(m->pp) = GetIPanel();
       return;
     }
   }
@@ -85,7 +83,7 @@ void Panel::SetLayoutType(const char *layout_name) {
   //   return;
 
   ILayout *layout = nullptr;
-  GetUIApplication()->GetLayoutFactory().CreateByName(layout_name, m_pIPanel,
+  GetUIApplication()->GetLayoutFactory().CreateByName(layout_name, GetIPanel(),
                                                       false, &layout);
   SetLayout(layout);
 }

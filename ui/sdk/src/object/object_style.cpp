@@ -3,6 +3,10 @@
 
 namespace ui {
 
+ObjectStyle::ObjectStyle() {
+  memset(&m_objStyle, 0, sizeof(m_objStyle));
+}
+
 bool ObjectStyle::NeedClip() {
   if (m_objStyle.noclip)
     return false;

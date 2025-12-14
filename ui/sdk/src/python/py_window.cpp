@@ -67,7 +67,7 @@ static PyObject *PyConnect(PyObject *self, PyObject *args) {
   PyArg_ParseTuple(args, "sO", &event, &callback);
 
   // 要增加callback的引用计数，否则可能会销毁了。
-  self_win->connect(event, ui::Slot(OnEvent, PyObjectPtr(callback)));
+  self_win->Connect(event, ui::Slot(OnEvent, PyObjectPtr(callback)));
   Py_RETURN_NONE;
 }
 

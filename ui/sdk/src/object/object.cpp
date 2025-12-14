@@ -30,16 +30,9 @@ using namespace ui;
 
 Object::Object(IObject *p) : Message(p)
 {
-  m_pIObject = p;
-  m_attribute_map_remaining = nullptr;
-
-  memset(&m_objStyle, 0, sizeof(m_objStyle));
-  memset(&m_objState, 0, sizeof(m_objState));
-  m_objState.visibility_ = VISIBILITY_VISIBLE;
 }
 
 // 注意：不要在构造或者析构函数中调用虚函数
-
 Object::~Object(void) {
 }
 
@@ -87,7 +80,7 @@ void Object::FinalRelease() {
   IUIEditor *pEditor = GetUIApplication()->GetUIEditorPtr();
   if (pEditor) {
     // 由子往父进行通知，便于从skinbuilder的tree中一个个删除
-    pEditor->OnObjectDeleteInd(m_pIObject);
+    pEditor->OnObjectDeleteInd(GetIObject());
   }
 
   //	清理自己的邻居关系
@@ -101,7 +94,9 @@ void Object::FinalRelease() {
   ObjectLayer::DestroyLayer();
 }
 
-IObject *Object::GetIObject() { return m_pIObject; }
+IObject *Object::GetIObject() { 
+  return static_cast<IObject*>(m_imessage); 
+}
 
 Layer *Object::GetSelfLayer() const { return ObjectLayer::GetLayer(); }
 
@@ -125,12 +120,12 @@ Object* Object::GetRootObject() {
 
 Window *Object::GetWindow() {
   Object* root = GetRootObject();
-  if (!root || !root->m_meta) {
+  if (!root) {
     return nullptr;
   }
   
   // query interface有点慢，直接换meta major type来判断。
-  if (root->m_meta->Detail().major_type != OBJ_ROOT) {
+  if (root->Meta().Detail().major_type != OBJ_ROOT) {
     return nullptr;
   }
   return &static_cast<RootObject*>(root)->GetWindow();
@@ -142,7 +137,7 @@ Window *Object::GetWindow() {
   // return nullptr;
 }
 
-Message *Object::GetWindow2() {
+Message *Object::GetWindowMessagePtr() {
   return static_cast<Message*>(GetWindow());
 }
 
@@ -247,8 +242,7 @@ Object *Object::find_child_object(const char *szobjId, bool bFindDecendant) {
 Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumChildObject(pObjChild))) {
-    IMeta *pDesc = pObjChild->GetMeta();
-    if (pDesc->UUID() == uuid) {
+    if (pObjChild->Meta().UUID() == uuid) {
       return pObjChild;
     }
   }
@@ -269,8 +263,7 @@ Object *Object::find_child_object(Uuid uuid, bool bFindDecendant) {
 Object *Object::find_ncchild_object(Uuid uuid, bool bFindDecendant) {
   Object *pObjChild = nullptr;
   while ((pObjChild = this->EnumNcChildObject(pObjChild))) {
-    IMeta *pDesc = pObjChild->GetMeta();
-    if (pDesc->UUID() == uuid) {
+    if (pObjChild->Meta().UUID() == uuid) {
       return pObjChild;
     }
   }
@@ -425,8 +418,7 @@ bool Object::IsVisible() {
 
   // 注：在这里不对最外层的窗口进行判断的原因是：在类似于窗口初始化的函数里面，
   // 虽然窗口暂时是不可见的，但里面的对象的IsVisible应该是返回true才好处理
-  if (m_pParent->m_meta &&
-      OBJ_WINDOW == m_pParent->m_meta->Detail().major_type) {
+  if (OBJ_WINDOW == m_pParent->Meta().Detail().major_type) {
     return true;
   } else {
     return m_pParent->IsVisible();
@@ -506,7 +498,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
 
   VisibleChangedMessage message;
   message.visible = bVisibleCompatible;
-  message.obj_trigger = m_pIObject;
+  message.obj_trigger = GetIObject();
 
   // 通知子对象
   RouteMessage(&message);
@@ -523,7 +515,7 @@ void Object::SetVisibleEx(VISIBILITY_TYPE eType) {
         scale = window->m_dpi.GetScaleFactor();
       }
       ArrangeParam param = {
-        m_pIObject, 
+        GetIObject(), 
         ArrangeReason::VisibleChanged,
       };
       msg.layout->Arrange(param);
@@ -586,7 +578,7 @@ void Object::onLoaded() {
 }
 
 bool SortByZorder(Object *p1, Object *p2) {
-  return p1->GetZorder() < p2->GetZorder();
+  return p1->GetZOrder() < p2->GetZOrder();
 }
 
 void Object::SortChildByZorder() {
@@ -875,32 +867,6 @@ unsigned int Object::GetChildObjectIndex(Object *pChild) {
   }
 
   return 0;
-}
-
-const Rect& ObjectProp::GetPadding() {
-  return m_property_store.GetRect(OBJECT_PADDING);
-}
-const Rect& ObjectProp::GetMargin() {
-  return m_property_store.GetRect(OBJECT_MARGIN);
-}
-const Rect& ObjectProp::GetBorder() {
-  return m_property_store.GetRect(OBJECT_BORDER);
-}
-const Rect& ObjectProp::GetExtNonClient() { 
-  return m_property_store.GetRect(OBJECT_EXT_NONCLIENT);
-}
-
-void ObjectProp::SetPadding(const Rect& rect) {
-  m_property_store.SetRect(OBJECT_PADDING, rect);
-}
-void ObjectProp::SetMargin(const Rect& rect) {
-  m_property_store.SetRect(OBJECT_MARGIN, rect);
-}
-void ObjectProp::SetBorder(const Rect& rect) {
-  m_property_store.SetRect(OBJECT_BORDER, rect);
-}
-void ObjectProp::SetExtNonClient(const Rect&  rect) { 
-  m_property_store.SetRect(OBJECT_EXT_NONCLIENT, rect);
 }
 
 //

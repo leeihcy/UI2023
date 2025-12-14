@@ -77,9 +77,9 @@ int main() {
   window->Create(nullptr, &rc);
 
   window->SetTitle("1.你好Hello! -- 窗口创建");
-  window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
-  window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
-  window->connect("lbutton_down", ui::Slot(&on_lbutton_down, window.get()));
+  window->Connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
+  window->Connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint, window.get()));
+  window->Connect("lbutton_down", ui::Slot(&on_lbutton_down, window.get()));
   window->Show();
   
   app->Run();

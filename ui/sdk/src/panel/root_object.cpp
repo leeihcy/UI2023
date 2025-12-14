@@ -95,7 +95,7 @@ void RootObject::onPaintBkgnd(IRenderTarget *pRenderTarget) {
   WindowPaintEvent event;
   event.window = m_window->GetIWindow();
   event.rt = pRenderTarget;
-  m_window->emit(&event);
+  m_window->Emit(&event);
 
   if (!event.handled) {
     Panel::onPaintBkgnd(pRenderTarget);

@@ -27,14 +27,14 @@ public:
     // 目标阶段
     event->phase = EventPhase::AtTarget;
     event->node = target.GetIObject();
-    target.emit(event);
+    target.Emit(event);
 
     //  冒泡阶段
     event->phase = EventPhase::Bubbling;
     Object *node = target.GetParentObject();
     while (node) {
       event->node = node->GetIObject();
-      node->emit(event);
+      node->Emit(event);
       node = node->GetParentObject();
       if (event->IsPropagationStopped()) {
         break;
@@ -53,7 +53,7 @@ private:
     }
 
     event->node = node.GetIObject();
-    node.emit(event, EventPhase::Capturing);
+    node.Emit(event, EventPhase::Capturing);
   }
 };
 

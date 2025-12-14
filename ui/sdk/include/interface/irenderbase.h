@@ -1,8 +1,10 @@
 #ifndef _UI_IRENDERBASE_H_
 #define _UI_IRENDERBASE_H_
 #include "sdk/include/interface.h"
+#include "sdk/include/macro/uidefine.h"
 #include "sdk/include/interface/imessage.h"
 #include "sdk/include/util/rect.h"
+
 #include <memory>
 
 #if 0 // defined(OS_WIN)

@@ -41,8 +41,8 @@ void ObjectTree::DestroyChildObject() {
   Object *pObj = nullptr;
   while ((pObj = EnumChildObject(pObj))) {
     this->m_pChild = pObj->m_pNext;
-    if (pObj->m_pIObject) {
-      pObj->GetMeta()->Destroy(pObj->m_pIObject);
+    if (pObj->GetIObject()) {
+      pObj->Meta().Destroy(pObj->GetIObject());
       pObj = nullptr;
     }
 
@@ -58,8 +58,8 @@ void ObjectTree::DestroyChildObject() {
   pObj = nullptr;
   while ((pObj = EnumNcChildObject(pObj))) {
     this->m_pNcChild = pObj->m_pNext;
-    if (pObj->m_pIObject) {
-      pObj->GetMeta()->Destroy(pObj->m_pIObject);
+    if (pObj->GetIObject()) {
+      pObj->Meta().Destroy(pObj->GetIObject());
       pObj = nullptr;
     }
 
@@ -129,14 +129,14 @@ void ObjectTree::AddChild(Object *pObj) {
     this->m_pChild = pObj;
     pObj->m_pParent = static_cast<Object *>(this);
   } else {
-    long lZorder = pObj->GetZorder();
+    long lZorder = pObj->GetZOrder();
 
     Object *pObjEnum = nullptr;
     while ((pObjEnum = EnumChildObject(pObjEnum))) {
       if (pObjEnum == pObj)
         return;
 
-      if (pObjEnum->GetZorder() > lZorder) {
+      if (pObjEnum->GetZOrder() > lZorder) {
         // 插入在pObjEnum前面
         Object *pObjPrev = pObjEnum->m_pPrev;
         if (pObjPrev) {

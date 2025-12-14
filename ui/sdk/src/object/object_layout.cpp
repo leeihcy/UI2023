@@ -7,12 +7,6 @@ namespace ui {
 
 ObjectLayout::ObjectLayout() {
   m_pLayoutParam = nullptr;
-
-  m_lzOrder = 0;
-
-  m_nMaxWidth = NDEF;
-  m_nMaxHeight = NDEF;
-  m_lMinWidth = m_lMinHeight = NDEF;
 }
 
 ObjectLayout::~ObjectLayout() {
@@ -22,39 +16,14 @@ ObjectLayout::~ObjectLayout() {
 void ObjectLayout::SerializeLayout(SerializeParam *pData) {
   if (pData->IsReload()) {
     SAFE_RELEASE(m_pLayoutParam);
+    CreateLayoutParam();
   }
-
-  AttributeSerializer s(pData, "ObjectLayout");
-  s.AddInt(
-      XML_ZORDER,
-      *(int *)&m_lzOrder); // z序
-                           // (注：默认在从xml加载之后，AddChild之前会先解析一次)
-  s.AddInt(XML_MAXWIDTH, *(int *)&m_nMaxWidth)
-      ->SetDefault(NDEF)
-      ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-  s.AddInt(XML_MAXHEIGHT, *(int *)&m_nMaxHeight)
-      ->SetDefault(NDEF)
-      ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-  s.AddInt(XML_MINWIDTH, m_lMinWidth)
-      ->SetDefault(NDEF)
-      ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-  s.AddInt(XML_MINHEIGHT, m_lMinHeight)
-      ->SetDefault(NDEF)
-      ->SetDpiScaleType(LONGATTR_DPI_SCALE_GRATETHAN_0);
-
-  // 布局属性
   if (m_pLayoutParam) {
     m_pLayoutParam->Serialize(pData);
-  } else if (pData->IsReload()) {
-    CreateLayoutParam();
   }
 }
 
-int ObjectLayout::GetZorder() { return m_lzOrder; }
-
-void ObjectLayout::SetZorderDirect(int z) {
-  m_lzOrder = z;
-
+void ObjectLayout::onZOrderChanged(int z) {
   assert(false);
 #if 0 // TODO:
   // bool bOldHasLayer = GetSelfLayer()?true:false;
@@ -82,23 +51,8 @@ void ObjectLayout::SetZorderDirect(int z) {
   if (/*bOldHasLayer && bNowHasLayer && */ bPosChanged) {
     m_objLayer.OnObjPosInTreeChanged();
   }
-#else
-  UIASSERT(false);
 #endif
 }
-
-int ObjectLayout::GetMaxWidth() { return m_nMaxWidth; }
-
-int ObjectLayout::GetMaxHeight() { return m_nMaxHeight; }
-
-void ObjectLayout::SetMaxWidth(int n) { m_nMaxWidth = n; }
-void ObjectLayout::SetMaxHeight(int n) { m_nMaxHeight = n; }
-
-int ObjectLayout::GetMinWidth() { return m_lMinWidth; }
-int ObjectLayout::GetMinHeight() { return m_lMinHeight; }
-void ObjectLayout::SetMinWidth(int n) { m_lMinWidth = n; }
-void ObjectLayout::SetMinHeight(int n) { m_lMinHeight = n; }
-
 
 // 自己在树中的位置改变。如在编辑器中，拖拽控件到另一个panel下面
 void ObjectLayout::position_in_tree_changed() {

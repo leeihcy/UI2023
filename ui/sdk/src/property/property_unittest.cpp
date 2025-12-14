@@ -4,6 +4,7 @@
 #include "src/object/object.h"
 #include "src/control/button/button.h"
 #include "src/window/window.h"
+#include "include/common/signalslot/signal.h"
 
 #include <cstddef>
 #include <iostream>
@@ -125,7 +126,8 @@ void test0_sizeof() {
   //   sizeof(ui::Button) == 512
   //   sizeof(ui::Window) == 344
   //
-  //   408 --> 336
+  //   408 --> 272
+  std::cout << "sizeof Message: " << sizeof(ui::Message) << std::endl;
   std::cout << "sizeof Object: " << sizeof(ui::Object) << std::endl;
   std::cout << "sizeof Control: " << sizeof(ui::Control) << std::endl;
   std::cout << "sizeof Button: " << sizeof(ui::Button) << std::endl;
@@ -133,6 +135,7 @@ void test0_sizeof() {
 
   std::cout << "sizeof std::string: " << sizeof(std::string) << std::endl;
   std::cout << "sizeof std::shared_ptr<IRenderBase>: " << sizeof(std::shared_ptr<IRenderBase>) << std::endl;
+  std::cout << "std::map<std::string, signal<void(Event*)>>: " << sizeof(std::map<std::string, ui::signal<void(Event*)>>) << std::endl;
 }
 
 void property_unittest() {

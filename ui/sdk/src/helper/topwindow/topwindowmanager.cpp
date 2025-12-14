@@ -255,16 +255,14 @@ void TopWindowManager::GetAllChildIntoList(Object *pParent,
   if (nullptr == pParent)
     return;
 
-  if (pParent->GetMeta() &&
-      OBJ_CONTROL == pParent->GetMeta()->Detail().major_type)
+  if (OBJ_CONTROL == pParent->Meta().Detail().major_type)
     return;
 
   Object *pChild = nullptr;
   while ((pChild = pParent->EnumChildObject(pChild))) {
     listObjects.push_back(pChild);
 
-    if (pParent->GetMeta() &&
-        OBJ_CONTROL != pParent->GetMeta()->Detail().major_type)
+    if (OBJ_CONTROL != pParent->Meta().Detail().major_type)
       this->GetAllChildIntoList(pChild, listObjects);
   }
 }

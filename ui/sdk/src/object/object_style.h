@@ -7,7 +7,9 @@ namespace ui {
  
 class ObjectStyle {
 public:
-  
+  ObjectStyle();
+
+public:
   bool TestObjectStyle(const OBJSTYLE &test);
   void ModifyObjectStyle(OBJSTYLE *add, OBJSTYLE *remove);
 

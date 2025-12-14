@@ -140,8 +140,6 @@ struct MetaImpl : public Super {
       return nullptr;
     }
 
-    // 确保FinalConstructMessage消息传递到了Message中。
-    assert(p->GetMeta() == static_cast<IMeta*>(this));
     return p;
   }
 

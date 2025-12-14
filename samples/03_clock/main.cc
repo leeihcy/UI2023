@@ -108,8 +108,8 @@ int main() {
   window->SetTitle("clock demo -- vulkan硬件合成");
   window->Show();
 
-  window->connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
-  window->connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
+  window->Connect(WINDOW_DESTROY_EVENT, ui::Slot(on_window_destroy, app.get()));
+  window->Connect(WINDOW_PAINT_EVENT, ui::Slot(on_window_paint));
 
   if (use_gpu) {
     g_clock_animate.StartAnimate(app.get(), window.get());

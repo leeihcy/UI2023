@@ -12,7 +12,7 @@ public:
   Control(IControl *);
 
   void onRouteMessage(ui::Msg *msg);
-  IControl *GetIControl() { return m_pIControl; }
+  IControl *GetIControl() { return static_cast<IControl*>(m_imessage); }
 
 public:
   void ModifyControlStyle(ControlStyle *add, ControlStyle *remove);
@@ -37,8 +37,6 @@ protected:
   void onGetDesiredSize(Size *size);
 
 protected:
-  IControl *m_pIControl;
-
   ControlStyle m_controlStyle;
 };
 

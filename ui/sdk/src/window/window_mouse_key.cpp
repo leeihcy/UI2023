@@ -463,7 +463,7 @@ void WindowMouseKey::_OnLButtonDown(Point pt) {
     LButtonDownEvent event;
     event.x = pt.x;
     event.y = pt.y;
-    m_window.emit(&event);
+    m_window.Emit(&event);
   }
 }
 
