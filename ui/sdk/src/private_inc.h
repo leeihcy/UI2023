@@ -6,11 +6,10 @@
 #include "include/util/color.h"
 #include "include/util/util.h"
 #include "include/macro/xmldefine.h"
-// #include "include/util/iimage.h"
+#include "sdk/include/interface/iuiinterface.h"
 #include "include/interface/iuieditor.h"
 #include "include/interface/imeta.h"
 #include "include/util/log.h"
-// #include "../common/define.h"
 #include "src/util/util.h"
 
 #include <map>

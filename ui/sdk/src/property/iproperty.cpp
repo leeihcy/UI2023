@@ -11,6 +11,7 @@ PropertyStoreWrap::~PropertyStoreWrap() {
   delete m_pImpl;
 }
 
+// 不对外暴露Property对象，避免DLL版本不兼容。
 void* PropertyStoreWrap::AllocRegister(int property_count) {
   return (void*)new Property[property_count];
 }

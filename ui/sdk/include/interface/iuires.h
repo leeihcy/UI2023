@@ -2,8 +2,8 @@
 #define _IUIRES_H_
 #include "sdk/include/interface.h"
 
-#include "sdk/include/macro/uidefine.h"
 #include "sdk/include/macro/xmldefine.h"
+#include "sdk/include/interface/iuiinterface.h"
 
 namespace ui {
 class ColorManager;

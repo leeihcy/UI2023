@@ -126,7 +126,7 @@ void test0_sizeof() {
   //   sizeof(ui::Button) == 512
   //   sizeof(ui::Window) == 344
   //
-  //   408 --> 272
+  //   408 --> 272 --> 232
   std::cout << "sizeof Message: " << sizeof(ui::Message) << std::endl;
   std::cout << "sizeof Object: " << sizeof(ui::Object) << std::endl;
   std::cout << "sizeof Control: " << sizeof(ui::Control) << std::endl;

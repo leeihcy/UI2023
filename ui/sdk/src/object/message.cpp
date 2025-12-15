@@ -40,8 +40,12 @@ void Message::Connect(const char *event_name, slot<void(Event *)> &&s) {
   if (!event_name || !event_name[0]) {
     return;
   }
-  m_events[std::string(event_name)].connect(
-      std::forward<slot<void(Event *)>>(s));
+  if (!m_event_listener_map) {
+    m_event_listener_map = std::make_unique<std::map<std::string, EventLintener>>();
+  }
+  
+  EventLintener& listener = (*m_event_listener_map)[std::string(event_name)];
+  listener.bubbling.connect(std::forward<slot<void(Event *)>>(s));
 }
 
   // 监听 capture阶段的事件
@@ -49,8 +53,11 @@ void Message::Capture(const char* event_name, slot<void(Event*)>&& s) {
   if (!event_name || !event_name[0]) {
     return;
   }
-  m_captures[std::string(event_name)].connect(
-      std::forward<slot<void(Event *)>>(s));
+  if (!m_event_listener_map) {
+    m_event_listener_map = std::make_unique<std::map<std::string, EventLintener>>();
+  }
+  EventLintener& listener = (*m_event_listener_map)[std::string(event_name)];
+  listener.capture.connect(std::forward<slot<void(Event *)>>(s));
 }
 
 void Message::Emit(Event *event, EventPhase phase) {
@@ -58,24 +65,23 @@ void Message::Emit(Event *event, EventPhase phase) {
   if (!type || !type[0]) {
     return;
   }
+  if (!m_event_listener_map) {
+    return;
+  }
+  auto iter = m_event_listener_map->find(std::string(type));
+  if (iter == m_event_listener_map->end()) {
+    return;
+  }
+
   if (phase == EventPhase::Capturing) {
-    auto iter = m_captures.find(std::string(type));
-    if (iter == m_captures.end()) {
-      return;
-    }
-    iter->second.emit(event);
+    iter->second.capture.emit(event);
   } else {
-    auto iter = m_events.find(std::string(type));
-    if (iter == m_events.end()) {
-      return;
-    }
-    iter->second.emit(event);
+    iter->second.bubbling.emit(event);
   }
 }
 
 void Message::ClearEvents() {
-  m_events.clear();
-  m_captures.clear();
+  m_event_listener_map.reset();
 }
 
 } // namespace ui

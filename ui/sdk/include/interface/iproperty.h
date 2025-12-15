@@ -21,11 +21,12 @@ struct IProperty {
 
 class PropertyStore;
 struct UIAPI PropertyStoreWrap {
-  PropertyStoreWrap(void* property_register_buffer);
-  ~PropertyStoreWrap();
 
-  static void* AllocRegister(int property_count);
-  static void FreeRegister(void* register_buffer);
+  static void *AllocRegister(int property_count);
+  static void FreeRegister(void *register_buffer);
+
+  PropertyStoreWrap(void *property_register_buffer);
+  ~PropertyStoreWrap();
 
   // Register
   IProperty& RegisterInt(int id, const std::string& key, int default_value = 0);
@@ -40,8 +41,7 @@ struct UIAPI PropertyStoreWrap {
   // Set
   void SetInt(int id, int n);
   void SetBool(int id, bool b);
-  void SetString(int id, const char* text);
-
+  void SetString(int id, const char *text);
 
 private:
   PropertyStore *m_pImpl;

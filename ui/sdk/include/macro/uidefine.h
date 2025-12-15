@@ -104,10 +104,6 @@ enum HANDLED_VALUE {
   HANDLED = 1,
 };
 
-class UIAPI IRootInterface {
-public:
-  virtual ~IRootInterface(){}; // 确保delete时能调用到派生类的析构函数
-};
 
 // 编辑器的一切功能不好实现，只能将一些代码加进UISDK工程
 // 这些代码都用这个宏包起来，在release模式下面不启用

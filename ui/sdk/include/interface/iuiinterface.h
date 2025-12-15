@@ -23,6 +23,11 @@ struct IObject;
 // 句柄定义
 struct IApplication;
 
+class UIAPI IRootInterface {
+public:
+  virtual ~IRootInterface(){}; // 确保delete时能调用到派生类的析构函数
+};
+
 class TopWindowManager;
 struct UIAPI ITopWindowManager : public IRootInterface {
   ITopWindowManager(TopWindowManager *p);
