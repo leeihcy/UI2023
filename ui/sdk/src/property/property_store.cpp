@@ -71,14 +71,14 @@ IProperty& DefaultPropertyStore::RegisterRect(int id, const std::string& key) {
 
 // --------------------------------------------------------------------------------
 
-ConfigPropertyStore::~ConfigPropertyStore() {
+SpecifiedPropertyStore::~SpecifiedPropertyStore() {
   auto iter = m_map.begin();
   for (; iter != m_map.end(); ++iter) {
     free(iter->second);
   }
 }
 
-PropertyValue *ConfigPropertyStore::GetConfigValue(int id) const {
+PropertyValue *SpecifiedPropertyStore::GetConfigValue(int id) const {
   auto iter = m_map.find(id);
   if (iter == m_map.end()) {
     return nullptr;
@@ -86,7 +86,7 @@ PropertyValue *ConfigPropertyStore::GetConfigValue(int id) const {
   return (*iter).second;
 }
 
-void ConfigPropertyStore::SetValue(int id, PropertyValue* value) {
+void SpecifiedPropertyStore::SetValue(int id, PropertyValue* value) {
   if (!value) {
     return;
   }
@@ -100,11 +100,11 @@ void ConfigPropertyStore::SetValue(int id, PropertyValue* value) {
   iter->second = value;
 }
 
-void ConfigPropertyStore::setValue(int id, PropertyValue *value) {
+void SpecifiedPropertyStore::setValue(int id, PropertyValue *value) {
   m_map[id] = value;
 }
 
-void ConfigPropertyStore::SetInt(int id, int n) {
+void SpecifiedPropertyStore::SetInt(int id, int n) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
     setValue(id, mallocValue<IntValue>(n));
@@ -113,7 +113,7 @@ void ConfigPropertyStore::SetInt(int id, int n) {
   }
 }
 
-void ConfigPropertyStore::SetBool(int id, bool b) {
+void SpecifiedPropertyStore::SetBool(int id, bool b) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
     setValue(id, mallocValue<BoolValue>(b));
@@ -122,7 +122,7 @@ void ConfigPropertyStore::SetBool(int id, bool b) {
   }
 }
 
-void ConfigPropertyStore::SetString(int id, const char *text) {
+void SpecifiedPropertyStore::SetString(int id, const char *text) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
     setValue(id, mallocValue<StringValue>(text));
@@ -131,7 +131,7 @@ void ConfigPropertyStore::SetString(int id, const char *text) {
   }
 }
 
-void ConfigPropertyStore::SetRect(int id, const Rect& rect) {
+void SpecifiedPropertyStore::SetRect(int id, const Rect& rect) {
   PropertyValue *cur = GetConfigValue(id);
   if (!cur) {
     setValue(id, mallocValue<RectValue>(rect));
@@ -208,7 +208,7 @@ void PropertyStore::Serialize(IAttributeMap* attr_map) {
       continue;
     }
     Property &default_data = GetDefaultData(id);
-    ConfigPropertyStore::SetValue(
+    SpecifiedPropertyStore::SetValue(
         id, PropertyValue::Parse(default_data.type, value));
   }
   attr_map->EndEnum();

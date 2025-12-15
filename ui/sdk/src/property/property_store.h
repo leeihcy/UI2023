@@ -56,9 +56,9 @@ private:
 
 
 // 每个对象单独配置的属性值数据库。
-class ConfigPropertyStore {
+class SpecifiedPropertyStore {
 public:
-  ~ConfigPropertyStore();
+  ~SpecifiedPropertyStore();
   PropertyValue *GetConfigValue(int id) const;
 
   void SetInt(int id, int n);
@@ -87,7 +87,7 @@ public:
 // 对外对象。
 // 为了方便外部直接调用 Register/Get/Set 各种方法，这里使用多重继承的方式。
 class PropertyStore:
-  public ConfigPropertyStore,
+  public SpecifiedPropertyStore,
   public InheritPropertyStore,
   public DefaultPropertyStore
 {
