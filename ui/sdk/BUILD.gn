@@ -53,6 +53,7 @@ shared_library("uisdk") {
       "//ui/gpu:uigpu",
       ":copy_skia",
       ":source_zlib",
+      "//ui/sdk/html:html",
     ]
 
     include_dirs = [

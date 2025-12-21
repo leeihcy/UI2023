@@ -10,6 +10,7 @@ void rect_region_unittest();
 void uuid_unittest();
 void color_unittest();
 void property_unittest();
+void html_unittest();
 
 namespace ui {
 
@@ -20,8 +21,9 @@ void _UIUnitTest() {
   rect_region_unittest();
   uuid_unittest();
   color_unittest();
-#endif
   property_unittest();
+#endif
+  html_unittest();
 }
 
 UIAPI void UIUnitTest() {

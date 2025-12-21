@@ -1,0 +1,22 @@
+
+source_set("html") {
+  sources = [
+    "css/parser/css_parser.h",
+    "css/parser/css_parser.cpp",
+    "css/parser/css_parser_token_stream.h",
+    "css/parser/css_parser_token_stream.cpp",
+
+    "util/util.h",
+    "util/util.cpp",
+  ]
+
+  if (is_debug) {
+    sources += [
+      "test/html_unittest.cpp"
+    ]
+  }
+
+  include_dirs=[
+    "//ui/sdk"
+  ]
+}

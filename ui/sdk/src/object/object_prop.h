@@ -75,6 +75,7 @@ protected:
   // 属性集
   PropertyStore m_property_store;
   
+  // TODO: 干掉这三个属性，全部使用CSS实现。
   std::shared_ptr<IRenderBase> m_back_render;     // 背景渲染
   std::shared_ptr<IRenderBase> m_fore_render;     // 前景渲染
   std::shared_ptr<ITextRenderBase> m_text_render; // 文字渲染，由control负责读取该属性

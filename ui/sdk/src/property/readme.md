@@ -38,7 +38,7 @@
 
 | Precedence Order (low to high) | Origin | Importance |
 | - | - | - |
-|1  | user-agent (browser)	normal
+| 1  | user-agent (browser)	normal
 | 2 | user | normal |
 | 3 | author (developer) | normal |
 | 4 | CSS keyframe animations| | 
@@ -98,3 +98,10 @@ style="color:red"        /* 1,0,0,0 → 1000 (行内样式) */
 
 
 
+## 演进
+
+1. DefaultValue/InitializeValue （done）
+
+2. 模板对象如何实现。多个对象共用一套样式，如列表中的所有行的按钮等。
+
+3. 

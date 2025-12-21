@@ -52,3 +52,4 @@
  
    TODO: image set. 200% 300% pecent
 
+TODO: 接入googletest单元测试框架。
