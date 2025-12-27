@@ -1,10 +1,22 @@
 
 source_set("html") {
   sources = [
-    "css/parser/css_parser.h",
-    "css/parser/css_parser.cpp",
+    "css/parser/css_parser_token.h",
+    "css/parser/css_parser_tokenizer.h",
+    "css/parser/css_parser_tokenizer.cpp",
     "css/parser/css_parser_token_stream.h",
     "css/parser/css_parser_token_stream.cpp",
+
+    "css/parser/css_parser.h",
+    "css/parser/css_parser.cpp",
+
+    "css/property/property_id.h",
+    "css/property/property_id.cpp",
+    "$target_gen_dir/css/property/property_id_hash.cpp",
+
+    "css/property/value_id.h",
+    "css/property/value_id.cpp",
+    "$target_gen_dir/css/property/value_id_hash.cpp",
 
     "util/util.h",
     "util/util.cpp",
@@ -12,11 +24,47 @@ source_set("html") {
 
   if (is_debug) {
     sources += [
+      "test/html_unittest_css_parser_token.cpp",
+      "test/html_unittest_css_parser.cpp",
       "test/html_unittest.cpp"
     ]
   }
 
   include_dirs=[
     "//ui/sdk"
+  ]
+
+  deps=[
+    ":gen_property_id_hash",
+    ":gen_value_id_hash",
+  ]
+}
+
+# 生成property name->id 的完美Hash
+action("gen_property_id_hash") {
+  script="css/property/gen_property_hash.py"
+  args = [
+    rebase_path("$target_gen_dir/css/property")
+  ]
+  inputs = [
+    "css/property/property_id.h",
+  ]
+  outputs = [
+    "$target_gen_dir/css/property/property_id.template",
+    "$target_gen_dir/css/property/property_id_hash.cpp",
+  ]
+}
+# 生成property value->id 的完美Hash
+action("gen_value_id_hash") {
+  script="css/property/gen_value_hash.py"
+  args = [
+    rebase_path("$target_gen_dir/css/property")
+  ]
+  inputs = [
+    "css/property/value_id.h",
+  ]
+  outputs = [
+    "$target_gen_dir/css/property/value_id.template",
+    "$target_gen_dir/css/property/value_id_hash.cpp",
   ]
 }

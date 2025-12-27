@@ -87,7 +87,7 @@ public:
                  const std::u16string &name)
       : m_type(type), m_block_type(block_type), m_name(name) {}
 
-  CSSParserTokenType Type() { return m_type; }
+  CSSParserTokenType Type() const { return m_type; }
 
   static CSSParserToken MakeIdent(const std::u16string& name) {
     CSSParserToken t(CSSParserTokenType::Ident);

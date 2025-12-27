@@ -1,4 +1,5 @@
 #include "html/util/util.h"
+#include <cctype>
 
 namespace html {
 
@@ -57,6 +58,22 @@ bool Utf8ToUnicode(const char* utf8, size_t utf8_length, std::u16string &out_uni
     }
   }
 
+  return true;
+}
+
+bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) {
+  out_ascii.clear();
+  
+  int length = unicode.length();
+  out_ascii.resize(length);
+
+  for (int i = 0; i < length; i++) {
+    char16_t c = unicode[i];
+    if (c == 0 || c >= 0x7F) {
+      return false;
+    }
+    out_ascii[i] = (char)std::tolower((char)c);
+  }
   return true;
 }
 
