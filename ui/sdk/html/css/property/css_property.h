@@ -2,7 +2,6 @@
 #define _UI_SDK_HTML_CSS_PROPERTY_CSSPROPERTY_H_
 
 #include "html/css/property/property_id.h"
-#include <_types/_uint64_t.h>
 namespace html {
 class CSSParserContext;
 
@@ -42,25 +41,44 @@ enum class CSSPropertyFlag : int {
 };
 
 
+// 1. 每个属性对应一个派生类，负责flag设置 + Value解析。
+// 2. 每个派生类不要添加成员变量，且构造函数要设置为 constexpre，
+//    用于构造全局属性表时不要触发构造函数，直接在编译期间完成数组初始化。
+//
 class CSSProperty {
 public:
   static const CSSProperty& Get(CSSPropertyId id);
+public:
+  constexpr CSSProperty(uint64_t flags) : m_flags(flags) {}
+  virtual ~CSSProperty() {}
 
 protected:
   uint64_t m_flags;
 };
 
+class Variable : public CSSProperty {
+
+};
+
+class Shorthand : public CSSProperty {
+
+};
 
 class Longhand : public CSSProperty {
+public:
+  constexpr Longhand(int flags) : CSSProperty(flags | (int)CSSPropertyFlag::Longhand) {}
+};
+
+class Background final : public Shorthand {
 
 };
 
 class BackgroundColor final : public Longhand {
-  BackgroundColor() {
-    m_flags = 
+public:
+  constexpr BackgroundColor() : Longhand(
       (int)CSSPropertyFlag::Interpolable | 
       (int)CSSPropertyFlag::Compositable | 
-      (int)CSSPropertyFlag::Property;
+      (int)CSSPropertyFlag::Property) {
   }
   bool Parse(CSSParserContext& c);
 };

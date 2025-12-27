@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import subprocess
 
 """
@@ -121,8 +122,13 @@ def gperf(output_dir):
   # gperf -t property_id.template > property_id_hash.cpp
   # gen_dir = os.path.join(SCRIPT_DIR, "gen")
 
-  # TODO:  gperf.exe on windows
   gperf_path = "gperf"
+  if sys.platform=="win32":
+    gperf_path="gperf.exe"
+
+  if not shutil.which(gperf_path):
+    print("Error: gperf is not exist: " + gperf_path)
+    exit(-1)
 
   code, output = run([gperf_path, "-t", "property_id.template"], output_dir)
   hash_cpp_path = os.path.join(output_dir, "property_id_hash.cpp")
@@ -134,7 +140,10 @@ def gperf(output_dir):
   output = output.replace("register ", "")
 
   # 2. 去掉 #line行，
-  lines = output.split("\n")
+  newline = "\n"
+  if sys.platform == "win32":
+    newline = "\r\n"
+  lines = output.split(newline)
   output = "\n".join([line for line in lines if not line.startswith("#line ")])
 
   # 2. 补全namespace后面那个括号

@@ -3,6 +3,7 @@
 #include "html/css/property/property_id.h"
 #include "html/css/property/value_id.h"
 #include "html/util/util.h"
+#include <assert.h>
 
 
 namespace html {

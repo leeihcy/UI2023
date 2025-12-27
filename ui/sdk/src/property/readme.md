@@ -105,3 +105,9 @@ style="color:red"        /* 1,0,0,0 → 1000 (行内样式) */
 2. 模板对象如何实现。多个对象共用一套样式，如列表中的所有行的按钮等。
 
 3. 
+
+## Test
+ninja third_party/blink/common:blink_common_unittests
+ninja third_party/blink/renderer/controller:blink_unittests
+
+blink_unittests --gtest_filter=ComputedStyleTest.ShapeOutsideBoxEqual

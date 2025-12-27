@@ -5,6 +5,7 @@
 #include "html/css/parser/css_parser_tokenizer.h"
 #include <cstdlib>
 #include <string>
+#include <memory>
 
 //
 // https://www.w3.org/TR/css-syntax-3/

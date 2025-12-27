@@ -10,6 +10,9 @@ source_set("html") {
     "css/parser/css_parser.h",
     "css/parser/css_parser.cpp",
 
+    "css/property/css_property.h",
+    "css/property/css_property.cpp",
+
     "css/property/property_id.h",
     "css/property/property_id.cpp",
     "$target_gen_dir/css/property/property_id_hash.cpp",
