@@ -1,9 +1,11 @@
 #ifndef _UI_SDK_HTML_CSS_PROPERTY_CSSPROPERTY_H_
 #define _UI_SDK_HTML_CSS_PROPERTY_CSSPROPERTY_H_
 
+#include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
 namespace html {
 class CSSParserContext;
+class CSSValue;
 
 enum class CSSPropertyFlag : int {
   // 表示该属性的值可以在两个状态之间平滑插值计算，是支持CSS动画/过渡的关键.
@@ -50,27 +52,45 @@ public:
   static const CSSProperty& Get(CSSPropertyId id);
 public:
   constexpr CSSProperty(uint64_t flags) : m_flags(flags) {}
-  virtual ~CSSProperty() {}
+  // constexpr virtual ~CSSProperty(){};
+
+  uint32_t GetFlags() const { return m_flags; }
+  bool IsProperty() const { return m_flags & (int)CSSPropertyFlag::Property; }
+  bool IsShorthand() const { return m_flags & (int)CSSPropertyFlag::Shorthand; }
+  bool IsLonghand() const { return m_flags & (int)CSSPropertyFlag::Longhand; }
+  bool IsInherited() const { return m_flags & (int)CSSPropertyFlag::Inherited; }
+
+  // virtual table pointer.
+  virtual void foo() {};
 
 protected:
+  // int m_id;
   uint64_t m_flags;
 };
-
+ 
 class Variable : public CSSProperty {
-
+public:
+  constexpr Variable() : CSSProperty(0) {}
 };
 
 class Shorthand : public CSSProperty {
-
+public:
+  constexpr Shorthand(int flags) : CSSProperty(flags | (int)CSSPropertyFlag::Shorthand) {}
 };
 
 class Longhand : public CSSProperty {
 public:
   constexpr Longhand(int flags) : CSSProperty(flags | (int)CSSPropertyFlag::Longhand) {}
+
+  virtual const CSSValue *
+  ParseSingleValue(CSSParserContext &context) const {
+    return nullptr;
+  }
 };
 
 class Background final : public Shorthand {
-
+public:
+  constexpr Background() : Shorthand(0) {}
 };
 
 class BackgroundColor final : public Longhand {
@@ -80,7 +100,7 @@ public:
       (int)CSSPropertyFlag::Compositable | 
       (int)CSSPropertyFlag::Property) {
   }
-  bool Parse(CSSParserContext& c);
+  const CSSValue * ParseSingleValue(CSSParserContext &context) const override;
 };
 
 }

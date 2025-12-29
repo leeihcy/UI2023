@@ -1,6 +1,7 @@
 #include "html/css/parser/css_parser_tokenizer.h"
 
 #include "html/css/parser/css_parser_token.h"
+#include "html/util/util.h"
 #include <cassert>
 #include <string>
 #include <vector>
@@ -50,28 +51,6 @@ inline bool IsHTMLSpace(char16_t character) {
   return character <= ' ' &&
          (character == ' ' || character == '\n' || character == '\t' ||
           character == '\r' || character == '\f');
-}
-
-inline char16_t ToASCIILower(char16_t ch) {
-  if (ch >= u'A' && ch <= u'Z') {
-    return ch + (u'a' - u'A');
-  }
-  return ch;
-}
-
-bool EqualIgnoringASCIICase(const char16_t *s1, const char16_t *s2) {
-  while (true) {
-    char16_t c1 = ToASCIILower(*s1++);
-    char16_t c2 = ToASCIILower(*s2++);
-
-    if (c1 != c2) {
-      return false;
-    }
-
-    if (c1 == u'\0') {
-      return true; // 结束
-    }
-  }
 }
 
 static bool IsNonPrintableCodePoint(char16_t cc) {
@@ -127,7 +106,7 @@ CSSParserToken CSSTokenizer::NextToken(bool skip_comments) {
     case '\n':
     case '\f': // 换页符 FormFeed
       m_input_stream.AdvanceUntilNonWhitespace();
-      return CSSParserToken(CSSParserTokenType::WhiteSpace);
+      return CSSParserToken(CSSParserTokenType::Whitespace);
 
     case '\'':
     case '"':

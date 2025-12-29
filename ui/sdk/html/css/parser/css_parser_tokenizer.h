@@ -2,6 +2,7 @@
 #define _UI_SDK_HTML_CSS_PARSER_CSSPARSERTOKENIZER_H_
 
 #include "html/css/parser/css_parser_token.h"
+#include <cstddef>
 #include <string>
 #include <stack>
 
@@ -96,6 +97,9 @@ public:
   unsigned int Offset() {
     return m_offset;
   }
+  void Restore(unsigned int offset) {
+    m_offset = offset;
+  }
   std::u16string RangeAt(unsigned int start_offset, unsigned int size) {
     return std::u16string(m_buffer + start_offset, size);
   }
@@ -110,7 +114,8 @@ public:
   CSSTokenizer(const char16_t* buffer, int size) : m_input_stream(buffer, size) {}
 
   CSSParserToken NextToken(bool skip_comments=true);
-
+  unsigned int  Offset() { return m_input_stream.Offset(); }
+  void Restore(unsigned int offset) { m_input_stream.Restore(offset); }
 private:
   char16_t Consume();
   bool ConsumeIfNext(char16_t);

@@ -2,16 +2,24 @@
 source_set("html") {
   sources = [
     "css/parser/css_parser_token.h",
+    "css/parser/css_parser_token.cpp",
     "css/parser/css_parser_tokenizer.h",
     "css/parser/css_parser_tokenizer.cpp",
     "css/parser/css_parser_token_stream.h",
     "css/parser/css_parser_token_stream.cpp",
-
+    "css/parser/css_property_parser.h",
+    "css/parser/css_property_parser.cpp",
     "css/parser/css_parser.h",
     "css/parser/css_parser.cpp",
 
     "css/property/css_property.h",
     "css/property/css_property.cpp",
+    "css/property/css_property_instances.h",
+    "css/property/css_property_instances.cpp",
+    "css/property/css_parsing_utils.h",
+    "css/property/css_parsing_utils.cpp",
+    "css/property/css_value.h",
+    "css/property/css_value.cpp",
 
     "css/property/property_id.h",
     "css/property/property_id.cpp",
@@ -29,6 +37,7 @@ source_set("html") {
     sources += [
       "test/html_unittest_css_parser_token.cpp",
       "test/html_unittest_css_parser.cpp",
+      "test/html_unittest_css_property.cpp",
       "test/html_unittest.cpp"
     ]
   }

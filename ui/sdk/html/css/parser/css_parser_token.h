@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_HTML_CSS_PARSER_CSSPARSERTOKEN_H_
 #define _UI_SDK_HTML_CSS_PARSER_CSSPARSERTOKEN_H_
 
+#include "html/css/property/value_id.h"
 #include <string>
 namespace html {
 
@@ -15,7 +16,7 @@ namespace html {
 enum class CSSParserTokenType : int {
   Invalid = -1,
   Eof = 0,
-  WhiteSpace,
+  Whitespace,
   Comment,
   Delimiter,
   Ident,
@@ -88,6 +89,7 @@ public:
       : m_type(type), m_block_type(block_type), m_name(name) {}
 
   CSSParserTokenType Type() const { return m_type; }
+  CSSParserTokenBlockType GetBlockType() const { return m_block_type; }
 
   static CSSParserToken MakeIdent(const std::u16string& name) {
     CSSParserToken t(CSSParserTokenType::Ident);
@@ -129,6 +131,9 @@ public:
   const std::u16string& Name() { return m_name; }
   const std::u16string& String() { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
+  char16_t Delimiter() { return m_delimiter; }
+  CSSValueId ValueId();
+  CSSValueId FunctionId();
 
 private:
   CSSParserTokenType m_type = CSSParserTokenType::Invalid;

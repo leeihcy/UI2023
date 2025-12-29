@@ -77,4 +77,27 @@ bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) 
   return true;
 }
 
+inline char16_t ToASCIILower(char16_t ch) {
+  if (ch >= u'A' && ch <= u'Z') {
+    return ch + (u'a' - u'A');
+  }
+  return ch;
+}
+
+bool EqualIgnoringASCIICase(const char16_t *s1, const char16_t *s2) {
+  while (true) {
+    char16_t c1 = ToASCIILower(*s1++);
+    char16_t c2 = ToASCIILower(*s2++);
+
+    if (c1 != c2) {
+      return false;
+    }
+
+    if (c1 == u'\0') {
+      return true; // 结束
+    }
+  }
+}
+
+
 } // namespace html

@@ -12,17 +12,17 @@ enum class CSSPropertyId : int {
   // gen_property_hash.py 脚本将读取这些字段生成Perfect Hash。
   
   Background,      // "background"
-  BackgroundClip,      // "background-clip"
+  // BackgroundClip,      // "background-clip"
   BackgroundColor,     // "background-color"
-  BackgroundRepeat,    // "background-repeat"
-  BackgroundOrigin,    // "background-origin"
-  BackgroundSize,      // "background-size"
-  BackgroundPosition,  // "background-position"
-  BackgroundPositionX, // "background-position-x"
-  BackgroundPositionY, // "background-position-y"
-  BackgroundBlendMode, // "background-blend-mode"
-  BackgroundImage,     // "background-image"
-  BackgroundAttachment,// "background-attachment"
+  // BackgroundRepeat,    // "background-repeat"
+  // BackgroundOrigin,    // "background-origin"
+  // BackgroundSize,      // "background-size"
+  // BackgroundPosition,  // "background-position"
+  // BackgroundPositionX, // "background-position-x"
+  // BackgroundPositionY, // "background-position-y"
+  // BackgroundBlendMode, // "background-blend-mode"
+  // BackgroundImage,     // "background-image"
+  // BackgroundAttachment,// "background-attachment"
 
 
 

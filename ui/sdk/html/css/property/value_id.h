@@ -323,6 +323,8 @@ enum class CSSValueId : int {
   ColorExtendedEnd = ColorExtendedYellowgreen,
   Transparent, // "transparent"
 
+  // Function
+  ColorMix,  // "color-mix"
 };
 
 constexpr size_t MaxCSSValueNameLength = 48;
