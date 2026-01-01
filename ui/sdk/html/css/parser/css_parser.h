@@ -24,16 +24,21 @@ public:
 
 class CSSPropertyValue {
 public:
-  explicit CSSPropertyValue(const CSSPropertyName& name, const CSSValue* value, bool important=false)
-    : m_property_id(name.m_property_id), m_value(value), m_important(important){
+  explicit CSSPropertyValue(const CSSPropertyName& name, U<CSSValue>&& value, bool important=false)
+    : m_property_id(name.m_property_id), m_value(std::move(value)), m_important(important){
       if (m_property_id == CSSPropertyId::Variable) {
         m_custom_property_name = name.m_custom_property_name;
       }
   }
+  CSSPropertyId Id() { return m_property_id; }
+  const std::string& CustomPropertyName() { return m_custom_property_name;}
+  const CSSValue* Value() { return m_value.get(); }
+  bool IsImportant() { return m_important; }
+
 private:
   CSSPropertyId m_property_id;
   std::string m_custom_property_name;
-  const CSSValue* m_value;
+  U<CSSValue> m_value;
   bool m_important = false;
 };
 
@@ -42,9 +47,27 @@ struct CSSParserContext {
   std::vector<CSSPropertyValue> parsed_properties;
 };
 
+class CSSPropertyValueSet {
+public:
+  CSSPropertyValueSet(std::vector<CSSPropertyValue> &&array)
+      : m_property_vector(std::move(array)) {}
+
+  size_t Size() { return m_property_vector.size(); }
+  CSSPropertyValue &Item(unsigned int i) {
+    if (i >= m_property_vector.size()) {
+      abort();
+    }
+    return m_property_vector[i];
+  };
+
+private:
+  std::vector<CSSPropertyValue> m_property_vector;
+};
+
 class CSSParser {
 public:
-  void ParseInlineStyleDeclaration(const char* bytes, size_t size);
+  std::unique_ptr<CSSPropertyValueSet>
+  ParseInlineStyleDeclaration(const char *bytes, size_t size);
 
 protected:
   void ConsumeBlockContents(CSSParserContext& context);

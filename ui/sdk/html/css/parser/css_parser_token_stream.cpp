@@ -15,6 +15,18 @@ bool CSSParserTokenStream::AtEnd() {
            m_next_token.GetBlockType() == CSSParserTokenBlockType::End;
 }
 
+bool CSSParserTokenStream::TokenMarksEnd(CSSParserTokenType end_type) {
+  return (m_boundaries & FlagForTokenType(m_next_token.Type()) ||
+          m_next_token.GetBlockType() == CSSParserTokenBlockType::End ||
+          m_next_token.Type() == end_type);
+}
+bool CSSParserTokenStream::TokenMarksEnd(const CSSParserToken &token,
+                                         CSSParserTokenType end_type) {
+  return (m_boundaries & FlagForTokenType(token.Type()) ||
+          token.GetBlockType() == CSSParserTokenBlockType::End ||
+          token.Type() == end_type);
+}
+
 CSSParserTokenStream::State CSSParserTokenStream::Save() {
   return {m_tokenizer->Offset()};
 }
@@ -51,6 +63,33 @@ CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
   CSSParserToken result = Consume();
   ConsumeWhitespace();
   return result;
+}
+
+// ??
+void CSSParserTokenStream::SkipUntilPeekedTypeIs(CSSParserTokenType type) {
+  if (m_next_token.IsEof() || TokenMarksEnd(type)) {
+    return;
+  }
+  // Process the lookahead token.
+  unsigned nesting_level = 0;
+  if (m_next_token.GetBlockType() == CSSParserTokenBlockType::Start) {
+    nesting_level++;
+  }
+
+  // Add tokens to our return vector until we see either EOF or we meet the
+  // return condition. (The termination condition is within the loop.)
+  while (true) {
+    CSSParserToken token = m_tokenizer->NextToken();
+    if (token.IsEof() || (nesting_level == 0 && TokenMarksEnd(token, type))) {
+      m_next_token = token;
+      // offset_ = tokenizer_.PreviousOffset();
+      return;
+    } else if (token.GetBlockType() == CSSParserTokenBlockType::Start) {
+      nesting_level++;
+    } else if (token.GetBlockType() == CSSParserTokenBlockType::End) {
+      nesting_level--;
+    }
+  }
 }
 
 // CSSParserToken CSSParserTokenStream::NextInputToken() {

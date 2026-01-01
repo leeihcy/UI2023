@@ -7,25 +7,54 @@
 
 namespace ui {
 
-// PropertyValue 创建释放，尽量不使用stdptr，减小对象内存使用。
-template<class T, class... Types>
-T* mallocValue(Types... args) {
-  T* p = (T*)::malloc(sizeof(T));
-  new (p) T(args...);
-  return p;
-}
+enum class PropertyValueFlags : int {
+  // 不需要释放
+  Static = 1,
+  // 从Pool创建，不需要释放
+  Pool = 2,
+  // 需要释放
+  Alloc = 4,
+};
+
+enum class PropertyFlags : int{
+  // 这个属性能够继承父对象的值
+  Inheritable = 1,
+
+  // 这个属性是数据，不是样式
+  AsData = 2
+};
 
 enum class PropertyValueType : int {
+  Invalid = 0,
   Int = 1 << 0,
   Bool = 1 << 1,
   String = 1 << 2,
   Rect = 1 << 3,
 };
 
+
+// PropertyValue 创建释放，尽量不使用stdptr，减小对象内存使用。
+template<class T, class... Types>
+T* mallocValue(Types... args) {
+  T* p = (T*)::malloc(sizeof(T));
+  new (p) T(args... );
+  p->flags |= (int)PropertyValueFlags::Alloc;
+  return p;
+}
+
 // 属性值基类
 struct PropertyValue {
-  // 注：不要添加虚函数，会导致每个实例也多一个虚表指针。
+  virtual ~PropertyValue() {}
   static PropertyValue* Parse(PropertyValueType, const char* text);
+
+  PropertyValue(PropertyValueType _type, unsigned int _flags = 0) {
+    type = _type;
+    flags = _flags;
+  }
+  bool IsAlloc() { return flags & (int)PropertyValueFlags::Alloc; }
+
+  PropertyValueType type : 16;
+  unsigned int flags : 16;
 };
 
 
@@ -34,57 +63,60 @@ class Property : public IProperty {
 public:
   ~Property();
 
+  PropertyValueType Type() {
+    if (value) {
+      return value->type;
+    }
+    return PropertyValueType::Invalid;
+  }
+
   // flags相关操作
   IProperty& AsData() override;
   IProperty& Inheritable() override;
-  IProperty& ToFree() override;
 
   bool IsData() override;
   bool CanInherit() override;
-  bool NeedsFree() override;
 
 public:
   // virtual table pointer
 
-  // value可能是static，也可能是malloc，根据flags标志位进行释放
+  // value可能是static，也可能是malloc，根据PropertyValue::flags标志位进行释放
   PropertyValue *value = nullptr;
-
-  PropertyValueType type;
   unsigned int flags = 0;
 };
 
 
 struct IntValue : public PropertyValue {
-  IntValue(int v) : value(v) {}
-  static PropertyValueType Type() { return PropertyValueType::Int; }
+  IntValue(int v, unsigned int _flags = 0) : PropertyValue(PropertyValueType::Int, _flags), value(v) {}
 
-  static IntValue* s_0() { static IntValue v(0); return &v;}
-  static IntValue* s_1() { static IntValue v(1); return &v;}
-  static IntValue* s_minus1() { static IntValue v(-1); return &v;}
+  static IntValue* s_0() { static IntValue v(0, (int)PropertyValueFlags::Static); return &v;}
+  static IntValue* s_1() { static IntValue v(1, (int)PropertyValueFlags::Static); return &v;}
+  static IntValue* s_minus1() { static IntValue v(-1, (int)PropertyValueFlags::Static); return &v;}
   
+  static IntValue* Create(int value);
   static IntValue* Parse(const char* text);
 
   int value = 0;
 };
 
 struct BoolValue : public PropertyValue  {
-  BoolValue(bool v) : value(v) {}
-  static PropertyValueType Type() { return PropertyValueType::Bool; }
+  BoolValue(bool v, unsigned int _flags = 0) : PropertyValue(PropertyValueType::Bool, _flags), value(v) {}
 
-  static BoolValue* s_true() { static BoolValue v(true); return &v;}
-  static BoolValue* s_false() { static BoolValue v(false); return &v;}
+  static BoolValue* s_true() { static BoolValue v(true, (int)PropertyValueFlags::Static); return &v;}
+  static BoolValue* s_false() { static BoolValue v(false, (int)PropertyValueFlags::Static); return &v;}
 
+  static BoolValue* Create(bool b);
   static BoolValue* Parse(const char* text);
 
   bool value = false;
 };
 
 struct StringValue : public PropertyValue  {
-  StringValue(const char* v) { if (v) { value = v; } }
-  static PropertyValueType Type() { return PropertyValueType::String; }
+  StringValue(const char* v, unsigned int _flags = 0) : PropertyValue(PropertyValueType::String, _flags) { if (v) { value = v; } }
 
-  static StringValue* s_empty() { static StringValue v(nullptr); return &v;}
+  static StringValue* s_empty() { static StringValue v(nullptr, (int)PropertyValueFlags::Static); return &v;}
   
+  static StringValue* Create(const char* text);
   static StringValue* Parse(const char* text);
 
   void Set(const char* text) {
@@ -95,14 +127,15 @@ struct StringValue : public PropertyValue  {
 };
 
 struct RectValue : public PropertyValue {
-  RectValue(const Rect& rect) : value(rect) {}
+  RectValue(const Rect& rect, unsigned int _flags = 0) : PropertyValue(PropertyValueType::Rect, _flags), value(rect) {}
   static PropertyValueType Type() { return PropertyValueType::Rect; }
   
   static RectValue* s_empty() { 
-    static RectValue v(ui::Rect::MakeLTRB(0, 0, 0, 0)); 
+    static RectValue v(ui::Rect::MakeLTRB(0, 0, 0, 0), (int)PropertyValueFlags::Static); 
     return &v;
   }
 
+  static RectValue* Create(const Rect& rect);
   static RectValue* Parse(const char* text);
 
   Rect value;

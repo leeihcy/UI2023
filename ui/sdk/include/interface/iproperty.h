@@ -10,11 +10,9 @@ struct IProperty {
   // flags相关操作
   virtual IProperty& AsData() = 0;
   virtual IProperty& Inheritable() = 0;
-  virtual IProperty& ToFree() = 0;
 
   virtual bool IsData() = 0;
   virtual bool CanInherit() = 0;
-  virtual bool NeedsFree() = 0;
 
   // virtual 
 };

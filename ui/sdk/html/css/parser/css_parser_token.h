@@ -2,6 +2,7 @@
 #define _UI_SDK_HTML_CSS_PARSER_CSSPARSERTOKEN_H_
 
 #include "html/css/property/value_id.h"
+#include "html/css/property/css_value.h"
 #include <string>
 namespace html {
 
@@ -34,7 +35,7 @@ enum class CSSParserTokenType : int {
   
   Number,
   Dimension,
-  Percent,
+  Percentage,
 
   LeftParenthesis,
   RightParenthesis,
@@ -89,6 +90,9 @@ public:
       : m_type(type), m_block_type(block_type), m_name(name) {}
 
   CSSParserTokenType Type() const { return m_type; }
+  CSSParserTokenType GetType() const { return m_type; }
+  bool IsEof () { return m_type == CSSParserTokenType::Eof; }
+  
   CSSParserTokenBlockType GetBlockType() const { return m_block_type; }
 
   static CSSParserToken MakeIdent(const std::u16string& name) {
@@ -106,11 +110,11 @@ public:
   static CSSParserToken MakeDimension(double number, const std::u16string& unit) {
     CSSParserToken t(CSSParserTokenType::Dimension);
     t.m_number = number;
-    t.m_unit = unit;
+    t.m_unit_type = CSSPrimitiveValue::StringToUnitType(unit);
     return t;
   }
   static CSSParserToken MakePercentage(double number) {
-    CSSParserToken t(CSSParserTokenType::Percent);
+    CSSParserToken t(CSSParserTokenType::Percentage);
     t.m_number = number;
     return t;
   }
@@ -127,13 +131,19 @@ public:
   }
   
   double Number() { return m_number; }
-  const std::u16string& Unit() { return m_unit; }
-  const std::u16string& Name() { return m_name; }
-  const std::u16string& String() { return m_name; }
+  CSSPrimitiveValue::UnitType GetUnitType() const { return m_unit_type; }
+  const std::u16string& Name() const { return m_name; }
+  const std::u16string& String() const { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
   char16_t Delimiter() { return m_delimiter; }
   CSSValueId ValueId();
   CSSValueId FunctionId();
+
+  double NumericValue() const {
+    assert(m_type == CSSParserTokenType::Number || m_type == CSSParserTokenType::Percentage ||
+         m_type == CSSParserTokenType::Dimension);
+  return m_number;
+}
 
 private:
   CSSParserTokenType m_type = CSSParserTokenType::Invalid;
@@ -146,12 +156,12 @@ private:
 
   // Number
   NumericValueType m_numeric_type = NumericValueType::Integer;
-
-  // Dimension
-  std::u16string m_unit;
-
+  
   // Ident
   std::u16string m_name;
+
+  // Dimension unit
+  CSSPrimitiveValue::UnitType m_unit_type;
 
   // type Delimiter
   char16_t m_delimiter = 0;

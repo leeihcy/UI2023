@@ -35,6 +35,10 @@ public:
   CSSParserToken Consume();
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
+  void SkipUntilPeekedTypeIs(CSSParserTokenType type);
+  
+  bool TokenMarksEnd(CSSParserTokenType end_type);
+  bool TokenMarksEnd(const CSSParserToken& token, CSSParserTokenType end_type);
 
 public:
   struct State {

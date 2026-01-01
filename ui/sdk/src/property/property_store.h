@@ -41,10 +41,15 @@ public:
 private:
   template <class T>
   inline IProperty &Register(int id, const std::string &key, T *value) {
-    return Register2(id, key, T::Type(), value);
+    assert(value);
+    Property &detail = m_properties[id];
+    // detail.id = id;
+    detail.value = value;
+
+    onRegister(id, key);
+    return detail;
   }
-  IProperty &Register2(int id, const std::string &key, PropertyValueType type,
-                       PropertyValue *value);
+  void onRegister(int id, const std::string &key);
 
 private:
   // 外部传递进来的属性数组内存。
@@ -72,7 +77,6 @@ private:
   void setValue(int id, PropertyValue* value);
 
 private:
-  // TODO: 这里的每个value暂时规定得是malloc出来的，不使用static分配
   std::map<int, PropertyValue*> m_map;
 };
 

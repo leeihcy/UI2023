@@ -10,26 +10,67 @@
 
 namespace html {
 
-void CSSParser::ParseInlineStyleDeclaration(const char* bytes, size_t size) {
+std::unique_ptr<CSSPropertyValueSet>
+CSSParser::ParseInlineStyleDeclaration(const char *bytes, size_t size) {
   CSSParserContext context;
   context.token_stream.SetInput(bytes, size);
 
   ConsumeBlockContents(context);
+  return std::make_unique<CSSPropertyValueSet>(
+      std::move(context.parsed_properties));
 }
 
 // 解析 { } 里的内容。
-void CSSParser::ConsumeBlockContents(CSSParserContext& context) {
+void CSSParser::ConsumeBlockContents(CSSParserContext &context) {
   while (true) {
     if (context.token_stream.AtEnd()) {
       break;
     }
 
     switch (context.token_stream.Peek().Type()) {
-    case CSSParserTokenType::Ident:
-      if (ConsumeDeclaration(context)) {
+    case CSSParserTokenType::Whitespace:
+    case CSSParserTokenType::Semicolon:
+      context.token_stream.Consume();
+      break;
 
+    case CSSParserTokenType::AtKeyword:
+      assert(false);
+      // TODO:
+      break;
+
+    case CSSParserTokenType::Ident: {
+      CSSParserTokenStream::State state = context.token_stream.Save();
+      bool consumed_declaration = false;
+      {
+        // 标记找到下一个;为止。
+        CSSParserTokenStream::Boundary boundary(context.token_stream,
+                                                CSSParserTokenType::Semicolon);
+        consumed_declaration = ConsumeDeclaration(context);
       }
+      if (consumed_declaration) {
+        if (!context.token_stream.AtEnd()) {
+          // 如果不是真的结束了，那下一个肯定是刚才设置的临时boundary符号 ;
+          assert(context.token_stream.Peek().Type() ==
+                 CSSParserTokenType::Semicolon);
+          context.token_stream.Consume(); // Semicolon
+        }
+        break;
+      }
+      if (context.token_stream.Peek().Type() == CSSParserTokenType::Semicolon) {
+        assert(false); // TODO: 什么场景?
+        context.token_stream.Consume(); // Semicolon
+        break;
+      }
+      assert(false); // TODO: 什么场景?
+      // Retry as nested rule.
+      context.token_stream.Restore(state);
+      [[fallthrough]];
+    }
     default:
+      context.token_stream.SkipUntilPeekedTypeIs(CSSParserTokenType::Semicolon);
+      if (!context.token_stream.AtEnd()) {
+        context.token_stream.Consume(); // Semicolon
+      }
       break;
     }
   }

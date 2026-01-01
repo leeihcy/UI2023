@@ -51,8 +51,11 @@ class CSSProperty {
 public:
   static const CSSProperty& Get(CSSPropertyId id);
 public:
-  constexpr CSSProperty(uint64_t flags) : m_flags(flags) {}
+  constexpr CSSProperty(CSSPropertyId id, uint64_t flags) : m_id(id), m_flags(flags) {}
   // constexpr virtual ~CSSProperty(){};
+
+  CSSPropertyId PropertyId() const { return m_id; }
+  bool IdEquals(CSSPropertyId id) const { return m_id == id; }
 
   uint32_t GetFlags() const { return m_flags; }
   bool IsProperty() const { return m_flags & (int)CSSPropertyFlag::Property; }
@@ -64,25 +67,30 @@ public:
   virtual void foo() {};
 
 protected:
-  // int m_id;
-  uint64_t m_flags;
+  // 成员控制在8byte以内，再加上虚表指针，总大小为16byte
+  CSSPropertyId m_id : 16;
+  uint64_t m_flags : 48;
 };
  
 class Variable : public CSSProperty {
 public:
-  constexpr Variable() : CSSProperty(0) {}
+  constexpr Variable() : CSSProperty(CSSPropertyId::Variable, 0) {}
 };
 
 class Shorthand : public CSSProperty {
 public:
-  constexpr Shorthand(int flags) : CSSProperty(flags | (int)CSSPropertyFlag::Shorthand) {}
+  constexpr Shorthand(CSSPropertyId id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Shorthand) {}
+
+  virtual bool ParseShorthand(CSSParserContext &context) const {
+    return false;
+  }
 };
 
 class Longhand : public CSSProperty {
 public:
-  constexpr Longhand(int flags) : CSSProperty(flags | (int)CSSPropertyFlag::Longhand) {}
+  constexpr Longhand(CSSPropertyId id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Longhand) {}
 
-  virtual const CSSValue *
+  virtual U<CSSValue>
   ParseSingleValue(CSSParserContext &context) const {
     return nullptr;
   }
@@ -90,17 +98,20 @@ public:
 
 class Background final : public Shorthand {
 public:
-  constexpr Background() : Shorthand(0) {}
+  constexpr Background() : Shorthand(CSSPropertyId::Background, 
+    (int)CSSPropertyFlag::Property) {}
+  bool ParseShorthand(CSSParserContext &context) const override;
 };
 
 class BackgroundColor final : public Longhand {
 public:
   constexpr BackgroundColor() : Longhand(
+      CSSPropertyId::BackgroundColor, 
       (int)CSSPropertyFlag::Interpolable | 
       (int)CSSPropertyFlag::Compositable | 
       (int)CSSPropertyFlag::Property) {
   }
-  const CSSValue * ParseSingleValue(CSSParserContext &context) const override;
+  U<CSSValue> ParseSingleValue(CSSParserContext &context) const override;
 };
 
 }

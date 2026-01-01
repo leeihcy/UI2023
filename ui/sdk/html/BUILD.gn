@@ -1,6 +1,9 @@
 
 source_set("html") {
   sources = [
+    "base/memory.h",
+    "base/memory.cpp",
+
     "css/parser/css_parser_token.h",
     "css/parser/css_parser_token.cpp",
     "css/parser/css_parser_tokenizer.h",
@@ -29,6 +32,11 @@ source_set("html") {
     "css/property/value_id.cpp",
     "$target_gen_dir/css/property/value_id_hash.cpp",
 
+    "css/graphics/color.h",
+    "css/graphics/color.cpp",
+    "css/style_property_shorthand.h",
+    "css/style_property_shorthand.cpp",
+
     "util/util.h",
     "util/util.cpp",
   ]
@@ -38,7 +46,8 @@ source_set("html") {
       "test/html_unittest_css_parser_token.cpp",
       "test/html_unittest_css_parser.cpp",
       "test/html_unittest_css_property.cpp",
-      "test/html_unittest.cpp"
+      "test/html_unittest_memory.cpp",
+      "test/html_unittest.cpp",
     ]
   }
 

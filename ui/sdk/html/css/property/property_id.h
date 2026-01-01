@@ -11,7 +11,8 @@ enum class CSSPropertyId : int {
   // 固定格式， id, // "name"
   // gen_property_hash.py 脚本将读取这些字段生成Perfect Hash。
   
-  Background,      // "background"
+  // https://www.w3.org/TR/css-backgrounds-4/
+  Background,          // "background"
   // BackgroundClip,      // "background-clip"
   BackgroundColor,     // "background-color"
   // BackgroundRepeat,    // "background-repeat"

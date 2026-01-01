@@ -164,6 +164,15 @@ void ObjectProp::SerializeProperty(SerializeParam *pData) {
   m_property_store.RegisterInt(OBJECT_MIN_HEIGHT, XML_MINHEIGHT, NDEF);
   m_property_store.RegisterInt(OBJECT_MAX_HEIGHT, XML_MAXHEIGHT, NDEF);
 
+  // TODO: 参考css样式实现背景绘制。
+  // 1. 不再区分background/foreground/texture/mask
+  // 2. background支持多layer绘制
+  // 3. 支持longhand/shorthand绘制
+  // 4. Render辅助类无状态化
+  //
+  // m_property_store.RegisterString(OBJECT_BACKGROUND, "");
+  // m_property_store.RegisterColor(OBJECT_BACKGROUND_COLOR, Color::transparent());
+  // m_property_store.RegisterString(OBJECT_BACKGROUND_IMAGE, "");
 
   // 将xml attribute全灌输给config property store
   m_property_store.Serialize(pData->attribute_map);

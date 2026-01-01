@@ -19,50 +19,25 @@ int DefaultPropertyStore::MapKeyToId(const std::string& key) {
   return iter->second;
 }
 
-IProperty &DefaultPropertyStore::Register2(int id, const std::string& key,
-                                          PropertyValueType type,
-                                          PropertyValue *value) {
-  assert(value);
-
-  Property &detail = m_properties[id];
-  // detail.id = id;
-  detail.type = type;
-  detail.value = value;
-
+void DefaultPropertyStore::onRegister(int id, const std::string &key) {
   if (!key.empty()) {
     g_key_id_map[key] = id;
   }
-  return detail;
 }
 
 IProperty& DefaultPropertyStore::RegisterInt(int id, const std::string &key,
                                        int default_value) {
-  if (default_value == 0) {
-    return Register(id, key, IntValue::s_0());
-  } else if (default_value == -1) {
-    return Register(id, key, IntValue::s_minus1());
-  } else if (default_value == 1) {
-    return Register(id, key, IntValue::s_1());
-  }
-  return Register(id, key, mallocValue<IntValue>(default_value)).ToFree();
+  return Register(id, key, IntValue::Create(default_value));
 }
 
 IProperty& DefaultPropertyStore::RegisterBool(int id, const std::string &key,
                                         bool default_value) {
-  if (default_value) {
-    return Register(id, key, BoolValue::s_true());
-  } else {
-    return Register(id, key, BoolValue::s_false());
-  }
+  return Register(id, key, BoolValue::Create(default_value));
 }
 
 IProperty& DefaultPropertyStore::RegisterString(int id, const std::string &key,
                                           const char *default_value) {
-  if (default_value) {
-    return Register(id, key, mallocValue<StringValue>(default_value)).ToFree();
-  } else {
-    return Register(id, key, StringValue::s_empty());
-  }
+  return Register(id, key, StringValue::Create(default_value));
 }
 
 IProperty& DefaultPropertyStore::RegisterRect(int id, const std::string& key) {
@@ -106,8 +81,9 @@ void SpecifiedPropertyStore::setValue(int id, PropertyValue *value) {
 
 void SpecifiedPropertyStore::SetInt(int id, int n) {
   PropertyValue *cur = GetConfigValue(id);
-  if (!cur) {
-    setValue(id, mallocValue<IntValue>(n));
+  if (!cur || !cur->IsAlloc()) {
+    setValue(id, IntValue::Create(n));
+    return;
   } else {
     static_cast<IntValue *>(cur)->value = n;
   }
@@ -115,8 +91,8 @@ void SpecifiedPropertyStore::SetInt(int id, int n) {
 
 void SpecifiedPropertyStore::SetBool(int id, bool b) {
   PropertyValue *cur = GetConfigValue(id);
-  if (!cur) {
-    setValue(id, mallocValue<BoolValue>(b));
+  if (!cur || !cur->IsAlloc()) {
+    setValue(id, BoolValue::Create(b));
   } else {
     static_cast<BoolValue *>(cur)->value = b;
   }
@@ -124,8 +100,8 @@ void SpecifiedPropertyStore::SetBool(int id, bool b) {
 
 void SpecifiedPropertyStore::SetString(int id, const char *text) {
   PropertyValue *cur = GetConfigValue(id);
-  if (!cur) {
-    setValue(id, mallocValue<StringValue>(text));
+  if (!cur || !cur->IsAlloc()) {
+    setValue(id, StringValue::Create(text));
   } else {
     static_cast<StringValue *>(cur)->Set(text);
   }
@@ -133,8 +109,8 @@ void SpecifiedPropertyStore::SetString(int id, const char *text) {
 
 void SpecifiedPropertyStore::SetRect(int id, const Rect& rect) {
   PropertyValue *cur = GetConfigValue(id);
-  if (!cur) {
-    setValue(id, mallocValue<RectValue>(rect));
+  if (!cur || !cur->IsAlloc()) {
+    setValue(id, RectValue::Create(rect));
   } else {
     static_cast<RectValue *>(cur)->value = rect;
   }
@@ -209,7 +185,7 @@ void PropertyStore::Serialize(IAttributeMap* attr_map) {
     }
     Property &default_data = GetDefaultData(id);
     SpecifiedPropertyStore::SetValue(
-        id, PropertyValue::Parse(default_data.type, value));
+        id, PropertyValue::Parse(default_data.Type(), value));
   }
   attr_map->EndEnum();
 }

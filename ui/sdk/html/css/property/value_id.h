@@ -18,6 +18,12 @@ enum class CSSValueId : int {
   Revert,            // "revert"
   RevertLayer,       // "revert-layer"
 
+  Top,               // "top"
+  Bottom,            // "bottom"
+  Left,              // "left"
+  Right,             // "Right"
+  Center,            // "Center"
+
   // https://www.w3.org/wiki/CSS/Properties/color/keywords
   ColorBasicStart,
 
