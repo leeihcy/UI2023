@@ -23,8 +23,8 @@ U<CSSPrimitiveValue> ConsumeLengthOrPercent(
     CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range
 );
-bool ConsumePosition(CSSParserContext &context, CSSValue *&result_x,
-                     CSSValue *&result_y);
+bool ConsumePosition(CSSParserContext &context, U<CSSValue>& result_x,
+                     U<CSSValue>& result_y);
 
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream& stream);
 

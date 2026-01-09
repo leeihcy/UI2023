@@ -18,5 +18,5 @@ void test1() {
 }
 
 void test_html_css_property() {
-  // test1();
+  test1();
 }

@@ -1,5 +1,8 @@
 #include "html/css/property/css_parsing_utils.h"
 
+
+#include "html/base/casting.h"
+#include "html/base/memory.h"
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/parser/css_parser_token_stream.h"
@@ -10,9 +13,11 @@
 #include "html/css/property/value_id.h"
 #include "html/css/graphics/color.h"
 #include "html/util/util.h"
-#include "html/base/memory.h"
-#include <cassert>
 
+#include <algorithm>
+#include <cassert>
+#include <array>
+#include <type_traits>
 
 
 namespace html {
@@ -184,7 +189,36 @@ U<CSSPrimitiveValue> ConsumeLength(CSSParserContext &context,
         context.token_stream.ConsumeIncludingWhitespace().NumericValue(),
         token.GetUnitType());
   }
+  if (token.GetType() == CSSParserTokenType::Number) {
+     if (value_range == CSSPrimitiveValue::ValueRange::kNonNegative &&
+        token.NumericValue() < 0) {
+      return nullptr;
+    }
+    return CSSNumericLiteralValue::Create(
+      context.token_stream.ConsumeIncludingWhitespace().NumericValue(),
+      CSSPrimitiveValue::UnitType::kPixels);
+  }
+
   // TODO: 
+  assert(false);
+  return nullptr;
+}
+
+
+U<CSSPrimitiveValue> ConsumePercent(CSSParserContext &context,
+                                 CSSPrimitiveValue::ValueRange value_range) {
+  const CSSParserToken token = context.token_stream.Peek();
+  if (token.GetType() == CSSParserTokenType::Percentage) {
+    if (value_range == CSSPrimitiveValue::ValueRange::kNonNegative &&
+        token.NumericValue() < 0) {
+      return nullptr;
+    }
+    return CSSNumericLiteralValue::Create(
+        context.token_stream.ConsumeIncludingWhitespace().NumericValue(),
+        CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  
+  // CSSMathFunctionValue
   assert(false);
   return nullptr;
 }
@@ -202,11 +236,11 @@ U<CSSPrimitiveValue> ConsumeLengthOrPercent(
   if (token.GetType() == CSSParserTokenType::Dimension || token.GetType() == CSSParserTokenType::Number) {
     return ConsumeLength(context, value_range);
   }
-#if 0
+
   if (token.GetType() == CSSParserTokenType::Percentage) {
     return ConsumePercent(context, value_range);
   }
-
+#if 0
   Flags parsing_flags({AllowPercent});
   switch (allow_calc_size) {
     case AllowCalcSize::kAllowWithAutoAndContent:
@@ -239,32 +273,125 @@ U<CSSPrimitiveValue> ConsumeLengthOrPercent(
 // background-position: right 3em bottom 10px
 // background-position: 75% 50%
 //
-static CSSValue* ConsumePositionComponent(const CSSParserContext& context,
+static U<CSSValue> ConsumePositionComponent(CSSParserContext& context,
                                           bool& horizontal_edge,
                                           bool& vertical_edge) {
-  assert(false);
-#if 0
   if (context.token_stream.Peek().Type() != CSSParserTokenType::Ident) {
     return ConsumeLengthOrPercent(
-        context, CSSPrimitiveValue::ValueRange::kAll, unitless);
+        context, CSSPrimitiveValue::ValueRange::kAll);
   }
 
-  CSSValueID id = stream.Peek().Id();
-  if (id == CSSValueID::kLeft || id == CSSValueID::kRight) {
+  CSSValueId id = context.token_stream.Peek().ValueId();
+  if (id == CSSValueId::Left || id == CSSValueId::Right) {
     if (horizontal_edge) {
       return nullptr;
     }
     horizontal_edge = true;
-  } else if (id == CSSValueId::kTop || id == CSSValueID::kBottom) {
+  } else if (id == CSSValueId::Top || id == CSSValueId::Bottom) {
     if (vertical_edge) {
       return nullptr;
     }
     vertical_edge = true;
-  } else if (id != CSSValueID::kCenter) {
+  } else if (id != CSSValueId::Center) {
     return nullptr;
   }
-  return ConsumeIdent(stream);
-#endif
+  return ConsumeIdent(context.token_stream);
+}
+
+static bool IsHorizontalPositionKeywordOnly(const CSSValue* value) {
+  if (!value) {
+    return false;
+  }
+  const CSSIdentifierValue* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value) {
+    return false;
+  }
+  CSSValueId value_id = identifier_value->GetValueId();
+  return value_id == CSSValueId::Left || value_id == CSSValueId::Right;
+}
+static bool IsVerticalPositionKeywordOnly(const CSSValue* value) {
+  if (!value) {
+    return false;
+  }
+  const CSSIdentifierValue* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (!identifier_value) {
+    return false;
+  }
+  CSSValueId value_id = identifier_value->GetValueId();
+  return value_id == CSSValueId::Top || value_id == CSSValueId::Bottom;
+}
+
+static void PositionFromOneValue(U<CSSValue>&& value, U<CSSValue>& result_x,
+                     U<CSSValue>& result_y) {
+  bool is_vertical = IsVerticalPositionKeywordOnly(value.get());
+  if (is_vertical) {
+    result_y.reset(std::move(value));
+    result_x.reset(CSSIdentifierValue::Create(CSSValueId::Center));
+  }
+  else {
+    result_x.reset(std::move(value));
+    result_y.reset(CSSIdentifierValue::Create(CSSValueId::Center));
+  }
+}
+
+static void PositionFromTwoValues(U<CSSValue> &&value1, U<CSSValue> &&value2,
+                                 U<CSSValue> &result_x, U<CSSValue> &result_y) {
+  bool must_order_as_xy = IsHorizontalPositionKeywordOnly(value1.get()) ||
+                          IsVerticalPositionKeywordOnly(value2.get()) ||
+                          !value1->IsIdentifierValue() ||
+                          !value2->IsIdentifierValue();
+  bool must_order_as_yx = IsVerticalPositionKeywordOnly(value1.get()) ||
+                          IsHorizontalPositionKeywordOnly(value2.get());
+  assert(!must_order_as_xy || !must_order_as_yx);
+
+  if (must_order_as_yx) {
+    result_y.reset(std::move(value1));
+    result_x.reset(std::move(value2));
+  } else {
+    result_x.reset(std::move(value1));
+    result_y.reset(std::move(value2));
+  }
+}
+
+static void PositionFromThreeOrFourValues(std::array<U<CSSValue>, 5> &values,
+                                          U<CSSValue> &result_x,
+                                          U<CSSValue> &result_y) {
+  U<CSSValue> center = nullptr;
+  for (int i = 0; values[i]; i++) {
+    // 非ident类型的索引在下面将被跳过。
+    auto* current_value = static_cast<CSSIdentifierValue*>(values[i].get());
+
+    CSSValueId id = current_value->GetValueId();
+    if (id == CSSValueId::Center) {
+      center.reset(std::move(values[i]));
+      continue;
+    }
+
+    U<CSSValue> result = nullptr;
+    if (values[i + 1] && !values[i + 1]->IsIdentifierValue()) {
+      int first = i;
+      int second = ++i;
+      U<CSSValuePair> pair = U<CSSValuePair>::make_new(std::move(values[first]), std::move(values[second]),
+          CSSValuePair::IdenticalValuesPolicy::Keep);
+
+      result.reset(std::move(pair));
+    } else {
+      result.reset(std::move(values[i]));
+    }
+
+    if (id == CSSValueId::Left || id == CSSValueId::Right) {
+      result_x.reset(std::move(result));
+    } else {
+      result_y.reset(std::move(result));
+    }
+  }
+  if (center) {
+    if (!result_x) {
+      result_x.reset(std::move(center));
+    } else {
+      result_y.reset(std::move(center));
+    }
+  }
 }
 
 //
@@ -278,14 +405,14 @@ static CSSValue* ConsumePositionComponent(const CSSParserContext& context,
 // left 15px;   // 0px, 15px
 // 10px top;    // 10px, 0px
 //
-bool ConsumePosition(const CSSParserContext& context,
-                     CSSValue*& result_x,
-                     CSSValue*& result_y) {
-  assert(false);
-#if 0
+bool ConsumePosition(CSSParserContext& context,
+                     U<CSSValue>& result_x,
+                     U<CSSValue>& result_y) {
+  auto& stream = context.token_stream;
+  
   bool horizontal_edge = false;
   bool vertical_edge = false;
-  CSSValue* value1 = ConsumePositionComponent(context,
+  U<CSSValue> value1 = ConsumePositionComponent(context,
                                               horizontal_edge, vertical_edge);
   if (!value1) {
     return false;
@@ -295,66 +422,75 @@ bool ConsumePosition(const CSSParserContext& context,
   }
 
   CSSParserTokenStream::State savepoint_after_first_consume = stream.Save();
-  CSSValue* value2 = ConsumePositionComponent(stream, context, unitless,
+  U<CSSValue> value2 = ConsumePositionComponent(context,
                                               horizontal_edge, vertical_edge);
+
+  // 只有一个值的场景，将另一个值设置为Center
   if (!value2) {
-    PositionFromOneValue(value1, result_x, result_y);
+    PositionFromOneValue(std::move(value1), result_x, result_y);
     return true;
   }
 
   CSSParserTokenStream::State savepoint_after_second_consume = stream.Save();
-  CSSValue* value3 = nullptr;
-  auto* identifier_value1 = DynamicTo<CSSIdentifierValue>(value1);
-  auto* identifier_value2 = DynamicTo<CSSIdentifierValue>(value2);
-  // TODO(crbug.com/940442): Fix the strange comparison of a
-  // CSSIdentifierValue instance against a specific "stream peek" type check.
+  U<CSSValue> value3 = nullptr;
+  auto* identifier_value1 = DynamicTo<CSSIdentifierValue>(value1.get());
+  auto* identifier_value2 = DynamicTo<CSSIdentifierValue>(value2.get());
+
+  // 第一个是关键字，第二个是数字，下一个如果是关键字，则尝试读取第三个字段
   if (identifier_value1 &&
-      !!identifier_value2 != (stream.Peek().GetType() == kIdentToken) &&
+      !!identifier_value2 != (stream.Peek().GetType() ==
+                              CSSParserTokenType::Ident) &&
       (identifier_value2
-           ? identifier_value2->GetValueID()
-           : identifier_value1->GetValueID()) != CSSValueID::kCenter) {
-    value3 = ConsumePositionComponent(stream, context, unitless,
-                                      horizontal_edge, vertical_edge);
+           ? identifier_value2->GetValueId()
+           : identifier_value1->GetValueId()) != CSSValueId::Center) {
+    value3.reset(
+        ConsumePositionComponent(context, horizontal_edge, vertical_edge));
   }
+
   if (!value3) {
     if (vertical_edge && !value2->IsIdentifierValue()) {
       stream.Restore(savepoint_after_first_consume);
-      PositionFromOneValue(value1, result_x, result_y);
+      PositionFromOneValue(std::move(value1), result_x, result_y);
       return true;
     }
-    PositionFromTwoValues(value1, value2, result_x, result_y);
+    PositionFromTwoValues(std::move(value1), std::move(value2), result_x, result_y);
     return true;
   }
 
-  CSSValue* value4 = nullptr;
-  auto* identifier_value3 = DynamicTo<CSSIdentifierValue>(value3);
+  U<CSSValue> value4 = nullptr;
+  auto* identifier_value3 = DynamicTo<CSSIdentifierValue>(value3.get());
   if (identifier_value3 &&
-      identifier_value3->GetValueID() != CSSValueID::kCenter &&
-      stream.Peek().GetType() != kIdentToken) {
-    value4 = ConsumePositionComponent(stream, context, unitless,
-                                      horizontal_edge, vertical_edge);
+      identifier_value3->GetValueId() != CSSValueId::Center &&
+      stream.Peek().GetType() != CSSParserTokenType::Ident) {
+    value4.reset(ConsumePositionComponent(context,
+                                      horizontal_edge, vertical_edge));
   }
+
+  // std::optional<WebFeature> three_value_position
+  bool three_value_position = true;
 
   if (!value4) {
     if (!three_value_position) {
       // [top | bottom] <length-percentage> is not permitted
       if (vertical_edge && !value2->IsIdentifierValue()) {
         stream.Restore(savepoint_after_first_consume);
-        PositionFromOneValue(value1, result_x, result_y);
+        PositionFromOneValue(std::move(value1), result_x, result_y);
         return true;
       }
       stream.Restore(savepoint_after_second_consume);
-      PositionFromTwoValues(value1, value2, result_x, result_y);
+      PositionFromTwoValues(std::move(value1), std::move(value2), result_x, result_y);
       return true;
     }
-    DCHECK_EQ(*three_value_position,
-              WebFeature::kThreeValuedPositionBackground);
-    context.Count(*three_value_position);
+    // DCHECK_EQ(*three_value_position,
+    //           WebFeature::kThreeValuedPositionBackground);
+    // context.Count(*three_value_position);
   }
 
-  std::array<CSSValue*, 5> values = {value1, value2, value3, value4, nullptr};
+  std::array<U<CSSValue>, 5> values = {std::move(value1), std::move(value2),
+                                       std::move(value3), std::move(value4),
+                                       nullptr};
   PositionFromThreeOrFourValues(values, result_x, result_y);
-#endif
+
   return true;
 }
 

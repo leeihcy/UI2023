@@ -136,7 +136,7 @@ public:
   const std::u16string& String() const { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
   char16_t Delimiter() { return m_delimiter; }
-  CSSValueId ValueId();
+  CSSValueId ValueId() const;
   CSSValueId FunctionId();
 
   double NumericValue() const {

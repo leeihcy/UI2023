@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_HTML_CSS_PROPERTY_CSSVALUE_H_
 #define _UI_SDK_HTML_CSS_PROPERTY_CSSVALUE_H_
 
+#include "html/base/casting.h"
 #include "html/base/memory.h"
 #include "html/css/property/value_id.h"
 #include "html/css/graphics/color.h"
@@ -16,6 +17,8 @@ enum class CSSValueClassType {
   Revert,
   RevertLayer,
 
+  Pair,
+
   Identifier,
   Color,
 
@@ -26,6 +29,17 @@ class CSSValue {
 public:
   CSSValue(CSSValueClassType class_type) : m_class_type(class_type) { }
   CSSValueClassType GetClassType() const { return m_class_type; }
+
+public:
+  bool IsNumericLiteralValue() const {
+    return m_class_type == CSSValueClassType::NumericLiteral;
+  }
+  bool IsIdentifierValue() const {
+    return m_class_type == CSSValueClassType::Identifier;
+  }
+  bool IsPair() const {
+    return m_class_type == CSSValueClassType::Pair;
+  }
 private:
   CSSValueClassType m_class_type;
 };
@@ -65,6 +79,42 @@ class CSSIdentifierValue : public CSSValue {
  public:
   static U<CSSIdentifierValue> Create(CSSValueId);
   explicit CSSIdentifierValue(CSSValueId);
+
+  CSSValueId GetValueId() const { return m_value_id; }
+protected:
+  CSSValueId m_value_id;
+};
+template<>
+struct DowncastTraits<CSSIdentifierValue> {
+  static bool AllowFrom(const CSSValue& from) {
+    return from.IsIdentifierValue();
+  }
+};
+
+class CSSValuePair : public CSSValue {
+public:
+  enum class IdenticalValuesPolicy {
+    Drop,
+    Keep
+  };
+
+  explicit CSSValuePair(U<CSSValue> &&first, U<CSSValue> &&second, IdenticalValuesPolicy policy)
+      : m_first(std::move(first)), m_second(std::move(second)), m_policy(policy),
+        CSSValue(CSSValueClassType::Pair) {}
+
+  const CSSValue* First() const { return m_first.get(); }
+  const CSSValue* Second() const { return m_second.get(); }
+
+private:
+  U<CSSValue> m_first;
+  U<CSSValue> m_second;
+  IdenticalValuesPolicy m_policy;
+};
+template<>
+struct DowncastTraits<CSSValuePair> {
+  static bool AllowFrom(const CSSValue& from) {
+    return from.IsPair();
+  }
 };
 
 // Represents the non-keyword subset of <color>.
@@ -80,13 +130,13 @@ private:
 
 class CSSPrimitiveValue : public CSSValue {
 public:
-  CSSPrimitiveValue(CSSValueClassType class_type) : CSSValue(class_type) {}
   enum class UnitType {
     kUnknown,
     kNumber,
     kPercentage,
 
     kPixels,
+    kInteger,
   };
   enum LengthUnitType {
     kUnitTypePixels = 0,
@@ -101,6 +151,15 @@ public:
   };
 
   static UnitType StringToUnitType(const std::u16string& text);
+
+public:
+  CSSPrimitiveValue(UnitType unit_type, CSSValueClassType class_type)
+      : m_unit_type(unit_type), CSSValue(class_type) {}
+
+  UnitType GetUnitType() const { return m_unit_type; }
+protected:
+  // blink中将这个字段放到cssvalue类中声明为uint8来节省内存。
+  UnitType m_unit_type;
 };
 
 class CSSNumericLiteralValue : public CSSPrimitiveValue {
@@ -108,6 +167,15 @@ public:
   static U<CSSNumericLiteralValue> Create(double num, UnitType unit_type);
   explicit CSSNumericLiteralValue(double num, UnitType unit_type);
 
+  double GetNum() const { return m_num; }
+protected:
+  const double m_num;
+};
+template<>
+struct DowncastTraits<CSSNumericLiteralValue> {
+  static bool AllowFrom(const CSSValue& from) {
+    return from.IsNumericLiteralValue();
+  }
 };
 
 }

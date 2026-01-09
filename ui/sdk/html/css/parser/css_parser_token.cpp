@@ -2,7 +2,7 @@
 
 namespace html {
 
-CSSValueId CSSParserToken::ValueId() {
+CSSValueId CSSParserToken::ValueId() const {
   if (m_type != CSSParserTokenType::Ident) {
     return CSSValueId::Invalid;
   }

@@ -65,6 +65,10 @@ public:
 
   // 释放指针
   ~UniquePtr() {
+    destroy();
+  }
+
+  void destroy() {
     if (!m_t) {
       return;
     }
@@ -113,6 +117,24 @@ public:
                   "U must be derived from T or same as T");
     return UniquePtr<T>(t, LifeCycleType::New);
   }
+
+  template <typename U> void reset(UniquePtr<U>&&o) {
+    static_assert(__is_base_of(T, U) || __is_same(T, U),
+                  "U must be derived from T or same as T");
+    destroy();
+
+    m_t = o.m_t;
+    m_type = o.m_type;
+    o.m_t = nullptr;
+    o.m_type = LifeCycleType::Unknown;
+  }
+
+  // 直接透传构造参数new
+  // 使用完美转发，支持 && 类型（std::move类型的右值）的构造函数参数。
+  template <typename... Args> 
+  static UniquePtr<T> make_new(Args&&... args) {
+    return UniquePtr<T>(new T(std::forward<Args>(args)...), LifeCycleType::New);
+  }
   
 public:
   T* m_t = nullptr;
@@ -120,9 +142,7 @@ public:
 };
 
 }
-
-#define U memory::UniquePtr
-
 }
+#define U html::memory::UniquePtr
 
 #endif

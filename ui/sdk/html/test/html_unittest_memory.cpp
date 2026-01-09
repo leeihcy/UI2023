@@ -86,9 +86,9 @@ void test1() {
   // 指针转换
   g_counter = 0;
   {
-    html::U<TestBase> o(html::U<TestDeriver>::take_new(new TestDeriver()));
+    U<TestBase> o(U<TestDeriver>::take_new(new TestDeriver()));
 
-    html::U<TestBase> p = html::U<TestDeriver>::take_new(new TestDeriver());
+    U<TestBase> p = U<TestDeriver>::take_new(new TestDeriver());
     o->foo();
   }
   assert(g_counter == 0);

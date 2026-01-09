@@ -3,6 +3,7 @@
 #include "html/util/util.h"
 #include <cassert>
 #include <map>
+#include <cmath>  // std::signbit
 
 namespace html {
 
@@ -13,6 +14,37 @@ public:
     return s;
   }
   CSSValuePool() {
+  }
+
+  U<CSSNumericLiteralValue> PixelCacheValue(int value) {
+    auto iter = m_pixel_numeric_value_map.find(value);
+    if (iter != m_pixel_numeric_value_map.end()) {
+      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+    }
+    CSSNumericLiteralValue *v =
+        new CSSNumericLiteralValue(value, CSSPrimitiveValue::UnitType::kPixels);
+    m_pixel_numeric_value_map[value] = v;
+    return U<CSSNumericLiteralValue>::from_pool(v);
+  }
+  U<CSSNumericLiteralValue> PercentCacheValue(int value) {
+    auto iter = m_percent_numeric_value_map.find(value);
+    if (iter != m_percent_numeric_value_map.end()) {
+      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+    }
+    CSSNumericLiteralValue *v = new CSSNumericLiteralValue(
+        value, CSSPrimitiveValue::UnitType::kPercentage);
+    m_percent_numeric_value_map[value] = v;
+    return U<CSSNumericLiteralValue>::from_pool(v);
+  }
+  U<CSSNumericLiteralValue> NumberCacheValue(int value) {
+    auto iter = m_number_value_map.find(value);
+    if (iter != m_number_value_map.end()) {
+      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+    }
+    CSSNumericLiteralValue *v = new CSSNumericLiteralValue(
+        value, CSSPrimitiveValue::UnitType::kInteger);
+    m_number_value_map[value] = v;
+    return U<CSSNumericLiteralValue>::from_pool(v);
   }
 
   U<CSSIdentifierValue> IdentifierCacheValue(CSSValueId value_id) {
@@ -57,6 +89,10 @@ public:
 private:
   std::map<CSSValueId, CSSIdentifierValue*> m_identifier_value_map;
 
+  std::map<int, CSSNumericLiteralValue*> m_pixel_numeric_value_map;
+  std::map<int, CSSNumericLiteralValue*> m_percent_numeric_value_map;
+  std::map<int, CSSNumericLiteralValue*> m_number_value_map;
+
   CSSColorValue m_color_transparent = {Color::kTransparent};
   CSSColorValue m_color_white = {Color::kWhite};
   CSSColorValue m_color_black = {Color::kBlack};
@@ -89,7 +125,7 @@ U<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueId value_id) {
   return CSSValuePool::Get().IdentifierCacheValue(value_id);
 }
 CSSIdentifierValue::CSSIdentifierValue(CSSValueId id) 
-  : CSSValue(CSSValueClassType::Identifier)  {
+  : m_value_id(id), CSSValue(CSSValueClassType::Identifier)  {
 
 }
 
@@ -123,15 +159,33 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::StringToUnitType(const std::u16st
 
 // static 
 U<CSSNumericLiteralValue> CSSNumericLiteralValue::Create(double value, UnitType unit_type) {
-  assert(false); // TODO:
-  
-  return nullptr;
-//   if (!(value >= 0 && value <= CSSValuePool::kMaximumCacheableIntegerValue)) {
-//     return CSSNumericLiteralValue(value, type);
-//   }
+  if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue) {
+    return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+  }
 
-}
-CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType unit_type) : CSSPrimitiveValue(CSSValueClassType::NumericLiteral) {
+  // 小数字特殊处理
 
+  int int_value = static_cast<int>(value);
+  if (value != int_value || (value == 0 && std::signbit(value))) {
+    return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+  }
+
+  CSSNumericLiteralValue* result = nullptr;
+  switch (unit_type) {
+    case CSSPrimitiveValue::UnitType::kPixels:
+      return CSSValuePool::Get().PixelCacheValue(value);
+    case CSSPrimitiveValue::UnitType::kPercentage:
+      return CSSValuePool::Get().PercentCacheValue(value);
+    case CSSPrimitiveValue::UnitType::kNumber:
+    case CSSPrimitiveValue::UnitType::kInteger:
+      return CSSValuePool::Get().NumberCacheValue(value);
+    default:
+      return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+  }
 }
-}
+
+CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType unit_type)
+    : m_num(num),
+      CSSPrimitiveValue(unit_type, CSSValueClassType::NumericLiteral) {}
+
+} // namespace html
