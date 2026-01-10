@@ -48,7 +48,6 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
   // background_color只能放在最后一个layer。
   bool previous_layer_had_background_color = false;
 
-#if 1
   // 循环每个background layer，以逗号分隔。
   do {
     std::array<bool, 10> parsed_longhand = {false};
@@ -160,7 +159,6 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
             CSSPropertyName(property.PropertyId()), 
             std::move(longhand), important));
   }
-#endif
   return true;
 }
 

@@ -24,6 +24,7 @@ enum class CSSValueClassType {
   Identifier,
   Color,
   Image,
+  RepeatStyle,
 
   NumericLiteral,
 };
@@ -197,9 +198,32 @@ struct DowncastTraits<CSSNumericLiteralValue> {
   }
 };
 
+class CSSUrlData {
+public:
+  CSSUrlData(const std::u16string& unresolved_url) : m_unresolved_url(unresolved_url) {
+
+  }
+private:
+  const std::u16string m_unresolved_url;
+};
+
 class CSSImageValue : public CSSValue {
 public:
-  CSSImageValue(): CSSValue(CSSValueClassType::Image) {}
+  CSSImageValue(A<CSSUrlData>&& url_data): m_url_data(std::move(url_data)), 
+    CSSValue(CSSValueClassType::Image) {}
+
+private:
+  A<CSSUrlData> m_url_data;
+};
+
+class CSSRepeatStyleValue : public CSSValue {
+public:
+  explicit CSSRepeatStyleValue(A<CSSIdentifierValue>&& repeat);
+  CSSRepeatStyleValue(A<CSSIdentifierValue>&& x, A<CSSIdentifierValue>&& y);
+
+private:
+  A<CSSIdentifierValue> m_x = nullptr;
+  A<CSSIdentifierValue> m_y = nullptr;
 };
 
 }

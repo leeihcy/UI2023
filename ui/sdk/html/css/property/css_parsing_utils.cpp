@@ -620,21 +620,27 @@ CSSParserToken ConsumeUrlAsToken(CSSParserContext& context) {
   return token;
 }
 
+static A<CSSUrlData> CollectUrlData(const std::u16string& url,
+                                 const CSSParserContext& context) {
+  // AtomicString url_string = url.ToAtomicString();
+  // return MakeGarbageCollected<CSSUrlData>(
+  //     url_string, context.CompleteNonEmptyURL(url_string),
+  //     context.GetReferrer(), context.IsOriginClean(), context.IsAdRelated());
+  return A<CSSUrlData>::make_new(url);
+}
 
 static A<CSSImageValue> CreateCSSImageValueWithReferrer(
     const std::u16string& uri,
     const CSSParserContext& context) {
-  // auto* image_value =
-  //     MakeGarbageCollected<CSSImageValue>(*CollectUrlData(uri, context));
+   A<CSSImageValue> image_value =
+      A<CSSImageValue>::make_new(std::move(CollectUrlData(uri, context)));
   // if (context.Mode() == kUASheetMode) {
   //   image_value->SetInitiator(fetch_initiator_type_names::kUacss);
   // }
-  // return image_value;
-  return nullptr;
+  return image_value;
 }
 
 A<CSSValue> ConsumeImage(CSSParserContext& context) {
-
   // const ConsumeGeneratedImagePolicy = ConsumeGeneratedImagePolicy::kAllow,
   // const ConsumeStringUrlImagePolicy = ConsumeStringUrlImagePolicy::kForbid,
   // const ConsumeImageSetImagePolicy = ConsumeImageSetImagePolicy::kAllow
@@ -646,45 +652,10 @@ A<CSSValue> ConsumeImage(CSSParserContext& context) {
   if (uri.GetType() != CSSParserTokenType::Eof) {
     return CreateCSSImageValueWithReferrer(uri.Name(), context);
   }
-#if 0  
-  if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
-    wtf_size_t value_start_offset = stream.LookAheadOffset();
-    String uri_string = ConsumeStringAsString(stream);
-    if (!uri_string.IsNull()) {
-      wtf_size_t value_end_offset = stream.LookAheadOffset();
-      if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
-        // https://drafts.csswg.org/css-values-5/#attr-security
-        // “Additionally, attr() is not allowed to be used in any <url> value,
-        // whether directly or indirectly. Doing so makes the property it’s used
-        // in invalid.”
-        return nullptr;
-      }
-      if (IsFetchRestricted(uri_string, context)) {
-        uri_string = "";
-      }
-      return CreateCSSImageValueWithReferrer(uri_string, context);
-    }
-  }
-  if (stream.Peek().GetType() == kFunctionToken) {
-    CSSValueID id = stream.Peek().FunctionId();
-    if (image_set_image_policy == ConsumeImageSetImagePolicy::kAllow &&
-        IsImageSet(id)) {
-      return ConsumeImageSet(stream, context, generated_image_policy);
-    }
-    if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
-        IsGeneratedImage(id)) {
-      return ConsumeGeneratedImage(stream, context);
-    }
-    if (IsUASheetBehavior(context.Mode())) {
-      return ConsumeLightDark(
-          static_cast<CSSValue* (*)(CSSParserTokenStream&,
-                                    const CSSParserContext&,
-                                    const ColorParserContext&)>(
-              ConsumeImageOrNone),
-          stream, context, ColorParserContext());
-    }
-  }
-#endif
+
+  // ... Image Set
+
+  
   return nullptr;
 }
 
@@ -698,9 +669,33 @@ A<CSSValue> ConsumeImageOrNone(CSSParserContext& context) {
 }
 
 
+A<CSSIdentifierValue> ConsumeRepeatStyleIdent(CSSParserTokenStream& stream) {
+  return ConsumeIdent<CSSValueId::Repeat, CSSValueId::NoRepeat,
+                      CSSValueId::Round, CSSValueId::Space>(stream);
+}
+
+A<CSSRepeatStyleValue> ConsumeRepeatStyleValue(CSSParserTokenStream& stream) {
+  A<CSSIdentifierValue> id = ConsumeIdent<CSSValueId::RepeatX>(stream);
+  if (id) {
+    return A<CSSRepeatStyleValue>::make_new(std::move(id));
+  }
+
+  A<CSSIdentifierValue> id2 = ConsumeIdent<CSSValueId::RepeatY>(stream);
+  if (id) {
+    return A<CSSRepeatStyleValue>::make_new(std::move(id2));
+  }
+
+  if (auto id1 = ConsumeRepeatStyleIdent(stream)) {
+    if (auto id2 = ConsumeRepeatStyleIdent(stream)) {
+      return A<CSSRepeatStyleValue>::make_new(std::move(id1), std::move(id2));
+    }
+    return A<CSSRepeatStyleValue>::make_new(std::move(id1));
+  }
+  return nullptr;
+}
+
 A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
                                      CSSParserContext& context) {
-
   // local_context.UseAliasParsing()
   bool use_alias_parsing = false;
   auto& stream = context.token_stream;
@@ -714,46 +709,22 @@ A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
       return ConsumeBackgroundBox(stream);
     case CSSPropertyId::BackgroundImage:
       return ConsumeImageOrNone(context);
-#if 0      
     case CSSPropertyId::BackgroundPositionX:
-    case CSSPropertyId::WebkitMaskPositionX:
-      return ConsumePositionLonghand<CSSValueID::kLeft, CSSValueID::kRight>(
+      return ConsumePositionLonghand<CSSValueId::Left, CSSValueId::Right>(
           stream, context);
     case CSSPropertyId::BackgroundPositionY:
-    case CSSPropertyId::WebkitMaskPositionY:
-      return ConsumePositionLonghand<CSSValueID::kTop, CSSValueID::kBottom>(
+      return ConsumePositionLonghand<CSSValueId::Top, CSSValueId::Bottom>(
           stream, context);
     case CSSPropertyId::BackgroundSize:
-      return ConsumeBackgroundSize(stream, context,
-                                   WebFeature::kNegativeBackgroundSize,
-                                   ParsingStyle::kNotLegacy);
-    case CSSPropertyId::MaskSize:
-      return ConsumeBackgroundSize(stream, context,
-                                   WebFeature::kNegativeMaskSize,
-                                   ParsingStyle::kNotLegacy);
+      return ConsumeBackgroundSize(context);
     case CSSPropertyId::BackgroundColor:
-      return ConsumeColor(stream, context);
-    case CSSPropertyId::MaskClip:
-      return use_alias_parsing
-                 ? ConsumePrefixedBackgroundBox(stream, AllowTextValue::kAllow)
-                 : ConsumeCoordBoxOrNoClip(stream);
-    case CSSPropertyId::MaskOrigin:
-      return use_alias_parsing
-                 ? ConsumePrefixedBackgroundBox(stream, AllowTextValue::kForbid)
-                 : ConsumeCoordBox(stream);
+      return ConsumeColor(stream);
     case CSSPropertyId::BackgroundRepeat:
-    case CSSPropertyId::MaskRepeat:
       return ConsumeRepeatStyleValue(stream);
-    case CSSPropertyId::MaskComposite:
-      return ConsumeMaskComposite(stream);
-    case CSSPropertyId::MaskMode:
-      return ConsumeMaskMode(stream);
-#endif
     default:
       return nullptr;
   };
 }
-
 
 }
 }

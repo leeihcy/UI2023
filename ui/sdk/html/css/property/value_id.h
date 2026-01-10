@@ -40,6 +40,13 @@ enum class CSSValueId : int {
   None,              // "none"
   Url,               // "url"
 
+  Repeat,            // "repeat"
+  RepeatX,           // "repeat-x"
+  RepeatY,           // "repeat-y"
+  Space,             // "space"
+  Round,             // "round"
+  NoRepeat,          // "no-repeat"
+
   // https://www.w3.org/wiki/CSS/Properties/color/keywords
   ColorBasicStart,
 

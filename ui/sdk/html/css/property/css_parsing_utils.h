@@ -1,6 +1,7 @@
 #ifndef _UI_SDK_HTLM_CSS_PROPERTY_CSSPARSINGUTILS_H_
 #define _UI_SDK_HTLM_CSS_PROPERTY_CSSPARSINGUTILS_H_
 
+#include "html/css/parser/css_parser_token.h"
 #include "html/css/property/property_id.h"
 #include "html/css/property/css_value.h"
 #include "html/css/property/value_id.h"
@@ -35,6 +36,7 @@ bool ConsumePosition(CSSParserContext &context, A<CSSValue>& result_x,
 A<CSSValue> ConsumeBackgroundSize(CSSParserContext &context);
 A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
                                      CSSParserContext& context);
+A<CSSRepeatStyleValue> ConsumeRepeatStyleValue(CSSParserTokenStream& stream);
 
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream& stream);
 bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream& stream);
@@ -63,6 +65,26 @@ A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream) {
   return CSSIdentifierValue::Create(stream.ConsumeIncludingWhitespace().ValueId());
 }
 
+template <CSSValueId start, CSSValueId end>
+A<CSSValue> ConsumePositionLonghand(CSSParserTokenStream &stream, CSSParserContext &context) {
+  if (stream.Peek().GetType() == CSSParserTokenType::Ident) {
+    CSSValueId id = stream.Peek().ValueId();
+    int percent;
+    if (id == start) {
+      percent = 0;
+    } else if (id == CSSValueId::Center) {
+      percent = 50;
+    } else if (id == end) {
+      percent = 100;
+    } else {
+      return nullptr;
+    }
+    stream.ConsumeIncludingWhitespace();
+    return CSSNumericLiteralValue::Create(
+        percent, CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return ConsumeLengthOrPercent(context, CSSPrimitiveValue::ValueRange::kAll);
+}
 
 } // namespace css_parsing_utils
 } // namespace html

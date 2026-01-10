@@ -188,4 +188,30 @@ CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType unit_type)
     : m_num(num),
       CSSPrimitiveValue(unit_type, CSSValueClassType::NumericLiteral) {}
 
+
+CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& x, A<CSSIdentifierValue>&& y) : 
+  m_x(std::move(x)), m_y(std::move(y)),
+  CSSValue(CSSValueClassType::RepeatStyle) {
+
+}
+
+CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& id): CSSValue(CSSValueClassType::RepeatStyle) {
+    switch (id->GetValueId()) {
+    case CSSValueId::RepeatX:
+      m_x.reset(CSSIdentifierValue::Create(CSSValueId::Repeat));
+      m_y.reset(CSSIdentifierValue::Create(CSSValueId::NoRepeat));
+      break;
+
+    case CSSValueId::RepeatY:
+      m_x.reset(CSSIdentifierValue::Create(CSSValueId::NoRepeat));
+      m_y.reset(CSSIdentifierValue::Create(CSSValueId::Repeat));
+      break;
+
+    default:
+      m_x.reset(std::move(id));
+      m_y.share(m_x);
+      break;
+  }
+}
+
 } // namespace html

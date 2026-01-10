@@ -73,21 +73,29 @@ void test3_ParseInlineStyleDeclaration() {
 }
 
 void test4_parse_shorthand() {
-  // {  
-  //   std::string css = "background: url(aaa.png), red;";
-  //   html::CSSParser parser;
-  //   std::unique_ptr<html::CSSPropertyValueSet> result = 
-  //     parser.ParseInlineStyleDeclaration(css.data(), css.length());
-  //   assert(result);
-  //   assert(result->Size() == 1);
-  // }
-  {  
-    std::string css = "background: url(\"aaa.png\")";
+   {  
+    std::string css = "background: red;";
     html::CSSParser parser;
     std::unique_ptr<html::CSSPropertyValueSet> result = 
       parser.ParseInlineStyleDeclaration(css.data(), css.length());
     assert(result);
-    assert(result->Size() == 1);
+    assert(result->Size() == 9);
+  }
+  {  
+    std::string css = "background: url(aaa.png), red;";
+    html::CSSParser parser;
+    std::unique_ptr<html::CSSPropertyValueSet> result = 
+      parser.ParseInlineStyleDeclaration(css.data(), css.length());
+    assert(result);
+    assert(result->Size() == 9);
+  }
+  {  
+    std::string css = "background: url(\"aaa.png\"), url(\"bbb.png\")";
+    html::CSSParser parser;
+    std::unique_ptr<html::CSSPropertyValueSet> result = 
+      parser.ParseInlineStyleDeclaration(css.data(), css.length());
+    assert(result);
+    assert(result->Size() == 9);
   }
 }
 
