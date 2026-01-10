@@ -24,7 +24,7 @@ public:
 
 class CSSPropertyValue {
 public:
-  explicit CSSPropertyValue(const CSSPropertyName& name, U<CSSValue>&& value, bool important=false)
+  explicit CSSPropertyValue(const CSSPropertyName& name, A<CSSValue>&& value, bool important=false)
     : m_property_id(name.m_property_id), m_value(std::move(value)), m_important(important){
       if (m_property_id == CSSPropertyId::Variable) {
         m_custom_property_name = name.m_custom_property_name;
@@ -34,11 +34,11 @@ public:
   const std::string& CustomPropertyName() { return m_custom_property_name;}
   const CSSValue* Value() { return m_value.get(); }
   bool IsImportant() { return m_important; }
-
+  void SetImportant(bool important) { m_important = important; }
 private:
   CSSPropertyId m_property_id;
   std::string m_custom_property_name;
-  U<CSSValue> m_value;
+  A<CSSValue> m_value;
   bool m_important = false;
 };
 

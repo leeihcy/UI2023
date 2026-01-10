@@ -3,6 +3,9 @@
 
 #include "html/css/property/property_id.h"
 #include "html/css/property/css_value.h"
+#include "html/css/property/value_id.h"
+#include "html/css/parser/css_parser_token_stream.h"
+#include <cstddef>
 
 namespace html {
 class CSSValue;
@@ -12,24 +15,54 @@ class CSSParserTokenStream;
 
 namespace css_parsing_utils {
 
-U<CSSValue> ConsumeCSSWideKeyword(CSSParserTokenStream &);
-U<CSSValue> ConsumeColor(CSSParserTokenStream &stream);
-U<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream);
+A<CSSValue> ConsumeCSSWideKeyword(CSSParserTokenStream &);
+A<CSSValue> ConsumeColor(CSSParserTokenStream &stream);
+A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream);
 
-U<CSSValue> ParseLonghand(CSSPropertyId property_id,
+A<CSSValue> ParseLonghand(CSSPropertyId property_id,
                               CSSParserContext &context);
 
-U<CSSPrimitiveValue> ConsumeLengthOrPercent(
+A<CSSPrimitiveValue> ConsumeLengthOrPercent(
     CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range
 );
-bool ConsumePosition(CSSParserContext &context, U<CSSValue>& result_x,
-                     U<CSSValue>& result_y);
+A<CSSValue> GetSingleValueOrMakeList(
+    CSSValueListSeparator list_separator,
+    std::vector< A<CSSValue> >&& values);
+    
+bool ConsumePosition(CSSParserContext &context, A<CSSValue>& result_x,
+                     A<CSSValue>& result_y);
+A<CSSValue> ConsumeBackgroundSize(CSSParserContext &context);
+A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
+                                     CSSParserContext& context);
 
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream& stream);
+bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream& stream);
 
 bool MaybeConsumeImportant(CSSParserTokenStream &stream,
                            bool allow_important_annotation);
+
+template <typename... empty>
+inline bool IdentMatches(CSSValueId id) {
+  return false;
+}
+template <CSSValueId head, CSSValueId... tail>
+inline bool IdentMatches(CSSValueId id) {
+  return id == head || IdentMatches<tail...>(id);
+}
+template <CSSValueId... allowIndents> 
+bool PeekedIdentMatches(CSSParserTokenStream &stream) {
+  return stream.Peek().GetType() == CSSParserTokenType::Ident &&
+    IdentMatches<allowIndents...>(stream.Peek().ValueId());
+}
+template <CSSValueId... names>
+A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream) {
+  if (!PeekedIdentMatches<names...>(stream)) {
+    return nullptr;
+  }
+  return CSSIdentifierValue::Create(stream.ConsumeIncludingWhitespace().ValueId());
+}
+
 
 } // namespace css_parsing_utils
 } // namespace html

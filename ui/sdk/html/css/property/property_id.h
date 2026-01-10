@@ -13,20 +13,18 @@ enum class CSSPropertyId : int {
   
   // https://www.w3.org/TR/css-backgrounds-4/
   Background,          // "background"
-  // BackgroundClip,      // "background-clip"
+  BackgroundAttachment,// "background-attachment"
+  BackgroundClip,      // "background-clip"
   BackgroundColor,     // "background-color"
-  // BackgroundRepeat,    // "background-repeat"
-  // BackgroundOrigin,    // "background-origin"
-  // BackgroundSize,      // "background-size"
-  // BackgroundPosition,  // "background-position"
-  // BackgroundPositionX, // "background-position-x"
-  // BackgroundPositionY, // "background-position-y"
-  // BackgroundBlendMode, // "background-blend-mode"
-  // BackgroundImage,     // "background-image"
-  // BackgroundAttachment,// "background-attachment"
-
-
-
+  BackgroundImage,     // "background-image"
+  BackgroundOrigin,    // "background-origin"
+  BackgroundPosition,  // "background-position"
+  BackgroundPositionX, // "background-position-x"
+  BackgroundPositionY, // "background-position-y"
+  BackgroundRepeat,    // "background-repeat"
+  BackgroundSize,      // "background-size"
+  BackgroundBlendMode, // "background-blend-mode"
+  
   CSSPropertyCount,
 };
 

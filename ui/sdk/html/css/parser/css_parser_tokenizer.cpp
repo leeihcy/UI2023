@@ -95,6 +95,8 @@ void CSSTokenizer::ConsumeSingleWhitespaceIfNext() {
 CSSParserToken CSSTokenizer::NextToken(bool skip_comments) {
   
   do {
+    m_prev_offset = m_input_stream.Offset();
+    
     char16_t c = Consume();
     switch (c) {
     case 0:

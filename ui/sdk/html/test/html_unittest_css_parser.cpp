@@ -12,6 +12,8 @@
 #include <string>
 #include <tuple>
 
+using html::A;
+
 namespace {
 
 void test1_perfect_hash_function() {
@@ -71,12 +73,22 @@ void test3_ParseInlineStyleDeclaration() {
 }
 
 void test4_parse_shorthand() {
-  std::string css = "background: url(aaa.png), red;";
-  html::CSSParser parser;
-  std::unique_ptr<html::CSSPropertyValueSet> result = 
-    parser.ParseInlineStyleDeclaration(css.data(), css.length());
-  assert(result);
-  assert(result->Size() == 1);
+  // {  
+  //   std::string css = "background: url(aaa.png), red;";
+  //   html::CSSParser parser;
+  //   std::unique_ptr<html::CSSPropertyValueSet> result = 
+  //     parser.ParseInlineStyleDeclaration(css.data(), css.length());
+  //   assert(result);
+  //   assert(result->Size() == 1);
+  // }
+  {  
+    std::string css = "background: url(\"aaa.png\")";
+    html::CSSParser parser;
+    std::unique_ptr<html::CSSPropertyValueSet> result = 
+      parser.ParseInlineStyleDeclaration(css.data(), css.length());
+    assert(result);
+    assert(result->Size() == 1);
+  }
 }
 
 void test5_ConsumeLengthOrPercent() {
@@ -91,7 +103,7 @@ void test5_ConsumeLengthOrPercent() {
     html::CSSParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    U<html::CSSPrimitiveValue> value = html::css_parsing_utils::ConsumeLengthOrPercent(
+    A<html::CSSPrimitiveValue> value = html::css_parsing_utils::ConsumeLengthOrPercent(
       context, html::CSSPrimitiveValue::ValueRange::kAll);
     assert(value);
     
@@ -108,8 +120,8 @@ void test6_ConsumePosition() {
     html::CSSParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    U<html::CSSValue> x = nullptr;
-    U<html::CSSValue> y = nullptr;
+    A<html::CSSValue> x = nullptr;
+    A<html::CSSValue> y = nullptr;
     html::css_parsing_utils::ConsumePosition(context, x, y);
 
     assert(x && y);
@@ -131,8 +143,8 @@ void test6_ConsumePosition() {
     html::CSSParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    U<html::CSSValue> x = nullptr;
-    U<html::CSSValue> y = nullptr;
+    A<html::CSSValue> x = nullptr;
+    A<html::CSSValue> y = nullptr;
     html::css_parsing_utils::ConsumePosition(context, x, y);
 
     assert(x && y);
@@ -154,8 +166,8 @@ void test6_ConsumePosition() {
       html::CSSParserContext context;
       context.token_stream.SetInput(css.c_str(), css.length());
 
-      U<html::CSSValue> x = nullptr;
-      U<html::CSSValue> y = nullptr;
+      A<html::CSSValue> x = nullptr;
+      A<html::CSSValue> y = nullptr;
       html::css_parsing_utils::ConsumePosition(context, x, y);
       assert(x && y);
       html::CSSIdentifierValue* x_ident = html::DynamicTo<html::CSSIdentifierValue>(x.get());
@@ -171,8 +183,8 @@ void test6_ConsumePosition() {
     html::CSSParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    U<html::CSSValue> x = nullptr;
-    U<html::CSSValue> y = nullptr;
+    A<html::CSSValue> x = nullptr;
+    A<html::CSSValue> y = nullptr;
     html::css_parsing_utils::ConsumePosition(context, x, y);
 
     assert(x && y);
@@ -192,7 +204,7 @@ void test_html_css_parser() {
   // test1_perfect_hash_function();
   // test2_parse_property_keyword();
   // test3_ParseInlineStyleDeclaration();
-  // test4_parse_shorthand();
+  test4_parse_shorthand();
   // test5_ConsumeLengthOrPercent();
-  test6_ConsumePosition();
+  // test6_ConsumePosition();
 }

@@ -9,7 +9,7 @@ namespace html {
 // 描述一个短样式中，包含的所有长样式集合。
 class StylePropertyShorthand {
  public:
-  using Properties = const CSSProperty*;
+  using Properties = const CSSProperty**;
 
   constexpr StylePropertyShorthand() : m_shorthand_id(CSSPropertyId::Invalid) {}
 
@@ -18,6 +18,7 @@ class StylePropertyShorthand {
   }
 
   const Properties& properties() const { return m_properties; }
+  const CSSProperty& properties(unsigned int i) const { return *m_properties[i]; }
   unsigned int length() const { return static_cast<unsigned>(m_size); }
   CSSPropertyId id() const { return m_shorthand_id; }
 

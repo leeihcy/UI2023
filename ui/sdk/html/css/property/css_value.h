@@ -7,6 +7,7 @@
 #include "html/css/graphics/color.h"
 
 #include <string>
+#include <vector>
 
 namespace html {
 
@@ -18,11 +19,20 @@ enum class CSSValueClassType {
   RevertLayer,
 
   Pair,
+  List,
 
   Identifier,
   Color,
+  Image,
 
   NumericLiteral,
+};
+
+// static constexpr size_t kValueListSeparatorBits = 2;
+enum class CSSValueListSeparator { 
+  kSpaceSeparator, 
+  kCommaSeparator, 
+  kSlashSeparator 
 };
 
 class CSSValue {
@@ -46,38 +56,38 @@ private:
 
 class CSSInitialValue : public CSSValue {
  public:
-  static U<CSSInitialValue> Create();
+  static A<CSSInitialValue> Create();
   CSSInitialValue() : CSSValue(CSSValueClassType::Initial) {}
 };
 
 class CSSInheritedValue : public CSSValue {
  public:
-  static U<CSSInheritedValue> Create();
+  static A<CSSInheritedValue> Create();
   CSSInheritedValue() : CSSValue(CSSValueClassType::Inherited) {}
 };
 
 class CSSUnsetValue : public CSSValue {
  public:
-  static U<CSSUnsetValue> Create();
+  static A<CSSUnsetValue> Create();
   CSSUnsetValue() : CSSValue(CSSValueClassType::Unset) {}
 };
 
 class CSSRevertValue : public CSSValue {
  public:
-  static U<CSSRevertValue> Create();
+  static A<CSSRevertValue> Create();
   CSSRevertValue() : CSSValue(CSSValueClassType::Revert) {}
 };
 
 class CSSRevertLayerValue : public CSSValue {
  public:
-  static U<CSSRevertLayerValue> Create();
+  static A<CSSRevertLayerValue> Create();
   CSSRevertLayerValue() : CSSValue(CSSValueClassType::RevertLayer) {}
 };
 
 // CSSIdentifierValue stores CSS value keywords
 class CSSIdentifierValue : public CSSValue {
  public:
-  static U<CSSIdentifierValue> Create(CSSValueId);
+  static A<CSSIdentifierValue> Create(CSSValueId);
   explicit CSSIdentifierValue(CSSValueId);
 
   CSSValueId GetValueId() const { return m_value_id; }
@@ -98,7 +108,7 @@ public:
     Keep
   };
 
-  explicit CSSValuePair(U<CSSValue> &&first, U<CSSValue> &&second, IdenticalValuesPolicy policy)
+  explicit CSSValuePair(A<CSSValue> &&first, A<CSSValue> &&second, IdenticalValuesPolicy policy)
       : m_first(std::move(first)), m_second(std::move(second)), m_policy(policy),
         CSSValue(CSSValueClassType::Pair) {}
 
@@ -106,8 +116,8 @@ public:
   const CSSValue* Second() const { return m_second.get(); }
 
 private:
-  U<CSSValue> m_first;
-  U<CSSValue> m_second;
+  A<CSSValue> m_first;
+  A<CSSValue> m_second;
   IdenticalValuesPolicy m_policy;
 };
 template<>
@@ -117,10 +127,19 @@ struct DowncastTraits<CSSValuePair> {
   }
 };
 
+class CSSValueList : public CSSValue {
+public:
+  CSSValueList(std::vector< A<CSSValue> >&& values, CSSValueListSeparator separator): 
+    m_values(std::move(values)), m_separator(separator), CSSValue(CSSValueClassType::List) {}
+private:
+  std::vector< A<CSSValue> > m_values;
+  CSSValueListSeparator m_separator;
+};
+
 // Represents the non-keyword subset of <color>.
 class CSSColorValue : public CSSValue {
 public:
-  static U<CSSColorValue> Create(const Color& color);
+  static A<CSSColorValue> Create(const Color& color);
   CSSColorValue(Color color) : CSSValue(CSSValueClassType::Color), m_color(color) {}
 
   const Color& GetColor() const { return m_color; };
@@ -164,7 +183,7 @@ protected:
 
 class CSSNumericLiteralValue : public CSSPrimitiveValue {
 public:
-  static U<CSSNumericLiteralValue> Create(double num, UnitType unit_type);
+  static A<CSSNumericLiteralValue> Create(double num, UnitType unit_type);
   explicit CSSNumericLiteralValue(double num, UnitType unit_type);
 
   double GetNum() const { return m_num; }
@@ -176,6 +195,11 @@ struct DowncastTraits<CSSNumericLiteralValue> {
   static bool AllowFrom(const CSSValue& from) {
     return from.IsNumericLiteralValue();
   }
+};
+
+class CSSImageValue : public CSSValue {
+public:
+  CSSImageValue(): CSSValue(CSSValueClassType::Image) {}
 };
 
 }

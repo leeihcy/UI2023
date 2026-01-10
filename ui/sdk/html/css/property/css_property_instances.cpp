@@ -47,13 +47,34 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion {
 
   DECLARE_UNION_ITEM(Variable);
   DECLARE_UNION_ITEM(Background);
+  DECLARE_UNION_ITEM(BackgroundAttachment);
+  DECLARE_UNION_ITEM(BackgroundClip);
   DECLARE_UNION_ITEM(BackgroundColor);
+  DECLARE_UNION_ITEM(BackgroundImage);
+  DECLARE_UNION_ITEM(BackgroundOrigin);
+  DECLARE_UNION_ITEM(BackgroundPosition);
+  DECLARE_UNION_ITEM(BackgroundPositionX);
+  DECLARE_UNION_ITEM(BackgroundPositionY);
+  DECLARE_UNION_ITEM(BackgroundRepeat);
+  DECLARE_UNION_ITEM(BackgroundSize);
+  DECLARE_UNION_ITEM(BackgroundBlendMode);
+  
 };
 
 constexpr CSSPropertyUnion g_css_properties[CSS_PROPERTY_COUNT] = {
   Variable(),
   Background(),
+  BackgroundAttachment(),
+  BackgroundClip(),
   BackgroundColor(),
+  BackgroundImage(),
+  BackgroundOrigin(),
+  BackgroundPosition(),
+  BackgroundPositionX(),
+  BackgroundPositionY(),
+  BackgroundRepeat(),
+  BackgroundSize(),
+  BackgroundBlendMode(),
 };
 
 

@@ -114,7 +114,8 @@ public:
   CSSTokenizer(const char16_t* buffer, int size) : m_input_stream(buffer, size) {}
 
   CSSParserToken NextToken(bool skip_comments=true);
-  unsigned int  Offset() { return m_input_stream.Offset(); }
+  unsigned int Offset() { return m_input_stream.Offset(); }
+  unsigned int PreviousOffset() { return m_prev_offset; }
   void Restore(unsigned int offset) { m_input_stream.Restore(offset); }
 private:
   char16_t Consume();
@@ -149,7 +150,10 @@ private:
   
 private:
   CSSTokenizerInputStream m_input_stream;
+  unsigned int m_prev_offset = 0;
   std::stack<CSSParserTokenType> m_block_stack;
+
+  friend class CSSParserTokenStream;
 };
 
 

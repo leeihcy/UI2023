@@ -17,7 +17,7 @@ public:
 
   bool ParseValueStart(CSSPropertyId property_id, bool allow_important);
   bool ParseCSSWideKeyword(CSSPropertyId property_id, bool allow_important);
-  U<CSSValue> ConsumeCSSWideKeyword(
+  A<CSSValue> ConsumeCSSWideKeyword(
     bool allow_important_annotation,
     bool& important);
 

@@ -31,8 +31,10 @@ public:
   CSSParserToken& Peek() { return m_next_token; }
   
   bool AtEnd();
-  
+  void PopBlockStack() { m_tokenizer->m_block_stack.pop(); }
+
   CSSParserToken Consume();
+  
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
   void SkipUntilPeekedTypeIs(CSSParserTokenType type);
@@ -40,6 +42,8 @@ public:
   bool TokenMarksEnd(CSSParserTokenType end_type);
   bool TokenMarksEnd(const CSSParserToken& token, CSSParserTokenType end_type);
 
+  unsigned int Offset() { return m_tokenizer->Offset(); }
+  unsigned int PreviousOffset() { return m_tokenizer->PreviousOffset(); }
 public:
   struct State {
     unsigned int offset;
@@ -68,6 +72,46 @@ public:
   private:
     uint64_t *m_variable = nullptr;
     uint64_t m_original_value = 0;
+  };
+
+  // 处理()函数辅助类
+  class RestoringBlockGuard {
+    static uint64_t ResetStreamBoundaries(CSSParserTokenStream& stream) {
+      uint64_t original = stream.m_boundaries;
+      stream.m_boundaries = FlagForTokenType(CSSParserTokenType::Eof);
+      return original;
+    }
+  public:
+    explicit RestoringBlockGuard(CSSParserTokenStream& stream)
+        : stream_(stream),
+          boundaries_(ResetStreamBoundaries(stream)),
+          state_(stream.Save()) {
+      const CSSParserToken next = stream.Consume();
+      assert(next.GetBlockType() == CSSParserTokenBlockType::Start);
+    }
+    bool Release() {
+      assert(!released_);
+      if (stream_.Peek().IsEof() ||
+          stream_.Peek().GetBlockType() == CSSParserTokenBlockType::End) {
+        stream_.Consume();
+        released_ = true;
+        return true;
+      }
+      return false;
+    }
+    ~RestoringBlockGuard() {
+      if (!released_) {
+        stream_.Restore(state_);
+        stream_.PopBlockStack();
+      }
+      stream_.m_boundaries = boundaries_;
+    }
+
+   private:
+    CSSParserTokenStream& stream_;
+    uint64_t boundaries_;
+    State state_;
+    bool released_ = false;
   };
 
 private:

@@ -16,69 +16,69 @@ public:
   CSSValuePool() {
   }
 
-  U<CSSNumericLiteralValue> PixelCacheValue(int value) {
+  A<CSSNumericLiteralValue> PixelCacheValue(int value) {
     auto iter = m_pixel_numeric_value_map.find(value);
     if (iter != m_pixel_numeric_value_map.end()) {
-      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+      return A<CSSNumericLiteralValue>::from_pool(iter->second);
     }
     CSSNumericLiteralValue *v =
         new CSSNumericLiteralValue(value, CSSPrimitiveValue::UnitType::kPixels);
     m_pixel_numeric_value_map[value] = v;
-    return U<CSSNumericLiteralValue>::from_pool(v);
+    return A<CSSNumericLiteralValue>::from_pool(v);
   }
-  U<CSSNumericLiteralValue> PercentCacheValue(int value) {
+  A<CSSNumericLiteralValue> PercentCacheValue(int value) {
     auto iter = m_percent_numeric_value_map.find(value);
     if (iter != m_percent_numeric_value_map.end()) {
-      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+      return A<CSSNumericLiteralValue>::from_pool(iter->second);
     }
     CSSNumericLiteralValue *v = new CSSNumericLiteralValue(
         value, CSSPrimitiveValue::UnitType::kPercentage);
     m_percent_numeric_value_map[value] = v;
-    return U<CSSNumericLiteralValue>::from_pool(v);
+    return A<CSSNumericLiteralValue>::from_pool(v);
   }
-  U<CSSNumericLiteralValue> NumberCacheValue(int value) {
+  A<CSSNumericLiteralValue> NumberCacheValue(int value) {
     auto iter = m_number_value_map.find(value);
     if (iter != m_number_value_map.end()) {
-      return U<CSSNumericLiteralValue>::from_pool(iter->second);
+      return A<CSSNumericLiteralValue>::from_pool(iter->second);
     }
     CSSNumericLiteralValue *v = new CSSNumericLiteralValue(
         value, CSSPrimitiveValue::UnitType::kInteger);
     m_number_value_map[value] = v;
-    return U<CSSNumericLiteralValue>::from_pool(v);
+    return A<CSSNumericLiteralValue>::from_pool(v);
   }
 
-  U<CSSIdentifierValue> IdentifierCacheValue(CSSValueId value_id) {
+  A<CSSIdentifierValue> IdentifierCacheValue(CSSValueId value_id) {
     auto iter = m_identifier_value_map.find(value_id);
     if (iter != m_identifier_value_map.end()) {
-      return U<CSSIdentifierValue>::from_pool(iter->second);
+      return A<CSSIdentifierValue>::from_pool(iter->second);
     }
     CSSIdentifierValue* v = new CSSIdentifierValue(value_id);
     m_identifier_value_map[value_id] = v;
-    return U<CSSIdentifierValue>::from_pool(v);
+    return A<CSSIdentifierValue>::from_pool(v);
   }
-  U<CSSColorValue> GetOrCreateColor(const Color& color) {
+  A<CSSColorValue> GetOrCreateColor(const Color& color) {
     // This is the empty value of the hash table.
     // See ColorHashTraitsForCSSValuePool.
     if (color == Color::kTransparent) {
-      return U<CSSColorValue>::from_managed(TransparentColor());
+      return A<CSSColorValue>::from_managed(TransparentColor());
     }
 
     // Just because they are common.
     if (color == Color::kWhite) {
-      return U<CSSColorValue>::from_managed(WhiteColor());
+      return A<CSSColorValue>::from_managed(WhiteColor());
     }
     if (color == Color::kBlack) {
-      return U<CSSColorValue>::from_managed(BlackColor());
+      return A<CSSColorValue>::from_managed(BlackColor());
     }
 
     auto iter = m_color_value_cache.find(color);
     if (iter != m_color_value_cache.end()) {
-      return U<CSSColorValue>::from_pool(iter->second);
+      return A<CSSColorValue>::from_pool(iter->second);
     }
 
     CSSColorValue* v = new CSSColorValue(color);
     m_color_value_cache[color] = v;
-    return U<CSSColorValue>::from_pool(v);
+    return A<CSSColorValue>::from_pool(v);
   }
   CSSColorValue* TransparentColor() { return &m_color_transparent; }
   CSSColorValue* WhiteColor() { return &m_color_white; }
@@ -100,28 +100,28 @@ private:
 };
 
 
-U<CSSInitialValue> CSSInitialValue::Create() {
+A<CSSInitialValue> CSSInitialValue::Create() {
   static CSSInitialValue s;
-  return U<CSSInitialValue>::from_managed(&s);
+  return A<CSSInitialValue>::from_managed(&s);
 }
-U<CSSInheritedValue> CSSInheritedValue::Create() {
+A<CSSInheritedValue> CSSInheritedValue::Create() {
   static CSSInheritedValue s;
-  return U<CSSInheritedValue>::from_managed(&s);
+  return A<CSSInheritedValue>::from_managed(&s);
 }
-U<CSSUnsetValue> CSSUnsetValue::Create() {
+A<CSSUnsetValue> CSSUnsetValue::Create() {
   static CSSUnsetValue s;
-  return U<CSSUnsetValue>::from_managed(&s);
+  return A<CSSUnsetValue>::from_managed(&s);
 }
-U<CSSRevertValue> CSSRevertValue::Create() {
+A<CSSRevertValue> CSSRevertValue::Create() {
   static CSSRevertValue s;
-  return U<CSSRevertValue>::from_managed(&s);
+  return A<CSSRevertValue>::from_managed(&s);
 }
-U<CSSRevertLayerValue> CSSRevertLayerValue::Create() {
+A<CSSRevertLayerValue> CSSRevertLayerValue::Create() {
   static CSSRevertLayerValue s;
-  return U<CSSRevertLayerValue>::from_managed(&s);
+  return A<CSSRevertLayerValue>::from_managed(&s);
 }
 
-U<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueId value_id) {
+A<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueId value_id) {
   return CSSValuePool::Get().IdentifierCacheValue(value_id);
 }
 CSSIdentifierValue::CSSIdentifierValue(CSSValueId id) 
@@ -129,7 +129,7 @@ CSSIdentifierValue::CSSIdentifierValue(CSSValueId id)
 
 }
 
-U<CSSColorValue> CSSColorValue::Create(const Color& color) {
+A<CSSColorValue> CSSColorValue::Create(const Color& color) {
   return CSSValuePool::Get().GetOrCreateColor(color);
 }
 
@@ -158,16 +158,16 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::StringToUnitType(const std::u16st
 }
 
 // static 
-U<CSSNumericLiteralValue> CSSNumericLiteralValue::Create(double value, UnitType unit_type) {
+A<CSSNumericLiteralValue> CSSNumericLiteralValue::Create(double value, UnitType unit_type) {
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue) {
-    return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+    return A<CSSNumericLiteralValue>::make_new(value, unit_type);
   }
 
   // 小数字特殊处理
 
   int int_value = static_cast<int>(value);
   if (value != int_value || (value == 0 && std::signbit(value))) {
-    return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+    return A<CSSNumericLiteralValue>::make_new(value, unit_type);
   }
 
   CSSNumericLiteralValue* result = nullptr;
@@ -180,7 +180,7 @@ U<CSSNumericLiteralValue> CSSNumericLiteralValue::Create(double value, UnitType 
     case CSSPrimitiveValue::UnitType::kInteger:
       return CSSValuePool::Get().NumberCacheValue(value);
     default:
-      return U<CSSNumericLiteralValue>::make_new(value, unit_type);
+      return A<CSSNumericLiteralValue>::make_new(value, unit_type);
   }
 }
 

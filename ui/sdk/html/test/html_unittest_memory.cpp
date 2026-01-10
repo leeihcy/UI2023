@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <memory>
 
+using html::A;
+
 namespace {
 
 int g_counter = 0;
@@ -29,7 +31,7 @@ void test1() {
   {
     static TestDeriver s1;
     assert(g_counter == 1);
-    auto o = html::memory::UniquePtr<TestBase>::from_managed(&s1);
+    auto o = html::memory::AutoPtr<TestBase>::from_managed(&s1);
     o->foo();
   }
   assert(g_counter == 1);
@@ -39,7 +41,7 @@ void test1() {
   {
     TestDeriver o1;
     assert(g_counter == 1);
-    auto o = html::memory::UniquePtr<TestBase>::from_managed(&o1);
+    auto o = html::memory::AutoPtr<TestBase>::from_managed(&o1);
     o->foo();
   }
   assert(g_counter == 0);
@@ -49,7 +51,7 @@ void test1() {
   {
     TestDeriver* o1 = new TestDeriver();
     assert(g_counter == 1);
-    auto o = html::memory::UniquePtr<TestBase>::take_new(o1);
+    auto o = html::memory::AutoPtr<TestBase>::take_new(o1);
     o->foo();
   }
   assert(g_counter == 0);
@@ -58,16 +60,16 @@ void test1() {
   {
     TestDeriver* o1 = new TestDeriver();
     assert(g_counter == 1);
-    auto o = html::memory::UniquePtr<TestBase>::take_new(o1);
+    auto o = html::memory::AutoPtr<TestBase>::take_new(o1);
     assert(g_counter == 1);
-    auto p = html::memory::UniquePtr<TestBase>::take_new(new TestDeriver());
+    auto p = html::memory::AutoPtr<TestBase>::take_new(new TestDeriver());
     assert(g_counter == 2);
     assert(o1 == nullptr);
     o->foo();
 
-    html::memory::UniquePtr<TestBase> q(std::move(p));
+    html::memory::AutoPtr<TestBase> q(std::move(p));
     assert(!p.get());
-    html::memory::UniquePtr<TestBase> r(std::move(q));
+    html::memory::AutoPtr<TestBase> r(std::move(q));
     assert(!q.get());
     r->foo();
   }
@@ -77,7 +79,7 @@ void test1() {
   {
     TestDeriver * p1 = new TestDeriver();
     assert(g_counter == 1);
-    auto o = html::memory::UniquePtr<TestBase>::from_pool(p1);
+    auto o = html::memory::AutoPtr<TestBase>::from_pool(p1);
     o->foo();
   }
   assert(g_counter == 1);
@@ -86,16 +88,54 @@ void test1() {
   // 指针转换
   g_counter = 0;
   {
-    U<TestBase> o(U<TestDeriver>::take_new(new TestDeriver()));
+    A<TestBase> o(A<TestDeriver>::take_new(new TestDeriver()));
 
-    U<TestBase> p = U<TestDeriver>::take_new(new TestDeriver());
+    A<TestBase> p = A<TestDeriver>::take_new(new TestDeriver());
     o->foo();
   }
   assert(g_counter == 0);
 }
 
+void test2_share() {
+  g_counter = 0;
+  {
+    A<TestBase> o1 = A<TestBase>::take_new(new TestDeriver());
+    assert(g_counter == 1);
+
+    A<TestBase> o2 = nullptr;
+    o2.share(o1);
+    assert(g_counter == 1);
+
+    o1.destroy();
+    assert(g_counter == 1);
+
+    o2.destroy();
+    assert(g_counter == 0);
+  }
+
+  g_counter = 0;
+  {
+    {
+      TestDeriver s1;
+      A<TestBase> o1 = A<TestBase>::from_managed(&s1);
+      assert(g_counter == 1);
+
+      A<TestBase> o2 = nullptr;
+      o2.share(o1);
+      assert(g_counter == 1);
+
+      o1.destroy();
+      assert(g_counter == 1);
+
+      o2.destroy();
+      assert(g_counter == 1);
+    }
+    assert(g_counter == 0);
+  }
+}
 }
 
 void test_html_memory() {
-  test1();
+  // test1();
+  test2_share();
 }

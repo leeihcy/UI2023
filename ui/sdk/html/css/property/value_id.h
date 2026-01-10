@@ -18,11 +18,27 @@ enum class CSSValueId : int {
   Revert,            // "revert"
   RevertLayer,       // "revert-layer"
 
+  Auto,              // "auto"
+  Contain,           // "contain"
+  Cover,             // "cover"
+
   Top,               // "top"
   Bottom,            // "bottom"
   Left,              // "left"
   Right,             // "right"
   Center,            // "center"
+
+  BorderBox,         // "border-box"
+  PaddingBox,        // "padding-box"
+  ContentBox,        // "center-box"
+  Text,              // "text"
+
+  Scroll,            // "scroll"
+  Fixed,             // "fixed"
+  Local,             // "local"
+
+  None,              // "none"
+  Url,               // "url"
 
   // https://www.w3.org/wiki/CSS/Properties/color/keywords
   ColorBasicStart,

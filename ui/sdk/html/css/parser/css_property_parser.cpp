@@ -20,13 +20,13 @@ CSSPropertyParser::CSSPropertyParser(CSSParserContext &context) : m_context(cont
 {
 }
 
-U<CSSValue> CSSPropertyParser::ConsumeCSSWideKeyword(
+A<CSSValue> CSSPropertyParser::ConsumeCSSWideKeyword(
     bool allow_important_annotation,
     bool& important) {
 
   CSSParserTokenStream::State savepoint = m_context.token_stream.Save();
 
-  U<CSSValue> value = css_parsing_utils::ConsumeCSSWideKeyword(m_context.token_stream);
+  A<CSSValue> value = css_parsing_utils::ConsumeCSSWideKeyword(m_context.token_stream);
   if (!value) {
     return nullptr;
   }
@@ -43,7 +43,7 @@ U<CSSValue> CSSPropertyParser::ConsumeCSSWideKeyword(
 
 bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyId property_id, bool allow_important_annotation) {
   bool important;
-  U<CSSValue> value =
+  A<CSSValue> value =
       ConsumeCSSWideKeyword(allow_important_annotation, important);
   if (!value) {
     return false;
@@ -83,23 +83,25 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyId property_id, bool allow_im
   // if (!IsPropertyAllowedInRule(property, rule_type)) {
   //   return false;
   // }
+
   bool is_shorthand = property.IsShorthand();
   if (is_shorthand) {
-    if (static_cast<const Shorthand&>(property).ParseShorthand(m_context)) {
+    int begin_index = m_context.parsed_properties.size();
+    
+    if (static_cast<const Shorthand&>(property).ParseShorthand(m_context, false)) {
       bool important = css_parsing_utils::MaybeConsumeImportant(
           m_context.token_stream, allow_important);
       if (m_context.token_stream.AtEnd()) {
         if (important) {
-          // for (wtf_size_t property_idx = parsed_properties_size;
-          //      property_idx < parsed_properties_->size(); ++property_idx) {
-          //   (*parsed_properties_)[property_idx].SetImportant();
-          // }
+          for (size_t i = begin_index; i < m_context.parsed_properties.size(); ++i) {
+            m_context.parsed_properties[i].SetImportant(true);
+          }
         }
         return true;
       }
     }
   } else {
-    if (U<CSSValue> parsed_value =
+    if (A<CSSValue> parsed_value =
             css_parsing_utils::ParseLonghand(property_id, m_context)) {
       bool important = css_parsing_utils::MaybeConsumeImportant(
           m_context.token_stream, allow_important);

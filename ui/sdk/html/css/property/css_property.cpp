@@ -16,6 +16,7 @@ const CSSProperty& CSSProperty::Get(CSSPropertyId id) {
   return GetCSSPropertyInternal(id);
 }
 
+
 // https://www.w3.org/TR/css-backgrounds-4/
 //
 // Background 允许你在一个元素上叠加多个背景图像，每个层都有自己的属性设置。
@@ -35,24 +36,23 @@ const CSSProperty& CSSProperty::Get(CSSPropertyId id) {
 //   每个背景层可以有自己的属性值：
 //   background-color 只能有一个值，且总是：显示在所有层的最下面,不受逗号分隔的层影响
 //
-bool Background::ParseShorthand(CSSParserContext &context) const {
+bool Background::ParseShorthand(CSSParserContext &context, bool important) const {
   const StylePropertyShorthand& shorthand = backgroundShorthand();
-  assert(false);
-#if 0
+
   const unsigned longhand_count = shorthand.length();
   assert(longhand_count <= 10);
 
-  std::array<std::vector<const CSSValue*>, 10> longhands;
+  std::array<std::vector< A<CSSValue> >, 10> longhands;
   
-
   bool implicit = false;
   // background_color只能放在最后一个layer。
   bool previous_layer_had_background_color = false;
 
+#if 1
   // 循环每个background layer，以逗号分隔。
   do {
     std::array<bool, 10> parsed_longhand = {false};
-    CSSValue* origin_value = nullptr;
+    A<CSSValue> origin_value = nullptr;
     bool found_property;
     bool found_any = false;
 
@@ -67,46 +67,40 @@ bool Background::ParseShorthand(CSSParserContext &context) const {
           continue;
         }
 
-        CSSValue* value = nullptr;
-        CSSValue* value_y = nullptr;
-        const CSSProperty& property = shorthand.properties()[i];
+        A<CSSValue> value = nullptr;
+        A<CSSValue> value_y = nullptr;
+        const CSSProperty& property = shorthand.properties(i);
         if (property.IdEquals(CSSPropertyId::BackgroundPositionX)) {
-          if (!ConsumePosition(context.token_stream, context, UnitlessQuirk::kForbid,
-                               WebFeature::kThreeValuedPositionBackground,
-                               value, value_y)) {
+          if (!css_parsing_utils::ConsumePosition(context, value, value_y)) {
             continue;
           }
           if (value) {
             bg_position_parsed_in_current_layer = true;
           }
         } else if (property.IdEquals(CSSPropertyId::BackgroundSize)) {
-          if (!ConsumeSlashIncludingWhitespace(context.token_stream)) {
+          if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(context.token_stream)) {
             continue;
           }
-          value = ConsumeBackgroundSize(
-              context.token_stream, context, WebFeature::kNegativeBackgroundSize,
-              ParsingStyle::kNotLegacy);
+          value.reset(css_parsing_utils::ConsumeBackgroundSize(context));
           if (!value || !bg_position_parsed_in_current_layer) {
             return false;
           }
         } else if (property.IdEquals(CSSPropertyId::BackgroundPositionY)) {
           continue;
         } else {
-          value =
-              ConsumeBackgroundComponent(property.PropertyId(), context,
-                                         /*local_context.UseAliasParsing()*/);
+          value.reset(css_parsing_utils::ConsumeBackgroundComponent(property.PropertyId(), context));
         }
         if (value) {
           if (property.IdEquals(CSSPropertyId::BackgroundOrigin)) {
-            origin_value = value;
+            origin_value.reset(std::move(value));
           }
           parsed_longhand[i] = true;
           found_property = true;
           found_any = true;
-          longhands[i].push_back(value);
+          longhands[i].push_back(std::move(value));
           if (value_y) {
             parsed_longhand[i + 1] = true;
-            longhands[i + 1].push_back(value_y);
+            longhands[i + 1].push_back(std::move(value_y));
           }
         }
       }
@@ -121,61 +115,56 @@ bool Background::ParseShorthand(CSSParserContext &context) const {
       // so return parse failure.
       return false;
     }
-#endif
-#if 0
     // TODO(timloh): This will make invalid longhands, see crbug.com/386459
     for (unsigned i = 0; i < longhand_count; ++i) {
-      const CSSProperty& property = *shorthand.properties()[i];
+      const CSSProperty& property = shorthand.properties(i);
 
-      if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
+      if (property.IdEquals(CSSPropertyId::BackgroundColor)) {
         if (parsed_longhand[i]) {
           previous_layer_had_background_color = true;
         }
       }
       if (!parsed_longhand[i]) {
-        if ((property.IDEquals(CSSPropertyID::kBackgroundClip) ||
-             property.IDEquals(CSSPropertyID::kMaskClip)) &&
+        if ((property.IdEquals(CSSPropertyId::BackgroundClip)) &&
             origin_value) {
-          longhands[i].push_back(origin_value);
+          longhands[i].push_back(std::move(origin_value));
           continue;
         }
 
-        if (shorthand_id == CSSPropertyID::kMask) {
-          longhands[i].push_back(To<Longhand>(property).InitialValue());
-        } else {
-          longhands[i].push_back(CSSInitialValue::Create());
-        }
+        longhands[i].push_back(std::move(CSSInitialValue::Create()));
       }
     }
 
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(context.token_stream));
-#endif
-#if 0
+  
   for (unsigned i = 0; i < longhand_count; ++i) {
-    const CSSProperty& property = *shorthand.properties()[i];
+    const CSSProperty& property = shorthand.properties(i);
 
-    const CSSValue* longhand;
-    if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
+    A<CSSValue> longhand = nullptr;
+    if (property.IdEquals(CSSPropertyId::BackgroundColor)) {
       // There can only be one background-color (we've verified this earlier,
       // by means of previous_layer_had_background_color), so pick out only
       // the last one (any others will just be “initial” over and over again).
-      longhand = longhands[i].back().Get();
+      longhand.reset(std::move(longhands[i].back()));
     } else {
       // To conserve memory we don't wrap a single value in a list.
-      longhand = GetSingleValueOrMakeList(CSSValue::kCommaSeparator,
-                                          std::move(longhands[i]));
+      longhand.reset(std::move(css_parsing_utils::GetSingleValueOrMakeList(
+          CSSValueListSeparator::kCommaSeparator, std::move(longhands[i]))));
     }
 
-    AddProperty(property.PropertyID(), shorthand.id(), *longhand, important,
-                implicit ? IsImplicitProperty::kImplicit
-                         : IsImplicitProperty::kNotImplicit,
-                properties);
+    // AddProperty(property.PropertyID(), shorthand.id(), *longhand, important,
+    //             implicit ? IsImplicitProperty::kImplicit
+    //                      : IsImplicitProperty::kNotImplicit,
+    //             properties);
+    context.parsed_properties.push_back(CSSPropertyValue(
+            CSSPropertyName(property.PropertyId()), 
+            std::move(longhand), important));
   }
 #endif
   return true;
 }
 
-U<CSSValue> BackgroundColor::ParseSingleValue(CSSParserContext &context) const {
+A<CSSValue> BackgroundColor::ParseSingleValue(CSSParserContext &context) const {
   return css_parsing_utils::ConsumeColor(context.token_stream);
 }
 
