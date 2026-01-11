@@ -1,6 +1,7 @@
 #include "html/css/property/css_property_instances.h"
 
 #include "html/css/property/css_property.h"
+#include <assert.h>
 
 namespace html {
 
@@ -30,6 +31,7 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion;
 
 static_assert(kCSSPropertyUnionBytes == sizeof(CSSProperty));
 static_assert(kCSSPropertyUnionBytes == sizeof(Variable));
+static_assert(kCSSPropertyUnionBytes == sizeof(Background));
 static_assert(kCSSPropertyUnionBytes == sizeof(BackgroundColor));
 
 #define DECLARE_UNION_ITEM2(ClassName, varName) \

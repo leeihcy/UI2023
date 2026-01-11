@@ -4,6 +4,8 @@
 #include "html/css/property/value_id.h"
 #include "html/css/property/css_value.h"
 #include <string>
+#include <assert.h>
+
 namespace html {
 
 /*

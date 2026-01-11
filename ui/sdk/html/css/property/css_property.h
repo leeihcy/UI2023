@@ -4,7 +4,7 @@
 #include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
 namespace html {
-class CSSParserContext;
+struct CSSParserContext;
 class CSSValue;
 
 enum class CSSPropertyFlag : int {
@@ -51,11 +51,11 @@ class CSSProperty {
 public:
   static const CSSProperty& Get(CSSPropertyId id);
 public:
-  constexpr CSSProperty(CSSPropertyId id, uint64_t flags) : m_id(id), m_flags(flags) {}
+  constexpr CSSProperty(CSSPropertyId id, uint64_t flags) : m_id((int)id), m_flags(flags) {}
   // constexpr virtual ~CSSProperty(){};
 
-  CSSPropertyId PropertyId() const { return m_id; }
-  bool IdEquals(CSSPropertyId id) const { return m_id == id; }
+  CSSPropertyId PropertyId() const { return (CSSPropertyId)m_id; }
+  bool IdEquals(CSSPropertyId id) const { return (CSSPropertyId)m_id == id; }
 
   uint32_t GetFlags() const { return m_flags; }
   bool IsProperty() const { return m_flags & (int)CSSPropertyFlag::Property; }
@@ -64,11 +64,11 @@ public:
   bool IsInherited() const { return m_flags & (int)CSSPropertyFlag::Inherited; }
 
   // virtual table pointer.
-  virtual void foo() {};
+  virtual void foo() const {};
 
 protected:
   // 成员控制在8byte以内，再加上虚表指针，总大小为16byte
-  CSSPropertyId m_id : 16;
+  uint64_t m_id : 16;
   uint64_t m_flags : 48;
 };
  
@@ -81,9 +81,7 @@ class Shorthand : public CSSProperty {
 public:
   constexpr Shorthand(CSSPropertyId id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Shorthand) {}
 
-  virtual bool ParseShorthand(CSSParserContext &context, bool important) const {
-    return false;
-  }
+  virtual bool ParseShorthand(CSSParserContext &context, bool important) const = 0;
 };
 
 class Longhand : public CSSProperty {

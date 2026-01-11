@@ -11,7 +11,7 @@
 namespace html {
 class CSSValue;
 class CSSIdentifierValue;
-class CSSParserContext;
+struct CSSParserContext;
 class CSSParserTokenStream;
 
 namespace css_parsing_utils {

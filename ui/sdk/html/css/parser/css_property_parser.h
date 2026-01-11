@@ -5,7 +5,7 @@
 #include "html/css/property/property_id.h"
 
 namespace html {
-class CSSParserContext;
+struct CSSParserContext;
 class CSSValue;
 
 class CSSPropertyParser {

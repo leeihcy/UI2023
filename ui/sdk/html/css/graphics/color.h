@@ -35,7 +35,7 @@ public:
   inline int operator < (const Color& other) const {
     float fother = other.param0_ + other.param1_ + other.param2_ + other.alpha_;
     float fthis = param0_ + param1_ + param2_ + alpha_;
-    return fother - fthis;
+    return int(fother - fthis);
   }
 
 public:

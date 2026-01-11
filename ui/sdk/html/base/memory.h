@@ -142,13 +142,15 @@ public:
 
   // 右值版本，直接传递一个new U()参数的场景。
   template <typename U> static AutoPtr<T> take_new(U *&&t) {
-    static_assert(__is_base_of(T, U) || __is_same(T, U),
+    static_assert(std::is_base_of<T, U>::value ||
+                  std::is_same<T, U>::value,
                   "U must be derived from T or same as T");
     return AutoPtr<T>(t, LifeCycleType::New);
   }
 
   template <typename U> void reset(AutoPtr<U>&&o) {
-    static_assert(__is_base_of(T, U) || __is_same(T, U),
+    static_assert(std::is_base_of<T, U>::value ||
+                  std::is_same<T, U>::value,
                   "U must be derived from T or same as T");
     destroy();
 

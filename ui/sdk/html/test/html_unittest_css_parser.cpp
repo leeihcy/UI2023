@@ -3,6 +3,7 @@
 #include "html/css/property/property_id.h"
 #include "html/css/property/css_parsing_utils.h"
 #include "html/css/parser/css_parser.h"
+#include "html/css/property/css_property.h"
 #include "html/base/casting.h"
 #include "html/base/memory.h"
 #include "html/css/property/value_id.h"
