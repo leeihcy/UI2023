@@ -201,6 +201,22 @@ public:
   ShareCounter* m_share_counter = nullptr;
 };
 
+template <typename T>
+void swap(AutoPtr<T>& o1, AutoPtr<T>& o2) {
+  T* t = o1.m_t;
+  LifeCycleType type = o1.m_type;
+  ShareCounter* counter = o1.m_share_counter;
+
+  o1.m_t = o2.m_t;
+  o2.m_t = t;
+
+  o1.m_type = o2.m_type;
+  o2.m_type = type;
+
+  o1.m_share_counter = o2.m_share_counter;
+  o2.m_share_counter = counter;
+}
+
 }
 
 // alias

@@ -49,7 +49,10 @@ IProperty& DefaultPropertyStore::RegisterRect(int id, const std::string& key) {
 SpecifiedPropertyStore::~SpecifiedPropertyStore() {
   auto iter = m_map.begin();
   for (; iter != m_map.end(); ++iter) {
-    free(iter->second);
+    PropertyValue* value = iter->second;
+    if (value->flags & (int)PropertyValueFlags::Alloc) {
+      delete value;
+    }
   }
 }
 

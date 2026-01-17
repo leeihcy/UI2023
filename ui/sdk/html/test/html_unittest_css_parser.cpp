@@ -207,13 +207,61 @@ void test6_ConsumePosition() {
   }
 }
 
+void test7_parse_sheet() {
+#if 0
+  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  String sheet_text = R"CSS(
+    #first {
+      color: red;
+      --x:foo;
+      --y:foo;
+    }
+    #second {
+      color: green;
+      --x:bar;
+      --y:bar;
+    }
+  )CSS";
+
+  CSSParser::ParseSheet(context, style_sheet, sheet_text,
+                        CSSDeferPropertyParsing::kNo);
+  StyleRule* rule0 = RuleAt(style_sheet, 0);
+  StyleRule* rule1 = RuleAt(style_sheet, 1);
+  MutableCSSPropertyValueSet& set0 = rule0->MutableProperties();
+  MutableCSSPropertyValueSet& set1 = rule1->MutableProperties();
+
+  EXPECT_EQ(3u, set0.PropertyCount());
+  EXPECT_EQ("red", set0.GetPropertyValue(CSSPropertyID::kColor));
+  EXPECT_EQ("foo", set0.GetPropertyValue(AtomicString("--x")));
+  EXPECT_EQ("foo", set0.GetPropertyValue(AtomicString("--y")));
+  EXPECT_EQ(3u, set1.PropertyCount());
+  EXPECT_EQ("green", set1.GetPropertyValue(CSSPropertyID::kColor));
+  EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--x")));
+  EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--y")));
+
+  set0.MergeAndOverrideOnConflict(&set1);
+
+  EXPECT_EQ(3u, set0.PropertyCount());
+  EXPECT_EQ("green", set0.GetPropertyValue(CSSPropertyID::kColor));
+  EXPECT_EQ("bar", set0.GetPropertyValue(AtomicString("--x")));
+  EXPECT_EQ("bar", set0.GetPropertyValue(AtomicString("--y")));
+  EXPECT_EQ(3u, set1.PropertyCount());
+  EXPECT_EQ("green", set1.GetPropertyValue(CSSPropertyID::kColor));
+  EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--x")));
+  EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--y")));
+#endif
+}
+
 }
 
 void test_html_css_parser() {
   // test1_perfect_hash_function();
   // test2_parse_property_keyword();
   // test3_ParseInlineStyleDeclaration();
-  test4_parse_shorthand();
+  // test4_parse_shorthand();
   // test5_ConsumeLengthOrPercent();
   // test6_ConsumePosition();
+  test7_parse_sheet();
 }

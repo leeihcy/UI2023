@@ -727,8 +727,8 @@ CSSParserToken CSSTokenizer::Hash(char16_t c) {
   if (IsIdentCodePoint(next_char) ||
       TwoCharsAreValidEscape(next_char, m_input_stream.Peek(1))) {
     HashTokenType type = WouldStartAnIdentifier()
-                             ? HashTokenType::Hash
-                             : HashTokenType::HashUnrestricted;
+                             ? HashTokenType::Id
+                             : HashTokenType::Unrestricted;
     return CSSParserToken::MakeHash(ConsumeAnIdentSequence(), type);
   }
 

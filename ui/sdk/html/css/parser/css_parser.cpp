@@ -1,5 +1,6 @@
 #include "html/css/parser/css_parser.h"
 
+#include "html/css/parser/allowed_rules.h"
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/parser/css_property_parser.h"
 #include "html/css/property/property_id.h"
@@ -10,6 +11,7 @@
 
 namespace html {
 
+// 解析style=""内容
 std::unique_ptr<CSSPropertyValueSet>
 CSSParser::ParseInlineStyleDeclaration(const char *bytes, size_t size) {
   CSSParserContext context;
@@ -102,6 +104,87 @@ void CSSParser::ConsumeDeclarationValue(CSSParserContext &context,
 
   bool allow_important_annotation = true; // TODO:
   CSSPropertyParser::ParseValue(context, property_id, allow_important_annotation);
+}
+
+bool CSSParser::ParseStyleSheet(const char *bytes, size_t size) {
+  CSSParserContext context;
+  context.token_stream.SetInput(bytes, size);
+  
+  return ConsumeRuleList(context, kTopLevelRules);
+}
+
+A<StyleRule> CSSParser::ConsumeStyleRule(CSSParserContext &context) {
+  // CSSSelectorParser::ConsumeSelector(context);
+  return nullptr;
+}
+
+// qualified rule包含两种：普通style和关键帧
+A<StyleRule> CSSParser::ConsumeQualifiedRule(CSSParserContext &context,
+                                             AllowedRules allowed_rules) {
+
+  // 普通style
+  if (allowed_rules.Has(QualifiedRuleType::Style)) {
+    return ConsumeStyleRule(context);
+  }
+
+  // keyframe
+  // @keyframe animate-name { keyframe-selector { property: value; }}
+  // keyframe-selector 有两种： from/to,  percentage(0%, 50%, 100%)
+  if (allowed_rules.Has(QualifiedRuleType::Keyframe)) {
+    assert(false);
+    // TODO;
+  }
+  return nullptr;
+}
+
+// 解析<style>或.css文件内容
+bool CSSParser::ConsumeRuleList(CSSParserContext& context, AllowedRules allowed_rules) {
+  auto& stream = context.token_stream;
+  bool allow_cdo_cdc_tokens = true;
+
+  bool seen_rule = false;
+  bool seen_import_or_namespace_rule = false;
+  bool first_rule_valid = false;
+  while (!stream.AtEnd()) {
+    unsigned int offset = stream.Offset();
+    A<StyleRule> rule = nullptr;
+    switch (stream.Peek().GetType()) {
+      case CSSParserTokenType::Whitespace:
+        stream.Consume();
+        continue;
+      case CSSParserTokenType::AtKeyword:
+        assert(false);
+        // rule = ConsumeAtRule(context, allowed_rules, nesting_type,
+        //                      parent_rule_for_nesting);
+        break;
+      case CSSParserTokenType::CDO:
+      case CSSParserTokenType::CDC:
+        if (allow_cdo_cdc_tokens) {
+          stream.Consume();
+          continue;
+        }
+        [[fallthrough]];
+      default:
+        rule.reset(ConsumeQualifiedRule(context, allowed_rules/*, nesting_type,
+                                    parent_rule_for_nesting*/));
+        break;
+    }
+    if (!seen_rule) {
+      seen_rule = true;
+      first_rule_valid = rule;
+    }
+    assert(false);
+#if 0
+    if (rule) {
+      allowed_rules = ComputeNewAllowedRules(allowed_rules, rule,
+                                             seen_import_or_namespace_rule);
+      callback(rule, offset);
+    }
+#endif
+    // DCHECK_GT(stream.Offset(), offset);
+  }
+
+  return first_rule_valid;
 }
 
 }

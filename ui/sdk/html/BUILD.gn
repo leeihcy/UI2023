@@ -3,6 +3,11 @@ source_set("html") {
   sources = [
     "base/memory.h",
     "base/memory.cpp",
+    "base/atomic_string.h",
+    "base/atomic_string.cpp",
+
+    "css/style_sheet_contents.h",
+    "css/style_sheet_contents.cpp",
 
     "css/parser/css_parser_token.h",
     "css/parser/css_parser_token.cpp",
@@ -14,6 +19,11 @@ source_set("html") {
     "css/parser/css_property_parser.cpp",
     "css/parser/css_parser.h",
     "css/parser/css_parser.cpp",
+    "css/parser/css_selector_parser.cpp",
+    "css/parser/css_selector_parser.h",
+
+    "css/resolver/style_resolver.h",
+    "css/resolver/style_resolver.cpp",
 
     "css/property/css_property.h",
     "css/property/css_property.cpp",

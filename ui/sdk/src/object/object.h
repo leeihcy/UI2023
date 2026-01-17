@@ -21,6 +21,7 @@ class Window;
 class Layer;
 class ObjectLayer;
 struct IRenderTarget;
+class ObjectData;
 
 class Object : 
   public Message,
@@ -135,8 +136,17 @@ protected: // virtual
 
 protected:
   // 用于支持多皮肤包共存（插件模式）
+  // TODO: 优化掉这个变量，大部分是一样的。可以考虑做成结点放在dom树上。
   ResourceBundle *m_resource = nullptr; 
  
+  // runtime data
+  // 例如编辑框内容，下列框当前选中项等。
+
+  // static data 
+  // 例如对象属性、样式属性。
+  // 对象属性数据。同一对象的相同属性，可以共享同一ObjectData。
+  std::shared_ptr<ObjectData>  m_object_data;
+
 #if 0
   bool CreateAccesible(IAccessible **pp);
   IAccessible *m_pAccessible;

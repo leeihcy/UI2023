@@ -225,6 +225,8 @@ shared_library("uisdk") {
         "src/object/object_animate.cpp",
         "src/object/object_layout.cpp",
         "src/object/object_layout.h",
+        "src/object/object_data.cpp",
+        "src/object/object_data.h",
 
         "src/panel/root_object.cpp",
         "src/panel/root_object.h",

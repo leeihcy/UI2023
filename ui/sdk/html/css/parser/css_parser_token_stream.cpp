@@ -92,6 +92,27 @@ void CSSParserTokenStream::SkipUntilPeekedTypeIs(CSSParserTokenType type) {
   }
 }
 
+bool CSSParserTokenStream::SkipToEndOfBlock() {
+  unsigned nesting_level = 1;
+  if (m_next_token.GetBlockType() == CSSParserTokenBlockType::Start) {
+    nesting_level++;
+  } else if (m_next_token.GetBlockType() == CSSParserTokenBlockType::End) {
+    nesting_level--;
+  }
+
+  // Skip tokens until we see EOF or the closing brace.
+  while (nesting_level != 0) {
+    CSSParserToken token = m_tokenizer->NextToken(true);
+    if (token.IsEof()) {
+      break;
+    } else if (token.GetBlockType() == CSSParserTokenBlockType::Start) {
+      nesting_level++;
+    } else if (token.GetBlockType() == CSSParserTokenBlockType::End) {
+      nesting_level--;
+    }
+  }
+}
+
 // CSSParserToken CSSParserTokenStream::NextInputToken() {
 //   return m_tokenizer->NextToken();
 // }

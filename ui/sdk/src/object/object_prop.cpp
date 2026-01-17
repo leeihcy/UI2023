@@ -1,4 +1,5 @@
 #include "include/interface/ilayout.h"
+#include "include/macro/xmldefine.h"
 #include "object.h"
 
 #include "include/interface/iattributemap.h"
@@ -9,8 +10,10 @@
 #include "src/attribute/bool_attribute.h"
 #include "src/attribute/enum_attribute.h"
 #include "src/attribute/stringselect_attribute.h"
+#include "src/object/object_data.h"
 #include "src/object/object_layout.h"
 #include "src/object/object_prop.h"
+#include "src/object/object_data.h"
 #include "src/property/property_id.h"
 
 namespace ui {
@@ -30,8 +33,10 @@ void ObjectProp::SerializeProperty(SerializeParam *pData) {
   Object* pthis = static_cast<Object*>(this);
   Object& self = *static_cast<Object*>(this);
 
-
   IAttributeMap *attribute_map = pData->attribute_map;
+
+  self.m_object_data = ObjectDataCache::Get().GetCache(self.Meta(), attribute_map);
+
   if (pData->IsReload()) {
     m_back_render.reset();
     m_fore_render.reset();
@@ -87,14 +92,13 @@ void ObjectProp::SerializeProperty(SerializeParam *pData) {
     s.AddBool(XML_LAYER, Slot(&Object::load_layer_config, pthis),
               Slot(&Object::HasLayer, pthis));
 
-    // 	    s.AddString(XML_CURSOR, this,
-    // 		    memfun_cast<pfnStringSetter>(&Object::SetCursorId),
-    // 		    memfun_cast<pfnStringGetter>(&Object::SaveCursorId));
+    s.AddString(XML_STYLE, Slot(&ObjectProp::set_inline_style, this),
+      Slot(&ObjectProp::get_inline_style, this));
 
     // 设置背景渲染器
-    s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, m_back_render);
+    // s.AddRenderBase(XML_BACKGND_RENDER_PREFIX, m_back_render);
     // 设置前景绘制
-    s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, m_fore_render);
+    // s.AddRenderBase(XML_FOREGND_RENDER_PREFIX, m_fore_render);
 
     //         s.AddStringEnum(XML_BACKGND_RENDER_PREFIX XML_RENDER_TYPE, this,
     //             memfun_cast<pfnStringSetter>(&Object::LoadBkgndRender),
@@ -173,6 +177,7 @@ void ObjectProp::SerializeProperty(SerializeParam *pData) {
   // m_property_store.RegisterString(OBJECT_BACKGROUND, "");
   // m_property_store.RegisterColor(OBJECT_BACKGROUND_COLOR, Color::transparent());
   // m_property_store.RegisterString(OBJECT_BACKGROUND_IMAGE, "");
+  // m_property_store.RegisterString(OBJECT_STYLE, "");
 
   // 将xml attribute全灌输给config property store
   m_property_store.Serialize(pData->attribute_map);
@@ -497,5 +502,12 @@ void ObjectProp::load_textrender(const char *szName,
 //   }
 }
 
+void ObjectProp::set_inline_style(const char* style) {
+  Object& self = *static_cast<Object*>(this);
+  self.m_object_data->ParseInlineStyle(style);
+}
+const char* ObjectProp::get_inline_style() {
+  return "";
+}
 
 } // namespace ui

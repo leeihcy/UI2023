@@ -38,6 +38,7 @@ public:
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
   void SkipUntilPeekedTypeIs(CSSParserTokenType type);
+  bool SkipToEndOfBlock();
   
   bool TokenMarksEnd(CSSParserTokenType end_type);
   bool TokenMarksEnd(const CSSParserToken& token, CSSParserTokenType end_type);
@@ -55,6 +56,35 @@ public:
   static constexpr uint64_t FlagForTokenType(CSSParserTokenType token_type) {
     return 1ull << static_cast<uint64_t>(token_type);
   }
+
+  // 自动消耗block剩余内容
+  class BlockGuard {
+     public:
+    explicit BlockGuard(CSSParserTokenStream& stream)
+        : stream_(stream), boundaries_(stream.m_boundaries) {
+      const CSSParserToken next = stream.Consume();
+      assert(next.GetBlockType() == CSSParserTokenBlockType::Start);
+      // Boundaries do not apply within blocks.
+      stream.m_boundaries = FlagForTokenType(CSSParserTokenType::Eof);
+    }
+
+    void SkipToEndOfBlock() {
+      assert(!skipped_to_end_of_block_);
+      stream_.SkipToEndOfBlock();
+      skipped_to_end_of_block_ = true;
+    }
+
+    ~BlockGuard() {
+      if (!skipped_to_end_of_block_) {
+        SkipToEndOfBlock();
+      }
+      stream_.m_boundaries = boundaries_;
+    }
+   private:
+    CSSParserTokenStream& stream_;
+    bool skipped_to_end_of_block_ = false;
+    uint64_t boundaries_;
+  };
 
   class Boundary {
     // STACK_ALLOCATED();

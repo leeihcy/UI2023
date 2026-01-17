@@ -1,9 +1,12 @@
 #ifndef _UI_SDK_HTML_CSS_PARSER_CSSPARSER_H_
 #define _UI_SDK_HTML_CSS_PARSER_CSSPARSER_H_
 
+#include "html/css/parser/allowed_rules.h"
 #include "html/css/parser/css_parser_token_stream.h"
 #include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
+#include "html/css/style_sheet_contents.h"
+#include "html/css/style_rule.h"
 
 #include <string>
 #include <vector>
@@ -43,7 +46,13 @@ private:
 };
 
 struct CSSParserContext {
+  // 输入内容
   CSSParserTokenStream token_stream;
+
+  // css内容解析结果
+  StyleSheetContents style_sheet;
+
+  // style=""内容解析结果
   std::vector<CSSPropertyValue> parsed_properties;
 };
 
@@ -64,15 +73,23 @@ private:
   std::vector<CSSPropertyValue> m_property_vector;
 };
 
+
 class CSSParser {
 public:
   std::unique_ptr<CSSPropertyValueSet>
   ParseInlineStyleDeclaration(const char *bytes, size_t size);
 
+  bool ParseStyleSheet(const char *bytes, size_t size);
+
 protected:
   void ConsumeBlockContents(CSSParserContext& context);
   bool ConsumeDeclaration(CSSParserContext& context);
   void ConsumeDeclarationValue(CSSParserContext& context, CSSPropertyId property_id);
+  
+  bool ConsumeRuleList(CSSParserContext &context, AllowedRules allowed_rules);
+  A<StyleRule> ConsumeQualifiedRule(CSSParserContext &context,
+                                    AllowedRules allowed_rules);
+  A<StyleRule> ConsumeStyleRule(CSSParserContext &context);
 };
 
 }

@@ -76,8 +76,8 @@ enum class NumericValueType : int {
 // };
 
 enum class HashTokenType {
-  Hash,
-  HashUnrestricted,
+  Id,  // 后面跟着ident
+  Unrestricted,
 };
 
 class CSSParserToken {
@@ -137,9 +137,10 @@ public:
   const std::u16string& Name() const { return m_name; }
   const std::u16string& String() const { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
-  char16_t Delimiter() { return m_delimiter; }
+  char16_t Delimiter() const { return m_delimiter; }
   CSSValueId ValueId() const;
   CSSValueId FunctionId();
+  HashTokenType GetHashTokenType() const { return m_hash_type; }
 
   double NumericValue() const {
     assert(m_type == CSSParserTokenType::Number || m_type == CSSParserTokenType::Percentage ||
@@ -169,7 +170,7 @@ private:
   char16_t m_delimiter = 0;
 
   // Hash
-  HashTokenType m_hash_type = HashTokenType::Hash;
+  HashTokenType m_hash_type = HashTokenType::Id;
 };
 }
 

@@ -66,6 +66,8 @@ public:
   const char *get_renderbase_name(std::shared_ptr<IRenderBase> &pRender);
   const char *get_textrender_name(std::shared_ptr<ITextRenderBase> &pTextRender);
 
+  void set_inline_style(const char* style);
+  const char* get_inline_style();
 protected:
   void SerializeProperty(SerializeParam *pData);
 
