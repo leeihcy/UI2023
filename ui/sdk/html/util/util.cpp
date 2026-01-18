@@ -61,6 +61,22 @@ bool Utf8ToUnicode(const char* utf8, size_t utf8_length, std::u16string &out_uni
   return true;
 }
 
+bool UnicodeToLower(const std::u16string& unicode, std::u16string& out) {
+  out.clear();
+  
+  int length = unicode.length();
+  out.resize(length);
+
+  for (int i = 0; i < length; i++) {
+    char16_t c = unicode[i];
+    if (c == 0 || c >= 0x7F) {
+      out[i] = c;
+    } else {
+      out[i] = std::tolower(c);
+    }
+  }
+  return true;
+}
 bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) {
   out_ascii.clear();
   
@@ -75,6 +91,17 @@ bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) 
     out_ascii[i] = (char)std::tolower((char)c);
   }
   return true;
+}
+
+bool IsLower(const std::u16string& unicode) {
+  int length = unicode.length();
+  for (int i = 0; i < length; i++) {
+    char16_t c = unicode[i];
+    if (c >= u'A' && c <= u'Z') {
+      return true;
+    }
+  }
+  return false;
 }
 
 inline char16_t ToASCIILower(char16_t ch) {

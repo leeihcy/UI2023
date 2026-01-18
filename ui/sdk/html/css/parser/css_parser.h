@@ -3,6 +3,7 @@
 
 #include "html/css/parser/allowed_rules.h"
 #include "html/css/parser/css_parser_token_stream.h"
+#include "html/css/parser/css_nesting_type.h"
 #include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
 #include "html/css/style_sheet_contents.h"
@@ -50,7 +51,7 @@ struct CSSParserContext {
   CSSParserTokenStream token_stream;
 
   // css内容解析结果
-  StyleSheetContents style_sheet;
+  // StyleSheetContents style_sheet;
 
   // style=""内容解析结果
   std::vector<CSSPropertyValue> parsed_properties;

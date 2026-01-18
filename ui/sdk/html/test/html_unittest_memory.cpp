@@ -1,4 +1,5 @@
 #include "html/base/memory.h"
+#include "html/base/atomic_string.h"
 #include <assert.h>
 #include <memory>
 
@@ -133,9 +134,34 @@ void test2_share() {
     assert(g_counter == 0);
   }
 }
+
+void test3_atomic_string() {
+  {
+    html::AtomicString as1;
+    html::AtomicString as2;
+    html::AtomicString as3(u"");
+    html::AtomicString as4(u"*");
+    assert(as1 == as2);
+    assert(as2 != as3);
+    assert(as3 == u"");
+    assert(as3 != as4);
+
+    assert(as1 == html::g_null_atom);
+    assert(as2 == html::g_null_atom);
+    assert(as3 == html::g_empty_atom);
+    assert(as4 == html::g_star_atom);
+  }
+  {
+     html::AtomicString as1 = u"div";
+     html::AtomicString as2 = u"div";
+     assert(as1 == as2);
+  }
+}
+
 }
 
 void test_html_memory() {
   // test1();
-  test2_share();
+  // test2_share();
+  test3_atomic_string();
 }

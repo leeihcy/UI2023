@@ -1,14 +1,21 @@
 #ifndef _HTML_CSS_CSSSELECTOR_H_
 #define _HTML_CSS_CSSSELECTOR_H_
 
+#include "html/dom/qualified_name.h"
+#include "html/css/parser/css_nesting_type.h"
+#include "html/base/memory.h"
 #include <string>
+
+
 namespace html {
+class CSSSelectorList;
+class StyleRule;
 
 class CSSSelector {
 public:
   enum MatchType {
     Unknown,
-    InvalidList,
+    InvalidList,   // 作为标记为CSSSelectorList中的结尾项。
 
     Tag,              // <div>
     UniversalTag,     // *
@@ -20,7 +27,7 @@ public:
 
     AttributeExact,   // E[foo="bar"],  input[type="submit"]
     AttributeSet,     // E[foo],        只要这个属性存在
-    AttributeHypen,   // E[foo|="bar"], 属性以指定值开头，后跟连字符-，或等于该值, div[class|="btn"]
+    AttributeHyphen,  // E[foo|="bar"], 属性以指定值开头，后跟连字符-，或等于该值, div[class|="btn"]
     AttributeList,    // E[foo~="bar"], 属性值是以空格分隔的列表，其中包含指定值
     AttributeContain, // E[foo*="bar"], 属性值包含指定子字符串
     AttributeBegin,   // E[foo^="bar"], 属性值以指定字符串开头
@@ -31,26 +38,102 @@ public:
 
   enum class RelationType {
     // .btn.primary, 两个连着的样式，表示同时具备这两个类的元素。
-    SubSelector,
-    // "Space"
+    SubSelector = 0,
+    // "Space" 子孙结点
     Descendant,
-    // >
+    // >  子结点
     Child,
-    // +
+    // + 相邻兄弟选择器，紧跟在后面的第一个兄弟元素
     DirectAdjacent,
-    // ~
+    // ~ 后面所有的兄弟元素（
     IndirectAdjacent,
   };
+
+  enum class AttributeMatchType : int {
+    kCaseSensitive,
+    kCaseInsensitive,
+    kCaseSensitiveAlways,
+  };
+
+  enum PseudoType {
+    kPseudoActive,
+    kPseudoAfter,
+    kPseudoBefore,
+    kPseudoChecked,
+    kPseudoFocus,
+    kPseudoHover,
+    kPseudoHas,
+  };
+
+  CSSSelector() {}
+  explicit CSSSelector(MatchType match_type, const QualifiedName &attribute,
+                       AttributeMatchType case_sensitivity);
+  explicit CSSSelector(MatchType match_type, const QualifiedName &attribute,
+                       AttributeMatchType case_sensitivity,
+                       const AtomicString &value);
+
+  explicit CSSSelector(const StyleRule *parent_rule, bool is_implicit) {
+    assert(false);
+  }
+  explicit CSSSelector(const AtomicString &pseudo_name, bool is_implicit) {
+    assert(false);
+  }
+  explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false) {
+    assert(false);
+  }
 
 public:
   void SetMatchType(MatchType t) { m_match_type = t; }
   MatchType GetMatchType() const { return m_match_type; }
 
-  void SetValue(const std::u16string& value) { m_value = value; }
-  
+  void SetValue(const AtomicString& value) { m_value = value; }
+  void SetRelation(CSSSelector::RelationType relation_type) { m_relation_type = relation_type; }
+
+  void SetLastInSelectorList(bool b) { 
+    m_isLastInSelectorList = b;
+  }
+  bool IsLastInSelectorList() const {
+    return m_isLastInSelectorList;
+  }
+  void SetLastInComplexSelector(bool b) {
+    m_isLastInComplexSelector = b;
+  }
+  bool IsLastInComplexSelector() {
+    return m_isLastInComplexSelector;
+  }
+  void SetScopeContaining(bool b) {
+    m_isScopeContaining = b;
+  }
+  CSSNestingType GetNestingType() const {
+    return m_nesting_type;
+  }
+  const CSSSelectorList* SelectorList() const {
+    return m_selector_list;
+  }
+  PseudoType GetPseudoType() const {
+    return m_pseudoType;
+  }
+  void SetHasArgumentMatchInShadowTree() {
+    m_hasArgumentMatchInShadowTree = true;
+  }
 private:
   MatchType m_match_type;
-  std::u16string m_value;
+  AtomicString m_value;
+  QualifiedName m_tag_q_name_or_attribute;
+  AttributeMatchType m_case_sensitivity = AttributeMatchType::kCaseInsensitive;
+  CSSSelector::RelationType m_relation_type = CSSSelector::RelationType::SubSelector;
+
+  PseudoType m_pseudoType;
+
+  // 用于在CSSSelectorList中遍历对象
+  bool m_isLastInSelectorList = false;
+  bool m_isLastInComplexSelector = false;
+  bool m_isScopeContaining = false;
+  bool m_hasArgumentMatchInShadowTree = false;
+
+  CSSNestingType m_nesting_type = CSSNestingType::None;
+
+  CSSSelectorList* m_selector_list = nullptr;
 };
 
 }

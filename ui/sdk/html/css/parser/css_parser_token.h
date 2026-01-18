@@ -29,11 +29,11 @@ enum class CSSParserTokenType : int {
   Column,
   Semicolon,
 
-  PrefixMatch,
-  SuffixMatch,
-  DashMatch,
-  SubstringMatch,
-  IncludeMatch,
+  PrefixMatch,    // ^=
+  SuffixMatch,    // &=
+  DashMatch,      // |=
+  SubstringMatch, // *=
+  IncludeMatch,   // ~=
   
   Number,
   Dimension,

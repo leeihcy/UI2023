@@ -1,8 +1,10 @@
+#include "html/css/css_selector.h"
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
 #include "html/css/property/css_parsing_utils.h"
 #include "html/css/parser/css_parser.h"
+#include "html/css/parser/css_selector_parser.h"
 #include "html/css/property/css_property.h"
 #include "html/base/casting.h"
 #include "html/base/memory.h"
@@ -207,7 +209,17 @@ void test6_ConsumePosition() {
   }
 }
 
-void test7_parse_sheet() {
+void test7_parse_selector() {
+  std::string css = "namespace1 | #id, .class, tag[foo=\"bar\"]";
+
+  html::CSSSelectorParserContext context;
+  context.token_stream.SetInput(css.c_str(), css.length());
+
+  std::vector<html::CSSSelector> result;
+  html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+}
+
+void test8_parse_sheet() {
 #if 0
   auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
@@ -263,5 +275,6 @@ void test_html_css_parser() {
   // test4_parse_shorthand();
   // test5_ConsumeLengthOrPercent();
   // test6_ConsumePosition();
-  test7_parse_sheet();
+  test7_parse_selector();
+  // test8_parse_sheet();
 }

@@ -92,7 +92,7 @@ void CSSParserTokenStream::SkipUntilPeekedTypeIs(CSSParserTokenType type) {
   }
 }
 
-bool CSSParserTokenStream::SkipToEndOfBlock() {
+void CSSParserTokenStream::SkipToEndOfBlock() {
   unsigned nesting_level = 1;
   if (m_next_token.GetBlockType() == CSSParserTokenBlockType::Start) {
     nesting_level++;

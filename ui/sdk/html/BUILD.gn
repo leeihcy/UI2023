@@ -6,8 +6,13 @@ source_set("html") {
     "base/atomic_string.h",
     "base/atomic_string.cpp",
 
+    "dom/qualified_name.h",
+    "dom/qualified_name.cpp",
+
     "css/style_sheet_contents.h",
     "css/style_sheet_contents.cpp",
+    "css/css_selector.h",
+    "css/css_selector.cpp",
 
     "css/parser/css_parser_token.h",
     "css/parser/css_parser_token.cpp",

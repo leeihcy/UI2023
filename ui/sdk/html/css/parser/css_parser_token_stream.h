@@ -38,7 +38,7 @@ public:
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
   void SkipUntilPeekedTypeIs(CSSParserTokenType type);
-  bool SkipToEndOfBlock();
+  void SkipToEndOfBlock();
   
   bool TokenMarksEnd(CSSParserTokenType end_type);
   bool TokenMarksEnd(const CSSParserToken& token, CSSParserTokenType end_type);
