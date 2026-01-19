@@ -1,3 +1,4 @@
+#include "html/base/atomic_string.h"
 #include "html/css/css_selector.h"
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/property/css_value.h"
@@ -210,13 +211,84 @@ void test6_ConsumePosition() {
 }
 
 void test7_parse_selector() {
-  std::string css = "namespace1 | #id, .class, tag[foo=\"bar\"]";
+  // std::string css = "namespace1|button, #id, .class, tag[foo=\"bar\"]";
+  // std::string css = "button, #id, .class, tag[foo=\"bar\"]";
+  // std::string css = "tag[foo=\"bar\"]";
+  {
+    // 当有定义@namespace "http..."时，匹配这个默认命名空间下的 <img> 元素（HTML 命名空间）
+    // 当没有定义默认@namespace时，会匹配所有命令空间，即*|img
+    std::string css("img");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
 
-  html::CSSSelectorParserContext context;
-  context.token_stream.SetInput(css.c_str(), css.length());
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 1);
+    assert(result[0].GetQualifiedName().LocalName() == u"img");
+    assert(result[0].GetQualifiedName().NamespaceUri() == html::g_star_atom);
+    assert(result[0].GetQualifiedName().Prefix() == html::g_null_atom);
+  }
+  {
+    std::string css("#id");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
 
-  std::vector<html::CSSSelector> result;
-  html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 1);
+    assert(result[0].GetMatchType() == html::CSSSelector::Id);
+    assert(result[0].GetValue() == u"id");
+  }
+  {
+    std::string css(".class");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 1);
+    assert(result[0].GetMatchType() == html::CSSSelector::Class);
+    assert(result[0].GetValue() == u"class");
+  }
+  {
+    // 匹配没有命名空间的 <img> 元素
+    std::string css("|img");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 1);
+    assert(result[0].GetQualifiedName().LocalName()==u"img");
+    assert(result[0].GetQualifiedName().NamespaceUri() == html::g_empty_atom);
+    assert(result[0].GetQualifiedName().Prefix() == html::g_empty_atom);
+  }
+  {
+    // 匹配任何命名空间下的 <img> 元素
+    std::string css("*|img");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 1);
+    assert(result[0].GetQualifiedName().LocalName()==u"img");
+    assert(result[0].GetQualifiedName().NamespaceUri() == html::g_star_atom);
+    assert(result[0].GetQualifiedName().Prefix() == html::g_null_atom);
+  }
+  {
+    // selector list
+    std::string css("html, head, body");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result;
+    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    assert(result.size() == 3);
+    assert(result[0].GetQualifiedName().LocalName()==u"html");
+    assert(result[1].GetQualifiedName().LocalName()==u"head");
+    assert(result[2].GetQualifiedName().LocalName()==u"body");
+  }
 }
 
 void test8_parse_sheet() {

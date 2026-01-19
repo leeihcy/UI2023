@@ -35,7 +35,7 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(CSSSelector
   // 逗号分隔多个不同的selector，例如：a:hover, button:hover
   while (!stream.AtEnd() &&
          stream.Peek().GetType() == CSSParserTokenType::Comma) {
-    stream.ConsumeWhitespace();
+    stream.ConsumeIncludingWhitespace();
     int size = m_output.size();
     ConsumeComplexSelector(context);
     if (size == m_output.size()) {
@@ -585,11 +585,7 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(CSSSelectorPar
   //                                   AtEndIgnoringWhitespace(stream)));
 
   if (reset_vector.AddedElements().empty()) {
-    // No simple selectors except for the tag name.
-    // TODO(sesse): Does this share too much code with
-    // PrependTypeSelectorIfNeeded()?
     if (!has_q_name) {
-      // No tag name either, so we fail parsing of this selector.
       return {};
     }
     assert(has_q_name);
@@ -607,8 +603,8 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(CSSSelectorPar
     return reset_vector.CommitAddedElements();
   }
 
-  // PrependTypeSelectorIfNeeded(namespace_prefix, has_q_name, element_name,
-  //                             start_pos);
+  PrependTypeSelectorIfNeeded(namespace_prefix, has_q_name, element_name,
+                              start_pos);
 
   // The relationship between all of these are that they are sub-selectors.
   for (CSSSelector& selector : reset_vector.AddedElements().first(
@@ -620,12 +616,6 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(CSSSelectorPar
   return reset_vector.CommitAddedElements();
 }
 
-
-
-// Some pseudo-elements behave as if they have an implicit combinator to their
-// left even though they are written without one. This method returns the
-// correct implicit combinator. If no new combinator should be used,
-// it returns RelationType::kSubSelector.
 CSSSelector::RelationType GetImplicitCombinatorForMatching(
     CSSSelector::PseudoType pseudo_type) {
   // switch (pseudo_type) {
@@ -654,11 +644,19 @@ CSSSelector::RelationType GetImplicitCombinatorForMatching(
       return CSSSelector::RelationType::SubSelector;
   // }
 }
+CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(CSSSelector::PseudoType pseudo_type) {
+  // TODO:
+  return CSSSelector::RelationType::SubSelector;
+}
 
 bool NeedsImplicitCombinatorForMatching(const CSSSelector& selector) {
   return GetImplicitCombinatorForMatching(selector.GetPseudoType()) !=
          CSSSelector::RelationType::SubSelector;
 }
+bool NeedsImplicitShadowCombinatorForMatching(const CSSSelector& selector) {
+  return GetImplicitShadowCombinatorForMatching(selector.GetPseudoType()) != CSSSelector::RelationType::SubSelector;
+}
+
 void CSSSelectorParser::SplitCompoundAtImplicitCombinator(
     std::span<CSSSelector> selectors) {
   // slot[name=foo]::slotted(div) -> [ ::slotted(div), slot, [name=foo] ]
@@ -679,8 +677,55 @@ void CSSSelectorParser::SplitCompoundAtImplicitCombinator(
   }
 }
 
+
+// tag[foo=bar]
+// 解析出了tag后，并不会立即添加到output中。[foo=bar]会被加入到output中。
+// 
+void CSSSelectorParser::PrependTypeSelectorIfNeeded(
+    const AtomicString& namespace_prefix,
+    bool has_q_name,
+    const AtomicString& element_name,
+    size_t start_index_of_compound_selector) {
+  const CSSSelector& compound_selector = m_output[start_index_of_compound_selector];
+
+  // if (!has_q_name && DefaultNamespace() == g_star_atom &&
+  //     !NeedsImplicitShadowCombinatorForMatching(compound_selector)) {
+  //   return;
+  // }
+
+  AtomicString determined_element_name = !has_q_name? g_null_atom : element_name;
+  AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
+  if (namespace_uri.IsNull()) {
+    m_failed_parsing = true;
+    return;
+  }
+  AtomicString determined_prefix = namespace_prefix;
+  if (namespace_uri == DefaultNamespace()) {
+    determined_prefix = g_null_atom;
+  }
+  QualifiedName tag = QualifiedName(determined_prefix, determined_element_name, namespace_uri);
+
+  bool is_host_pseudo = false;
+  // bool is_host_pseudo = IsHostPseudoSelector(compound_selector);
+  // if (is_host_pseudo && !has_q_name && namespace_prefix.IsNull()) {
+  //   return;
+  // }
+
+  if (tag != g_any_name || is_host_pseudo ||
+      NeedsImplicitShadowCombinatorForMatching(compound_selector)) {
+    const bool is_implicit =
+        determined_prefix == g_null_atom &&
+        determined_element_name == CSSSelector::UniversalSelectorAtom() &&
+        !is_host_pseudo;
+
+    m_output.insert(m_output.begin() + start_index_of_compound_selector,
+                    CSSSelector(tag, is_implicit));
+  }
+}
+
 // 处理命名空间
 // 提取一个 <tag> name，或者 *， 或者 <namespace> | 
+// 注：namespace和|之间不能有空格。空格在selector中代表后代选择器。
 bool CSSSelectorParser::ConsumeName(CSSSelectorParserContext &context,
                                     AtomicString &name,
                                     AtomicString &namespace_prefix) {

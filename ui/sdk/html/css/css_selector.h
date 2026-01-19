@@ -1,6 +1,7 @@
 #ifndef _HTML_CSS_CSSSELECTOR_H_
 #define _HTML_CSS_CSSSELECTOR_H_
 
+#include "html/base/atomic_string.h"
 #include "html/dom/qualified_name.h"
 #include "html/css/parser/css_nesting_type.h"
 #include "html/base/memory.h"
@@ -56,6 +57,7 @@ public:
   };
 
   enum PseudoType {
+    kUnknown,
     kPseudoActive,
     kPseudoAfter,
     kPseudoBefore,
@@ -78,10 +80,11 @@ public:
   explicit CSSSelector(const AtomicString &pseudo_name, bool is_implicit) {
     assert(false);
   }
-  explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false) {
-    assert(false);
+  explicit CSSSelector(const QualifiedName& name, bool tag_is_implicit = false) {
+    m_tag_q_name_or_attribute = name;
   }
 
+  static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
 public:
   void SetMatchType(MatchType t) { m_match_type = t; }
   MatchType GetMatchType() const { return m_match_type; }
@@ -116,14 +119,20 @@ public:
   void SetHasArgumentMatchInShadowTree() {
     m_hasArgumentMatchInShadowTree = true;
   }
+  const QualifiedName& GetQualifiedName() { return m_tag_q_name_or_attribute; }
+  const QualifiedName& GetAttribute() { return m_tag_q_name_or_attribute; }
+  const AtomicString& GetValue() { return m_value; }
+
 private:
-  MatchType m_match_type;
+  MatchType m_match_type = MatchType::Unknown;
+  
+  QualifiedName m_tag_q_name_or_attribute; 
   AtomicString m_value;
-  QualifiedName m_tag_q_name_or_attribute;
+
   AttributeMatchType m_case_sensitivity = AttributeMatchType::kCaseInsensitive;
   CSSSelector::RelationType m_relation_type = CSSSelector::RelationType::SubSelector;
 
-  PseudoType m_pseudoType;
+  PseudoType m_pseudoType = PseudoType::kUnknown;
 
   // 用于在CSSSelectorList中遍历对象
   bool m_isLastInSelectorList = false;

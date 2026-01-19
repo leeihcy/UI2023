@@ -666,7 +666,7 @@ void CSSTokenizer::ConsumeBadUrlRemnants() {
 
 CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType type) {
   m_block_stack.push(type);
-  return CSSParserToken(type);
+  return CSSParserToken(type, CSSParserTokenBlockType::Start);
 }
 CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType block_type,
                                         CSSParserTokenType type,

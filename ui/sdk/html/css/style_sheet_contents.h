@@ -10,16 +10,15 @@ namespace html {
 class StyleSheetContents {
 public:
   AtomicString DefaultNamespace() const { return m_default_namespace; }
-  const AtomicString NamespaceURIFromPrefix(const AtomicString& prefix) const;
+  const AtomicString NamespaceURIFromPrefix(const AtomicString &prefix) const;
+  void ParserAddNamespace(const AtomicString &prefix, const AtomicString &uri);
 
 private:
-  AtomicString m_default_namespace;
+  AtomicString m_default_namespace = g_star_atom;
 
   // PrefixNamespaceURIMap
-  std::map<std::u16string, std::u16string> m_namespaces;
+  std::map<AtomicString, AtomicString> m_namespaces;
 };
-
-
 }
 
 #endif

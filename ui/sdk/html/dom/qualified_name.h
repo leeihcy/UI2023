@@ -21,12 +21,40 @@ public:
       : m_prefix(prefix), m_localname(localname),
         m_namespace_uri(namespace_uri) {}
 
+  const AtomicString& NamespaceUri() const { return m_namespace_uri; }
+  const AtomicString& Prefix() const { return m_prefix; }
+  const AtomicString& LocalName() const { return m_localname; }
+
+  bool operator==(const QualifiedName &other) {
+    return m_namespace_uri == other.m_namespace_uri &&
+           m_prefix == other.m_prefix && m_localname == other.m_localname;
+  }
+  bool operator!=(const QualifiedName& other) {
+    return !(*this == other);
+  }
 private:
   AtomicString m_namespace_uri;
   AtomicString m_prefix;
   AtomicString m_localname;
 };
 
+extern const QualifiedName g_any_name;
+extern const QualifiedName g_null_name;
+
+inline bool operator==(const AtomicString& a, const QualifiedName& q) {
+  return a == q.LocalName();
 }
+inline bool operator!=(const AtomicString& a, const QualifiedName& q) {
+  return a != q.LocalName();
+}
+inline bool operator==(const QualifiedName& q, const AtomicString& a) {
+  return a == q.LocalName();
+}
+inline bool operator!=(const QualifiedName& q, const AtomicString& a) {
+  return a != q.LocalName();
+}
+
+}
+
 
 #endif

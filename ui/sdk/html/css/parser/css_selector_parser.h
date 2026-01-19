@@ -53,9 +53,14 @@ public:
   bool ConsumePartialComplexSelector(CSSSelectorParserContext &context,
                                      CSSSelector::RelationType &combinator,
                                      unsigned previous_compound_flags);
-  bool PeekIsCombinator(CSSParserTokenStream& stream);
-  std::span<CSSSelector> ConsumeNestedRelativeSelector(CSSSelectorParserContext &context);
+  bool PeekIsCombinator(CSSParserTokenStream &stream);
+  std::span<CSSSelector>
+  ConsumeNestedRelativeSelector(CSSSelectorParserContext &context);
   void SplitCompoundAtImplicitCombinator(std::span<CSSSelector> selectors);
+  void PrependTypeSelectorIfNeeded(const AtomicString &namespace_prefix,
+                                   bool has_q_name,
+                                   const AtomicString &element_name,
+                                   size_t start_index_of_compound_selector);
 
   CSSSelector::RelationType ConsumeCombinator(CSSSelectorParserContext& context);
   CSSSelector::MatchType ConsumeAttributeMatch(CSSSelectorParserContext &context);

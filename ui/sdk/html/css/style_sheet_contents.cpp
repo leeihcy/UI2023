@@ -8,7 +8,17 @@ const AtomicString StyleSheetContents::NamespaceURIFromPrefix(
     return g_null_atom;
   }
   auto it = m_namespaces.find(prefix.text());
-  return it != m_namespaces.end() ? AtomicString(it->second.c_str()) : g_null_atom;
+  return it != m_namespaces.end() ? it->second : g_null_atom;
+}
+
+void StyleSheetContents::ParserAddNamespace(const AtomicString& prefix,
+                                            const AtomicString& uri) {
+  assert(!uri.IsNull());
+  if (prefix.IsNull()) {
+    m_default_namespace = uri;
+    return;
+  }
+  m_namespaces[prefix] = uri;
 }
 
 }
