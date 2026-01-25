@@ -2,6 +2,7 @@
 #include "html/css/parser/css_parser_token.h"
 #include "html/util/util.h"
 #include <memory>
+#include <string>
 
 namespace html {
 
@@ -67,7 +68,7 @@ CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
 
 // ??
 void CSSParserTokenStream::SkipUntilPeekedTypeIs(CSSParserTokenType type) {
-  if (m_next_token.IsEof() || TokenMarksEnd(type)) {
+  if (m_next_token.IsEOF() || TokenMarksEnd(type)) {
     return;
   }
   // Process the lookahead token.
@@ -80,7 +81,7 @@ void CSSParserTokenStream::SkipUntilPeekedTypeIs(CSSParserTokenType type) {
   // return condition. (The termination condition is within the loop.)
   while (true) {
     CSSParserToken token = m_tokenizer->NextToken();
-    if (token.IsEof() || (nesting_level == 0 && TokenMarksEnd(token, type))) {
+    if (token.IsEOF() || (nesting_level == 0 && TokenMarksEnd(token, type))) {
       m_next_token = token;
       // offset_ = tokenizer_.PreviousOffset();
       return;
@@ -103,7 +104,7 @@ void CSSParserTokenStream::SkipToEndOfBlock() {
   // Skip tokens until we see EOF or the closing brace.
   while (nesting_level != 0) {
     CSSParserToken token = m_tokenizer->NextToken(true);
-    if (token.IsEof()) {
+    if (token.IsEOF()) {
       break;
     } else if (token.GetBlockType() == CSSParserTokenBlockType::Start) {
       nesting_level++;
@@ -116,5 +117,10 @@ void CSSParserTokenStream::SkipToEndOfBlock() {
 // CSSParserToken CSSParserTokenStream::NextInputToken() {
 //   return m_tokenizer->NextToken();
 // }
+
+std::u16string CSSParserTokenStream::StringRangeAt(size_t start, size_t length) const {
+  return m_input_unicode.substr(start, length);
+}
+
 
 }

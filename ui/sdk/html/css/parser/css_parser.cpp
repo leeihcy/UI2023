@@ -265,8 +265,7 @@ bool CSSParser::ConsumeDeclaration(CSSParserContext& context, StyleRule::RuleTyp
                             rule_type == StyleRule::kCounterStyle ||
                             rule_type == StyleRule::kViewTransition ||
                             rule_type == StyleRule::kFunction;
-  assert(0);
-#if 0
+
   uint64_t id = parsing_descriptor
                     ? static_cast<uint64_t>(lhs.ParseAsAtRuleDescriptorID())
                     : static_cast<uint64_t>(lhs.ParseAsUnresolvedCSSPropertyID(
@@ -278,14 +277,38 @@ bool CSSParser::ConsumeDeclaration(CSSParserContext& context, StyleRule::RuleTyp
 
   context.token_stream.ConsumeWhitespace();
 
-  CSSPropertyID property_id = CSSPropertyNameToId(lhs.Name());
-  if (property_id == CSSPropertyID::Variable) {
-    assert(false);
-    // TODO:
-  } else if (property_id != CSSPropertyID::Invalid) {
-    ConsumeDeclarationValue(context, property_id);
+  if (id) {
+    if (parsing_descriptor) {
+      const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
+      const AtomicString& variable_name =
+          (atrule_id == AtRuleDescriptorID::Variable ? lhs.Name() : g_null_atom);
+      assert(false);
+#if 0
+      AtRuleDescriptorParser::ParseDescriptorValue(
+          rule_type, atrule_id, variable_name, stream, *context_,
+          parsed_properties_);
+#endif          
+    } else {
+      CSSPropertyID property_id = CSSPropertyNameToId(lhs.Name());
+      if (property_id == CSSPropertyID::Variable) {
+        if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kScope &&
+            rule_type != StyleRule::kKeyframe) {
+          return false;
+        }
+        AtomicString variable_name = lhs.Name();
+        bool allow_important_annotation = (rule_type != StyleRule::kKeyframe);
+        bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
+        if (!ConsumeVariableValue(context, variable_name,
+                                  allow_important_annotation,
+                                  is_animation_tainted)) {
+          return false;
+        }
+      } else if (property_id != CSSPropertyID::Invalid) {
+        ConsumeDeclarationValue(context, property_id);
+      }
+    }
   }
-#endif
+
   return true;
 }
 
@@ -643,5 +666,35 @@ void CSSParser::ConsumeErroneousAtRule(CSSParserTokenStream &stream,
   }
 }
 
+bool CSSParser::ConsumeVariableValue(CSSParserContext& context,
+                                         const AtomicString& variable_name,
+                                         bool allow_important_annotation,
+                                         bool is_animation_tainted) {
+  CSSParserTokenStream& stream = context.token_stream;
+
+  // First, see if this is (only) a CSS-wide keyword.
+  bool important;
+  A<CSSValue> value = CSSPropertyParser::ConsumeCSSWideKeyword(
+      context, allow_important_annotation, important);
+  if (!value) {
+    assert(false);
+#if 0
+    A<CSSVariableData> variable_data =
+        CSSVariableParser::ConsumeUnparsedDeclaration(
+            stream, allow_important_annotation, is_animation_tainted,
+            /*must_contain_variable_reference=*/false,
+            /*restricted_value=*/false, /*comma_ends_declaration=*/false,
+            important/*, *context_*/);
+    if (!variable_data) {
+      return false;
+    }
+
+    value = A<CSSUnparsedDeclarationValue>::make_new(variable_data/*, context_*/);
+#endif    
+  }
+  context.parsed_properties.push_back(
+      CSSPropertyValue(CSSPropertyName(variable_name), std::move(value), important));
+  return true;
+}
 
 }

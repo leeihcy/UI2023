@@ -51,12 +51,11 @@ enum class AtRuleDescriptorID {
 };
 
 const int numAtRuleDescriptors = 42;
+const int MaxAtRuleDescriptorNameLength = 24;
 
-// const char* getValueName(AtRuleDescriptorID);
-AtRuleDescriptorID AsAtRuleDescriptorID(const std::u16string&);
+AtRuleDescriptorID AtRuleDescriptorNameToId(const std::u16string& name);
+AtRuleDescriptorID AtRuleDescriptorIDNameToIdByHash(const char* name, unsigned int len);
 
-// CSSPropertyID AtRuleDescriptorIDAsCSSPropertyID(AtRuleDescriptorID);
-// AtRuleDescriptorID CSSPropertyIDAsAtRuleDescriptor(CSSPropertyID id);
 }
 
 #endif

@@ -157,6 +157,21 @@ public:
 
     kPixels,
     kInteger,
+
+    kEms,
+    kChs,
+    kExs,
+    kIcs,
+    kCaps,
+
+    kRems,
+    kRexs,
+    kRchs,
+    kRics,
+    kRlhs,
+    kRcaps,
+
+    kLhs,
   };
   enum LengthUnitType {
     kUnitTypePixels = 0,

@@ -63,19 +63,22 @@ protected:
                                      CSSParserContext &context,
                                      bool &invalid_rule_error);
 
-  void EmitDeclarationsRuleIfNeeded(
-   CSSParserContext& context,
-    StyleRule::RuleType rule_type,
-    size_t start_index,
-    std::vector<A<StyleRuleBase>>& child_rules);
+  void EmitDeclarationsRuleIfNeeded(CSSParserContext &context,
+                                    StyleRule::RuleType rule_type,
+                                    size_t start_index,
+                                    std::vector<A<StyleRuleBase>> &child_rules);
 
-A<StyleRuleBase> CreateDeclarationsRule(
-  CSSParserContext& context,
-    CSSNestingType nesting_type,
-    const CSSSelector* selector_list,
-    size_t start_index);
-  void ConsumeErroneousAtRule(CSSParserTokenStream& stream, CSSAtRuleID id);
-  
+  A<StyleRuleBase> CreateDeclarationsRule(CSSParserContext &context,
+                                          CSSNestingType nesting_type,
+                                          const CSSSelector *selector_list,
+                                          size_t start_index);
+  void ConsumeErroneousAtRule(CSSParserTokenStream &stream, CSSAtRuleID id);
+
+  bool ConsumeVariableValue(CSSParserContext &context,
+                            const AtomicString &variable_name,
+                            bool allow_important_annotation,
+                            bool is_animation_tainted);
+
   A<StyleRuleBase> ConsumeQualifiedRule(CSSParserContext &context,
                                     AllowedRules allowed_rules);
   A<StyleRuleBase> ConsumeStyleRule(CSSParserContext &context, bool nested, bool& invalid_rule_error);

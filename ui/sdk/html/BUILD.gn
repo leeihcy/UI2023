@@ -52,12 +52,15 @@ source_set("html") {
     "$target_gen_dir/css/property/css_value_id_hash.cpp",
 
     "css/parser/at_rule_descriptor_id.h",
+    "css/parser/at_rule_descriptor_id.cpp",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.cpp",
 
     "css/graphics/color.h",
     "css/graphics/color.cpp",
     "css/style_property_shorthand.h",
     "css/style_property_shorthand.cpp",
+    "css/css_variable_data.cpp",
+    "css/css_variable_data.h",
 
     "util/util.h",
     "util/util.cpp",

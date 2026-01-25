@@ -21,30 +21,31 @@ CSSPropertyParser::CSSPropertyParser(CSSParserContext &context) : m_context(cont
 }
 
 A<CSSValue> CSSPropertyParser::ConsumeCSSWideKeyword(
+    CSSParserContext &context,
     bool allow_important_annotation,
     bool& important) {
 
-  CSSParserTokenStream::State savepoint = m_context.token_stream.Save();
+  CSSParserTokenStream::State savepoint = context.token_stream.Save();
 
-  A<CSSValue> value = css_parsing_utils::ConsumeCSSWideKeyword(m_context.token_stream);
+  A<CSSValue> value = css_parsing_utils::ConsumeCSSWideKeyword(context.token_stream);
   if (!value) {
     return nullptr;
   }
 
   important = css_parsing_utils::MaybeConsumeImportant(
-      m_context.token_stream, allow_important_annotation);
-  if (!m_context.token_stream.AtEnd()) {
-    m_context.token_stream.Restore(savepoint);
+      context.token_stream, allow_important_annotation);
+  if (!context.token_stream.AtEnd()) {
+    context.token_stream.Restore(savepoint);
     return nullptr;
   }
 
   return value;
 }
 
-bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID property_id, bool allow_important_annotation) {
+bool CSSPropertyParser::ParseCSSWideKeyword(CSSParserContext &context, CSSPropertyID property_id, bool allow_important_annotation) {
   bool important;
   A<CSSValue> value =
-      ConsumeCSSWideKeyword(allow_important_annotation, important);
+      ConsumeCSSWideKeyword(context, allow_important_annotation, important);
   if (!value) {
     return false;
   }
@@ -68,7 +69,7 @@ bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID property_id, bool allo
 }
 
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID property_id, bool allow_important) {
-  if (ParseCSSWideKeyword(property_id, allow_important)) {
+  if (ParseCSSWideKeyword(m_context, property_id, allow_important)) {
     return true;
   }
 

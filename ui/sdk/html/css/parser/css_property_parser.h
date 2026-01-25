@@ -16,10 +16,11 @@ public:
                          bool allow_important);
 
   bool ParseValueStart(CSSPropertyID property_id, bool allow_important);
-  bool ParseCSSWideKeyword(CSSPropertyID property_id, bool allow_important);
-  A<CSSValue> ConsumeCSSWideKeyword(
-    bool allow_important_annotation,
-    bool& important);
+  bool ParseCSSWideKeyword(CSSParserContext &context, CSSPropertyID property_id, bool allow_important);
+
+  static A<CSSValue> ConsumeCSSWideKeyword(CSSParserContext &context,
+                                           bool allow_important_annotation,
+                                           bool &important);
 
 private:
   CSSParserContext &m_context;

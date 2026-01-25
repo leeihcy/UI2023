@@ -60,11 +60,13 @@ public:
            detail::IsTokenTypeOneOf<EndTypes...>(token.GetType());
   }
 
+  std::u16string StringRangeAt(size_t start, size_t length) const;
+
   void SkipUntilPeekedTypeIs(CSSParserTokenType type);
   void SkipToEndOfBlock();
   template <CSSParserTokenType... Types>
   void SkipUntilPeekedTypeIs() {
-    if (m_next_token.IsEof() || TokenMarksEnd<Types...>(m_next_token)) {
+    if (m_next_token.IsEOF() || TokenMarksEnd<Types...>(m_next_token)) {
       return;
     }
   }
@@ -146,7 +148,7 @@ public:
     }
     bool Release() {
       assert(!released_);
-      if (stream_.Peek().IsEof() ||
+      if (stream_.Peek().IsEOF() ||
           stream_.Peek().GetBlockType() == CSSParserTokenBlockType::End) {
         stream_.Consume();
         released_ = true;

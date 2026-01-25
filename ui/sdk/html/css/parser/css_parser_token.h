@@ -3,6 +3,8 @@
 
 #include "html/css/property/value_id.h"
 #include "html/css/property/css_value.h"
+#include "html/css/parser/at_rule_descriptor_id.h"
+#include "html/css/property/property_id.h"
 #include <string>
 #include <assert.h>
 
@@ -59,7 +61,7 @@ enum class CSSParserTokenType : int {
 
 };
 
-enum CSSParserTokenBlockType {
+enum class CSSParserTokenBlockType {
   Not,
   Start,
   End,
@@ -93,7 +95,7 @@ public:
 
   CSSParserTokenType Type() const { return m_type; }
   CSSParserTokenType GetType() const { return m_type; }
-  bool IsEof () { return m_type == CSSParserTokenType::Eof; }
+  bool IsEOF () const { return m_type == CSSParserTokenType::Eof; }
   
   CSSParserTokenBlockType GetBlockType() const { return m_block_type; }
 
@@ -139,14 +141,16 @@ public:
   CSSParserTokenBlockType BlockType() { return m_block_type; }
   char16_t Delimiter() const { return m_delimiter; }
   CSSValueID ValueId() const;
-  CSSValueID FunctionId();
+  CSSValueID FunctionId() const;
   HashTokenType GetHashTokenType() const { return m_hash_type; }
 
   double NumericValue() const {
     assert(m_type == CSSParserTokenType::Number || m_type == CSSParserTokenType::Percentage ||
          m_type == CSSParserTokenType::Dimension);
-  return m_number;
-}
+    return m_number;
+  }
+  AtRuleDescriptorID ParseAsAtRuleDescriptorID() const;
+  CSSPropertyID ParseAsUnresolvedCSSPropertyID() const;
 
 private:
   CSSParserTokenType m_type = CSSParserTokenType::Invalid;

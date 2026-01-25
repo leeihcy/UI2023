@@ -100,7 +100,7 @@ public:
   void Restore(unsigned int offset) {
     m_offset = offset;
   }
-  std::u16string RangeAt(unsigned int start_offset, unsigned int size) {
+  std::u16string RangeAt(unsigned int start_offset, unsigned int size) const {
     return std::u16string(m_buffer + start_offset, size);
   }
 private:
@@ -117,6 +117,9 @@ public:
   unsigned int Offset() { return m_input_stream.Offset(); }
   unsigned int PreviousOffset() { return m_prev_offset; }
   void Restore(unsigned int offset) { m_input_stream.Restore(offset); }
+
+  std::u16string StringRangeAt(size_t start, size_t length) const;
+
 private:
   char16_t Consume();
   bool ConsumeIfNext(char16_t);

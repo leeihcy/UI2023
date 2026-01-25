@@ -86,6 +86,13 @@ A<CSSValue> ConsumePositionLonghand(CSSParserTokenStream &stream, CSSParserConte
   return ConsumeLengthOrPercent(context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
+// https://drafts.csswg.org/css-mixins-1/#function-rule
+inline bool IsDashedFunctionName(const CSSParserToken& token) {
+  return token.GetType() == CSSParserTokenType::Function && token.Name().length() >= 3 &&
+         token.Name()[0] == '-' && token.Name()[1] == '-';
+}
+
+
 } // namespace css_parsing_utils
 } // namespace html
 #endif

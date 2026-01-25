@@ -47,6 +47,10 @@ enum class CSSValueID : int {
   Round,             // "round"
   NoRepeat,          // "no-repeat"
 
+  Var,               // "var"
+  Env,               // "env"
+  Attr,              // "attr"
+
   // https://www.w3.org/wiki/CSS/Properties/color/keywords
   ColorBasicStart,
 
