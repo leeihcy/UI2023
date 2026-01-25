@@ -49,13 +49,13 @@ enum class CSSPropertyFlag : int {
 //
 class CSSProperty {
 public:
-  static const CSSProperty& Get(CSSPropertyId id);
+  static const CSSProperty& Get(CSSPropertyID id);
 public:
-  constexpr CSSProperty(CSSPropertyId id, uint64_t flags) : m_id((int)id), m_flags(flags) {}
+  constexpr CSSProperty(CSSPropertyID id, uint64_t flags) : m_id((int)id), m_flags(flags) {}
   // constexpr virtual ~CSSProperty(){};
 
-  CSSPropertyId PropertyId() const { return (CSSPropertyId)m_id; }
-  bool IdEquals(CSSPropertyId id) const { return (CSSPropertyId)m_id == id; }
+  CSSPropertyID PropertyId() const { return (CSSPropertyID)m_id; }
+  bool IdEquals(CSSPropertyID id) const { return (CSSPropertyID)m_id == id; }
 
   uint32_t GetFlags() const { return m_flags; }
   bool IsProperty() const { return m_flags & (int)CSSPropertyFlag::Property; }
@@ -72,21 +72,26 @@ protected:
   uint64_t m_flags : 48;
 };
  
+class CSSPropertyInvalid : public CSSProperty {
+public:
+  constexpr CSSPropertyInvalid() : CSSProperty(CSSPropertyID::Invalid, 0) {}
+};
+
 class Variable : public CSSProperty {
 public:
-  constexpr Variable() : CSSProperty(CSSPropertyId::Variable, 0) {}
+  constexpr Variable() : CSSProperty(CSSPropertyID::Variable, 0) {}
 };
 
 class Shorthand : public CSSProperty {
 public:
-  constexpr Shorthand(CSSPropertyId id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Shorthand) {}
+  constexpr Shorthand(CSSPropertyID id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Shorthand) {}
 
   virtual bool ParseShorthand(CSSParserContext &context, bool important) const = 0;
 };
 
 class Longhand : public CSSProperty {
 public:
-  constexpr Longhand(CSSPropertyId id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Longhand) {}
+  constexpr Longhand(CSSPropertyID id, int flags) : CSSProperty(id, flags | (int)CSSPropertyFlag::Longhand) {}
 
   virtual A<CSSValue>
   ParseSingleValue(CSSParserContext &context) const {
@@ -96,7 +101,7 @@ public:
 
 class Background final : public Shorthand {
 public:
-  constexpr Background() : Shorthand(CSSPropertyId::Background, 
+  constexpr Background() : Shorthand(CSSPropertyID::Background, 
     (int)CSSPropertyFlag::Property) {}
   bool ParseShorthand(CSSParserContext &context, bool important) const override;
 };
@@ -104,7 +109,7 @@ public:
 class BackgroundClip final : public Longhand {
 public:
   constexpr BackgroundClip() : Longhand(
-      CSSPropertyId::BackgroundClip, 
+      CSSPropertyID::BackgroundClip, 
       (int)CSSPropertyFlag::Property) {
   }
 };
@@ -112,7 +117,7 @@ public:
 class BackgroundColor final : public Longhand {
 public:
   constexpr BackgroundColor() : Longhand(
-      CSSPropertyId::BackgroundColor, 
+      CSSPropertyID::BackgroundColor, 
       (int)CSSPropertyFlag::Interpolable | 
       (int)CSSPropertyFlag::Compositable | 
       (int)CSSPropertyFlag::Property) {
@@ -123,63 +128,63 @@ public:
 class BackgroundRepeat final : public Longhand {
 public:
   constexpr BackgroundRepeat() : Longhand(
-      CSSPropertyId::BackgroundRepeat, 
+      CSSPropertyID::BackgroundRepeat, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundOrigin final : public Longhand {
 public:
   constexpr BackgroundOrigin() : Longhand(
-      CSSPropertyId::BackgroundOrigin, 
+      CSSPropertyID::BackgroundOrigin, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundSize final : public Longhand {
 public:
   constexpr BackgroundSize() : Longhand(
-      CSSPropertyId::BackgroundSize, 
+      CSSPropertyID::BackgroundSize, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundPosition final : public Longhand {
 public:
   constexpr BackgroundPosition() : Longhand(
-      CSSPropertyId::BackgroundPosition, 
+      CSSPropertyID::BackgroundPosition, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundPositionX final : public Longhand {
 public:
   constexpr BackgroundPositionX() : Longhand(
-      CSSPropertyId::BackgroundPositionX, 
+      CSSPropertyID::BackgroundPositionX, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundPositionY final : public Longhand {
 public:
   constexpr BackgroundPositionY() : Longhand(
-      CSSPropertyId::BackgroundPositionY, 
+      CSSPropertyID::BackgroundPositionY, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundBlendMode final : public Longhand {
 public:
   constexpr BackgroundBlendMode() : Longhand(
-      CSSPropertyId::BackgroundBlendMode, 
+      CSSPropertyID::BackgroundBlendMode, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundImage final : public Longhand {
 public:
   constexpr BackgroundImage() : Longhand(
-      CSSPropertyId::BackgroundImage, 
+      CSSPropertyID::BackgroundImage, 
       (int)CSSPropertyFlag::Property) {
   }
 };
 class BackgroundAttachment final : public Longhand {
 public:
   constexpr BackgroundAttachment() : Longhand(
-      CSSPropertyId::BackgroundAttachment, 
+      CSSPropertyID::BackgroundAttachment, 
       (int)CSSPropertyFlag::Property) {
   }
 };

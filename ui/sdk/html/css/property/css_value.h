@@ -88,12 +88,12 @@ class CSSRevertLayerValue : public CSSValue {
 // CSSIdentifierValue stores CSS value keywords
 class CSSIdentifierValue : public CSSValue {
  public:
-  static A<CSSIdentifierValue> Create(CSSValueId);
-  explicit CSSIdentifierValue(CSSValueId);
+  static A<CSSIdentifierValue> Create(CSSValueID);
+  explicit CSSIdentifierValue(CSSValueID);
 
-  CSSValueId GetValueId() const { return m_value_id; }
+  CSSValueID GetValueId() const { return m_value_id; }
 protected:
-  CSSValueId m_value_id;
+  CSSValueID m_value_id;
 };
 template<>
 struct DowncastTraits<CSSIdentifierValue> {

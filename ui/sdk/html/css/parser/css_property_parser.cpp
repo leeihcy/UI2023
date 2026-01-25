@@ -10,7 +10,7 @@ namespace html {
 
 // static
 bool CSSPropertyParser::ParseValue(CSSParserContext &context,
-                                   CSSPropertyId property_id,
+                                   CSSPropertyID property_id,
                                    bool allow_important) {
   CSSPropertyParser parser(context);
   return parser.ParseValueStart(property_id, allow_important);
@@ -41,7 +41,7 @@ A<CSSValue> CSSPropertyParser::ConsumeCSSWideKeyword(
   return value;
 }
 
-bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyId property_id, bool allow_important_annotation) {
+bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID property_id, bool allow_important_annotation) {
   bool important;
   A<CSSValue> value =
       ConsumeCSSWideKeyword(allow_important_annotation, important);
@@ -67,7 +67,7 @@ bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyId property_id, bool allo
   return true;
 }
 
-bool CSSPropertyParser::ParseValueStart(CSSPropertyId property_id, bool allow_important) {
+bool CSSPropertyParser::ParseValueStart(CSSPropertyID property_id, bool allow_important) {
   if (ParseCSSWideKeyword(property_id, allow_important)) {
     return true;
   }

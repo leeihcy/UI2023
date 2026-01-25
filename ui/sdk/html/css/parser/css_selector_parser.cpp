@@ -14,14 +14,14 @@
 namespace html {
 
 // static
-void CSSSelectorParser::ConsumeSelector(CSSSelectorParserContext &context, StyleSheetContents* style_sheet,
-                                        std::vector<CSSSelector> &result) {
-  CSSSelectorParser parser(style_sheet);
+std::vector<CSSSelector> CSSSelectorParser::ConsumeSelector(CSSSelectorParserContext &context) {
+  CSSSelectorParser parser(context.style_sheet);
   context.token_stream.ConsumeWhitespace();
 
   std::span<CSSSelector> out = parser.ConsumeComplexSelectorList(context);
-  result.swap(parser.m_output);
+  return parser.m_output;
 }
+
 // html, head, body { }
 std::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(CSSSelectorParserContext &context) {
   auto &stream = context.token_stream;

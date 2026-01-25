@@ -9,18 +9,18 @@ const StylePropertyShorthand& backgroundShorthand() {
   // 注：Background 不包含 blend-mode
 
   static const CSSProperty* longhands[] = {
-    &CSSProperty::Get(CSSPropertyId::BackgroundAttachment),
-    &CSSProperty::Get(CSSPropertyId::BackgroundClip),
-    &CSSProperty::Get(CSSPropertyId::BackgroundColor),
-    &CSSProperty::Get(CSSPropertyId::BackgroundImage),
-    &CSSProperty::Get(CSSPropertyId::BackgroundOrigin),
-    &CSSProperty::Get(CSSPropertyId::BackgroundPositionX),
-    &CSSProperty::Get(CSSPropertyId::BackgroundPositionY),
-    &CSSProperty::Get(CSSPropertyId::BackgroundRepeat),
-    &CSSProperty::Get(CSSPropertyId::BackgroundSize)
+    &CSSProperty::Get(CSSPropertyID::BackgroundAttachment),
+    &CSSProperty::Get(CSSPropertyID::BackgroundClip),
+    &CSSProperty::Get(CSSPropertyID::BackgroundColor),
+    &CSSProperty::Get(CSSPropertyID::BackgroundImage),
+    &CSSProperty::Get(CSSPropertyID::BackgroundOrigin),
+    &CSSProperty::Get(CSSPropertyID::BackgroundPositionX),
+    &CSSProperty::Get(CSSPropertyID::BackgroundPositionY),
+    &CSSProperty::Get(CSSPropertyID::BackgroundRepeat),
+    &CSSProperty::Get(CSSPropertyID::BackgroundSize)
   };
 
-  static const StylePropertyShorthand shorthand(CSSPropertyId::Background,
+  static const StylePropertyShorthand shorthand(CSSPropertyID::Background,
                                                 (const CSSProperty **)longhands,
                                                 std::size(longhands));
 

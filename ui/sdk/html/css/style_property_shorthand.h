@@ -11,22 +11,22 @@ class StylePropertyShorthand {
  public:
   using Properties = const CSSProperty**;
 
-  constexpr StylePropertyShorthand() : m_shorthand_id(CSSPropertyId::Invalid) {}
+  constexpr StylePropertyShorthand() : m_shorthand_id(CSSPropertyID::Invalid) {}
 
-  constexpr StylePropertyShorthand(CSSPropertyId id, Properties properties, unsigned int size)
+  constexpr StylePropertyShorthand(CSSPropertyID id, Properties properties, unsigned int size)
       : m_properties(properties), m_size(size), m_shorthand_id(id) {
   }
 
   const Properties& properties() const { return m_properties; }
   const CSSProperty& properties(unsigned int i) const { return *m_properties[i]; }
   unsigned int length() const { return static_cast<unsigned>(m_size); }
-  CSSPropertyId id() const { return m_shorthand_id; }
+  CSSPropertyID id() const { return m_shorthand_id; }
 
  private:
   Properties m_properties = nullptr;
   unsigned int m_size = 0;
 
-  CSSPropertyId m_shorthand_id;
+  CSSPropertyID m_shorthand_id;
 };
 
 const StylePropertyShorthand& backgroundShorthand();

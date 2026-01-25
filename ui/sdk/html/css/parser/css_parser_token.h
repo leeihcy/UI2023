@@ -43,7 +43,7 @@ enum class CSSParserTokenType : int {
   RightParenthesis,
   LeftBracket,
   RightBracket,
-  LeftBrace,
+  LeftBrace, // {
   RightBrace,
 
   Hash,
@@ -138,8 +138,8 @@ public:
   const std::u16string& String() const { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
   char16_t Delimiter() const { return m_delimiter; }
-  CSSValueId ValueId() const;
-  CSSValueId FunctionId();
+  CSSValueID ValueId() const;
+  CSSValueID FunctionId();
   HashTokenType GetHashTokenType() const { return m_hash_type; }
 
   double NumericValue() const {

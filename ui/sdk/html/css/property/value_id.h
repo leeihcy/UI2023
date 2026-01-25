@@ -5,7 +5,7 @@
 
 namespace html {
 
-enum class CSSValueId : int {
+enum class CSSValueID : int {
   Invalid,
 
   // 固定格式， id, // "name"
@@ -358,10 +358,10 @@ enum class CSSValueId : int {
 
 constexpr size_t MaxCSSValueNameLength = 48;
 
-CSSValueId CSSValueNameToId(const std::u16string& name);
+CSSValueID CSSValueNameToId(const std::u16string& name);
 
 // perfect hash function.
-CSSValueId CSSValueNameToIdByHash(const char* name, unsigned int len);
+CSSValueID CSSValueIDNameToIdByHash(const char* name, unsigned int len);
 }
 
 #endif

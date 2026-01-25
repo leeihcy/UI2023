@@ -3,6 +3,7 @@
 
 #include "html/css/css_selector.h"
 #include "html/css/parser/css_nesting_type.h"
+#include "html/css/parser/css_parser.h"
 #include "html/css/parser/css_parser_token_stream.h"
 #include "html/base/memory.h"
 #include "html/base/atomic_string.h"
@@ -13,12 +14,7 @@
 namespace html {
 class StyleSheetContents;
 
-struct CSSSelectorParserContext {
-  CSSParserTokenStream token_stream;
-  CSSNestingType nesting_type = CSSNestingType::None;
-  // const StyleRule* parent_rule_for_nesting_;
-  uint8_t result_flags = 0;
-};
+using CSSSelectorParserContext = CSSParserContext;
 
 class CSSSelectorParser {
 public:
@@ -36,7 +32,7 @@ public:
   };
   using ResultFlags = uint8_t;
 
-  static void ConsumeSelector(CSSSelectorParserContext& context, StyleSheetContents* style_sheet, std::vector<CSSSelector>& result);
+  static std::vector<CSSSelector> ConsumeSelector(CSSSelectorParserContext& context);
   std::span<CSSSelector> ConsumeComplexSelectorList(CSSSelectorParserContext& context);
 
   bool ConsumeSimpleSelector(CSSSelectorParserContext& context);

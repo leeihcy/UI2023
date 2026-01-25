@@ -23,14 +23,14 @@ namespace {
 void test1_perfect_hash_function() {
   // 完美Hash验证
   {
-    std::tuple<std::string, html::CSSPropertyId> data[] = {
-      {"background", html::CSSPropertyId::Background},
-      // {"background-image", html::CSSPropertyId::BackgroundImage},
-      // {"background-position-x", html::CSSPropertyId::BackgroundPositionX},
-      {"not_exist", html::CSSPropertyId::Invalid},
+    std::tuple<std::string, html::CSSPropertyID> data[] = {
+      {"background", html::CSSPropertyID::Background},
+      // {"background-image", html::CSSPropertyID::BackgroundImage},
+      // {"background-position-x", html::CSSPropertyID::BackgroundPositionX},
+      {"not_exist", html::CSSPropertyID::Invalid},
     };
     for (auto& [name, id] : data) {
-      auto proerty_id = html::CSSPropertyNameToIdByHash(name.c_str(), name.length());
+      auto proerty_id = html::CSSPropertyIDNameToIdByHash(name.c_str(), name.length());
       assert(proerty_id == id);
     }
   }
@@ -50,7 +50,7 @@ void test2_parse_property_keyword() {
       html::CSSParser parser;
       auto result = parser.ParseInlineStyleDeclaration(css.c_str(), css.length());
       assert(result->Size() == 1);
-      assert(result->Item(0).Id() == html::CSSPropertyId::BackgroundColor);
+      assert(result->Item(0).Id() == html::CSSPropertyID::BackgroundColor);
       assert(result->Item(0).Value()->GetClassType() == class_type);
     }
   }
@@ -65,11 +65,11 @@ void test3_ParseInlineStyleDeclaration() {
   assert(result);
   assert(result->Size() == 2);
 
-  assert(result->Item(0).Id() == html::CSSPropertyId::BackgroundColor);
+  assert(result->Item(0).Id() == html::CSSPropertyID::BackgroundColor);
   assert(result->Item(0).Value()->GetClassType() == html::CSSValueClassType::Identifier);
   assert(result->Item(0).IsImportant() == false);
 
-  assert(result->Item(1).Id() == html::CSSPropertyId::BackgroundColor);
+  assert(result->Item(1).Id() == html::CSSPropertyID::BackgroundColor);
   assert(result->Item(1).Value()->GetClassType() == html::CSSValueClassType::Color);
   const html::CSSColorValue* color_value = static_cast<const html::CSSColorValue*>(result->Item(1).Value());
   assert(color_value->GetColor() == html::Color::FromRGBA32(0xFFFFFFFF));
@@ -144,8 +144,8 @@ void test6_ConsumePosition() {
     assert(x_pair->Second()->IsNumericLiteralValue());
     assert(y_pair->First()->IsIdentifierValue());
     assert(y_pair->Second()->IsNumericLiteralValue());
-    assert(html::DynamicTo<html::CSSIdentifierValue>(x_pair->First())->GetValueId() == html::CSSValueId::Left);
-    assert(html::DynamicTo<html::CSSIdentifierValue>(y_pair->First())->GetValueId() == html::CSSValueId::Top);
+    assert(html::DynamicTo<html::CSSIdentifierValue>(x_pair->First())->GetValueId() == html::CSSValueID::Left);
+    assert(html::DynamicTo<html::CSSIdentifierValue>(y_pair->First())->GetValueId() == html::CSSValueID::Top);
     assert(html::DynamicTo<html::CSSNumericLiteralValue>(x_pair->Second())->GetNum() == 10);
     assert(html::DynamicTo<html::CSSNumericLiteralValue>(y_pair->Second())->GetNum() == 15);
   }
@@ -163,16 +163,16 @@ void test6_ConsumePosition() {
     html::CSSIdentifierValue* x_ident = html::DynamicTo<html::CSSIdentifierValue>(x.get());
     html::CSSIdentifierValue* y_ident = html::DynamicTo<html::CSSIdentifierValue>(y.get());
     assert(x_ident && y_ident);
-    assert(x_ident->GetValueId() == html::CSSValueId::Left);
-    assert(y_ident->GetValueId() == html::CSSValueId::Top);
+    assert(x_ident->GetValueId() == html::CSSValueID::Left);
+    assert(y_ident->GetValueId() == html::CSSValueID::Top);
   }
 
   {
-    std::tuple<std::string, html::CSSValueId, html::CSSValueId> datas[] = {
-      {"top", html::CSSValueId::Center, html::CSSValueId::Top }, 
-      {"left", html::CSSValueId::Left, html::CSSValueId::Center },
-      {"right", html::CSSValueId::Right, html::CSSValueId::Center }, 
-      {"bottom", html::CSSValueId::Center, html::CSSValueId::Bottom}
+    std::tuple<std::string, html::CSSValueID, html::CSSValueID> datas[] = {
+      {"top", html::CSSValueID::Center, html::CSSValueID::Top }, 
+      {"left", html::CSSValueID::Left, html::CSSValueID::Center },
+      {"right", html::CSSValueID::Right, html::CSSValueID::Center }, 
+      {"bottom", html::CSSValueID::Center, html::CSSValueID::Bottom}
     };
     for (auto& [css, x_id, y_id] : datas) {
       html::CSSParserContext context;
@@ -211,9 +211,6 @@ void test6_ConsumePosition() {
 }
 
 void test7_parse_selector() {
-  // std::string css = "namespace1|button, #id, .class, tag[foo=\"bar\"]";
-  // std::string css = "button, #id, .class, tag[foo=\"bar\"]";
-  // std::string css = "tag[foo=\"bar\"]";
   {
     // 当有定义@namespace "http..."时，匹配这个默认命名空间下的 <img> 元素（HTML 命名空间）
     // 当没有定义默认@namespace时，会匹配所有命令空间，即*|img
@@ -221,8 +218,7 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result=html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 1);
     assert(result[0].GetQualifiedName().LocalName() == u"img");
     assert(result[0].GetQualifiedName().NamespaceUri() == html::g_star_atom);
@@ -233,8 +229,7 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 1);
     assert(result[0].GetMatchType() == html::CSSSelector::Id);
     assert(result[0].GetValue() == u"id");
@@ -244,8 +239,7 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 1);
     assert(result[0].GetMatchType() == html::CSSSelector::Class);
     assert(result[0].GetValue() == u"class");
@@ -256,8 +250,7 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 1);
     assert(result[0].GetQualifiedName().LocalName()==u"img");
     assert(result[0].GetQualifiedName().NamespaceUri() == html::g_empty_atom);
@@ -269,8 +262,7 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 1);
     assert(result[0].GetQualifiedName().LocalName()==u"img");
     assert(result[0].GetQualifiedName().NamespaceUri() == html::g_star_atom);
@@ -282,21 +274,125 @@ void test7_parse_selector() {
     html::CSSSelectorParserContext context;
     context.token_stream.SetInput(css.c_str(), css.length());
 
-    std::vector<html::CSSSelector> result;
-    html::CSSSelectorParser::ConsumeSelector(context, nullptr, result);
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
     assert(result.size() == 3);
     assert(result[0].GetQualifiedName().LocalName()==u"html");
     assert(result[1].GetQualifiedName().LocalName()==u"head");
     assert(result[2].GetQualifiedName().LocalName()==u"body");
   }
+
+  // compound selector
+  {
+    std::string css(".a.b .c > #d");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
+    assert(result.size() == 4);
+    assert(result[2].GetValue() == u"a");
+    assert(result[2].GetMatchType() == html::CSSSelector::MatchType::Class);
+    assert(result[2].GetRelationType() ==
+           html::CSSSelector::RelationType::SubSelector);
+
+    assert(result[3].GetValue() == u"b");
+    assert(result[3].GetMatchType() == html::CSSSelector::MatchType::Class);
+    assert(result[3].GetRelationType() ==
+           html::CSSSelector::RelationType::SubSelector);
+
+    assert(result[1].GetValue() == u"c");
+    assert(result[1].GetMatchType() == html::CSSSelector::MatchType::Class);
+    assert(result[1].GetRelationType() ==
+           html::CSSSelector::RelationType::Descendant);
+
+    assert(result[0].GetValue() == u"d");
+    assert(result[0].GetMatchType() == html::CSSSelector::MatchType::Id);
+    assert(result[0].GetRelationType() ==
+           html::CSSSelector::RelationType::Child);
+  }
+  {
+    std::string css("li + a, ul~p");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
+    assert(result.size() == 4);
+
+    assert(result[1].GetQualifiedName().LocalName() == u"li");
+    assert(result[1].GetMatchType() == html::CSSSelector::MatchType::Unknown);
+    assert(result[1].GetRelationType() ==
+           html::CSSSelector::RelationType::SubSelector);
+    assert(result[0].GetQualifiedName().LocalName() == u"a");
+    assert(result[0].GetRelationType() ==
+           html::CSSSelector::RelationType::DirectAdjacent);
+
+    assert(result[3].GetQualifiedName().LocalName() == u"ul");
+    assert(result[3].GetMatchType() == html::CSSSelector::MatchType::Unknown);
+    assert(result[3].GetRelationType() ==
+           html::CSSSelector::RelationType::SubSelector);
+    assert(result[2].GetQualifiedName().LocalName() == u"p");
+    assert(result[2].GetRelationType() ==
+           html::CSSSelector::RelationType::IndirectAdjacent);
+  }
+
+  // attribute
+  {
+    std::string css("input[type=\"button\"]");
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
+    assert(result.size() == 2);
+
+    assert(result[0].GetQualifiedName().LocalName() == u"input");
+    assert(result[1].GetAttribute() == u"type");
+    assert(result[1].GetValue() == u"button");
+    assert(result[1].GetMatchType() ==
+           html::CSSSelector::MatchType::AttributeExact);
+  }
+  {
+    std::tuple<std::string, html::CSSSelector::MatchType> data[] = {
+      {"a[href]", html::CSSSelector::MatchType::AttributeSet},
+      {"div[class|=\"btn\"]", html::CSSSelector::MatchType::AttributeHyphen},
+      {"E[foo~=\"bar\"]", html::CSSSelector::MatchType::AttributeList},
+      {"E[foo*=\"bar\"]", html::CSSSelector::MatchType::AttributeContain},
+      {"E[foo^=\"bar\"]", html::CSSSelector::MatchType::AttributeBegin},
+      {"E[foo$=\"bar\"]", html::CSSSelector::MatchType::AttributeEnd},
+    };
+    for (auto& [css, type]: data) {
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
+    assert(result.size() == 2);
+    assert(result[1].GetMatchType() == type);
+    }
+  } 
+
+  // 失败场景
+  {
+    std::string data[] = {
+      "unknown_namespace|img",
+      "E[foo#=\"bar\"]",
+      "!button",
+    };
+    for (auto& css : data) {
+      html::CSSSelectorParserContext context;
+      context.token_stream.SetInput(css.c_str(), css.length());
+
+      std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector(context);
+      assert(result.empty());
+    }
+  }
 }
 
 void test8_parse_sheet() {
-#if 0
-  auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
-  String sheet_text = R"CSS(
+  // auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
+  // auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  // @namespace html "https://123.com";
+  // @namespace "https://default";
+  std::string css = R"CSS(
     #first {
       color: red;
       --x:foo;
@@ -309,6 +405,11 @@ void test8_parse_sheet() {
     }
   )CSS";
 
+  html::StyleSheetContents style_sheet;
+  html::CSSParser parser;
+  parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
+
+#if 0
   CSSParser::ParseSheet(context, style_sheet, sheet_text,
                         CSSDeferPropertyParsing::kNo);
   StyleRule* rule0 = RuleAt(style_sheet, 0);
@@ -347,6 +448,6 @@ void test_html_css_parser() {
   // test4_parse_shorthand();
   // test5_ConsumeLengthOrPercent();
   // test6_ConsumePosition();
-  test7_parse_selector();
-  // test8_parse_sheet();
+  // test7_parse_selector();
+  test8_parse_sheet();
 }

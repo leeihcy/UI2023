@@ -47,7 +47,7 @@ public:
     return A<CSSNumericLiteralValue>::from_pool(v);
   }
 
-  A<CSSIdentifierValue> IdentifierCacheValue(CSSValueId value_id) {
+  A<CSSIdentifierValue> IdentifierCacheValue(CSSValueID value_id) {
     auto iter = m_identifier_value_map.find(value_id);
     if (iter != m_identifier_value_map.end()) {
       return A<CSSIdentifierValue>::from_pool(iter->second);
@@ -87,7 +87,7 @@ public:
   static const int kMaximumCacheableIntegerValue = 255;
 
 private:
-  std::map<CSSValueId, CSSIdentifierValue*> m_identifier_value_map;
+  std::map<CSSValueID, CSSIdentifierValue*> m_identifier_value_map;
 
   std::map<int, CSSNumericLiteralValue*> m_pixel_numeric_value_map;
   std::map<int, CSSNumericLiteralValue*> m_percent_numeric_value_map;
@@ -121,10 +121,10 @@ A<CSSRevertLayerValue> CSSRevertLayerValue::Create() {
   return A<CSSRevertLayerValue>::from_managed(&s);
 }
 
-A<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueId value_id) {
+A<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueID value_id) {
   return CSSValuePool::Get().IdentifierCacheValue(value_id);
 }
-CSSIdentifierValue::CSSIdentifierValue(CSSValueId id) 
+CSSIdentifierValue::CSSIdentifierValue(CSSValueID id) 
   : m_value_id(id), CSSValue(CSSValueClassType::Identifier)  {
 
 }
@@ -197,14 +197,14 @@ CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& x, A<CSSIdentif
 
 CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& id): CSSValue(CSSValueClassType::RepeatStyle) {
     switch (id->GetValueId()) {
-    case CSSValueId::RepeatX:
-      m_x.reset(CSSIdentifierValue::Create(CSSValueId::Repeat));
-      m_y.reset(CSSIdentifierValue::Create(CSSValueId::NoRepeat));
+    case CSSValueID::RepeatX:
+      m_x.reset(CSSIdentifierValue::Create(CSSValueID::Repeat));
+      m_y.reset(CSSIdentifierValue::Create(CSSValueID::NoRepeat));
       break;
 
-    case CSSValueId::RepeatY:
-      m_x.reset(CSSIdentifierValue::Create(CSSValueId::NoRepeat));
-      m_y.reset(CSSIdentifierValue::Create(CSSValueId::Repeat));
+    case CSSValueID::RepeatY:
+      m_x.reset(CSSIdentifierValue::Create(CSSValueID::NoRepeat));
+      m_y.reset(CSSIdentifierValue::Create(CSSValueID::Repeat));
       break;
 
     default:

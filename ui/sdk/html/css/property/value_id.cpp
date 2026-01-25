@@ -4,21 +4,21 @@
 
 namespace html {
 
-CSSValueId CSSValueNameToId(const std::u16string& name) {
+CSSValueID CSSValueNameToId(const std::u16string& name) {
   int length = name.length();
 
   if (length == 0) {
-    return CSSValueId::Invalid;
+    return CSSValueID::Invalid;
   }
   if (length > MaxCSSValueNameLength) {
-    return CSSValueId::Invalid;
+    return CSSValueID::Invalid;
   }
   std::string ascii_name;
   if (!UnicodeToLowerAscii(name, ascii_name)) {
-    return CSSValueId::Invalid;
+    return CSSValueID::Invalid;
   }
 
-  return CSSValueNameToIdByHash(ascii_name.c_str(), ascii_name.length());
+  return CSSValueIDNameToIdByHash(ascii_name.c_str(), ascii_name.length());
 }
 
 

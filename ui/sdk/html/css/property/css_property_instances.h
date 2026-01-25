@@ -3,9 +3,9 @@
 
 namespace html {
 class CSSProperty;
-enum class CSSPropertyId;
+enum class CSSPropertyID;
 
-const CSSProperty& GetCSSPropertyInternal(CSSPropertyId id);
+const CSSProperty& GetCSSPropertyInternal(CSSPropertyID id);
 
 }
 

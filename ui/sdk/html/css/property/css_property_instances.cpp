@@ -20,7 +20,7 @@ namespace html {
 //    这也限制了所有子类不能使用多重继续，否则虚表指针将没对齐。
 //
 
-constexpr int CSS_PROPERTY_COUNT = (int)CSSPropertyId::CSSPropertyCount;
+constexpr int CSS_PROPERTY_COUNT = (int)CSSPropertyID::CSSPropertyCount;
 
 // 虚表指针 + uint64_t
 constexpr size_t kCSSPropertyUnionBytes = 16;
@@ -46,7 +46,8 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion {
   // Sample: 
   // constexpr CSSPropertyUnion(Variable&& arg) : variable(std::move(arg)) { }
   // Variable variable;
-
+  
+  DECLARE_UNION_ITEM(CSSPropertyInvalid);
   DECLARE_UNION_ITEM(Variable);
   DECLARE_UNION_ITEM(Background);
   DECLARE_UNION_ITEM(BackgroundAttachment);
@@ -64,6 +65,8 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion {
 };
 
 constexpr CSSPropertyUnion g_css_properties[CSS_PROPERTY_COUNT] = {
+  CSSPropertyInvalid(),
+
   Variable(),
   Background(),
   BackgroundAttachment(),
@@ -81,7 +84,7 @@ constexpr CSSPropertyUnion g_css_properties[CSS_PROPERTY_COUNT] = {
 
 
 // static 
-const CSSProperty& GetCSSPropertyInternal(CSSPropertyId id) {
+const CSSProperty& GetCSSPropertyInternal(CSSPropertyID id) {
   int n = (int)id;
 
   if (n < 0 && n >= CSS_PROPERTY_COUNT) {

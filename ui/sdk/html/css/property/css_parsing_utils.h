@@ -20,7 +20,7 @@ A<CSSValue> ConsumeCSSWideKeyword(CSSParserTokenStream &);
 A<CSSValue> ConsumeColor(CSSParserTokenStream &stream);
 A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream);
 
-A<CSSValue> ParseLonghand(CSSPropertyId property_id,
+A<CSSValue> ParseLonghand(CSSPropertyID property_id,
                               CSSParserContext &context);
 
 A<CSSPrimitiveValue> ConsumeLengthOrPercent(
@@ -34,7 +34,7 @@ A<CSSValue> GetSingleValueOrMakeList(
 bool ConsumePosition(CSSParserContext &context, A<CSSValue>& result_x,
                      A<CSSValue>& result_y);
 A<CSSValue> ConsumeBackgroundSize(CSSParserContext &context);
-A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
+A<CSSValue> ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      CSSParserContext& context);
 A<CSSRepeatStyleValue> ConsumeRepeatStyleValue(CSSParserTokenStream& stream);
 
@@ -45,19 +45,19 @@ bool MaybeConsumeImportant(CSSParserTokenStream &stream,
                            bool allow_important_annotation);
 
 template <typename... empty>
-inline bool IdentMatches(CSSValueId id) {
+inline bool IdentMatches(CSSValueID id) {
   return false;
 }
-template <CSSValueId head, CSSValueId... tail>
-inline bool IdentMatches(CSSValueId id) {
+template <CSSValueID head, CSSValueID... tail>
+inline bool IdentMatches(CSSValueID id) {
   return id == head || IdentMatches<tail...>(id);
 }
-template <CSSValueId... allowIndents> 
+template <CSSValueID... allowIndents> 
 bool PeekedIdentMatches(CSSParserTokenStream &stream) {
   return stream.Peek().GetType() == CSSParserTokenType::Ident &&
     IdentMatches<allowIndents...>(stream.Peek().ValueId());
 }
-template <CSSValueId... names>
+template <CSSValueID... names>
 A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream) {
   if (!PeekedIdentMatches<names...>(stream)) {
     return nullptr;
@@ -65,14 +65,14 @@ A<CSSIdentifierValue> ConsumeIdent(CSSParserTokenStream &stream) {
   return CSSIdentifierValue::Create(stream.ConsumeIncludingWhitespace().ValueId());
 }
 
-template <CSSValueId start, CSSValueId end>
+template <CSSValueID start, CSSValueID end>
 A<CSSValue> ConsumePositionLonghand(CSSParserTokenStream &stream, CSSParserContext &context) {
   if (stream.Peek().GetType() == CSSParserTokenType::Ident) {
-    CSSValueId id = stream.Peek().ValueId();
+    CSSValueID id = stream.Peek().ValueId();
     int percent;
     if (id == start) {
       percent = 0;
-    } else if (id == CSSValueId::Center) {
+    } else if (id == CSSValueID::Center) {
       percent = 50;
     } else if (id == end) {
       percent = 100;

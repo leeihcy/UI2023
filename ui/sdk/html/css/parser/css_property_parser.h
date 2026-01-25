@@ -12,11 +12,11 @@ class CSSPropertyParser {
 public:
   CSSPropertyParser(CSSParserContext &context);
 
-  static bool ParseValue(CSSParserContext &context, CSSPropertyId property_id,
+  static bool ParseValue(CSSParserContext &context, CSSPropertyID property_id,
                          bool allow_important);
 
-  bool ParseValueStart(CSSPropertyId property_id, bool allow_important);
-  bool ParseCSSWideKeyword(CSSPropertyId property_id, bool allow_important);
+  bool ParseValueStart(CSSPropertyID property_id, bool allow_important);
+  bool ParseCSSWideKeyword(CSSPropertyID property_id, bool allow_important);
   A<CSSValue> ConsumeCSSWideKeyword(
     bool allow_important_annotation,
     bool& important);

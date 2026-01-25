@@ -44,9 +44,9 @@ public:
     Descendant,
     // >  子结点
     Child,
-    // + 相邻兄弟选择器，紧跟在后面的第一个兄弟元素
+    // + 相邻兄弟选择器，紧跟在后面的第一个符号条件的兄弟元素
     DirectAdjacent,
-    // ~ 后面所有的兄弟元素（
+    // ~ 后面所有的符号条件的兄弟元素（
     IndirectAdjacent,
   };
 
@@ -91,6 +91,7 @@ public:
 
   void SetValue(const AtomicString& value) { m_value = value; }
   void SetRelation(CSSSelector::RelationType relation_type) { m_relation_type = relation_type; }
+  CSSSelector::RelationType GetRelationType() const { return m_relation_type; }
 
   void SetLastInSelectorList(bool b) { 
     m_isLastInSelectorList = b;

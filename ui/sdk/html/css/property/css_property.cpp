@@ -12,7 +12,7 @@
 namespace html {
 
 // static 
-const CSSProperty& CSSProperty::Get(CSSPropertyId id) {
+const CSSProperty& CSSProperty::Get(CSSPropertyID id) {
   return GetCSSPropertyInternal(id);
 }
 
@@ -69,14 +69,14 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
         A<CSSValue> value = nullptr;
         A<CSSValue> value_y = nullptr;
         const CSSProperty& property = shorthand.properties(i);
-        if (property.IdEquals(CSSPropertyId::BackgroundPositionX)) {
+        if (property.IdEquals(CSSPropertyID::BackgroundPositionX)) {
           if (!css_parsing_utils::ConsumePosition(context, value, value_y)) {
             continue;
           }
           if (value) {
             bg_position_parsed_in_current_layer = true;
           }
-        } else if (property.IdEquals(CSSPropertyId::BackgroundSize)) {
+        } else if (property.IdEquals(CSSPropertyID::BackgroundSize)) {
           if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(context.token_stream)) {
             continue;
           }
@@ -84,13 +84,13 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
           if (!value || !bg_position_parsed_in_current_layer) {
             return false;
           }
-        } else if (property.IdEquals(CSSPropertyId::BackgroundPositionY)) {
+        } else if (property.IdEquals(CSSPropertyID::BackgroundPositionY)) {
           continue;
         } else {
           value.reset(css_parsing_utils::ConsumeBackgroundComponent(property.PropertyId(), context));
         }
         if (value) {
-          if (property.IdEquals(CSSPropertyId::BackgroundOrigin)) {
+          if (property.IdEquals(CSSPropertyID::BackgroundOrigin)) {
             origin_value.reset(std::move(value));
           }
           parsed_longhand[i] = true;
@@ -118,13 +118,13 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
     for (unsigned i = 0; i < longhand_count; ++i) {
       const CSSProperty& property = shorthand.properties(i);
 
-      if (property.IdEquals(CSSPropertyId::BackgroundColor)) {
+      if (property.IdEquals(CSSPropertyID::BackgroundColor)) {
         if (parsed_longhand[i]) {
           previous_layer_had_background_color = true;
         }
       }
       if (!parsed_longhand[i]) {
-        if ((property.IdEquals(CSSPropertyId::BackgroundClip)) &&
+        if ((property.IdEquals(CSSPropertyID::BackgroundClip)) &&
             origin_value) {
           longhands[i].push_back(std::move(origin_value));
           continue;
@@ -140,7 +140,7 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
     const CSSProperty& property = shorthand.properties(i);
 
     A<CSSValue> longhand = nullptr;
-    if (property.IdEquals(CSSPropertyId::BackgroundColor)) {
+    if (property.IdEquals(CSSPropertyID::BackgroundColor)) {
       // There can only be one background-color (we've verified this earlier,
       // by means of previous_layer_had_background_color), so pick out only
       // the last one (any others will just be “initial” over and over again).

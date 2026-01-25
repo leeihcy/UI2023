@@ -2,16 +2,16 @@
 
 namespace html {
 
-CSSValueId CSSParserToken::ValueId() const {
+CSSValueID CSSParserToken::ValueId() const {
   if (m_type != CSSParserTokenType::Ident) {
-    return CSSValueId::Invalid;
+    return CSSValueID::Invalid;
   }
 
   return CSSValueNameToId(m_name.c_str());
 }
-CSSValueId CSSParserToken::FunctionId() {
+CSSValueID CSSParserToken::FunctionId() {
   if (m_type != CSSParserTokenType::Function) {
-      return CSSValueId::Invalid;
+      return CSSValueID::Invalid;
     }
     return CSSValueNameToId(m_name.c_str());
 }

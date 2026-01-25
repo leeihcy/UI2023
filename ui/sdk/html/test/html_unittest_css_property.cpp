@@ -8,7 +8,7 @@ namespace {
 
 void test1() {
   const html::CSSProperty& property = 
-    html::CSSProperty::Get(html::CSSPropertyId::BackgroundColor);
+    html::CSSProperty::Get(html::CSSPropertyID::BackgroundColor);
   
   auto& background_color = static_cast<const html::BackgroundColor&>(property);
   assert(background_color.IsLonghand());

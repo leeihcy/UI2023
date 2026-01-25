@@ -22,6 +22,18 @@
 namespace html {
 class CSSTokenizer;
 
+namespace detail {
+template <typename...>
+bool IsTokenTypeOneOf(CSSParserTokenType t) {
+  return false;
+}
+
+template <CSSParserTokenType Head, CSSParserTokenType... Tail>
+bool IsTokenTypeOneOf(CSSParserTokenType t) {
+  return t == Head || IsTokenTypeOneOf<Tail...>(t);
+}
+}
+
 class CSSParserTokenStream {
 public:
   CSSParserTokenStream();
@@ -37,12 +49,25 @@ public:
   
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
-  void SkipUntilPeekedTypeIs(CSSParserTokenType type);
-  void SkipToEndOfBlock();
-  
+
   bool TokenMarksEnd(CSSParserTokenType end_type);
   bool TokenMarksEnd(const CSSParserToken& token, CSSParserTokenType end_type);
+  
+  template <CSSParserTokenType... EndTypes>
+  inline bool TokenMarksEnd(const CSSParserToken& token) {
+    return (m_boundaries & FlagForTokenType(token.GetType())) ||
+           token.GetBlockType() == CSSParserTokenBlockType::End ||
+           detail::IsTokenTypeOneOf<EndTypes...>(token.GetType());
+  }
 
+  void SkipUntilPeekedTypeIs(CSSParserTokenType type);
+  void SkipToEndOfBlock();
+  template <CSSParserTokenType... Types>
+  void SkipUntilPeekedTypeIs() {
+    if (m_next_token.IsEof() || TokenMarksEnd<Types...>(m_next_token)) {
+      return;
+    }
+  }
   unsigned int Offset() { return m_tokenizer->Offset(); }
   unsigned int PreviousOffset() { return m_tokenizer->PreviousOffset(); }
 public:

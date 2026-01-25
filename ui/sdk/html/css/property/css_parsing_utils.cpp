@@ -24,10 +24,10 @@
 namespace html {
 namespace css_parsing_utils {
 
-bool IsCSSWideKeyword(CSSValueId id) {
-  return id == CSSValueId::Inherit || id == CSSValueId::Initial ||
-         id == CSSValueId::Unset || id == CSSValueId::Revert ||
-         id == CSSValueId::RevertLayer;
+bool IsCSSWideKeyword(CSSValueID id) {
+  return id == CSSValueID::Inherit || id == CSSValueID::Initial ||
+         id == CSSValueID::Unset || id == CSSValueID::Revert ||
+         id == CSSValueID::RevertLayer;
 }
 
 A<CSSValue> ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
@@ -35,17 +35,17 @@ A<CSSValue> ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
     return nullptr;
   }
   switch (stream.ConsumeIncludingWhitespace().ValueId()) {
-    case CSSValueId::Initial:
+    case CSSValueID::Initial:
       return CSSInitialValue::Create();
-    case CSSValueId::Inherit:
+    case CSSValueID::Inherit:
       return CSSInheritedValue::Create();
-    case CSSValueId::Unset:
+    case CSSValueID::Unset:
       return CSSUnsetValue::Create();
-    case CSSValueId::Revert:
+    case CSSValueID::Revert:
       return CSSRevertValue::Create();
-    case CSSValueId::RevertLayer:
+    case CSSValueID::RevertLayer:
       return CSSRevertLayerValue::Create();
-    // case CSSValueId::RevertRule: {
+    // case CSSValueID::RevertRule: {
     //   if (!RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
     //     return nullptr;
     //   }
@@ -84,8 +84,8 @@ bool MaybeConsumeImportant(CSSParserTokenStream& stream,
   return true;
 }
 
-A<CSSValue> ParseLonghand(CSSPropertyId property_id, CSSParserContext& context) {
-  // CSSValueId value_id = stream.Peek().ValueId();
+A<CSSValue> ParseLonghand(CSSPropertyID property_id, CSSParserContext& context) {
+  // CSSValueID value_id = stream.Peek().ValueId();
 
   const CSSProperty& property = CSSProperty::Get(property_id);
   return static_cast<const Longhand&>(property).ParseSingleValue(context);
@@ -115,7 +115,7 @@ static bool ParseHexColor(CSSParserTokenStream& stream,
 
 A<CSSValue> ConsumeColor(CSSParserTokenStream &stream) {
 
-  if (stream.Peek().FunctionId() == CSSValueId::ColorMix) {
+  if (stream.Peek().FunctionId() == CSSValueID::ColorMix) {
     // CSSValue* color =
     //     ConsumeColorMixFunction(stream);
     // return color;
@@ -123,8 +123,8 @@ A<CSSValue> ConsumeColor(CSSParserTokenStream &stream) {
     return nullptr;
   }
 
-  CSSValueId id = stream.Peek().ValueId();
-  if (id >= CSSValueId::ColorBasicStart && id <= CSSValueId::ColorExtendedEnd) {
+  CSSValueID id = stream.Peek().ValueId();
+  if (id >= CSSValueID::ColorBasicStart && id <= CSSValueID::ColorExtendedEnd) {
     // if (!IsValueAllowedInMode(id, context.Mode())) {
     //   return nullptr;
     // }
@@ -300,18 +300,18 @@ static A<CSSValue> ConsumePositionComponent(CSSParserContext& context,
         context, CSSPrimitiveValue::ValueRange::kAll);
   }
 
-  CSSValueId id = context.token_stream.Peek().ValueId();
-  if (id == CSSValueId::Left || id == CSSValueId::Right) {
+  CSSValueID id = context.token_stream.Peek().ValueId();
+  if (id == CSSValueID::Left || id == CSSValueID::Right) {
     if (horizontal_edge) {
       return nullptr;
     }
     horizontal_edge = true;
-  } else if (id == CSSValueId::Top || id == CSSValueId::Bottom) {
+  } else if (id == CSSValueID::Top || id == CSSValueID::Bottom) {
     if (vertical_edge) {
       return nullptr;
     }
     vertical_edge = true;
-  } else if (id != CSSValueId::Center) {
+  } else if (id != CSSValueID::Center) {
     return nullptr;
   }
   return ConsumeIdent(context.token_stream);
@@ -325,8 +325,8 @@ static bool IsHorizontalPositionKeywordOnly(const CSSValue* value) {
   if (!identifier_value) {
     return false;
   }
-  CSSValueId value_id = identifier_value->GetValueId();
-  return value_id == CSSValueId::Left || value_id == CSSValueId::Right;
+  CSSValueID value_id = identifier_value->GetValueId();
+  return value_id == CSSValueID::Left || value_id == CSSValueID::Right;
 }
 static bool IsVerticalPositionKeywordOnly(const CSSValue* value) {
   if (!value) {
@@ -336,8 +336,8 @@ static bool IsVerticalPositionKeywordOnly(const CSSValue* value) {
   if (!identifier_value) {
     return false;
   }
-  CSSValueId value_id = identifier_value->GetValueId();
-  return value_id == CSSValueId::Top || value_id == CSSValueId::Bottom;
+  CSSValueID value_id = identifier_value->GetValueId();
+  return value_id == CSSValueID::Top || value_id == CSSValueID::Bottom;
 }
 
 static void PositionFromOneValue(A<CSSValue>&& value, A<CSSValue>& result_x,
@@ -345,11 +345,11 @@ static void PositionFromOneValue(A<CSSValue>&& value, A<CSSValue>& result_x,
   bool is_vertical = IsVerticalPositionKeywordOnly(value.get());
   if (is_vertical) {
     result_y.reset(std::move(value));
-    result_x.reset(CSSIdentifierValue::Create(CSSValueId::Center));
+    result_x.reset(CSSIdentifierValue::Create(CSSValueID::Center));
   }
   else {
     result_x.reset(std::move(value));
-    result_y.reset(CSSIdentifierValue::Create(CSSValueId::Center));
+    result_y.reset(CSSIdentifierValue::Create(CSSValueID::Center));
   }
 }
 
@@ -380,8 +380,8 @@ static void PositionFromThreeOrFourValues(std::array<A<CSSValue>, 5> &values,
     // 非ident类型的索引在下面将被跳过。
     auto* current_value = static_cast<CSSIdentifierValue*>(values[i].get());
 
-    CSSValueId id = current_value->GetValueId();
-    if (id == CSSValueId::Center) {
+    CSSValueID id = current_value->GetValueId();
+    if (id == CSSValueID::Center) {
       center.reset(std::move(values[i]));
       continue;
     }
@@ -398,7 +398,7 @@ static void PositionFromThreeOrFourValues(std::array<A<CSSValue>, 5> &values,
       result.reset(std::move(values[i]));
     }
 
-    if (id == CSSValueId::Left || id == CSSValueId::Right) {
+    if (id == CSSValueID::Left || id == CSSValueID::Right) {
       result_x.reset(std::move(result));
     } else {
       result_y.reset(std::move(result));
@@ -461,7 +461,7 @@ bool ConsumePosition(CSSParserContext& context,
                               CSSParserTokenType::Ident) &&
       (identifier_value2
            ? identifier_value2->GetValueId()
-           : identifier_value1->GetValueId()) != CSSValueId::Center) {
+           : identifier_value1->GetValueId()) != CSSValueID::Center) {
     value3.reset(
         ConsumePositionComponent(context, horizontal_edge, vertical_edge));
   }
@@ -479,7 +479,7 @@ bool ConsumePosition(CSSParserContext& context,
   A<CSSValue> value4 = nullptr;
   auto* identifier_value3 = DynamicTo<CSSIdentifierValue>(value3.get());
   if (identifier_value3 &&
-      identifier_value3->GetValueId() != CSSValueId::Center &&
+      identifier_value3->GetValueId() != CSSValueID::Center &&
       stream.Peek().GetType() != CSSParserTokenType::Ident) {
     value4.reset(ConsumePositionComponent(context,
                                       horizontal_edge, vertical_edge));
@@ -522,12 +522,12 @@ A<CSSValue> ConsumeBackgroundSize(CSSParserContext &context) {
   bool parsing_legacy = true;
 
   // 关键字
-  CSSValueId value_id = stream.Peek().ValueId();
-  if (value_id == CSSValueId::Contain || value_id == CSSValueId::Cover) {
+  CSSValueID value_id = stream.Peek().ValueId();
+  if (value_id == CSSValueID::Contain || value_id == CSSValueID::Cover) {
     return ConsumeIdent(context.token_stream);
   }
 
-  A<CSSValue> horizontal = ConsumeIdent<CSSValueId::Auto>(stream);
+  A<CSSValue> horizontal = ConsumeIdent<CSSValueID::Auto>(stream);
   if (!horizontal) {
     horizontal.reset(ConsumeLengthOrPercent(context, CSSPrimitiveValue::ValueRange::kNonNegative));
   }
@@ -537,7 +537,7 @@ A<CSSValue> ConsumeBackgroundSize(CSSParserContext &context) {
 
   A<CSSValue> vertical = nullptr;
   if (!stream.AtEnd()) {
-    if (stream.Peek().ValueId() == CSSValueId::Auto) {
+    if (stream.Peek().ValueId() == CSSValueID::Auto) {
       stream.ConsumeIncludingWhitespace();
     } else {
       vertical.reset(ConsumeLengthOrPercent(context, CSSPrimitiveValue::ValueRange::kNonNegative));
@@ -562,12 +562,12 @@ background-clip: text;
 background-clip: border-area;
 */
 A<CSSValue> ConsumeBackgroundBox(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueId::BorderBox, CSSValueId::PaddingBox,
-                      CSSValueId::ContentBox>(stream);
+  return ConsumeIdent<CSSValueID::BorderBox, CSSValueID::PaddingBox,
+                      CSSValueID::ContentBox>(stream);
 }
 A<CSSValue> ConsumeBackgroundBoxOrText(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueId::BorderBox, CSSValueId::PaddingBox,
-                      CSSValueId::ContentBox, CSSValueId::Text>(stream);
+  return ConsumeIdent<CSSValueID::BorderBox, CSSValueID::PaddingBox,
+                      CSSValueID::ContentBox, CSSValueID::Text>(stream);
 }
 
 /*
@@ -576,8 +576,8 @@ background-attachment: fixed;
 background-attachment: local;
 */
 A<CSSValue> ConsumeBackgroundAttachment(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueId::Scroll, CSSValueId::Fixed,
-                      CSSValueId::Local>(stream);
+  return ConsumeIdent<CSSValueID::Scroll, CSSValueID::Fixed,
+                      CSSValueID::Local>(stream);
 }
 
 // Returns a token whose token.Value() will contain the URL,
@@ -593,7 +593,7 @@ CSSParserToken ConsumeUrlAsToken(CSSParserContext& context) {
   CSSParserToken token = stream.Peek();
   if (token.GetType() == CSSParserTokenType::Url) {
     stream.ConsumeIncludingWhitespace();
-  } else if (token.FunctionId() == CSSValueId::Url) {
+  } else if (token.FunctionId() == CSSValueID::Url) {
     {
       CSSParserTokenStream::RestoringBlockGuard guard(stream);
       stream.ConsumeWhitespace();
@@ -662,7 +662,7 @@ A<CSSValue> ConsumeImage(CSSParserContext& context) {
 A<CSSValue> ConsumeImageOrNone(CSSParserContext& context) {
   auto& stream = context.token_stream;
 
-  if (stream.Peek().ValueId() == CSSValueId::None) {
+  if (stream.Peek().ValueId() == CSSValueID::None) {
     return ConsumeIdent(stream);
   }
   return ConsumeImage(context);
@@ -670,17 +670,17 @@ A<CSSValue> ConsumeImageOrNone(CSSParserContext& context) {
 
 
 A<CSSIdentifierValue> ConsumeRepeatStyleIdent(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueId::Repeat, CSSValueId::NoRepeat,
-                      CSSValueId::Round, CSSValueId::Space>(stream);
+  return ConsumeIdent<CSSValueID::Repeat, CSSValueID::NoRepeat,
+                      CSSValueID::Round, CSSValueID::Space>(stream);
 }
 
 A<CSSRepeatStyleValue> ConsumeRepeatStyleValue(CSSParserTokenStream& stream) {
-  A<CSSIdentifierValue> id = ConsumeIdent<CSSValueId::RepeatX>(stream);
+  A<CSSIdentifierValue> id = ConsumeIdent<CSSValueID::RepeatX>(stream);
   if (id) {
     return A<CSSRepeatStyleValue>::make_new(std::move(id));
   }
 
-  A<CSSIdentifierValue> id2 = ConsumeIdent<CSSValueId::RepeatY>(stream);
+  A<CSSIdentifierValue> id2 = ConsumeIdent<CSSValueID::RepeatY>(stream);
   if (id) {
     return A<CSSRepeatStyleValue>::make_new(std::move(id2));
   }
@@ -694,32 +694,32 @@ A<CSSRepeatStyleValue> ConsumeRepeatStyleValue(CSSParserTokenStream& stream) {
   return nullptr;
 }
 
-A<CSSValue> ConsumeBackgroundComponent(CSSPropertyId resolved_property,
+A<CSSValue> ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      CSSParserContext& context) {
   // local_context.UseAliasParsing()
   bool use_alias_parsing = false;
   auto& stream = context.token_stream;
 
   switch (resolved_property) {
-    case CSSPropertyId::BackgroundClip:
+    case CSSPropertyID::BackgroundClip:
       return ConsumeBackgroundBoxOrText(stream);
-    case CSSPropertyId::BackgroundAttachment:
+    case CSSPropertyID::BackgroundAttachment:
       return ConsumeBackgroundAttachment(stream);
-    case CSSPropertyId::BackgroundOrigin:
+    case CSSPropertyID::BackgroundOrigin:
       return ConsumeBackgroundBox(stream);
-    case CSSPropertyId::BackgroundImage:
+    case CSSPropertyID::BackgroundImage:
       return ConsumeImageOrNone(context);
-    case CSSPropertyId::BackgroundPositionX:
-      return ConsumePositionLonghand<CSSValueId::Left, CSSValueId::Right>(
+    case CSSPropertyID::BackgroundPositionX:
+      return ConsumePositionLonghand<CSSValueID::Left, CSSValueID::Right>(
           stream, context);
-    case CSSPropertyId::BackgroundPositionY:
-      return ConsumePositionLonghand<CSSValueId::Top, CSSValueId::Bottom>(
+    case CSSPropertyID::BackgroundPositionY:
+      return ConsumePositionLonghand<CSSValueID::Top, CSSValueID::Bottom>(
           stream, context);
-    case CSSPropertyId::BackgroundSize:
+    case CSSPropertyID::BackgroundSize:
       return ConsumeBackgroundSize(context);
-    case CSSPropertyId::BackgroundColor:
+    case CSSPropertyID::BackgroundColor:
       return ConsumeColor(stream);
-    case CSSPropertyId::BackgroundRepeat:
+    case CSSPropertyID::BackgroundRepeat:
       return ConsumeRepeatStyleValue(stream);
     default:
       return nullptr;

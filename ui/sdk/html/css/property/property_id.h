@@ -4,9 +4,9 @@
 #include <string>
 namespace html {
 
-enum class CSSPropertyId : int {
-  Invalid = -1,
-  Variable = 0,
+enum class CSSPropertyID : int {
+  Invalid = 0,
+  Variable = 1,
 
   // 固定格式， id, // "name"
   // gen_property_hash.py 脚本将读取这些字段生成Perfect Hash。
@@ -30,10 +30,10 @@ enum class CSSPropertyId : int {
 
 constexpr size_t MaxCSSPropertyNameLength = 48;
 
-CSSPropertyId CSSPropertyNameToId(const std::u16string& name);
+CSSPropertyID CSSPropertyNameToId(const std::u16string& name);
 
 // perfect hash function.
-CSSPropertyId CSSPropertyNameToIdByHash(const char* name, unsigned int len);
+CSSPropertyID CSSPropertyIDNameToIdByHash(const char* name, unsigned int len);
 }
 
 #endif

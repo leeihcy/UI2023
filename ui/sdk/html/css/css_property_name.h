@@ -1,0 +1,20 @@
+#ifndef _UI_SDK_HTML_CSS_CSSPROPERTYNAME_H_
+#define _UI_SDK_HTML_CSS_CSSPROPERTYNAME_H_
+
+#include "html/css/property/property_id.h"
+
+namespace html {
+
+class CSSPropertyName {
+public:
+  CSSPropertyName(CSSPropertyID id) : m_property_id(id) {}
+  CSSPropertyName(const std::string &custom_name)
+      : m_custom_property_name(custom_name) {}
+
+public:
+  CSSPropertyID m_property_id = CSSPropertyID::Invalid;
+  std::string m_custom_property_name;
+};
+
+}
+#endif

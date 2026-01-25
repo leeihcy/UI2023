@@ -1,22 +1,11 @@
 #ifndef _HTML_CSS_PARSER_ALLOWDRULES_H_
 #define _HTML_CSS_PARSER_ALLOWDRULES_H_
 
+#include "html/css/parser/css_at_rule_id.h"
 #include <cstdint>
 #include <initializer_list>
 
 namespace html {
-
-enum class CSSAtRuleId {
-  Invalid,
-
-  Charset,
-  FontFace,
-  Import,
-  Keyframes,
-  Namespace,
-
-  Count,
-};
 
 enum class QualifiedRuleType {
   // 普通样式，如 .foo:hover {}
@@ -48,15 +37,25 @@ public:
   constexpr AllowedRules(std::initializer_list<QualifiedRuleType> list) :
     m_qualified_bits(EnumBits(list)) {
   }
-  constexpr AllowedRules(std::initializer_list<CSSAtRuleId> list) :
+  constexpr AllowedRules(std::initializer_list<CSSAtRuleID> list) :
     m_atrule_bits(EnumBits(list)) {
   }
   constexpr AllowedRules operator|(const AllowedRules& o) const {
     return AllowedRules(m_atrule_bits|o.m_atrule_bits, m_qualified_bits|o.m_qualified_bits); 
   }
 
+  bool Has(CSSAtRuleID id) const {
+    return (m_atrule_bits >> (int)id) & 0x1;
+  }
   bool Has(QualifiedRuleType id) const {
     return (m_qualified_bits >> (int)id) & 0x1;
+  }
+
+  void Remove(CSSAtRuleID id) {
+    m_atrule_bits &= ~(int)id;
+  }
+  void Remove(QualifiedRuleType id) {
+    m_qualified_bits &= ~(int)id;
   }
 private:
   explicit constexpr AllowedRules(uint64_t atrule_bits, uint64_t qualified_bits) :
@@ -71,17 +70,17 @@ private:
 static constexpr AllowedRules kRegularRules = 
   AllowedRules{QualifiedRuleType::Style} | 
   AllowedRules{
-    CSSAtRuleId::FontFace,
-    CSSAtRuleId::Keyframes
+    CSSAtRuleID::FontFace,
+    CSSAtRuleID::Keyframes
     // ...
   };
 
 // 最外层rules。例如不能在其它规则下使用@import
 static constexpr AllowedRules kTopLevelRules = 
   kRegularRules | AllowedRules{
-    CSSAtRuleId::Charset,
-    CSSAtRuleId::Import,
-    CSSAtRuleId::Namespace
+    CSSAtRuleID::Charset,
+    CSSAtRuleID::Import,
+    CSSAtRuleID::Namespace
   };
 
 }

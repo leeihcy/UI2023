@@ -150,11 +150,12 @@ public:
 
   template <typename U> void reset(AutoPtr<U>&&o) {
     static_assert(std::is_base_of<T, U>::value ||
+                  std::is_base_of<U, T>::value ||
                   std::is_same<T, U>::value,
-                  "U must be derived from T or same as T");
+                  "U should be derived from T or T should be derived from U or same as T");
     destroy();
 
-    m_t = o.m_t;
+    m_t = static_cast<T*>(o.m_t);
     m_type = o.m_type;
     m_share_counter = o.m_share_counter;
 
