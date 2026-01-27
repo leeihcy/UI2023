@@ -1,11 +1,12 @@
 #ifndef _UI_SDK_HTML_CSS_PROPERTY_CSSVALUE_H_
 #define _UI_SDK_HTML_CSS_PROPERTY_CSSVALUE_H_
 
+#include "html/base/atomic_string.h"
 #include "html/base/casting.h"
 #include "html/base/memory.h"
 #include "html/css/property/value_id.h"
 #include "html/css/graphics/color.h"
-
+#include "html/css/css_variable_data.h"
 #include <string>
 #include <vector>
 
@@ -27,6 +28,8 @@ enum class CSSValueClassType {
   RepeatStyle,
 
   NumericLiteral,
+  
+  UnparsedDeclarationClass,
 };
 
 // static constexpr size_t kValueListSeparatorBits = 2;
@@ -51,6 +54,15 @@ public:
   bool IsPair() const {
     return m_class_type == CSSValueClassType::Pair;
   }
+  bool IsUnparsedDeclarationClass() const {
+    return m_class_type == CSSValueClassType::UnparsedDeclarationClass;
+  }
+  AtomicString CssText() {
+    return CustomCSSText();
+  }
+protected:
+  // TODO: Blink没有使用虚函数。
+  virtual AtomicString CustomCSSText() { return g_empty_atom; }
 private:
   CSSValueClassType m_class_type;
 };
@@ -59,30 +71,50 @@ class CSSInitialValue : public CSSValue {
  public:
   static A<CSSInitialValue> Create();
   CSSInitialValue() : CSSValue(CSSValueClassType::Initial) {}
+
+  AtomicString CustomCSSText() override {
+    return AtomicString(u"initial");
+  }
 };
 
 class CSSInheritedValue : public CSSValue {
  public:
   static A<CSSInheritedValue> Create();
   CSSInheritedValue() : CSSValue(CSSValueClassType::Inherited) {}
+
+  AtomicString CustomCSSText() override {
+    return AtomicString(u"inherit");
+  }
 };
 
 class CSSUnsetValue : public CSSValue {
  public:
   static A<CSSUnsetValue> Create();
   CSSUnsetValue() : CSSValue(CSSValueClassType::Unset) {}
+
+  AtomicString CustomCSSText() override {
+    return AtomicString(u"unset");
+  }
 };
 
 class CSSRevertValue : public CSSValue {
  public:
   static A<CSSRevertValue> Create();
   CSSRevertValue() : CSSValue(CSSValueClassType::Revert) {}
+
+  AtomicString CustomCSSText() override {
+    return AtomicString(u"revert");
+  }
 };
 
 class CSSRevertLayerValue : public CSSValue {
  public:
   static A<CSSRevertLayerValue> Create();
   CSSRevertLayerValue() : CSSValue(CSSValueClassType::RevertLayer) {}
+
+  AtomicString CustomCSSText() override {
+    return AtomicString(u"revert-layer");
+  }
 };
 
 // CSSIdentifierValue stores CSS value keywords
@@ -239,6 +271,22 @@ public:
 private:
   A<CSSIdentifierValue> m_x = nullptr;
   A<CSSIdentifierValue> m_y = nullptr;
+};
+
+class CSSUnparsedDeclarationValue final : public CSSValue {
+public:
+  explicit CSSUnparsedDeclarationValue(A<CSSVariableData> &&data)
+      : CSSValue(CSSValueClassType::UnparsedDeclarationClass),
+        m_data(std::move(data)) {}
+
+private:
+  A<CSSVariableData> m_data;
+};
+template<>
+struct DowncastTraits<CSSUnparsedDeclarationValue> {
+  static bool AllowFrom(const CSSValue& from) {
+    return from.IsUnparsedDeclarationClass();
+  }
 };
 
 }

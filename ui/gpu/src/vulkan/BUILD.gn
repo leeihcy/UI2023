@@ -6,7 +6,7 @@
 
 config("vulkan_config") {
   defines = [ "ENABLE_VULKAN" ]
-
+  
   VULKAN_SDK_DIR = exec_script("//build_tools/scripts/getenv.py", ["VULKAN_SDK_DIR"], "string")
   print("VULKAN_SDK_DIR: " + VULKAN_SDK_DIR)
   if (is_win) {

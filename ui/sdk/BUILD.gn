@@ -63,6 +63,7 @@ shared_library("uisdk") {
         "//ui/3rd/zlib/",
         "//third_party/skia/src/",
         "//third_party/skia/src/include/core/",
+        "$target_gen_dir/",
     ]
 
     if (enable_python) {

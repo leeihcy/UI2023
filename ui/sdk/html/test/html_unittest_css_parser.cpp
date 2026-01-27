@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <string>
 #include <tuple>
+#include "test/test.h"
 
 using html::A;
 
@@ -386,20 +387,16 @@ void test7_parse_selector() {
 }
 
 void test8_parse_sheet() {
-
-  // auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-  // auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  // @namespace html "https://123.com";
-  // @namespace "https://default";
   std::string css = R"CSS(
+    @namespace html "https://123.com";
+    @namespace "https://default";
     #first {
-      color: red;
+      background-color: red;
       --x:foo;
       --y:foo;
     }
     #second {
-      color: green;
+      background-color: green;
       --x:bar;
       --y:bar;
     }
@@ -409,18 +406,19 @@ void test8_parse_sheet() {
   html::CSSParser parser;
   parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
 
-#if 0
-  CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kNo);
-  StyleRule* rule0 = RuleAt(style_sheet, 0);
-  StyleRule* rule1 = RuleAt(style_sheet, 1);
-  MutableCSSPropertyValueSet& set0 = rule0->MutableProperties();
-  MutableCSSPropertyValueSet& set1 = rule1->MutableProperties();
+  assert(style_sheet.RuleCount() == 2);
+  html::StyleRule* rule0 = style_sheet.RuleAt(0);
+  html::StyleRule* rule1 = style_sheet.RuleAt(1);
 
-  EXPECT_EQ(3u, set0.PropertyCount());
-  EXPECT_EQ("red", set0.GetPropertyValue(CSSPropertyID::kColor));
-  EXPECT_EQ("foo", set0.GetPropertyValue(AtomicString("--x")));
-  EXPECT_EQ("foo", set0.GetPropertyValue(AtomicString("--y")));
+  html::CSSPropertyValueSet* set0 = rule0->GetProperties();
+  html::CSSPropertyValueSet* set1 = rule1->GetProperties();
+
+  EXPECT_EQ(3u, set0->Count());
+#if 0
+  EXPECT_EQ("red", set0->GetPropertyValue(html::CSSPropertyID::BackgroundColor)->CssText());
+  EXPECT_EQ("foo", set0->GetPropertyValue(html::AtomicString(u"--x"))->CssText());
+  EXPECT_EQ("foo", set0->GetPropertyValue(html::AtomicString(u"--y"))->CssText());
+
   EXPECT_EQ(3u, set1.PropertyCount());
   EXPECT_EQ("green", set1.GetPropertyValue(CSSPropertyID::kColor));
   EXPECT_EQ("bar", set1.GetPropertyValue(AtomicString("--x")));

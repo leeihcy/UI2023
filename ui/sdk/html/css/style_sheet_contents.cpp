@@ -68,4 +68,11 @@ void StyleSheetContents::ParserAppendRule(A<StyleRuleBase>&& rule) {
   m_child_rules.push_back(std::move(rule));
 }
 
+StyleRule* StyleSheetContents::RuleAt(size_t index) const {
+  if (index >= m_child_rules.size()) {
+    return nullptr;
+  }
+  return DynamicTo<StyleRule>(m_child_rules[index].get());
+}
+
 }

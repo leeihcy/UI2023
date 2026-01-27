@@ -18,6 +18,10 @@ public:
   void ParserAddNamespace(const AtomicString &prefix, const AtomicString &uri);
 
   void ParserAppendRule(A<StyleRuleBase>&& rule);
+
+  StyleRule* RuleAt(size_t index) const;
+  size_t RuleCount() const { return m_child_rules.size(); }
+
 private:
   AtomicString m_default_namespace = g_star_atom;
 

@@ -6,6 +6,7 @@
 #include "html/css/parser/css_parser_token.h"
 #include "html/css/parser/css_property_parser.h"
 #include "html/css/parser/css_selector_parser.h"
+#include "html/css/css_variable_data.h"
 #include "html/css/parser/css_variable_parser.h"
 #include "html/css/property/property_id.h"
 #include "html/css/property/value_id.h"
@@ -92,7 +93,7 @@ void CSSParser::ConsumeBlockContents(
         break;
       }
       if (context.token_stream.Peek().Type() == CSSParserTokenType::Semicolon) {
-        assert(false); // TODO: 什么场景?
+        // 遇到未知的Property Id。跳过这个Property
         context.token_stream.Consume(); // Semicolon
         break;
       }
@@ -309,7 +310,14 @@ bool CSSParser::ConsumeDeclaration(CSSParserContext& context, StyleRule::RuleTyp
     }
   }
 
-  return true;
+  // if (!id) {
+  //   A<CSSVariableData> temp = CSSVariableParser::ConsumeUnparsedDeclaration(
+  //       context.token_stream, true, false, false, true, false, important);
+  // }
+  // context.token_stream.SkipUntilPeekedTypeIs<CSSParserTokenType::LeftBrace,
+  //                                            CSSParserTokenType::Semicolon>();
+
+  return context.parsed_properties.size() != properties_count;
 }
 
 void CSSParser::ConsumeDeclarationValue(CSSParserContext &context,
@@ -677,8 +685,6 @@ bool CSSParser::ConsumeVariableValue(CSSParserContext& context,
   A<CSSValue> value = CSSPropertyParser::ConsumeCSSWideKeyword(
       context, allow_important_annotation, important);
   if (!value) {
-    assert(false);
-#if 0
     A<CSSVariableData> variable_data =
         CSSVariableParser::ConsumeUnparsedDeclaration(
             stream, allow_important_annotation, is_animation_tainted,
@@ -689,8 +695,8 @@ bool CSSParser::ConsumeVariableValue(CSSParserContext& context,
       return false;
     }
 
-    value = A<CSSUnparsedDeclarationValue>::make_new(variable_data/*, context_*/);
-#endif    
+    value.reset(A<CSSUnparsedDeclarationValue>::make_new(
+        std::move(variable_data) /*, context_*/));
   }
   context.parsed_properties.push_back(
       CSSPropertyValue(CSSPropertyName(variable_name), std::move(value), important));

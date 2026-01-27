@@ -43,9 +43,10 @@ source_set("html") {
     "css/property/css_value.h",
     "css/property/css_value.cpp",
 
+    "$target_gen_dir/css/property/property_id_enum.h",
     "css/property/property_id.h",
     "css/property/property_id.cpp",
-    "$target_gen_dir/css/property/css_property_id_hash.cpp",
+    "$target_gen_dir/css/property/property_id_hash.cpp",
 
     "css/property/value_id.h",
     "css/property/value_id.cpp",
@@ -77,7 +78,8 @@ source_set("html") {
   }
 
   include_dirs=[
-    "//ui/sdk"
+    "//ui/sdk",
+    "$target_gen_dir/../",
   ]
 
   deps=[
@@ -89,19 +91,18 @@ source_set("html") {
 
 # 生成property name->id 的完美Hash
 action("gen_property_id_hash") {
-  script="hash_gen.py"
+  script="perf_hash.py"
   inputs = [
-    "css/property/property_id.h",
+    "css/property/property_id.json5",
   ]
   args = [
     rebase_path(inputs[0]),  # input file path
-    "CSSPropertyID",    # class name
-    "css_property_id",  # name
     rebase_path("$target_gen_dir/css/property")
   ]
   outputs = [
-    "$target_gen_dir/css/property/css_property_id.template",
-    "$target_gen_dir/css/property/css_property_id_hash.cpp",
+    "$target_gen_dir/css/property/property_id_enum.h",
+    "$target_gen_dir/css/property/property_id_hash.template",
+    "$target_gen_dir/css/property/property_id_hash.cpp",
   ]
 }
 # 生成property value->id 的完美Hash
@@ -124,18 +125,17 @@ action("gen_value_id_hash") {
 
 # 生成AtRuleDescriptorID value->id 的完美Hash
 action("gen_atrule_descriptor_id_hash") {
-  script="hash_gen.py"
+  script="perf_hash.py"
   inputs = [
-    "css/parser/at_rule_descriptor_id.h",
+    "css/parser/at_rule_descriptor_id.json5",
   ]
   args = [
     rebase_path(inputs[0]),  # input file path
-    "AtRuleDescriptorID",    # class name
-    "at_rule_descriptor_id", # name
     rebase_path("$target_gen_dir/css/parser"),
   ]
   outputs = [
-    "$target_gen_dir/css/parser/at_rule_descriptor_id.template",
+    "$target_gen_dir/css/parser/at_rule_descriptor_id_enum.h",
+    "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.template",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.cpp",
   ]
 }

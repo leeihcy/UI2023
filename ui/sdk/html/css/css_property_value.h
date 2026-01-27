@@ -19,13 +19,13 @@ public:
   CSSPropertyValue() {}
 
   CSSPropertyID Id() { return m_property_id; }
-  const std::string& CustomPropertyName() { return m_custom_property_name;}
+  const AtomicString& CustomPropertyName() { return m_custom_property_name;}
   const CSSValue* Value() { return m_value.get(); }
   bool IsImportant() { return m_important; }
   void SetImportant(bool important) { m_important = important; }
 private:
   CSSPropertyID m_property_id;
-  std::string m_custom_property_name;
+  AtomicString m_custom_property_name;
   A<CSSValue> m_value = nullptr;
   bool m_important = false;
 };

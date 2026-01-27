@@ -1,4 +1,5 @@
 #include "html/css/parser/css_parser_token.h"
+#include "html/css/property/property_id.h"
 
 namespace html {
 

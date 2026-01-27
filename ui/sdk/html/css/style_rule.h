@@ -70,6 +70,8 @@ public:
   void SetProperties(std::vector<CSSPropertyValue>&& properties) {
     m_properties.reset(A<CSSPropertyValueSet>::make_new(std::move(properties)));
   }
+  CSSPropertyValueSet* GetProperties() { return m_properties.get(); }
+
 private:
   A<CSSPropertyValueSet> m_properties = nullptr;
   std::vector<A<StyleRuleBase>> m_child_rules;

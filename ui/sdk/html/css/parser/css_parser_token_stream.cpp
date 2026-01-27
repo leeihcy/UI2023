@@ -105,13 +105,15 @@ void CSSParserTokenStream::SkipToEndOfBlock() {
   while (nesting_level != 0) {
     CSSParserToken token = m_tokenizer->NextToken(true);
     if (token.IsEOF()) {
-      break;
+      return;
     } else if (token.GetBlockType() == CSSParserTokenBlockType::Start) {
       nesting_level++;
     } else if (token.GetBlockType() == CSSParserTokenBlockType::End) {
       nesting_level--;
     }
   }
+  // 去掉最后的}
+  Consume();
 }
 
 // CSSParserToken CSSParserTokenStream::NextInputToken() {
