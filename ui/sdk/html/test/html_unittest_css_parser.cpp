@@ -31,7 +31,7 @@ void test1_perfect_hash_function() {
       {"not_exist", html::CSSPropertyID::Invalid},
     };
     for (auto& [name, id] : data) {
-      auto proerty_id = html::CSSPropertyIDMap(name.c_str(), name.length());
+      auto proerty_id = html::ResolveCSSPropertyID(name.c_str(), name.length());
       assert(proerty_id == id);
     }
   }

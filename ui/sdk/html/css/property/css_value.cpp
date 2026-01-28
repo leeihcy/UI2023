@@ -132,7 +132,7 @@ CSSIdentifierValue::CSSIdentifierValue(CSSValueID id)
 }
 
 AtomicString CSSIdentifierValue::CustomCSSText() const {
-  const char* text = CSSValueIDName(m_value_id);
+  const char* text = CSSValueIDString(m_value_id);
   return AtomicString(text);
 }
 

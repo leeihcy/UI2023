@@ -4,7 +4,7 @@
 namespace html {
 
 AtRuleDescriptorID AtRuleDescriptorNameToId(const std::u16string& name) {
-  int length = name.length();
+  size_t length = name.length();
 
   if (length == 0) {
     return AtRuleDescriptorID::Invalid;
@@ -16,10 +16,10 @@ AtRuleDescriptorID AtRuleDescriptorNameToId(const std::u16string& name) {
     return AtRuleDescriptorID::Invalid;
   }
   std::string ascii_name;
-  if (!UnicodeToLowerAscii(name, ascii_name)) {
+  if (!QuasiUnicodeToLowerAscii(name, ascii_name)) {
     return AtRuleDescriptorID::Invalid;
   }
 
-  return AtRuleDescriptorIDMap(ascii_name.c_str(), ascii_name.length());
+  return ResolveAtRuleDescriptorID(ascii_name.c_str(), (unsigned int)ascii_name.length());
 }
 }

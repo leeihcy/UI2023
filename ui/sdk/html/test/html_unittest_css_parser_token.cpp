@@ -54,7 +54,7 @@ bool equal(double d1, double d2) {
 // https://www.w3.org/TR/css-syntax-3/#consume-numeric-token
 void test_tokenizer_4_3_3_Consume_a_numeric_token() {
   {
-    std::tuple<std::u16string, int> datas[] = {
+    std::tuple<std::u16string, uint64_t> datas[] = {
       {u"0", 0},
       {u"123456", 123456},
       {u"1234567890", 1234567890},

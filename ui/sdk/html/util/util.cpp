@@ -61,6 +61,7 @@ bool Utf8ToUnicode(const char* utf8, size_t utf8_length, std::u16string &out_uni
   return true;
 }
 
+// 仅针对于已知的string，如tag、property id等一定是ascii字符的文本进行转换。
 bool UnicodeToLower(const std::u16string& unicode, std::u16string& out) {
   out.clear();
   
@@ -77,7 +78,9 @@ bool UnicodeToLower(const std::u16string& unicode, std::u16string& out) {
   }
   return true;
 }
-bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) {
+
+// 仅针对于已知的string，如tag、property id等一定是ascii字符的文本进行转换。
+bool QuasiUnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) {
   out_ascii.clear();
   
   int length = unicode.length();
@@ -89,6 +92,20 @@ bool UnicodeToLowerAscii(const std::u16string& unicode, std::string& out_ascii) 
       return false;
     }
     out_ascii[i] = (char)std::tolower((char)c);
+  }
+  return true;
+}
+
+bool QuasiAsciiToUnicode(const char* text, std::u16string& out_unicode) {
+  if (!text) {
+    return false;
+  }
+  int length = strlen(text);
+  out_unicode.resize(length);
+
+   for (int i = 0; i < length; i++) {
+    char16_t c = text[i];
+    out_unicode[i] = (char)c;
   }
   return true;
 }

@@ -15,11 +15,11 @@ CSSValueID CSSValueNameToId(const std::u16string& name) {
     return CSSValueID::Invalid;
   }
   std::string ascii_name;
-  if (!UnicodeToLowerAscii(name, ascii_name)) {
+  if (!QuasiUnicodeToLowerAscii(name, ascii_name)) {
     return CSSValueID::Invalid;
   }
 
-  return CSSValueIDMap(ascii_name.c_str(), ascii_name.length());
+  return ResolveCSSValueID(ascii_name.c_str(), ascii_name.length());
 }
 
 

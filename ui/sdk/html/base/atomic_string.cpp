@@ -10,7 +10,9 @@ const AtomicString g_empty_atom = g_cache.Get(u"");
 const AtomicString g_star_atom = g_cache.Get(u"*");
 
 AtomicString::AtomicString(const char* text) {
-  assert(false); // TODO:
+  std::u16string unicode;
+  QuasiAsciiToUnicode(text, unicode);
+  m_text = g_cache.Get(unicode).m_text;
 }
 AtomicString::AtomicString(const char16_t* text):m_text(g_cache.Get(text).m_text) {
 }

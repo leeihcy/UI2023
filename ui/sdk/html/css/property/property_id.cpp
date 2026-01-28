@@ -16,11 +16,11 @@ CSSPropertyID CSSPropertyNameToId(const std::u16string& name) {
     return CSSPropertyID::Invalid;
   }
   std::string ascii_name;
-  if (!UnicodeToLowerAscii(name, ascii_name)) {
+  if (!QuasiUnicodeToLowerAscii(name, ascii_name)) {
     return CSSPropertyID::Invalid;
   }
 
-  return CSSPropertyIDMap(ascii_name.c_str(), ascii_name.length());
+  return ResolveCSSPropertyID(ascii_name.c_str(), ascii_name.length());
 }
 
 }

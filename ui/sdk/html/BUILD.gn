@@ -95,7 +95,7 @@ source_set("html") {
 
 # 生成property name->id 的完美Hash
 action("gen_property_id_hash") {
-  script="perf_hash.py"
+  script="perfect_hash.py"
   inputs = [
     "css/property/property_id.json5",
   ]
@@ -111,7 +111,7 @@ action("gen_property_id_hash") {
 }
 # 生成property value->id 的完美Hash
 action("gen_value_id_hash") {
-  script="perf_hash.py"
+  script="perfect_hash.py"
   inputs = [
     "css/property/value_id.json5",
   ]
@@ -128,7 +128,7 @@ action("gen_value_id_hash") {
 
 # 生成AtRuleDescriptorID value->id 的完美Hash
 action("gen_atrule_descriptor_id_hash") {
-  script="perf_hash.py"
+  script="perfect_hash.py"
   inputs = [
     "css/parser/at_rule_descriptor_id.json5",
   ]
