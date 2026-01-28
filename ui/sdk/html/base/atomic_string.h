@@ -15,6 +15,7 @@ namespace html {
 class AtomicString {
 public:
   AtomicString() {}
+  AtomicString(const char* text);
   AtomicString(const char16_t* text);
   AtomicString(const std::u16string& text);
   AtomicString(std::shared_ptr<std::u16string> text) : m_text(text) {}

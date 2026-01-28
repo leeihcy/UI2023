@@ -1,0 +1,356 @@
+{
+  class_name: "CSSValueID",
+  data: [
+
+    { id: "Invalid" },
+
+    // Wide Keywords
+    { id: "Initial", name: "initial" },
+    { id: "Inherit", name: "inherit" },
+    { id: "Unset", name: "unset" },
+    { id: "Revert", name: "revert" },
+    { id: "RevertLayer", name: "revert-layer" },
+
+    { id: "Auto", name: "auto" },
+    { id: "Contain", name: "contain" },
+    { id: "Cover", name: "cover" },
+
+    { id: "Top", name: "top" },
+    { id: "Bottom", name: "bottom" },
+    { id: "Left", name: "left" },
+    { id: "Right", name: "right" },
+    { id: "Center", name: "center" },
+
+    { id: "BorderBox", name: "border-box" },
+    { id: "PaddingBox", name: "padding-box" },
+    { id: "ContentBox", name: "center-box" },
+    { id: "Text", name: "text" },
+
+    { id: "Scroll", name: "scroll" },
+    { id: "Fixed", name: "fixed" },
+    { id: "Local", name: "local" },
+
+    { id: "None", name: "none" },
+    { id: "Url", name: "url" },
+
+    { id: "Repeat", name: "repeat" },
+    { id: "RepeatX", name: "repeat-x" },
+    { id: "RepeatY", name: "repeat-y" },
+    { id: "Space", name: "space" },
+    { id: "Round", name: "round" },
+    { id: "NoRepeat", name: "no-repeat" },
+
+    { id: "Var", name: "var" },
+    { id: "Env", name: "env" },
+    { id: "Attr", name: "attr" },
+
+    // https://www.w3.org/wiki/CSS/Properties/color/keywords
+    { id: "ColorBasicStart" },
+
+    // black	#000000	0,0,0
+    { id: "ColorBasicBlack", name: "black" },
+    // silver	#C0C0C0	192,192,192
+    { id: "ColorBasicSilver", name: "silver" },
+    // gray	#808080	128,128,128
+    { id: "ColorBasicGray", name: "gray" },
+    // white	#FFFFFF	255,255,255
+    { id: "ColorBasicWhite", name: "white" },
+    // maroon	#800000	128,0,0
+    { id: "ColorBasicMaroon", name: "maroon" },
+    // red	#FF0000	255,0,0
+    { id: "ColorBasicRed", name: "red" },
+    // purple	#800080	128,0,128
+    { id: "ColorBasicPurple", name: "purple" },
+    // fuchsia	#FF00FF	255,0,255
+    { id: "ColorBasicFuchsia", name: "fuchsia" },
+    // green	#008000	0,128,0
+    { id: "ColorBasicGreen", name: "green" },
+    // lime	#00FF00	0,255,0
+    { id: "ColorBasicLime", name: "lime" },
+    // olive	#808000	128,128,0
+    { id: "ColorBasicOlive", name: "olive" },
+    // yellow	#FFFF00	255,255,0
+    { id: "ColorBasicYellow", name: "yellow" },
+    // navy	#000080	0,0,128
+    { id: "ColorBasicNavy", name: "navy" },
+    // blue	#0000FF	0,0,255
+    { id: "ColorBasicBlue", name: "blue" },
+    // teal	#008080	0,128,128
+    { id: "ColorBasicTeal", name: "teal" },
+    // aqua	#00FFFF	0,255,255
+    { id: "ColorBasicAqua", name: "aqua" },
+
+    { id: "ColorBasicEnd" },
+    { id: "ColorExtendedStart" },
+
+    // aliceblue	#f0f8ff	240,248,255
+    { id: "ColorExtendedAliceblue", name: "aliceblue" },
+    // antiquewhite	#faebd7	250,235,21
+    { id: "ColorExtendedAntiquewhite", name: "antiquewhite" },
+    // aquamarine	#7fffd4	127,255,212
+    { id: "ColorExtendedAquamarine", name: "aquamarine" },
+    // azure	#f0ffff	240,255,255
+    { id: "ColorExtendedAzure", name: "azure" },
+    // beige	#f5f5dc	245,245,220
+    { id: "ColorExtendedBeige", name: "beige" },
+    // bisque	#ffe4c4	255,228,196
+    { id: "ColorExtendedBisque", name: "bisque" },
+    // blanchedalmond	#ffebcd	255,235,
+    { id: "ColorExtendedBlanchedalmond", name: "blanchedalmond" },
+    // blueviolet	#8a2be2	138,43,226
+    { id: "ColorExtendedBlueviolet", name: "blueviolet" },
+    // brown	#a52a2a	165,42,42
+    { id: "ColorExtendedBrown", name: "brown" },
+    // burlywood	#deb887	222,184,135
+    { id: "ColorExtendedBurlywood", name: "burlywood" },
+    // cadetblue	#5f9ea0	95,158,160
+    { id: "ColorExtendedCadetblue", name: "cadetblue" },
+    // chartreuse	#7fff00	127,255,0
+    { id: "ColorExtendedChartreuse", name: "chartreuse" },
+    // chocolate	#d2691e	210,105,30
+    { id: "ColorExtendedChocolate", name: "chocolate" },
+    // coral	#ff7f50	255,127,80
+    { id: "ColorExtendedCoral", name: "coral" },
+    // cornflowerblue	#6495ed	100,149,
+    { id: "ColorExtendedCornflowerblue", name: "cornflowerblue" },
+    // cornsilk	#fff8dc	255,248,220
+    { id: "ColorExtendedCornsilk", name: "cornsilk" },
+    // crimson	#dc143c	220,20,60
+    { id: "ColorExtendedCrimson", name: "crimson" },
+    // cyan	#00ffff	0,255,255
+    { id: "ColorExtendedCyan", name: "cyan" },
+    // darkblue	#00008b	0,0,139
+    { id: "ColorExtendedDarkblue", name: "darkblue" },
+    // darkcyan	#008b8b	0,139,139
+    { id: "ColorExtendedDarkcyan", name: "darkcyan" },
+    // darkgoldenrod	#b8860b	184,134,11
+    { id: "ColorExtendedDarkgoldenrod", name: "darkgoldenrod" },
+    // darkgray	#a9a9a9	169,169,169
+    { id: "ColorExtendedDarkgray", name: "darkgray" },
+    // darkgreen	#006400	0,100,0
+    { id: "ColorExtendedDarkgreen", name: "darkgreen" },
+    // darkgrey	#a9a9a9	169,169,169
+    { id: "ColorExtendedDarkgrey", name: "darkgrey" },
+    // darkkhaki	#bdb76b	189,183,107
+    { id: "ColorExtendedDarkkhaki", name: "darkkhaki" },
+    // darkmagenta	#8b008b	139,0,139
+    { id: "ColorExtendedDarkmagenta", name: "darkmagenta" },
+    // darkolivegreen	#556b2f	85,107,4
+    { id: "ColorExtendedDarkolivegreen", name: "darkolivegreen" },
+    // darkorange	#ff8c00	255,140,0
+    { id: "ColorExtendedDarkorange", name: "darkorange" },
+    // darkorchid	#9932cc	153,50,204
+    { id: "ColorExtendedDarkorchid", name: "darkorchid" },
+    // darkred	#8b0000	139,0,0
+    { id: "ColorExtendedDarkred", name: "darkred" },
+    // darksalmon	#e9967a	233,150,122
+    { id: "ColorExtendedDarksalmon", name: "darksalmon" },
+    // darkseagreen	#8fbc8f	143,188,14
+    { id: "ColorExtendedDarkseagreen", name: "darkseagreen" },
+    // darkslateblue	#483d8b	72,61,139
+    { id: "ColorExtendedDarkslateblue", name: "darkslateblue" },
+    // darkslategray	#2f4f4f	47,79,79
+    { id: "ColorExtendedDarkslategray", name: "darkslategray" },
+    // darkslategrey	#2f4f4f	47,79,79
+    { id: "ColorExtendedDarkslategrey", name: "darkslategrey" },
+    // darkturquoise	#00ced1	0,206,209
+    { id: "ColorExtendedDarkturquoise", name: "darkturquoise" },
+    // darkviolet	#9400d3	148,0,211
+    { id: "ColorExtendedDarkviolet", name: "darkviolet" },
+    // deeppink	#ff1493	255,20,147
+    { id: "ColorExtendedDeeppink", name: "deeppink" },
+    // deepskyblue	#00bfff	0,191,255
+    { id: "ColorExtendedDeepskyblue", name: "deepskyblue" },
+    // dimgray	#696969	105,105,105
+    { id: "ColorExtendedDimgray", name: "dimgray" },
+    // dimgrey	#696969	105,105,105
+    { id: "ColorExtendedDimgrey", name: "dimgrey" },
+    // dodgerblue	#1e90ff	30,144,255
+    { id: "ColorExtendedDodgerblue", name: "dodgerblue" },
+    // firebrick	#b22222	178,34,34
+    { id: "ColorExtendedFirebrick", name: "firebrick" },
+    // floralwhite	#fffaf0	255,250,240
+    { id: "ColorExtendedFloralwhite", name: "floralwhite" },
+    // forestgreen	#228b22	34,139,34
+    { id: "ColorExtendedForestgreen", name: "forestgreen" },
+    // gainsboro	#dcdcdc	220,220,220
+    { id: "ColorExtendedGainsboro", name: "gainsboro" },
+    // ghostwhite	#f8f8ff	248,248,255
+    { id: "ColorExtendedGhostwhite", name: "ghostwhite" },
+    // gold	#ffd700	255,215,0
+    { id: "ColorExtendedGold", name: "gold" },
+    // goldenrod	#daa520	218,165,32
+    { id: "ColorExtendedGoldenrod", name: "goldenrod" },
+    // greenyellow	#adff2f	173,255,47
+    { id: "ColorExtendedGreenyellow", name: "greenyellow" },
+    // grey	#808080	128,128,128
+    { id: "ColorExtendedGrey", name: "grey" },
+    // honeydew	#f0fff0	240,255,240
+    { id: "ColorExtendedHoneydew", name: "honeydew" },
+    // hotpink	#ff69b4	255,105,180
+    { id: "ColorExtendedHotpink", name: "hotpink" },
+    // indianred	#cd5c5c	205,92,92
+    { id: "ColorExtendedIndianred", name: "indianred" },
+    // indigo	#4b0082	75,0,130
+    { id: "ColorExtendedIndigo", name: "indigo" },
+    // ivory	#fffff0	255,255,240
+    { id: "ColorExtendedIvory", name: "ivory" },
+    // khaki	#f0e68c	240,230,140
+    { id: "ColorExtendedKhaki", name: "khaki" },
+    // lavender	#e6e6fa	230,230,250
+    { id: "ColorExtendedLavender", name: "lavender" },
+    // lavenderblush	#fff0f5	255,240,24
+    { id: "ColorExtendedLavenderblush", name: "lavenderblush" },
+    // lawngreen	#7cfc00	124,252,0
+    { id: "ColorExtendedLawngreen", name: "lawngreen" },
+    // lemonchiffon	#fffacd	255,250,20
+    { id: "ColorExtendedLemonchiffon", name: "lemonchiffon" },
+    // lightblue	#add8e6	173,216,230
+    { id: "ColorExtendedLightblue", name: "lightblue" },
+    // lightcoral	#f08080	240,128,128
+    { id: "ColorExtendedLightcoral", name: "lightcoral" },
+    // lightcyan	#e0ffff	224,255,255
+    { id: "ColorExtendedLightcyan", name: "lightcyan" },
+    // lightgoldenrodyellow	#fafad2	25
+    { id: "ColorExtendedLightgoldenrodyellow", name: "lightgoldenrodyellow" },
+    // lightgray	#d3d3d3	211,211,211
+    { id: "ColorExtendedLightgray", name: "lightgray" },
+    // lightgreen	#90ee90	144,238,144
+    { id: "ColorExtendedLightgreen", name: "lightgreen" },
+    // lightgrey	#d3d3d3	211,211,211
+    { id: "ColorExtendedLightgrey", name: "lightgrey" },
+    // lightpink	#ffb6c1	255,182,193
+    { id: "ColorExtendedLightpink", name: "lightpink" },
+    // lightsalmon	#ffa07a	255,160,122
+    { id: "ColorExtendedLightsalmon", name: "lightsalmon" },
+    // lightseagreen	#20b2aa	32,178,170
+    { id: "ColorExtendedLightseagreen", name: "lightseagreen" },
+    // lightskyblue	#87cefa	135,206,25
+    { id: "ColorExtendedLightskyblue", name: "lightskyblue" },
+    // lightslategray	#778899	119,136,
+    { id: "ColorExtendedLightslategray", name: "lightslategray" },
+    // lightslategrey	#778899	119,136,
+    { id: "ColorExtendedLightslategrey", name: "lightslategrey" },
+    // lightsteelblue	#b0c4de	176,196,
+    { id: "ColorExtendedLightsteelblue", name: "lightsteelblue" },
+    // lightyellow	#ffffe0	255,255,224
+    { id: "ColorExtendedLightyellow", name: "lightyellow" },
+    // limegreen	#32cd32	50,205,50
+    { id: "ColorExtendedLimegreen", name: "limegreen" },
+    // linen	#faf0e6	250,240,230
+    { id: "ColorExtendedLinen", name: "linen" },
+    // magenta	#ff00ff	255,0,255
+    { id: "ColorExtendedMagenta", name: "magenta" },
+    // mediumaquamarine	#66cdaa	102,20
+    { id: "ColorExtendedMediumaquamarine", name: "mediumaquamarine" },
+    // mediumblue	#0000cd	0,0,205
+    { id: "ColorExtendedMediumblue", name: "mediumblue" },
+    // mediumorchid	#ba55d3	186,85,211
+    { id: "ColorExtendedMediumorchid", name: "mediumorchid" },
+    // mediumpurple	#9370db	147,112,21
+    { id: "ColorExtendedMediumpurple", name: "mediumpurple" },
+    // mediumseagreen	#3cb371	60,179,1
+    { id: "ColorExtendedMediumseagreen", name: "mediumseagreen" },
+    // mediumslateblue	#7b68ee	123,104,
+    { id: "ColorExtendedMediumslateblue", name: "mediumslateblue" },
+    // mediumspringgreen	#00fa9a	0,250,
+    { id: "ColorExtendedMediumspringgreen", name: "mediumspringgreen" },
+    // mediumturquoise	#48d1cc	72,209,2
+    { id: "ColorExtendedMediumturquoise", name: "mediumturquoise" },
+    // mediumvioletred	#c71585	199,21,1
+    { id: "ColorExtendedMediumvioletred", name: "mediumvioletred" },
+    // midnightblue	#191970	25,25,112
+    { id: "ColorExtendedMidnightblue", name: "midnightblue" },
+    // mintcream	#f5fffa	245,255,250
+    { id: "ColorExtendedMintcream", name: "mintcream" },
+    // mistyrose	#ffe4e1	255,228,225
+    { id: "ColorExtendedMistyrose", name: "mistyrose" },
+    // moccasin	#ffe4b5	255,228,181
+    { id: "ColorExtendedMoccasin", name: "moccasin" },
+    // navajowhite	#ffdead	255,222,173
+    { id: "ColorExtendedNavajowhite", name: "navajowhite" },
+    // oldlace	#fdf5e6	253,245,230
+    { id: "ColorExtendedOldlace", name: "oldlace" },
+    // olivedrab	#6b8e23	107,142,35
+    { id: "ColorExtendedOlivedrab", name: "olivedrab" },
+    // orange	#ffa500	255,165,0
+    { id: "ColorExtendedOrange", name: "orange" },
+    // orangered	#ff4500	255,69,0
+    { id: "ColorExtendedOrangered", name: "orangered" },
+    // orchid	#da70d6	218,112,214
+    { id: "ColorExtendedOrchid", name: "orchid" },
+    // palegoldenrod	#eee8aa	238,232,17
+    { id: "ColorExtendedPalegoldenrod", name: "palegoldenrod" },
+    // palegreen	#98fb98	152,251,152
+    { id: "ColorExtendedPalegreen", name: "palegreen" },
+    // paleturquoise	#afeeee	175,238,23
+    { id: "ColorExtendedPaleturquoise", name: "paleturquoise" },
+    // palevioletred	#db7093	219,112,14
+    { id: "ColorExtendedPalevioletred", name: "palevioletred" },
+    // papayawhip	#ffefd5	255,239,213
+    { id: "ColorExtendedPapayawhip", name: "papayawhip" },
+    // peachpuff	#ffdab9	255,218,185
+    { id: "ColorExtendedPeachpuff", name: "peachpuff" },
+    // peru	#cd853f	205,133,63
+    { id: "ColorExtendedPeru", name: "peru" },
+    // pink	#ffc0cb	255,192,203
+    { id: "ColorExtendedPink", name: "pink" },
+    // plum	#dda0dd	221,160,221
+    { id: "ColorExtendedPlum", name: "plum" },
+    // powderblue	#b0e0e6	176,224,230
+    { id: "ColorExtendedPowderblue", name: "powderblue" },
+    // rosybrown	#bc8f8f	188,143,143
+    { id: "ColorExtendedRosybrown", name: "rosybrown" },
+    // royalblue	#4169e1	65,105,225
+    { id: "ColorExtendedRoyalblue", name: "royalblue" },
+    // saddlebrown	#8b4513	139,69,19
+    { id: "ColorExtendedSaddlebrown", name: "saddlebrown" },
+    // salmon	#fa8072	250,128,114
+    { id: "ColorExtendedSalmon", name: "salmon" },
+    // sandybrown	#f4a460	244,164,96
+    { id: "ColorExtendedSandybrown", name: "sandybrown" },
+    // seagreen	#2e8b57	46,139,87
+    { id: "ColorExtendedSeagreen", name: "seagreen" },
+    // seashell	#fff5ee	255,245,238
+    { id: "ColorExtendedSeashell", name: "seashell" },
+    // sienna	#a0522d	160,82,45
+    { id: "ColorExtendedSienna", name: "sienna" },
+    // skyblue	#87ceeb	135,206,235
+    { id: "ColorExtendedSkyblue", name: "skyblue" },
+    // slateblue	#6a5acd	106,90,205
+    { id: "ColorExtendedSlateblue", name: "slateblue" },
+    // slategray	#708090	112,128,144
+    { id: "ColorExtendedSlategray", name: "slategray" },
+    // slategrey	#708090	112,128,144
+    { id: "ColorExtendedSlategrey", name: "slategrey" },
+    // snow	#fffafa	255,250,250
+    { id: "ColorExtendedSnow", name: "snow" },
+    // springgreen	#00ff7f	0,255,127
+    { id: "ColorExtendedSpringgreen", name: "springgreen" },
+    // steelblue	#4682b4	70,130,180
+    { id: "ColorExtendedSteelblue", name: "steelblue" },
+    // tan	#d2b48c	210,180,140
+    { id: "ColorExtendedTan", name: "tan" },
+    // thistle	#d8bfd8	216,191,216
+    { id: "ColorExtendedThistle", name: "thistle" },
+    // tomato	#ff6347	255,99,71
+    { id: "ColorExtendedTomato", name: "tomato" },
+    // turquoise	#40e0d0	64,224,208
+    { id: "ColorExtendedTurquoise", name: "turquoise" },
+    // violet	#ee82ee	238,130,238
+    { id: "ColorExtendedViolet", name: "violet" },
+    // wheat	#f5deb3	245,222,179
+    { id: "ColorExtendedWheat", name: "wheat" },
+    // whitesmoke	#f5f5f5	245,245,245
+    { id: "ColorExtendedWhitesmoke", name: "whitesmoke" },
+    // yellowgreen	#9acd32	154,205,50
+    { id: "ColorExtendedYellowgreen", name: "yellowgreen" },
+
+    { id: "ColorExtendedEnd" },
+    
+    { id: "Transparent", name: "transparent" },
+
+    // Function
+    { id: "ColorMix", name: "color-mix" },
+  ]
+}

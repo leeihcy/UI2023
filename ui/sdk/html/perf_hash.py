@@ -71,12 +71,13 @@ def parse_class_info():
   class_info.class_name = json_data["class_name"]
 
   for i in json_data["data"]:
-    class_info.list.append((i.get("id"), i.get("text")))
+    class_info.list.append((i.get("id"), i.get("name")))
 
 
 # 生成头文件
 def gen_header():
   header_file_path = opt.header_file_path()
+  class_name = class_info.class_name
 
   define_text = opt.include_text().upper().replace("/", "_").replace(".", "_")
   with open(header_file_path, "w", encoding="utf-8") as f:
@@ -88,16 +89,19 @@ def gen_header():
 
 namespace html {{
 
-enum class {class_info.class_name} : unsigned short {{
+enum class {class_name} : unsigned short {{
 """)
 
     for index, i in enumerate(class_info.list):
       f.write(f"  {i[0]} = {index},\n");
 
-    f.write("""
-};
+    f.write(f"""
+}};
 
-}
+// helper function
+{class_name} {class_name}Map(const char* name, unsigned int len);
+const char* {class_name}Name({class_name} id);
+}}
 
 #endif
 """)
@@ -225,12 +229,12 @@ def gperf():
   class_name = class_info.class_name
   suffix = f"""
 // 外部调用的函数。
-{class_name} {class_name}NameToIdByHash(const char* name, unsigned int len) {{
+{class_name} {class_name}Map(const char* name, unsigned int len) {{
   {class_name}HashEntry* entry = {class_name}Hash::{class_name}NameToId(name, len);
   return entry ? ({class_name})entry->id : html::{class_name}::Invalid;
 }}
 
-const char* Get{class_name}Name({class_name} id) {{
+const char* {class_name}Name({class_name} id) {{
   unsigned short index = (unsigned short)id;
   if (index > sizeof(kStringOffsets)) {{ return nullptr; }}
 

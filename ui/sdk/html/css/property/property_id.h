@@ -10,8 +10,6 @@ constexpr size_t MaxCSSPropertyNameLength = 48;
 
 CSSPropertyID CSSPropertyNameToId(const std::u16string& name);
 
-// perfect hash function.
-CSSPropertyID CSSPropertyIDNameToIdByHash(const char* name, unsigned int len);
 }
 
 #endif

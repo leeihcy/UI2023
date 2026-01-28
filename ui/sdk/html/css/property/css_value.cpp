@@ -1,5 +1,7 @@
 #include "html/css/property/css_value.h"
+#include "html/base/atomic_string.h"
 #include "html/base/memory.h"
+#include "html/css/property/value_id_enum.h"
 #include "html/util/util.h"
 #include <cassert>
 #include <map>
@@ -127,6 +129,11 @@ A<CSSIdentifierValue> CSSIdentifierValue::Create(CSSValueID value_id) {
 CSSIdentifierValue::CSSIdentifierValue(CSSValueID id) 
   : m_value_id(id), CSSValue(CSSValueClassType::Identifier)  {
 
+}
+
+AtomicString CSSIdentifierValue::CustomCSSText() const {
+  const char* text = CSSValueIDName(m_value_id);
+  return AtomicString(text);
 }
 
 A<CSSColorValue> CSSColorValue::Create(const Color& color) {

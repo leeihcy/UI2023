@@ -20,6 +20,6 @@ AtRuleDescriptorID AtRuleDescriptorNameToId(const std::u16string& name) {
     return AtRuleDescriptorID::Invalid;
   }
 
-  return AtRuleDescriptorIDNameToIdByHash(ascii_name.c_str(), ascii_name.length());
+  return AtRuleDescriptorIDMap(ascii_name.c_str(), ascii_name.length());
 }
 }

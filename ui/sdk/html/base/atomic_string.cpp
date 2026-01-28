@@ -9,6 +9,9 @@ const AtomicString g_null_atom = g_cache.Get(nullptr);
 const AtomicString g_empty_atom = g_cache.Get(u"");
 const AtomicString g_star_atom = g_cache.Get(u"*");
 
+AtomicString::AtomicString(const char* text) {
+  assert(false); // TODO:
+}
 AtomicString::AtomicString(const char16_t* text):m_text(g_cache.Get(text).m_text) {
 }
 AtomicString::AtomicString(const std::u16string& text) : m_text(g_cache.Get(text).m_text) {

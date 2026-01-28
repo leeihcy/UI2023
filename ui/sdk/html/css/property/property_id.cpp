@@ -20,7 +20,7 @@ CSSPropertyID CSSPropertyNameToId(const std::u16string& name) {
     return CSSPropertyID::Invalid;
   }
 
-  return CSSPropertyIDNameToIdByHash(ascii_name.c_str(), ascii_name.length());
+  return CSSPropertyIDMap(ascii_name.c_str(), ascii_name.length());
 }
 
 }

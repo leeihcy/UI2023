@@ -1,5 +1,11 @@
 
 source_set("html") {
+  deps=[
+    ":gen_property_id_hash",
+    ":gen_value_id_hash",
+    ":gen_atrule_descriptor_id_hash",
+  ]
+
   sources = [
     "base/memory.h",
     "base/memory.cpp",
@@ -13,6 +19,8 @@ source_set("html") {
     "css/style_sheet_contents.cpp",
     "css/css_selector.h",
     "css/css_selector.cpp",
+    "css/css_property_value_set.h",
+    "css/css_property_value_set.cpp",
 
     "css/parser/css_at_rule_id.cpp",
     "css/parser/css_at_rule_id.h",
@@ -43,17 +51,19 @@ source_set("html") {
     "css/property/css_value.h",
     "css/property/css_value.cpp",
 
-    "$target_gen_dir/css/property/property_id_enum.h",
     "css/property/property_id.h",
     "css/property/property_id.cpp",
+    "$target_gen_dir/css/property/property_id_enum.h",
     "$target_gen_dir/css/property/property_id_hash.cpp",
 
     "css/property/value_id.h",
     "css/property/value_id.cpp",
-    "$target_gen_dir/css/property/css_value_id_hash.cpp",
+    "$target_gen_dir/css/property/value_id_enum.h",
+    "$target_gen_dir/css/property/value_id_hash.cpp",
 
     "css/parser/at_rule_descriptor_id.h",
     "css/parser/at_rule_descriptor_id.cpp",
+    "$target_gen_dir/css/parser/at_rule_descriptor_id_enum.h",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.cpp",
 
     "css/graphics/color.h",
@@ -81,12 +91,6 @@ source_set("html") {
     "//ui/sdk",
     "$target_gen_dir/../",
   ]
-
-  deps=[
-    ":gen_property_id_hash",
-    ":gen_value_id_hash",
-    ":gen_atrule_descriptor_id_hash",
-  ]
 }
 
 # 生成property name->id 的完美Hash
@@ -107,19 +111,18 @@ action("gen_property_id_hash") {
 }
 # 生成property value->id 的完美Hash
 action("gen_value_id_hash") {
-  script="hash_gen.py"
+  script="perf_hash.py"
   inputs = [
-    "css/property/value_id.h",
+    "css/property/value_id.json5",
   ]
   args = [
     rebase_path(inputs[0]),  # input file path
-    "CSSValueID",    # class name
-    "css_value_id",  # name
     rebase_path("$target_gen_dir/css/property")
   ]
   outputs = [
-    "$target_gen_dir/css/property/css_value_id.template",
-    "$target_gen_dir/css/property/css_value_id_hash.cpp",
+    "$target_gen_dir/css/property/value_id_enum.h",
+    "$target_gen_dir/css/property/value_id_hash.template",
+    "$target_gen_dir/css/property/value_id_hash.cpp",
   ]
 }
 

@@ -10,7 +10,6 @@ const int numAtRuleDescriptors = 42;
 const int MaxAtRuleDescriptorNameLength = 24;
 
 AtRuleDescriptorID AtRuleDescriptorNameToId(const std::u16string& name);
-AtRuleDescriptorID AtRuleDescriptorIDNameToIdByHash(const char* name, unsigned int len);
 
 }
 

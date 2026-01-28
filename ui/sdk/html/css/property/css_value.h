@@ -57,12 +57,12 @@ public:
   bool IsUnparsedDeclarationClass() const {
     return m_class_type == CSSValueClassType::UnparsedDeclarationClass;
   }
-  AtomicString CssText() {
+  AtomicString CssText() const {
     return CustomCSSText();
   }
 protected:
   // TODO: Blink没有使用虚函数。
-  virtual AtomicString CustomCSSText() { return g_empty_atom; }
+  virtual AtomicString CustomCSSText() const { return g_empty_atom; }
 private:
   CSSValueClassType m_class_type;
 };
@@ -72,7 +72,7 @@ class CSSInitialValue : public CSSValue {
   static A<CSSInitialValue> Create();
   CSSInitialValue() : CSSValue(CSSValueClassType::Initial) {}
 
-  AtomicString CustomCSSText() override {
+  AtomicString CustomCSSText() const override {
     return AtomicString(u"initial");
   }
 };
@@ -82,7 +82,7 @@ class CSSInheritedValue : public CSSValue {
   static A<CSSInheritedValue> Create();
   CSSInheritedValue() : CSSValue(CSSValueClassType::Inherited) {}
 
-  AtomicString CustomCSSText() override {
+  AtomicString CustomCSSText() const override {
     return AtomicString(u"inherit");
   }
 };
@@ -92,7 +92,7 @@ class CSSUnsetValue : public CSSValue {
   static A<CSSUnsetValue> Create();
   CSSUnsetValue() : CSSValue(CSSValueClassType::Unset) {}
 
-  AtomicString CustomCSSText() override {
+  AtomicString CustomCSSText() const override {
     return AtomicString(u"unset");
   }
 };
@@ -102,7 +102,7 @@ class CSSRevertValue : public CSSValue {
   static A<CSSRevertValue> Create();
   CSSRevertValue() : CSSValue(CSSValueClassType::Revert) {}
 
-  AtomicString CustomCSSText() override {
+  AtomicString CustomCSSText() const override {
     return AtomicString(u"revert");
   }
 };
@@ -112,7 +112,7 @@ class CSSRevertLayerValue : public CSSValue {
   static A<CSSRevertLayerValue> Create();
   CSSRevertLayerValue() : CSSValue(CSSValueClassType::RevertLayer) {}
 
-  AtomicString CustomCSSText() override {
+  AtomicString CustomCSSText() const override {
     return AtomicString(u"revert-layer");
   }
 };
@@ -124,6 +124,8 @@ class CSSIdentifierValue : public CSSValue {
   explicit CSSIdentifierValue(CSSValueID);
 
   CSSValueID GetValueId() const { return m_value_id; }
+
+  AtomicString CustomCSSText() const override;
 protected:
   CSSValueID m_value_id;
 };

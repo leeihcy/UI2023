@@ -1,4 +1,5 @@
 #include "html/css/property/value_id.h"
+#include "html/css/property/value_id_enum.h"
 #include "html/util/util.h"
 
 
@@ -18,7 +19,7 @@ CSSValueID CSSValueNameToId(const std::u16string& name) {
     return CSSValueID::Invalid;
   }
 
-  return CSSValueIDNameToIdByHash(ascii_name.c_str(), ascii_name.length());
+  return CSSValueIDMap(ascii_name.c_str(), ascii_name.length());
 }
 
 

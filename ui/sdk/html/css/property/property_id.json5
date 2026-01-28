@@ -5,18 +5,18 @@
     { id: "Variable" },
 
     // https://www.w3.org/TR/css-backgrounds-4/
-    { id: "Background", text: "background" },
-    { id: "BackgroundAttachment", text: "background-attachment" },
-    { id: "BackgroundClip", text: "background-clip" },
-    { id: "BackgroundColor", text: "background-color" },
-    { id: "BackgroundImage", text: "background-image" },
-    { id: "BackgroundOrigin", text: "background-origin" },
-    { id: "BackgroundPosition", text: "background-position" },
-    { id: "BackgroundPositionX", text: "background-position-x" },
-    { id: "BackgroundPositionY", text: "background-position-y" },
-    { id: "BackgroundRepeat", text: "background-repeat" },
-    { id: "BackgroundSize", text: "background-size" },
-    { id: "BackgroundBlendMode", text: "background-blend-mode" },
+    { id: "Background", name: "background" },
+    { id: "BackgroundAttachment", name: "background-attachment" },
+    { id: "BackgroundClip", name: "background-clip" },
+    { id: "BackgroundColor", name: "background-color" },
+    { id: "BackgroundImage", name: "background-image" },
+    { id: "BackgroundOrigin", name: "background-origin" },
+    { id: "BackgroundPosition", name: "background-position" },
+    { id: "BackgroundPositionX", name: "background-position-x" },
+    { id: "BackgroundPositionY", name: "background-position-y" },
+    { id: "BackgroundRepeat", name: "background-repeat" },
+    { id: "BackgroundSize", name: "background-size" },
+    { id: "BackgroundBlendMode", name: "background-blend-mode" },
     
     { id: "CSSPropertyCount" }
   ]

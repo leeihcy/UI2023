@@ -31,7 +31,7 @@ void test1_perfect_hash_function() {
       {"not_exist", html::CSSPropertyID::Invalid},
     };
     for (auto& [name, id] : data) {
-      auto proerty_id = html::CSSPropertyIDNameToIdByHash(name.c_str(), name.length());
+      auto proerty_id = html::CSSPropertyIDMap(name.c_str(), name.length());
       assert(proerty_id == id);
     }
   }
@@ -414,8 +414,9 @@ void test8_parse_sheet() {
   html::CSSPropertyValueSet* set1 = rule1->GetProperties();
 
   EXPECT_EQ(3u, set0->Count());
-#if 0
-  EXPECT_EQ("red", set0->GetPropertyValue(html::CSSPropertyID::BackgroundColor)->CssText());
+
+  EXPECT_EQ(u"red", set0->GetPropertyValue(html::CSSPropertyID::BackgroundColor)->CssText());
+#if 0  
   EXPECT_EQ("foo", set0->GetPropertyValue(html::AtomicString(u"--x"))->CssText());
   EXPECT_EQ("foo", set0->GetPropertyValue(html::AtomicString(u"--y"))->CssText());
 
