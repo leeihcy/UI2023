@@ -48,7 +48,7 @@ public:
     return *m_text;
   }
 
-  AtomicString Lower();
+  AtomicString Lower() const;
   
 private:
   std::shared_ptr<std::u16string> m_text;

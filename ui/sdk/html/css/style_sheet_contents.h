@@ -21,6 +21,7 @@ public:
 
   StyleRule* RuleAt(size_t index) const;
   size_t RuleCount() const { return m_child_rules.size(); }
+  size_t NamespaceRuleCount() const { return m_namespace_rules.size(); }
 
 private:
   AtomicString m_default_namespace = g_star_atom;

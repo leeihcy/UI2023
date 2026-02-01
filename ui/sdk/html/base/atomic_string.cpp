@@ -19,7 +19,7 @@ AtomicString::AtomicString(const char16_t* text):m_text(g_cache.Get(text).m_text
 AtomicString::AtomicString(const std::u16string& text) : m_text(g_cache.Get(text).m_text) {
 }
 
-AtomicString AtomicString::Lower() {
+AtomicString AtomicString::Lower() const {
   if (IsNull()) {
     return *this;
   }

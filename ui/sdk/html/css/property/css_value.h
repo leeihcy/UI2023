@@ -281,6 +281,7 @@ public:
       : CSSValue(CSSValueClassType::UnparsedDeclarationClass),
         m_data(std::move(data)) {}
 
+  AtomicString CustomCSSText() const override;
 private:
   A<CSSVariableData> m_data;
 };

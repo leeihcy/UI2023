@@ -7,6 +7,8 @@
 #include "html/css/css_selector.h"
 #include "html/css/css_property_value_set.h"
 #include <assert.h>
+#include <cstddef>
+#include <sys/_types/_size_t.h>
 #include <vector>
 
 namespace html {
@@ -55,6 +57,17 @@ public:
   const CSSSelector* FirstSelector() const { 
     return m_selectors.data();
   }
+  size_t GetSelectorCount() const {
+    return m_selectors.size();
+  }
+  const CSSSelector*  GetSelectorAt(size_t index) {
+    if (index > m_selectors.size()) {
+      return nullptr;
+    }
+    return &m_selectors[index];
+  }
+
+
   static A<StyleRule> Create(const std::vector<CSSSelector>& selectors) {
     return A<StyleRule>::make_new(selectors);
   }
@@ -67,6 +80,17 @@ public:
   void AddChildRule(A<StyleRuleBase>&& child) {
     m_child_rules.push_back(std::move(child));
   }
+
+  size_t GetChildRuleCount() {
+    return m_child_rules.size();
+  }
+  StyleRuleBase* ChildRuleAt(size_t index) {
+    if (index >= m_child_rules.size()) {
+      return nullptr;
+    }
+    return m_child_rules[index].get();
+  }
+
   void SetProperties(std::vector<CSSPropertyValue>&& properties) {
     m_properties.reset(A<CSSPropertyValueSet>::make_new(std::move(properties)));
   }

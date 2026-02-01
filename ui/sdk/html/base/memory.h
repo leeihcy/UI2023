@@ -115,7 +115,7 @@ public:
   T* get() const {
     return m_t;
   }
-  operator bool() {
+  operator bool() const {
     return !!m_t;
   }
 

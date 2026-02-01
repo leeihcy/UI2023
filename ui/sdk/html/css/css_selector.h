@@ -57,7 +57,7 @@ public:
   };
 
   enum PseudoType {
-    kUnknown,
+    kPseudoUnknown,
     kPseudoActive,
     kPseudoAfter,
     kPseudoBefore,
@@ -65,33 +65,62 @@ public:
     kPseudoFocus,
     kPseudoHover,
     kPseudoHas,
+
+    kPseudoHost,
+    kPseudoUnparsed,
+    kPseudoScope,
+    kPseudoParent,
   };
 
-  CSSSelector() {}
+  CSSSelector() {
+    OnConstruct();
+  }
   explicit CSSSelector(MatchType match_type, const QualifiedName &attribute,
                        AttributeMatchType case_sensitivity);
   explicit CSSSelector(MatchType match_type, const QualifiedName &attribute,
                        AttributeMatchType case_sensitivity,
                        const AtomicString &value);
 
-  explicit CSSSelector(const StyleRule *parent_rule, bool is_implicit) {
-    assert(false);
+  explicit CSSSelector(const StyleRule *parent_rule, bool is_implicit) :
+    m_parent_rule(parent_rule) {
+    assert(parent_rule);
+    OnConstruct();
   }
   explicit CSSSelector(const AtomicString &pseudo_name, bool is_implicit) {
     assert(false);
+    OnConstruct();
   }
   explicit CSSSelector(const QualifiedName& name, bool tag_is_implicit = false) {
     m_tag_q_name_or_attribute = name;
+    OnConstruct();
   }
+
+  void OnConstruct();
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
 public:
   void SetMatchType(MatchType t) { m_match_type = t; }
+  void SetMatch(MatchType t) { m_match_type = t; }
   MatchType GetMatchType() const { return m_match_type; }
 
   void SetValue(const AtomicString& value) { m_value = value; }
   void SetRelation(CSSSelector::RelationType relation_type) { m_relation_type = relation_type; }
   CSSSelector::RelationType GetRelationType() const { return m_relation_type; }
+
+  void UpdatePseudoType(const AtomicString &value,
+                        /*const CSSParserContext &context, */
+                        bool has_arguments/*,
+                        CSSParserMode mode*/);
+  void SetPseudoType(PseudoType pseudo_type) {
+    m_pseudoType = pseudo_type;
+  }
+  PseudoType GetPseudoType() const {
+    return m_pseudoType;
+  }
+  static CSSSelector::PseudoType NameToPseudoType(
+    const std::u16string& name,
+    bool has_arguments/*,
+    const Document* document*/);
 
   void SetLastInSelectorList(bool b) { 
     m_isLastInSelectorList = b;
@@ -108,21 +137,17 @@ public:
   void SetScopeContaining(bool b) {
     m_isScopeContaining = b;
   }
-  CSSNestingType GetNestingType() const {
-    return m_nesting_type;
-  }
+  CSSNestingType GetNestingType() const;
+  
   const CSSSelectorList* SelectorList() const {
     return m_selector_list;
-  }
-  PseudoType GetPseudoType() const {
-    return m_pseudoType;
   }
   void SetHasArgumentMatchInShadowTree() {
     m_hasArgumentMatchInShadowTree = true;
   }
-  const QualifiedName& GetQualifiedName() { return m_tag_q_name_or_attribute; }
-  const QualifiedName& GetAttribute() { return m_tag_q_name_or_attribute; }
-  const AtomicString& GetValue() { return m_value; }
+  const QualifiedName& GetQualifiedName() const { return m_tag_q_name_or_attribute; }
+  const QualifiedName& GetAttribute() const { return m_tag_q_name_or_attribute; }
+  const AtomicString& GetValue() const { return m_value; }
 
 private:
   MatchType m_match_type = MatchType::Unknown;
@@ -130,10 +155,13 @@ private:
   QualifiedName m_tag_q_name_or_attribute; 
   AtomicString m_value;
 
+  // &:hover，&对应的父Rule.
+  const StyleRule* m_parent_rule = nullptr; 
+
   AttributeMatchType m_case_sensitivity = AttributeMatchType::kCaseInsensitive;
   CSSSelector::RelationType m_relation_type = CSSSelector::RelationType::SubSelector;
 
-  PseudoType m_pseudoType = PseudoType::kUnknown;
+  PseudoType m_pseudoType = PseudoType::kPseudoUnknown;
 
   // 用于在CSSSelectorList中遍历对象
   bool m_isLastInSelectorList = false;

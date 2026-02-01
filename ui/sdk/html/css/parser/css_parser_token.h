@@ -138,6 +138,7 @@ public:
   CSSPrimitiveValue::UnitType GetUnitType() const { return m_unit_type; }
   const std::u16string& Name() const { return m_name; }
   const std::u16string& String() const { return m_name; }
+  const std::u16string& Value() const { return m_name; }
   CSSParserTokenBlockType BlockType() { return m_block_type; }
   char16_t Delimiter() const { return m_delimiter; }
   CSSValueID ValueId() const;

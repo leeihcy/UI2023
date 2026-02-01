@@ -18,7 +18,8 @@ using CSSSelectorParserContext = CSSParserContext;
 
 class CSSSelectorParser {
 public:
-  CSSSelectorParser(const StyleSheetContents* style_sheet) : m_style_sheet(style_sheet) {
+  CSSSelectorParser(const StyleSheetContents* style_sheet, const StyleRule* parent_rule_for_nesting) 
+    : m_style_sheet(style_sheet), parent_rule_for_nesting_(parent_rule_for_nesting) {
 
   }
   enum ResultFlag {
@@ -32,11 +33,14 @@ public:
   };
   using ResultFlags = uint8_t;
 
-  static std::vector<CSSSelector> ConsumeSelector(CSSSelectorParserContext& context);
-  std::span<CSSSelector> ConsumeComplexSelectorList(CSSSelectorParserContext& context);
+  static std::vector<CSSSelector> ConsumeSelector2(CSSSelectorParserContext &context);
+  static std::vector<CSSSelector> ConsumeSelector(CSSSelectorParserContext &context,
+                  CSSNestingType nesting_type,
+                  const StyleRule *parent_rule_for_nesting);
+  std::span<CSSSelector> ConsumeComplexSelectorList(CSSSelectorParserContext& context, CSSNestingType nesting_type);
 
   bool ConsumeSimpleSelector(CSSSelectorParserContext& context);
-  std::span<CSSSelector> ConsumeComplexSelector(CSSSelectorParserContext& context);
+  std::span<CSSSelector> ConsumeComplexSelector(CSSSelectorParserContext& context, CSSNestingType nesting_type);
   std::span<CSSSelector> ConsumeCompoundSelector(CSSSelectorParserContext& context);
   bool ConsumeName(CSSSelectorParserContext& context, AtomicString& name, AtomicString& namespace_prefix);
 
@@ -44,14 +48,14 @@ public:
   bool ConsumeClass(CSSSelectorParserContext &context);
   bool ConsumeAttribute(CSSSelectorParserContext &context);
   bool ConsumePseudo(CSSSelectorParserContext &context, ResultFlags &result_flags);
-  bool ConsumeNestinParent(CSSSelectorParserContext &context,
+  bool ConsumeNestingParent(CSSSelectorParserContext &context,
                            ResultFlags &result_flags);
   bool ConsumePartialComplexSelector(CSSSelectorParserContext &context,
                                      CSSSelector::RelationType &combinator,
                                      unsigned previous_compound_flags);
   bool PeekIsCombinator(CSSParserTokenStream &stream);
   std::span<CSSSelector>
-  ConsumeNestedRelativeSelector(CSSSelectorParserContext &context);
+  ConsumeNestedRelativeSelector(CSSSelectorParserContext &context, CSSNestingType nesting_type);
   void SplitCompoundAtImplicitCombinator(std::span<CSSSelector> selectors);
   void PrependTypeSelectorIfNeeded(const AtomicString &namespace_prefix,
                                    bool has_q_name,
@@ -64,6 +68,11 @@ public:
 
   const AtomicString DetermineNamespace(const AtomicString& prefix);
   const AtomicString DefaultNamespace() const;
+
+  static CSSSelector::PseudoType ParsePseudoType(
+    const AtomicString& name,
+    bool has_arguments/*,
+    const Document* document*/);
 
   class ResetVectorAfterScope {
    public:

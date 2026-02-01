@@ -1,6 +1,7 @@
 #ifndef _HTML_CSS_CSSVARIABLEDATA_H_
 #define _HTML_CSS_CSSVARIABLEDATA_H_
 
+#include "html/base/atomic_string.h"
 #include "html/base/memory.h"
 #include <string>
 
@@ -54,6 +55,8 @@ public:
         has_line_height_units, has_dashed_functions);
   }
 
+  AtomicString  GetOriginalText() { return m_original_text; }
+  
 private:
   const unsigned length_ : 22;
   const unsigned is_animation_tainted_ : 1;       // bool.
@@ -66,7 +69,7 @@ private:
   unsigned has_dashed_functions_ : 1;             // bool.
   unsigned /* unused_ */ : 2;
 
-  std::u16string m_original_text;
+  AtomicString m_original_text;
 };
 }
 

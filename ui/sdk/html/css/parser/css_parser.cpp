@@ -38,7 +38,7 @@ CSSParser::ParseInlineStyleDeclaration(const char *bytes, size_t size) {
 // 解析 { } 里的内容。
 void CSSParser::ConsumeBlockContents(
     CSSParserContext &context, StyleRule::RuleType rule_type,
-    CSSNestingType,
+    CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
     size_t nested_declarations_start_index,
     std::vector<A<StyleRuleBase>> *child_rules) {
@@ -61,12 +61,14 @@ void CSSParser::ConsumeBlockContents(
         const CSSAtRuleID id = CssAtRuleID(name);
         bool invalid_rule_error_ignored = false;
         A<StyleRuleBase> child = ConsumeNestedRule(
-            id, rule_type, context, invalid_rule_error_ignored);
-        
+            id, rule_type, context, nesting_type, parent_rule_for_nesting,
+            invalid_rule_error_ignored);
+
         assert(!invalid_rule_error_ignored);
         if (child && child_rules) {
           EmitDeclarationsRuleIfNeeded(context,
               rule_type,
+              nesting_type, parent_rule_for_nesting,
               nested_declarations_start_index, *child_rules);
           nested_declarations_start_index = context.parsed_properties.size();
           child_rules->push_back(std::move(child));
@@ -103,18 +105,55 @@ void CSSParser::ConsumeBlockContents(
       [[fallthrough]];
     }
     default:
-      context.token_stream.SkipUntilPeekedTypeIs(CSSParserTokenType::Semicolon);
-      if (!context.token_stream.AtEnd()) {
-        context.token_stream.Consume(); // Semicolon
+      if (nesting_type != CSSNestingType::None &&
+          nesting_type != CSSNestingType::Function) {
+        bool invalid_rule_error = false;
+        A<StyleRuleBase> child =
+              ConsumeNestedRule(std::nullopt, rule_type, context, nesting_type,
+                                parent_rule_for_nesting, invalid_rule_error);
+        if (child) {
+            if (child_rules) {
+              EmitDeclarationsRuleIfNeeded(
+                context,
+                  rule_type, nesting_type, parent_rule_for_nesting,
+                  nested_declarations_start_index, *child_rules);
+              nested_declarations_start_index = context.parsed_properties.size();
+              child_rules->push_back(std::move(child));
+            }
+            break;
+        } else if (invalid_rule_error) {
+            // https://drafts.csswg.org/css-syntax/#invalid-rule-error
+            //
+            // This means the rule was valid per the "core" grammar of
+            // css-syntax, but the prelude (i.e. selector list) didn't parse.
+            // We should not fall through to error recovery in this case,
+            // because we should continue parsing immediately after
+            // the {}-block.
+          break;
+        }
+      }
+
+    case CSSParserTokenType::Function:
+      stream.SkipUntilPeekedTypeIs<CSSParserTokenType::Semicolon>();
+      if (!stream.AtEnd()) {
+        stream.Consume(); // kSemicolonToken
       }
       break;
     }
+    //   context.token_stream.SkipUntilPeekedTypeIs(CSSParserTokenType::Semicolon);
+    //   if (!context.token_stream.AtEnd()) {
+    //     context.token_stream.Consume(); // Semicolon
+    //   }
+    //   break;
   }
+
 }
 
 void CSSParser::EmitDeclarationsRuleIfNeeded(
   CSSParserContext& context,
     StyleRule::RuleType rule_type,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
     size_t start_index,
     std::vector<A<StyleRuleBase>>& child_rules) {
   if (rule_type == StyleRule::kPage) {
@@ -128,9 +167,9 @@ void CSSParser::EmitDeclarationsRuleIfNeeded(
   }
 
   A<StyleRuleBase> nested_declarations_rule = CreateDeclarationsRule(
-      context, context.nesting_type,
-      context.parent_rule_for_nesting
-          ? context.parent_rule_for_nesting->FirstSelector()
+      context, nesting_type,
+      parent_rule_for_nesting
+          ? parent_rule_for_nesting->FirstSelector()
           : nullptr,
       start_index);
   assert(nested_declarations_rule);
@@ -227,6 +266,8 @@ A<StyleRuleBase> CSSParser::ConsumeNestedRule(
     std::optional<CSSAtRuleID> id,
     StyleRule::RuleType parent_rule_type,
     CSSParserContext& context,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
     bool& invalid_rule_error) {
   auto& stream = context.token_stream;
   
@@ -238,7 +279,7 @@ A<StyleRuleBase> CSSParser::ConsumeNestedRule(
       &m_in_nested_style_rule,
       m_in_nested_style_rule || parent_rule_type == StyleRule::kStyle);
   if (!id.has_value()) {
-    child.reset(ConsumeStyleRule(context, /* nested */ true, invalid_rule_error));
+    child.reset(ConsumeStyleRule(context, nesting_type, parent_rule_for_nesting, /* nested */ true, invalid_rule_error));
   } else {
     child.reset(ConsumeAtRuleContents(
         *id, stream,
@@ -332,11 +373,16 @@ bool CSSParser::ParseStyleSheet(StyleSheetContents* style_sheet, const char *byt
   context.token_stream.SetInput(bytes, size);
   context.style_sheet = style_sheet;
   
-  return ConsumeRuleList(context, kTopLevelRules);
+  return ConsumeRuleList(context, kTopLevelRules, CSSNestingType::None,
+      /*parent_rule_for_nesting=*/nullptr);
 }
 
-A<StyleRuleBase> CSSParser::ConsumeStyleRule(CSSParserContext &context, bool nested, bool& invalid_rule_error) {
-  auto& stream = context.token_stream;
+A<StyleRuleBase> CSSParser::ConsumeStyleRule(CSSParserContext &context,
+                                             CSSNestingType nesting_type,
+                                             StyleRule *parent_rule_for_nesting,
+                                             bool nested,
+                                             bool &invalid_rule_error) {
+  auto &stream = context.token_stream;
 
   if (!m_in_nested_style_rule) {
     assert(0u == m_arena.size());
@@ -355,8 +401,9 @@ A<StyleRuleBase> CSSParser::ConsumeStyleRule(CSSParserContext &context, bool nes
   
   bool has_visited_pseudo = false;
   // Parse the prelude of the style rule
-  
-  std::vector<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(context);
+
+  std::vector<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
+      context, nesting_type, parent_rule_for_nesting);
 
   if (selector_vector.empty()) {
     if (nested) {
@@ -387,7 +434,6 @@ A<StyleRuleBase> CSSParser::ConsumeStyleRule(CSSParserContext &context, bool nes
   return ConsumeStyleRuleContents(selector_vector, context, has_visited_pseudo);
 }
 
-
 A<StyleRuleBase> CSSParser::ConsumeStyleRuleContents(
     const std::vector<CSSSelector>& selector_vector,
     CSSParserContext &context,
@@ -416,13 +462,14 @@ A<StyleRuleBase> CSSParser::ConsumeStyleRuleContents(
 }
 
 // qualified rule包含两种：普通style和关键帧
-A<StyleRuleBase> CSSParser::ConsumeQualifiedRule(CSSParserContext &context,
-                                             AllowedRules allowed_rules) {
+A<StyleRuleBase> CSSParser::ConsumeQualifiedRule(
+    CSSParserContext &context, AllowedRules allowed_rules, CSSNestingType nesting_type,
+    StyleRule *parent_rule_for_nesting) {
 
   // 普通style
   if (allowed_rules.Has(QualifiedRuleType::Style)) {
     bool invalid_rule_error_ignored = false;  // Only relevant when nested.
-    return ConsumeStyleRule(context, /* nested */ false, invalid_rule_error_ignored);
+    return ConsumeStyleRule(context, nesting_type, parent_rule_for_nesting, /* nested */ false, invalid_rule_error_ignored);
   }
 
   // keyframe
@@ -434,7 +481,6 @@ A<StyleRuleBase> CSSParser::ConsumeQualifiedRule(CSSParserContext &context,
   }
   return nullptr;
 }
-
 
 static AllowedRules ComputeNewAllowedRules(
     AllowedRules old_allowed_rules,
@@ -471,9 +517,11 @@ static AllowedRules ComputeNewAllowedRules(
   return new_allowed_rules;
 }
 
-
 // 解析<style>或.css文件内容
-bool CSSParser::ConsumeRuleList(CSSParserContext& context, AllowedRules allowed_rules) {
+bool CSSParser::ConsumeRuleList(CSSParserContext &context,
+                                AllowedRules allowed_rules,
+                                CSSNestingType nesting_type,
+                                StyleRule *parent_rule_for_nesting) {
   auto& stream = context.token_stream;
   bool allow_cdo_cdc_tokens = true;
 
@@ -498,8 +546,8 @@ bool CSSParser::ConsumeRuleList(CSSParserContext& context, AllowedRules allowed_
         }
         [[fallthrough]];
       default:
-        rule.reset(ConsumeQualifiedRule(context, allowed_rules/*, nesting_type,
-                                    parent_rule_for_nesting*/));
+        rule.reset(ConsumeQualifiedRule(context, allowed_rules, nesting_type,
+                                    parent_rule_for_nesting));
         break;
     }
     if (!seen_rule) {

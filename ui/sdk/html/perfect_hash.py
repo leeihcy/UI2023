@@ -128,12 +128,13 @@ def write_id_to_name_map(f):
   f.write("static const char kStringPool[] = {\n")
   for index, (id, name) in enumerate(class_info.list):
     offsets.append(counter)
+
+    counter += 1
     if not name:
       name = "\\0"
-      counter += 1
     else:
+      counter += len(name)
       name += "\\0"
-      counter += len(name)+1
 
     f.write(f'  "{name}"\n')
    

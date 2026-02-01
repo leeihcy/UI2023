@@ -221,4 +221,11 @@ CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& id): CSSValue(C
   }
 }
 
+AtomicString CSSUnparsedDeclarationValue::CustomCSSText() const {
+  if (!m_data) {
+    return g_null_atom;
+  }
+  return m_data->GetOriginalText();
+}
+
 } // namespace html
