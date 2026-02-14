@@ -383,6 +383,19 @@ void test7_parse_selector() {
     }
   } 
 
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:scope
+  {
+    std::string data[] =  {
+      ":scope { background-color: lime; }",
+    };
+    for (auto& css: data) {
+    html::CSSSelectorParserContext context;
+    context.token_stream.SetInput(css.c_str(), css.length());
+    std::vector<html::CSSSelector> result = html::CSSSelectorParser::ConsumeSelector2(context);
+    int a= 0;
+    }
+  }
+
   // 失败场景
   {
     std::string data[] = {
@@ -401,7 +414,7 @@ void test7_parse_selector() {
 }
 
 void test8_parse_sheet() {
-  if (0)
+  
   {
     std::string css = R"CSS(
       @namespace html "https://123.com";
@@ -424,9 +437,10 @@ void test8_parse_sheet() {
 
     assert(style_sheet.NamespaceRuleCount() == 2);
 
-    assert(style_sheet.RuleCount() == 2);
-    html::StyleRule* rule0 = style_sheet.RuleAt(0);
-    html::StyleRule* rule1 = style_sheet.RuleAt(1);
+    assert(style_sheet.RuleCount() == 4);
+    assert(style_sheet.ChildRuleCount() == 2);
+    html::StyleRule* rule0 = html::DynamicTo<html::StyleRule>(style_sheet.ChildRuleAt(0));
+    html::StyleRule* rule1 = html::DynamicTo<html::StyleRule>(style_sheet.ChildRuleAt(1));
 
     html::CSSPropertyValueSet* set0 = rule0->GetProperties();
     html::CSSPropertyValueSet* set1 = rule1->GetProperties();
@@ -454,7 +468,7 @@ void test8_parse_sheet() {
     html::CSSParser parser;
     parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
 
-    html::StyleRule* rule0 = style_sheet.RuleAt(0);
+    html::StyleRule* rule0 = html::DynamicTo<html::StyleRule>(style_sheet.RuleAt(0));
     html::StyleRule* rule1 = html::DynamicTo<html::StyleRule>(rule0->ChildRuleAt(0));;
     assert(rule1);
     
@@ -475,11 +489,28 @@ void test8_parse_sheet() {
     html::CSSParser parser;
     parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
 
-    html::StyleRule* rule0 = style_sheet.RuleAt(0);
+    html::StyleRule* rule0 = html::DynamicTo<html::StyleRule>(style_sheet.RuleAt(0));
     html::StyleRule* rule1 = html::DynamicTo<html::StyleRule>(rule0->ChildRuleAt(0));;
     assert(rule1);
   }
 
+  if (0) // TODO:
+  {
+    // pseudo
+    std::string css = R"CSS(
+       @scope (.light-scheme) { 
+        :scope { background-color: plum; 
+      }
+    )CSS";
+
+    html::StyleSheetContents style_sheet;
+    html::CSSParser parser;
+    parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
+
+    html::StyleRule* rule0 = html::DynamicTo<html::StyleRule>(style_sheet.RuleAt(0));
+    html::StyleRule* rule1 = html::DynamicTo<html::StyleRule>(rule0->ChildRuleAt(0));;
+    assert(rule1);
+  }
   {
     // 嵌套CSS
     std::string css = R"CSS(
@@ -500,7 +531,7 @@ void test8_parse_sheet() {
     parser.ParseStyleSheet(&style_sheet, css.c_str(), css.length());
 
     assert(style_sheet.RuleCount() == 1);
-    html::StyleRule* rule0 = style_sheet.RuleAt(0);
+    html::StyleRule* rule0 = html::DynamicTo<html::StyleRule>(style_sheet.RuleAt(0));
 
     const html::CSSSelector* selector0 = rule0->FirstSelector();
     EXPECT_EQ(selector0->GetMatchType(), html::CSSSelector::Unknown);

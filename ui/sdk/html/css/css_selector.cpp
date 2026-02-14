@@ -45,28 +45,23 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     bool has_arguments/*,
     const Document* document*/) {
   // assert(false && "todo: perfect hash");
+  
+  static std::map<std::u16string, CSSSelector::PseudoType> pseudo_map = {
+    { u"hover", CSSSelector::kPseudoHover },
+    { u"focus", CSSSelector::kPseudoFocus },
+    { u"checked", CSSSelector::kPseudoChecked },
+    { u"active", CSSSelector::kPseudoActive },
+    { u"has", CSSSelector::kPseudoHas },
+    { u"after", CSSSelector::kPseudoAfter },
+    { u"before", CSSSelector::kPseudoBefore },
+    { u"root", CSSSelector::kPseudoRoot},
+    { u"scope", CSSSelector::kPseudoScope},
+  };
+  auto iter = pseudo_map.find(name);
+  if (iter != pseudo_map.end()) {
+    return iter->second;
+  }
 
-  if (name == "hover") {
-    return kPseudoHover;
-  }
-  if (name == "focus") {
-    return kPseudoFocus;
-  }
-  if (name == "checked") {
-    return kPseudoChecked;
-  }
-  if (name == "active") {
-    return kPseudoActive;
-  }
-  if (name == "has") {
-    return kPseudoHas;
-  }
-  if (name == "after") {
-    return kPseudoAfter;
-  }
-  if (name == "before") {
-    return kPseudoBefore;
-  }
   return CSSSelector::PseudoType::kPseudoUnknown;
 }
 

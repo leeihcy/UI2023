@@ -66,6 +66,7 @@ public:
     kPseudoHover,
     kPseudoHas,
 
+    kPseudoRoot,
     kPseudoHost,
     kPseudoUnparsed,
     kPseudoScope,

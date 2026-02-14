@@ -13,7 +13,8 @@
 
 namespace html {
 
-static std::vector<CSSSelector> ConsumeSelector2(CSSSelectorParserContext &context) {
+// static 
+std::vector<CSSSelector> CSSSelectorParser::ConsumeSelector2(CSSSelectorParserContext &context) {
    return CSSSelectorParser::ConsumeSelector(context, CSSNestingType::None, nullptr);
 }
 // static
@@ -550,7 +551,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSSelectorParserContext &context, ResultF
       found_host_in_compound_ = true;
     }
     if (selector.GetPseudoType() == CSSSelector::kPseudoScope) {
-      result_flags |= kContainsScopeOrParent;
+      result_flags |= kContainsScopeOrParent; // :scope
     }
     m_output.push_back(std::move(selector));
     return true;
@@ -996,7 +997,7 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSSelectorParserContext& context)
     return false;
   }
   if (local_result_flags & kContainsScopeOrParent) {
-    //....
+    m_output.back().SetScopeContaining(true);
   }
   context.result_flags |= local_result_flags;
   return true;

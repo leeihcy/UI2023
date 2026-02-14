@@ -284,7 +284,7 @@ A<StyleRuleBase> CSSParser::ConsumeNestedRule(
     child.reset(ConsumeAtRuleContents(
         *id, stream,
         AllowedNestedRules(parent_rule_type, m_in_nested_style_rule, in_mixin_)
-        ));
+        ,nesting_type, parent_rule_for_nesting));
   }
   context.parsed_properties = std::move(outer_parsed_properties);
   return child;
@@ -536,7 +536,7 @@ bool CSSParser::ConsumeRuleList(CSSParserContext &context,
         stream.Consume();
         continue;
       case CSSParserTokenType::AtKeyword:
-        rule.reset(ConsumeAtRule(context, allowed_rules));
+        rule.reset(ConsumeAtRule(context, allowed_rules, nesting_type, parent_rule_for_nesting));
         break;
       case CSSParserTokenType::CDO:
       case CSSParserTokenType::CDC:
@@ -589,7 +589,9 @@ void CSSParser::onConsumeRuleList(CSSParserContext &context,
 }
 
 A<StyleRuleBase> CSSParser::ConsumeAtRule(CSSParserContext &context,
-                                    AllowedRules allowed_rules) {
+                                          AllowedRules allowed_rules,
+                                          CSSNestingType nesting_type,
+                                          StyleRule *parent_rule_for_nesting) {
   auto &stream = context.token_stream;
   assert(stream.Peek().GetType() == CSSParserTokenType::AtKeyword);
 
@@ -597,14 +599,17 @@ A<StyleRuleBase> CSSParser::ConsumeAtRule(CSSParserContext &context,
 
   const std::u16string &name = name_token.Name();
   const CSSAtRuleID id = CssAtRuleID(name);
-  return ConsumeAtRuleContents(id, stream, allowed_rules);
+  return ConsumeAtRuleContents(id, stream, allowed_rules, nesting_type, parent_rule_for_nesting);
 }
 
 A<StyleRuleBase> CSSParser::ConsumeAtRuleContents(
     CSSAtRuleID id,
     CSSParserTokenStream& stream,
-    AllowedRules allowed_rules) {
+    AllowedRules allowed_rules,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting) {
   if (!allowed_rules.Has(id)) {
+    assert(false && "TODO: ");
     ConsumeErroneousAtRule(stream, id);
     return nullptr;
   }
@@ -617,6 +622,9 @@ A<StyleRuleBase> CSSParser::ConsumeAtRuleContents(
     case CSSAtRuleID::Count:
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
+
+    case CSSAtRuleID::kCSSAtRuleScope:
+      return ConsumeScopeRule(stream, nesting_type, parent_rule_for_nesting);
 
     default:
       assert(false);
@@ -720,6 +728,40 @@ void CSSParser::ConsumeErroneousAtRule(CSSParserTokenStream &stream,
       stream.Consume(); // kSemicolonToken
     }
   }
+}
+A<StyleRuleBase>
+CSSParser::ConsumeScopeRule(CSSParserTokenStream &stream,
+                            CSSNestingType nesting_type,
+                            StyleRule *parent_rule_for_nesting) {
+#if 0
+  // Parse the prelude.
+  size_t prelude_offset_start = stream.Offset();
+  auto* style_scope = StyleScope::Parse(stream, context_, nesting_type,
+                                        parent_rule_for_nesting, style_sheet_);
+  if (!style_scope) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleScope);
+    return nullptr;
+  }
+
+  size_t prelude_offset_end = stream.Offset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
+                                             CSSAtRuleID::kCSSAtRuleScope)) {
+    return nullptr;
+  }
+
+  // Parse the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  std::vector<A<StyleRuleBase>> rules;
+  ConsumeBlockContents(
+      stream, StyleRule::kScope, CSSNestingType::Scope,
+      /*parent_rule_for_nesting=*/style_scope->RuleForNesting(),
+      /*nested_declarations_start_index=*/0, &rules);
+
+  return A<StyleRuleScope>::make_new(*style_scope, std::move(rules));
+#endif
+  assert(false&&"TODO:");
+  return nullptr;
 }
 
 bool CSSParser::ConsumeVariableValue(CSSParserContext& context,

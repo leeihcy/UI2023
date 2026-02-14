@@ -60,16 +60,23 @@ protected:
                          unsigned int offset);
 
   A<StyleRuleBase> ConsumeAtRule(CSSParserContext &stream,
-                                 AllowedRules allowed_rules);
+                                 AllowedRules allowed_rules,
+                                 CSSNestingType nesting_type,
+                                 StyleRule *parent_rule_for_nesting);
   A<StyleRuleBase> ConsumeAtRuleContents(CSSAtRuleID id,
                                          CSSParserTokenStream &stream,
-                                         AllowedRules allowed_rules);
+                                         AllowedRules allowed_rules,
+                                         CSSNestingType nesting_type,
+                                         StyleRule *parent_rule_for_nesting);
   A<StyleRuleBase> ConsumeNestedRule(std::optional<CSSAtRuleID> id,
                                      StyleRule::RuleType parent_rule_type,
                                      CSSParserContext &context,
                                      CSSNestingType nesting_type,
                                      StyleRule *parent_rule_for_nesting,
                                      bool &invalid_rule_error);
+  A<StyleRuleBase> ConsumeScopeRule(CSSParserTokenStream &stream,
+                                    CSSNestingType nesting_type,
+                                    StyleRule *parent_rule_for_nesting);
 
   void EmitDeclarationsRuleIfNeeded(CSSParserContext &context,
                                     StyleRule::RuleType rule_type,

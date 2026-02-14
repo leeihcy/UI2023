@@ -66,6 +66,11 @@ public:
     }
     return &m_selectors[index];
   }
+  CSSSelector&  GetMutableSelectorAt(size_t index) {
+    assert(index <= m_selectors.size());
+    return m_selectors[index];
+  }
+  
 
 
   static A<StyleRule> Create(const std::vector<CSSSelector>& selectors) {
@@ -90,6 +95,9 @@ public:
     }
     return m_child_rules[index].get();
   }
+  const std::vector<A<StyleRuleBase>>& GetChildRules() const { return m_child_rules; }
+
+  
 
   void SetProperties(std::vector<CSSPropertyValue>&& properties) {
     m_properties.reset(A<CSSPropertyValueSet>::make_new(std::move(properties)));

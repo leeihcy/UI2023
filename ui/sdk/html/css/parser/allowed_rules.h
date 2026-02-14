@@ -71,7 +71,8 @@ static constexpr AllowedRules kRegularRules =
   AllowedRules{QualifiedRuleType::Style} | 
   AllowedRules{
     CSSAtRuleID::FontFace,
-    CSSAtRuleID::Keyframes
+    CSSAtRuleID::Keyframes,
+    CSSAtRuleID::kCSSAtRuleScope
     // ...
   };
 

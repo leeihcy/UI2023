@@ -4,12 +4,13 @@
 #include "html/base/atomic_string.h"
 #include "html/base/memory.h"
 #include "html/css/style_rule_import.h"
+#include "html/css/style_rule_namespace.h"
+#include <cstddef>
 #include <string>
 #include <map>
 
 namespace html {
 class StyleRuleBase;
-class StyleRuleNamespace;
 
 class StyleSheetContents {
 public:
@@ -19,10 +20,13 @@ public:
 
   void ParserAppendRule(A<StyleRuleBase>&& rule);
 
-  StyleRule* RuleAt(size_t index) const;
-  size_t RuleCount() const { return m_child_rules.size(); }
+  StyleRuleBase* RuleAt(size_t index) const;
+  StyleRule* ChildRuleAt(size_t index) const;
+  size_t RuleCount() const;
+  size_t ChildRuleCount() const;
   size_t NamespaceRuleCount() const { return m_namespace_rules.size(); }
-
+  const std::vector<A<StyleRuleBase>>& GetChildRules() const { return m_child_rules; }
+  
 private:
   AtomicString m_default_namespace = g_star_atom;
 
@@ -32,6 +36,7 @@ private:
   std::vector<A<StyleRuleBase>> m_child_rules;
   std::vector<A<StyleRuleNamespace>> m_namespace_rules;
   std::vector<A<StyleRuleImport>> m_import_rules;
+  // pre import layer statement rules
 };
 }
 

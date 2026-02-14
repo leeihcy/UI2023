@@ -68,7 +68,34 @@ void StyleSheetContents::ParserAppendRule(A<StyleRuleBase>&& rule) {
   m_child_rules.push_back(std::move(rule));
 }
 
-StyleRule* StyleSheetContents::RuleAt(size_t index) const {
+size_t StyleSheetContents::ChildRuleCount() const { 
+  return m_child_rules.size();
+}
+size_t StyleSheetContents::RuleCount() const { 
+  return 
+    m_import_rules.size() + 
+    m_namespace_rules.size() +
+    m_child_rules.size(); 
+}
+
+StyleRuleBase* StyleSheetContents::RuleAt(size_t index) const {
+  if (index < m_import_rules.size()) {
+    return m_import_rules[index].get();
+  }
+  index -= m_import_rules.size();
+  
+  if (index < m_namespace_rules.size()) {
+    return m_namespace_rules[index].get();
+  }
+  index -= m_namespace_rules.size();
+
+  if (index < m_child_rules.size()) {
+    return m_child_rules[index].get();
+  }
+  return nullptr;
+}
+
+StyleRule* StyleSheetContents::ChildRuleAt(size_t index) const {
   if (index >= m_child_rules.size()) {
     return nullptr;
   }
