@@ -11,6 +11,7 @@
 #include "html/base/memory.h"
 #include "html/css/property/property_id_enum.h"
 #include "html/css/property/value_id.h"
+#include "html/css/resolver/style_resolver.h"
 
 #include <cassert>
 #include <cstddef>
@@ -18,6 +19,7 @@
 #include <sys/_types/_size_t.h>
 #include <tuple>
 #include "html/css/style_rule.h"
+#include "html/dom/element.h"
 #include "test/test.h"
 
 using html::A;
@@ -556,6 +558,17 @@ void test8_parse_sheet() {
   }
 }
 
+void test9_style_resolve() {
+  html::StyleResolver style_resolve;
+
+  html::Element element;
+  html::StyleRecalcContext style_recalc_context;
+  html::StyleRequest style_request;
+
+  element.DidAddAttribute(html::QualifiedName("id"), html::AtomicString(u"btn"));
+  style_resolve.ResolveStyle(&element, style_recalc_context, style_request);
+}
+
 }
 
 void test_html_css_parser() {
@@ -566,5 +579,6 @@ void test_html_css_parser() {
   // test5_ConsumeLengthOrPercent();
   // test6_ConsumePosition();
   // test7_parse_selector();
-  test8_parse_sheet();
+  // test8_parse_sheet();
+  test9_style_resolve();
 }

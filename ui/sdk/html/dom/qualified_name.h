@@ -15,11 +15,11 @@ namespace html {
 class QualifiedName {
 public:
   QualifiedName() {}
-  QualifiedName(AtomicString localname) : m_localname(localname) {}
+  QualifiedName(AtomicString localname) : m_localname(std::move(localname)) {}
   QualifiedName(AtomicString prefix, AtomicString localname,
                 AtomicString namespace_uri)
-      : m_prefix(prefix), m_localname(localname),
-        m_namespace_uri(namespace_uri) {}
+      : m_prefix(std::move(prefix)), m_localname(std::move(localname)),
+        m_namespace_uri(std::move(namespace_uri)) {}
 
   const AtomicString& NamespaceUri() const { return m_namespace_uri; }
   const AtomicString& Prefix() const { return m_prefix; }

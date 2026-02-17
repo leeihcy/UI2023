@@ -18,7 +18,10 @@ public:
   AtomicString(const char* text);
   AtomicString(const char16_t* text);
   AtomicString(const std::u16string& text);
+  AtomicString(const AtomicString& o);
+  AtomicString(AtomicString&& o);
   AtomicString(std::shared_ptr<std::u16string> text) : m_text(text) {}
+  AtomicString& operator=(const AtomicString& o);
 
   bool IsNull() const {
     return !m_text;
