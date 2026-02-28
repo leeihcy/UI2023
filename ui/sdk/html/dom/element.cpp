@@ -18,7 +18,7 @@ namespace html {
 //   return HasElementData() && GetElementData()->HasClass();
 // }
 
-inline const AtomicString& Element::IdForStyleResolution() const {
+const AtomicString& Element::IdForStyleResolution() const {
   assert(HasID());
   return GetElementData()->IdForStyleResolution();
 }

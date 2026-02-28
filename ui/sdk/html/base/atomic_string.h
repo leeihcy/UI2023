@@ -27,7 +27,10 @@ public:
     return !m_text;
   }
   operator bool() const {
-    return !!m_text;
+    return !empty();
+  }
+  bool empty() const {
+    return !m_text || m_text->empty();
   }
   AtomicString& operator=(const std::u16string& text) {
     m_text = std::make_shared<std::u16string>(text);
@@ -53,6 +56,12 @@ public:
 
   AtomicString Lower() const;
   
+
+  unsigned Hash() const { 
+    // return string_.Impl()->ExistingHash(); 
+    return std::hash<std::u16string>{}(*m_text);
+  }
+
 private:
   std::shared_ptr<std::u16string> m_text;
 };

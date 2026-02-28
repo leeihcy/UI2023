@@ -71,8 +71,6 @@ public:
     return m_selectors[index];
   }
   
-
-
   static A<StyleRule> Create(const std::vector<CSSSelector>& selectors) {
     return A<StyleRule>::make_new(selectors);
   }
@@ -103,6 +101,9 @@ public:
     m_properties.reset(A<CSSPropertyValueSet>::make_new(std::move(properties)));
   }
   CSSPropertyValueSet* GetProperties() { return m_properties.get(); }
+  const CSSPropertyValueSet& Properties() const {
+    return *m_properties.get();
+  }
 
 private:
   A<CSSPropertyValueSet> m_properties = nullptr;

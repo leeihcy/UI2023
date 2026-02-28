@@ -5,6 +5,7 @@
 #include "html/base/memory.h"
 #include "html/dom/element_data.h"
 #include "html/dom/qualified_name.h"
+#include <cstddef>
 
 namespace html {
 
@@ -20,11 +21,12 @@ public:
   inline bool HasID() const;
   // inline bool HasClass() const;
 
-  inline const AtomicString &IdForStyleResolution() const;
+  const AtomicString &IdForStyleResolution() const;
 
   bool HasElementData() const { return m_element_data; }
   const ElementData* GetElementData() const { return m_element_data.get(); }
   
+  const Element* parentElement() const { return nullptr; }
 
   enum class AttributeModificationReason {
     kDirectly,

@@ -27,8 +27,12 @@ source_set("html") {
     "css/css_property_value_set.cpp",
     "css/css_default_style_sheets.h",
     "css/css_default_style_sheets.cpp",
+    "css/element_rule_collector.h",
+    "css/element_rule_collector.cpp",
     "css/rule_set.h",
     "css/rule_set.cpp",
+    "css/selector_checker.h",
+    "css/selector_checker.cpp",
     "css/style_sheet_contents.h",
     "css/style_sheet_contents.cpp",
 
@@ -55,6 +59,8 @@ source_set("html") {
     "css/resolver/style_resolver_state.cpp",
     "css/resolver/match_request.h",
     "css/resolver/match_request.cpp",
+    "css/resolver/match_result.h",
+    "css/resolver/match_result.cpp",
     "css/resolver/element_resolve_context.h",
     "css/resolver/element_resolve_context.cpp",
 

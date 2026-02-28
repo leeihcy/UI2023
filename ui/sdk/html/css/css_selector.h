@@ -33,8 +33,10 @@ public:
     AttributeContain, // E[foo*="bar"], 属性值包含指定子字符串
     AttributeBegin,   // E[foo^="bar"], 属性值以指定字符串开头
     AttributeEnd,     // E[foo&="bar"], 属性值以指定字符串结尾
-    FirstAttributeSelectorMatch = AttributeExact
+    FirstAttributeSelectorMatch = AttributeExact,
 
+
+    PagePseudoClass,
   };
 
   enum class RelationType {
@@ -48,6 +50,9 @@ public:
     DirectAdjacent,
     // ~ 后面所有的符号条件的兄弟元素（
     IndirectAdjacent,
+
+
+    kUAShadow,
   };
 
   enum class AttributeMatchType : int {
@@ -106,8 +111,11 @@ public:
 
   void SetValue(const AtomicString& value) { m_value = value; }
   void SetRelation(CSSSelector::RelationType relation_type) { m_relation_type = relation_type; }
-  CSSSelector::RelationType GetRelationType() const { return m_relation_type; }
-
+  RelationType GetRelationType() const { return m_relation_type; }
+  RelationType Relation() const {
+    return GetRelationType();
+  }
+  
   void UpdatePseudoType(const AtomicString &value,
                         /*const CSSParserContext &context, */
                         bool has_arguments/*,
@@ -132,8 +140,14 @@ public:
   void SetLastInComplexSelector(bool b) {
     m_isLastInComplexSelector = b;
   }
-  bool IsLastInComplexSelector() {
+  bool IsLastInComplexSelector() const {
     return m_isLastInComplexSelector;
+  }
+  const CSSSelector* NextSimpleSelector() const {
+    return IsLastInComplexSelector() ? nullptr : this + 1;
+  }
+  CSSSelector* NextSimpleSelector() {
+    return IsLastInComplexSelector() ? nullptr : this + 1;
   }
   void SetScopeContaining(bool b) {
     m_isScopeContaining = b;
@@ -147,8 +161,10 @@ public:
     m_hasArgumentMatchInShadowTree = true;
   }
   const QualifiedName& GetQualifiedName() const { return m_tag_q_name_or_attribute; }
+  const QualifiedName& TagQName() const { return m_tag_q_name_or_attribute; }
   const QualifiedName& GetAttribute() const { return m_tag_q_name_or_attribute; }
   const AtomicString& GetValue() const { return m_value; }
+  const AtomicString& Value() const { return m_value; }
 
 private:
   MatchType m_match_type = MatchType::Unknown;

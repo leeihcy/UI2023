@@ -42,9 +42,12 @@ void StyleResolver::ApplyBaseStyleNoCache(
     Element *element, const StyleRecalcContext &style_recalc_context,
     const StyleRequest &style_request, StyleResolverState &state,
     StyleCascade &cascade) {
-  ElementRuleCollector collector;
+  ElementRuleCollector collector(cascade.MutableMatchResult());
   collector.SetElement(element);
   MatchAllRules(state, collector);
+
+  const MatchResult& match_result = collector.MatchedResult();
+
 }
 
 void StyleResolver::MatchAllRules(
