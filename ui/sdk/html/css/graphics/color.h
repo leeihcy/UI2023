@@ -15,9 +15,9 @@ public:
         param1_is_none_(0),
         param2_is_none_(0),
         alpha_is_none_(0),
-        param0_(((color >> 16) & 0xFF)),
-        param1_(((color >> 8) & 0xFF)),
-        param2_(((color >> 0) & 0xFF)),
+        param0_((float)((color >> 16) & 0xFF)),
+        param1_((float)((color >> 8) & 0xFF)),
+        param2_((float)((color >> 0) & 0xFF)),
         alpha_(((color >> 24) & 0xFF) / 255.f) {}
 
   inline bool operator==(const Color& other) const {

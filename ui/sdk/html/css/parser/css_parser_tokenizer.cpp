@@ -500,12 +500,12 @@ char16_t CSSTokenizer::ConsumeEscape() {
   if (IsASCIIHexDigit(c)) {
     unsigned consumed_hex_digits = 1;
 
-    hex_chars.push_back(c);
+    hex_chars.push_back((char)c);
     while (consumed_hex_digits < 6 &&
            IsASCIIHexDigit(m_input_stream.Peek(0))) {
       c = m_input_stream.NextInputCodePoint();
       m_input_stream.Advance();
-      hex_chars.push_back(c);
+      hex_chars.push_back((char)c);
       consumed_hex_digits++;
     };
 

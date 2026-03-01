@@ -16,7 +16,6 @@
 #include <cassert>
 #include <cstddef>
 #include <string>
-#include <sys/_types/_size_t.h>
 #include <tuple>
 #include "html/css/style_rule.h"
 #include "html/dom/element.h"
@@ -36,7 +35,7 @@ void test1_perfect_hash_function() {
       {"not_exist", html::CSSPropertyID::Invalid},
     };
     for (auto& [name, id] : data) {
-      auto proerty_id = html::ResolveCSSPropertyID(name.c_str(), name.length());
+      auto proerty_id = html::ResolveCSSPropertyID(name.c_str(), (unsigned int)name.length());
       assert(proerty_id == id);
     }
   }

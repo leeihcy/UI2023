@@ -1,7 +1,6 @@
 #ifndef _HTML_CSS_ELEMENT_RULE_COLLECTOR_H_
 #define _HTML_CSS_ELEMENT_RULE_COLLECTOR_H_
 
-#include <_types/_uint16_t.h>
 #include <cassert>
 #include <vector>
 #include <span>
@@ -177,6 +176,5 @@ private:
   MatchResult& m_result;
 };
 }
-
 
 #endif

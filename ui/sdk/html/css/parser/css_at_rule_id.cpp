@@ -1,6 +1,6 @@
 #include "html/css/parser/css_at_rule_id.h"
 #include "html/util/util.h"
-
+#include <assert.h>
 
 namespace html {
 

@@ -57,9 +57,11 @@ public:
   AtomicString Lower() const;
   
 
-  unsigned Hash() const { 
+  unsigned int Hash() const { 
     // return string_.Impl()->ExistingHash(); 
-    return std::hash<std::u16string>{}(*m_text);
+
+    // must be 24 bit
+    return (std::hash<std::u16string>{}(*m_text) & 0x00FFFFFF);
   }
 
 private:

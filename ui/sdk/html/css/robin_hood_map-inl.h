@@ -5,10 +5,11 @@
 #include <memory>
 #include "html/base/atomic_string.h"
 #include "html/css/robin_hood_map.h"
+#include <algorithm>
 
 namespace html {
 
-#include <algorithm>
+
 
 template <class Key, class Value>
 typename RobinHoodMap<Key, Value>::Bucket*
@@ -57,7 +58,7 @@ RobinHoodMap<Key, Value>::InsertInternal(
 template <class Key, class Value>
 typename RobinHoodMap<Key, Value>::Bucket* RobinHoodMap<Key, Value>::Insert(
     const Key& key) {
-  unsigned hash = key.Hash();
+  size_t hash = key.Hash();
   pre_filter_ |= 1ULL << (hash & 63);
   pre_filter_ |= 1ULL << ((hash >> 6) & 63);
 
@@ -77,7 +78,7 @@ RobinHoodMap<Key, Value> RobinHoodMap<Key, Value>::Grow() {
            std::numeric_limits<unsigned>::max());
       // << "This should never happen with 24-bit hashes";
 
-  RobinHoodMap new_ht(new_size);
+  RobinHoodMap new_ht((int)new_size);
   for (RobinHoodMap::Bucket& bucket : *this) {
     if (bucket.key.IsNull()) {
       continue;

@@ -8,7 +8,6 @@
 #include "html/css/css_property_value_set.h"
 #include <assert.h>
 #include <cstddef>
-#include <sys/_types/_size_t.h>
 #include <vector>
 
 namespace html {

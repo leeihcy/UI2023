@@ -52,8 +52,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
 
 void RuleSet::AddStyleRule(StyleRule* style_rule, StyleRule* parent_rule,
                            const StyleScope* style_scope) {
-  int selector_count = style_rule->GetSelectorCount();
-  for (int i = 0; i < selector_count; i++) {
+  unsigned selector_count = (unsigned)style_rule->GetSelectorCount();
+  for (unsigned i = 0; i < selector_count; i++) {
     AddRule(style_rule, i, style_scope);
   }
 
@@ -62,7 +62,7 @@ void RuleSet::AddStyleRule(StyleRule* style_rule, StyleRule* parent_rule,
   }
 }
 
-void RuleSet::AddRule(StyleRule *style_rule, size_t selector_index,
+void RuleSet::AddRule(StyleRule *style_rule, unsigned selector_index,
                       const StyleScope *style_scope) {
   RuleData rule_data(*style_rule, selector_index, m_rule_count);
   m_rule_count++;

@@ -116,7 +116,7 @@ public:
   std::vector<RuleData> backing;
   std::vector<unsigned> bucket_number_;
 
-  size_t num_buckets = 0;
+  unsigned int num_buckets = 0;
   bool compacted = false;
 };
 
@@ -127,7 +127,7 @@ public:
      const std::vector<A<StyleRuleBase>>& rules,  const StyleScope* style_scope);
   void AddStyleRule(StyleRule* style_rule, StyleRule* parent_rule, 
     const StyleScope* style_scope);
-  void AddRule(StyleRule* style_rule, size_t selector_index, const StyleScope* style_scope);
+  void AddRule(StyleRule* style_rule, unsigned selector_index, const StyleScope* style_scope);
 
 
   enum class BucketCoverage {

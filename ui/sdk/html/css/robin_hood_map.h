@@ -50,7 +50,7 @@ struct RobinHoodMap {
   bool IsNull() const { return buckets_ == nullptr; }
 
   Bucket* Find(const Key& key) {
-    uint32_t hash = key.Hash();
+    size_t hash = key.Hash();
     bool h1 = (pre_filter_ >> (hash & 63)) & 1;
     bool h2 = (pre_filter_ >> ((hash >> 6) & 63)) & 1;
     if (!h1 || !h2) {
@@ -156,7 +156,7 @@ struct RobinHoodMap {
     // This gives a fair map to [0,N) based on (mostly) the high bits
     // of the hash, with only a multiplication and shift.
     unsigned bucket =
-        static_cast<unsigned>(((uint64_t)key.Hash() * num_buckets_) >> 24);
+        static_cast<unsigned>((key.Hash() * num_buckets_) >> 24);
     // DCHECK_LT(bucket, num_buckets_);
     return bucket;
   }
