@@ -95,6 +95,27 @@ const Derived* DynamicTo(const Base& from) {
   return IsA<Derived>(from) ? static_cast<const Derived*>(&from):nullptr;
 }
 
+template <typename Derived, typename Base>
+const Derived& To(const Base& from) {
+  SECURITY_DCHECK(IsA<Derived>(from));
+  return static_cast<const Derived&>(from);
+}
+
+template <typename Derived, typename Base>
+const Derived* To(const Base* from) {
+  return from ? &To<Derived>(*from) : nullptr;
+}
+
+template <typename Derived, typename Base>
+Derived& To(Base& from) {
+  SECURITY_DCHECK(IsA<Derived>(from));
+  return static_cast<Derived&>(from);
+}
+template <typename Derived, typename Base>
+Derived* To(Base* from) {
+  return from ? &To<Derived>(*from) : nullptr;
+}
+
 }
 
 #endif

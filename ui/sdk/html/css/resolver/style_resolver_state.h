@@ -16,10 +16,21 @@ public:
                      const StyleRequest& = StyleRequest());
   Element& GetElement() const { return m_element_context.GetElement(); }
 
+  const ComputedStyle* Style() const { return style_.get(); }
+  ComputedStyle* Style() { return style_.get(); }
+
+  std::shared_ptr<ComputedStyle> TakeStyle() {
+    return style_;
+  }
+
 private:
   ElementResolveContext  m_element_context;
   Document* m_document;
   const StyleRecalcContext* m_style_recalc_context;
+
+
+  // style_ is the primary output for each element's style resolve.
+  std::shared_ptr<ComputedStyle> style_;
 };
 
 }

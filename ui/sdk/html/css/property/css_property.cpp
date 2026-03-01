@@ -5,6 +5,7 @@
 #include "html/css/property/css_parsing_utils.h"
 #include "html/css/property/css_property_instances.h"
 #include "html/css/style_property_shorthand.h"
+#include "html/style/computed_style.h"
 #include <assert.h>
 #include <array>
 
@@ -87,7 +88,7 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
         } else if (property.IdEquals(CSSPropertyID::BackgroundPositionY)) {
           continue;
         } else {
-          value.reset(css_parsing_utils::ConsumeBackgroundComponent(property.PropertyId(), context));
+          value.reset(css_parsing_utils::ConsumeBackgroundComponent(property.PropertyID(), context));
         }
         if (value) {
           if (property.IdEquals(CSSPropertyID::BackgroundOrigin)) {
@@ -156,7 +157,7 @@ bool Background::ParseShorthand(CSSParserContext &context, bool important) const
     //                      : IsImplicitProperty::kNotImplicit,
     //             properties);
     context.parsed_properties.push_back(CSSPropertyValue(
-            CSSPropertyName(property.PropertyId()), 
+            CSSPropertyName(property.PropertyID()), 
             std::move(longhand), important));
   }
   return true;
@@ -166,5 +167,8 @@ A<CSSValue> BackgroundColor::ParseSingleValue(CSSParserContext &context) const {
   return css_parsing_utils::ConsumeColor(context.token_stream);
 }
 
+void BackgroundColor::ApplyValue(StyleResolverState& state, const CSSValue&) const {
+  // state.Style()->SetBackgroundColor(StyleBuilderConverter::ConvertStyleColor(state, value, false));
+}
 
 }

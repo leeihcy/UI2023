@@ -3,6 +3,8 @@
 
 #include "html/css/property/css_value.h"
 #include "html/css/property/property_id.h"
+#include "html/css/resolver/style_resolver_state.h"
+
 namespace html {
 struct CSSParserContext;
 class CSSValue;
@@ -54,7 +56,7 @@ public:
   constexpr CSSProperty(CSSPropertyID id, uint64_t flags) : m_id((int)id), m_flags(flags) {}
   // constexpr virtual ~CSSProperty(){};
 
-  CSSPropertyID PropertyId() const { return (CSSPropertyID)m_id; }
+  CSSPropertyID PropertyID() const { return (CSSPropertyID)m_id; }
   bool IdEquals(CSSPropertyID id) const { return (CSSPropertyID)m_id == id; }
 
   uint32_t GetFlags() const { return m_flags; }
@@ -97,6 +99,10 @@ public:
   ParseSingleValue(CSSParserContext &context) const {
     return nullptr;
   }
+
+  virtual void ApplyInitial(StyleResolverState&) const { abort(); }
+  virtual void ApplyInherit(StyleResolverState&) const { abort(); }
+  virtual void ApplyValue(StyleResolverState&, const CSSValue&) const { abort();}
 };
 
 class Background final : public Shorthand {
@@ -123,6 +129,9 @@ public:
       (int)CSSPropertyFlag::Property) {
   }
   A<CSSValue> ParseSingleValue(CSSParserContext &context) const override;
+
+  void ApplyValue(StyleResolverState&, const CSSValue&) const override;
+
 };
 
 class BackgroundRepeat final : public Longhand {

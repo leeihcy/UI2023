@@ -4,7 +4,9 @@
 namespace html {
 
 class ComputedStyle {
-
+public:
+  // void SetMarginLeft(const Length& v) { };
+  // SetBackgroundColor
 };
 
 }
