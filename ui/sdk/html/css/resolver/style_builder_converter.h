@@ -9,7 +9,7 @@ class CSSValue;
 
 class StyleBuilderConverter {
 public:
-  static StyleColor StyleBuilderConverter::ConvertStyleColor(
+  static StyleColor ConvertStyleColor(
       StyleResolverState &state, const CSSValue &value, bool for_visited_link);
 };
 

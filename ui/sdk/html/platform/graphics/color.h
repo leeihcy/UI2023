@@ -1,5 +1,5 @@
-#ifndef _HTML_CSS_GRAPHICS_COLOR_H_
-#define _HTML_CSS_GRAPHICS_COLOR_H_
+#ifndef _HTML_PLATFORM_GRAPHICS_COLOR_H_
+#define _HTML_PLATFORM_GRAPHICS_COLOR_H_
 #include <string>
 
 namespace html {
@@ -10,6 +10,12 @@ public:
   static bool ParseHexColor(const std::u16string& text, Color& out);
   static constexpr Color FromRGBA32(RGBA32 color) { return Color(color); }
 
+  constexpr Color()
+      : param0_is_none_(0),
+        param1_is_none_(0),
+        param2_is_none_(0),
+        alpha_is_none_(0) {}
+        
   constexpr explicit Color(RGBA32 color)
       : param0_is_none_(0),
         param1_is_none_(0),

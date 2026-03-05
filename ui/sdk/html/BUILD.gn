@@ -20,6 +20,8 @@ source_set("html") {
     "dom/node.h",
     "dom/element.h",
     "dom/element.cpp",
+    "dom/text_link_colors.h",
+    "dom/text_link_colors.cpp",
 
     "css/css_selector.h",
     "css/css_selector.cpp",
@@ -35,6 +37,8 @@ source_set("html") {
     "css/selector_checker.cpp",
     "css/style_sheet_contents.h",
     "css/style_sheet_contents.cpp",
+    "css/style_color.h",
+    "css/style_color.cpp",
 
     "css/parser/css_at_rule_id.cpp",
     "css/parser/css_at_rule_id.h",
@@ -63,6 +67,8 @@ source_set("html") {
     "css/resolver/match_result.cpp",
     "css/resolver/element_resolve_context.h",
     "css/resolver/element_resolve_context.cpp",
+    "css/resolver/style_builder_converter.h",
+    "css/resolver/style_builder_converter.cpp",
 
     "css/property/css_property.h",
     "css/property/css_property.cpp",
@@ -88,12 +94,23 @@ source_set("html") {
     "$target_gen_dir/css/parser/at_rule_descriptor_id_enum.h",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.cpp",
 
-    "css/graphics/color.h",
-    "css/graphics/color.cpp",
+    "platform/graphics/color.h",
+    "platform/graphics/color.cpp",
     "css/style_property_shorthand.h",
     "css/style_property_shorthand.cpp",
     "css/css_variable_data.cpp",
     "css/css_variable_data.h",
+
+    "style/data_ref.h",
+    "style/computed_style.h",
+    "style/computed_style.cpp",
+    "style/fill_layer.h",
+    "style/fill_layer.cpp",
+
+    "platform/geometry/length.h",
+    "platform/geometry/length.cpp",
+    "platform/geometry/length_size.h",
+    "platform/geometry/length_size.cpp",
 
     "util/util.h",
     "util/util.cpp",

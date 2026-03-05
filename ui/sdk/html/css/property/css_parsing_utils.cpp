@@ -9,7 +9,7 @@
 #include "html/css/property/property_id.h"
 #include "html/css/property/css_property.h"
 #include "html/css/property/value_id.h"
-#include "html/css/graphics/color.h"
+#include "html/platform/graphics/color.h"
 #include "html/util/util.h"
 
 #include <algorithm>
@@ -324,7 +324,7 @@ static bool IsHorizontalPositionKeywordOnly(const CSSValue* value) {
   if (!identifier_value) {
     return false;
   }
-  CSSValueID value_id = identifier_value->GetValueId();
+  CSSValueID value_id = identifier_value->GetValueID();
   return value_id == CSSValueID::Left || value_id == CSSValueID::Right;
 }
 static bool IsVerticalPositionKeywordOnly(const CSSValue* value) {
@@ -335,7 +335,7 @@ static bool IsVerticalPositionKeywordOnly(const CSSValue* value) {
   if (!identifier_value) {
     return false;
   }
-  CSSValueID value_id = identifier_value->GetValueId();
+  CSSValueID value_id = identifier_value->GetValueID();
   return value_id == CSSValueID::Top || value_id == CSSValueID::Bottom;
 }
 
@@ -379,7 +379,7 @@ static void PositionFromThreeOrFourValues(std::array<A<CSSValue>, 5> &values,
     // 非ident类型的索引在下面将被跳过。
     auto* current_value = static_cast<CSSIdentifierValue*>(values[i].get());
 
-    CSSValueID id = current_value->GetValueId();
+    CSSValueID id = current_value->GetValueID();
     if (id == CSSValueID::Center) {
       center.reset(std::move(values[i]));
       continue;
@@ -459,8 +459,8 @@ bool ConsumePosition(CSSParserContext& context,
       !!identifier_value2 != (stream.Peek().GetType() ==
                               CSSParserTokenType::Ident) &&
       (identifier_value2
-           ? identifier_value2->GetValueId()
-           : identifier_value1->GetValueId()) != CSSValueID::Center) {
+           ? identifier_value2->GetValueID()
+           : identifier_value1->GetValueID()) != CSSValueID::Center) {
     value3.reset(
         ConsumePositionComponent(context, horizontal_edge, vertical_edge));
   }
@@ -478,7 +478,7 @@ bool ConsumePosition(CSSParserContext& context,
   A<CSSValue> value4 = nullptr;
   auto* identifier_value3 = DynamicTo<CSSIdentifierValue>(value3.get());
   if (identifier_value3 &&
-      identifier_value3->GetValueId() != CSSValueID::Center &&
+      identifier_value3->GetValueID() != CSSValueID::Center &&
       stream.Peek().GetType() != CSSParserTokenType::Ident) {
     value4.reset(ConsumePositionComponent(context,
                                       horizontal_edge, vertical_edge));

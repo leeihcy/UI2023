@@ -160,8 +160,8 @@ void test6_ConsumePosition() {
     assert(x_pair->Second()->IsNumericLiteralValue());
     assert(y_pair->First()->IsIdentifierValue());
     assert(y_pair->Second()->IsNumericLiteralValue());
-    assert(html::DynamicTo<html::CSSIdentifierValue>(x_pair->First())->GetValueId() == html::CSSValueID::Left);
-    assert(html::DynamicTo<html::CSSIdentifierValue>(y_pair->First())->GetValueId() == html::CSSValueID::Top);
+    assert(html::DynamicTo<html::CSSIdentifierValue>(x_pair->First())->GetValueID() == html::CSSValueID::Left);
+    assert(html::DynamicTo<html::CSSIdentifierValue>(y_pair->First())->GetValueID() == html::CSSValueID::Top);
     assert(html::DynamicTo<html::CSSNumericLiteralValue>(x_pair->Second())->GetNum() == 10);
     assert(html::DynamicTo<html::CSSNumericLiteralValue>(y_pair->Second())->GetNum() == 15);
   }
@@ -179,8 +179,8 @@ void test6_ConsumePosition() {
     html::CSSIdentifierValue* x_ident = html::DynamicTo<html::CSSIdentifierValue>(x.get());
     html::CSSIdentifierValue* y_ident = html::DynamicTo<html::CSSIdentifierValue>(y.get());
     assert(x_ident && y_ident);
-    assert(x_ident->GetValueId() == html::CSSValueID::Left);
-    assert(y_ident->GetValueId() == html::CSSValueID::Top);
+    assert(x_ident->GetValueID() == html::CSSValueID::Left);
+    assert(y_ident->GetValueID() == html::CSSValueID::Top);
   }
 
   {
@@ -201,8 +201,8 @@ void test6_ConsumePosition() {
       html::CSSIdentifierValue* x_ident = html::DynamicTo<html::CSSIdentifierValue>(x.get());
       html::CSSIdentifierValue* y_ident = html::DynamicTo<html::CSSIdentifierValue>(y.get());
       assert(x_ident && y_ident);
-      assert(x_ident->GetValueId() == x_id);
-      assert(y_ident->GetValueId() == y_id);
+      assert(x_ident->GetValueID() == x_id);
+      assert(y_ident->GetValueID() == y_id);
     }
   }
 

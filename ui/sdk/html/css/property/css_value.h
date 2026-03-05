@@ -5,7 +5,7 @@
 #include "html/base/casting.h"
 #include "html/base/memory.h"
 #include "html/css/property/value_id.h"
-#include "html/css/graphics/color.h"
+#include "html/platform/graphics/color.h"
 #include "html/css/css_variable_data.h"
 #include <string>
 #include <vector>
@@ -123,7 +123,7 @@ class CSSIdentifierValue : public CSSValue {
   static A<CSSIdentifierValue> Create(CSSValueID);
   explicit CSSIdentifierValue(CSSValueID);
 
-  CSSValueID GetValueId() const { return m_value_id; }
+  CSSValueID GetValueID() const { return m_value_id; }
 
   AtomicString CustomCSSText() const override;
 protected:

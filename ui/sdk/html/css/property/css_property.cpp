@@ -5,7 +5,9 @@
 #include "html/css/property/css_parsing_utils.h"
 #include "html/css/property/css_property_instances.h"
 #include "html/css/style_property_shorthand.h"
+#include "html/css/resolver/style_builder_converter.h"
 #include "html/style/computed_style.h"
+
 #include <assert.h>
 #include <array>
 
@@ -167,8 +169,8 @@ A<CSSValue> BackgroundColor::ParseSingleValue(CSSParserContext &context) const {
   return css_parsing_utils::ConsumeColor(context.token_stream);
 }
 
-void BackgroundColor::ApplyValue(StyleResolverState& state, const CSSValue&) const {
-  // state.Style()->SetBackgroundColor(StyleBuilderConverter::ConvertStyleColor(state, value, false));
+void BackgroundColor::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+  state.Style()->SetBackgroundColor(StyleBuilderConverter::ConvertStyleColor(state, value, false));
 }
 
 }

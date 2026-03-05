@@ -203,7 +203,7 @@ CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& x, A<CSSIdentif
 }
 
 CSSRepeatStyleValue::CSSRepeatStyleValue(A<CSSIdentifierValue>&& id): CSSValue(CSSValueClassType::RepeatStyle) {
-    switch (id->GetValueId()) {
+    switch (id->GetValueID()) {
     case CSSValueID::RepeatX:
       m_x.reset(CSSIdentifierValue::Create(CSSValueID::Repeat));
       m_y.reset(CSSIdentifierValue::Create(CSSValueID::NoRepeat));
