@@ -1,5 +1,7 @@
 {
-  class_name: "CSSPropertyID",
+  is_enum: true,
+  value_type: "unsigned short",
+  name: "CSSPropertyID",
   data: [
     { id: "Invalid" },
     { id: "Variable" },

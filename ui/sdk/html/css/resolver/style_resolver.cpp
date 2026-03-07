@@ -13,7 +13,7 @@ namespace html {
 //
 // third_party\blink\renderer\core\css\resolver\style_resolver.cc
 //
-const ComputedStyle *
+std::shared_ptr<ComputedStyle>
 StyleResolver::ResolveStyle(Element *element,
                             const StyleRecalcContext &style_recalc_context,
                             const StyleRequest &style_request) {
@@ -27,7 +27,9 @@ StyleResolver::ResolveStyle(Element *element,
   StyleCascade cascade(state);
 
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
-  return nullptr;
+  
+  // Now return the style.
+  return state.TakeStyle();
 }
 
 void StyleResolver::ApplyBaseStyle(
@@ -46,8 +48,16 @@ void StyleResolver::ApplyBaseStyleNoCache(
   collector.SetElement(element);
   MatchAllRules(state, collector);
 
-  const MatchResult& match_result = collector.MatchedResult();
+  // const MatchResult& match_result = collector.MatchedResult();
+  
+  CascadeAndApplyMatchedProperties(state, cascade);
+}
 
+void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState &state,
+                                                     StyleCascade &cascade) {
+  const MatchResult& result = cascade.GetMatchResult();
+  cascade.Apply(CascadeFilter());
+  return;
 }
 
 void StyleResolver::MatchAllRules(

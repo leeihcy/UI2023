@@ -35,6 +35,7 @@ public:
 
 class ComputedStyle {
 public:
+  ComputedStyle();
   // void SetMarginLeft(const Length& v) { };
 
   void SetBackgroundColor(const StyleColor &v) {

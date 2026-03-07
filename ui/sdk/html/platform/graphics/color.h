@@ -4,6 +4,13 @@
 
 namespace html {
 
+struct NamedColor {
+  // DISALLOW_NEW();
+  const char* name;
+  unsigned argb_value;
+};
+const NamedColor* FindColor(const char* str, unsigned len);
+
 typedef unsigned RGBA32; 
 class Color {
 public:

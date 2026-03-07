@@ -1,5 +1,7 @@
 {
-  class_name: "AtRuleDescriptorID",
+  is_enum: true,
+  value_type: "unsigned short",
+  name: "AtRuleDescriptorID",
   data: [
     { id: "Invalid" },
     { id: "Variable" },

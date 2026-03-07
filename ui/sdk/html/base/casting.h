@@ -97,7 +97,6 @@ const Derived* DynamicTo(const Base& from) {
 
 template <typename Derived, typename Base>
 const Derived& To(const Base& from) {
-  SECURITY_DCHECK(IsA<Derived>(from));
   return static_cast<const Derived&>(from);
 }
 
@@ -108,7 +107,6 @@ const Derived* To(const Base* from) {
 
 template <typename Derived, typename Base>
 Derived& To(Base& from) {
-  SECURITY_DCHECK(IsA<Derived>(from));
   return static_cast<Derived&>(from);
 }
 template <typename Derived, typename Base>

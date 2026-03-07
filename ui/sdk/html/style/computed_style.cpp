@@ -9,4 +9,9 @@ StyleBackgroundData::StyleBackgroundData()
 StyleBackgroundData::StyleBackgroundData(const StyleBackgroundData &other)
     : background_(other.background_),
       background_color_(other.background_color_) {}
+
+ComputedStyle::ComputedStyle() {
+  background_data_.Init();
+}
+
 }

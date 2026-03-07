@@ -4,6 +4,8 @@
 #include "html/css/style_request.h"
 #include "html/css/style_recalc_context.h"
 
+#include <memory>
+
 namespace html {
 class ComputedStyle;
 class ElementRuleCollector;
@@ -30,7 +32,7 @@ public:
   
   Document& GetDocument() const { return *m_document; }
 
-  const ComputedStyle *
+  std::shared_ptr<ComputedStyle>
   ResolveStyle(Element *element, const StyleRecalcContext &style_recalc_context,
                const StyleRequest &style_request);
   void ApplyBaseStyle(Element* element,
@@ -45,6 +47,8 @@ public:
     StyleResolverState &state,
      StyleCascade& cascade
   );
+  void CascadeAndApplyMatchedProperties(StyleResolverState &state,
+                                        StyleCascade &cascade);
 
   void MatchAllRules(StyleResolverState& state, ElementRuleCollector& collector);
   void MatchUARules(const Element& element, ElementRuleCollector& collector);

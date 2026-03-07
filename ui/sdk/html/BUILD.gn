@@ -1,6 +1,7 @@
 
 source_set("html") {
   deps=[
+    ":gen_color_hash",
     ":gen_property_id_hash",
     ":gen_value_id_hash",
     ":gen_atrule_descriptor_id_hash",
@@ -69,6 +70,10 @@ source_set("html") {
     "css/resolver/element_resolve_context.cpp",
     "css/resolver/style_builder_converter.h",
     "css/resolver/style_builder_converter.cpp",
+    "css/resolver/style_cascade.h",
+    "css/resolver/style_cascade.cpp",
+    "css/resolver/style_builder.h",
+    "css/resolver/style_builder.cpp",
 
     "css/property/css_property.h",
     "css/property/css_property.cpp",
@@ -78,6 +83,9 @@ source_set("html") {
     "css/property/css_parsing_utils.cpp",
     "css/property/css_value.h",
     "css/property/css_value.cpp",
+
+    "$target_gen_dir/css/property/color_enum.h",
+    "$target_gen_dir/css/property/color_hash.cpp",
 
     "css/property/property_id.h",
     "css/property/property_id.cpp",
@@ -179,5 +187,23 @@ action("gen_atrule_descriptor_id_hash") {
     "$target_gen_dir/css/parser/at_rule_descriptor_id_enum.h",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.template",
     "$target_gen_dir/css/parser/at_rule_descriptor_id_hash.cpp",
+  ]
+}
+
+
+# 生成 Color name->value 的完美Hash
+action("gen_color_hash") {
+  script="perfect_hash.py"
+  inputs = [
+    "css/property/color.json5",
+  ]
+  args = [
+    rebase_path(inputs[0]),  # input file path
+    rebase_path("$target_gen_dir/css/property"),
+  ]
+  outputs = [
+    "$target_gen_dir/css/property/color_enum.h",
+    "$target_gen_dir/css/property/color_hash.template",
+    "$target_gen_dir/css/property/color_hash.cpp",
   ]
 }

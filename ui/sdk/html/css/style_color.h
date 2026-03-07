@@ -3,6 +3,7 @@
 
 #include "html/css/property/value_id.h"
 #include "html/platform/graphics/color.h"
+#include "html/dom/text_link_colors.h"
 
 namespace html {
 
@@ -29,7 +30,8 @@ public:
   inline bool operator!=(const StyleColor& other) const {
     return !(*this == other);
   }
-
+  static Color ColorFromKeyword(CSSValueID,
+                                ColorScheme color_scheme);
 private:
   Color color_;
   CSSValueID color_keyword_ = CSSValueID::CurrentColor;

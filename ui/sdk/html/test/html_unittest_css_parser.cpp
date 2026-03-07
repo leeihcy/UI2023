@@ -565,7 +565,8 @@ void test9_style_resolve() {
   html::StyleRequest style_request;
 
   element.DidAddAttribute(html::QualifiedName("id"), html::AtomicString(u"btn"));
-  style_resolve.ResolveStyle(&element, style_recalc_context, style_request);
+  std::shared_ptr<html::ComputedStyle> computed_style = style_resolve.ResolveStyle(&element, style_recalc_context, style_request);
+  assert(computed_style);
 }
 
 }

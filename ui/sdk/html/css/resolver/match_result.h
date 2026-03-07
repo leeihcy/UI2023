@@ -10,7 +10,7 @@ class MatchedProperties {
 public:
   MatchedProperties(CSSPropertyValueSet* p):properties(p) {}
 
-private:
+public:
   CSSPropertyValueSet* properties = nullptr;
 };
 
@@ -24,6 +24,9 @@ public:
       const MixinParameterBindings* mixin_parameter_bindings,
       MatchedProperties::Data types*/);
 
+  const MatchedPropertiesVector& GetMatchedProperties() const {
+    return matched_properties_;
+  }
 private:
 
 

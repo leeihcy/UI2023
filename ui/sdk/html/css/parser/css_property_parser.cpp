@@ -87,7 +87,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID property_id, bool allow_im
 
   bool is_shorthand = property.IsShorthand();
   if (is_shorthand) {
-    int begin_index = m_context.parsed_properties.size();
+    size_t begin_index = m_context.parsed_properties.size();
     
     if (static_cast<const Shorthand&>(property).ParseShorthand(m_context, false)) {
       bool important = css_parsing_utils::MaybeConsumeImportant(

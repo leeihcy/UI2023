@@ -1,5 +1,7 @@
 {
-  class_name: "CSSValueID",
+  is_enum: true,
+  value_type: "unsigned short",
+  name: "CSSValueID",
   data: [
 
     { id: "Invalid" },

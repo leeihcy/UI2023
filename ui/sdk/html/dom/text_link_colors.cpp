@@ -1,4 +1,7 @@
 #include "html/dom/text_link_colors.h"
+#include "html/css/property/value_id.h"
+#include "html/css/property/css_value.h"
+#include "html/css/style_color.h"
 #include <assert.h>
 
 namespace html {
@@ -31,40 +34,38 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
                                         Color current_color,
                                         ColorScheme color_scheme,
                                         bool for_visited_link) const {
-  assert(false);
-#if 0 // TODO:
-  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
-    return color_value->Value();
-
-  if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
-    const CSSValue& color_value =
-        color_scheme == mojom::blink::ColorScheme::kLight ? pair->First()
-                                                          : pair->Second();
-    return ColorFromCSSValue(color_value, current_color, color_scheme,
-                             for_visited_link);
-  }
+  
+  // if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
+  //   return color_value->Value();
+  // 
+  // if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
+  //   const CSSValue& color_value =
+  //       color_scheme == ColorScheme::kLight ? pair->First()
+  //                                                         : pair->Second();
+  //   return ColorFromCSSValue(color_value, current_color, color_scheme,
+  //                            for_visited_link);
+  // }
 
   CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
   switch (value_id) {
-    case CSSValueID::kInvalid:
-      NOTREACHED();
+    case CSSValueID::Invalid:
+      //NOTREACHED();
+      abort();
       return Color();
-    case CSSValueID::kInternalQuirkInherit:
-      return TextColor(color_scheme);
-    case CSSValueID::kWebkitLink:
-      return for_visited_link ? VisitedLinkColor(color_scheme)
-                              : LinkColor(color_scheme);
-    case CSSValueID::kWebkitActivelink:
-      return ActiveLinkColor(color_scheme);
-    case CSSValueID::kWebkitFocusRingColor:
-      return LayoutTheme::GetTheme().FocusRingColor(color_scheme);
-    case CSSValueID::kCurrentcolor:
-      return current_color;
+    // case CSSValueID::kInternalQuirkInherit:
+    //   return TextColor(color_scheme);
+    // case CSSValueID::kWebkitLink:
+    //   return for_visited_link ? VisitedLinkColor(color_scheme)
+    //                           : LinkColor(color_scheme);
+    // case CSSValueID::kWebkitActivelink:
+    //   return ActiveLinkColor(color_scheme);
+    // case CSSValueID::kWebkitFocusRingColor:
+    //   return LayoutTheme::GetTheme().FocusRingColor(color_scheme);
+    // case CSSValueID::kCurrentcolor:
+    //   return current_color;
     default:
       return StyleColor::ColorFromKeyword(value_id, color_scheme);
   }
-#endif
-  return Color();
 }
 
 }

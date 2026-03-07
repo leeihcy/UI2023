@@ -38,19 +38,19 @@ class DataRef {
   }
 
   void Init() {
-    DCHECK(!data_);
+    // DCHECK(!data_);
     data_ = T::Create();
   }
 
   bool operator==(const DataRef<T>& o) const {
-    DCHECK(data_);
-    DCHECK(o.data_);
+    // DCHECK(data_);
+    // DCHECK(o.data_);
     return data_ == o.data_ || *data_ == *o.data_;
   }
 
   bool operator!=(const DataRef<T>& o) const {
-    DCHECK(data_);
-    DCHECK(o.data_);
+    // DCHECK(data_);
+    // DCHECK(o.data_);
     return data_ != o.data_ && *data_ != *o.data_;
   }
 
