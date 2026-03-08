@@ -1,10 +1,22 @@
 shared_library("net") {
   output_dir = "$root_out_dir/bin"
 
-  defines = ["NET_EXPORTS"]
+  defines = [
+    "NET_IMPLEMENTATION", 
+    "COMPONENT_BUILD"
+  ]
   sources = [
     "base/io_buffer.h",
     "base/io_buffer.cpp",
+  ]
+
+  sources += [
+    "socket/next_proto.h",
+    "socket/next_proto.cpp",
+    "socket/socket.h",
+    "socket/socket.cpp",
+    "socket/stream_socket.h",
+    "socket/stream_socket.cpp",
   ]
   
   include_dirs = [

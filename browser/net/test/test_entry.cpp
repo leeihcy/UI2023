@@ -1,4 +1,4 @@
-#include "net/include/net_api.h"
+#include "net/base/net_export.h"
 #include <iostream>
 
 namespace net {
@@ -6,7 +6,7 @@ namespace net {
 void _NetUnitTest() {
 }
 
-NETAPI void NetUnitTest() {
+NET_EXPORT void NetUnitTest() {
 #if defined(NET_UNITTEST)
   std::cout << "net unit test begin!" << std::endl;
   _NetUnitTest();
