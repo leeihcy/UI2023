@@ -1,0 +1,47 @@
+shared_library("net") {
+  output_dir = "$root_out_dir/bin"
+
+  defines = ["NET_EXPORTS"]
+  sources = [
+    "base/io_buffer.h",
+    "base/io_buffer.cpp",
+  ]
+  
+  include_dirs = [
+        "//browser/",
+        "$target_gen_dir/",
+  ]
+
+  # 单元测试
+  if (is_debug) { 
+    defines += ["NET_UNITTEST"]
+    sources += [
+      "test/test_entry.cpp",
+    ]
+  }
+}
+
+if (is_debug) {
+executable("net_unittest") {
+  output_dir = "$root_out_dir/bin"
+  deps = [
+    ":net"
+  ]
+
+  cflags = []
+  if (is_debug || (is_mac||is_linux)) {
+    cflags = ["-g"]
+  }
+  include_dirs = [
+  ]
+  sources = [
+    "test/test_main.cpp"
+  ]
+}
+group("net_test") {
+  deps = [
+    ":net_unittest"
+  ]
+}
+
+}

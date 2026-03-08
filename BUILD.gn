@@ -2,7 +2,8 @@
 
 group("ui") {
   deps = [
-    "//ui:ui"
+    "//ui:ui",
+    "//browser",
   ]
 }
 
@@ -15,7 +16,8 @@ group("samples") {
 if (is_debug) {
   group("unittest") {
     deps = [
-      "//ui:unittest"
+      "//ui:unittest",
+      "//browser:unittest",
     ]
   }
 }

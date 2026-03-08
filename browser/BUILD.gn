@@ -1,0 +1,16 @@
+# import("//build/config/common.gni")
+
+group("browser") {
+    deps = [
+      "net:net",
+    ]
+}
+
+######################################
+if (is_debug) {
+group("unittest") {
+    deps = [
+        "net:net_test",
+    ]
+}
+}

@@ -84,13 +84,13 @@ public:
         int rotate_center_y = (m_root_size.cy)/2  + context.m_yOffset;
 
         Matrix44 matrix;
-        matrix.Translate(rotate_center_x, rotate_center_y, 0);
+        matrix.Translate((float)rotate_center_x, (float)rotate_center_y, 0);
         
         matrix.Perspective(2000);
-        matrix.Translate(0, 0, (m_root_size.cx)/2);
+        matrix.Translate(0, 0, (float)(m_root_size.cx)/2);
         matrix.Rotate(0, count, 0);
 
-        matrix.Translate(-rotate_center_x, -rotate_center_y, 0);
+        matrix.Translate((float)-rotate_center_x, (float)-rotate_center_y, 0);
         
         m_root_layer->Compositor(&context, (float*)&matrix);
     } else {

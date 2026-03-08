@@ -14,7 +14,10 @@ config("compiler_defaults") {
   }
 
   if (is_win) {
-    defines += ["OS_WIN", "_HAS_STD_BYTE=0"]
+    defines += [
+      "OS_WIN",
+      "_HAS_STD_BYTE=0"
+    ]
   }
   else if (is_linux) {
     defines += ["OS_LINUX"]
