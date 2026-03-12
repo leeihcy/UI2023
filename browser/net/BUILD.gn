@@ -6,6 +6,8 @@ shared_library("net") {
     "COMPONENT_BUILD"
   ]
   sources = [
+    "base/address_family.h",
+    "base/address_family.cpp",
     "base/io_buffer.h",
     "base/io_buffer.cpp",
   ]
