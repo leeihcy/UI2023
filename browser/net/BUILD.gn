@@ -30,6 +30,14 @@ shared_library("net") {
     "socket/stream_socket.cpp",
     "socket/tcp_client_socket.h",
     "socket/tcp_client_socket.cpp",
+
+    "socket/tcp_socket_win.h",
+    "socket/tcp_socket_win.cpp",
+  ]
+
+  sources += [
+    "url_request/url_request.h",
+    "url_request/url_request.cpp"
   ]
 
   sources += [
@@ -41,6 +49,15 @@ shared_library("net") {
     "../url/url_canon_ip.cpp",
   ]
   
+   sources += [
+    "../services/network/cors/cors_url_loader.h",
+    "../services/network/cors/cors_url_loader.cpp",
+    "../services/network/url_loader.h",
+    "../services/network/url_loader.cpp",
+    "../services/network/url_loader_factory.h",
+    "../services/network/url_loader_factory.cpp",
+  ]
+
   include_dirs = [
         "//browser/",
         "$target_gen_dir/",
@@ -67,6 +84,7 @@ executable("net_unittest") {
     cflags = ["-g"]
   }
   include_dirs = [
+    "//browser/",
   ]
   sources = [
     "test/test_main.cpp"

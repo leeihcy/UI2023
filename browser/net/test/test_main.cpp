@@ -1,6 +1,7 @@
+#include "net/base/net_export.h"
 
 namespace net {
-void NetUnitTest();
+NET_EXPORT void NetUnitTest();
 }
 
 int main() {

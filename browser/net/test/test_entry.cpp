@@ -2,11 +2,15 @@
 #include <iostream>
 
 #include "net/socket/tcp_client_socket.h"
+#include "services/network/cors/cors_url_loader.h"
 
 namespace net {
 
 void _NetUnitTest() {
   // TCPClientSocket socket;
+
+  network::CorsURLLoader cors_url_loader;
+  cors_url_loader.Start();
 }
 
 NET_EXPORT void NetUnitTest() {

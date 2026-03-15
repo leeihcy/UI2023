@@ -9,7 +9,7 @@
 // be exported to consumers, and NET_EXPORT_PRIVATE that allows unit tests to
 // access features not intended to be used directly by real consumers.
 
-#if defined(COMPONENT_BUILD)
+#if 1 //defined(COMPONENT_BUILD)
 #if defined(OS_WIN)
 
 #if defined(NET_IMPLEMENTATION)
