@@ -6,11 +6,11 @@ config("compiler_defaults") {
   cflags_objcc = []
 
   if (is_win) {
-    cflags_cc += ["/std:c++20"]
+    cflags_cc += ["/std:c++latest"]
   } else {
     cflags_c += [ "-std=c11" ]   
-    cflags_cc += [ "-std=c++20" ]
-    cflags_objcc += ["-std=c++20"]
+    cflags_cc += [ "-std=c++latest" ]
+    cflags_objcc += ["-std=c++latest"]
   }
 
   if (is_win) {

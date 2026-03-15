@@ -25,7 +25,7 @@ class SSLCertRequestInfo;
 class SSLInfo;
 class SocketTag;
 
-class NET_EXPORT StreamSocket : public Socket {
+class StreamSocket : public Socket {
  public:
   using BeforeConnectCallback = std::function<int()>;
 

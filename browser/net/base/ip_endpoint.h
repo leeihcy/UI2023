@@ -38,18 +38,18 @@ namespace net {
 //  * IP address (either v4 or v6)
 //  * Port
 //  * IPv6 link local scope ID (only for IPv6 link local address)
-class NET_EXPORT IPEndPoint {
+class IPEndPoint {
  public:
   // Function signatures of if_nametoindex() and if_indextoname().
-  using NameToIndexFunc = uint32_t (*)(const char*);
-  using IndexToNameFunc = char* (*)(unsigned int, base::span<char>);
+  // using NameToIndexFunc = uint32_t (*)(const char*);
+  // using IndexToNameFunc = char* (*)(unsigned int, base::span<char>);
 
-  // Set fake if_nametoindex() and if_indextoname() functions for testing.
-  static void SetNameToIndexFuncForTesting(NameToIndexFunc func);
-  static void SetIndexToNameFuncForTesting(IndexToNameFunc func);
+  // // Set fake if_nametoindex() and if_indextoname() functions for testing.
+  // static void SetNameToIndexFuncForTesting(NameToIndexFunc func);
+  // static void SetIndexToNameFuncForTesting(IndexToNameFunc func);
 
-  // Nullopt if `value` is malformed to be serialized to IPEndPoint.
-  static std::optional<IPEndPoint> FromValue(const base::Value& value);
+  // // Nullopt if `value` is malformed to be serialized to IPEndPoint.
+  // static std::optional<IPEndPoint> FromValue(const base::Value& value);
 
   IPEndPoint();
   ~IPEndPoint();
@@ -119,18 +119,18 @@ class NET_EXPORT IPEndPoint {
                       ep.port_, ep.scope_id_);
   }
 
-  base::Value ToValue() const;
+  // base::Value ToValue() const;
 
  private:
-  static NameToIndexFunc name_to_index_func_for_testing_;
-  static IndexToNameFunc index_to_name_func_for_testing_;
+  // static NameToIndexFunc name_to_index_func_for_testing_;
+  // static IndexToNameFunc index_to_name_func_for_testing_;
 
   // Returns a scope ID from `dict` when `dict` has a valid interface name that
   // can be converted to an interface index.
-  static std::optional<uint32_t> ScopeIdFromDict(const base::DictValue& dict);
+  // static std::optional<uint32_t> ScopeIdFromDict(const base::DictValue& dict);
 
   // Converts `scope_id` to an interface name as a base::Value.
-  static base::Value ScopeIdToValue(std::optional<uint32_t> scope_id);
+  // static base::Value ScopeIdToValue(std::optional<uint32_t> scope_id);
 
   bool IsIPv6LinkLocal() const;
 

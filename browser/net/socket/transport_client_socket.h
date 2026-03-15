@@ -7,14 +7,14 @@
 
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/socket/connection_attempts.h"
+// #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
 
 namespace net {
 
 // A socket class that extends StreamSocket to provide methods that are relevant
 // to a transport client socket.
-class NET_EXPORT TransportClientSocket : public StreamSocket {
+class TransportClientSocket : public StreamSocket {
  public:
   TransportClientSocket();
 

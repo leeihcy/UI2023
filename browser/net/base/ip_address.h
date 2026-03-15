@@ -408,7 +408,7 @@ constexpr bool IPAddressStartsWith(const IPAddress& address,
   if (address.size() < N)
     return false;
   // SAFETY: N is size of `prefix` as inferred by the compiler.
-  return std::equal(prefix, UNSAFE_BUFFERS(prefix + N),
+  return std::equal(prefix, (prefix + N),
                     address.bytes().begin());
 }
 

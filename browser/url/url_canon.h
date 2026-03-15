@@ -23,6 +23,13 @@
 // #include "base/numerics/clamped_math.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
 namespace url {
 
 // Represents the different behavior between canonicalizing special URLs
@@ -102,7 +109,7 @@ class CanonOutputT {
     // dramatically because this branch is predicted as taken.
     if (cur_len_ < buffer_len_) {
       // SAFETY: `cur_len_` was validated on the previous line.
-      UNSAFE_BUFFERS(buffer_[cur_len_]) = ch;
+      buffer_[cur_len_] = ch;
       cur_len_++;
       return;
     }
@@ -114,7 +121,7 @@ class CanonOutputT {
 
     // Actually do the insertion.
     // SAFETY: Successful `Grow(1)` ensured `cur_len_` was valid.
-    UNSAFE_BUFFERS(buffer_[cur_len_]) = ch;
+    buffer_[cur_len_] = ch;
     cur_len_++;
   }
 
@@ -125,7 +132,8 @@ class CanonOutputT {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    Span().subspan(cur_len_, str_len).copy_from(std::span(str));
+    // Span().subspan(cur_len_, str_len).copy_from(std::span(str));
+    std::ranges::copy(std::span(str), Span().subspan(cur_len_, str_len).begin());
     cur_len_ += str_len;
   }
 
@@ -148,7 +156,7 @@ class CanonOutputT {
   // Returns a span for the whole buffer.
   std::span<T> Span() {
     // SAFETY: Resize() must ensure `buffer_` has `buffer_len_` size.
-    return UNSAFE_BUFFERS(std::span(buffer_, buffer_len_));
+    return std::span(buffer_, buffer_len_);
   }
 
  protected:
@@ -193,7 +201,7 @@ class RawCanonOutputT : public CanonOutputT<T> {
   void Resize(size_t sz) override {
     T* new_buf = new T[sz];
     // SAFETY: The previous line ensured `new_buf` had `sz` size.
-    UNSAFE_BUFFERS(std::span(new_buf, sz))
+    std::span(new_buf, sz)
         .copy_prefix_from(
             CanonOutputT<T>::Span().first(std::min(sz, this->cur_len_)));
     if (this->buffer_ != fixed_buffer_)

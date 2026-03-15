@@ -3,13 +3,22 @@ shared_library("net") {
 
   defines = [
     "NET_IMPLEMENTATION", 
-    "COMPONENT_BUILD"
+    # "COMPONENT_BUILD"
   ]
   sources = [
     "base/address_family.h",
     "base/address_family.cpp",
+    "base/address_list.h",
+    "base/address_list.cpp",
     "base/io_buffer.h",
     "base/io_buffer.cpp",
+    "base/ip_address.h",
+    "base/ip_address.cpp",
+    "base/ip_address_util.cpp",
+    "base/ip_endpoint.h",
+    "base/ip_endpoint.cpp",
+    "base/net_errors.h",
+    "base/net_errors_win.cpp",
   ]
 
   sources += [
@@ -19,6 +28,17 @@ shared_library("net") {
     "socket/socket.cpp",
     "socket/stream_socket.h",
     "socket/stream_socket.cpp",
+    "socket/tcp_client_socket.h",
+    "socket/tcp_client_socket.cpp",
+  ]
+
+  sources += [
+    "../url/url_canon_stdstring.h",
+    "../url/url_canon_stdstring.cpp",
+    "../url/url_canon.h",
+    "../url/url_canon.cpp",
+    "../url/url_canon_ip.h",
+    "../url/url_canon_ip.cpp",
   ]
   
   include_dirs = [
