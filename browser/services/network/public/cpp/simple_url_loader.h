@@ -2,7 +2,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_SIMPLEURLLOADER_H_
 
 #include <memory>
-#include "service/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace network {
 

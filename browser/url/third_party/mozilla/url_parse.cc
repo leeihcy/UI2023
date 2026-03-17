@@ -59,8 +59,8 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed) {
 
 Component MakeRange(size_t begin, size_t end) {
   CHECK_LE(begin, end);
-  return Component(base::checked_cast<int>(begin),
-                   base::checked_cast<int>(end - begin));
+  return Component(int(begin),
+                   int(end - begin));
 }
 
 namespace {
@@ -166,7 +166,7 @@ void DoParseAuthority(std::basic_string_view<CHAR> spec,
                       Component* password,
                       Component* hostname,
                       Component* port_num) {
-  DCHECK(auth.is_valid()) << "We should always get an authority";
+  // DCHECK(auth.is_valid()) << "We should always get an authority";
   if (auth.len == 0) {
     username->reset();
     password->reset();
@@ -361,7 +361,7 @@ Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
     // everything is the scheme. Both would produce an invalid URL, but this way
     // seems less wrong in more cases.
     parsed.scheme.reset();
-    after_scheme = base::checked_cast<int>(begin);
+    after_scheme = int(begin);
   }
   DoParseAfterSpecialScheme(url, after_scheme, &parsed);
   return parsed;

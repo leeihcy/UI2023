@@ -134,7 +134,7 @@ class CanonOutputT {
     }
     // Span().subspan(cur_len_, str_len).copy_from(std::span(str));
     //std::ranges::copy(std::span(str), Span().subspan(cur_len_, str_len).begin());
-    memcpy(str.data(), Span().subspan(cur_len_, str_len).data(), str_len);
+    memcpy((void*)str.data(), Span().subspan(cur_len_, str_len).data(), str_len);
     cur_len_ += str_len;
   }
 

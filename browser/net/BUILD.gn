@@ -6,6 +6,12 @@ shared_library("net") {
     # "COMPONENT_BUILD"
   ]
   sources = [
+    "../base/strings/string_util.h",
+    "../base/strings/string_util.cpp",
+    "../base/strings/string_util_internal.h",
+    "../base/strings/string_util_constants.cpp",
+  ]
+  sources += [
     "base/address_family.h",
     "base/address_family.cpp",
     "base/address_list.h",
@@ -33,6 +39,8 @@ shared_library("net") {
 
     "socket/tcp_socket_win.h",
     "socket/tcp_socket_win.cpp",
+    
+    "http/http_request_header.cpp",
   ]
 
   sources += [
@@ -41,12 +49,19 @@ shared_library("net") {
   ]
 
   sources += [
+    "../url/gurl.h",
+    "../url/gurl.cpp",
     "../url/url_canon_stdstring.h",
     "../url/url_canon_stdstring.cpp",
     "../url/url_canon.h",
     "../url/url_canon.cpp",
     "../url/url_canon_ip.h",
     "../url/url_canon_ip.cpp",
+    "../url/url_util.h",
+    "../url/url_util.cpp",
+    "../url/url_parse_file.cc",
+    "../url/third_party/mozilla/url_parse.h",
+    "../url/third_party/mozilla/url_parse.cc",
   ]
   
    sources += [

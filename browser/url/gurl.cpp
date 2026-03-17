@@ -1,5 +1,6 @@
 #include "url/gurl.h"
 #include "url/url_canon_stdstring.h"
+#include "url/url_util.h"
 
 GURL::GURL() : is_valid_(false) {}
 
