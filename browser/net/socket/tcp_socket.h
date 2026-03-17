@@ -11,8 +11,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "net/socket/tcp_socket_win.h"
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "net/socket/tcp_socket_posix.h"
+#elif BUILDFLAG(IS_POSIX)
+// #include "net/socket/tcp_socket_posix.h"
 #endif
 
 namespace net {

@@ -1,16 +1,27 @@
+#include "browser/services/network/public/cpp/resource_request.h"
 #include "net/base/net_export.h"
 #include <iostream>
+#include <memory>
 
 #include "net/socket/tcp_client_socket.h"
 #include "services/network/cors/cors_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace net {
 
+void CorsUrlLoaderTest() {
+  network::CorsURLLoader cors_url_loader;
+  cors_url_loader.Start();
+}
+
+void SimpleUrlLoaderTest() {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+}
 void _NetUnitTest() {
   // TCPClientSocket socket;
 
-  network::CorsURLLoader cors_url_loader;
-  cors_url_loader.Start();
+  CorsUrlLoaderTest();
+  SimpleUrlLoaderTest();
 }
 
 NET_EXPORT void NetUnitTest() {

@@ -49,7 +49,7 @@ enum DRAW_BITMAP_FLAG {
 
 struct DrawBitmapParam {
   DrawBitmapParam() {
-    memset(this, 0, sizeof(DrawBitmapParam));
+    memset((void*)this, 0, sizeof(DrawBitmapParam));
     // scale_factor = 1.0f;
     nFlag = DRAW_BITMAP_BITBLT;
   }

@@ -9,6 +9,7 @@
 #include "html/util/util.h"
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 
 
 namespace html {
@@ -157,8 +158,8 @@ bool CSSSelectorParser::ConsumePartialComplexSelector(
     compound_selector.back().SetRelation(combinator);
 
     // See ConsumeComplexSelector().
-    // std::ranges::reverse(compound_selector);
-    std::reverse(compound_selector.begin(), compound_selector.end());
+    std::ranges::reverse(compound_selector);
+    // std::reverse(compound_selector.begin(), compound_selector.end());
 
     if (previous_compound_flags & kHasPseudoElementForRightmostCompound) {
       // If we've already seen a compound that needs to be rightmost, and still
@@ -292,7 +293,8 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     return {};
   }
 
-  std::reverse(compound_selector.begin(), compound_selector.end());
+  std::ranges::reverse(compound_selector);
+  // std::reverse(compound_selector.begin(), compound_selector.end());
 
   // 获取与下一个selector之间的连接符，如空格，>子对象。
   CSSSelector::RelationType combinator = ConsumeCombinator(context);
@@ -308,7 +310,8 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   }
 
   auto result = reset_vector.AddedElements();
-  std::reverse(result.begin(), result.end());
+  // std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
 
   if (nesting_type != CSSNestingType::None) {
     size_t last_index = m_output.size() - 1;
@@ -1271,7 +1274,8 @@ std::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
   }
 
   std::span<CSSSelector> result = reset_vector.AddedElements();
-  std::reverse(result.begin(), result.end());
+  std::ranges::reverse(result);
+  // std::reverse(result.begin(), result.end());
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
