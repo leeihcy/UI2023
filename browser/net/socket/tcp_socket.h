@@ -12,7 +12,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "net/socket/tcp_socket_win.h"
 #elif BUILDFLAG(IS_POSIX)
-// #include "net/socket/tcp_socket_posix.h"
+#include "net/socket/tcp_socket_posix.h"
 #endif
 
 namespace net {

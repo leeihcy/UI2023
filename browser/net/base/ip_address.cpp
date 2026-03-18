@@ -382,9 +382,16 @@ std::string IPAddressToStringWithPort(const IPAddress& address, uint16_t port) {
 
   if (address.IsIPv6()) {
     // Need to bracket IPv6 addresses since they contain colons.
-    return std::format("[{}]:{}", address_str.c_str(), port);
+    // 需要c++23，在mac上的老机器上编译支持的不是很好
+    // return std::format("[{}]:{}", address_str.c_str(), port);
+    char buffer[64];
+    std::sprintf(buffer, "[%s]:%d", address_str.c_str(), port);
+    return std::string(buffer);
   }
-  return std::format("{}:{}", address_str.c_str(), port);
+  // return std::format("{}:{}", address_str.c_str(), port);
+  char buffer[64];
+  std::sprintf(buffer, "%s:%d", address_str.c_str(), port);
+  return std::string(buffer);
 }
 
 IPAddress ConvertIPv4ToIPv4MappedIPv6(const IPAddress& address) {

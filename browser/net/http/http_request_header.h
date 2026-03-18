@@ -1,4 +1,3 @@
-
 namespace net {
 
 class HttpRequestHeaders {

@@ -137,7 +137,7 @@ inline void AppendHexEncodedByte(uint8_t byte,
                                             'c', 'd', 'e', 'f'};
   const char* const hex_chars = uppercase ? kHexCharsUpper : kHexCharsLower;
   output.append(
-      {UNSAFE_TODO(hex_chars[byte >> 4]), UNSAFE_TODO(hex_chars[byte & 0xf])});
+      {(hex_chars[byte >> 4]), (hex_chars[byte & 0xf])});
 }
 
 // Best effort conversion, see StringToInt above for restrictions.
@@ -179,7 +179,7 @@ BASE_EXPORT bool HexStringToString(std::string_view input, std::string* output);
 // characters, `output` will have been filled with the decoded bytes up until
 // the failure.
 BASE_EXPORT bool HexStringToSpan(std::string_view input,
-                                 base::span<uint8_t> output);
+                                 std::span<uint8_t> output);
 
 }  // namespace base
 

@@ -1,4 +1,5 @@
 #include "net/base/net_export.h"
+#include "services/network/public/cpp/resource_request.h"
 #include <iostream>
 #include <memory>
 

@@ -7,10 +7,14 @@ config("compiler_defaults") {
 
   if (is_win) {
     cflags_cc += ["/std:c++latest"]
+  } else if (is_mac) {
+    cflags_c += [ "-std=c11" ]   
+    cflags_cc += [ "-std=c++2b" ]
+    cflags_objcc += ["-std=c++2b"]
   } else {
     cflags_c += [ "-std=c11" ]   
-    cflags_cc += [ "-std=c++latest" ]
-    cflags_objcc += ["-std=c++latest"]
+    cflags_cc += [ "-std=c++23" ]
+    cflags_objcc += ["-std=c++23"]
   }
 
   if (is_win) {

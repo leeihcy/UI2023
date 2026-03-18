@@ -4,13 +4,13 @@
 
 #ifndef BASE_NOTREACHED_H_
 #define BASE_NOTREACHED_H_
+#include "base/notimplemented.h"
 
 #include <assert.h>
 
 namespace logging {
 
 #define NOTREACHED() abort()
-#define NOTIMPLEMENTED() assert(false && "NotImplemented");
 
 }
 #endif  // BASE_NOTREACHED_H_

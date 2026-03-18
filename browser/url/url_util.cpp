@@ -205,13 +205,13 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
-    success = CanonicalizeFileUrl(spec, ParseFileUrl(spec), charset_converter,
-                                  output, output_parsed);
+    // success = CanonicalizeFileUrl(spec, ParseFileUrl(spec), charset_converter,
+    //                               output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
-    success =
-        CanonicalizeFileSystemUrl(spec, ParseFileSystemUrl(spec),
-                                  charset_converter, output, output_parsed);
+    // success =
+    //     CanonicalizeFileSystemUrl(spec, ParseFileSystemUrl(spec),
+    //                               charset_converter, output, output_parsed);
 
   } else if (DoIsStandard(std::optional(scheme.AsViewOn(spec)), &scheme_type)) {
     // All "normal" URLs.
@@ -220,14 +220,14 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
 
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
-    if (!DoIsOpaqueNonSpecial(spec, scheme)) {
-      success = CanonicalizeNonSpecialUrl(
-          spec, ParseNonSpecialUrlInternal(spec, trim_path_end),
-          charset_converter, *output, *output_parsed);
-    } else {
-      success = CanonicalizePathUrl(spec, ParsePathUrl(spec, trim_path_end),
-                                    output, output_parsed);
-    }
+    // if (!DoIsOpaqueNonSpecial(spec, scheme)) {
+    //   success = CanonicalizeNonSpecialUrl(
+    //       spec, ParseNonSpecialUrlInternal(spec, trim_path_end),
+    //       charset_converter, *output, *output_parsed);
+    // } else {
+    //   success = CanonicalizePathUrl(spec, ParsePathUrl(spec, trim_path_end),
+    //                                 output, output_parsed);
+    // }
   }
   return success;
 }

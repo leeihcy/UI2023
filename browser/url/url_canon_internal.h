@@ -18,7 +18,8 @@
 // #include "base/component_export.h"
 // #include "base/containers/span.h"
 // #include "base/notreached.h"
-// #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/notimplemented.h"
 // #include "base/third_party/icu/icu_utf.h"
 // #include "url/url_canon.h"
 
@@ -186,7 +187,6 @@ constexpr bool IsHexChar(unsigned char c) {
 constexpr bool IsComponentChar(unsigned char c) {
   return IsCharOfType(c, CHAR_COMPONENT);
 }
-#if 0
 // Appends the given string to the output, escaping characters that do not
 // match the given |type| in SharedCharTypes.
 void AppendStringOfType(std::string_view source,
@@ -196,6 +196,7 @@ void AppendStringOfType(std::u16string_view source,
                         SharedCharTypes type,
                         CanonOutput* output);
 
+#if 0
 // This lookup table allows fast conversion between ASCII hex letters and their
 // corresponding numerical value. The 8-bit range is divided up into 8
 // regions of 0x20 characters each. Each of the three character types (numbers,
@@ -233,7 +234,7 @@ inline size_t IsDot(std::basic_string_view<CHAR> spec) {
 //
 // Returns 0 if the input character is not a valid scheme character.
 char CanonicalSchemeChar(char16_t ch);
-
+#endif
 // Write a single character, escaped, to the output. This always escapes: it
 // does no checking that thee character requires escaping.
 // Escaping makes sense only 8 bit chars, so code works in all cases of
@@ -246,7 +247,7 @@ inline void AppendEscapedChar(UINCHAR ch, CanonOutputT<OUTCHAR>* output) {
   output->push_back(static_cast<OUTCHAR>(hex[0]));
   output->push_back(static_cast<OUTCHAR>(hex[1]));
 }
-
+#if 0
 // The character we'll substitute for undecodable or invalid characters.
 extern const base_icu::UChar32 kUnicodeReplacementCharacter;
 
@@ -346,7 +347,7 @@ inline void AppendUTF16Value(base_icu::UChar32 code_point,
     output->push_back(static_cast<char16_t>(code_point));
   }
 }
-
+#endif
 // Escaping functions ---------------------------------------------------------
 
 // Writes the given character to the output as UTF-8, escaped. Call this
@@ -371,6 +372,7 @@ inline void AppendUTF16Value(base_icu::UChar32 code_point,
 inline bool AppendUtf8EscapedChar(std::u16string_view str,
                                   size_t* begin,
                                   CanonOutput* output) {
+#if 0
   // UTF-16 input. ReadUTFCharLossy will handle invalid characters for us and
   // give us the kUnicodeReplacementCharacter, so we don't have to do special
   // checking after failure, just pass through the failure to the caller.
@@ -378,12 +380,16 @@ inline bool AppendUtf8EscapedChar(std::u16string_view str,
   bool success = ReadUtfCharLossy(str, begin, &char_value);
   AppendUTF8EscapedValue(char_value, output);
   return success;
+#endif
+  NOTIMPLEMENTED();
+  return false;
 }
 
 // Handles UTF-8 input. See the wide version above for usage.
 inline bool AppendUtf8EscapedChar(std::string_view str,
                                   size_t* begin,
                                   CanonOutput* output) {
+#if 0
   // ReadUTFCharLossy will handle invalid characters for us and give us the
   // kUnicodeReplacementCharacter, so we don't have to do special checking
   // after failure, just pass through the failure to the caller.
@@ -391,8 +397,11 @@ inline bool AppendUtf8EscapedChar(std::string_view str,
   bool success = ReadUtfCharLossy(str, begin, &ch);
   AppendUTF8EscapedValue(ch, output);
   return success;
+#endif
+  NOTIMPLEMENTED();
+  return false;
 }
-
+#if 0
 // URL Standard: https://url.spec.whatwg.org/#c0-control-percent-encode-set
 template <typename CHAR>
 bool IsInC0ControlPercentEncodeSet(CHAR ch) {
@@ -439,7 +448,7 @@ inline bool DecodeEscaped(std::basic_string_view<CHAR> spec,
   *begin += 2;
   return true;
 }
-
+#endif
 // Appends the given string to the output, escaping "some" characters that
 // it feels may not be safe. It assumes the input values are all contained in
 // 8-bit although it allows any type.
@@ -449,7 +458,7 @@ inline bool DecodeEscaped(std::basic_string_view<CHAR> spec,
 // the escaping rules are not guaranteed!
 void AppendInvalidNarrowString(std::string_view input, CanonOutput* output);
 void AppendInvalidNarrowString(std::u16string_view input, CanonOutput* output);
-
+#if 0
 // Misc canonicalization helpers ----------------------------------------------
 
 // Converts between UTF-8 and UTF-16, returning true on successful conversion.

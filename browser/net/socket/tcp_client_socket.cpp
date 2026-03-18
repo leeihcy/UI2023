@@ -1,5 +1,7 @@
 #include "net/socket/tcp_client_socket.h"
 
+#include <assert.h>
+
 namespace net {
 
 int TCPClientSocket::Connect(CompletionOnceCallback callback) {
@@ -17,6 +19,21 @@ int TCPClientSocket::Connect(CompletionOnceCallback callback) {
 
   return rv;
 }
+
+void TCPClientSocket::Disconnect() {
+  assert(false);
+}
+
+bool TCPClientSocket::IsConnected() const {
+  assert(false);
+  return false;
+}
+
+bool TCPClientSocket::IsConnectedAndIdle() const {
+  assert(false);
+  return false;
+}
+  
 
 int TCPClientSocket::DoConnectLoop(int result) {
   DCHECK_NE(next_connect_state_, CONNECT_STATE_NONE);

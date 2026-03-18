@@ -24,8 +24,12 @@ shared_library("net") {
     "base/ip_endpoint.h",
     "base/ip_endpoint.cpp",
     "base/net_errors.h",
-    "base/net_errors_win.cpp",
   ]
+  if (is_win) {
+    sources += [
+      "base/net_errors_win.cpp",
+    ]
+  }
 
   sources += [
     "socket/next_proto.h",
@@ -36,12 +40,21 @@ shared_library("net") {
     "socket/stream_socket.cpp",
     "socket/tcp_client_socket.h",
     "socket/tcp_client_socket.cpp",
-
-    "socket/tcp_socket_win.h",
-    "socket/tcp_socket_win.cpp",
-    
+    "socket/transport_client_socket.h",
+    "socket/transport_client_socket.cpp",
     "http/http_request_header.cpp",
   ]
+  if (is_win) {
+    sources += [
+      "socket/tcp_socket_win.h",
+      "socket/tcp_socket_win.cpp",
+    ]
+  } else if (is_mac || is_linux) {
+    sources += [
+      "socket/tcp_socket_posix.h",
+      "socket/tcp_socket_posix.cpp",
+    ]
+  }
 
   sources += [
     "url_request/url_request.h",
@@ -59,6 +72,8 @@ shared_library("net") {
     "../url/url_canon_ip.cpp",
     "../url/url_util.h",
     "../url/url_util.cpp",
+    "../url/url_canon_stdurl.cc",
+    "../url/url_canon_etc.cc",
     "../url/url_parse_file.cc",
     "../url/third_party/mozilla/url_parse.h",
     "../url/third_party/mozilla/url_parse.cc",

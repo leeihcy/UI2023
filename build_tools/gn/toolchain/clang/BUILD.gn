@@ -1,6 +1,15 @@
 toolchain("clang") {
   cc = "clang"
-  cxx = "clang++"
+  if (host_os == "mac") {
+    # c++23需要更新llvm，macbookpro 2015对应的12.x版本macOS自带的clang++不支持，
+    # 需要更新操作系统到13.x版本，或者单独更新llvm。
+    # brew install llvm@22
+    # 编译了230分钟。
+    # cxx = "/usr/local/opt/llvm/bin/clang++"
+    cxx = "clang++"
+  } else {
+    cxx = "clang++"
+  }
   ld = cxx
 
   # Use explicit paths to binaries. The binaries present on the default
@@ -52,7 +61,7 @@ toolchain("clang") {
   tool("cxx") {
     depfile = "{{output}}.d"
     precompiled_header_type = "gcc"
-    command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
+    command = "$cxx -stdlib=libc++ -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} -c {{source}} -o {{output}}"
     depsformat = "gcc"
     description = "CXX {{output}}"
     outputs = [ "$object_subdir/{{source_name_part}}.o" ]
