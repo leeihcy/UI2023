@@ -64,19 +64,23 @@ shared_library("net") {
   sources += [
     "../url/gurl.h",
     "../url/gurl.cpp",
-    "../url/url_canon_stdstring.h",
-    "../url/url_canon_stdstring.cpp",
-    "../url/url_canon.h",
-    "../url/url_canon.cpp",
-    "../url/url_canon_ip.h",
-    "../url/url_canon_ip.cpp",
-    "../url/url_util.h",
-    "../url/url_util.cpp",
-    "../url/url_canon_stdurl.cc",
-    "../url/url_canon_etc.cc",
-    "../url/url_parse_file.cc",
-    "../url/third_party/mozilla/url_parse.h",
-    "../url/third_party/mozilla/url_parse.cc",
+    # "../url/url_canon_stdstring.h",
+    # "../url/url_canon_stdstring.cpp",
+    # "../url/url_canon.h",
+    # "../url/url_canon.cpp",
+    # "../url/url_canon_ip.h",
+    # "../url/url_canon_ip.cpp",
+    # "../url/url_util.h",
+    # "../url/url_util.cpp",
+    # "../url/url_canon_stdurl.cc",
+    # "../url/url_canon_etc.cc",
+    # "../url/url_canon_host.cc",
+    # "../url/url_canon_path.cc",
+    # "../url/url_canon_query.cpp",
+    # "../url/url_canon_internal.cpp",
+    # "../url/url_parse_file.cc",
+    # "../url/third_party/mozilla/url_parse.h",
+    # "../url/third_party/mozilla/url_parse.cc",
   ]
   
    sources += [
@@ -86,6 +90,8 @@ shared_library("net") {
     "../services/network/url_loader.cpp",
     "../services/network/url_loader_factory.h",
     "../services/network/url_loader_factory.cpp",
+    "../services/network/public/cpp/simple_url_loader.h",
+    "../services/network/public/cpp/simple_url_loader.cpp",
   ]
 
   include_dirs = [

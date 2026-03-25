@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include <algorithm>
 #include <array>
@@ -24,7 +25,7 @@
 #include "base/values.h"
 #endif
 #include "net/base/net_export.h"
-#include "url/url_canon_ip.h"
+// #include "url/url_canon_ip.h"
 
 
 namespace net {
@@ -149,15 +150,19 @@ constexpr bool ParseIPLiteralToBytes(std::string_view ip_literal,
 
     // Try parsing the hostname as an IPv6 literal.
     bytes->Resize(16);  // 128 bits.
-    return url::IPv6AddressToNumber(host_with_brackets, bytes->span());
+    assert(false);
+    return false;
+    // return url::IPv6AddressToNumber(host_with_brackets, bytes->span());
   }
 
   // Otherwise the string is an IPv4 address.
   bytes->Resize(4);  // 32 bits.
-  int num_components;
-  url::CanonHostInfo::Family family =
-      url::IPv4AddressToNumber(ip_literal, bytes->span(), &num_components);
-  return family == url::CanonHostInfo::IPV4;
+  // int num_components;
+  // url::CanonHostInfo::Family family =
+  //     url::IPv4AddressToNumber(ip_literal, bytes->span(), &num_components);
+  // return family == url::CanonHostInfo::IPV4;
+  assert(false);
+  return false;
 }
 
 }  // namespace internal

@@ -4,6 +4,7 @@
 
 #include "net/base/ip_address.h"
 
+#include <cassert>
 #include <stddef.h>
 
 #include <algorithm>
@@ -25,7 +26,6 @@
 // #include "base/values.h"
 #include "net/base/parse_number.h"
 // #include "url/gurl.h"
-#include "url/url_canon_stdstring.h"
 
 namespace net {
 namespace {
@@ -355,15 +355,17 @@ bool IPAddress::operator<(const IPAddress& that) const {
 
 std::string IPAddress::ToString() const {
   std::string str;
-  url::StdStringCanonOutput output(&str);
+  // url::StdStringCanonOutput output(&str);
 
-  if (IsIPv4()) {
-    url::AppendIPv4Address(ip_address_.span(), &output);
-  } else if (IsIPv6()) {
-    url::AppendIPv6Address(ip_address_.span(), &output);
-  }
+  // if (IsIPv4()) {
+  //   url::AppendIPv4Address(ip_address_.span(), &output);
+  // } else if (IsIPv6()) {
+  //   url::AppendIPv6Address(ip_address_.span(), &output);
+  // }
 
-  output.Complete();
+  // output.Complete();
+  assert(false);
+  //TODO:
   return str;
 }
 // base::Value IPAddress::ToValue() const {
@@ -385,12 +387,12 @@ std::string IPAddressToStringWithPort(const IPAddress& address, uint16_t port) {
     // 需要c++23，在mac上的老机器上编译支持的不是很好
     // return std::format("[{}]:{}", address_str.c_str(), port);
     char buffer[64];
-    std::sprintf(buffer, "[%s]:%d", address_str.c_str(), port);
+    std::snprintf(buffer, 64, "[%s]:%d", address_str.c_str(), port);
     return std::string(buffer);
   }
   // return std::format("{}:{}", address_str.c_str(), port);
   char buffer[64];
-  std::sprintf(buffer, "%s:%d", address_str.c_str(), port);
+  std::snprintf(buffer, 64, "%s:%d", address_str.c_str(), port);
   return std::string(buffer);
 }
 

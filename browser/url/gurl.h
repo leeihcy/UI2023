@@ -23,7 +23,7 @@ private:
   bool is_valid_;
 
   // Identified components of the canonical spec.
-  url::Parsed parsed_;
+  // url::Parsed parsed_;
 
   // Used for nested schemes [currently only filesystem:].
   // std::unique_ptr<GURL> inner_url_;

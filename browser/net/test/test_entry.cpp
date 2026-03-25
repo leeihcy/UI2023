@@ -16,6 +16,11 @@ void CorsUrlLoaderTest() {
 
 void SimpleUrlLoaderTest() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL("http://zhihu.com");
+  resource_request->method = net::HttpRequestHeaders::kGetMethod;
+
+  std::unique_ptr<network::SimpleURLLoader> loader = 
+    network::SimpleURLLoader::Create(std::move(resource_request));
 }
 void _NetUnitTest() {
   // TCPClientSocket socket;
