@@ -2,7 +2,7 @@
 #define URL_GURL_H_
 
 #include <string>
-#include "url/third_party/mozilla/url_parse.h"
+// #include "url/third_party/mozilla/url_parse.h"
 
 class GURL {
 public:

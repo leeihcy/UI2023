@@ -21,6 +21,7 @@ void SimpleUrlLoaderTest() {
 
   std::unique_ptr<network::SimpleURLLoader> loader = 
     network::SimpleURLLoader::Create(std::move(resource_request));
+  loader->Start(URLLoaderFactory *url_loader_factory)
 }
 void _NetUnitTest() {
   // TCPClientSocket socket;
