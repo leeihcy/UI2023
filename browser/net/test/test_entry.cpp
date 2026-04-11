@@ -19,9 +19,9 @@ void SimpleUrlLoaderTest() {
   resource_request->url = GURL("http://zhihu.com");
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
 
-  std::unique_ptr<network::SimpleURLLoader> loader = 
-    network::SimpleURLLoader::Create(std::move(resource_request));
-  loader->Start(URLLoaderFactory *url_loader_factory)
+  // std::unique_ptr<network::SimpleURLLoader> loader = 
+  //   network::SimpleURLLoader::Create(std::move(resource_request));
+  // loader->Start(URLLoaderFactory *url_loader_factory)
 }
 void _NetUnitTest() {
   // TCPClientSocket socket;
