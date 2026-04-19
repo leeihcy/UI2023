@@ -84,8 +84,17 @@ shared_library("net") {
   ]
   
    sources += [
+    "../services/network/network_service.h",
+    "../services/network/network_service.cpp",
+    "../services/network/network_context.h",
+    "../services/network/network_context.cpp",
+    "../services/network/prefetch_matching_url_loader_factory.h",
+    "../services/network/prefetch_matching_url_loader_factory.cpp",
+
     "../services/network/cors/cors_url_loader.h",
     "../services/network/cors/cors_url_loader.cpp",
+    "../services/network/cors/cors_url_loader_factory.h",
+    "../services/network/cors/cors_url_loader_factory.cpp",
     "../services/network/url_loader.h",
     "../services/network/url_loader.cpp",
     "../services/network/url_loader_factory.h",

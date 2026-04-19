@@ -2,6 +2,7 @@
 #define SERVICES_NETWORK_PREFETCH_MATCHING_URL_LOADER_FACTORY_H_
 
 #include "services/network/cors/cors_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
 
@@ -15,13 +16,13 @@ namespace network {
 // 它实际上是 URLLoaderFactory 的一个包装器（wrapper），
 // 内部维护了一个“待匹配的预取请求”的映射表。
 //
-class PrefetchMatchingURLLoaderFactory
+class PrefetchMatchingURLLoaderFactory : public mojom::URLLoaderFactory
 {
 public:
   PrefetchMatchingURLLoaderFactory();
   ~PrefetchMatchingURLLoaderFactory();
   
-  void CreateLoaderAndStart();
+  void CreateLoaderAndStart() override;
 
 private:
   const std::unique_ptr<cors::CorsURLLoaderFactory> next_;

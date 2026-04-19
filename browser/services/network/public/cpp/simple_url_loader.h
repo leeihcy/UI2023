@@ -4,6 +4,7 @@
 #include <memory>
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
 
@@ -17,8 +18,8 @@ public:
   );
 
   SimpleURLLoader(std::unique_ptr<ResourceRequest> resource_request);
-  void Start(URLLoaderFactory* url_loader_factory);
-  void StartRequest(URLLoaderFactory* url_loader_factory);
+  void Start(mojom::URLLoaderFactory* url_loader_factory);
+  void StartRequest(mojom::URLLoaderFactory* url_loader_factory);
 
 private:
   std::unique_ptr<ResourceRequest> m_resource_request;

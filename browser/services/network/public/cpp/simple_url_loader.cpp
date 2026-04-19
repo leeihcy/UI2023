@@ -15,12 +15,12 @@ SimpleURLLoader::SimpleURLLoader(std::unique_ptr<ResourceRequest> resource_reque
 
 }
 
-void SimpleURLLoader::Start(URLLoaderFactory* url_loader_factory) {
+void SimpleURLLoader::Start(mojom::URLLoaderFactory* url_loader_factory) {
   StartRequest(url_loader_factory);
 }
 
-void SimpleURLLoader::StartRequest(URLLoaderFactory* url_loader_factory) {
-  url_loader_factory->CreateLoaderAndStart(*m_resource_request);
+void SimpleURLLoader::StartRequest(mojom::URLLoaderFactory* url_loader_factory) {
+  url_loader_factory->CreateLoaderAndStart(/**m_resource_request*/);
 
   // TODO:
   // 1. 超时回调

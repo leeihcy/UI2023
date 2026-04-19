@@ -36,9 +36,15 @@ deque<net::HostResolverManager::TaskType>
 > 获取一个值，该值指定是否在当前设备上启用零信任 DNS （ZTDNS）。
 > 命令行执行可进行查看：netsh ztdns show help
 >
-> 在86/108核中，features::kAsyncDns (built-in DNS resolver) 是默认关闭， 145核中默认开启。
+> 在86/108核中，features::kAsyncDns (built-in DNS resolver) 是默认关闭， 145核中默认开启。(从109 Windows默认开启的)
 >
-
+> 629950a2fe003db7d96667c2cb8e902faea63217
+> Tsuyoshi Horo* 2022/11/2 5:32 Enable AsyncDns on Windows by default
+> MAJOR=109
+> MINOR=0
+> BUILD=5396
+> PATCH=0
+>
 
 ```cpp
 bool StubResolverConfigReader::GetInsecureStubResolverEnabled() {
@@ -195,6 +201,9 @@ net\dns\dns_server_iterator.cc
  	net.dll!net::`anonymous namespace'::DnsTransactionImpl::OnFallbackPeriodExpired 行 1770	C++
 
 > 还有一种可能性，就是走的 SYSTEM （PROC）类型的DNS解析。
+>
+> 使用 getaddrinfo api验证发现，确实是会出现同时发并请求多个DNS的现象，但再次请求时就只请求一个，内部原理未知。
+>
 > 
 > 组策略-计算机配置-管理模板-网络-DNS客户端-禁用智能多宿主名称解析-勾选已禁用/未配置
 > reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 0x20 /f
