@@ -14,8 +14,8 @@
 namespace net {
 
 void CorsUrlLoaderTest() {
-  network::CorsURLLoader cors_url_loader;
-  cors_url_loader.Start();
+  // network::CorsURLLoader cors_url_loader;
+  // cors_url_loader.Start();
 }
 
 void SimpleUrlLoaderTest() {

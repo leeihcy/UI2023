@@ -1,9 +1,10 @@
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/url_loader_factory.h"
 
+
 namespace network {
 
-CorsURLLoader::CorsURLLoader() {
+CorsURLLoader::CorsURLLoader(URLLoaderFactory* factory) : m_network_loader_factory(factory) {
   SetCorsFlagIfNeeded();
 }
 
@@ -82,7 +83,7 @@ void CorsURLLoader::StartRequest() {
 }
 
 void CorsURLLoader::StartNetworkRequest() {
-  URLLoaderFactory::GetInstance().CreateLoaderAndStartWithSyncClient();
+  m_network_loader_factory->CreateLoaderAndStartWithSyncClient();
 }
 
 }

@@ -5,6 +5,7 @@
 #include <memory>
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/prefetch_matching_url_loader_factory.h"
+#include "net/url_request/url_request_context.h"
 
 namespace network {
 class PrefetchMatchingURLLoaderFactory;
@@ -37,9 +38,15 @@ public:
   ~NetworkContext() {}
 
   mojom::URLLoaderFactory* CreateURLLoaderFactory();
+  net::URLRequestContext* url_request_context() { return &m_url_request_context; }
+
 
 private:
   std::vector<std::unique_ptr<PrefetchMatchingURLLoaderFactory>> m_url_loader_factories;
+
+  // URLRequestContext 是整个网络栈的“核心引擎”，包含了发起网络请求所需的所有基础设施；
+  // 而 NetworkContext 则是这个引擎在 Chromium 现代化架构（网络服务化）下的“对外接口”和“容器”。
+  net::URLRequestContext m_url_request_context;
 };
 
 }

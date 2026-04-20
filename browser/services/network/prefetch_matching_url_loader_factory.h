@@ -19,10 +19,10 @@ namespace network {
 class PrefetchMatchingURLLoaderFactory : public mojom::URLLoaderFactory
 {
 public:
-  PrefetchMatchingURLLoaderFactory();
+  PrefetchMatchingURLLoaderFactory(NetworkContext* );
   ~PrefetchMatchingURLLoaderFactory();
   
-  void CreateLoaderAndStart() override;
+  void CreateLoaderAndStart(ResourceRequest& request) override;
 
 private:
   const std::unique_ptr<cors::CorsURLLoaderFactory> next_;

@@ -20,7 +20,7 @@ void SimpleURLLoader::Start(mojom::URLLoaderFactory* url_loader_factory) {
 }
 
 void SimpleURLLoader::StartRequest(mojom::URLLoaderFactory* url_loader_factory) {
-  url_loader_factory->CreateLoaderAndStart(/**m_resource_request*/);
+  url_loader_factory->CreateLoaderAndStart(*m_resource_request);
 
   // TODO:
   // 1. 超时回调

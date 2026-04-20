@@ -1,15 +1,35 @@
 #ifndef SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+namespace net {
+class URLRequestContext;
+}
+
 namespace network {
 class ResourceRequest;
+class NetworkContext;
 
-class URLLoaderFactory {
+class URLLoaderContext {
 public:
-  static URLLoaderFactory& GetInstance();
+  virtual net::URLRequestContext* GetUrlRequestContext() const = 0;
+};
+
+class URLLoaderFactory : public mojom::URLLoaderFactory, public URLLoaderContext {
+public:
+  URLLoaderFactory(NetworkContext* context);
+
+  // static URLLoaderFactory& GetInstance();
   void CreateLoaderAndStartWithSyncClient();
   
   void CreateLoaderAndStart(ResourceRequest& resource_request);
+
+  // URLLoaderContext
+  net::URLRequestContext* GetUrlRequestContext() const override;
+  
+private:
+  NetworkContext* m_network_context = nullptr;
 };
 
 }

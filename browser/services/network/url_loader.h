@@ -5,10 +5,11 @@
 #include "net/url_request/url_request.h"
 
 namespace network {
+class URLLoaderContext;
 
 class URLLoader {
 public:
-  URLLoader();
+  URLLoader(URLLoaderContext& context);
   void ScheduleStart();
 
 private:

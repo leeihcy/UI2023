@@ -58,7 +58,9 @@ shared_library("net") {
 
   sources += [
     "url_request/url_request.h",
-    "url_request/url_request.cpp"
+    "url_request/url_request.cpp",
+    "url_request/url_request_context.h",
+    "url_request/url_request_context.cpp",
   ]
 
   sources += [
