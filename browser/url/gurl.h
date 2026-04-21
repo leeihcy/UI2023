@@ -10,6 +10,15 @@ public:
   GURL();
   GURL(std::string_view url_string);
 
+  bool has_scheme() const { 
+    // return parsed_.scheme.is_valid(); 
+    return false;
+  }
+  std::string GetScheme() const { 
+    // return ComponentString(parsed_.scheme); 
+    return "";
+  }
+  
  template <typename T, typename CharT = typename T::value_type>
   void InitCanonical(T input_spec, bool trim_path_end);
 

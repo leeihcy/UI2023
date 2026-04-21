@@ -6,10 +6,11 @@
 
 namespace network {
 class URLLoaderContext;
+class ResourceRequest;
 
 class URLLoader {
 public:
-  URLLoader(URLLoaderContext& context);
+  URLLoader(URLLoaderContext& context, const ResourceRequest& request);
   void ScheduleStart();
 
 private:

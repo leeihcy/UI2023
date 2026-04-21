@@ -4,10 +4,11 @@
 
 namespace network {
 
-CorsURLLoader::CorsURLLoader(URLLoaderFactory* factory) : m_network_loader_factory(factory) {
+CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
+                             URLLoaderFactory *factory)
+    : m_request(resource_request), m_network_loader_factory(factory) {
   SetCorsFlagIfNeeded();
 }
-
 
 bool ShouldCheckCors(/*const GURL& request_url,
                      const std::optional<url::Origin>& request_initiator,
@@ -83,7 +84,7 @@ void CorsURLLoader::StartRequest() {
 }
 
 void CorsURLLoader::StartNetworkRequest() {
-  m_network_loader_factory->CreateLoaderAndStartWithSyncClient();
+  m_network_loader_factory->CreateLoaderAndStartWithSyncClient(m_request);
 }
 
 }

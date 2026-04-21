@@ -12,7 +12,7 @@ CorsURLLoaderFactory::~CorsURLLoaderFactory() {
 }
 
 void CorsURLLoaderFactory::CreateLoaderAndStart(ResourceRequest& request) {
-  auto loader = std::make_unique<CorsURLLoader>(m_network_loader_factory.get());
+  auto loader = std::make_unique<CorsURLLoader>(request, m_network_loader_factory.get());
   loader->SetCorsFlagIfNeeded();
   loader->Start();
 }

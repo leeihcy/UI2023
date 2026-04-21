@@ -8,10 +8,11 @@
 
 namespace net {
 class URLRequestJob;
+class URLRequestContext;
 
 class URLRequest {
 public:
-  URLRequest();
+  URLRequest(const GURL& url, const URLRequestContext* context);
 
   // The original URL is the URL used to initialize the request, and it may
   // differ from the URL if the request was redirected.
@@ -25,6 +26,7 @@ public:
   void StartJob(std::unique_ptr<URLRequestJob> job);
 
 private:
+  const URLRequestContext* m_context;
   std::vector<GURL> url_chain_;
 };
 

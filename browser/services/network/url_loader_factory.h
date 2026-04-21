@@ -20,10 +20,8 @@ class URLLoaderFactory : public mojom::URLLoaderFactory, public URLLoaderContext
 public:
   URLLoaderFactory(NetworkContext* context);
 
-  // static URLLoaderFactory& GetInstance();
-  void CreateLoaderAndStartWithSyncClient();
-  
-  void CreateLoaderAndStart(ResourceRequest& resource_request);
+  void CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request);
+  void CreateLoaderAndStart(ResourceRequest& resource_request) override;
 
   // URLLoaderContext
   net::URLRequestContext* GetUrlRequestContext() const override;

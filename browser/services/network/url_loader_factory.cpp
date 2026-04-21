@@ -20,12 +20,12 @@ net::URLRequestContext* URLLoaderFactory::GetUrlRequestContext() const {
   return m_network_context->url_request_context();
 }
 
-void URLLoaderFactory::CreateLoaderAndStartWithSyncClient() {
-  auto loader = std::make_unique<URLLoader>(*this);
+void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request) {
+  auto loader = std::make_unique<URLLoader>(*this, resource_request);
 }
 
 void URLLoaderFactory::CreateLoaderAndStart(ResourceRequest& resource_request) {
-    
+    CreateLoaderAndStartWithSyncClient(resource_request);
 }
 
 }
