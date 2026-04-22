@@ -13,7 +13,7 @@ class URLRequest;
 
 class ProtocolHandler {
 public:
-  virtual ~ProtocolHandler();
+  virtual ~ProtocolHandler() {};
 
   // Creates a URLRequestJob for the particular protocol. Never returns
   // nullptr.
@@ -22,7 +22,7 @@ public:
 
   // Indicates if it should be safe to redirect to |location|. Should handle
   // protocols handled by MaybeCreateJob().
-  virtual bool IsSafeRedirectTarget(const GURL &location) const;
+  virtual bool IsSafeRedirectTarget(const GURL &location) const { return false; }
 };
 
 class URLRequestJobFactory {

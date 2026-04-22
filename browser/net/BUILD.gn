@@ -65,6 +65,8 @@ shared_library("net") {
     "url_request/url_request_job.cpp",
     "url_request/url_request_job_factory.h",
     "url_request/url_request_job_factory.cpp",
+    "url_request/url_request_http_job.h",
+    "url_request/url_request_http_job.cpp",
   ]
 
   sources += [

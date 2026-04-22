@@ -2,7 +2,6 @@
 #define URL_GURL_H_
 
 #include <string>
-// #include "url/third_party/mozilla/url_parse.h"
 
 class GURL {
 public:
@@ -10,32 +9,38 @@ public:
   GURL();
   GURL(std::string_view url_string);
 
-  bool has_scheme() const { 
-    // return parsed_.scheme.is_valid(); 
-    return false;
-  }
-  std::string GetScheme() const { 
-    // return ComponentString(parsed_.scheme); 
-    return "";
-  }
-  
- template <typename T, typename CharT = typename T::value_type>
-  void InitCanonical(T input_spec, bool trim_path_end);
+  bool has_scheme() const;
+  std::string GetScheme() const;
+
+  bool has_host() const;
+  std::string GetHost() const;
+  int GetPort() const;
+  std::string GetPath() const;
+  std::string GetQuery() const;
+  std::string GetFragment() const;
+  std::string GetUserInfo() const;
+
+  void InitCanonical(std::string_view input_spec, bool trim_path_end);
 
 private:
+  void ParseURL(std::string_view spec);
+  bool ParseScheme(const char*& current, size_t* out_len);
+  void ParseUserInfo(const char* userinfo, std::string* out_userinfo);
+  void ParsePort(const char* port_str, int* out_port);
+  std::string DecodeURLComponent(std::string s);
+
   // The actual text of the URL, in canonical ASCII form.
   std::string spec_;
 
-  // Set when the given URL is valid. Otherwise, we may still have a spec and
-  // components, but they may not identify valid resources (for example, an
-  // invalid port number, invalid characters in the scheme, etc.).
+  // Parsed components
   bool is_valid_;
-
-  // Identified components of the canonical spec.
-  // url::Parsed parsed_;
-
-  // Used for nested schemes [currently only filesystem:].
-  // std::unique_ptr<GURL> inner_url_;
+  std::string scheme_;
+  std::string host_;
+  int port_ = -1;
+  std::string path_;
+  std::string query_;
+  std::string fragment_;
+  std::string user_info_;
 };
 
 #endif
