@@ -21,10 +21,12 @@ public:
   // redirects, this vector will contain one element.
   const std::vector<GURL>& url_chain() const { return url_chain_; }
   const GURL& url() const { return url_chain_.back(); }
+  
+  const URLRequestContext* context() const { return m_context; }
 
   void Start();
   void StartJob(std::unique_ptr<URLRequestJob> job);
-
+  
 private:
   const URLRequestContext* m_context;
   std::vector<GURL> url_chain_;

@@ -3,7 +3,7 @@
 
 namespace net {
 
-URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
+URLRequestJob::URLRequestJob(URLRequest* request) : m_request(request) {}
 
 
 }

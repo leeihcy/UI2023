@@ -10,9 +10,9 @@ public:
   
   virtual void Start() = 0;
 
-private:
+protected:
   // The request that initiated this job. This value will never be nullptr.
-  const URLRequest* request_;
+  const URLRequest* m_request;
 };
 
 }

@@ -43,6 +43,8 @@ shared_library("net") {
     "socket/transport_client_socket.h",
     "socket/transport_client_socket.cpp",
     "http/http_request_header.cpp",
+    "http/http_cache.h",
+    "http/http_cache.cpp",
   ]
   if (is_win) {
     sources += [

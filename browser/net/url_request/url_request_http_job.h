@@ -3,7 +3,7 @@
 #define NET_URL_REQUEST_URL_REQUEST_HTTP_JOB_H_
 
 #include "net/url_request/url_request_job.h"
-
+#include "net/http/http_transaction.h"
 #include <memory>
 
 namespace net {
@@ -18,6 +18,12 @@ public:
   static std::unique_ptr<URLRequestJob> Create(URLRequest* request);
 
   void Start() override;
+
+private:
+  void StartTransaction();
+  
+private:
+   std::unique_ptr<HttpTransaction> m_transaction;
 };
 
 }
