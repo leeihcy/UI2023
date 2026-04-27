@@ -5,7 +5,8 @@
 namespace net {
 
 class HttpTransaction {
-
+public:
+  virtual int Start() = 0;
 };
 
 }

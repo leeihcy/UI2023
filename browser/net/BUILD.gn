@@ -45,6 +45,10 @@ shared_library("net") {
     "http/http_request_header.cpp",
     "http/http_cache.h",
     "http/http_cache.cpp",
+    "http/http_network_layer.cpp",
+    "http/http_network_layer.h",
+    "http/http_network_transaction.cpp",
+    "http/http_network_transaction.h",
   ]
   if (is_win) {
     sources += [

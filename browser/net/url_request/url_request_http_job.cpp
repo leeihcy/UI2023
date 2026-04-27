@@ -23,5 +23,7 @@ void URLRequestHttpJob::Start() {
 void URLRequestHttpJob::StartTransaction() {
   m_transaction =
       m_request->context()->http_transaction_factory()->CreateTransaction();
+  m_transaction->Start();
 }
+
 }
