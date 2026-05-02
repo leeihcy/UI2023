@@ -7,14 +7,17 @@ namespace net {
 URLRequestContext::URLRequestContext() {
   m_job_factory = std::make_unique<URLRequestJobFactory>();
 
+  m_http_network_session = std::make_unique<HttpNetworkSession>();
+    
   auto network_layer =
-    std::make_unique<HttpNetworkLayer>(/*context->http_network_session()*/);
+    std::make_unique<HttpNetworkLayer>(http_network_session());
 
   m_http_transaction_factory = std::make_unique<HttpCache>(
         std::move(network_layer)
         //,  std::move(http_cache_backend),
         // std::move(file_operations)
   );
+
 }
 
 std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(GURL url) {

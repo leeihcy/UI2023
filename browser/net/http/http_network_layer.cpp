@@ -3,9 +3,13 @@
 
 namespace net {
 
+HttpNetworkLayer::HttpNetworkLayer(HttpNetworkSession* session) : m_session(session) {
+
+}
+
 std::unique_ptr<HttpTransaction> HttpNetworkLayer::CreateTransaction(
     /*RequestPriority priority*/) {
-  return std::make_unique<HttpNetworkTransaction>(/*priority, GetSession()*/);
+  return std::make_unique<HttpNetworkTransaction>(/*priority,*/ GetSession());
 }
 
 }

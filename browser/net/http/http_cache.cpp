@@ -13,6 +13,10 @@ std::unique_ptr<HttpTransaction> HttpCache::CreateTransaction() {
   return new_transaction;
 }
 
+HttpNetworkSession* HttpCache::GetSession() {
+  return m_network_layer->GetSession();
+}
+
 int HttpCache::Transaction::Start() {
   
   // TODO: Load Cache

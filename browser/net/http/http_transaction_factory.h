@@ -7,6 +7,7 @@
 #include "net/http/http_transaction.h"
 
 namespace net {
+class HttpNetworkSession;
 
 class HttpTransactionFactory {
  public:
@@ -19,8 +20,8 @@ class HttpTransactionFactory {
   // // Returns the associated cache if any (may be NULL).
   // virtual HttpCache* GetCache() = 0;
 
-  // // Returns the associated HttpNetworkSession used by new transactions.
-  // virtual HttpNetworkSession* GetSession() = 0;
+  // Returns the associated HttpNetworkSession used by new transactions.
+  virtual HttpNetworkSession* GetSession() = 0;
 };
 
 }

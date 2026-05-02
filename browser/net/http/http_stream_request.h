@@ -4,8 +4,8 @@
 namespace net {
 
 class HttpStreamRequest {
-
-
+public:
+  void InitializeStream();
 };
 
 }

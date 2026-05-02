@@ -49,6 +49,9 @@ shared_library("net") {
     "http/http_network_layer.h",
     "http/http_network_transaction.cpp",
     "http/http_network_transaction.h",
+    "http/http_stream.h",
+    "http/http_stream_factory.cpp",
+    "http/http_stream_factory.h",
   ]
   if (is_win) {
     sources += [

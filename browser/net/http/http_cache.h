@@ -21,7 +21,8 @@ public:
 public:
   HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer);
   std::unique_ptr<HttpTransaction> CreateTransaction() override;
-
+  HttpNetworkSession* GetSession() override;
+  
 public:
   std::unique_ptr<HttpTransactionFactory> m_network_layer;
 };

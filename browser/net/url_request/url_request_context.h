@@ -5,6 +5,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/http/http_network_session.h"
 
 namespace net {
 
@@ -19,11 +20,16 @@ public:
   HttpTransactionFactory* http_transaction_factory() const {
     return m_http_transaction_factory.get();
   }
+  HttpNetworkSession* http_network_session() const { 
+    return m_http_network_session.get();
+  }
 
 private:
   std::unique_ptr<URLRequestJobFactory> m_job_factory;
 
   std::unique_ptr<HttpTransactionFactory> m_http_transaction_factory;
+
+  std::unique_ptr<HttpNetworkSession>  m_http_network_session;
 
 };
 

@@ -6,8 +6,8 @@
 #include "net/http/http_transaction.h"
 #include <memory>
 
-
 namespace net {
+class HttpNetworkSession;
 
 class HttpNetworkTransaction : public HttpTransaction {
   enum State {
@@ -37,13 +37,17 @@ class HttpNetworkTransaction : public HttpTransaction {
   };
 
 public:
+  HttpNetworkTransaction(HttpNetworkSession* session) : m_session(session) {}
   int Start() override;
 
 private:
   void DoCreateStream();
+  void DoInitStream();
 
 private:
   std::unique_ptr<HttpStreamRequest> stream_request_;
+
+  HttpNetworkSession* m_session;
 };
 
 } // namespace net

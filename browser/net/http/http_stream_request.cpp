@@ -1,5 +1,9 @@
-#include "http_stream_request.h"
+#include "net/http/http_stream_request.h"
 
 namespace net {
+
+void HttpStreamRequest::InitializeStream() {
+
+}
 
 }

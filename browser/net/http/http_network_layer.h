@@ -7,8 +7,15 @@ namespace net {
 
 class HttpNetworkLayer : public HttpTransactionFactory {
 public:
+   explicit HttpNetworkLayer(HttpNetworkSession* session);
+
    std::unique_ptr<HttpTransaction> CreateTransaction(
       /*RequestPriority priority*/) override;
+
+   HttpNetworkSession* GetSession() override { return m_session; }
+
+private:
+   HttpNetworkSession* m_session;
 };
 
 }
