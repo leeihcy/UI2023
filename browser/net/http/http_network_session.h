@@ -2,6 +2,8 @@
 #define NET_HTTP_HTTP_NETWORK_SESSION_H_
 
 #include "net/http/http_stream_factory.h"
+#include "net/socket/client_socket_pool_manager_impl.h"
+#include "net/socket/client_socket_pool.h"
 #include <memory>
 
 namespace net {
@@ -15,13 +17,19 @@ namespace net {
 //
 class HttpNetworkSession {
 public:
+  HttpNetworkSession();
+
   HttpStreamFactory* http_stream_factory() {
     return m_http_stream_factory.get();
   }
 
+  ClientSocketPool* GetSocketPool();
+
 private:
   // std::unique_ptr<HttpStreamPool> http_stream_pool_;
-  
+
+  std::unique_ptr<ClientSocketPoolManager> m_normal_socket_pool_manager;
+
   std::unique_ptr<HttpStreamFactory> m_http_stream_factory;
 };
 
