@@ -50,6 +50,12 @@ shared_library("net") {
     "socket/client_socket_pool.cpp",
     "socket/client_socket_pool_manager_impl.h",
     "socket/client_socket_pool_manager_impl.cpp",
+    "socket/connect_job.h",
+    "socket/connect_job.cpp",
+    "socket/connect_job_factory.h",
+    "socket/connect_job_factory.cpp",
+    "socket/transport_connect_job.h",
+    "socket/transport_connect_job.cpp",
 
     "http/http_request_header.cpp",
     "http/http_cache.h",
