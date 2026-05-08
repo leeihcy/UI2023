@@ -10,6 +10,8 @@ namespace net {
 // A client socket that uses TCP as the transport layer.
 class TCPClientSocket : public TransportClientSocket {
 public:
+   TCPClientSocket(const AddressList& addresses);
+
   int Connect(CompletionOnceCallback callback) override;
   void Disconnect() override;
   bool IsConnected() const override;

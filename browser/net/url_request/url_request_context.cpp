@@ -18,6 +18,9 @@ URLRequestContext::URLRequestContext() {
         // std::move(file_operations)
   );
 
+  // auto client_socket_factory =
+  //     std::make_unique<NetworkBindingClientSocketFactory>(bound_network_);
+  // context->set_client_socket_factory(std::move(client_socket_factory));
 }
 
 std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(GURL url) {

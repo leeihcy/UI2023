@@ -4,6 +4,10 @@
 
 namespace net {
 
+TCPClientSocket::TCPClientSocket(const AddressList& addresses) {
+
+}
+
 int TCPClientSocket::Connect(CompletionOnceCallback callback) {
   // We will try to connect to each address in addresses_. Start with the
   // first one in the list.

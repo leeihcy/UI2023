@@ -22,7 +22,7 @@ namespace net {
 
 class IPAddress;
 
-class NET_EXPORT AddressList {
+class AddressList {
  public:
   AddressList();
   AddressList(const AddressList&);

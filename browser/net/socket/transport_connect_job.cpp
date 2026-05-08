@@ -1,5 +1,6 @@
 #include "net/socket/transport_connect_job.h"
 #include <assert.h>
+#include "net/socket/tcp_client_socket.h"
 
 namespace net {
 
@@ -37,9 +38,7 @@ TransportConnectSubJob::TransportConnectSubJob(std::vector<IPEndPoint> addresses
 
 }
 int TransportConnectSubJob::Start() {
-  //  transport_socket_ =
-  //     parent_job_->client_socket_factory()->CreateTransportClientSocket(
-  //         one_address);
+  //  transport_socket_ = std::make_unique<TCPClientSocket>(addresses);
 
   // return transport_socket_->Connect(base::BindOnce(
   //     &TransportConnectSubJob::OnIOComplete, base::Unretained(this)));

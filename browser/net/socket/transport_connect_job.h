@@ -5,26 +5,28 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include "net/socket/stream_socket.h"
+#include "net/base/ip_endpoint.h"
 
 namespace net {
 
-class IPAddressBytes {
-public:
-  using IPAddressStorage = std::array<uint8_t, 16>;
-  IPAddressStorage bytes_;
-  uint8_t size_;
-};
+// class IPAddressBytes {
+// public:
+//   using IPAddressStorage = std::array<uint8_t, 16>;
+//   IPAddressStorage bytes_;
+//   uint8_t size_;
+// };
 
-class IPAddress {
-public:
-  IPAddressBytes ip_address_;
-};
+// class IPAddress {
+// public:
+//   IPAddressBytes ip_address_;
+// };
 
-class IPEndPoint {
-public:
-  IPAddress address_;
-  uint16_t port_ = 0;
-};
+// class IPEndPoint {
+// public:
+//   IPAddress address_;
+//   uint16_t port_ = 0;
+// };
 
 struct HostResolverEndpointResult {
   // IP endpoints at which to connect to the service.
@@ -38,6 +40,11 @@ public:
                          TransportConnectJob* parent_job/*,
                          SubJobType type*/);
   int Start();
+
+private:
+  TransportConnectJob* parent_job_;
+  
+  std::unique_ptr<StreamSocket> transport_socket_;
 };
 
 class TransportConnectJob : public ConnectJob {
