@@ -18,6 +18,37 @@ public:
   bool IsConnectedAndIdle() const override;
   int OpenSocket(AddressFamily family);
 
+  // TransportClientSocket implementation.
+  int Bind(const IPEndPoint& address) override;
+  bool SetKeepAlive(bool enable, int delay) override;
+  bool SetNoDelay(bool no_delay) override;
+  
+  // StreamSocket implementation.
+  void SetBeforeConnectCallback(
+      const BeforeConnectCallback& before_connect_callback) override;
+  int GetPeerAddress(IPEndPoint* address) const override;
+  int GetLocalAddress(IPEndPoint* address) const override;
+  // const NetLogWithSource& NetLog() const override;
+  bool WasEverUsed() const override;
+  NextProto GetNegotiatedProtocol() const override;
+  bool GetSSLInfo(SSLInfo* ssl_info) override;
+  int64_t GetTotalReceivedBytes() const override;
+  void ApplySocketTag(const SocketTag& tag) override;
+
+  // Socket implementation.
+  int Read(IOBuffer* buf,
+           int buf_len,
+           CompletionOnceCallback callback) override;
+  int ReadIfReady(IOBuffer* buf,
+                  int buf_len,
+                  CompletionOnceCallback callback) override;
+  int CancelReadIfReady() override;
+  int Write(IOBuffer* buf,
+            int buf_len,
+            CompletionOnceCallback callback) override;
+  int SetReceiveBufferSize(int32_t size) override;
+  int SetSendBufferSize(int32_t size) override;
+
 private:
   // State machine used by Connect().
   int DoConnectLoop(int result);

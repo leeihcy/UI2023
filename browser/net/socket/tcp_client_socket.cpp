@@ -106,4 +106,41 @@ int TCPClientSocket::DoConnect() {
 
 int TCPClientSocket::DoConnectComplete(int result) { return 0; }
 
+// TransportClientSocket implementation.
+int TCPClientSocket::Bind(const IPEndPoint &address) { return 0; };
+bool TCPClientSocket::SetKeepAlive(bool enable, int delay) { return false; };
+bool TCPClientSocket::SetNoDelay(bool no_delay) { return false; };
+
+void TCPClientSocket::SetBeforeConnectCallback(
+    const BeforeConnectCallback &before_connect_callback) {
+  return;
+}
+int TCPClientSocket::GetPeerAddress(IPEndPoint *address) const { return 0; }
+int TCPClientSocket::GetLocalAddress(IPEndPoint *address) const { return 0; }
+// const TCPClientSocket::NetLogWithSource& NetLog() const { return
+// NetLogWithSource(); }
+bool TCPClientSocket::WasEverUsed() const { return false; }
+NextProto TCPClientSocket::GetNegotiatedProtocol() const {
+  return NextProto::kProtoHTTP11;
+}
+bool TCPClientSocket::GetSSLInfo(SSLInfo *ssl_info) { return false; }
+int64_t TCPClientSocket::GetTotalReceivedBytes() const { return 0; }
+void TCPClientSocket::ApplySocketTag(const SocketTag &tag) {}
+
+int TCPClientSocket::Read(IOBuffer *buf, int buf_len,
+                          CompletionOnceCallback callback) {
+  return 0;
+}
+int TCPClientSocket::ReadIfReady(IOBuffer *buf, int buf_len,
+                                 CompletionOnceCallback callback) {
+  return 0;
+}
+int TCPClientSocket::CancelReadIfReady() { return 0; }
+int TCPClientSocket::Write(IOBuffer *buf, int buf_len,
+                           CompletionOnceCallback callback) {
+  return 0;
+}
+int TCPClientSocket::SetReceiveBufferSize(int32_t size) { return 0; }
+int TCPClientSocket::SetSendBufferSize(int32_t size) { return 0; }
+
 } // namespace net

@@ -40,11 +40,16 @@ public:
                          TransportConnectJob* parent_job/*,
                          SubJobType type*/);
   int Start();
-
+    
+  const IPEndPoint& CurrentAddress() const;
+  void OnIOComplete(int result);
+  
 private:
   TransportConnectJob* parent_job_;
   
   std::unique_ptr<StreamSocket> transport_socket_;
+  std::vector<IPEndPoint> addresses_;
+  size_t current_address_index_ = 0;
 };
 
 class TransportConnectJob : public ConnectJob {

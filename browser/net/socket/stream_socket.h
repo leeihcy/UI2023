@@ -104,7 +104,7 @@ class StreamSocket : public Socket {
   virtual int GetLocalAddress(IPEndPoint* address) const = 0;
 
   // Gets the NetLog for this socket.
-  virtual const NetLogWithSource& NetLog() const = 0;
+//   virtual const NetLogWithSource& NetLog() const = 0;
 
   // Returns true if the socket ever had any reads or writes.  StreamSockets
   // layered on top of transport sockets should return if their own Read() or

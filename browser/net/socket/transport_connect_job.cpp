@@ -34,15 +34,28 @@ void TransportConnectJob::DoTransportConnect() {
 
 TransportConnectSubJob::TransportConnectSubJob(std::vector<IPEndPoint> addresses,
                          TransportConnectJob* parent_job/*,
-                         SubJobType type*/) {
+                         SubJobType type*/) :addresses_(std::move(addresses)) {
 
 }
 int TransportConnectSubJob::Start() {
-  //  transport_socket_ = std::make_unique<TCPClientSocket>(addresses);
+  AddressList one_address(CurrentAddress());
+  transport_socket_ = std::make_unique<TCPClientSocket>(one_address);
 
-  // return transport_socket_->Connect(base::BindOnce(
-  //     &TransportConnectSubJob::OnIOComplete, base::Unretained(this)));
+  return transport_socket_->Connect(
+    std::bind(&TransportConnectSubJob::OnIOComplete, this));
+    // base::BindOnce(
+    //   &TransportConnectSubJob::OnIOComplete, base::Unretained(this)));
   return 0;
+}
+
+void TransportConnectSubJob::OnIOComplete(int result) {
+  // int rv = DoLoop(result);
+  // if (rv != ERR_IO_PENDING)
+  //   parent_job_->OnSubJobComplete(rv, this);  // |this| deleted
+}
+
+const IPEndPoint& TransportConnectSubJob::CurrentAddress() const {
+  return addresses_[current_address_index_];
 }
 
 }

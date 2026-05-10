@@ -58,8 +58,6 @@ A WebContents represents a tab. A WebContents owns a FrameTree, the "primary fra
 
 A FrameTree consists of FrameTreeNodes. A FrameTreeNode contains a RenderFrameHost. FrameTreeNodes reflect the frame structure in the renderer. RenderFrameHosts represent documents loaded in a frame (roughly, see footnote 3). As a frame navigates its RenderFrameHost may change, but its FrameTreeNode stays the same.
 
-In the case of nested frame trees, the RenderFrameHost corresponding to the hosting document owns the inner FrameTree (possibly through an intermediate object, as is the case for content::FencedFrame).
-
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              WebContents                                     │
 │                                                                             │
