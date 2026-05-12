@@ -6,6 +6,7 @@
 #include "net/http/http_stream.h"
 #include <memory>
 #include <set>
+#include "url/gurl.h"
 
 namespace net {
 class HttpNetworkSession;
@@ -14,7 +15,7 @@ class HttpStreamFactory {
 public:
    class Job {
    public:
-     Job(HttpNetworkSession* session);
+     Job(HttpNetworkSession* session, url::SchemeHostPort destination);
 
      void Start(/*HttpStreamRequest::StreamType stream_type*/);
      void DoInitConnection();
@@ -22,6 +23,13 @@ public:
    
    private:
      HttpNetworkSession* m_session;
+
+      // The host we are going to connect to, could be that of the origin or of the
+      // alternative service. The scheme of this is always HTTP or HTTPS, even for
+      // websockets requests. The original destination can be found in
+      // `request_info_`, which is used for the purposes of encryption.
+      const url::SchemeHostPort destination_;
+  
 
      // 负责 “传输层”连接。它代表一个底层的、已建立的 TCP 或 SSL/TLS Socket 连接，是流式数据的通道，但本身不理解 HTTP 协议。
      std::unique_ptr<ClientSocketHandle> m_connection;
@@ -31,9 +39,13 @@ public:
 
    class JobFactory {
    public:
-      std::unique_ptr<Job> CreateJob(HttpNetworkSession* session) const {
-         return std::make_unique<Job>(session);
+      std::unique_ptr<Job> CreateJob(HttpNetworkSession* session, url::SchemeHostPort destination) const {
+         return std::make_unique<Job>(session, std::move(destination));
       }
+   };
+
+   struct StreamRequestInfo {
+      GURL url;
    };
 
    class JobController {
@@ -50,6 +62,8 @@ public:
       HttpNetworkSession* m_session;
       const JobFactory* m_job_factory;
       HttpStreamRequest* m_request = nullptr;
+
+      const StreamRequestInfo request_info_;
 
       std::unique_ptr<Job> m_main_job;
       // std::unique_ptr<Job> alternative_job_;

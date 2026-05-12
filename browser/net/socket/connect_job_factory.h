@@ -12,7 +12,12 @@ class ConnectJobFactory {
 public:
   ConnectJobFactory();
 
-  std::unique_ptr<ConnectJob> CreateConnectJob();
+  struct SchemelessEndpoint {
+    bool using_ssl;
+    HostPortPair host_port_pair;
+  };
+  using Endpoint = std::variant<url::SchemeHostPort, SchemelessEndpoint>;
+  std::unique_ptr<ConnectJob> CreateConnectJob(const ConnectJobFactory::Endpoint& endpoint);
 
   // 用途：处理 HTTP 代理（包括 CONNECT 方法）的连接建立。
   // 场景：当配置了 HTTP 代理，并且需要与目标服务器建立隧道（例如 HTTPS 请求）时使用。

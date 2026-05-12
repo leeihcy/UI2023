@@ -80,7 +80,11 @@ void HttpStreamFactory::JobController::DoResolveProxy() {
 // . 启动竞速：让这些 Job 同时发起连接，谁先成功建立连接，谁就被用来发送请求。
 //
 void HttpStreamFactory::JobController::DoCreateJobs() {
-  m_main_job = m_job_factory->CreateJob(m_session);
+	url::SchemeHostPort destination(request_info_.url);
+  // DCHECK(destination.IsValid());
+  // ConvertWsToHttp(destination);
+
+  m_main_job = m_job_factory->CreateJob(m_session, std::move(destination));
 
   // if (alternative_job_) {
   //   alternative_job_->Start(request_->stream_type());
@@ -95,8 +99,8 @@ void HttpStreamFactory::JobController::DoCreateJobs() {
   }
 }
 
-HttpStreamFactory::Job::Job(HttpNetworkSession *session)
-    : m_session(session), m_connection(std::make_unique<ClientSocketHandle>()) {
+HttpStreamFactory::Job::Job(HttpNetworkSession *session, url::SchemeHostPort destination)
+    : m_session(session), destination_(std::move(destination)), m_connection(std::make_unique<ClientSocketHandle>()) {
 
 }
 
@@ -111,7 +115,10 @@ void HttpStreamFactory::Job::DoInitConnection() {
 
   ClientSocketPool *pool = m_session->GetSocketPool(
       /*socket_pool_type, proxy_info.proxy_chain()*/);
-  return m_connection->Init(pool);
+
+	ClientSocketPool::GroupId connection_group;
+	connection_group.destination_ =  destination_;
+  return m_connection->Init(connection_group, pool);
 }
 
 void HttpStreamFactory::Job::DoCreateStream() {

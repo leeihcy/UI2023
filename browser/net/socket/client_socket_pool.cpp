@@ -6,14 +6,14 @@ TransportClientSocketPool::TransportClientSocketPool() : ClientSocketPool(std::m
 
 }
 
-int TransportClientSocketPool::RequestSocket(ClientSocketHandle* handle) {
-  std::unique_ptr<ConnectJob> connect_job(CreateConnectJob());
+int TransportClientSocketPool::RequestSocket(const GroupId& group_id, ClientSocketHandle* handle) {
+  std::unique_ptr<ConnectJob> connect_job(CreateConnectJob(group_id));
   int rv = connect_job->Connect();
   return rv;
 }
 
-std::unique_ptr<ConnectJob> TransportClientSocketPool::CreateConnectJob() {
-  return m_connect_job_factory->CreateConnectJob();
+std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(GroupId group_id) {
+  return m_connect_job_factory->CreateConnectJob(group_id.destination());
 }
 
 }

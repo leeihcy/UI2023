@@ -14,8 +14,19 @@ public:
   ClientSocketPool(std::unique_ptr<ConnectJobFactory> connect_job_factory)
       : m_connect_job_factory(std::move(connect_job_factory)) {}
 
-  virtual int RequestSocket(ClientSocketHandle *handle) = 0;
+  // Group ID for a socket request. Requests with the same group ID are
+  // considered indistinguishable.
+  class GroupId {
+  public:
+   const url::SchemeHostPort& destination() const { return destination_; }
 
+    // The endpoint of the final destination (not the proxy).
+    url::SchemeHostPort destination_;
+  };
+
+  virtual int RequestSocket(const GroupId& group_id, ClientSocketHandle *handle) = 0;
+
+  std::unique_ptr<ConnectJob> CreateConnectJob(GroupId group_id);
 protected:
   const std::unique_ptr<ConnectJobFactory> m_connect_job_factory;
 };
@@ -25,8 +36,8 @@ class TransportClientSocketPool : public ClientSocketPool {
 public:
   TransportClientSocketPool();
 
-  int RequestSocket(ClientSocketHandle* handle) override;
-  std::unique_ptr<ConnectJob> CreateConnectJob();
+  int RequestSocket(const GroupId& group_id, ClientSocketHandle* handle) override;
+
 
 private:
 };

@@ -4,7 +4,7 @@
 
 namespace net {
 
-TransportConnectJob::TransportConnectJob() {
+TransportConnectJob::TransportConnectJob(const std::shared_ptr<TransportSocketParams>& params) : params_(params){
 
 }
 
@@ -16,6 +16,7 @@ int TransportConnectJob::ConnectInternal() {
 
 void TransportConnectJob::DoResolveHost() {
   // 目前先跳过，用IP进行测试
+  // params_->destination();
 }
 
 void TransportConnectJob::DoTransportConnect() {
@@ -42,9 +43,7 @@ int TransportConnectSubJob::Start() {
   transport_socket_ = std::make_unique<TCPClientSocket>(one_address);
 
   return transport_socket_->Connect(
-    std::bind(&TransportConnectSubJob::OnIOComplete, this));
-    // base::BindOnce(
-    //   &TransportConnectSubJob::OnIOComplete, base::Unretained(this)));
+    std::bind(&TransportConnectSubJob::OnIOComplete, this, std::placeholders::_1));
   return 0;
 }
 

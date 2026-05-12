@@ -3,7 +3,7 @@
 
 namespace net {
 
-void ClientSocketHandle::Init(ClientSocketPool *pool) {
-  pool->RequestSocket(this);
+void ClientSocketHandle::Init(const ClientSocketPool::GroupId& group_id, ClientSocketPool *pool) {
+  pool->RequestSocket(group_id, this);
 }
 } // namespace net
