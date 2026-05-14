@@ -4,6 +4,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/http/http_stream.h"
+#include "net/http/http_request_info.h"
 #include <memory>
 #include <set>
 #include "url/gurl.h"
@@ -45,14 +46,19 @@ public:
    };
 
    struct StreamRequestInfo {
+      StreamRequestInfo(const HttpRequestInfo& http_request_info) : url(http_request_info.url) {
+
+      }
+
       GURL url;
    };
 
    class JobController {
    public:
-      JobController(HttpNetworkSession* session, const JobFactory* job_factory) : 
+      JobController(HttpNetworkSession* session, const JobFactory* job_factory, const HttpRequestInfo& http_request_info) : 
          m_session(session),
-         m_job_factory(job_factory) {}
+         m_job_factory(job_factory),
+         request_info_(http_request_info) {}
 
       std::unique_ptr<HttpStreamRequest> Start();
       void DoResolveProxy();
@@ -73,7 +79,7 @@ public:
 
 public:
    HttpStreamFactory(HttpNetworkSession* session);
-   std::unique_ptr<HttpStreamRequest> RequestStream();
+   std::unique_ptr<HttpStreamRequest> RequestStream(const HttpRequestInfo& request_info);
 
  private:
    HttpNetworkSession* m_session;

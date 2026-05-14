@@ -17,8 +17,10 @@ HttpNetworkSession* HttpCache::GetSession() {
   return m_network_layer->GetSession();
 }
 
-int HttpCache::Transaction::Start() {
-  
+int HttpCache::Transaction::Start(const HttpRequestInfo* request) {
+  initial_request_ = request;
+  request_ = initial_request_;
+
   // TODO: Load Cache
 
   DoSendRequest();
@@ -29,7 +31,7 @@ int HttpCache::Transaction::Start() {
 void HttpCache::Transaction::DoSendRequest() {
    m_network_trans = m_cache->m_network_layer->CreateTransaction(/*priority_*/);
 
-   m_network_trans->Start(/*request_, io_callback_, net_log_*/);
+   m_network_trans->Start(request_/*, io_callback_, net_log_*/);
 }
 
 }

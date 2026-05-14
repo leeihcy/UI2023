@@ -1,6 +1,7 @@
 #include "url/gurl.h"
 #include <cctype>
 #include <cstring>
+#include "url/url_constants.h"
 
 GURL::GURL() : is_valid_(false), port_(-1), host_(), user_info_() {}
 
@@ -16,6 +17,8 @@ void GURL::InitCanonical(std::string_view input_spec, bool trim_path_end) {
     ParseURL(spec_);
   }
 }
+
+bool GURL::is_valid() const { return is_valid_; }
 
 bool GURL::has_scheme() const {
   return is_valid_ && !scheme_.empty();
@@ -35,6 +38,48 @@ std::string GURL::GetHost() const {
 
 int GURL::GetPort() const {
   return port_;
+}
+
+int GURL::IntPort() const {
+  if (port_ > 65535 || port_ < url::PORT_INVALID)
+    return url::PORT_INVALID; // Out of range.
+  
+  return port_;
+}
+
+static int DefaultPortForScheme(std::string_view scheme) {
+  switch (scheme.length()) {
+    case 4:
+      if (scheme == url::kHttpScheme) {
+        return 80;
+      }
+      break;
+    case 5:
+      if (scheme == url::kHttpsScheme) {
+        return 443;
+      }
+      break;
+    case 3:
+      if (scheme == url::kFtpScheme) {
+        return 21;
+      } else if (scheme == url::kWssScheme) {
+        return 443;
+      }
+      break;
+    case 2:
+      if (scheme == url::kWsScheme) {
+        return 80;
+      }
+      break;
+  }
+  return url::PORT_UNSPECIFIED;
+}
+
+int GURL::EffectiveIntPort() const {
+  int int_port = IntPort();
+  if (int_port == url::PORT_UNSPECIFIED /*&& IsStandard()*/)
+    return DefaultPortForScheme(scheme());
+  return int_port;
 }
 
 std::string GURL::GetPath() const {

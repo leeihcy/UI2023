@@ -9,11 +9,15 @@ public:
   class Transaction : public HttpTransaction {
   public:
     Transaction(HttpCache* cache) : m_cache(cache) {}
-    int Start() override;
+    int Start(const HttpRequestInfo* request_info) override;
 
   private:
     void DoSendRequest();
     HttpCache* m_cache;
+
+    // Initial request with which Start() was invoked.
+    const HttpRequestInfo* initial_request_ = nullptr;
+    const HttpRequestInfo* request_ = nullptr;
 
     std::unique_ptr<HttpTransaction> m_network_trans;
   };

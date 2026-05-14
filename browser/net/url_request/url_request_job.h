@@ -12,7 +12,7 @@ public:
 
 protected:
   // The request that initiated this job. This value will never be nullptr.
-  const URLRequest* m_request;
+  const URLRequest* request_;
 };
 
 }

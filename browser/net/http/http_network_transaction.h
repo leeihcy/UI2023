@@ -38,7 +38,7 @@ class HttpNetworkTransaction : public HttpTransaction {
 
 public:
   HttpNetworkTransaction(HttpNetworkSession* session) : m_session(session) {}
-  int Start() override;
+  int Start(const HttpRequestInfo* request_info) override;
 
 private:
   void DoCreateStream();
@@ -48,6 +48,7 @@ private:
   std::unique_ptr<HttpStreamRequest> stream_request_;
 
   HttpNetworkSession* m_session;
+  const HttpRequestInfo* request_ = nullptr;
 };
 
 } // namespace net

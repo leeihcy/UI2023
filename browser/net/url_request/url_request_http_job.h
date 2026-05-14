@@ -4,6 +4,7 @@
 
 #include "net/url_request/url_request_job.h"
 #include "net/http/http_transaction.h"
+#include "net/http/http_request_info.h"
 #include <memory>
 
 namespace net {
@@ -24,6 +25,7 @@ private:
   
 private:
    std::unique_ptr<HttpTransaction> m_transaction;
+   HttpRequestInfo request_info_;
 };
 
 }

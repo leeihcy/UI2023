@@ -17,15 +17,33 @@ int TransportConnectJob::ConnectInternal() {
 void TransportConnectJob::DoResolveHost() {
   // 目前先跳过，用IP进行测试
   // params_->destination();
+
+  std::vector<IPEndPoint> ip_endpoints;
+
+  if (std::holds_alternative<url::SchemeHostPort>(params_->destination())) {
+    url::SchemeHostPort host =
+        std::get<url::SchemeHostPort>(params_->destination());
+    IPEndPoint ip_endpoint(*IPAddress::FromIPLiteral(host.host_), host.port_);
+    ip_endpoints.push_back(ip_endpoint);
+  } else {
+    net::HostPortPair host = std::get<HostPortPair>(params_->destination());
+  }
+
+  HostResolverEndpointResult new_result;
+  new_result.ip_endpoints = std::move(ip_endpoints);
+  // new_result.metadata = result.metadata;
+
+  endpoint_results_.clear();
+  endpoint_results_.push_back(std::move(new_result));
 }
 
 void TransportConnectJob::DoTransportConnect() {
-  if (m_endpoint_results.empty()) {
+  if (endpoint_results_.empty()) {
     assert(false);
   }
 
   std::vector<IPEndPoint> ipv4_addresses, ipv6_addresses;
-  ipv4_addresses.push_back(m_endpoint_results[0].ip_endpoints[0]);
+  ipv4_addresses.push_back(endpoint_results_[0].ip_endpoints[0]);
 
   ipv4_job_ = std::make_unique<TransportConnectSubJob>(
         std::move(ipv4_addresses), this/*, SUB_JOB_IPV4*/);

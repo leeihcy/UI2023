@@ -15,6 +15,9 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
 void URLRequestHttpJob::Start() {
   printf("Hello URL Request Http Job \n");
 
+  request_info_.url = request_->url();
+  request_info_.method = request_->method();
+
   // TOOD: GetCookie
 
   StartTransaction();
@@ -22,8 +25,8 @@ void URLRequestHttpJob::Start() {
 
 void URLRequestHttpJob::StartTransaction() {
   m_transaction =
-      m_request->context()->http_transaction_factory()->CreateTransaction();
-  m_transaction->Start();
+      request_->context()->http_transaction_factory()->CreateTransaction();
+  m_transaction->Start(&request_info_);
 }
 
 }

@@ -3,14 +3,16 @@
 
 namespace net {
 
-int HttpNetworkTransaction::Start() {
+int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info) {
+  request_ = request_info;
+
   DoCreateStream();
   DoInitStream();
   return 0;
 }
 
 void HttpNetworkTransaction::DoCreateStream() {
-  stream_request_ = m_session->http_stream_factory()->RequestStream();
+  stream_request_ = m_session->http_stream_factory()->RequestStream(*request_);
 }
 
 void HttpNetworkTransaction::DoInitStream() {

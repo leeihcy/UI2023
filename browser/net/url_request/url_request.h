@@ -22,6 +22,13 @@ public:
   const std::vector<GURL>& url_chain() const { return url_chain_; }
   const GURL& url() const { return url_chain_.back(); }
   
+  // The request method. "GET" is the default value. The request method may
+  // only be changed before Start() is called. Request methods are
+  // case-sensitive, so standard HTTP methods like GET or POST should be
+  // specified in uppercase.
+  const std::string& method() const { return method_; }
+  void set_method(std::string_view method);
+
   const URLRequestContext* context() const { return m_context; }
 
   void Start();
@@ -30,6 +37,8 @@ public:
 private:
   const URLRequestContext* m_context;
   std::vector<GURL> url_chain_;
+
+  std::string method_;  // "GET", "POST", etc. Case-sensitive.
 };
 
 }

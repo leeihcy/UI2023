@@ -8,7 +8,7 @@ HttpStreamFactory::HttpStreamFactory(HttpNetworkSession *session)
     : m_session(session),
       m_job_factory(std::make_unique<HttpStreamFactory::JobFactory>()) {}
 
-std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream() {
+std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream(const HttpRequestInfo& request_info) {
   // 这个函数内部很复杂。会涉及DNS的解析。
   /*
   net.dll!net::HostResolverManager::ResolveLocally
@@ -48,7 +48,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream() {
  	net.dll!net::HttpNetworkTransaction::DoLoop
   */
 
-  auto job_controller = std::make_unique<JobController>(m_session, m_job_factory.get());
+  auto job_controller = std::make_unique<JobController>(m_session, m_job_factory.get(), request_info);
   JobController *job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
   return job_controller_raw_ptr->Start();
@@ -80,7 +80,7 @@ void HttpStreamFactory::JobController::DoResolveProxy() {
 // . 启动竞速：让这些 Job 同时发起连接，谁先成功建立连接，谁就被用来发送请求。
 //
 void HttpStreamFactory::JobController::DoCreateJobs() {
-	url::SchemeHostPort destination(request_info_.url);
+  url::SchemeHostPort destination(request_info_.url);
   // DCHECK(destination.IsValid());
   // ConvertWsToHttp(destination);
 

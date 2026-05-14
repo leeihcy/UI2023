@@ -3,6 +3,7 @@
 #define NET_HTTP_HTTP_TRANSACTION_H_
 
 namespace net {
+struct HttpRequestInfo;
 
 /*
 在 Chromium 的网络栈中，HttpTransaction
@@ -12,7 +13,7 @@ URLRequest
 */
 class HttpTransaction {
 public:
-  virtual int Start() = 0;
+  virtual int Start(const HttpRequestInfo* request_info) = 0;
 };
 
 } // namespace net

@@ -5,8 +5,12 @@
 
 namespace net {
 
-URLRequest::URLRequest(const GURL& url, const URLRequestContext* context) : url_chain_(1, url), m_context(context) {
+URLRequest::URLRequest(const GURL &url, const URLRequestContext *context)
+    : url_chain_(1, url), m_context(context), method_("GET") {}
 
+void URLRequest::set_method(std::string_view method) {
+  // DCHECK(!is_pending_);
+  method_ = std::string(method);
 }
 
 void URLRequest::Start() {

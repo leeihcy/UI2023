@@ -64,7 +64,7 @@ protected:
   void DoTransportConnect();
 
 private:
-  std::vector<HostResolverEndpointResult> m_endpoint_results;
+  std::vector<HostResolverEndpointResult> endpoint_results_;
 
   std::shared_ptr<TransportSocketParams> params_;
 
