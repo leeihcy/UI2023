@@ -140,29 +140,171 @@ constexpr bool ParseIPLiteralToBytes(std::string_view ip_literal,
   // |ip_literal| could be either an IPv4 or an IPv6 literal. If it contains
   // a colon however, it must be an IPv6 address.
   if (ip_literal.find(':') != std::string_view::npos) {
-    // GURL expects IPv6 hostnames to be surrounded with brackets.
-    // Not using base::StrCat() because it is not constexpr.
-    std::string host_with_brackets;
-    host_with_brackets.reserve(ip_literal.size() + 2);
-    host_with_brackets.push_back('[');
-    host_with_brackets.append(ip_literal);
-    host_with_brackets.push_back(']');
+    // --- IPv6 ---
+    // Reject leading/trailing single colon (only "::" is valid at edges).
+    if (ip_literal.size() >= 1 && ip_literal[0] == ':' &&
+        (ip_literal.size() < 2 || ip_literal[1] != ':'))
+      return false;
+    if (ip_literal.size() >= 2 && ip_literal.back() == ':' &&
+        ip_literal[ip_literal.size() - 2] != ':')
+      return false;
 
-    // Try parsing the hostname as an IPv6 literal.
-    bytes->Resize(16);  // 128 bits.
-    assert(false);
-    return false;
-    // return url::IPv6AddressToNumber(host_with_brackets, bytes->span());
+    bytes->Resize(16);
+    std::fill(bytes->begin(), bytes->end(), 0);
+
+    // Detect embedded IPv4 address (last 32 bits in dotted-decimal).
+    bool embedded_ipv4 = false;
+    std::string_view hex_part = ip_literal;
+    std::string_view v4_part;
+
+    size_t first_dot = ip_literal.find('.');
+    if (first_dot != std::string_view::npos) {
+      embedded_ipv4 = true;
+      // Walk backward from the first dot to find the colon separator.
+      size_t v4_start = first_dot;
+      while (v4_start > 0 && ip_literal[v4_start - 1] != ':')
+        --v4_start;
+      if (v4_start == 0)
+        return false;
+
+      // Keep "::" together when the separator is the second colon of "::".
+      if (v4_start >= 2 && ip_literal[v4_start - 2] == ':')
+        hex_part = ip_literal.substr(0, v4_start);
+      else
+        hex_part = ip_literal.substr(0, v4_start - 1);
+      v4_part = ip_literal.substr(v4_start);
+    }
+
+    size_t dc = hex_part.find("::");
+    if (dc != std::string_view::npos) {
+      // Parse groups before "::".
+      size_t idx = 0;
+      size_t s = 0;
+      for (size_t i = 0; i <= hex_part.size() && s < dc; ++i) {
+        if (i == hex_part.size() || hex_part[i] == ':') {
+          if (i > s && s < dc) {
+            uint16_t val = 0;
+            for (size_t j = s; j < i; ++j) {
+              char c = hex_part[j];
+              if (c >= '0' && c <= '9')
+                val = val * 16 + static_cast<uint16_t>(c - '0');
+              else if (c >= 'A' && c <= 'F')
+                val = val * 16 + static_cast<uint16_t>(c - 'A' + 10);
+              else
+                val = val * 16 + static_cast<uint16_t>(c - 'a' + 10);
+            }
+            if (idx >= 16) return false;
+            (*bytes)[idx++] = static_cast<uint8_t>(val >> 8);
+            (*bytes)[idx++] = static_cast<uint8_t>(val & 0xFF);
+          }
+          s = i + 1;
+        }
+      }
+
+      // Parse groups after "::" (right-justified).
+      std::string_view right = hex_part.substr(dc + 2);
+      if (!right.empty()) {
+        size_t right_hextets = 1;
+        for (char c : right)
+          if (c == ':') right_hextets++;
+
+        size_t offset =
+            16 - (embedded_ipv4 ? 4 : 0) - right_hextets * 2;
+        size_t ri = 0;
+        s = 0;
+        for (size_t i = 0; i <= right.size(); ++i) {
+          if (i == right.size() || right[i] == ':') {
+            if (i > s) {
+              uint16_t val = 0;
+              for (size_t j = s; j < i; ++j) {
+                char c = right[j];
+                if (c >= '0' && c <= '9')
+                  val = val * 16 + static_cast<uint16_t>(c - '0');
+                else if (c >= 'A' && c <= 'F')
+                  val = val * 16 + static_cast<uint16_t>(c - 'A' + 10);
+                else
+                  val = val * 16 + static_cast<uint16_t>(c - 'a' + 10);
+              }
+              (*bytes)[offset + ri * 2] = static_cast<uint8_t>(val >> 8);
+              (*bytes)[offset + ri * 2 + 1] = static_cast<uint8_t>(val & 0xFF);
+              ri++;
+            }
+            s = i + 1;
+          }
+        }
+      }
+    } else {
+      // No "::" compression — parse the exact number of hex groups.
+      size_t idx = 0;
+      size_t expected = embedded_ipv4 ? 12 : 16;  // bytes from hex part
+      size_t s = 0;
+      for (size_t i = 0; i <= hex_part.size(); ++i) {
+        if (i == hex_part.size() || hex_part[i] == ':') {
+          if (i > s) {
+            uint16_t val = 0;
+            for (size_t j = s; j < i; ++j) {
+              char c = hex_part[j];
+              if (c >= '0' && c <= '9')
+                val = val * 16 + static_cast<uint16_t>(c - '0');
+              else if (c >= 'A' && c <= 'F')
+                val = val * 16 + static_cast<uint16_t>(c - 'A' + 10);
+              else
+                val = val * 16 + static_cast<uint16_t>(c - 'a' + 10);
+            }
+            if (idx >= expected) return false;
+            (*bytes)[idx++] = static_cast<uint8_t>(val >> 8);
+            (*bytes)[idx++] = static_cast<uint8_t>(val & 0xFF);
+          }
+          s = i + 1;
+        }
+      }
+      if (idx != expected) return false;
+    }
+
+    // Parse embedded IPv4 address (always occupies the last 4 bytes).
+    if (embedded_ipv4) {
+      size_t idx = 12;
+      size_t s = 0;
+      for (size_t i = 0; i <= v4_part.size(); ++i) {
+        if (i == v4_part.size() || v4_part[i] == '.') {
+          if (i == s) return false;
+          uint32_t val = 0;
+          for (size_t j = s; j < i; ++j) {
+            char c = v4_part[j];
+            if (c < '0' || c > '9') return false;
+            val = val * 10 + (c - '0');
+            if (val > 255) return false;
+          }
+          (*bytes)[idx++] = static_cast<uint8_t>(val);
+          s = i + 1;
+        }
+      }
+      return idx == 16;
+    }
+
+    return true;
   }
 
-  // Otherwise the string is an IPv4 address.
+  // --- IPv4 ---
   bytes->Resize(4);  // 32 bits.
-  // int num_components;
-  // url::CanonHostInfo::Family family =
-  //     url::IPv4AddressToNumber(ip_literal, bytes->span(), &num_components);
-  // return family == url::CanonHostInfo::IPV4;
-  assert(false);
-  return false;
+  size_t idx = 0;
+  size_t s = 0;
+  for (size_t i = 0; i <= ip_literal.size(); ++i) {
+    if (i == ip_literal.size() || ip_literal[i] == '.') {
+      if (i == s) return false;
+      uint32_t val = 0;
+      for (size_t j = s; j < i; ++j) {
+        char c = ip_literal[j];
+        if (c < '0' || c > '9') return false;
+        val = val * 10 + (c - '0');
+        if (val > 255) return false;
+      }
+      if (idx >= 4) return false;
+      (*bytes)[idx++] = static_cast<uint8_t>(val);
+      s = i + 1;
+    }
+  }
+  return idx == 4;
 }
 
 }  // namespace internal

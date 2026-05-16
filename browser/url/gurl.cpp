@@ -1,5 +1,6 @@
 #include "url/gurl.h"
 #include <cctype>
+#include <charconv>
 #include <cstring>
 #include "url/url_constants.h"
 
@@ -165,78 +166,106 @@ void GURL::ParseURL(std::string_view spec) {
   const char* current = spec.data();
 
   // Skip leading whitespace
-  SkipWhitespace(current, &len);
+  const char* url_start = current;
+  SkipWhitespace(url_start, &len);
   if (len == 0) {
     return;
   }
 
-  // Parse scheme
+  // Parse scheme. ParseScheme advances url_start past the scheme chars,
+  // so it will point at the ':' (if present) after the call.
+  const char* scheme_start = url_start;
   size_t scheme_len = 0;
-  if (ParseScheme(current, &scheme_len)) {
-    scheme_ = std::string(spec.data(), scheme_len);
+  if (ParseScheme(url_start, &scheme_len)) {
+    scheme_ = std::string(scheme_start, scheme_len);
   }
 
-  // Check for // after scheme (authority indicator)
+  // After ParseScheme, url_start points right after the scheme characters.
+  // Check for ://, :/, or : at url_start[0].
   bool has_authority = false;
-  if (scheme_len >= 2 && current[scheme_len - 1] == ':' && current[scheme_len] == '/' && current[scheme_len + 1] == '/') {
-    has_authority = true;
-    current += scheme_len + 2;
-    len -= scheme_len + 2;
-  } else if (scheme_len >= 1 && current[scheme_len - 1] == ':' && current[scheme_len] == '/') {
-    // Single / after scheme (e.g., file://)
-    has_authority = false;
-    current += scheme_len;
-    len -= scheme_len;
-  } else if (scheme_len > 0 && current[scheme_len - 1] == ':') {
-    // No // after scheme, treat rest as path
-    has_authority = false;
-    current += scheme_len;
-    len -= scheme_len;
-  } else {
-    // No scheme found
-    has_authority = false;
-    current = spec.data();
+  if (scheme_len > 0 && url_start[0] == ':') {
+    if (url_start[1] == '/' && url_start[2] == '/') {
+      // scheme://authority/path...
+      has_authority = true;
+      url_start += 3;
+      len -= scheme_len + 3;
+    } else if (url_start[1] == '/') {
+      // scheme:/path... (rare)
+      url_start += 2;
+      len -= scheme_len + 2;
+    } else {
+      // scheme:path... (e.g. mailto:)
+      url_start += 1;
+      len -= scheme_len + 1;
+    }
+  } else if (scheme_len == 0) {
+    // No scheme found, treat as relative URL or path
+    url_start = spec.data();
     len = spec.length();
   }
+  // else: scheme found but no colon after it — unusual, keep url_start as-is
 
-  // Skip whitespace after scheme
+  current = url_start;
+
+  // Skip whitespace after scheme separator
   SkipWhitespace(current, &len);
 
   // Parse authority [userinfo@]host[:port]
-  if (has_authority && len >= 2 && current[0] == '/' && current[1] == '/') {
-    const char* auth_start = current + 2;
-    size_t auth_len = len - 2;
-    const char* auth_end = current + len;
+  if (has_authority) {
+    // current points to the start of the authority (host or userinfo@host).
+    // Find the end of the authority segment (delimited by /, ?, #, or end).
+    const char* auth_end = current;
+    while (auth_end < current + len && *auth_end != '/' && *auth_end != '?' && *auth_end != '#') {
+      auth_end++;
+    }
+    size_t auth_len = auth_end - current;
 
-    // Parse userinfo@host[:port]
-    size_t at_pos = auth_end - auth_start;
-    size_t at_found = 0;
-    while (at_found < at_pos && auth_start[at_found] != '@') {
-      at_found++;
+    // Look for @ to separate userinfo from host
+    const char* at_sign = current;
+    while (at_sign < current + auth_len && *at_sign != '@') {
+      at_sign++;
     }
 
-    if (at_found < at_pos) {
-      // Has userinfo
-      ParseUserInfo(auth_start, &user_info_);
-      current = auth_start + at_found + 1;
-      len -= at_found + 1;
+    if (at_sign < current + auth_len) {
+      // Has userinfo: "user:pass@host"
+      std::string userinfo_str(current, at_sign - current);
+      ParseUserInfo(userinfo_str.c_str(), &user_info_);
+      current = at_sign + 1;
+      auth_len = auth_end - current;
     }
 
-    // Find port
-    size_t colon_pos = 0;
-    while (colon_pos < len && current[colon_pos] != ':') {
-      colon_pos++;
-    }
-
-    if (colon_pos < len && current[colon_pos] == ':') {
-      ParsePort(current + colon_pos + 1, &port_);
+    // Now current..auth_end is host[:port]
+    if (auth_len > 0 && current[0] == '[') {
+      // IPv6 literal: [::1] or [::1]:port
+      const char* bracket_end = current + 1;
+      while (bracket_end < auth_end && *bracket_end != ']') {
+        bracket_end++;
+      }
+      if (bracket_end < auth_end) {
+        host_ = std::string(current, bracket_end - current + 1);
+        if (bracket_end + 1 < auth_end && *(bracket_end + 1) == ':') {
+          ParsePort(bracket_end + 2, &port_);
+        }
+      }
     } else {
-      host_ = std::string(current, len);
+      // Regular host or host:port
+      const char* colon = current;
+      while (colon < auth_end && *colon != ':') {
+        colon++;
+      }
+      if (colon < auth_end) {
+        host_ = std::string(current, colon - current);
+        ParsePort(colon + 1, &port_);
+      } else {
+        host_ = std::string(current, auth_len);
+      }
     }
-    current += len;
-    len = 0;
+
+    // Advance past the authority
+    len -= auth_end - current;
+    current = auth_end;
   } else if (len > 0 && current[0] == '@') {
-    // Implicit userinfo@host
+    // Implicit userinfo@host (no scheme://)
     size_t at_pos = 1;
     while (at_pos < len && current[at_pos] != '/') {
       at_pos++;
@@ -258,37 +287,40 @@ void GURL::ParseURL(std::string_view spec) {
     len--;
   }
 
-  // Parse path
+  // Parse path — scan forward to the first ? or #
   if (len > 0 && current[0] != '?' && current[0] != '#') {
-    size_t path_end = len;
-    while (path_end > 0 && (current[path_end - 1] == '?' || current[path_end - 1] == '#')) {
-      path_end--;
+    size_t path_end = 0;
+    while (path_end < len && current[path_end] != '?' && current[path_end] != '#') {
+      path_end++;
     }
 
-    if (path_end > 0) {
-      std::string path_str(current, path_end);
-      path_ = DecodeURLComponent(path_str);
-      if (path_.empty() || path_ == "?") {
-        path_ = "/";
-      }
-      current += path_end;
-      len -= path_end;
+    std::string path_str(current, path_end);
+    path_ = DecodeURLComponent(path_str);
+    if (path_.empty()) {
+      path_ = "/";
     }
+    current += path_end;
+    len -= path_end;
   }
 
-  // Parse query
+  // Parse query — from ? up to # or end
   if (len > 0 && current[0] == '?') {
-    size_t query_len = len - 1;
-    query_ = std::string(current + 1, query_len);
-    current += len;
-    len = 0;
+    current++;
+    len--;
+    size_t query_end = 0;
+    while (query_end < len && current[query_end] != '#') {
+      query_end++;
+    }
+    query_ = std::string(current, query_end);
+    current += query_end;
+    len -= query_end;
   }
 
   // Parse fragment
   if (len > 0 && current[0] == '#') {
-    size_t frag_len = len - 1;
-    fragment_ = DecodeURLComponent(std::string(current + 1, frag_len));
-    current += len;
+    current++;
+    len--;
+    fragment_ = DecodeURLComponent(std::string(current, len));
     len = 0;
   }
 
@@ -342,9 +374,9 @@ void GURL::ParseUserInfo(const char* userinfo, std::string* out_userinfo) {
   user = DecodeURLComponent(user);
   pass = DecodeURLComponent(pass);
 
-  user_info_ = user;
+  *out_userinfo = user;
   if (!pass.empty()) {
-    user_info_ = user + ":" + pass;
+    *out_userinfo = user + ":" + pass;
   }
 }
 
@@ -358,13 +390,10 @@ void GURL::ParsePort(const char* port_str, int* out_port) {
     return;
   }
 
-  try {
-    int port = std::stoi(port_str_s);
-    if (port >= 1 && port <= 65535) {
-      *out_port = port;
-    }
-  } catch (...) {
-    return;
+  int port = 0;
+  auto res = std::from_chars(port_str_s.data(), port_str_s.data() + port_str_s.size(), port);
+  if (res.ec == std::errc{} && port >= 1 && port <= 65535) {
+    *out_port = port;
   }
 }
 

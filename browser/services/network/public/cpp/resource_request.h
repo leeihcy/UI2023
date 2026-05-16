@@ -2,7 +2,9 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_RESOURCE_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "net/http/http_request_header.h"
 
 namespace network {
@@ -16,7 +18,7 @@ public:
 public:
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
-  
+  std::optional<url::Origin> request_initiator;
 };
 
 }

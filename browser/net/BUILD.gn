@@ -105,6 +105,8 @@ shared_library("net") {
     "../url/gurl.cpp",
     "../url/scheme_host_port.h",
     "../url/scheme_host_port.cpp",
+    "../url/origin.h",
+    "../url/origin.cpp",
   ]
   
    sources += [

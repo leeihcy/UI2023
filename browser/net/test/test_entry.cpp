@@ -26,7 +26,7 @@ void SimpleUrlLoaderTest() {
   network::mojom::URLLoaderFactory* url_loader_factory = network_context->CreateURLLoaderFactory();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL("http://192.168.0.1");
+  resource_request->url = GURL("http://192.168.0.1:80");
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
 
   std::unique_ptr<network::SimpleURLLoader> loader = 

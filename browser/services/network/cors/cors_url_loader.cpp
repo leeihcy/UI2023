@@ -1,17 +1,19 @@
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/url_loader_factory.h"
-
+#include "url/origin.h"
+#include <assert.h>
 
 namespace network {
 
 CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
                              URLLoaderFactory *factory)
-    : m_request(resource_request), m_network_loader_factory(factory) {
+    : request_(resource_request), m_network_loader_factory(factory) {
   SetCorsFlagIfNeeded();
 }
 
-bool ShouldCheckCors(/*const GURL& request_url,
-                     const std::optional<url::Origin>& request_initiator,
+// 判断是否需要进行跨域检测
+bool ShouldCheckCors(const GURL& request_url,
+                     const std::optional<url::Origin>& request_initiator/*,
                      mojom::RequestMode request_mode*/) {
 #if 0
   if (request_mode == network::mojom::RequestMode::kNavigate ||
@@ -22,12 +24,11 @@ bool ShouldCheckCors(/*const GURL& request_url,
   // CORS needs a proper origin (including a unique opaque origin). If the
   // request doesn't have one, CORS should not work.
   DCHECK(request_initiator);
+#endif
 
   if (request_initiator->IsSameOriginWith(request_url))
     return false;
   return true;
-#endif
-  return false;
 }
 
 bool CorsURLLoader::HasSpecialAccessToDestination() const {
@@ -49,7 +50,7 @@ void CorsURLLoader::SetCorsFlagIfNeeded() {
    return;
  }
 
- if (!ShouldCheckCors(/*request_.url, request_.request_initiator,
+ if (!ShouldCheckCors(request_.url, request_.request_initiator/*,
                                      request_.mode*/)) {
    return;
  }
@@ -84,7 +85,39 @@ void CorsURLLoader::StartRequest() {
 }
 
 void CorsURLLoader::StartNetworkRequest() {
-  m_network_loader_factory->CreateLoaderAndStartWithSyncClient(m_request);
+  m_network_loader_factory->CreateLoaderAndStartWithSyncClient(request_);
+}
+
+std::optional<CorsErrorStatus> CheckAccess(const GURL &response_url/*,
+            const std::optional<std::string> &allow_origin_header,
+            const std::optional<std::string> &allow_credentials_header,
+            mojom::CredentialsMode credentials_mode,
+            const url::Origin &origin*/) {
+  assert(false);
+  return std::optional<CorsErrorStatus>();
+}
+
+void CorsURLLoader::OnReceiveResponse() {
+  if (fetch_cors_flag_) {
+    const auto result = CheckAccess(request_.url/*,
+      GetHeaderString(*response_head,
+                      header_names::kAccessControlAllowOrigin),
+      GetHeaderString(*response_head,
+                      header_names::kAccessControlAllowCredentials),
+      request_.credentials_mode,
+      tainted_ ? url::Origin() : *request_.request_initiator*/);
+    // if (!result.has_value()) {
+    //   HandleComplete(URLLoaderCompletionStatus(result.error()));
+    //   return;
+    // }
+  }
+}
+
+void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
+  // 跨域错误，上报给控制台。
+  // if (devtools_observer_ && status.cors_error_status) {
+  //   ReportCorsErrorToDevTools(*status.cors_error_status);
+  // }
 }
 
 }
