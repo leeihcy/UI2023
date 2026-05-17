@@ -19,17 +19,32 @@ namespace header_names {
 const char kAccessControlAllowCredentials[] =
     "Access-Control-Allow-Credentials";
 
-const char kAccessControlAllowHeaders[] = "Access-Control-Allow-Headers";
-const char kAccessControlAllowMethods[] = "Access-Control-Allow-Methods";
-
+    
 // 响应头，只能是一个具体的源（origin），或者是一个通配符 *
 // 如果要支持多个，需要后台做动态处理。
 const char kAccessControlAllowOrigin[] = "Access-Control-Allow-Origin";
 
 
-const char kAccessControlMaxAge[] = "Access-Control-Max-Age";
+//
+// 用于preflight，在OPTION请求里附带上真实请求的参数。例如
+//
+// OPTIONS /api/data
+// Origin: https://client.com
+// Access-Control-Request-Method: GET
+// Access-Control-Request-Headers: X-Auth-Token, X-User-ID
+//
+// ----------------------------------------------------------
+// HTTP/1.1 200 OK
+// Access-Control-Allow-Origin: https://client.com
+// Access-Control-Allow-Methods: GET, POST, PUT
+// Access-Control-Allow-Headers: X-Auth-Token, X-User-ID
+// Access-Control-Max-Age: 86400
 const char kAccessControlRequestHeaders[] = "Access-Control-Request-Headers";
 const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
+
+const char kAccessControlAllowHeaders[] = "Access-Control-Allow-Headers";
+const char kAccessControlAllowMethods[] = "Access-Control-Allow-Methods";
+const char kAccessControlMaxAge[] = "Access-Control-Max-Age";
 
 }  // namespace header_names
 

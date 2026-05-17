@@ -6,6 +6,54 @@
 
 namespace network {
 
+namespace {
+
+// 预检请求（Preflight）的核心作用可以用一句话概括：
+// 在实际发送跨域请求之前，先“试探”一下服务器是否允许这种跨域操作，
+// 保护那些传统 HTML 表单无法发起的、可能具有破坏性的请求。
+// 1. 保护服务器资源（核心安全作用）
+// 2. 减少不必要的数据传输（性能优化）
+// 3. 携带额外凭证信息
+//
+// 为了性能，预检结果可以被缓存。服务器通过 Access-Control-Max-Age 头指定缓存时间（单位：秒）：
+//
+// preflight场景：
+enum class PreflightRequiredReason {
+
+  // 强制指定：
+  // fetch('https://api.example.com/ping', {
+  //   mode: 'cors-with-forced-preflight'
+  // });
+  kCorsWithForcedPreflightMode,
+
+  // 简单方法（GET/HEAD/POST）
+  kDisallowedMethod,
+
+  // 安全头（如 Accept、Accept-Language、Content-Language、
+  // Content-Type 仅限于 application/x-www-form-urlencoded、
+  // multipart/form-data 或 text/plain）；
+  kDisallowedHeader
+};
+
+
+// Returns std::nullopt when a preflight isn't needed. Otherwise returns the
+// reason why a preflight is needed.
+std::optional<PreflightRequiredReason> NeedsPreflight(
+    const ResourceRequest& request) {
+
+  // if (!IsCorsSafelistedMethod(request.method))
+  //   return PreflightRequiredReason::kDisallowedMethod;
+
+  // if (!CorsUnsafeNotForbiddenRequestHeaderNames(
+  //          request.headers.GetHeaderVector(), request.is_revalidating)
+  //          .empty())
+  //   return PreflightRequiredReason::kDisallowedHeader;
+
+  return std::nullopt;
+}
+
+}
+
 CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
                              URLLoaderFactory *factory)
     : request_(resource_request), m_network_loader_factory(factory) {
@@ -79,10 +127,18 @@ void CorsURLLoader::Start() {
 }
 
 void CorsURLLoader::StartRequest() {
-  //  if (!preflight_required) {
-  StartNetworkRequest();
-  //    return;
-  //  }
+  std::optional<PreflightRequiredReason> needs_preflight =
+      NeedsPreflight(request_);
+
+  // 只在跨域的时候，才触发预检
+  bool preflight_required = needs_preflight.has_value() && fetch_cors_flag_;
+  if (!preflight_required) {
+    StartNetworkRequest();
+    return;
+  }
+
+  // TODO: PerformPreflightCheck();
+  assert(false);
 }
 
 void CorsURLLoader::StartNetworkRequest() {
