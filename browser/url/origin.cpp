@@ -1,5 +1,6 @@
 #include "url/origin.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include <assert.h>
 
 namespace url {
@@ -34,5 +35,18 @@ bool Origin::IsSameOriginWith(const Origin &other) const {
 bool Origin::IsSameOriginWith(const GURL &url) const {
   return IsSameOriginWith(url::Origin::Create(url));
 }
+
+
+std::string Origin::Serialize() const {
+  // if (opaque())
+  //   return "null";
+
+  if (scheme() == url::kFileScheme)
+    return "file://";
+
+  return tuple_.Serialize();
+}
+
+
 
 }

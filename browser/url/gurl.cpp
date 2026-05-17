@@ -397,3 +397,13 @@ void GURL::ParsePort(const char* port_str, int* out_port) {
   }
 }
 
+
+bool GURL::SchemeIs(std::string_view lower_ascii_scheme) const {
+  // DCHECK(base::IsStringASCII(lower_ascii_scheme));
+  // DCHECK(base::ToLowerASCII(lower_ascii_scheme) == lower_ascii_scheme);
+  return scheme() == lower_ascii_scheme;
+}
+
+bool GURL::SchemeIsHTTPOrHTTPS() const {
+  return SchemeIs(url::kHttpsScheme) || SchemeIs(url::kHttpScheme);
+}

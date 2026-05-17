@@ -6,6 +6,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "net/http/http_request_header.h"
+#include "services/network/public/cpp/cors/cors.h"
 
 namespace network {
 
@@ -19,6 +20,9 @@ public:
   std::string method = net::HttpRequestHeaders::kGetMethod;
   GURL url;
   std::optional<url::Origin> request_initiator;
+
+  mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
+
 };
 
 }

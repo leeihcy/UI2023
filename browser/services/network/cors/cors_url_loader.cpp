@@ -1,5 +1,6 @@
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "url/origin.h"
 #include <assert.h>
 
@@ -88,28 +89,39 @@ void CorsURLLoader::StartNetworkRequest() {
   m_network_loader_factory->CreateLoaderAndStartWithSyncClient(request_);
 }
 
-std::optional<CorsErrorStatus> CheckAccess(const GURL &response_url/*,
-            const std::optional<std::string> &allow_origin_header,
-            const std::optional<std::string> &allow_credentials_header,
-            mojom::CredentialsMode credentials_mode,
-            const url::Origin &origin*/) {
-  assert(false);
-  return std::optional<CorsErrorStatus>();
+// static
+std::optional<std::string> CorsURLLoader::GetHeaderString(
+    const mojom::URLResponseHead& response,
+    const std::string& header_name) {
+  if (!response.headers) {
+    return std::nullopt;
+  }
+  return response.headers->GetNormalizedHeader(header_name);
 }
 
-void CorsURLLoader::OnReceiveResponse() {
+void CorsURLLoader::OnReceiveResponse(
+    mojom::URLResponseHead* response_head //,
+    // mojo::ScopedDataPipeConsumerHandle body,
+    // std::optional<mojo_base::BigBuffer> cached_metadata 
+){
   if (fetch_cors_flag_) {
-    const auto result = CheckAccess(request_.url/*,
-      GetHeaderString(*response_head,
-                      header_names::kAccessControlAllowOrigin),
-      GetHeaderString(*response_head,
-                      header_names::kAccessControlAllowCredentials),
-      request_.credentials_mode,
-      tainted_ ? url::Origin() : *request_.request_initiator*/);
-    // if (!result.has_value()) {
-    //   HandleComplete(URLLoaderCompletionStatus(result.error()));
-    //   return;
-    // }
+    std::optional<CorsErrorStatus> result = cors::CheckAccess(
+        request_.url,
+
+        // Access-Control-Allow-Origin: *
+        GetHeaderString(*response_head,
+                        cors::header_names::kAccessControlAllowOrigin),
+
+        // Access-Control-Allow-Credentials: 
+        GetHeaderString(*response_head,
+                        cors::header_names::kAccessControlAllowCredentials),
+        request_.credentials_mode,
+
+        /*tainted_ ? url::Origin() :*/ *request_.request_initiator);
+    if (!result.has_value()) {
+      HandleComplete(URLLoaderCompletionStatus(*result));
+      return;
+    }
   }
 }
 

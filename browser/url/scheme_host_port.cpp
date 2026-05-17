@@ -31,4 +31,26 @@ SchemeHostPort::SchemeHostPort(const GURL& url) {
   port_ = port;
 }
 
+std::string SchemeHostPort::Serialize() const {
+  std::string result;
+
+  // Reserve enough space for the "normal" case of scheme://host/.
+  result.reserve(scheme_.size() + host_.size() + 4);
+
+  if (!scheme_.empty()) {
+    result.append(scheme_);
+  }
+  if (!host_.empty()) {
+    result.append(host_);
+  }
+  if (port_ > 0 && port_ < 65535) {
+    result.push_back(':');
+
+    char text[8];
+    sprintf(text, "%d", port_);
+    result.append(text);
+  }
+  return result;
+}
+
 }

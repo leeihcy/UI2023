@@ -46,6 +46,14 @@ public:
 
   void InitCanonical(std::string_view input_spec, bool trim_path_end);
 
+  // Returns true if the given parameter (should be lower-case ASCII to match
+  // the canonicalized scheme) is the scheme for this URL. Do not include a
+  // colon.
+  bool SchemeIs(std::string_view lower_ascii_scheme) const;
+
+  // Returns true if the scheme is "http" or "https".
+  bool SchemeIsHTTPOrHTTPS() const;
+
 private:
   void ParseURL(std::string_view spec);
   bool ParseScheme(const char*& current, size_t* out_len);

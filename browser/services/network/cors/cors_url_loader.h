@@ -5,6 +5,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 class NetworkContext;
@@ -50,8 +51,12 @@ public:
   void StartRequest();
   void StartNetworkRequest();
 
-  void OnReceiveResponse();
+  void OnReceiveResponse(mojom::URLResponseHead* response_head);
   void HandleComplete(URLLoaderCompletionStatus status);
+
+  static std::optional<std::string>
+  GetHeaderString(const mojom::URLResponseHead &response,
+                  const std::string &header_name);
 
 private:
   bool fetch_cors_flag_ = false;

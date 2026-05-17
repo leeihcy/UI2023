@@ -15,7 +15,18 @@ namespace url {
 class SchemeHostPort {
 public:
   SchemeHostPort();
-  explicit SchemeHostPort(const GURL& url);
+  explicit SchemeHostPort(const GURL &url);
+
+  const std::string& host() const { return host_; }
+  const std::string& scheme() const { return scheme_; }
+  uint16_t port() const { return port_; }
+
+  std::string Serialize() const;
+  
+  friend bool operator==(const SchemeHostPort &left,
+                         const SchemeHostPort &right) = default;
+  friend auto operator<=>(const SchemeHostPort &left,
+                          const SchemeHostPort &right) = default;
 
 public:
   uint16_t port_ = 0;

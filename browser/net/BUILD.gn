@@ -74,6 +74,8 @@ shared_library("net") {
     "http/http_basic_stream.h",
     "http/http_network_session.h",
     "http/http_network_session.cpp",
+    "http/http_response_headers.h",
+    "http/http_response_headers.cpp",
   ]
   if (is_win) {
     sources += [
@@ -127,6 +129,12 @@ shared_library("net") {
     "../services/network/url_loader_factory.cpp",
     "../services/network/public/cpp/simple_url_loader.h",
     "../services/network/public/cpp/simple_url_loader.cpp",
+    "../services/network/public/cpp/url_loader_completion_status.h",
+    "../services/network/public/cpp/url_loader_completion_status.cpp",
+    "../services/network/public/cpp/cors/cors.h",
+    "../services/network/public/cpp/cors/cors.cpp",
+    "../services/network/public/cpp/cors/cors_error_status.h",
+    "../services/network/public/cpp/cors/cors_error_status.cpp",
   ]
 
   include_dirs = [

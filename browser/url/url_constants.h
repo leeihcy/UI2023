@@ -10,6 +10,9 @@ inline constexpr char16_t kHttpScheme16[] = u"http";
 inline constexpr char kHttpsScheme[] = "https";
 inline constexpr char16_t kHttpsScheme16[] = u"https";
 
+inline constexpr char kFileScheme[] = "file";
+inline constexpr char16_t kFileScheme16[] = u"file";
+
 inline constexpr char kFtpScheme[] = "ftp";
 inline constexpr char16_t kFtpScheme16[] = u"ftp";
 
