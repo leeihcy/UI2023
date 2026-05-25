@@ -4,8 +4,8 @@
 
 namespace net {
 
-TCPClientSocket::TCPClientSocket(const AddressList& addresses) {
-
+TCPClientSocket::TCPClientSocket(const AddressList& addresses) : addresses_(addresses) {
+  socket_ = TCPSocket::Create();
 }
 
 int TCPClientSocket::Connect(CompletionOnceCallback callback) {
@@ -78,8 +78,8 @@ int TCPClientSocket::OpenSocket(AddressFamily family) {
   //   }
   // }
 
-  // socket_->SetDefaultOptionsForClient();
-
+  // 禁用Naggle、启用KeepAlive
+  socket_->SetDefaultOptionsForClient();
   return OK;
 }
 
@@ -101,7 +101,11 @@ int TCPClientSocket::DoConnect() {
   //   }
   // }
   }
-  return 0;
+
+  //return ConnectInternal(endpoint);
+  return socket_->Connect(endpoint/*,
+                        base::BindOnce(&TCPClientSocket::DidCompleteConnect,
+                                       base::Unretained(this))*/);
 }
 
 int TCPClientSocket::DoConnectComplete(int result) { return 0; }

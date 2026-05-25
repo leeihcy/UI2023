@@ -10,21 +10,19 @@ Origin Origin::Create(const GURL& url) {
   if (!url.is_valid())
     return Origin();
 
-  // SchemeHostPort tuple;
+  SchemeHostPort tuple;
 
   // if (url.SchemeIsFileSystem()) {
   //   tuple = SchemeHostPort(*url.inner_url());
   // } else if (url.SchemeIsBlob()) {
   //   tuple = SchemeHostPort(GURL(url.GetContent()));
   // } else {
-  //   tuple = SchemeHostPort(url);
+    tuple = SchemeHostPort(url);
   // }
 
   // if (!tuple.IsValid())
   //   return Origin();
-  // return Origin(std::move(tuple));
-  assert(false);
-  return Origin();
+  return Origin(std::move(tuple));
 }
 
 

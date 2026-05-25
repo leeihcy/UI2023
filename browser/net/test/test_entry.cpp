@@ -28,10 +28,17 @@ void SimpleUrlLoaderTest() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL("http://192.168.0.1:80");
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
+  resource_request->request_initiator = url::Origin();
 
   std::unique_ptr<network::SimpleURLLoader> loader = 
     network::SimpleURLLoader::Create(std::move(resource_request));
   loader->Start(url_loader_factory);
+
+  MSG msg = {0};
+  while (::GetMessage(&msg, 0, 0, 0)) {
+    ::TranslateMessage(&msg);
+    ::DispatchMessage(&msg);
+  }
 }
 
 void _NetUnitTest() {

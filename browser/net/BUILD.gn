@@ -10,6 +10,8 @@ shared_library("net") {
     "../base/strings/string_util.cpp",
     "../base/strings/string_util_internal.h",
     "../base/strings/string_util_constants.cpp",
+    "../base/win/object_watcher.h",
+    "../base/win/object_watcher.cpp",
   ]
   sources += [
     "base/address_family.h",
@@ -24,6 +26,11 @@ shared_library("net") {
     "base/ip_endpoint.h",
     "base/ip_endpoint.cpp",
     "base/net_errors.h",
+    "base/sockaddr_storage.h",
+    "base/sockaddr_storage.cpp",
+
+    "base/winsock_init.h",
+    "base/winsock_init.cpp",
   ]
   if (is_win) {
     sources += [
@@ -141,6 +148,13 @@ shared_library("net") {
         "//browser/",
         "$target_gen_dir/",
   ]
+  
+  libs = []
+  if (is_win) {
+    libs += [
+      "Ws2_32.lib"
+    ]
+  }
 
   # 单元测试
   if (is_debug) { 

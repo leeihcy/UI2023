@@ -32,9 +32,12 @@ public:
       const url::SchemeHostPort destination_;
   
 
-     // 负责 “传输层”连接。它代表一个底层的、已建立的 TCP 或 SSL/TLS Socket 连接，是流式数据的通道，但本身不理解 HTTP 协议。
+     // 负责 “传输层”连接。它代表一个底层的、已建立的 TCP 或 SSL/TLS Socket 连接，
+     // 是流式数据的通道，但本身不理解 HTTP 协议。
      std::unique_ptr<ClientSocketHandle> m_connection;
-     // 负责 “应用层”逻辑。它依赖于 connection_ 提供的 Socket，在连接之上发送“GET /index.html HTTP/1.1”这样的 HTTP 请求，解析响应的格式，处理 chunked 编码、keep-alive 等 HTTP 协议细节。
+     // 负责 “应用层”逻辑。它依赖于 connection_ 提供的 Socket，
+     // 在连接之上发送“GET /index.html HTTP/1.1”这样的 HTTP 请求，
+     // 解析响应的格式，处理 chunked 编码、keep-alive 等 HTTP 协议细节。
      std::unique_ptr<HttpStream> m_stream;
    };
 
