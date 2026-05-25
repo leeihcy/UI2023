@@ -56,6 +56,7 @@ private:
   int DoConnectComplete(int result);
 
   void OnConnectAttemptTimeout();
+  void DidCompleteConnect(int result);
 
 private:
   // External callbacks; called when corresponding operations are complete.

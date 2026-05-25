@@ -4,9 +4,9 @@
 
 namespace net {
 
-TransportConnectJob::TransportConnectJob(const std::shared_ptr<TransportSocketParams>& params) : params_(params){
-
-}
+TransportConnectJob::TransportConnectJob(
+    const std::shared_ptr<TransportSocketParams> &params, Delegate *delegate)
+    : ConnectJob(delegate), params_(params) {}
 
 int TransportConnectJob::ConnectInternal() {
   DoResolveHost();
@@ -43,6 +43,9 @@ void TransportConnectJob::DoTransportConnect() {
   }
 
   std::vector<IPEndPoint> ipv4_addresses, ipv6_addresses;
+
+  // TODO: 
+  // 遍历所有的 endpoint.ip_endpoints 列表，这里简单取第一个。
   ipv4_addresses.push_back(endpoint_results_[0].ip_endpoints[0]);
 
   ipv4_job_ = std::make_unique<TransportConnectSubJob>(
@@ -50,6 +53,24 @@ void TransportConnectJob::DoTransportConnect() {
   ipv4_job_->Start();
 }
 
+void TransportConnectJob::OnSubJobComplete(int result,
+                                           TransportConnectSubJob *job) {
+  // 处理IPV4和IPV6哪个更先成功就用哪个。
+  // result = HandleSubJobComplete(result, job);
+
+  if (result == OK) {
+    SetSocket(job->PassSocket()/*, dns_aliases_*/);
+  }
+  if (result != ERR_IO_PENDING) {
+    OnIOComplete(result);
+  }
+}
+
+void TransportConnectJob::OnIOComplete(int result) {
+  // result = DoLoop(result);
+  if (result != ERR_IO_PENDING)
+    NotifyDelegateOfCompletion(result);  // Deletes |this|
+}
 
 TransportConnectSubJob::TransportConnectSubJob(std::vector<IPEndPoint> addresses,
                          TransportConnectJob* parent_job/*,
@@ -66,9 +87,9 @@ int TransportConnectSubJob::Start() {
 }
 
 void TransportConnectSubJob::OnIOComplete(int result) {
-  // int rv = DoLoop(result);
-  // if (rv != ERR_IO_PENDING)
-  //   parent_job_->OnSubJobComplete(rv, this);  // |this| deleted
+   int rv = result; // DoLoop(result);
+   if (rv != ERR_IO_PENDING)
+     parent_job_->OnSubJobComplete(rv, this);  // |this| deleted
 }
 
 const IPEndPoint& TransportConnectSubJob::CurrentAddress() const {

@@ -48,14 +48,6 @@ public:
   // void WatchForWrite() {
   //   write_watcher_.StartWatchingOnce(write_overlapped_.hEvent, &writer_);
   // }
-  void OnRead(HANDLE object) {
-  // if (core_->socket_->connect_callback_) {
-  //   core_->socket_->DidCompleteConnect();
-  // } else {
-  //   core_->socket_->DidSignalRead();
-  // }
-    assert(false);
-  }
 
   // Event handle for monitoring connect and read events through WSAEventSelect.
   HANDLE read_event_;
@@ -68,7 +60,13 @@ private:
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
   public:
     explicit ReadDelegate(CoreImpl *core) : core_(core) {}
-    void OnObjectSignaled(HANDLE object) override { core_->OnRead(object); }
+    void OnObjectSignaled(HANDLE object) override {
+      if (core_->socket_->connect_callback_) {
+        core_->socket_->DidCompleteConnect();
+      } else {
+        //   core_->socket_->DidSignalRead();
+      }
+    }
 
   private:
     CoreImpl *core_;
@@ -210,7 +208,8 @@ void TCPSocketWin::SetDefaultOptionsForClient() {
   SetTCPKeepAlive(socket_, true, 45/*kTCPKeepAliveSeconds*/);
 }
 
-int TCPSocketWin::Connect(const IPEndPoint& address/*, CompletionOnceCallback callback*/) {
+int TCPSocketWin::Connect(const IPEndPoint& address, CompletionOnceCallback callback) {
+  connect_callback_ = callback;
   peer_address_ = std::make_unique<IPEndPoint>(address);
   int rv = DoConnect();
   return rv;
@@ -242,4 +241,47 @@ int TCPSocketWin::DoConnect() {
 
   return ERR_IO_PENDING;
 }
+
+
+int MapConnectError(int os_error) {
+  switch (os_error) {
+    // connect fails with WSAEACCES when Windows Firewall blocks the
+    // connection.
+    case WSAEACCES:
+      return ERR_NETWORK_ACCESS_DENIED;
+    case WSAETIMEDOUT:
+      return ERR_CONNECTION_TIMED_OUT;
+    default: {
+      int net_error = MapSystemError(os_error);
+      if (net_error == ERR_FAILED)
+        return ERR_CONNECTION_FAILED;  // More specific than ERR_FAILED.
+
+      // Give a more specific error when the user is offline.
+      // if (net_error == ERR_ADDRESS_UNREACHABLE &&
+      //     NetworkChangeNotifier::IsOffline()) {
+      //   return ERR_INTERNET_DISCONNECTED;
+      // }
+
+      return net_error;
+    }
+  }
+}
+
+void TCPSocketWin::DidCompleteConnect() {
+  int result;
+
+  WSANETWORKEVENTS events;
+  int rv = WSAEnumNetworkEvents(socket_, core_->GetConnectEvent(), &events);
+  int os_error = WSAGetLastError();
+  if (rv == SOCKET_ERROR) {
+    result = MapSystemError(os_error);
+  } else if (events.lNetworkEvents & FD_CONNECT) {
+    os_error = events.iErrorCode[FD_CONNECT_BIT];
+    result = MapConnectError(os_error);
+  } else {
+     result = ERR_UNEXPECTED;
+  }
+  connect_callback_(result);
+}
+
 }

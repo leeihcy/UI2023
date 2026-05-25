@@ -28,6 +28,8 @@ public:
 };
 
 class TransportConnectJob;
+
+// 分为IPV4和IPV6两个类型。
 class TransportConnectSubJob {
 public:
   TransportConnectSubJob(std::vector<IPEndPoint> addresses,
@@ -38,6 +40,10 @@ public:
   const IPEndPoint& CurrentAddress() const;
   void OnIOComplete(int result);
   
+  std::unique_ptr<StreamSocket> PassSocket() {
+    return std::move(transport_socket_);
+  }
+
 private:
   TransportConnectJob* parent_job_;
   
@@ -50,14 +56,18 @@ class TransportConnectJob : public ConnectJob {
 public:
   class Factory {
     public:
-      virtual std::unique_ptr<TransportConnectJob> Create(const std::shared_ptr<TransportSocketParams>& params) {
-        return std::make_unique<TransportConnectJob>(params);
+      virtual std::unique_ptr<TransportConnectJob> Create(const std::shared_ptr<TransportSocketParams>& params,  Delegate* delegate) {
+        return std::make_unique<TransportConnectJob>(params, delegate);
       }
   };
 public:
-  TransportConnectJob(const std::shared_ptr<TransportSocketParams>& params);
+  TransportConnectJob(const std::shared_ptr<TransportSocketParams>& params, Delegate* delegate);
 
   enum SubJobType { SUB_JOB_IPV4, SUB_JOB_IPV6 };
+  void OnSubJobComplete(int result, TransportConnectSubJob *job);
+
+  void OnIOComplete(int result);
+
 protected:
   int ConnectInternal() override;
   void DoResolveHost();

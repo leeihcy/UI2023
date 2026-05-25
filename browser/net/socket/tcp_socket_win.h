@@ -3,8 +3,8 @@
 
 #include <winsock2.h>
 
+#include <functional>
 #include <stdint.h>
-
 #include <memory>
 
 #include "net/base/address_family.h"
@@ -21,6 +21,7 @@ typedef UINT_PTR SocketDescriptor;
 // const SocketDescriptor kInvalidSocket = -1;
 // #endif
 
+typedef std::function<void(int)> CompletionOnceCallback;
 
 class TCPSocketWin {
 public:
@@ -32,7 +33,7 @@ public:
 
   bool IsValid() const { return socket_ != INVALID_SOCKET; }
 
-  int Connect(const IPEndPoint& address/*, CompletionOnceCallback callback*/);
+  int Connect(const IPEndPoint& address, CompletionOnceCallback callback);
 
   class Core {
   public:
@@ -51,9 +52,11 @@ public:
     virtual void WatchForConnect() = 0;
   };
 
+public:
+  void DidCompleteConnect();
+
 private:
   int DoConnect();
-
   
 protected:
   SOCKET socket_ = INVALID_SOCKET;
@@ -63,6 +66,8 @@ protected:
   // resources to the Windows async IO functions and we have to make sure that
   // they are not destroyed while the OS still references them.
   std::shared_ptr<Core> core_;
+
+  CompletionOnceCallback connect_callback_;
 };
 
 }

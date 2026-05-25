@@ -2,10 +2,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include <iostream>
 #include <memory>
+#include <Windows.h>
 
-#include "chrome/browser/net/system_network_context_manager.h"
-
-#include "net/socket/tcp_client_socket.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"

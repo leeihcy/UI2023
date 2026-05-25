@@ -103,12 +103,21 @@ int TCPClientSocket::DoConnect() {
   }
 
   //return ConnectInternal(endpoint);
-  return socket_->Connect(endpoint/*,
-                        base::BindOnce(&TCPClientSocket::DidCompleteConnect,
-                                       base::Unretained(this))*/);
+  return socket_->Connect(endpoint, std::bind(&TCPClientSocket::DidCompleteConnect, this, std::placeholders::_1));
 }
 
 int TCPClientSocket::DoConnectComplete(int result) { return 0; }
+
+void TCPClientSocket::DidCompleteConnect(int result) {
+  assert(next_connect_state_ == CONNECT_STATE_CONNECT_COMPLETE);
+  assert(result != ERR_IO_PENDING);
+  assert(connect_callback_);
+
+  result = DoConnectLoop(result);
+  if (result != ERR_IO_PENDING) {
+    connect_callback_(result);
+  }
+}
 
 // TransportClientSocket implementation.
 int TCPClientSocket::Bind(const IPEndPoint &address) { return 0; };
