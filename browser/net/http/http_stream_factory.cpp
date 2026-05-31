@@ -114,7 +114,7 @@ void HttpStreamFactory::JobController::DoCreateJobs() {
   // DCHECK(destination.IsValid());
   // ConvertWsToHttp(destination);
 
-  m_main_job = m_job_factory->CreateJob(m_session, std::move(destination));
+  m_main_job = m_job_factory->CreateJob(this, m_session, std::move(destination));
 
   // if (alternative_job_) {
   //   alternative_job_->Start(request_->stream_type());
@@ -129,30 +129,51 @@ void HttpStreamFactory::JobController::DoCreateJobs() {
   }
 }
 
-HttpStreamFactory::Job::Job(HttpNetworkSession *session, url::SchemeHostPort destination)
-    : m_session(session), destination_(std::move(destination)), m_connection(std::make_unique<ClientSocketHandle>()) {
-
-}
+HttpStreamFactory::Job::Job(Delegate *delegate, HttpNetworkSession *session,
+                            url::SchemeHostPort destination)
+    : delegate_(delegate), m_session(session),
+      destination_(std::move(destination)),
+      m_connection(std::make_unique<ClientSocketHandle>()) {}
 
 void HttpStreamFactory::Job::Start(/*HttpStreamRequest::StreamType stream_type*/) {
 	DoInitConnection();
-	DoCreateStream();
 }
 
-void HttpStreamFactory::Job::DoInitConnection() {
+int HttpStreamFactory::Job::DoInitConnection() {
   // return InitSocketHandleForHttpRequest();
   // return InitSocketPoolHelper(m_connection.get());
 
   ClientSocketPool *pool = m_session->GetSocketPool(
       /*socket_pool_type, proxy_info.proxy_chain()*/);
 
-	ClientSocketPool::GroupId connection_group;
-	connection_group.destination_ =  destination_;
-  return m_connection->Init(connection_group, pool);
+  ClientSocketPool::GroupId connection_group;
+  connection_group.destination_ = destination_;
+  return m_connection->Init(connection_group,
+                            std::bind(&HttpStreamFactory::Job::OnIOComplete,
+                                      this, std::placeholders::_1),
+                            pool);
+}
+
+void HttpStreamFactory::Job::OnIOComplete(int result) {
+  DoCreateStream();
+	OnStreamReadyCallback();
 }
 
 void HttpStreamFactory::Job::DoCreateStream() {
-	m_stream = std::make_unique<HttpBasicStream>();
+	m_stream = std::make_unique<HttpBasicStream>(std::move(m_connection));
+}
+
+void HttpStreamFactory::Job::OnStreamReadyCallback() {
+	delegate_->OnStreamReady(this);
+}
+
+void HttpStreamFactory::JobController::OnStreamReady(Job *job) {
+  // std::unique_ptr<HttpStream> stream = job->ReleaseStream();
+  // MarkRequestComplete(job);
+  // OnJobSucceeded(job);
+
+  // // HttpNetworkTransaction::OnStreamReady
+  // delegate_->OnStreamReady(job->proxy_info(), std::move(stream));
 }
 
 }

@@ -9,9 +9,11 @@ class ClientSocketPool;
 
 class ClientSocketHandle : public StreamSocketHandle {
 public:
-  void Init(const ClientSocketPool::GroupId& group_id, ClientSocketPool* pool);
+  int Init(const ClientSocketPool::GroupId& group_id, CompletionOnceCallback callback, ClientSocketPool* pool);
   void OnIOComplete(int result);
 
+private:
+  CompletionOnceCallback callback_;
 };
 
 }

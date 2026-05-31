@@ -83,6 +83,8 @@ shared_library("net") {
     "http/http_network_session.cpp",
     "http/http_response_headers.h",
     "http/http_response_headers.cpp",
+    "http/http_stream_request.h", 
+    "http/http_stream_request.cpp",
   ]
   if (is_win) {
     sources += [

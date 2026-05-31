@@ -16,13 +16,23 @@ class HttpStreamFactory {
 public:
    class Job {
    public:
-     Job(HttpNetworkSession* session, url::SchemeHostPort destination);
+     class Delegate {
+     public:
+       virtual ~Delegate() = default;
+       virtual void OnStreamReady(Job* job) = 0;
+     };
+     
+     Job(Delegate* delegate, HttpNetworkSession* session, url::SchemeHostPort destination);
 
      void Start(/*HttpStreamRequest::StreamType stream_type*/);
-     void DoInitConnection();
+     int DoInitConnection();
      void DoCreateStream();
    
+     void OnIOComplete(int result);
+     void OnStreamReadyCallback();
+
    private:
+     Delegate* delegate_;
      HttpNetworkSession* m_session;
 
       // The host we are going to connect to, could be that of the origin or of the
@@ -43,8 +53,8 @@ public:
 
    class JobFactory {
    public:
-      std::unique_ptr<Job> CreateJob(HttpNetworkSession* session, url::SchemeHostPort destination) const {
-         return std::make_unique<Job>(session, std::move(destination));
+      std::unique_ptr<Job> CreateJob(HttpStreamFactory::Job::Delegate* delegate, HttpNetworkSession* session, url::SchemeHostPort destination) const {
+         return std::make_unique<Job>(delegate, session, std::move(destination));
       }
    };
 
@@ -56,7 +66,7 @@ public:
       GURL url;
    };
 
-   class JobController {
+   class JobController : public HttpStreamFactory::Job::Delegate {
    public:
       JobController(HttpNetworkSession* session, const JobFactory* job_factory, const HttpRequestInfo& http_request_info) : 
          m_session(session),
@@ -67,6 +77,7 @@ public:
       void DoResolveProxy();
       void DoCreateJobs();
 
+      void OnStreamReady(Job* job) override;
    private:
       HttpNetworkSession* m_session;
       const JobFactory* m_job_factory;
