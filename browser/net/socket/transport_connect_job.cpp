@@ -10,8 +10,7 @@ TransportConnectJob::TransportConnectJob(
 
 int TransportConnectJob::ConnectInternal() {
   DoResolveHost();
-  DoTransportConnect();
-  return 0;
+  return DoTransportConnect();
 }
 
 void TransportConnectJob::DoResolveHost() {
@@ -37,7 +36,7 @@ void TransportConnectJob::DoResolveHost() {
   endpoint_results_.push_back(std::move(new_result));
 }
 
-void TransportConnectJob::DoTransportConnect() {
+int TransportConnectJob::DoTransportConnect() {
   if (endpoint_results_.empty()) {
     assert(false);
   }
@@ -50,7 +49,7 @@ void TransportConnectJob::DoTransportConnect() {
 
   ipv4_job_ = std::make_unique<TransportConnectSubJob>(
         std::move(ipv4_addresses), this/*, SUB_JOB_IPV4*/);
-  ipv4_job_->Start();
+  return ipv4_job_->Start();
 }
 
 void TransportConnectJob::OnSubJobComplete(int result,
@@ -74,7 +73,7 @@ void TransportConnectJob::OnIOComplete(int result) {
 
 TransportConnectSubJob::TransportConnectSubJob(std::vector<IPEndPoint> addresses,
                          TransportConnectJob* parent_job/*,
-                         SubJobType type*/) :addresses_(std::move(addresses)) {
+                         SubJobType type*/) :addresses_(std::move(addresses)), parent_job_(parent_job) {
 
 }
 int TransportConnectSubJob::Start() {

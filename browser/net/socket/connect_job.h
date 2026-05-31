@@ -15,7 +15,7 @@ public:
   };
 
   ConnectJob(Delegate*);
-
+  ~ConnectJob();
 
   int Connect() {
     return ConnectInternal();

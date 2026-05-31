@@ -5,6 +5,9 @@ namespace net {
 ConnectJob::ConnectJob(Delegate* delegate) : delegate_(delegate) {
   
 }
+ConnectJob::~ConnectJob() {
+  
+}
 
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket/*,
                  std::optional<std::set<std::string>> dns_aliases*/) {

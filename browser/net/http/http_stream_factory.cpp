@@ -80,6 +80,36 @@ void HttpStreamFactory::JobController::DoResolveProxy() {
 // . 启动竞速：让这些 Job 同时发起连接，谁先成功建立连接，谁就被用来发送请求。
 //
 void HttpStreamFactory::JobController::DoCreateJobs() {
+ 
+	// 当前请求是否走新的 HttpStreamPool 架构，而不是继续走老的 Job/ConnectJob/SocketPool 创建链路。
+	// 旧路径：(状态机太大、HTTP/1 HTTP/2 HTTP/3逻辑重复、连接复用能力差)
+	// JobController
+  //     │
+  //     ├─ Main Job
+  //     │     │
+  //     │     ├─ DNS
+  //     │     ├─ TCP
+  //     │     └─ SSL
+  //     │
+  //     └─ Alternative Job
+  //            │
+  //            └─ QUIC
+  
+  // 新路径：（可通过 --disable-features=HappyEyeballsV3 禁用）
+	// JobController
+	// 			│
+	// 			▼
+	// HttpStreamPool
+	// 			│
+	// 			▼
+	// AttemptManager
+	// 			│
+	// 			├─ TCP Attempt
+	// 			├─ QUIC Attempt
+	// 			└─ HappyEyeballs Attempt
+
+	// SwitchToHttpStreamPool();
+
   url::SchemeHostPort destination(request_info_.url);
   // DCHECK(destination.IsValid());
   // ConvertWsToHttp(destination);

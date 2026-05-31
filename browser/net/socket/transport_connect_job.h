@@ -45,7 +45,7 @@ public:
   }
 
 private:
-  TransportConnectJob* parent_job_;
+  TransportConnectJob* parent_job_ = nullptr;
   
   std::unique_ptr<StreamSocket> transport_socket_;
   std::vector<IPEndPoint> addresses_;
@@ -71,7 +71,7 @@ public:
 protected:
   int ConnectInternal() override;
   void DoResolveHost();
-  void DoTransportConnect();
+  int DoTransportConnect();
 
 private:
   std::vector<HostResolverEndpointResult> endpoint_results_;

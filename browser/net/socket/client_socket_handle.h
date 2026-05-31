@@ -10,6 +10,8 @@ class ClientSocketPool;
 class ClientSocketHandle : public StreamSocketHandle {
 public:
   void Init(const ClientSocketPool::GroupId& group_id, ClientSocketPool* pool);
+  void OnIOComplete(int result);
+
 };
 
 }

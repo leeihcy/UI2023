@@ -108,6 +108,13 @@ int TCPClientSocket::DoConnect() {
 
 int TCPClientSocket::DoConnectComplete(int result) { return 0; }
 
+//
+// >	net.dll!net::HttpStreamPool::TcpBasedAttempt::OnAttemptComplete	C++
+// >	net.dll!net::TlsStreamAttempt::OnIOComplete	C++
+// >	net.dll!net::TcpStreamAttempt::OnIOComplete	C++
+//  	net.dll!net::TCPClientSocket::DidCompleteConnect	C++
+//   	net.dll!net::TCPSocketWin::DidCompleteConnect	C++
+//
 void TCPClientSocket::DidCompleteConnect(int result) {
   assert(next_connect_state_ == CONNECT_STATE_CONNECT_COMPLETE);
   assert(result != ERR_IO_PENDING);

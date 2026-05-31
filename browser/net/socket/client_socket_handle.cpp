@@ -4,6 +4,12 @@
 namespace net {
 
 void ClientSocketHandle::Init(const ClientSocketPool::GroupId& group_id, ClientSocketPool *pool) {
-  pool->RequestSocket(group_id, this);
+  auto callback = std::bind(&ClientSocketHandle::OnIOComplete, this, std::placeholders::_1);
+  pool->RequestSocket(group_id, this, callback);
 }
+
+void ClientSocketHandle::OnIOComplete(int result) {
+
+}
+
 } // namespace net
