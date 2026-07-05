@@ -8,52 +8,53 @@ HttpStreamFactory::HttpStreamFactory(HttpNetworkSession *session)
     : m_session(session),
       m_job_factory(std::make_unique<HttpStreamFactory::JobFactory>()) {}
 
-std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStream(const HttpRequestInfo& request_info) {
+std::unique_ptr<HttpStreamRequest>
+HttpStreamFactory::RequestStream(const HttpRequestInfo &request_info,
+                                 HttpStreamRequest::Delegate *delegate) {
   // 这个函数内部很复杂。会涉及DNS的解析。
   /*
   net.dll!net::HostResolverManager::ResolveLocally
- 	net.dll!net::HostResolverManager::RequestImpl::DoResolveLocally
- 	net.dll!net::HostResolverManager::RequestImpl::DoLoop
- 	net.dll!net::HostResolverManager::RequestImpl::Start
- 	net.dll!net::TransportConnectJob::DoResolveHost
- 	net.dll!net::TransportConnectJob::DoLoop
- 	net.dll!net::TransportConnectJob::ConnectInternal
- 	net.dll!net::ConnectJob::Connect
- 	net.dll!net::HttpProxyConnectJob::DoTransportConnect
- 	net.dll!net::HttpProxyConnectJob::DoLoop
- 	net.dll!net::HttpProxyConnectJob::ConnectInternal
- 	net.dll!net::ConnectJob::Connect
- 	net.dll!net::SSLConnectJob::DoTunnelConnect
- 	net.dll!net::SSLConnectJob::DoLoop
- 	net.dll!net::SSLConnectJob::ConnectInternal
- 	net.dll!net::ConnectJob::Connect
- 	net.dll!net::TransportClientSocketPool::RequestSocketInternal
- 	net.dll!net::TransportClientSocketPool::RequestSocket
- 	net.dll!net::ClientSocketHandle::Init
- 	net.dll!net::`anonymous namespace'::InitSocketPoolHelper
- 	net.dll!net::InitSocketHandleForHttpRequest
- 	net.dll!net::HttpStreamFactory::Job::DoInitConnectionImpl
- 	net.dll!net::HttpStreamFactory::Job::DoInitConnection
- 	net.dll!net::HttpStreamFactory::Job::DoLoop
- 	net.dll!net::HttpStreamFactory::Job::RunLoop
- 	net.dll!net::HttpStreamFactory::Job::StartInternal
- 	net.dll!net::HttpStreamFactory::Job::Start
- 	net.dll!net::HttpStreamFactory::JobController::DoCreateJobs
- 	net.dll!net::HttpStreamFactory::JobController::DoLoop
- 	net.dll!net::HttpStreamFactory::JobController::RunLoop
- 	net.dll!net::HttpStreamFactory::JobController::Start
- 	net.dll!net::HttpStreamFactory::RequestStreamInternal
-	net.dll!net::HttpStreamFactory::RequestStream
- 	net.dll!net::HttpNetworkTransaction::DoCreateStream
- 	net.dll!net::HttpNetworkTransaction::DoLoop
+        net.dll!net::HostResolverManager::RequestImpl::DoResolveLocally
+        net.dll!net::HostResolverManager::RequestImpl::DoLoop
+        net.dll!net::HostResolverManager::RequestImpl::Start
+        net.dll!net::TransportConnectJob::DoResolveHost
+        net.dll!net::TransportConnectJob::DoLoop
+        net.dll!net::TransportConnectJob::ConnectInternal
+        net.dll!net::ConnectJob::Connect
+        net.dll!net::HttpProxyConnectJob::DoTransportConnect
+        net.dll!net::HttpProxyConnectJob::DoLoop
+        net.dll!net::HttpProxyConnectJob::ConnectInternal
+        net.dll!net::ConnectJob::Connect
+        net.dll!net::SSLConnectJob::DoTunnelConnect
+        net.dll!net::SSLConnectJob::DoLoop
+        net.dll!net::SSLConnectJob::ConnectInternal
+        net.dll!net::ConnectJob::Connect
+        net.dll!net::TransportClientSocketPool::RequestSocketInternal
+        net.dll!net::TransportClientSocketPool::RequestSocket
+        net.dll!net::ClientSocketHandle::Init
+        net.dll!net::`anonymous namespace'::InitSocketPoolHelper
+        net.dll!net::InitSocketHandleForHttpRequest
+        net.dll!net::HttpStreamFactory::Job::DoInitConnectionImpl
+        net.dll!net::HttpStreamFactory::Job::DoInitConnection
+        net.dll!net::HttpStreamFactory::Job::DoLoop
+        net.dll!net::HttpStreamFactory::Job::RunLoop
+        net.dll!net::HttpStreamFactory::Job::StartInternal
+        net.dll!net::HttpStreamFactory::Job::Start
+        net.dll!net::HttpStreamFactory::JobController::DoCreateJobs
+        net.dll!net::HttpStreamFactory::JobController::DoLoop
+        net.dll!net::HttpStreamFactory::JobController::RunLoop
+        net.dll!net::HttpStreamFactory::JobController::Start
+        net.dll!net::HttpStreamFactory::RequestStreamInternal
+        net.dll!net::HttpStreamFactory::RequestStream
+        net.dll!net::HttpNetworkTransaction::DoCreateStream
+        net.dll!net::HttpNetworkTransaction::DoLoop
   */
 
-  auto job_controller = std::make_unique<JobController>(m_session, m_job_factory.get(), request_info);
+  auto job_controller = std::make_unique<JobController>(delegate, m_session, m_job_factory.get(), request_info);
   JobController *job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
   return job_controller_raw_ptr->Start();
 }
-
 
 std::unique_ptr<HttpStreamRequest>  HttpStreamFactory::JobController::Start() {
   auto request = std::make_unique<HttpStreamRequest>();
@@ -168,12 +169,26 @@ void HttpStreamFactory::Job::OnStreamReadyCallback() {
 }
 
 void HttpStreamFactory::JobController::OnStreamReady(Job *job) {
-  // std::unique_ptr<HttpStream> stream = job->ReleaseStream();
+  std::unique_ptr<HttpStream> stream = job->ReleaseStream();
   // MarkRequestComplete(job);
-  // OnJobSucceeded(job);
+  OnJobSucceeded(job);
 
-  // // HttpNetworkTransaction::OnStreamReady
-  // delegate_->OnStreamReady(job->proxy_info(), std::move(stream));
+  // HttpNetworkTransaction::OnStreamReady
+  delegate_->OnStreamReady(/*job->proxy_info(),*/ std::move(stream));
+}
+
+void HttpStreamFactory::JobController::OnJobSucceeded(Job *job) {
+  if (!bound_job_) {
+    BindJob(job);
+    return;
+  }
+}
+
+void HttpStreamFactory::JobController::BindJob(Job* job) {
+  job_bound_ = true;
+  bound_job_ = job;
+
+  // OrphanUnboundJob();
 }
 
 }

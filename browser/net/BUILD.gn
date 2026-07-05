@@ -66,7 +66,10 @@ shared_library("net") {
     "socket/client_socket_factory.h",
     "socket/client_socket_factory.cpp",
 
-    "http/http_request_header.cpp",
+    "http/http_request_headers.cpp",
+    "http/http_request_headers.h",
+    "http/http_stream_parser.cpp",
+    "http/http_stream_parser.h",
     "http/http_cache.h",
     "http/http_cache.cpp",
     "http/http_network_layer.cpp",

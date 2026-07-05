@@ -1,10 +1,20 @@
 #ifndef NET_HTTP_HTTP_STREAM_H_
 #define NET_HTTP_HTTP_STREAM_H_
 
+#include "net/http/http_request_headers.h"
+
 namespace net {
 
 class HttpStream {
+public:
+  virtual int InitializeStream(/*bool can_send_early,
+                               RequestPriority priority,
+                               const NetLogWithSource& net_log,
+                               CompletionOnceCallback callback*/) = 0;
 
+  virtual int SendRequest(const HttpRequestHeaders& headers/*,
+                  HttpResponseInfo* response,
+                  CompletionOnceCallback callback*/) = 0;
 };
 
 }

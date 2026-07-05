@@ -3,7 +3,6 @@
 namespace net {
 
 void HttpStreamRequest::InitializeStream() {
-
 }
 
 }

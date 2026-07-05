@@ -31,6 +31,8 @@ public:
      void OnIOComplete(int result);
      void OnStreamReadyCallback();
 
+     std::unique_ptr<HttpStream> ReleaseStream() { return std::move(m_stream); }
+
    private:
      Delegate* delegate_;
      HttpNetworkSession* m_session;
@@ -68,32 +70,42 @@ public:
 
    class JobController : public HttpStreamFactory::Job::Delegate {
    public:
-      JobController(HttpNetworkSession* session, const JobFactory* job_factory, const HttpRequestInfo& http_request_info) : 
-         m_session(session),
-         m_job_factory(job_factory),
-         request_info_(http_request_info) {}
+     JobController(HttpStreamRequest::Delegate *delegate,
+                   HttpNetworkSession *session, const JobFactory *job_factory,
+                   const HttpRequestInfo &http_request_info)
+         : delegate_(delegate), m_session(session), m_job_factory(job_factory),
+           request_info_(http_request_info) {}
 
-      std::unique_ptr<HttpStreamRequest> Start();
-      void DoResolveProxy();
-      void DoCreateJobs();
+     std::unique_ptr<HttpStreamRequest> Start();
+     void DoResolveProxy();
+     void DoCreateJobs();
 
-      void OnStreamReady(Job* job) override;
+     void OnStreamReady(Job *job) override;
+
+     void OnJobSucceeded(Job *job);
+     void BindJob(Job *job);
+
    private:
       HttpNetworkSession* m_session;
       const JobFactory* m_job_factory;
       HttpStreamRequest* m_request = nullptr;
+      HttpStreamRequest::Delegate* delegate_ = nullptr;
 
       const StreamRequestInfo request_info_;
 
       std::unique_ptr<Job> m_main_job;
       // std::unique_ptr<Job> alternative_job_;
       // std::unique_ptr<Job> dns_alpn_h3_job_;
+
+      // True if a Job has ever been bound to the |request_|.
+      bool job_bound_ = false;
+      Job* bound_job_ = nullptr;
    };
 
 
 public:
    HttpStreamFactory(HttpNetworkSession* session);
-   std::unique_ptr<HttpStreamRequest> RequestStream(const HttpRequestInfo& request_info);
+   std::unique_ptr<HttpStreamRequest> RequestStream(const HttpRequestInfo& request_info, HttpStreamRequest::Delegate* delegate);
 
  private:
    HttpNetworkSession* m_session;

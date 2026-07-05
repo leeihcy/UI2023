@@ -5,7 +5,7 @@
 #include <optional>
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "net/http/http_request_header.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
 
 namespace network {

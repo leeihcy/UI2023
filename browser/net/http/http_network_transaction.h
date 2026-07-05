@@ -4,12 +4,15 @@
 
 #include "net/http/http_stream_request.h"
 #include "net/http/http_transaction.h"
+#include "net/http/http_stream.h"
+#include "net/http/http_request_headers.h"
 #include <memory>
 
 namespace net {
 class HttpNetworkSession;
 
-class HttpNetworkTransaction : public HttpTransaction {
+class HttpNetworkTransaction : public HttpTransaction,
+                               public HttpStreamRequest::Delegate {
   enum State {
     STATE_CREATE_STREAM,
     STATE_CREATE_STREAM_COMPLETE,
@@ -40,15 +43,28 @@ public:
   HttpNetworkTransaction(HttpNetworkSession* session) : m_session(session) {}
   int Start(const HttpRequestInfo* request_info) override;
 
+protected:
+  void OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
+                     std::unique_ptr<HttpStream> stream) override;
+
 private:
   void DoCreateStream();
   void DoInitStream();
+  void DoBuildRequest();
+  int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
+  int DoSendRequest();
 
 private:
   std::unique_ptr<HttpStreamRequest> stream_request_;
 
   HttpNetworkSession* m_session;
   const HttpRequestInfo* request_ = nullptr;
+
+  std::unique_ptr<HttpStream> stream_;
+
+  // RequestHeadersCallback request_headers_callback_;
+  HttpRequestHeaders request_headers_;
+
 };
 
 } // namespace net

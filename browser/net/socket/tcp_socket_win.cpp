@@ -64,7 +64,7 @@ private:
       if (core_->socket_->connect_callback_) {
         core_->socket_->DidCompleteConnect();
       } else {
-        //   core_->socket_->DidSignalRead();
+        // core_->socket_->DidSignalRead();
       }
     }
 
