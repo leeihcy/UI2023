@@ -7,9 +7,11 @@
 
 namespace network {
 
-URLLoaderFactory::URLLoaderFactory(NetworkContext* context) : m_network_context(context) {
-
-}
+URLLoaderFactory::URLLoaderFactory(
+    NetworkContext *context,
+    cors::CorsURLLoaderFactory *cors_url_loader_factory)
+    : m_network_context(context),
+      cors_url_loader_factory_(cors_url_loader_factory) {}
 
 // URLLoaderFactory& URLLoaderFactory::GetInstance() {
 //   static URLLoaderFactory s;
@@ -22,6 +24,7 @@ net::URLRequestContext* URLLoaderFactory::GetUrlRequestContext() const {
 
 void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request) {
   auto loader = std::make_unique<URLLoader>(*this, resource_request);
+  cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 
 void URLLoaderFactory::CreateLoaderAndStart(ResourceRequest& resource_request) {

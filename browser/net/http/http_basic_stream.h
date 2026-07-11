@@ -1,10 +1,12 @@
 #ifndef NET_HTTP_HTTP_BASIC_STREAM_H_
 #define NET_HTTP_HTTP_BASIC_STREAM_H_
 
+#include <memory>
+
 #include "net/http/http_stream.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/http/http_stream_parser.h"
-#include <memory>
+#include "net/http/http_request_info.h"
 
 namespace net {
 
@@ -12,7 +14,7 @@ class HttpBasicState {
 public:
   HttpBasicState(std::unique_ptr<StreamSocketHandle> connection);
 
-  void Initialize(/*const HttpRequestInfo* request_info,
+  void Initialize(const HttpRequestInfo* request_info/*,
                   RequestPriority priority,
                   const NetLogWithSource& net_log*/);
 
@@ -31,7 +33,8 @@ class HttpBasicStream : public HttpStream {
 public:
   HttpBasicStream(std::unique_ptr<StreamSocketHandle> connection);
 
-   // HttpStream methods:
+  // HttpStream methods:
+  void RegisterRequest(const HttpRequestInfo* request_info) override;
   int InitializeStream(/*bool can_send_early,
                                RequestPriority priority,
                                const NetLogWithSource& net_log,
@@ -46,6 +49,8 @@ public:
 
 private:
   HttpBasicState state_;
+  
+  const HttpRequestInfo* request_info_;
 };
 
 }

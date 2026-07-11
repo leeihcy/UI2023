@@ -51,6 +51,7 @@ private:
   void DoCreateStream();
   void DoInitStream();
   void DoBuildRequest();
+  void DoConnectedCallback();
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
   int DoSendRequest();
 

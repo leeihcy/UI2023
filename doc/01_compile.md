@@ -224,6 +224,9 @@ Note: including file:%s%s\n
 `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.43.34808\bin\Hostx64\x64\2052\clui.dll`
 
 
+`C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\1033\clui.dll`
+`C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\2052`
+
 ## submodule
 
 配置git pull时，默认不更新submodule:

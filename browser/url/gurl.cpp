@@ -407,3 +407,9 @@ bool GURL::SchemeIs(std::string_view lower_ascii_scheme) const {
 bool GURL::SchemeIsHTTPOrHTTPS() const {
   return SchemeIs(url::kHttpsScheme) || SchemeIs(url::kHttpScheme);
 }
+
+std::string GURL::PathForRequest() const {
+  return path_;
+}
+
+

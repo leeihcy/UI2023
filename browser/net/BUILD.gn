@@ -8,6 +8,8 @@ shared_library("net") {
   sources = [
     "../base/strings/string_util.h",
     "../base/strings/string_util.cpp",
+    "../base/strings/strcat.h",
+    "../base/strings/strcat.cpp",
     "../base/strings/string_util_internal.h",
     "../base/strings/string_util_constants.cpp",
     "../base/win/object_watcher.h",
@@ -88,6 +90,8 @@ shared_library("net") {
     "http/http_response_headers.cpp",
     "http/http_stream_request.h", 
     "http/http_stream_request.cpp",
+    "http/http_util.cpp",
+    "http/http_util.h",
   ]
   if (is_win) {
     sources += [

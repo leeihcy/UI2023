@@ -1,10 +1,12 @@
 #include "net/http/http_stream_parser.h"
 
+#include "net/socket/stream_socket.h"
+
 namespace net {
 
-HttpStreamParser::HttpStreamParser() {
-
-}
+HttpStreamParser::HttpStreamParser(StreamSocket *stream_socket, const GURL &url,
+                                   const std::string &method)
+    : url_(url), method_(method), stream_socket_(stream_socket) {}
 
 int HttpStreamParser::SendRequest(const std::string& request_line/*,
                   const HttpRequestHeaders& headers,
@@ -36,4 +38,4 @@ int HttpStreamParser::DoSendHeaders() {
   return 0;
 }
 
-}
+} // namespace net

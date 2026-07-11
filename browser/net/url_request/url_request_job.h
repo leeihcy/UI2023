@@ -7,6 +7,7 @@ class URLRequest;
 class  URLRequestJob {
 public:
   explicit URLRequestJob(URLRequest* request);
+  virtual ~URLRequestJob() {}
   
   virtual void Start() = 0;
 

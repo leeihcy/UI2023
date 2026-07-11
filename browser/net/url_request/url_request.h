@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "url/gurl.h"
+#include "net/url_request/url_request_job.h"
 
 namespace net {
-class URLRequestJob;
 class URLRequestContext;
 
 class URLRequest {
@@ -39,6 +39,8 @@ private:
   std::vector<GURL> url_chain_;
 
   std::string method_;  // "GET", "POST", etc. Case-sensitive.
+
+  std::unique_ptr<URLRequestJob> job_;
 };
 
 }

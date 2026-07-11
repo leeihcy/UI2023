@@ -10,6 +10,10 @@ class URLRequestContext;
 namespace network {
 class ResourceRequest;
 class NetworkContext;
+namespace cors {
+class CorsURLLoaderFactory;
+}  // namespace cors
+
 
 class URLLoaderContext {
 public:
@@ -18,7 +22,7 @@ public:
 
 class URLLoaderFactory : public mojom::URLLoaderFactory, public URLLoaderContext {
 public:
-  URLLoaderFactory(NetworkContext* context);
+  URLLoaderFactory(NetworkContext* context, cors::CorsURLLoaderFactory *cors_url_loader_factory);
 
   void CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request);
   void CreateLoaderAndStart(ResourceRequest& resource_request) override;
@@ -28,6 +32,9 @@ public:
   
 private:
   NetworkContext* m_network_context = nullptr;
+
+  // |cors_url_loader_factory_| owns this.
+  cors::CorsURLLoaderFactory* const cors_url_loader_factory_;
 };
 
 }

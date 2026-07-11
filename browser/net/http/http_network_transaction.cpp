@@ -45,7 +45,7 @@ void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
 
   // OnIOComplete(OK);
   //   DoCreateStreamComplete();
-  //   DoConnectedCallback();
+  DoConnectedCallback();
   //
   //     URLLoader::OnConnected
   //     URLRequest::NotifyConnected
@@ -66,6 +66,10 @@ void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
   DoBuildRequest();
   // DoBuildRequestComplete();
   DoSendRequest();
+}
+
+void HttpNetworkTransaction::DoConnectedCallback() {
+  stream_->RegisterRequest(request_);
 }
 
 void HttpNetworkTransaction::DoBuildRequest() {

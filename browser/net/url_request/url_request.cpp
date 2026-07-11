@@ -18,7 +18,8 @@ void URLRequest::Start() {
 }
 
 void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
-  job->Start();
+  job_ = std::move(job);
+  job_->Start();
 }
 
 }

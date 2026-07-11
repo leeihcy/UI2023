@@ -2,4 +2,8 @@
 
 namespace net {
 
+void StreamSocketHandle::SetSocket(std::unique_ptr<StreamSocket> socket) {
+  socket_ = std::move(socket);
+}
+
 }

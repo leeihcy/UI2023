@@ -1,6 +1,7 @@
 #include "net/http/http_basic_stream.h"
 
 #include <assert.h>
+#include "net/http/http_util.h"
 
 namespace net {
 
@@ -8,20 +9,16 @@ HttpBasicState::HttpBasicState(std::unique_ptr<StreamSocketHandle> connection) :
 
 }
 
-void HttpBasicState::Initialize(/*const HttpRequestInfo* request_info,
+void HttpBasicState::Initialize(const HttpRequestInfo* request_info/*,
                   RequestPriority priority,
                   const NetLogWithSource& net_log*/) 
 {
-  parser_ = std::make_unique<HttpStreamParser>();
+  parser_ = std::make_unique<HttpStreamParser>(
+    connection_->socket(), request_info->url, request_info->method);
 }
 
 std::string HttpBasicState::GenerateRequestLine() const {
-#if 0
-  return HttpUtil::GenerateRequestLine(parser_->method(), parser_->url(),
-                                       is_for_get_to_http_proxy_);
-#endif
-  assert(false);
-  return "";
+  return HttpUtil::GenerateRequestLine(parser_->method(), parser_->url());
 }
 
 
@@ -29,14 +26,18 @@ HttpBasicStream::HttpBasicStream(std::unique_ptr<StreamSocketHandle> connection)
 
 }
 
+void HttpBasicStream::RegisterRequest(const HttpRequestInfo* request_info) {
+  request_info_ = request_info;
+}
+
 int HttpBasicStream::InitializeStream(/*bool can_send_early,
                                RequestPriority priority,
                                const NetLogWithSource& net_log,
                                CompletionOnceCallback callback*/) {
-  state_.Initialize(/*request_info_, priority, net_log*/);
+  state_.Initialize(request_info_/*, priority, net_log*/);
 
   // RequestInfo is no longer needed after this point.
-  // request_info_ = nullptr;
+  request_info_ = nullptr;
 
   return 0;
 }

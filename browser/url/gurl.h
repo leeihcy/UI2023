@@ -54,6 +54,10 @@ public:
   // Returns true if the scheme is "http" or "https".
   bool SchemeIsHTTPOrHTTPS() const;
 
+  // Returns the path that should be sent to the server. This is the path,
+  // parameter, and query portions of the URL. It is guaranteed to be ASCII.
+  std::string PathForRequest() const;
+
 private:
   void ParseURL(std::string_view spec);
   bool ParseScheme(const char*& current, size_t* out_len);

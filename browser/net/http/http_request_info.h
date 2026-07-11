@@ -8,6 +8,11 @@
 namespace net {
 
 struct HttpRequestInfo {
+  HttpRequestInfo() {
+  }
+  ~HttpRequestInfo() {
+  }
+
   // The requested URL.
   GURL url;
 

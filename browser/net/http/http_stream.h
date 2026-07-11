@@ -4,9 +4,11 @@
 #include "net/http/http_request_headers.h"
 
 namespace net {
+struct HttpRequestInfo;
 
 class HttpStream {
 public:
+  virtual void RegisterRequest(const HttpRequestInfo* request_info) = 0;
   virtual int InitializeStream(/*bool can_send_early,
                                RequestPriority priority,
                                const NetLogWithSource& net_log,
