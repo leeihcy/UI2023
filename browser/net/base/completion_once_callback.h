@@ -11,6 +11,7 @@
 namespace net {
 
 using CompletionOnceCallback = std::function<void(int)>;
+using CompletionRepeatingCallback = std::function<void(int)>;
 using Int64CompletionOnceCallback = std::function<void(int64_t)>;
 
 }  // namespace net

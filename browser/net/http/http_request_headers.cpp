@@ -1,6 +1,7 @@
 #include "net/http/http_request_headers.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 
 namespace net {
 
@@ -83,6 +84,25 @@ void HttpRequestHeaders::SetHeaderInternal(std::string_view key,
     it->value = std::move(value);
   else
     headers_.emplace_back(key, std::move(value));
+}
+
+
+std::string HttpRequestHeaders::ToString() const {
+  static constexpr std::string_view kColon = ": ";
+  static constexpr std::string_view kCrNl = "\r\n";
+
+  // As of January 2024, 99% of of HttpRequestHeaders objects had 27 headers or
+  // less. Allow space for 128 string pieces without heap allocation as it is a
+  // nice round number.
+  std::vector<std::string_view> pieces;
+  const size_t expected_size = headers_.size() * 4 + 1;
+
+  pieces.reserve(expected_size);
+  for (const auto& header : headers_) {
+    pieces.insert(pieces.end(), {header.key, kColon, header.value, kCrNl});
+  }
+  pieces.push_back(kCrNl);
+  return base::StrCat(pieces);
 }
 
 }

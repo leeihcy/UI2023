@@ -16,6 +16,11 @@ public:
 
   ConnectJob(Delegate*);
   ~ConnectJob();
+  
+  // Releases ownership of the underlying socket to the caller. Returns the
+  // released socket, or nullptr if there was a connection error.
+  std::unique_ptr<StreamSocket> PassSocket();
+  StreamSocket* socket() { return socket_.get(); }
 
   int Connect() {
     return ConnectInternal();

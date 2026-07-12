@@ -26,7 +26,9 @@ public:
 
 private:
   std::unique_ptr<StreamSocketHandle> connection_;
-   std::unique_ptr<HttpStreamParser> parser_;
+
+  std::shared_ptr<GrowableIOBuffer> read_buf_;
+  std::unique_ptr<HttpStreamParser> parser_;
 };
 
 class HttpBasicStream : public HttpStream {
@@ -43,6 +45,8 @@ public:
   int SendRequest(const HttpRequestHeaders& headers/*,
                   HttpResponseInfo* response,
                   CompletionOnceCallback callbac*/) override;
+
+  int ReadResponseHeaders(CompletionOnceCallback callback) override;
 
  private:
   HttpStreamParser* parser() const { return state_.parser(); }

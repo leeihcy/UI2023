@@ -60,6 +60,8 @@ public:
   void SetHeader(std::string_view key, const char* value) {
     SetHeader(key, std::string_view(value));
   }
+  
+  std::string ToString() const;
 
 private:
   HeaderVector::iterator FindHeader(std::string_view key);

@@ -1,6 +1,7 @@
 #include "net/socket/tcp_socket_win.h"
 
 #include "base/win/object_watcher.h"
+#include "net/base/io_buffer.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/base/net_errors.h"
 #include "net/base/winsock_init.h"
@@ -18,8 +19,29 @@ namespace net {
 class TCPSocketDefaultWin : public TCPSocketWin {
 public:
   class CoreImpl;
+
+  int Write(IOBuffer *buf, int buf_len,
+            CompletionOnceCallback callback) override;
+  int Read(IOBuffer *buf, int buf_len,
+           CompletionOnceCallback callback) override;
+  int ReadIfReady(IOBuffer *buf, int buf_len,
+                  CompletionOnceCallback callback) override;
+
+  void RetryRead(int);
+
 private:
   CoreImpl& GetCoreImpl();
+
+  // External callback; called when read is complete.
+  CompletionOnceCallback read_callback_;
+
+  // Non-null if a ReadIfReady() is to be completed asynchronously. This is an
+  // external callback if user used ReadIfReady() instead of Read(), but a
+  // wrapped callback on top of RetryRead() if Read() is used.
+  CompletionOnceCallback read_if_ready_callback_;
+
+  // External callback; called when write is complete.
+  CompletionOnceCallback write_callback_;
 };
 
 class TCPSocketDefaultWin::CoreImpl : public TCPSocketWin::Core {
@@ -28,6 +50,10 @@ public:
       read_event_(WSACreateEvent()),
       socket_(socket),
       reader_(this) {
+    write_overlapped_.hEvent = WSACreateEvent();
+  }
+  ~CoreImpl() {
+    WSACloseEvent(write_overlapped_.hEvent);
   }
   void Detach() override {
 
@@ -52,9 +78,14 @@ public:
   // Event handle for monitoring connect and read events through WSAEventSelect.
   HANDLE read_event_;
   
+    // OVERLAPPED variable for overlapped writes.
+  // TODO(mmenke): Can writes be switched to WSAEventSelect as well? That would
+  // allow removing this class. The only concern is whether that would have a
+  // negative perf impact.
+  OVERLAPPED write_overlapped_ = {};
+
   // The socket that created this object.
   TCPSocketDefaultWin* socket_;
-
   
 private:
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
@@ -81,6 +112,13 @@ private:
   base::win::ObjectWatcher read_watcher_;
   // |write_watcher_| watches for events from Write();
   base::win::ObjectWatcher write_watcher_;
+
+public:
+  // The buffers used in Read() and Write().
+  IOBuffer* read_iobuffer_ = nullptr;
+  IOBuffer* write_iobuffer_ = nullptr;
+  int read_buffer_length_ = 0;
+  int write_buffer_length_ = 0;
 };
 
 TCPSocketDefaultWin::CoreImpl& TCPSocketDefaultWin::GetCoreImpl() {
@@ -282,6 +320,111 @@ void TCPSocketWin::DidCompleteConnect() {
      result = ERR_UNEXPECTED;
   }
   connect_callback_(result);
+}
+
+static bool ResetEventIfSignaled(WSAEVENT hEvent) {
+  DWORD wait_rv = WaitForSingleObject(hEvent, 0);
+  if (wait_rv == WAIT_TIMEOUT)
+    return false;  // The event object is not signaled.
+  DCHECK_EQ(wait_rv, static_cast<DWORD>(WAIT_OBJECT_0));
+  BOOL ok = WSAResetEvent(hEvent);
+  DCHECK(ok);
+  return true;
+}
+
+int TCPSocketDefaultWin::Write(
+    IOBuffer* buf,
+    int buf_len,
+    CompletionOnceCallback callback) {
+  CoreImpl& core = GetCoreImpl();
+
+  WSABUF write_buffer;
+  write_buffer.len = buf_len;
+  write_buffer.buf = buf->data();
+
+  DWORD num;
+  int rv = WSASend(socket_, &write_buffer, 1, &num, 0, &core.write_overlapped_,
+                   nullptr);
+  int os_error = WSAGetLastError();
+  if (rv == 0) {
+    if (ResetEventIfSignaled(core.write_overlapped_.hEvent)) {
+      rv = static_cast<int>(num);
+      if (rv > buf_len || rv < 0) {
+        return ERR_WINSOCK_UNEXPECTED_WRITTEN_BYTES;
+      }
+      return rv;
+    }
+  } else {
+    if (os_error != WSA_IO_PENDING) {
+      int net_error = MapSystemError(os_error);
+      return net_error;
+    }
+  }
+  write_callback_ = std::move(callback);
+  core.write_iobuffer_ = buf;
+  core.write_buffer_length_ = buf_len;
+  // core.WatchForWrite();
+  return ERR_IO_PENDING;
+}
+
+
+int TCPSocketDefaultWin::Read(IOBuffer* buf,
+                              int buf_len,
+                              CompletionOnceCallback callback) {
+  CoreImpl& core = GetCoreImpl();
+  // base::Unretained() is safe because RetryRead() won't be called when |this|
+  // is gone.
+  int rv = ReadIfReady(
+      buf, buf_len,
+      std::bind(&TCPSocketDefaultWin::RetryRead, this, std::placeholders::_1));
+  if (rv != ERR_IO_PENDING)
+    return rv;
+  read_callback_ = std::move(callback);
+  core.read_iobuffer_ = buf;
+  core.read_buffer_length_ = buf_len;
+  return ERR_IO_PENDING;
+}
+
+int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
+                                     int buf_len,
+                                     CompletionOnceCallback callback) {
+  CoreImpl& core = GetCoreImpl();
+  // if (!core.non_blocking_reads_initialized_) {
+  //   WSAEventSelect(socket_, core.read_event_, FD_READ | FD_CLOSE);
+  //   core.non_blocking_reads_initialized_ = true;
+  // }
+  int rv = recv(socket_, buf->data(), buf_len, 0);
+  int os_error = WSAGetLastError();
+  if (rv == SOCKET_ERROR) {
+    if (os_error != WSAEWOULDBLOCK) {
+      int net_error = MapSystemError(os_error);
+      return net_error;
+    }
+  } else {
+    return rv;
+  }
+
+  read_if_ready_callback_ = std::move(callback);
+  core.WatchForRead();
+  return ERR_IO_PENDING;
+}
+
+
+void TCPSocketDefaultWin::RetryRead(int rv) {
+  CoreImpl& core = GetCoreImpl();
+
+  if (rv == OK) {
+    // base::Unretained() is safe because RetryRead() won't be called when
+    // |this| is gone.
+    rv = ReadIfReady(core.read_iobuffer_, core.read_buffer_length_,
+                     std::bind(&TCPSocketDefaultWin::RetryRead,
+                                    this, std::placeholders::_1));
+    if (rv == ERR_IO_PENDING)
+      return;
+  }
+  core.read_iobuffer_ = nullptr;
+  core.read_buffer_length_ = 0;
+  std::move(read_callback_)(rv);
 }
 
 }

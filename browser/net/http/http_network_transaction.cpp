@@ -3,6 +3,12 @@
 
 namespace net {
 
+HttpNetworkTransaction::HttpNetworkTransaction(HttpNetworkSession *session)
+    : m_session(session) {
+  io_callback_ = std::bind(&HttpNetworkTransaction::OnIOComplete, this,
+                           std::placeholders::_1);
+}
+
 int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info) {
   request_ = request_info;
 
@@ -65,7 +71,13 @@ void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
   // DoInitRequestBodyComplete();
   DoBuildRequest();
   // DoBuildRequestComplete();
-  DoSendRequest();
+  int result = DoSendRequest();
+  DoSendRequestComplete(result);
+ 
+  result = DoReadHeaders();
+  DoReadHeadersComplete(result);
+
+  // DoReadBody();
 }
 
 void HttpNetworkTransaction::DoConnectedCallback() {
@@ -142,4 +154,33 @@ int HttpNetworkTransaction::DoSendRequest() {
   return stream_->SendRequest(request_headers_/*, &response_, io_callback_*/);
 }
 
+int HttpNetworkTransaction::DoSendRequestComplete(int result) {
+  assert (result >= 0);
+  return 0;
+}
+
+int HttpNetworkTransaction::DoReadHeaders() {
+  // next_state_ = STATE_READ_HEADERS_COMPLETE;
+  return stream_->ReadResponseHeaders(io_callback_);
+}
+
+void HttpNetworkTransaction::DoReadHeadersComplete(int result) {
+  if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    assert(false);
+  }
+
+  if (result == ERR_HTTP_1_1_REQUIRED ||
+      result == ERR_PROXY_HTTP_1_1_REQUIRED) {
+    assert(false);
+  }
+
+  if (result < 0) {
+    assert(false);
+    // return HandleIOError(result);
+  }
+  // if (response_headers_callback_)
+  //   response_headers_callback_.Run(response_.headers);
+
+  return;
+}
 }

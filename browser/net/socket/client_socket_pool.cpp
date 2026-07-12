@@ -1,5 +1,7 @@
 #include "net/socket/client_socket_pool.h"
 
+#include "net/socket/client_socket_handle.h"
+
 namespace net {
 
 TransportClientSocketPool::TransportClientSocketPool() : ClientSocketPool(std::make_unique<ConnectJobFactory>()) {
@@ -121,6 +123,10 @@ void TransportClientSocketPool::OnConnectJobComplete(Group *group, int result,
     return;
   }
 
+  if (job->socket()) {
+    HandOutSocket(job->PassSocket(), request->handle());
+  }
+
   InvokeUserCallbackLater(request->handle(), request->release_callback(),
                           result /*, request->socket_tag()*/);
 }
@@ -128,6 +134,11 @@ void TransportClientSocketPool::OnConnectJobComplete(Group *group, int result,
 void TransportClientSocketPool::InvokeUserCallbackLater(
     ClientSocketHandle *handle, CompletionOnceCallback callback, int result) {
   std::move(callback)(result);
+}
+
+void TransportClientSocketPool::HandOutSocket(
+    std::unique_ptr<StreamSocket> socket, ClientSocketHandle *handle) {
+  handle->SetSocket(std::move(socket));
 }
 
 }

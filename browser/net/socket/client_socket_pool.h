@@ -125,6 +125,9 @@ public:
   void InvokeUserCallbackLater(ClientSocketHandle *handle,
                                CompletionOnceCallback callback, int rv);
 
+                                 // Assigns |socket| to |handle| and updates |group|'s counters appropriately.
+  void HandOutSocket(std::unique_ptr<StreamSocket> socket, ClientSocketHandle* handle);
+
 private:
   using GroupMap = std::map<GroupId, Group *>;
   GroupMap group_map_;

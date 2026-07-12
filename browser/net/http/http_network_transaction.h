@@ -6,6 +6,7 @@
 #include "net/http/http_transaction.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_request_headers.h"
+#include "net/base/completion_once_callback.h"
 #include <memory>
 
 namespace net {
@@ -40,7 +41,7 @@ class HttpNetworkTransaction : public HttpTransaction,
   };
 
 public:
-  HttpNetworkTransaction(HttpNetworkSession* session) : m_session(session) {}
+  HttpNetworkTransaction(HttpNetworkSession* session);
   int Start(const HttpRequestInfo* request_info) override;
 
 protected:
@@ -54,6 +55,11 @@ private:
   void DoConnectedCallback();
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
   int DoSendRequest();
+  int DoSendRequestComplete(int result);
+  int DoReadHeaders();
+  void DoReadHeadersComplete(int result);
+ 
+  void OnIOComplete(int result){};
 
 private:
   std::unique_ptr<HttpStreamRequest> stream_request_;
@@ -65,6 +71,9 @@ private:
 
   // RequestHeadersCallback request_headers_callback_;
   HttpRequestHeaders request_headers_;
+
+  CompletionRepeatingCallback io_callback_;
+  CompletionOnceCallback callback_;
 
 };
 

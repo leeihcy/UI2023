@@ -91,7 +91,7 @@ class StringIOBuffer : public IOBuffer {
  public:
   explicit StringIOBuffer(std::string s);
 
- private:
+//  private:
   ~StringIOBuffer() override;
 
   std::string string_data_;
@@ -138,8 +138,9 @@ class DrainableIOBuffer : public IOBuffer {
   // and remaining are updated appropriately.
   void SetOffset(int bytes);
 
- private:
+ // private:
   ~DrainableIOBuffer() override;
+ private:
 
   std::shared_ptr<IOBuffer> base_;
   int used_ = 0;
@@ -196,9 +197,9 @@ class GrowableIOBuffer : public IOBuffer {
   std::span<uint8_t> span_before_offset();
   std::span<const uint8_t> span_before_offset() const;
 
- private:
+ // private:
   ~GrowableIOBuffer() override;
-
+ private:
   // TODO(329476354): Convert to std::vector, use reserve()+resize() to make
   // exact reallocs, and remove `capacity_`. Possibly with an allocator the
   // default-initializes, if it's important to not initialize the new memory?

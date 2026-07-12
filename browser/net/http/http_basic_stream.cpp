@@ -6,7 +6,7 @@
 namespace net {
 
 HttpBasicState::HttpBasicState(std::unique_ptr<StreamSocketHandle> connection) : connection_(std::move(connection)) {
-
+  read_buf_ = std::make_shared<GrowableIOBuffer>();
 }
 
 void HttpBasicState::Initialize(const HttpRequestInfo* request_info/*,
@@ -14,7 +14,7 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info/*,
                   const NetLogWithSource& net_log*/) 
 {
   parser_ = std::make_unique<HttpStreamParser>(
-    connection_->socket(), request_info->url, request_info->method);
+    connection_->socket(), request_info->url, request_info->method, read_buf_.get());
 }
 
 std::string HttpBasicState::GenerateRequestLine() const {
@@ -55,9 +55,13 @@ int HttpBasicStream::SendRequest(const HttpRequestHeaders& headers/*,
   // }
 
   return parser()->SendRequest(
-      state_.GenerateRequestLine()/*, headers,
+      state_.GenerateRequestLine(), headers/*,
       NetworkTrafficAnnotationTag(state_.traffic_annotation()), response,
       std::move(callback)*/);
+}
+
+int HttpBasicStream::ReadResponseHeaders(CompletionOnceCallback callback) {
+  return parser()->ReadResponseHeaders(std::move(callback));
 }
 
 }

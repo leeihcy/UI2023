@@ -54,9 +54,20 @@ private:
   int DoConnectLoop(int result);
   int DoConnect();
   int DoConnectComplete(int result);
+  void DidCompleteRead(int result);
 
   void OnConnectAttemptTimeout();
   void DidCompleteConnect(int result);
+
+  void DidCompleteWrite(int result);
+  void DidCompleteReadWrite(CompletionOnceCallback callback, int result);
+
+  // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
+  // set to true, ReadIfReady() will be used instead of Read().
+  int ReadCommon(IOBuffer* buf,
+      int buf_len,
+      const CompletionOnceCallback callback,
+      bool read_if_ready);
 
 private:
   // External callbacks; called when corresponding operations are complete.

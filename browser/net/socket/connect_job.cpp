@@ -9,6 +9,10 @@ ConnectJob::~ConnectJob() {
   
 }
 
+std::unique_ptr<StreamSocket> ConnectJob::PassSocket() {
+  return std::move(socket_);
+}
+
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket/*,
                  std::optional<std::set<std::string>> dns_aliases*/) {
   socket_ = std::move(socket);

@@ -149,18 +149,76 @@ void TCPClientSocket::ApplySocketTag(const SocketTag &tag) {}
 
 int TCPClientSocket::Read(IOBuffer *buf, int buf_len,
                           CompletionOnceCallback callback) {
-  return 0;
+  return ReadCommon(buf, buf_len, std::move(callback), /*read_if_ready=*/false);
 }
 int TCPClientSocket::ReadIfReady(IOBuffer *buf, int buf_len,
                                  CompletionOnceCallback callback) {
-  return 0;
+  return ReadCommon(buf, buf_len, std::move(callback), /*read_if_ready=*/true);
 }
+
+int TCPClientSocket::ReadCommon(IOBuffer* buf,
+    int buf_len,
+    CompletionOnceCallback callback,
+    bool read_if_ready) {
+    // if (was_disconnected_on_suspend_)
+    //     return ERR_NETWORK_IO_SUSPENDED;
+
+    // |socket_| is owned by |this| and the callback won't be run once |socket_|
+    // is gone/closed. Therefore, it is safe to use base::Unretained() here.
+    CompletionOnceCallback complete_read_callback =
+        std::bind(&TCPClientSocket::DidCompleteRead, this, std::placeholders::_1);
+    int result =
+        read_if_ready
+        ? socket_->ReadIfReady(buf, buf_len,
+            std::move(complete_read_callback))
+        : socket_->Read(buf, buf_len, std::move(complete_read_callback));
+    if (result == ERR_IO_PENDING) {
+        read_callback_ = std::move(callback);
+    }
+    else if (result > 0) {
+        // was_ever_used_ = true;
+        // total_received_bytes_ += result;
+    }
+
+    return result;
+}
+
 int TCPClientSocket::CancelReadIfReady() { return 0; }
 int TCPClientSocket::Write(IOBuffer *buf, int buf_len,
                            CompletionOnceCallback callback) {
-  return 0;
+  // if (was_disconnected_on_suspend_)
+  //   return ERR_NETWORK_IO_SUSPENDED;
+
+  // // |socket_| is owned by this class and the callback won't be run once
+  // // |socket_| is gone. Therefore, it is safe to use base::Unretained() here.
+  CompletionOnceCallback complete_write_callback = std::bind(
+      &TCPClientSocket::DidCompleteWrite, this, std::placeholders::_1);
+  int result = socket_->Write(buf, buf_len, std::move(complete_write_callback));
+  // if (result == ERR_IO_PENDING) {
+  //   write_callback_ = std::move(callback);
+  // } else if (result > 0) {
+  //   was_ever_used_ = true;
+  // }
+
+  return result;
 }
 int TCPClientSocket::SetReceiveBufferSize(int32_t size) { return 0; }
 int TCPClientSocket::SetSendBufferSize(int32_t size) { return 0; }
+
+void TCPClientSocket::DidCompleteWrite(int result) {
+  DidCompleteReadWrite(std::move(write_callback_), result);
+}
+void TCPClientSocket::DidCompleteReadWrite(CompletionOnceCallback callback,
+                                           int result) {
+  // if (result > 0)
+  //   was_ever_used_ = true;
+  std::move(callback)(result);
+}
+
+void TCPClientSocket::DidCompleteRead(int result) {
+  // if (result > 0)
+  //   total_received_bytes_ += result;
+  DidCompleteReadWrite(std::move(read_callback_), result);
+}
 
 } // namespace net

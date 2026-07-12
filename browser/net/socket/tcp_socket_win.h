@@ -12,6 +12,7 @@
 
 namespace net {
 class IPEndPoint;
+class IOBuffer;
 
 // #if BUILDFLAG(IS_WIN)
 typedef UINT_PTR SocketDescriptor;
@@ -33,7 +34,15 @@ public:
 
   bool IsValid() const { return socket_ != INVALID_SOCKET; }
 
-  int Connect(const IPEndPoint& address, CompletionOnceCallback callback);
+  int Connect(const IPEndPoint &address, CompletionOnceCallback callback);
+  virtual int Read(IOBuffer* buf,
+                   int buf_len,
+                   CompletionOnceCallback callback) = 0;
+  virtual int ReadIfReady(IOBuffer* buf,
+                          int buf_len,
+                          CompletionOnceCallback callback) = 0;
+  virtual int Write(IOBuffer *buf, int buf_len,
+                    CompletionOnceCallback callback) = 0;
 
   class Core {
   public:
