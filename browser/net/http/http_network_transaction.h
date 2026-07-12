@@ -2,14 +2,17 @@
 #ifndef NET_HTTP_HTTP_NETWORK_TRANSACTION_H_
 #define NET_HTTP_HTTP_NETWORK_TRANSACTION_H_
 
+#include "net/base/completion_once_callback.h"
 #include "net/http/http_stream_request.h"
 #include "net/http/http_transaction.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_request_headers.h"
-#include "net/base/completion_once_callback.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include <memory>
 
 namespace net {
+class IOBuffer;
 class HttpNetworkSession;
 
 class HttpNetworkTransaction : public HttpTransaction,
@@ -42,12 +45,15 @@ class HttpNetworkTransaction : public HttpTransaction,
 
 public:
   HttpNetworkTransaction(HttpNetworkSession* session);
-  int Start(const HttpRequestInfo* request_info) override;
+  int Start(const HttpRequestInfo* request_info, CompletionOnceCallback callback) override;
+  void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
 
 protected:
   void OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
                      std::unique_ptr<HttpStream> stream) override;
-
+  int Read(IOBuffer* buf,
+           int buf_len,
+           CompletionOnceCallback callback) override;
 private:
   void DoCreateStream();
   void DoInitStream();
@@ -58,8 +64,11 @@ private:
   int DoSendRequestComplete(int result);
   int DoReadHeaders();
   void DoReadHeadersComplete(int result);
- 
-  void OnIOComplete(int result){};
+  int DoReadBody();
+  int DoReadBodyComplete(int result);
+
+  void DoCallback(int rv);
+  void OnIOComplete(int result);
 
 private:
   std::unique_ptr<HttpStreamRequest> stream_request_;
@@ -71,10 +80,16 @@ private:
 
   // RequestHeadersCallback request_headers_callback_;
   HttpRequestHeaders request_headers_;
+  ResponseHeadersCallback response_headers_callback_;
 
   CompletionRepeatingCallback io_callback_;
   CompletionOnceCallback callback_;
 
+  HttpResponseInfo response_;
+
+  // User buffer and length passed to the Read method.
+  IOBuffer* read_buf_ = nullptr;
+  int read_buf_len_ = 0;
 };
 
 } // namespace net

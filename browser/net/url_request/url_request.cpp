@@ -17,8 +17,15 @@ void URLRequest::Start() {
   StartJob(m_context->job_factory()->CreateJob(this));
 }
 
+void URLRequest::SetResponseHeadersCallback(ResponseHeadersCallback callback) {
+  response_headers_callback_ = std::move(callback);
+}
+
 void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   job_ = std::move(job);
+
+  job_->SetResponseHeadersCallback(response_headers_callback_);
+
   job_->Start();
 }
 

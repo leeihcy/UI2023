@@ -9,11 +9,14 @@ HttpNetworkTransaction::HttpNetworkTransaction(HttpNetworkSession *session)
                            std::placeholders::_1);
 }
 
-int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info) {
+int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info, CompletionOnceCallback callback) {
   request_ = request_info;
 
   DoCreateStream();
   // DoInitStream();
+
+  //  if (rv == ERR_IO_PENDING)
+  //   callback_ = std::move(callback);
   return 0;
 }
 
@@ -76,8 +79,6 @@ void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
  
   result = DoReadHeaders();
   DoReadHeadersComplete(result);
-
-  // DoReadBody();
 }
 
 void HttpNetworkTransaction::DoConnectedCallback() {
@@ -164,6 +165,11 @@ int HttpNetworkTransaction::DoReadHeaders() {
   return stream_->ReadResponseHeaders(io_callback_);
 }
 
+void HttpNetworkTransaction::SetResponseHeadersCallback(
+    ResponseHeadersCallback callback) {
+  response_headers_callback_ = std::move(callback);
+}
+
 void HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     assert(false);
@@ -178,9 +184,53 @@ void HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     assert(false);
     // return HandleIOError(result);
   }
-  // if (response_headers_callback_)
-  //   response_headers_callback_.Run(response_.headers);
+  if (response_headers_callback_)
+    response_headers_callback_(response_.headers);
 
   return;
 }
+
+void HttpNetworkTransaction::OnIOComplete(int result){
+  // HttpCache::Transaction::OnIOComplete
+  // std::move(callback_)(result);
+
+  // int rv = DoLoop(result);
+  // if (rv != ERR_IO_PENDING)
+    DoCallback(result);
+}
+
+int HttpNetworkTransaction::Read(IOBuffer *buf, int buf_len,
+                                 CompletionOnceCallback callback) {
+  read_buf_ = buf;
+  read_buf_len_ = buf_len;
+
+  int result = DoReadBody();
+  if (result == ERR_IO_PENDING) {
+    callback_ = std::move(callback);
+    return result;
+  }
+
+  return DoReadBodyComplete(result);
+}
+
+int HttpNetworkTransaction::DoReadBody() {
+  return stream_->ReadResponseBody(
+      read_buf_, read_buf_len_, io_callback_);
+}
+
+int HttpNetworkTransaction::DoReadBodyComplete(int result) {
+  return 0;
+}
+
+// 
+// >	net.dll!net::HttpNetworkTransaction::DoCallback	C++
+//  	net.dll!net::HttpNetworkTransaction::OnIOComplete	C++
+//  	net.dll!net::HttpNetworkTransaction::OnStreamReady	C++
+//  	net.dll!net::HttpStreamFactory::JobController::OnStreamReady	C++
+//  	net.dll!net::HttpStreamFactory::Job::OnStreamReadyCallback	C++
+// 
+void HttpNetworkTransaction::DoCallback(int rv) {
+    std::move(callback_)(rv);
+}
+
 }

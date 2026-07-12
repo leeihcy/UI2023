@@ -64,4 +64,9 @@ int HttpBasicStream::ReadResponseHeaders(CompletionOnceCallback callback) {
   return parser()->ReadResponseHeaders(std::move(callback));
 }
 
+int HttpBasicStream::ReadResponseBody(IOBuffer *buf, int buf_len,
+                                      CompletionOnceCallback callback) {
+  return parser()->ReadResponseBody(buf, buf_len, std::move(callback));
+}
+
 }

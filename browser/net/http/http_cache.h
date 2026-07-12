@@ -8,16 +8,26 @@ class HttpCache : public HttpTransactionFactory {
 public:
   class Transaction : public HttpTransaction {
   public:
-    Transaction(HttpCache* cache) : m_cache(cache) {}
-    int Start(const HttpRequestInfo* request_info) override;
+    Transaction(HttpCache* cache);
+    int Start(const HttpRequestInfo *request_info,
+              CompletionOnceCallback callback) override;
+    int Read(IOBuffer *buf, int buf_len,
+             CompletionOnceCallback callback) override;
+    void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
 
   private:
-    void DoSendRequest();
+    int DoSendRequest();
+    void OnIOComplete(int result);
+  
+  private:
     HttpCache* m_cache;
 
     // Initial request with which Start() was invoked.
     const HttpRequestInfo* initial_request_ = nullptr;
     const HttpRequestInfo* request_ = nullptr;
+
+    ResponseHeadersCallback response_headers_callback_;
+    CompletionRepeatingCallback io_callback_;
 
     std::unique_ptr<HttpTransaction> m_network_trans;
   };

@@ -34,9 +34,13 @@ public:
 private:
   int DoSendHeaders();
   int DoReadHeaders();
+  int DoReadBody();
+  int DoReadBodyComplete(int result);
 
   // Handle callbacks.
   void OnIOComplete(int result);
+
+  bool IsResponseBodyComplete() const;
 
 private:
   StreamSocket* stream_socket_ = nullptr;
@@ -52,6 +56,15 @@ private:
 
   // Temporary buffer for reading.
   GrowableIOBuffer* read_buf_;
+
+  // Where the caller wants the body data.
+  IOBuffer* user_read_buf_ = nullptr;
+  size_t user_read_buf_len_ = 0;
+
+  // Offset of the first unused byte in |read_buf_|.  May be nonzero due to
+  // body data in the same packet as header data but is zero when reading
+  // headers.
+  size_t read_buf_unused_offset_ = 0;
 
   // The callback to notify a user that their request or response is
   // complete or there was an error

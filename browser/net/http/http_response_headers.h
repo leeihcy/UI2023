@@ -3,6 +3,7 @@
 
 #include <string>
 #include <optional>
+#include <functional>
 
 namespace net {
 
@@ -13,7 +14,8 @@ public:
       std::string_view name) const;
 
 };
-
+using ResponseHeadersCallback =
+    std::function<void(const HttpResponseHeaders*)>;
 
 }
 

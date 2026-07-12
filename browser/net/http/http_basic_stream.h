@@ -47,8 +47,10 @@ public:
                   CompletionOnceCallback callbac*/) override;
 
   int ReadResponseHeaders(CompletionOnceCallback callback) override;
+  int ReadResponseBody(IOBuffer *buf, int buf_len,
+                       CompletionOnceCallback callback) override;
 
- private:
+private:
   HttpStreamParser* parser() const { return state_.parser(); }
 
 private:

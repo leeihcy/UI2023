@@ -19,13 +19,19 @@ public:
   static std::unique_ptr<URLRequestJob> Create(URLRequest* request);
 
   void Start() override;
+  void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
 
 private:
   void StartTransaction();
+
+  void OnStartCompleted(int result);
   
 private:
    std::unique_ptr<HttpTransaction> m_transaction;
    HttpRequestInfo request_info_;
+
+  ResponseHeadersCallback response_headers_callback_;
+
 };
 
 }

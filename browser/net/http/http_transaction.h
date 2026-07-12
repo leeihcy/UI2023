@@ -2,8 +2,12 @@
 #ifndef NET_HTTP_HTTP_TRANSACTION_H_
 #define NET_HTTP_HTTP_TRANSACTION_H_
 
+#include "net/base/completion_once_callback.h"
+#include "net/http/http_response_headers.h"
+
 namespace net {
 struct HttpRequestInfo;
+class IOBuffer;
 
 /*
 在 Chromium 的网络栈中，HttpTransaction
@@ -13,7 +17,11 @@ URLRequest
 */
 class HttpTransaction {
 public:
-  virtual int Start(const HttpRequestInfo* request_info) = 0;
+  virtual int Start(const HttpRequestInfo *request_info,
+                    CompletionOnceCallback callback) = 0;
+  virtual int Read(IOBuffer *buf, int buf_len,
+                   CompletionOnceCallback callback) = 0;
+  virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) = 0;
 };
 
 } // namespace net

@@ -23,10 +23,32 @@ void URLRequestHttpJob::Start() {
   StartTransaction();
 }
 
+void URLRequestHttpJob::SetResponseHeadersCallback(
+    ResponseHeadersCallback callback) {
+  response_headers_callback_ = std::move(callback);
+}
+
 void URLRequestHttpJob::StartTransaction() {
   m_transaction =
       request_->context()->http_transaction_factory()->CreateTransaction();
-  m_transaction->Start(&request_info_);
+
+  m_transaction->SetResponseHeadersCallback(response_headers_callback_);
+
+  m_transaction->Start(&request_info_,
+                       std::bind(&URLRequestHttpJob::OnStartCompleted, this,
+                                 std::placeholders::_1));
+}
+
+void URLRequestHttpJob::OnStartCompleted(int result) {
+  // NetworkDelegate* network_delegate = request()->network_delegate();
+  // if (network_delegate) {
+  //  int error = network_delegate->NotifyHeadersReceived(
+  //           request_,
+  //           base::BindOnce(&URLRequestHttpJob::OnHeadersReceivedCallback,
+  //                          weak_factory_.GetWeakPtr()),
+  //           headers.get(), &override_response_headers_, endpoint,
+  //           &preserve_fragment_on_redirect_url_, ssl_info);
+  // }
 }
 
 }

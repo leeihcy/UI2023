@@ -34,11 +34,20 @@ public:
   void Start();
   void StartJob(std::unique_ptr<URLRequestJob> job);
   
+  // Sets a callback that will be invoked each time the response is received
+  // from the remote party with the actual response headers received. Note this
+  // is different from response_headers() getter in that in case of revalidation
+  // request, the latter will return cached headers, while the callback will be
+  // called with a response from the server.
+  void SetResponseHeadersCallback(ResponseHeadersCallback callback);
+
 private:
   const URLRequestContext* m_context;
   std::vector<GURL> url_chain_;
 
   std::string method_;  // "GET", "POST", etc. Case-sensitive.
+
+  ResponseHeadersCallback response_headers_callback_;
 
   std::unique_ptr<URLRequestJob> job_;
 };

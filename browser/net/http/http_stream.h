@@ -6,6 +6,7 @@
 
 namespace net {
 struct HttpRequestInfo;
+class IOBuffer;
 
 class HttpStream {
 public:
@@ -19,7 +20,9 @@ public:
                   HttpResponseInfo* response,
                   CompletionOnceCallback callback*/) = 0;
   virtual int ReadResponseHeaders(CompletionOnceCallback callback) = 0;
-
+  virtual int ReadResponseBody(IOBuffer* buf,
+                               int buf_len,
+                               CompletionOnceCallback callback) = 0;
 };
 
 }

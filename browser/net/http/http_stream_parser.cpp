@@ -87,9 +87,75 @@ int HttpStreamParser::DoReadHeaders() {
 }
 
 int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
-                       int buf_len,
-                       CompletionOnceCallback callback) {
-  return 0;
+                                       int buf_len,
+                                       CompletionOnceCallback callback) {
+  // if (io_state_ == STATE_DONE)
+  //   return OK;
+
+  user_read_buf_ = buf;
+  user_read_buf_len_ = size_t(buf_len);
+  // io_state_ = STATE_READ_BODY;
+
+  // int result = DoLoop(OK);
+  // if (result == ERR_IO_PENDING)
+  //   callback_ = std::move(callback);
+
+  // return result;
+
+  int result = DoReadBody();
+  result = DoReadBodyComplete(result);
+
+  return result;
+}
+int HttpStreamParser::DoReadBody() {
+  uint64_t remaining_read_len = user_read_buf_len_;
+  uint64_t remaining_body = 0;
+
+  // There may be some data left over from reading the response headers.
+  if (read_buf_->offset()) {
+    const auto read_offset_s = size_t(read_buf_->offset());
+    const size_t available = read_offset_s - read_buf_unused_offset_;
+    if (available) {
+      const auto bytes_from_buffer = size_t(
+          std::min(uint64_t{available}, remaining_read_len));
+      auto src = read_buf_->everything().subspan(
+          read_buf_unused_offset_, bytes_from_buffer);
+      auto dst = user_read_buf_->span();
+      std::copy(src.begin(), src.end(), dst.begin());
+      
+      read_buf_unused_offset_ += bytes_from_buffer;
+      // Clear out the remaining data if we've reached the end of the body.
+      if (bytes_from_buffer == available) {
+        read_buf_->SetCapacity(0);
+        read_buf_unused_offset_ = 0;
+      }
+      return (int)bytes_from_buffer;
+    }
+    read_buf_->SetCapacity(0);
+    read_buf_unused_offset_ = 0;
+  }
+  
+  if (IsResponseBodyComplete())
+    return 0;
+
+  return stream_socket_->Read(user_read_buf_,
+                              int(user_read_buf_len_),
+                              io_callback_);
+}
+
+
+bool HttpStreamParser::IsResponseBodyComplete() const {
+  // if (chunked_decoder_.get())
+  //   return chunked_decoder_->reached_eof();
+  // if (response_body_length_ != -1)
+  //   return response_body_read_ >= response_body_length_;
+
+  return false;  // Must read to EOF.
+}
+
+int HttpStreamParser::DoReadBodyComplete(int result) {
+  assert(false);
+  return result;
 }
 
 } // namespace net
