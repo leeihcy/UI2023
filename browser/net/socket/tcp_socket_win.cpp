@@ -28,6 +28,7 @@ public:
                   CompletionOnceCallback callback) override;
 
   void RetryRead(int);
+  void DidSignalRead();
 
 private:
   CoreImpl& GetCoreImpl();
@@ -87,6 +88,14 @@ public:
   // The socket that created this object.
   TCPSocketDefaultWin* socket_;
   
+  // The buffers used in Read() and Write().
+  IOBuffer* read_iobuffer_ = nullptr;
+  IOBuffer* write_iobuffer_ = nullptr;
+  int read_buffer_length_ = 0;
+  int write_buffer_length_ = 0;
+
+  bool non_blocking_reads_initialized_ = false;
+
 private:
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
   public:
@@ -95,7 +104,7 @@ private:
       if (core_->socket_->connect_callback_) {
         core_->socket_->DidCompleteConnect();
       } else {
-        // core_->socket_->DidSignalRead();
+        core_->socket_->DidSignalRead();
       }
     }
 
@@ -112,13 +121,6 @@ private:
   base::win::ObjectWatcher read_watcher_;
   // |write_watcher_| watches for events from Write();
   base::win::ObjectWatcher write_watcher_;
-
-public:
-  // The buffers used in Read() and Write().
-  IOBuffer* read_iobuffer_ = nullptr;
-  IOBuffer* write_iobuffer_ = nullptr;
-  int read_buffer_length_ = 0;
-  int write_buffer_length_ = 0;
 };
 
 TCPSocketDefaultWin::CoreImpl& TCPSocketDefaultWin::GetCoreImpl() {
@@ -319,7 +321,31 @@ void TCPSocketWin::DidCompleteConnect() {
   } else {
      result = ERR_UNEXPECTED;
   }
+
+  // 清空connect_callback_，这样下次ReadDelegate::OnObjectSignaled时就能走Read逻辑
   connect_callback_(result);
+  connect_callback_ = nullptr;
+}
+
+void TCPSocketDefaultWin::DidSignalRead() {
+  CoreImpl& core = GetCoreImpl();
+
+  int os_error = 0;
+  WSANETWORKEVENTS network_events;
+  int rv = WSAEnumNetworkEvents(socket_, core.read_event_, &network_events);
+  os_error = WSAGetLastError();
+
+  if (rv == SOCKET_ERROR) {
+    rv = MapSystemError(os_error);
+  } else if (network_events.lNetworkEvents) {
+    rv = OK;
+  } else {
+    core.WatchForRead();
+    return;
+  }
+
+  assert(rv != ERR_IO_PENDING);
+  std::move(read_if_ready_callback_)(rv);
 }
 
 static bool ResetEventIfSignaled(WSAEVENT hEvent) {
@@ -389,10 +415,12 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
                                      int buf_len,
                                      CompletionOnceCallback callback) {
   CoreImpl& core = GetCoreImpl();
-  // if (!core.non_blocking_reads_initialized_) {
-  //   WSAEventSelect(socket_, core.read_event_, FD_READ | FD_CLOSE);
-  //   core.non_blocking_reads_initialized_ = true;
-  // }
+  if (!core.non_blocking_reads_initialized_) {
+    // 初始化异步read/close监听，用event来关联异步读取事件。
+    WSAEventSelect(socket_, core.read_event_, FD_READ | FD_CLOSE);
+    core.non_blocking_reads_initialized_ = true;
+  }
+
   int rv = recv(socket_, buf->data(), buf_len, 0);
   int os_error = WSAGetLastError();
   if (rv == SOCKET_ERROR) {
@@ -404,6 +432,7 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
     return rv;
   }
 
+  // 目前还没有可读数据，等待==>TCPSocketDefaultWin::DidSignalRead
   read_if_ready_callback_ = std::move(callback);
   core.WatchForRead();
   return ERR_IO_PENDING;

@@ -58,7 +58,7 @@ int HttpStreamParser::DoSendHeaders() {
 
 // Handle callbacks.
 void HttpStreamParser::OnIOComplete(int result) {
-
+  assert(false);
 }
 
 int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {

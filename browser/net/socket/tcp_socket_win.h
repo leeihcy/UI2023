@@ -63,6 +63,7 @@ public:
 
 public:
   void DidCompleteConnect();
+  void DidSignalRead();
 
 private:
   int DoConnect();

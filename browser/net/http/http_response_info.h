@@ -9,7 +9,7 @@ class HttpResponseInfo {
 public:
 
   // The parsed response headers and status line.
-  HttpResponseHeaders* headers;
+  HttpResponseHeaders* headers = nullptr;
 
 };
 

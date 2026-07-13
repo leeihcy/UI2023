@@ -170,7 +170,7 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
   response_headers_callback_ = std::move(callback);
 }
 
-void HttpNetworkTransaction::DoReadHeadersComplete(int result) {
+int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     assert(false);
   }
@@ -181,13 +181,13 @@ void HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   }
 
   if (result < 0) {
-    assert(false);
     // return HandleIOError(result);
+    return result;
   }
   if (response_headers_callback_)
     response_headers_callback_(response_.headers);
 
-  return;
+  return 0;
 }
 
 void HttpNetworkTransaction::OnIOComplete(int result){

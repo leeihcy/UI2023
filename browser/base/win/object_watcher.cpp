@@ -89,6 +89,8 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
   // OnSignal() is dispatched back to this thread's message loop.
   GetMessageWindow();
 
+  run_once_ = execute_only_once;
+
   // Since our job is to just notice when an object is signaled and report the
   // result back to this sequence, we can just run on a Windows wait thread.
   DWORD wait_flags = WT_EXECUTEINWAITTHREAD;
@@ -105,13 +107,16 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
 }
 
 void ObjectWatcher::OnSignal() {
-  if (delegate_) {
-    delegate_->OnObjectSignaled(object_);
-    if (run_once_) {
-      delegate_ = nullptr;
+    if (!delegate_) {
+        return;
     }
+    HANDLE object = object_;
+    Delegate* delegate = delegate_;
+    if (run_once_) {
+        StopWatching();
+    }
+    delegate->OnObjectSignaled(object);
   }
 }
 
-}
 }

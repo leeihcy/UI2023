@@ -63,7 +63,7 @@ private:
   int DoSendRequest();
   int DoSendRequestComplete(int result);
   int DoReadHeaders();
-  void DoReadHeadersComplete(int result);
+  int DoReadHeadersComplete(int result);
   int DoReadBody();
   int DoReadBodyComplete(int result);
 
