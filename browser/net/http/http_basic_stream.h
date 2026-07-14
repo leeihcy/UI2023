@@ -43,8 +43,8 @@ public:
                                CompletionOnceCallback callback*/) override;
 
   int SendRequest(const HttpRequestHeaders& headers/*,
-                  HttpResponseInfo* response,
-                  CompletionOnceCallback callbac*/) override;
+                  HttpResponseInfo* response*/,
+                  CompletionOnceCallback callbac) override;
 
   int ReadResponseHeaders(CompletionOnceCallback callback) override;
   int ReadResponseBody(IOBuffer *buf, int buf_len,

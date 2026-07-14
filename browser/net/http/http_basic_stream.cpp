@@ -43,8 +43,8 @@ int HttpBasicStream::InitializeStream(/*bool can_send_early,
 }
 
 int HttpBasicStream::SendRequest(const HttpRequestHeaders& headers/*,
-                  HttpResponseInfo* response,
-                  CompletionOnceCallback callbac*/) {
+                  HttpResponseInfo* response*/,
+                  CompletionOnceCallback callback) {
   // if (request_headers_callback_) {
   //   HttpRawRequestHeaders raw_headers;
   //   raw_headers.set_request_line(state_.GenerateRequestLine());
@@ -56,8 +56,8 @@ int HttpBasicStream::SendRequest(const HttpRequestHeaders& headers/*,
 
   return parser()->SendRequest(
       state_.GenerateRequestLine(), headers/*,
-      NetworkTrafficAnnotationTag(state_.traffic_annotation()), response,
-      std::move(callback)*/);
+      NetworkTrafficAnnotationTag(state_.traffic_annotation()), response*/,
+      std::move(callback));
 }
 
 int HttpBasicStream::ReadResponseHeaders(CompletionOnceCallback callback) {

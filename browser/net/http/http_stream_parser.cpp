@@ -22,8 +22,8 @@ HttpStreamParser::HttpStreamParser(StreamSocket *stream_socket, const GURL &url,
 int HttpStreamParser::SendRequest(const std::string& request_line,
                   const HttpRequestHeaders& headers/*,
                   const NetworkTrafficAnnotationTag& traffic_annotation,
-                  HttpResponseInfo* response,
-                  CompletionOnceCallback callback*/) {
+                  HttpResponseInfo* response*/,
+                  CompletionOnceCallback callback) {
 
   // // Put the peer's IP address and port into the response.
   // IPEndPoint ip_endpoint;
@@ -43,14 +43,71 @@ int HttpStreamParser::SendRequest(const std::string& request_line,
   request_headers_ = std::make_shared<DrainableIOBuffer>(
         std::move(headers_io_buf), request_size);
 
-  int result = DoSendHeaders();
+  io_state_ = STATE_SEND_HEADERS;
+  int result = DoLoop(OK);
+  if (result == ERR_IO_PENDING)
+    callback_ = std::move(callback);
 
   return result > 0 ? OK : result;
+}
+
+
+int HttpStreamParser::DoLoop(int result) {
+  do {
+    State state = io_state_;
+    io_state_ = STATE_NONE;
+    switch (state) {
+      case STATE_SEND_HEADERS:
+        // DCHECK_EQ(OK, result);
+        result = DoSendHeaders();
+        // DCHECK_NE(STATE_NONE, io_state_);
+        break;
+      case STATE_SEND_HEADERS_COMPLETE:
+        // result = DoSendHeadersComplete(result);
+        // DCHECK_NE(STATE_NONE, io_state_);
+        break;
+      case STATE_SEND_BODY:
+        // DCHECK_EQ(OK, result);
+        // result = DoSendBody();
+        // DCHECK_NE(STATE_NONE, io_state_);
+        break;
+      case STATE_SEND_BODY_COMPLETE:
+        // result = DoSendBodyComplete(result);
+        // DCHECK_NE(STATE_NONE, io_state_);
+        break;
+      case STATE_SEND_REQUEST_READ_BODY_COMPLETE:
+        // result = DoSendRequestReadBodyComplete(result);
+        // DCHECK_NE(STATE_NONE, io_state_);
+        break;
+      case STATE_SEND_REQUEST_COMPLETE:
+        // result = DoSendRequestComplete(result);
+        break;
+      case STATE_READ_HEADERS:
+        result = DoReadHeaders();
+        break;
+      case STATE_READ_HEADERS_COMPLETE:
+        // result = DoReadHeadersComplete(result);
+        break;
+      case STATE_READ_BODY:
+        // DCHECK_GE(result, 0);
+        result = DoReadBody();
+        break;
+      case STATE_READ_BODY_COMPLETE:
+        result = DoReadBodyComplete(result);
+        break;
+      default:
+        NOTREACHED();
+    }
+  } while (result != ERR_IO_PENDING &&
+           (io_state_ != STATE_DONE && io_state_ != STATE_NONE));
+
+  return result;
 }
 
 int HttpStreamParser::DoSendHeaders() {
   int bytes_remaining = request_headers_->BytesRemaining();
 
+  io_state_ = STATE_SEND_HEADERS_COMPLETE;
   // BrokeredTcpClientSocket::Write
   return stream_socket_->Write(
       request_headers_.get(), bytes_remaining, io_callback_);

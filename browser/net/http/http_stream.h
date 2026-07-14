@@ -17,8 +17,8 @@ public:
                                CompletionOnceCallback callback*/) = 0;
 
   virtual int SendRequest(const HttpRequestHeaders& headers/*,
-                  HttpResponseInfo* response,
-                  CompletionOnceCallback callback*/) = 0;
+                  HttpResponseInfo* response*/,
+                  CompletionOnceCallback callback) = 0;
   virtual int ReadResponseHeaders(CompletionOnceCallback callback) = 0;
   virtual int ReadResponseBody(IOBuffer* buf,
                                int buf_len,

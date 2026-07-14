@@ -40,6 +40,7 @@ void URLRequestHttpJob::StartTransaction() {
 }
 
 void URLRequestHttpJob::OnStartCompleted(int result) {
+  assert(false);
   // NetworkDelegate* network_delegate = request()->network_delegate();
   // if (network_delegate) {
   //  int error = network_delegate->NotifyHeadersReceived(

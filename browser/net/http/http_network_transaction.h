@@ -55,10 +55,13 @@ protected:
            int buf_len,
            CompletionOnceCallback callback) override;
 private:
-  void DoCreateStream();
-  void DoInitStream();
-  void DoBuildRequest();
-  void DoConnectedCallback();
+  int DoLoop(int result);
+
+  int DoCreateStream();
+  int DoCreateStreamComplete(int result);
+  int DoInitStream();
+  int DoBuildRequest();
+  int DoConnectedCallback();
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
   int DoSendRequest();
   int DoSendRequestComplete(int result);
@@ -90,6 +93,9 @@ private:
   // User buffer and length passed to the Read method.
   IOBuffer* read_buf_ = nullptr;
   int read_buf_len_ = 0;
+
+  // The next state in the state machine.
+  State next_state_ = STATE_NONE;
 };
 
 } // namespace net

@@ -12,12 +12,12 @@ HttpNetworkTransaction::HttpNetworkTransaction(HttpNetworkSession *session)
 int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info, CompletionOnceCallback callback) {
   request_ = request_info;
 
-  DoCreateStream();
-  // DoInitStream();
+  next_state_ = STATE_CREATE_STREAM;
+  int rv = DoLoop(OK);
+  if (rv == ERR_IO_PENDING)
+      callback_ = std::move(callback);
 
-  //  if (rv == ERR_IO_PENDING)
-  //   callback_ = std::move(callback);
-  return 0;
+  return rv;
 }
 
 // void HttpNetworkTransaction::SetRequestHeadersCallback(
@@ -26,9 +26,32 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info, Completio
 //   request_headers_callback_ = std::move(callback);
 // }
 
-void HttpNetworkTransaction::DoCreateStream() {
+int HttpNetworkTransaction::DoCreateStream() {
+  next_state_ = STATE_CREATE_STREAM_COMPLETE;
   stream_request_ = m_session->http_stream_factory()->RequestStream(
       *request_, static_cast<HttpStreamRequest::Delegate *>(this));
+
+  return ERR_IO_PENDING;
+}
+
+int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
+  if (result == OK) {
+    next_state_ = STATE_CONNECTED_CALLBACK;
+    DCHECK(stream_.get());
+  // } else if (result == ERR_HTTP_1_1_REQUIRED ||
+  //            result == ERR_PROXY_HTTP_1_1_REQUIRED) {
+  //   return HandleHttp11Required(result);
+  // } else {
+  //   // Handle possible client certificate errors that may have occurred if the
+  //   // stream used SSL for one or more of the layers.
+  //   result = HandleSSLClientAuthError(result);
+  } else {
+    assert(false);
+  }
+
+  // At this point we are done with the stream_request_.
+  stream_request_.reset();
+  return result;
 }
 
 //
@@ -40,15 +63,19 @@ void HttpNetworkTransaction::DoCreateStream() {
 //  	net.dll!net::HttpStreamFactory::JobController::OnStreamReady	C++
 //  	net.dll!net::HttpStreamFactory::Job::OnStreamReadyCallback	C++
 //
-void HttpNetworkTransaction::DoInitStream() {
+int HttpNetworkTransaction::DoInitStream() {
+  next_state_ = STATE_INIT_STREAM_COMPLETE;
+
   // stream_request_->InitializeStream();
-  stream_->InitializeStream();
+  int rv = stream_->InitializeStream();
+  return rv;
 }
 
 void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
                                            std::unique_ptr<HttpStream> stream) {
   stream_ = std::move(stream);
-
+  OnIOComplete(OK);
+#if 0
   // stream_->SetRequestHeadersCallback(request_headers_callback_);
   // proxy_info_ = used_proxy_info;
 
@@ -60,33 +87,26 @@ void HttpNetworkTransaction::OnStreamReady(/*const ProxyInfo& used_proxy_info,*/
   //     URLRequest::NotifyConnected
   //     URLRequestHttpJob::NotifyConnectedCallback
   // return connected_callback_.Run();
-
-
-  // DoConnectedCallbackComplete();
-
-  DoInitStream();
-  // DoInitStreamComplete();
-  // DoGenerateProxyAuthToken();
-  // DoGenerateProxyAuthTokenComplete();
-  // DoGenerateServerAuthToken();
-  // DoGenerateServerAuthTokenComplete();
-  // DoInitRequestBody(); // upload_data_stream
-  // DoInitRequestBodyComplete();
-  DoBuildRequest();
-  // DoBuildRequestComplete();
-  int result = DoSendRequest();
-  DoSendRequestComplete(result);
- 
-  result = DoReadHeaders();
-  DoReadHeadersComplete(result);
+#endif
 }
 
-void HttpNetworkTransaction::DoConnectedCallback() {
+void HttpNetworkTransaction::OnIOComplete(int result) {
+    int rv = DoLoop(result);
+    if (rv != ERR_IO_PENDING)
+        DoCallback(rv);
+}
+
+int HttpNetworkTransaction::DoConnectedCallback() {
   stream_->RegisterRequest(request_);
+  next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
+
+  return OK;
 }
 
-void HttpNetworkTransaction::DoBuildRequest() {
-  BuildRequestHeaders(false);
+int HttpNetworkTransaction::DoBuildRequest() {
+  next_state_ = STATE_BUILD_REQUEST_COMPLETE;
+
+  return BuildRequestHeaders(false);
 }
 
 int HttpNetworkTransaction::BuildRequestHeaders(
@@ -152,7 +172,7 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 
 int HttpNetworkTransaction::DoSendRequest() {
   // stream_->SetRequestIdempotency(request_->idempotency);
-  return stream_->SendRequest(request_headers_/*, &response_, io_callback_*/);
+  return stream_->SendRequest(request_headers_/*, &response_*/, io_callback_);
 }
 
 int HttpNetworkTransaction::DoSendRequestComplete(int result) {
@@ -161,7 +181,7 @@ int HttpNetworkTransaction::DoSendRequestComplete(int result) {
 }
 
 int HttpNetworkTransaction::DoReadHeaders() {
-  // next_state_ = STATE_READ_HEADERS_COMPLETE;
+  next_state_ = STATE_READ_HEADERS_COMPLETE;
   return stream_->ReadResponseHeaders(io_callback_);
 }
 
@@ -190,28 +210,81 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   return 0;
 }
 
-void HttpNetworkTransaction::OnIOComplete(int result){
-  // HttpCache::Transaction::OnIOComplete
-  // std::move(callback_)(result);
+int HttpNetworkTransaction::DoLoop(int result) {
 
-  // int rv = DoLoop(result);
-  // if (rv != ERR_IO_PENDING)
-    DoCallback(result);
+  int rv = result;
+  do {
+    State state = next_state_;
+    next_state_ = STATE_NONE;
+    switch (state) {
+    case STATE_CREATE_STREAM:
+      DCHECK_EQ(OK, rv);
+      rv = DoCreateStream();
+      break;
+    case STATE_CREATE_STREAM_COMPLETE:
+      rv = DoCreateStreamComplete(rv);
+      break;
+    case STATE_CONNECTED_CALLBACK:
+      rv = DoConnectedCallback();
+      break;
+    case STATE_CONNECTED_CALLBACK_COMPLETE:
+      next_state_ = STATE_INIT_STREAM;
+      rv = OK;
+      break;
+    case STATE_INIT_STREAM:
+      rv = DoInitStream();
+      break;
+    case STATE_INIT_STREAM_COMPLETE:
+      // next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
+      next_state_ = STATE_BUILD_REQUEST;
+      break;
+    case STATE_BUILD_REQUEST:
+      rv = DoBuildRequest();
+      break;
+    case STATE_BUILD_REQUEST_COMPLETE:
+      next_state_ = STATE_SEND_REQUEST;
+      break;
+
+    case STATE_SEND_REQUEST:
+      DCHECK_EQ(OK, rv);
+      rv = DoSendRequest();
+      break;
+    case STATE_SEND_REQUEST_COMPLETE:
+      rv = DoSendRequestComplete(rv);
+      break;
+
+    case STATE_READ_HEADERS:
+      DCHECK_EQ(OK, rv);
+      rv = DoReadHeaders();
+      break;
+    case STATE_READ_HEADERS_COMPLETE:
+      rv = DoReadHeadersComplete(rv);
+      break;
+    case STATE_READ_BODY:
+      DCHECK_EQ(OK, rv);
+      rv = DoReadBody();
+      break;
+    case STATE_READ_BODY_COMPLETE:
+      rv = DoReadBodyComplete(rv);
+      break;
+    }
+  } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
+  return rv;
 }
 
 int HttpNetworkTransaction::Read(IOBuffer *buf, int buf_len,
                                  CompletionOnceCallback callback) {
+  next_state_ = STATE_READ_BODY;
+
   read_buf_ = buf;
   read_buf_len_ = buf_len;
 
-  int result = DoReadBody();
-  if (result == ERR_IO_PENDING) {
+  int rv = DoLoop(OK);
+  if (rv == ERR_IO_PENDING)
     callback_ = std::move(callback);
-    return result;
-  }
-
-  return DoReadBodyComplete(result);
+  return rv;
 }
+
 
 int HttpNetworkTransaction::DoReadBody() {
   return stream_->ReadResponseBody(

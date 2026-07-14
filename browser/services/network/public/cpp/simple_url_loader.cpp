@@ -1,5 +1,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
+
 #include <memory>
+#include <span>
+#include "net/base/net_errors.h"
 
 namespace network {
 
@@ -13,6 +16,48 @@ SimpleURLLoader::SimpleURLLoader(std::unique_ptr<ResourceRequest> resource_reque
   : m_resource_request(std::move(resource_request))
 {
 
+}
+
+class BodyReader {
+ public:
+  class Delegate {
+   public:
+    Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    virtual net::Error OnDataRead(std::span<const uint8_t> data) = 0;
+    virtual void OnDone(net::Error error, int64_t total_bytes) = 0;
+   protected:
+    virtual ~Delegate() = default;
+  };
+};
+
+// BodyHandler implementation for consuming the response as a string.
+class SaveToStringBodyHandler : public BodyHandler,
+                                public BodyReader::Delegate {
+public:
+  SaveToStringBodyHandler(
+      SimpleURLLoader *simple_url_loader, bool want_download_progress,
+      SimpleURLLoader::BodyAsStringCallback body_as_string_callback,
+      int64_t max_body_size)
+      : BodyHandler(simple_url_loader, want_download_progress),
+        max_body_size_(max_body_size),
+        body_as_string_callback_(std::move(body_as_string_callback)) {}
+
+private:
+  const int64_t max_body_size_;
+
+  std::optional<std::string> body_;
+  SimpleURLLoader::BodyAsStringCallback body_as_string_callback_;
+};
+
+void SimpleURLLoader::DownloadToString(
+    mojom::URLLoaderFactory *url_loader_factory,
+    BodyAsStringCallback body_as_string_callback, size_t max_body_size) {
+  // body_handler_ = std::make_unique<SaveToStringBodyHandler>(
+  //     this, false, std::move(body_as_string_callback), max_body_size);
+  // Start(url_loader_factory);
 }
 
 void SimpleURLLoader::Start(mojom::URLLoaderFactory* url_loader_factory) {

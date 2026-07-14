@@ -23,8 +23,8 @@ public:
   int SendRequest(const std::string& request_line,
                   const HttpRequestHeaders& headers/*,
                   const NetworkTrafficAnnotationTag& traffic_annotation,
-                  HttpResponseInfo* response,
-                  CompletionOnceCallback callback*/);
+                  HttpResponseInfo* response*/,
+                  CompletionOnceCallback callback);
 
   int ReadResponseHeaders(CompletionOnceCallback callback);
   int ReadResponseBody(IOBuffer* buf,
@@ -32,6 +32,24 @@ public:
                        CompletionOnceCallback callback);
                        
 private:
+  enum State {
+    // STATE_NONE indicates that this is waiting on an external call before
+    // continuing.
+    STATE_NONE,
+    STATE_SEND_HEADERS,
+    STATE_SEND_HEADERS_COMPLETE,
+    STATE_SEND_BODY,
+    STATE_SEND_BODY_COMPLETE,
+    STATE_SEND_REQUEST_READ_BODY_COMPLETE,
+    STATE_SEND_REQUEST_COMPLETE,
+    STATE_READ_HEADERS,
+    STATE_READ_HEADERS_COMPLETE,
+    STATE_READ_BODY,
+    STATE_READ_BODY_COMPLETE,
+    STATE_DONE
+  };
+  int DoLoop(int result);
+
   int DoSendHeaders();
   int DoReadHeaders();
   int DoReadBody();
@@ -43,6 +61,9 @@ private:
   bool IsResponseBodyComplete() const;
 
 private:
+  // Next state of the request, when the current one completes.
+  State io_state_ = STATE_NONE;
+
   StreamSocket* stream_socket_ = nullptr;
 
   const GURL url_;
