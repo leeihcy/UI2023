@@ -8,6 +8,7 @@
 namespace net {
 struct HttpRequestInfo;
 class IOBuffer;
+struct TransportInfo;
 
 /*
 在 Chromium 的网络栈中，HttpTransaction
@@ -21,7 +22,11 @@ public:
                     CompletionOnceCallback callback) = 0;
   virtual int Read(IOBuffer *buf, int buf_len,
                    CompletionOnceCallback callback) = 0;
-  virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) = 0;
+
+  using ConnectedCallback = std::function<int(const TransportInfo &info)>;
+  virtual void SetConnectedCallback(const ConnectedCallback& callback) {};
+  // virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) {};
+  virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) {};
 };
 
 } // namespace net

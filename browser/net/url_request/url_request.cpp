@@ -5,8 +5,8 @@
 
 namespace net {
 
-URLRequest::URLRequest(const GURL &url, const URLRequestContext *context)
-    : url_chain_(1, url), m_context(context), method_("GET") {}
+URLRequest::URLRequest(const GURL &url, Delegate* delegate, const URLRequestContext *context)
+    : url_chain_(1, url), delegate_(delegate), m_context(context), method_("GET") {}
 
 void URLRequest::set_method(std::string_view method) {
   // DCHECK(!is_pending_);
@@ -28,5 +28,12 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
 
   job_->Start();
 }
+
+
+int URLRequest::NotifyConnected(const TransportInfo& info) {
+  int result = delegate_->OnConnected(this, info);
+  return result;
+}
+
 
 }

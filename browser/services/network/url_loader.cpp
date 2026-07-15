@@ -6,12 +6,16 @@
 namespace network {
 
 URLLoader::URLLoader(URLLoaderContext& context, const ResourceRequest& request) {
-  url_request_ = context.GetUrlRequestContext()->CreateRequest(request.url);
+  url_request_ = context.GetUrlRequestContext()->CreateRequest(request.url, this);
   ScheduleStart();
 }
 
 void URLLoader::ScheduleStart() {
   url_request_->Start();
+}
+
+int URLLoader::OnConnected(net::URLRequest *request, const net::TransportInfo &info) {
+  return 0;
 }
 
 }

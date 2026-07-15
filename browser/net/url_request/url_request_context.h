@@ -13,7 +13,7 @@ class URLRequestContext {
 public:
   URLRequestContext();
 
-  std::unique_ptr<URLRequest> CreateRequest(GURL url);
+  std::unique_ptr<URLRequest> CreateRequest(GURL url, URLRequest::Delegate* delegate);
 
   const URLRequestJobFactory* job_factory() const { return m_job_factory.get(); }
 

@@ -25,7 +25,8 @@ private:
   void StartTransaction();
 
   void OnStartCompleted(int result);
-  
+  int NotifyConnectedCallback(const TransportInfo& info);
+
 private:
    std::unique_ptr<HttpTransaction> m_transaction;
    HttpRequestInfo request_info_;

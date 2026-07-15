@@ -26,8 +26,8 @@ class BodyReader {
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
-    virtual net::Error OnDataRead(std::span<const uint8_t> data) = 0;
-    virtual void OnDone(net::Error error, int64_t total_bytes) = 0;
+    virtual net::Error OnDataRead(std::span<const uint8_t> data) { return net::OK; }
+    virtual void OnDone(net::Error error, int64_t total_bytes) { }
    protected:
     virtual ~Delegate() = default;
   };
@@ -55,9 +55,9 @@ private:
 void SimpleURLLoader::DownloadToString(
     mojom::URLLoaderFactory *url_loader_factory,
     BodyAsStringCallback body_as_string_callback, size_t max_body_size) {
-  // body_handler_ = std::make_unique<SaveToStringBodyHandler>(
-  //     this, false, std::move(body_as_string_callback), max_body_size);
-  // Start(url_loader_factory);
+  body_handler_ = std::make_unique<SaveToStringBodyHandler>(
+      this, false, std::move(body_as_string_callback), max_body_size);
+  Start(url_loader_factory);
 }
 
 void SimpleURLLoader::Start(mojom::URLLoaderFactory* url_loader_factory) {

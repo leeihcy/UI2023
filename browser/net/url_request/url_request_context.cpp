@@ -23,8 +23,8 @@ URLRequestContext::URLRequestContext() {
   // context->set_client_socket_factory(std::move(client_socket_factory));
 }
 
-std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(GURL url) {
-  return std::make_unique<URLRequest>(url, this);
+std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(GURL url, URLRequest::Delegate* delegate) {
+  return std::make_unique<URLRequest>(url, delegate, this);
 }
 
 }

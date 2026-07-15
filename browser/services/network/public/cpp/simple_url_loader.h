@@ -24,10 +24,9 @@ class BodyHandler {
   virtual ~BodyHandler() = default;
 
   virtual bool RequiresBodyDataPipe() { return true; }
-  // virtual void OnStartLoadingResponseBody(
-  //     mojo::ScopedDataPipeConsumerHandle body_data_pipe) = 0;
-  virtual void NotifyConsumerOfCompletion(bool destroy_results) = 0;
-  // virtual void PrepareToRetry(base::OnceClosure retry_callback) = 0;
+  virtual void OnStartLoadingResponseBody(/*mojo::ScopedDataPipeConsumerHandle body_data_pipe*/) { }
+  virtual void NotifyConsumerOfCompletion(bool destroy_results) { }
+  // virtual void PrepareToRetry(base::OnceClosure retry_callback) { }
 
  protected:
   const SimpleURLLoader* simple_url_loader() { return simple_url_loader_; }

@@ -32,11 +32,20 @@ void URLRequestHttpJob::StartTransaction() {
   m_transaction =
       request_->context()->http_transaction_factory()->CreateTransaction();
 
+  m_transaction->SetConnectedCallback(
+      std::bind(&URLRequestHttpJob::NotifyConnectedCallback, this,
+                std::placeholders::_1));
+  // m_transaction->SetRequestHeadersCallback(request_headers_callback_);
+  // m_transaction->SetEarlyResponseHeadersCallback(early_response_headers_callback_);
   m_transaction->SetResponseHeadersCallback(response_headers_callback_);
 
   m_transaction->Start(&request_info_,
                        std::bind(&URLRequestHttpJob::OnStartCompleted, this,
                                  std::placeholders::_1));
+}
+
+int URLRequestHttpJob::NotifyConnectedCallback(const TransportInfo& info) {
+  return URLRequestJob::NotifyConnected(info/*, std::move(callback)*/);
 }
 
 void URLRequestHttpJob::OnStartCompleted(int result) {

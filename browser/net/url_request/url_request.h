@@ -12,7 +12,12 @@ class URLRequestContext;
 
 class URLRequest {
 public:
-  URLRequest(const GURL& url, const URLRequestContext* context);
+  class Delegate {
+  public:
+    virtual int OnConnected(URLRequest *request, const TransportInfo &info) = 0;
+  };
+
+  URLRequest(const GURL& url, Delegate* delegate, const URLRequestContext* context);
 
   // The original URL is the URL used to initialize the request, and it may
   // differ from the URL if the request was redirected.
@@ -41,12 +46,17 @@ public:
   // called with a response from the server.
   void SetResponseHeadersCallback(ResponseHeadersCallback callback);
 
+
+public:
+   int NotifyConnected(const TransportInfo& info);
+
 private:
   const URLRequestContext* m_context;
   std::vector<GURL> url_chain_;
 
   std::string method_;  // "GET", "POST", etc. Case-sensitive.
 
+  Delegate* delegate_;
   ResponseHeadersCallback response_headers_callback_;
 
   std::unique_ptr<URLRequestJob> job_;

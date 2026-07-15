@@ -3,15 +3,19 @@
 
 #include <memory>
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request.h"
 
 namespace network {
 class URLLoaderContext;
 class ResourceRequest;
 
-class URLLoader {
+class URLLoader : public net::URLRequest::Delegate {
 public:
   URLLoader(URLLoaderContext& context, const ResourceRequest& request);
   void ScheduleStart();
+
+  // net::URLRequest::Delegate
+  int OnConnected(net::URLRequest *request, const net::TransportInfo &info) override;
 
 private:
    std::unique_ptr<net::URLRequest> url_request_;
