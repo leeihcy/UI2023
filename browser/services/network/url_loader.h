@@ -20,6 +20,7 @@ public:
   // net::URLRequest::Delegate
   int OnConnected(net::URLRequest *request, const net::TransportInfo &info) override;
   void OnResponseStarted(net::URLRequest* request, int net_error) override;
+  void OnReadCompleted(net::URLRequest* request, int bytes_read) override;
 
 private:
   void StartReading();
@@ -27,6 +28,9 @@ private:
   void DidRead(int num_bytes, bool completed_synchronously,
                bool into_slop_bucket);
   void SendResponseToClient();
+  void NotifyCompleted(int error_code);
+
+  void DeleteSelf();
 
 private:
    std::unique_ptr<net::URLRequest> url_request_;

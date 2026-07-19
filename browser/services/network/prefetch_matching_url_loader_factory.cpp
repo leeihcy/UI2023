@@ -13,7 +13,7 @@ void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(ResourceRequest& req
   // TODO: cache
   
   // 2. 没有缓存时重新请示
-  next_->CreateLoaderAndStart(request);
+  next_->CreateLoaderAndStart(request, client);
 }
 
 }

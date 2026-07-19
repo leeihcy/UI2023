@@ -8,6 +8,7 @@
 
 namespace network {
 class NetworkContext;
+class CorsURLLoader;
 }
 
 namespace network::cors {
@@ -16,19 +17,26 @@ class CorsURLLoaderFactory {
   CorsURLLoaderFactory(network::NetworkContext* context);
   ~CorsURLLoaderFactory();
 
-  void CreateLoaderAndStart(ResourceRequest& request);
+  void CreateLoaderAndStart(ResourceRequest& request, mojom::URLLoaderClient* client);
 
   // Methods for use by network::URLLoaderFactory.
   void OnURLLoaderCreated(std::unique_ptr<URLLoader> loader);
 
- private:
+private:
+  void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
+  void DestroyLoader(URLLoader* loader);
+  void DestroyLoader(CorsURLLoader* loader);
+private:
   // 禁止拷贝
   CorsURLLoaderFactory(const CorsURLLoaderFactory&) = delete;
   CorsURLLoaderFactory& operator=(const CorsURLLoaderFactory&) = delete;
 
   std::set<std::unique_ptr<URLLoader>> url_loaders_;
+  std::set<std::unique_ptr<CorsURLLoader>> cors_url_loaders_;
 
   std::unique_ptr<network::URLLoaderFactory> m_network_loader_factory;
+
+  
 };
 
 }  // namespace network::cors

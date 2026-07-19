@@ -53,7 +53,35 @@ void URLLoader::ReadMore() {
 void URLLoader::DidRead(int num_bytes,
                         bool completed_synchronously,
                         bool into_slop_bucket) {
-  SendResponseToClient();
+  // SendResponseToClient();
+  if (num_bytes <= 0) {
+    if (!into_slop_bucket) {
+      NotifyCompleted(num_bytes);
+      // |this| will have been deleted.
+    }
+    return;
+  }
+
+  if (completed_synchronously) {
+    // ReadMoreAsync();
+    assert(false);
+  } else {
+    ReadMore();
+  }
+}
+
+/*
+>	services_network_network_service.dll!network::URLLoader::NotifyCompleted	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::ReadMore	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::OnReadCompleted	C++
+ 	net.dll!net::URLRequest::NotifyReadCompleted	C++
+ 	net.dll!net::URLRequestJob::SourceStreamReadComplete	C++
+*/
+void URLLoader::OnReadCompleted(net::URLRequest* request, int bytes_read) {
+  bool into_slop_bucket = false;
+  DidRead(bytes_read, /*completed_synchronously=*/false, into_slop_bucket);
 }
 
 void URLLoader::SendResponseToClient() {
@@ -61,6 +89,19 @@ void URLLoader::SendResponseToClient() {
 
   url_loader_client_->OnReceiveResponse(nullptr/*
       response_->Clone(), std::move(consumer_handle_), std::nullopt*/);
+}
+
+void URLLoader::NotifyCompleted(int error_code) {
+  URLLoaderCompletionStatus status;
+  status.error_code = error_code;
+  url_loader_client_->OnComplete(status);
+
+  DeleteSelf();
+}
+
+void URLLoader::DeleteSelf() {
+  // void CorsURLLoaderFactory::DestroyURLLoader(URLLoader* loader) {
+  // std::move(delete_callback_).Run(this);
 }
 
 }

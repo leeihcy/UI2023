@@ -81,5 +81,9 @@ void SimpleURLLoader::OnReceiveResponse(
       std::optional<::mojo_base::BigBuffer> cached_metadata*/) {
   assert(false);
 }
+void SimpleURLLoader::OnComplete(const ::network::URLLoaderCompletionStatus& status) {
+  assert(false);
+}
+
 
 } // namespace network

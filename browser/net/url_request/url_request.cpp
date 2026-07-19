@@ -54,4 +54,8 @@ int URLRequest::Read(IOBuffer* dest, int dest_size) {
   return rv;
 }
 
+void URLRequest::NotifyReadCompleted(int result) {
+  delegate_->OnReadCompleted(this, result);
+}
+
 }

@@ -61,10 +61,12 @@ public:
                         size_t max_body_size);
 
   // mojom::URLLoaderClient
-  virtual void OnReceiveResponse(
+  void OnReceiveResponse(
       ::network::mojom::URLResponseHead* head/*, 
       ::mojo::ScopedDataPipeConsumerHandle body, 
       std::optional<::mojo_base::BigBuffer> cached_metadata*/) override;
+
+  void OnComplete(const ::network::URLLoaderCompletionStatus& status) override;
 
 private:
   void Start(mojom::URLLoaderFactory* url_loader_factory);

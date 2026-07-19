@@ -19,6 +19,8 @@ public:
     
     // 调用 Start() 后，将触发这个回调。
     virtual void OnResponseStarted(URLRequest* request, int net_error) = 0;
+
+    virtual void OnReadCompleted(URLRequest* request, int bytes_read) = 0;
   };
 
   URLRequest(const GURL& url, Delegate* delegate, const URLRequestContext* context);
@@ -58,6 +60,7 @@ public:
   // Called by URLRequestJob to allow interception when the final response
   // occurs.
   void NotifyResponseStarted(int net_error);
+  void NotifyReadCompleted(int result);
 
 private:
   const URLRequestContext* m_context;

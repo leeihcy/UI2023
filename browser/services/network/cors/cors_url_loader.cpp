@@ -55,8 +55,10 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
 }
 
 CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
+                             mojom::URLLoaderClient *client,
                              URLLoaderFactory *factory)
-    : request_(resource_request), m_network_loader_factory(factory) {
+    : request_(resource_request), m_network_loader_factory(factory),
+      forwarding_client_(std::move(client)) {
   SetCorsFlagIfNeeded();
 }
 
@@ -186,11 +188,33 @@ void CorsURLLoader::OnReceiveResponse(
   }
 }
 
+/*
+>	services_network_network_service.dll!network::cors::CorsURLLoader::HandleComplete	C++
+ 	services_network_network_service.dll!network::cors::CorsURLLoader::OnComplete	C++
+ 	services_network_network_service.dll!network::URLLoader::NotifyCompleted	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::ReadMore	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::OnReadCompleted	C++
+ 	net.dll!net::URLRequest::NotifyReadCompleted	C++
+ 	net.dll!net::URLRequestJob::SourceStreamReadComplete	C++
+*/
+void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
+  HandleComplete(status);
+}
+
 void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   // 跨域错误，上报给控制台。
   // if (devtools_observer_ && status.cors_error_status) {
   //   ReportCorsErrorToDevTools(*status.cors_error_status);
   // }
+
+  // URLLoaderClientProxy::OnComplete
+  forwarding_client_->OnComplete(std::move(status));
+
+  // void CorsURLLoaderFactory::DestroyCorsURLLoader(CorsURLLoader* loader) 
+  // std::move(delete_callback_).Run(this);
+  // |this| is deleted here.
 }
 
 }

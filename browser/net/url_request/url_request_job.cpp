@@ -42,8 +42,17 @@ void URLRequestJob::ReadRawDataComplete(int result) {
   SourceStreamReadComplete(false, result);
 }
 
+/*
+>	services_network_network_service.dll!network::URLLoader::NotifyCompleted	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::ReadMore	C++
+ 	services_network_network_service.dll!network::URLLoader::DidRead	C++
+ 	services_network_network_service.dll!network::URLLoader::OnReadCompleted	C++
+ 	net.dll!net::URLRequest::NotifyReadCompleted	C++
+ 	net.dll!net::URLRequestJob::SourceStreamReadComplete	C++
+*/
 void URLRequestJob::SourceStreamReadComplete(bool synchronous, int result) {
-  OnDone(OK, false /* notify_done */);
+  request_->NotifyReadCompleted(result);
 }
 
 void URLRequestJob::OnDone(int net_error, bool notify_done) {
