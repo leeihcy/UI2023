@@ -11,15 +11,17 @@ class IOBuffer;
 struct TransportInfo;
 
 /*
-在 Chromium 的网络栈中，HttpTransaction
-接口及其实现扮演着单一HTTP请求/响应交互的总控制器角色。它位于网络请求处理流程的中间层，对上层的
-URLRequest
-屏蔽了底层网络通信、缓存、认证等复杂细节，对下层则负责协调和管理一个完整HTTP事务的整个生命周期。
+有两个实现类：
+HttpCache::Transaction
+HttpNetworkTransaction
+其中HttpCache::Transaction在没有cache时，会wrap HttpNetworkTransaction进行调用。
 */
 class HttpTransaction {
 public:
+  // Start负责 连接+发送+读取Response Header
   virtual int Start(const HttpRequestInfo *request_info,
                     CompletionOnceCallback callback) = 0;
+  // Read负责继续读取Response Body
   virtual int Read(IOBuffer *buf, int buf_len,
                    CompletionOnceCallback callback) = 0;
 

@@ -20,12 +20,17 @@ public:
 
   void Start() override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
+  int ReadRawData(IOBuffer* buf, int buf_size) override;
 
 private:
   void StartTransaction();
 
   void OnStartCompleted(int result);
+  void OnReadCompleted(int result);
+
   int NotifyConnectedCallback(const TransportInfo& info);
+  void SaveCookiesAndNotifyHeadersComplete(int result);
+  void NotifyHeadersComplete();
 
 private:
    std::unique_ptr<HttpTransaction> m_transaction;

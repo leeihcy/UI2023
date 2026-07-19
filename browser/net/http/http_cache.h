@@ -9,10 +9,14 @@ public:
   class Transaction : public HttpTransaction {
   public:
     Transaction(HttpCache* cache);
+
+    // Start负责 连接+发送+读取Response Header
     int Start(const HttpRequestInfo *request_info,
               CompletionOnceCallback callback) override;
+    // Read负责继续读取Response Body
     int Read(IOBuffer *buf, int buf_len,
              CompletionOnceCallback callback) override;
+
     void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
 
   private:
@@ -90,10 +94,12 @@ public:
     const HttpRequestInfo* initial_request_ = nullptr;
     const HttpRequestInfo* request_ = nullptr;
 
+    // 往上层的回调，例如上层调用 Start/Read 时传回来的回调函数。
     CompletionOnceCallback callback_;  // Consumer's callback.
+    // 给下层的回调，下层完成后通知本层继续 DoLoop()
+    CompletionRepeatingCallback io_callback_;
 
     ResponseHeadersCallback response_headers_callback_;
-    CompletionRepeatingCallback io_callback_;
 
     std::unique_ptr<HttpTransaction> m_network_trans;
   };

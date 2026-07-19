@@ -405,6 +405,7 @@ int TCPSocketDefaultWin::Read(IOBuffer* buf,
       std::bind(&TCPSocketDefaultWin::RetryRead, this, std::placeholders::_1));
   if (rv != ERR_IO_PENDING)
     return rv;
+  // assert(core.read_iobuffer_ == nullptr);
   read_callback_ = std::move(callback);
   core.read_iobuffer_ = buf;
   core.read_buffer_length_ = buf_len;
@@ -441,6 +442,7 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
 
 void TCPSocketDefaultWin::RetryRead(int rv) {
   CoreImpl& core = GetCoreImpl();
+  assert(core.read_iobuffer_);
 
   if (rv == OK) {
     // base::Unretained() is safe because RetryRead() won't be called when

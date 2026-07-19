@@ -8,7 +8,7 @@ PrefetchMatchingURLLoaderFactory::PrefetchMatchingURLLoaderFactory(NetworkContex
 
 PrefetchMatchingURLLoaderFactory::~PrefetchMatchingURLLoaderFactory() = default;
 
-void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(ResourceRequest& request) {
+void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(ResourceRequest& request, mojom::URLLoaderClient *client) {
   // 1. 检查这个请示是否有缓存
   // TODO: cache
   

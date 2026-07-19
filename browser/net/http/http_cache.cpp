@@ -73,8 +73,9 @@ int HttpCache::Transaction::DoLoop(int result) {
         next_state_ = STATE_FINISH_HEADERS_COMPLETE;
         break;
     case STATE_FINISH_HEADERS_COMPLETE:
-        //rv = DoFinishHeadersComplete(rv);
-        // next_state_ = STATE_NETWORK_READ;
+        // rv = DoFinishHeadersComplete(rv);
+        // 接下来回调上层Start时传进来的callback，让上层继续调用Read流程。
+        rv = net::OK;
         next_state_ = STATE_NONE;
         break;
     case STATE_NETWORK_READ:
@@ -87,10 +88,11 @@ int HttpCache::Transaction::DoLoop(int result) {
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
 
-  // if (rv != ERR_IO_PENDING && !callback_.is_null()) {
-  //     read_buf_ = nullptr;  // Release the buffer before invoking the
-  //     callback. std::move(callback_).Run(rv); callback_ = nullptr;
-  // }
+  // 在STATE_FINISH_HEADERS_COMPLETE时，往上层回调
+  if (rv != ERR_IO_PENDING && callback_) {
+      // read_buf_ = nullptr;  // Release the buffer before invoking the
+      callback_(rv); callback_ = nullptr;
+  }
   return rv;
 }
 
@@ -116,6 +118,26 @@ int HttpCache::Transaction::DoNetworkRead() {
     // return m_network_trans->Read(read_buf_.get(), read_buf_len_, io_callback_);
 }
 
+
+/*
+>	net.dll!net::HttpCache::Transaction::Read	C++
+ 	net.dll!net::URLRequestHttpJob::ReadRawData	C++
+ 	net.dll!net::URLRequestJob::ReadRawDataHelper	C++
+ 	net.dll!net::URLRequestJob::URLRequestJobSourceStream::Read	C++
+ 	net.dll!net::URLRequestJob::Read	C++
+ 	net.dll!net::URLRequest::Read	C++
+ 	services_network_network_service.dll!network::URLLoader::ReadMore	C++
+ 	services_network_network_service.dll!network::URLLoader::StartReading	C++
+ 	services_network_network_service.dll!network::URLLoader::ContinueOnResponseStarted	C++
+ 	services_network_network_service.dll!network::URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted	C++
+ 	services_network_network_service.dll!network::URLLoader::OnResponseStarted	C++
+ 	net.dll!net::URLRequest::NotifyResponseStarted	C++
+ 	net.dll!net::URLRequestJob::NotifyFinalHeadersReceived	C++
+ 	net.dll!net::URLRequestJob::NotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::NotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::OnStartCompleted	C++
+*/
 int HttpCache::Transaction::Read(IOBuffer* buf,
                                  int buf_len,
                                  CompletionOnceCallback callback) {

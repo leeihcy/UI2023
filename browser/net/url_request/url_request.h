@@ -8,6 +8,7 @@
 #include "net/url_request/url_request_job.h"
 
 namespace net {
+class IOBuffer;
 class URLRequestContext;
 
 class URLRequest {
@@ -15,6 +16,9 @@ public:
   class Delegate {
   public:
     virtual int OnConnected(URLRequest *request, const TransportInfo &info) = 0;
+    
+    // 调用 Start() 后，将触发这个回调。
+    virtual void OnResponseStarted(URLRequest* request, int net_error) = 0;
   };
 
   URLRequest(const GURL& url, Delegate* delegate, const URLRequestContext* context);
@@ -39,6 +43,8 @@ public:
   void Start();
   void StartJob(std::unique_ptr<URLRequestJob> job);
   
+  int Read(IOBuffer* buf, int max_bytes);
+
   // Sets a callback that will be invoked each time the response is received
   // from the remote party with the actual response headers received. Note this
   // is different from response_headers() getter in that in case of revalidation
@@ -49,6 +55,9 @@ public:
 
 public:
    int NotifyConnected(const TransportInfo& info);
+  // Called by URLRequestJob to allow interception when the final response
+  // occurs.
+  void NotifyResponseStarted(int net_error);
 
 private:
   const URLRequestContext* m_context;

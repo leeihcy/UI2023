@@ -22,13 +22,15 @@ net::URLRequestContext* URLLoaderFactory::GetUrlRequestContext() const {
   return m_network_context->url_request_context();
 }
 
-void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request) {
-  auto loader = std::make_unique<URLLoader>(*this, resource_request);
+void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
+  ResourceRequest& resource_request, mojom::URLLoaderClient* client) {
+  auto loader = std::make_unique<URLLoader>(*this, resource_request, client);
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 
-void URLLoaderFactory::CreateLoaderAndStart(ResourceRequest& resource_request) {
-    CreateLoaderAndStartWithSyncClient(resource_request);
+void URLLoaderFactory::CreateLoaderAndStart(ResourceRequest &resource_request,
+                                            mojom::URLLoaderClient *client) {
+  CreateLoaderAndStartWithSyncClient(resource_request, client);
 }
 
-}
+} // namespace network

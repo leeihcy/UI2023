@@ -45,7 +45,7 @@ class BodyHandler {
 //
 // 对外使用接口，不要直接调用UrlLoader。
 //
-class SimpleURLLoader {
+class SimpleURLLoader : public mojom::URLLoaderClient {
 public:
   using BodyAsStringCallback =
       std::function<void(std::optional<std::string> response_body)>;
@@ -59,6 +59,13 @@ public:
   void DownloadToString(mojom::URLLoaderFactory *url_loader_factory,
                         BodyAsStringCallback body_as_string_callback,
                         size_t max_body_size);
+
+  // mojom::URLLoaderClient
+  virtual void OnReceiveResponse(
+      ::network::mojom::URLResponseHead* head/*, 
+      ::mojo::ScopedDataPipeConsumerHandle body, 
+      std::optional<::mojo_base::BigBuffer> cached_metadata*/) override;
+
 private:
   void Start(mojom::URLLoaderFactory* url_loader_factory);
   void StartRequest(mojom::URLLoaderFactory* url_loader_factory);

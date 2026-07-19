@@ -115,7 +115,14 @@ int HttpStreamParser::DoSendHeaders() {
 
 // Handle callbacks.
 void HttpStreamParser::OnIOComplete(int result) {
-  assert(false);
+  result = DoLoop(result);
+
+  // The client callback can do anything, including destroying this class,
+  // so any pending callback must be issued after everything else is done.
+  if (result != ERR_IO_PENDING && callback_) {
+    callback_(result);
+    callback_ = nullptr;
+  }
 }
 
 int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
@@ -151,20 +158,18 @@ int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
 
   user_read_buf_ = buf;
   user_read_buf_len_ = size_t(buf_len);
-  // io_state_ = STATE_READ_BODY;
+  io_state_ = STATE_READ_BODY;
 
-  // int result = DoLoop(OK);
-  // if (result == ERR_IO_PENDING)
-  //   callback_ = std::move(callback);
-
-  // return result;
-
-  int result = DoReadBody();
-  result = DoReadBodyComplete(result);
+  int result = DoLoop(OK);
+  if (result == ERR_IO_PENDING)
+    callback_ = std::move(callback);
 
   return result;
 }
+
 int HttpStreamParser::DoReadBody() {
+  io_state_ = STATE_READ_BODY_COMPLETE;
+
   uint64_t remaining_read_len = user_read_buf_len_;
   uint64_t remaining_body = 0;
 
@@ -211,7 +216,12 @@ bool HttpStreamParser::IsResponseBodyComplete() const {
 }
 
 int HttpStreamParser::DoReadBodyComplete(int result) {
-  assert(false);
+  // if (result > 0)
+  //   received_bytes_ += result;
+
+  // if (result > 0)
+  //   response_body_read_ += result;
+
   return result;
 }
 

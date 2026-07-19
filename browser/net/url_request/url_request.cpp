@@ -35,5 +35,23 @@ int URLRequest::NotifyConnected(const TransportInfo& info) {
   return result;
 }
 
+void URLRequest::NotifyResponseStarted(int net_error) {
+   delegate_->OnResponseStarted(this, net_error);
+  // Nothing may appear below this line as OnResponseStarted may delete
+  // |this|.
+}
+
+int URLRequest::Read(IOBuffer* dest, int dest_size) {
+  int rv = job_->Read(dest, dest_size);
+  // if (rv == ERR_IO_PENDING) {
+  //   set_status(ERR_IO_PENDING);
+  // } else if (rv <= 0) {
+  //   NotifyRequestCompleted();
+  // }
+  // 
+  // // If rv is not 0 or actual bytes read, the status cannot be success.
+  // DCHECK(rv >= 0 || status_ != OK);
+  return rv;
+}
 
 }

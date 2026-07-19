@@ -60,6 +60,10 @@ CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
   SetCorsFlagIfNeeded();
 }
 
+CorsURLLoader::~CorsURLLoader() {
+  int a= 0;
+}
+
 // 判断是否需要进行跨域检测
 bool ShouldCheckCors(const GURL& request_url,
                      const std::optional<url::Origin>& request_initiator/*,
@@ -142,7 +146,8 @@ void CorsURLLoader::StartRequest() {
 }
 
 void CorsURLLoader::StartNetworkRequest() {
-  m_network_loader_factory->CreateLoaderAndStartWithSyncClient(request_);
+  m_network_loader_factory->CreateLoaderAndStartWithSyncClient(
+      request_, static_cast<mojom::URLLoaderClient *>(this));
 }
 
 // static

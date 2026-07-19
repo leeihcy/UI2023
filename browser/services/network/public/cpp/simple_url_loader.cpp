@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <span>
+#include <assert.h>
 #include "net/base/net_errors.h"
 
 namespace network {
@@ -64,13 +65,21 @@ void SimpleURLLoader::Start(mojom::URLLoaderFactory* url_loader_factory) {
   StartRequest(url_loader_factory);
 }
 
-void SimpleURLLoader::StartRequest(mojom::URLLoaderFactory* url_loader_factory) {
-  url_loader_factory->CreateLoaderAndStart(*m_resource_request);
+void SimpleURLLoader::StartRequest(
+    mojom::URLLoaderFactory *url_loader_factory) {
+  url_loader_factory->CreateLoaderAndStart(
+      *m_resource_request, static_cast<mojom::URLLoaderClient *>(this));
 
   // TODO:
   // 1. 超时回调
   // 2. 重试次数
 }
 
+void SimpleURLLoader::OnReceiveResponse(
+      ::network::mojom::URLResponseHead* head/*, 
+      ::mojo::ScopedDataPipeConsumerHandle body, 
+      std::optional<::mojo_base::BigBuffer> cached_metadata*/) {
+  assert(false);
+}
 
 } // namespace network

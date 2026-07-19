@@ -2,6 +2,7 @@
 #define SERVICES_NETWORK_URL_LOADER_FACTORY_H_
 
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace net {
 class URLRequestContext;
@@ -24,8 +25,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory, public URLLoaderContext
 public:
   URLLoaderFactory(NetworkContext* context, cors::CorsURLLoaderFactory *cors_url_loader_factory);
 
-  void CreateLoaderAndStartWithSyncClient(ResourceRequest& resource_request);
-  void CreateLoaderAndStart(ResourceRequest& resource_request) override;
+  void CreateLoaderAndStartWithSyncClient(ResourceRequest &resource_request,
+                                          mojom::URLLoaderClient *client);
+  void CreateLoaderAndStart(ResourceRequest &resource_request,
+                            mojom::URLLoaderClient *client) override;
 
   // URLLoaderContext
   net::URLRequestContext* GetUrlRequestContext() const override;

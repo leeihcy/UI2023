@@ -21,8 +21,9 @@ class PrefetchMatchingURLLoaderFactory : public mojom::URLLoaderFactory
 public:
   PrefetchMatchingURLLoaderFactory(NetworkContext* );
   ~PrefetchMatchingURLLoaderFactory();
-  
-  void CreateLoaderAndStart(ResourceRequest& request) override;
+
+  void CreateLoaderAndStart(ResourceRequest &request,
+                            mojom::URLLoaderClient *client) override;
 
 private:
   const std::unique_ptr<cors::CorsURLLoaderFactory> next_;

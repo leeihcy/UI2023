@@ -100,6 +100,11 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   stream_->RegisterRequest(request_);
   next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
 
+  // 让URL Loader处理 LNA 等逻辑，处理完之后再回调回来：HttpNetworkTransaction::ResumeAfterConnected
+  // if (connected_callback_) {
+    
+  // }
+  OnIOComplete(net::OK);
   return OK;
 }
 
@@ -171,13 +176,18 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 }
 
 int HttpNetworkTransaction::DoSendRequest() {
+  next_state_ = STATE_SEND_REQUEST_COMPLETE;
   // stream_->SetRequestIdempotency(request_->idempotency);
   return stream_->SendRequest(request_headers_/*, &response_*/, io_callback_);
 }
 
 int HttpNetworkTransaction::DoSendRequestComplete(int result) {
-  assert (result >= 0);
-  return 0;
+  if (result < 0) {
+    assert(false);
+    // return HandleIOError(result);
+  }
+  next_state_ = STATE_READ_HEADERS;
+  return OK;
 }
 
 int HttpNetworkTransaction::DoReadHeaders() {
