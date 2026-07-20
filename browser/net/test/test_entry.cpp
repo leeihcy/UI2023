@@ -31,7 +31,8 @@ void SimpleUrlLoaderTest() {
   std::unique_ptr<network::SimpleURLLoader> loader = 
     network::SimpleURLLoader::Create(std::move(resource_request));
   loader->DownloadToString(url_loader_factory, [](std::optional<std::string> response_body){
-    assert(false);
+    printf("DownloadToString!\n");
+    PostQuitMessage(0);
   }, -1);
 
   MSG msg = {0};

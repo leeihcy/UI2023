@@ -71,6 +71,9 @@ public:
 private:
   void Start(mojom::URLLoaderFactory* url_loader_factory);
   void StartRequest(mojom::URLLoaderFactory* url_loader_factory);
+ 
+  void MaybeComplete();
+  void FinishWithResult(int net_error);
 
 private:
   std::unique_ptr<ResourceRequest> m_resource_request;

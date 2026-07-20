@@ -330,8 +330,9 @@ void TCPSocketWin::DidCompleteConnect() {
 void TCPSocketDefaultWin::DidSignalRead() {
   CoreImpl& core = GetCoreImpl();
 
+  // FD_READ=1, FD_WRITE=2, FD_OOB=4, FD_ACCEPT=8, FD_CONNECT=16, FD_CLOSE=32
   int os_error = 0;
-  WSANETWORKEVENTS network_events;
+  WSANETWORKEVENTS network_events = { 0 };
   int rv = WSAEnumNetworkEvents(socket_, core.read_event_, &network_events);
   os_error = WSAGetLastError();
 

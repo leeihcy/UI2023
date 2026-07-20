@@ -120,8 +120,10 @@ void HttpStreamParser::OnIOComplete(int result) {
   // The client callback can do anything, including destroying this class,
   // so any pending callback must be issued after everything else is done.
   if (result != ERR_IO_PENDING && callback_) {
-    callback_(result);
-    callback_ = nullptr;
+    // 要先清空callbac_再执行回调，不能先回调再清callback。
+    // 因为回调的过程中可能会再重入一次设置callback。
+    auto f = std::move(callback_);
+    f(result);
   }
 }
 
@@ -136,8 +138,9 @@ int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
 //     io_state_ = STATE_READ_HEADERS_COMPLETE;
 
   result = DoReadHeaders();
-  if (result == ERR_IO_PENDING)
-    callback_ = std::move(callback);
+  if (result == ERR_IO_PENDING) {
+      callback_ = std::move(callback);
+  }
 
   return result > 0 ? OK : result;
 }
@@ -155,7 +158,6 @@ int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
                                        CompletionOnceCallback callback) {
   // if (io_state_ == STATE_DONE)
   //   return OK;
-
   user_read_buf_ = buf;
   user_read_buf_len_ = size_t(buf_len);
   io_state_ = STATE_READ_BODY;
@@ -215,13 +217,21 @@ bool HttpStreamParser::IsResponseBodyComplete() const {
   return false;  // Must read to EOF.
 }
 
-int HttpStreamParser::DoReadBodyComplete(int result) {
+int HttpStreamParser::DoReadBodyComplete(int result/*bytes_read*/) {
   // if (result > 0)
   //   received_bytes_ += result;
 
   // if (result > 0)
   //   response_body_read_ += result;
-
+  
+  if (result <= 0 || IsResponseBodyComplete()) {
+    // recv返回0表示连接已断开
+      io_state_ = STATE_DONE;
+  } else {
+    // Now waiting for more of the body to be read.
+    user_read_buf_ = nullptr;
+    user_read_buf_len_ = 0;
+  }
   return result;
 }
 

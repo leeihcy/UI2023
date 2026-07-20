@@ -46,6 +46,18 @@ public:
         max_body_size_(max_body_size),
         body_as_string_callback_(std::move(body_as_string_callback)) {}
 
+  void NotifyConsumerOfCompletion(bool destroy_results) override {
+    // body_reader_.reset();
+    std::optional<std::string> body =
+        destroy_results ? std::nullopt : std::move(body_);
+    body_ = std::nullopt;
+
+    if (body_as_string_callback_) {
+      body_as_string_callback_(std::move(body));
+      body_as_string_callback_ = nullptr;
+    }
+  }
+
 private:
   const int64_t max_body_size_;
 
@@ -82,8 +94,20 @@ void SimpleURLLoader::OnReceiveResponse(
   assert(false);
 }
 void SimpleURLLoader::OnComplete(const ::network::URLLoaderCompletionStatus& status) {
-  assert(false);
+  // Wait to receive any pending data on the data pipe before reporting the
+  // failure.
+  MaybeComplete();
 }
 
+void SimpleURLLoader::MaybeComplete() {
+  FinishWithResult(/*request_state_->net_error*/0);
+}
+
+void SimpleURLLoader::FinishWithResult(int net_error) {
+// If it's a partial download or an error was received, erase the body.
+  // bool destroy_results =
+  //     request_state_->net_error != net::OK && !allow_partial_results_;
+  body_handler_->NotifyConsumerOfCompletion(/*destroy_results*/true);
+}
 
 } // namespace network

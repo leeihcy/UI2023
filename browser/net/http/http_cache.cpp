@@ -91,7 +91,11 @@ int HttpCache::Transaction::DoLoop(int result) {
   // 在STATE_FINISH_HEADERS_COMPLETE时，往上层回调
   if (rv != ERR_IO_PENDING && callback_) {
       // read_buf_ = nullptr;  // Release the buffer before invoking the
-      callback_(rv); callback_ = nullptr;
+
+      // 要先清空callbac_再执行回调，不能先回调再清callback。
+      // 因为回调的过程中可能会再重入一次设置callback。
+      auto f = std::move(callback_);
+      f(rv);
   }
   return rv;
 }
