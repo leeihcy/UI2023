@@ -54,8 +54,9 @@ public:
   void StartRequest();
   void StartNetworkRequest();
 
-  void OnReceiveResponse(mojom::URLResponseHead* response_head) override;
-  void OnComplete(const URLLoaderCompletionStatus& status) override;
+  void OnReceiveResponse(mojom::URLResponseHead *response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
+  void OnComplete(const URLLoaderCompletionStatus &status) override;
 
   void HandleComplete(URLLoaderCompletionStatus status);
 

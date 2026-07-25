@@ -24,8 +24,50 @@ int URLLoader::OnConnected(net::URLRequest *request, const net::TransportInfo &i
   return 0;
 }
 
+/*
+>	net.dll!net::HttpCache::Transaction::Read	C++
+ 	net.dll!net::URLRequestHttpJob::ReadRawData	C++
+ 	net.dll!net::URLRequestJob::ReadRawDataHelper	C++
+ 	net.dll!net::URLRequestJob::URLRequestJobSourceStream::Read	C++
+ 	net.dll!net::URLRequestJob::Read	C++
+ 	net.dll!net::URLRequest::Read	C++
+ 	services_network_network_service.dll!network::URLLoader::ReadMore	C++
+ 	services_network_network_service.dll!network::URLLoader::StartReading	C++
+ 	services_network_network_service.dll!network::URLLoader::ContinueOnResponseStarted	C++
+ 	services_network_network_service.dll!network::URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted	C++
+ 	services_network_network_service.dll!network::URLLoader::OnResponseStarted	C++
+ 	net.dll!net::URLRequest::NotifyResponseStarted	C++
+ 	net.dll!net::URLRequestJob::NotifyFinalHeadersReceived	C++
+ 	net.dll!net::URLRequestJob::NotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::NotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete	C++
+ 	net.dll!net::URLRequestHttpJob::OnStartCompleted	C++
+*/
 void URLLoader::OnResponseStarted(net::URLRequest* request, int net_error) {
+  response_ = BuildResponseHead();
+
+  if (!response_body_stream_.is_valid()) {
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+
+    constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
+    options.capacity_num_bytes = kLargerDataPipeAllocationSize;
+
+    MojoResult result =
+        mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
+  }
+  
   StartReading();
+}
+
+mojom::URLResponseHead* URLLoader::BuildResponseHead() const {
+  // url_loader_util::BuildResponseHead
+  auto response = new mojom::URLResponseHead();
+  // response->headers = url_request_.response_headers();
+
+  return response;
 }
 
 void URLLoader::StartReading() {
@@ -87,8 +129,9 @@ void URLLoader::OnReadCompleted(net::URLRequest* request, int bytes_read) {
 void URLLoader::SendResponseToClient() {
   // response_->emitted_extra_info = emitted_devtools_raw_request_;
 
-  url_loader_client_->OnReceiveResponse(nullptr/*
-      response_->Clone(), std::move(consumer_handle_), std::nullopt*/);
+  url_loader_client_->OnReceiveResponse(
+      response_, // response_->Clone(),  TODO:
+      std::move(consumer_handle_) /*, std::nullopt*/);
 }
 
 void URLLoader::NotifyCompleted(int error_code) {

@@ -31,14 +31,20 @@ private:
   void NotifyCompleted(int error_code);
 
   void DeleteSelf();
+  mojom::URLResponseHead* BuildResponseHead() const;
 
 private:
-   std::unique_ptr<net::URLRequest> url_request_;
-   std::unique_ptr<net::GrowableIOBuffer> pending_write_;
+  std::unique_ptr<net::URLRequest> url_request_;
+  std::unique_ptr<net::GrowableIOBuffer> pending_write_;
 
-   mojom::URLLoaderClient* url_loader_client_ = nullptr;
+  // Used when deferring sending the data to the client until mime sniffing is
+  // finished.
+  mojom::URLResponseHead* response_;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle_;
+  mojo::ScopedDataPipeProducerHandle response_body_stream_;
+
+  mojom::URLLoaderClient *url_loader_client_ = nullptr;
 };
-
 }
 
 #endif

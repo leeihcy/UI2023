@@ -163,8 +163,8 @@ std::optional<std::string> CorsURLLoader::GetHeaderString(
 }
 
 void CorsURLLoader::OnReceiveResponse(
-    mojom::URLResponseHead* response_head //,
-    // mojo::ScopedDataPipeConsumerHandle body,
+    mojom::URLResponseHead* response_head,
+    mojo::ScopedDataPipeConsumerHandle body //,
     // std::optional<mojo_base::BigBuffer> cached_metadata 
 ){
   if (fetch_cors_flag_) {

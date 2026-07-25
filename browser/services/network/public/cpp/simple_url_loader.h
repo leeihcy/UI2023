@@ -62,8 +62,8 @@ public:
 
   // mojom::URLLoaderClient
   void OnReceiveResponse(
-      ::network::mojom::URLResponseHead* head/*, 
-      ::mojo::ScopedDataPipeConsumerHandle body, 
+      ::network::mojom::URLResponseHead* head, 
+      ::mojo::ScopedDataPipeConsumerHandle body/*, 
       std::optional<::mojo_base::BigBuffer> cached_metadata*/) override;
 
   void OnComplete(const ::network::URLLoaderCompletionStatus& status) override;

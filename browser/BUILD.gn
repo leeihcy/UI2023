@@ -3,6 +3,7 @@
 group("browser") {
     deps = [
       "net:net",
+      "mojo:mojo"
     ]
 }
 

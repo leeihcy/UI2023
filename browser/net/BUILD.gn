@@ -172,6 +172,10 @@ shared_library("net") {
       "test/test_entry.cpp",
     ]
   }
+
+  deps = [
+     "../mojo:mojo"
+  ]
 }
 
 if (is_debug) {

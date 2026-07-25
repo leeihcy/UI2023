@@ -32,6 +32,23 @@ class BodyReader {
    protected:
     virtual ~Delegate() = default;
   };
+
+  BodyReader(Delegate* delegate) : delegate_(delegate) {
+  }
+
+  void Start(/*mojo::ScopedDataPipeConsumerHandle body_data_pipe*/) {
+    ReadData();
+  }
+
+  void ReadData() {
+    assert(false);
+    // while (true) {
+    //   net::Error error = delegate_->OnDataRead(body.first(copy_size));
+    // }
+  }
+
+private:
+  Delegate* delegate_ = nullptr;
 };
 
 // BodyHandler implementation for consuming the response as a string.
@@ -46,6 +63,13 @@ public:
         max_body_size_(max_body_size),
         body_as_string_callback_(std::move(body_as_string_callback)) {}
 
+  // BodyHandler implementation:
+  void OnStartLoadingResponseBody() override {
+    body_ = std::string();
+    body_reader_ = std::make_unique<BodyReader>(this/*, max_body_size_,
+                                                url_loader_created_from_*/);
+    body_reader_->Start(/*std::move(body_data_pipe)*/);
+  }
   void NotifyConsumerOfCompletion(bool destroy_results) override {
     // body_reader_.reset();
     std::optional<std::string> body =
@@ -58,11 +82,24 @@ public:
     }
   }
 
+  // BodyReader::Delegate implementation.
+  net::Error OnDataRead(std::span<const uint8_t> data) override {
+    // body_->append(base::as_string_view(data));
+    // ReportProgress(body_reader_->total_bytes_read());
+    return net::OK;
+  }
+  void OnDone(net::Error error, int64_t total_bytes) override {
+    // DCHECK_EQ(body_->size(), static_cast<size_t>(total_bytes));
+    // simple_url_loader()->OnBodyHandlerDone(error, total_bytes);
+  }
+
 private:
   const int64_t max_body_size_;
 
   std::optional<std::string> body_;
   SimpleURLLoader::BodyAsStringCallback body_as_string_callback_;
+
+  std::unique_ptr<BodyReader> body_reader_;
 };
 
 void SimpleURLLoader::DownloadToString(
@@ -88,8 +125,8 @@ void SimpleURLLoader::StartRequest(
 }
 
 void SimpleURLLoader::OnReceiveResponse(
-      ::network::mojom::URLResponseHead* head/*, 
-      ::mojo::ScopedDataPipeConsumerHandle body, 
+      ::network::mojom::URLResponseHead* head, 
+      ::mojo::ScopedDataPipeConsumerHandle body/*, 
       std::optional<::mojo_base::BigBuffer> cached_metadata*/) {
   assert(false);
 }
