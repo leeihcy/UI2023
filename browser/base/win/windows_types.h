@@ -3,5 +3,6 @@
 
 
 typedef void* HANDLE;
+typedef unsigned long DWORD;  // NOLINT(runtime/int)
 
 #endif

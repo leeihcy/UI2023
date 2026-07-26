@@ -10,12 +10,23 @@ shared_library("mojo") {
     "core/core.h",
     "core/entrypoints.cpp",
     "core/entrypoints.h",
+    "core/node_controller.cpp",
+    "core/node_controller.h",
 
     "public/c/system/thunks.cpp",
   ]
   
+  sources += [
+    "../base/memory/platform_shared_memory_region.cpp",
+    "../base/memory/platform_shared_memory_region.h",
+    "../base/memory/writable_shared_memory_region.cpp",
+    "../base/memory/writable_shared_memory_region.h",
+  ]
+
   include_dirs = [
     "//browser/",
     "$target_gen_dir/",
   ]
+  
+  cflags = [ "/wd4251" ]
 }
