@@ -5,12 +5,13 @@
 #ifndef MOJO_CORE_ENTRYPOINTS_H_
 #define MOJO_CORE_ENTRYPOINTS_H_
 
+#include "mojo/mojo_export.h"
 
 namespace mojo {
 namespace core {
 
-void InitializeCore();
-void ShutDownCore();
+void MOJO_EXPORT InitializeCore();
+void MOJO_EXPORT ShutDownCore();
 // const MojoSystemThunks2& GetSystemThunks();
 
 }  // namespace core

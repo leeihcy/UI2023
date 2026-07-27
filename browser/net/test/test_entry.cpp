@@ -8,6 +8,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/network_context.h"
+#include "mojo/core/entrypoints.h"
 
 namespace net {
 
@@ -17,6 +18,8 @@ void CorsUrlLoaderTest() {
 }
 
 void SimpleUrlLoaderTest() {
+  mojo::core::InitializeCore();
+
   auto& network_service = network::NetworkService::GetInstance();
   auto* network_context = network_service.CreateNetworkContext();
 
@@ -40,6 +43,8 @@ void SimpleUrlLoaderTest() {
     ::TranslateMessage(&msg);
     ::DispatchMessage(&msg);
   }
+
+  mojo::core::ShutDownCore();
 }
 
 void _NetUnitTest() {

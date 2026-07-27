@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <string>
 #include "base/process/process_handle.h"
+#include "base/win/scoped_handle.h"
 
 namespace base::subtle {
 
@@ -33,12 +34,8 @@ inline const wchar_t* as_wcstr(std::u16string_view str) {
 HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
                                                size_t size,
                                                LPCWSTR name) {
-  auto create_file_mapping = [&]() {
-    return ::CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
-                               static_cast<DWORD>(size), name);
-  };
-
-  HANDLE h = create_file_mapping();
+  HANDLE h = ::CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
+      static_cast<DWORD>(size), name);
   if (!h) {
     return nullptr;
   }
@@ -57,8 +54,9 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
   return h2;
 }
 
-
 }
+
+PlatformSharedMemoryRegion::PlatformSharedMemoryRegion() = default;
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
@@ -93,18 +91,25 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
   }
 
-#if 0
   win::ScopedHandle scoped_h(h);
   // Check if the shared memory pre-exists.
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
     return {};
   }
 
-  return PlatformSharedMemoryRegion(std::move(scoped_h), mode, size,
-                                    UnguessableToken::Create());
-#endif
+  return PlatformSharedMemoryRegion(std::move(scoped_h), mode, size/*,
+                                    UnguessableToken::Create()*/);
 }
 
 #endif
+
+
+PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
+    win::ScopedHandle handle,
+    Mode mode,
+    size_t size/*,
+    const UnguessableToken& guid*/)
+    : handle_(std::move(handle)), mode_(mode), size_(size)/*, guid_(guid)*/ {}
+
 
 }

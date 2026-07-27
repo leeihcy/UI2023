@@ -1,6 +1,8 @@
 #ifndef BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
+#include "base/memory/platform_shared_memory_handle.h"
+
 namespace base {
 namespace subtle {
 
@@ -36,7 +38,16 @@ public:
  private:
   static PlatformSharedMemoryRegion Create(Mode mode, size_t size);
 
+  PlatformSharedMemoryRegion();
+  PlatformSharedMemoryRegion(ScopedPlatformSharedMemoryHandle handle,
+                             Mode mode,
+                             size_t size/*,
+                             const UnguessableToken& guid*/);
 
+  ScopedPlatformSharedMemoryHandle handle_;
+  Mode mode_ = Mode::kReadOnly;
+  size_t size_ = 0;
+  // UnguessableToken guid_;
 };
 
 }  // namespace subtle

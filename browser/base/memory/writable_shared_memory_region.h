@@ -12,6 +12,9 @@ public:
   explicit WritableSharedMemoryRegion(
       subtle::PlatformSharedMemoryRegion handle);
 
+  static subtle::PlatformSharedMemoryRegion TakeHandleForSerialization(
+      WritableSharedMemoryRegion region);
+
 private:
   subtle::PlatformSharedMemoryRegion handle_;
 };

@@ -3,13 +3,14 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
+#include "base/win/scoped_handle.h"
 #endif
 
 namespace base::subtle {
 
 #if defined(OS_WIN)
 using PlatformSharedMemoryHandle = HANDLE;
-// using ScopedPlatformSharedMemoryHandle = win::ScopedHandle;
+using ScopedPlatformSharedMemoryHandle = win::ScopedHandle;
 #else
 
 #endif

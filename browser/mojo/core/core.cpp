@@ -14,12 +14,9 @@ NodeController *Core::GetNodeController() {
 MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
                                 MojoHandle* data_pipe_producer_handle,
                                 MojoHandle* data_pipe_consumer_handle) {
-
-      //                              base::subtle::PlatformSharedMemoryRegion ring_buffer_region =
-      // base::WritableSharedMemoryRegion::TakeHandleForSerialization();
-
-  // GetNodeController()->CreateSharedBuffer(create_options.capacity_num_bytes);
-
+  base::subtle::PlatformSharedMemoryRegion ring_buffer_region =
+      base::WritableSharedMemoryRegion::TakeHandleForSerialization(
+          GetNodeController()->CreateSharedBuffer(options->capacity_num_bytes));
   return MOJO_RESULT_OK;
 }
 

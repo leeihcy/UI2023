@@ -15,4 +15,11 @@ WritableSharedMemoryRegion::WritableSharedMemoryRegion(
     : handle_(std::move(handle)) {
 }
 
+// static
+subtle::PlatformSharedMemoryRegion
+WritableSharedMemoryRegion::TakeHandleForSerialization(
+    WritableSharedMemoryRegion region) {
+  return std::move(region.handle_);
+}
+
 }
