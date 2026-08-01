@@ -2,6 +2,7 @@
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
 #include "base/memory/platform_shared_memory_handle.h"
+#include <utility>
 
 namespace base {
 namespace subtle {
@@ -34,6 +35,23 @@ public:
 
   static PlatformSharedMemoryRegion CreateWritable(size_t size);
   static PlatformSharedMemoryRegion CreateUnsafe(size_t size);
+
+  bool IsValid() const {
+    return handle_.is_valid();
+  }
+
+  ScopedPlatformSharedMemoryHandle PassPlatformHandle() {
+    return std::move(handle_);
+  }
+  static PlatformSharedMemoryRegion Take(
+      ScopedPlatformSharedMemoryHandle handle,
+      Mode mode,
+      size_t size/*,
+      const UnguessableToken& guid*/) {
+    // return TakeOrFail(std::move(handle), mode, size/*, guid*/).value();
+    return PlatformSharedMemoryRegion(std::move(handle), mode, size/*, guid*/);
+  }
+  PlatformSharedMemoryRegion Duplicate() const;
 
  private:
   static PlatformSharedMemoryRegion Create(Mode mode, size_t size);

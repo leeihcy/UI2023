@@ -111,5 +111,22 @@ PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(
     const UnguessableToken& guid*/)
     : handle_(std::move(handle)), mode_(mode), size_(size)/*, guid_(guid)*/ {}
 
+PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
+  if (!IsValid()) {
+    return {};
+  }
+
+  HANDLE duped_handle;
+  ProcessHandle process = GetCurrentProcess();
+  BOOL success =
+      ::DuplicateHandle(process, handle_.get(), process, &duped_handle, 0,
+                        FALSE, DUPLICATE_SAME_ACCESS);
+  if (!success) {
+    return {};
+  }
+
+  return PlatformSharedMemoryRegion(win::ScopedHandle(duped_handle), mode_,
+                                    size_/*, guid_*/);
+}
 
 }

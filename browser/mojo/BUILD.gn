@@ -12,6 +12,15 @@ shared_library("mojo") {
     "core/entrypoints.h",
     "core/node_controller.cpp",
     "core/node_controller.h",
+    "core/data_pipe_producer_dispatcher.cpp",
+    "core/data_pipe_producer_dispatcher.h",
+    "core/data_pipe_consumer_dispatcher.cpp",
+    "core/data_pipe_consumer_dispatcher.h",
+    "core/handle_table.cpp",
+    "core/handle_table.h",
+
+    "core/ports/node.cpp",
+    "core/ports/node.h",
 
     "public/c/system/thunks.cpp",
   ]

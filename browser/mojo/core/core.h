@@ -5,6 +5,8 @@
 #include "mojo/mojo_export.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/core/node_controller.h"
+#include "mojo/core/dispatcher.h"
+#include "mojo/core/handle_table.h"
 
 namespace mojo {
 namespace core {
@@ -22,9 +24,12 @@ class MOJO_EXPORT Core {
                             MojoHandle* data_pipe_producer_handle,
                             MojoHandle* data_pipe_consumer_handle);
 
+  MojoHandle AddDispatcher(std::shared_ptr<Dispatcher> dispatcher);
 
  private:
   std::unique_ptr<NodeController> node_controller_;
+
+  std::unique_ptr<HandleTable> handles_;
 };
 
 }
