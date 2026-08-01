@@ -58,7 +58,17 @@ void URLLoader::OnResponseStarted(net::URLRequest* request, int net_error) {
     MojoResult result =
         mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
   }
-  
+
+  // peer_closed_handle_watcher_.Watch(
+  //     response_body_stream_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+  //     base::BindRepeating(&URLLoader::OnResponseBodyStreamConsumerClosed,
+  //                         base::Unretained(this)));
+  // peer_closed_handle_watcher_.ArmOrNotify();
+  // 
+  // writable_handle_watcher_.Watch(
+  //     response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+  //     base::BindRepeating(&URLLoader::OnResponseBodyStreamReady, this));
+
   StartReading();
 }
 

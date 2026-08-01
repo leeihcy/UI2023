@@ -37,4 +37,32 @@ inline constexpr MojoResult MOJO_RESULT_DATA_LOSS = 15;
 inline constexpr MojoResult MOJO_RESULT_BUSY = 16;
 inline constexpr MojoResult MOJO_RESULT_SHOULD_WAIT = 17;
 
+
+
+typedef uint32_t MojoHandleSignals;
+
+#ifdef __cplusplus
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_NONE = 0;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_READABLE = 1 << 0;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_WRITABLE = 1 << 1;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_PEER_CLOSED = 1 << 2;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE = 1
+                                                                          << 3;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_PEER_REMOTE = 1 << 4;
+inline constexpr MojoHandleSignals MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED = 1 << 5;
+#else
+#define MOJO_HANDLE_SIGNAL_NONE ((MojoHandleSignals)0)
+#define MOJO_HANDLE_SIGNAL_READABLE ((MojoHandleSignals)1 << 0)
+#define MOJO_HANDLE_SIGNAL_WRITABLE ((MojoHandleSignals)1 << 1)
+#define MOJO_HANDLE_SIGNAL_PEER_CLOSED ((MojoHandleSignals)1 << 2)
+#define MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE ((MojoHandleSignals)1 << 3);
+#define MOJO_HANDLE_SIGNAL_PEER_REMOTE ((MojoHandleSignals)1 << 4);
+#define MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED ((MojoHandleSignals)1 << 5);
+#endif
+
+struct MojoHandleSignalsState {
+  MojoHandleSignals satisfied_signals;
+  MojoHandleSignals satisfiable_signals;
+};
+
 #endif

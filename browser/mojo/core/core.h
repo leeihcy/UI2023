@@ -25,6 +25,19 @@ class MOJO_EXPORT Core {
                             MojoHandle* data_pipe_consumer_handle);
 
   MojoHandle AddDispatcher(std::shared_ptr<Dispatcher> dispatcher);
+  std::shared_ptr<Dispatcher> GetDispatcher(MojoHandle handle);
+  
+  MojoResult ReadData(MojoHandle data_pipe_consumer_handle,
+                      const MojoReadDataOptions* options,
+                      void* elements,
+                      uint32_t* num_bytes);
+  MojoResult BeginReadData(MojoHandle data_pipe_consumer_handle,
+                           const MojoBeginReadDataOptions* options,
+                           const void** buffer,
+                           uint32_t* buffer_num_bytes);
+  MojoResult EndReadData(MojoHandle data_pipe_consumer_handle,
+                         uint32_t num_bytes_read,
+                         const MojoEndReadDataOptions* options);
 
  private:
   std::unique_ptr<NodeController> node_controller_;

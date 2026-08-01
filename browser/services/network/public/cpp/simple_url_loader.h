@@ -24,7 +24,7 @@ class BodyHandler {
   virtual ~BodyHandler() = default;
 
   virtual bool RequiresBodyDataPipe() { return true; }
-  virtual void OnStartLoadingResponseBody(/*mojo::ScopedDataPipeConsumerHandle body_data_pipe*/) { }
+  virtual void OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body_data_pipe) { }
   virtual void NotifyConsumerOfCompletion(bool destroy_results) { }
   // virtual void PrepareToRetry(base::OnceClosure retry_callback) { }
 

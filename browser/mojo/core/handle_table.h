@@ -15,6 +15,8 @@ public:
   MojoResult GetAndRemoveDispatcher(MojoHandle,
                                     std::shared_ptr<Dispatcher>* dispatcher);
 
+  std::shared_ptr<Dispatcher> GetDispatcher(MojoHandle handle);
+
   struct Entry {
     explicit Entry(std::shared_ptr<Dispatcher> dispatcher);
     ~Entry();
@@ -31,6 +33,7 @@ public:
 
     // Returns whether an Entry was inserted.
     bool Add(MojoHandle handle, Entry entry);
+    const std::shared_ptr<Dispatcher>* GetDispatcher(MojoHandle handle);
 
     enum RemovalCondition { kRemoveOnlyIfBusy, kRemoveOnlyIfNotBusy };
     MojoResult Remove(MojoHandle handle,

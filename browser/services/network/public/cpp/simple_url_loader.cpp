@@ -4,6 +4,7 @@
 #include <span>
 #include <assert.h>
 #include "net/base/net_errors.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
 
 namespace network {
 
@@ -33,22 +34,103 @@ class BodyReader {
     virtual ~Delegate() = default;
   };
 
-  BodyReader(Delegate* delegate) : delegate_(delegate) {
-  }
+  BodyReader(Delegate *delegate, int64_t max_body_size)
+      : delegate_(delegate), max_body_size_(max_body_size) {}
 
-  void Start(/*mojo::ScopedDataPipeConsumerHandle body_data_pipe*/) {
+  void Start(mojo::ScopedDataPipeConsumerHandle body_data_pipe) {
+    body_data_pipe_ = std::move(body_data_pipe);
+    // handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+    //     FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+    //     base::SequencedTaskRunner::GetCurrentDefault());
+    // handle_watcher_->Watch(
+    //     body_data_pipe_.get(),
+    //     MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+    //     MOJO_WATCH_CONDITION_SATISFIED,
+    //     base::BindRepeating(&BodyReader::MojoReadyCallback,
+    //                         this));
+
+    ReadData();
+  }
+  void MojoReadyCallback(MojoResult result,
+                         const mojo::HandleSignalsState& state) {
     ReadData();
   }
 
   void ReadData() {
-    assert(false);
-    // while (true) {
-    //   net::Error error = delegate_->OnDataRead(body.first(copy_size));
-    // }
+    while (true) {
+      if (pending_error_) {
+        ClosePipe();
+        // This call may delete the BodyReader.
+        delegate_->OnDone(pending_error_, total_bytes_read_);
+        return;
+      }
+
+      std::span<const uint8_t> body;
+      MojoResult result =
+          body_data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, body);
+      if (result == MOJO_RESULT_SHOULD_WAIT) {
+        // handle_watcher_->ArmOrNotify();
+        return;
+      }
+
+      // If the pipe was closed, unclear if it was an error or success. Notify
+      // the consumer of how much data was received.
+      if (result != MOJO_RESULT_OK) {
+        ClosePipe();
+        // This call may delete the BodyReader.
+        // delegate_->OnDone(net::OK, total_bytes_read_);
+        return;
+      }
+
+       // Check size against the limit.
+      size_t copy_size = body.size();
+      size_t limit = (size_t)(max_body_size_ - total_bytes_read_);
+      if (copy_size > limit) {
+        copy_size = limit;
+      }
+
+      total_bytes_read_ += copy_size;
+
+      if (copy_size < body.size()) {
+        pending_error_ = net::ERR_INSUFFICIENT_RESOURCES;
+      }
+
+      mojo::ScopedDataPipeConsumerHandle body_data_pipe =
+          std::move(body_data_pipe_);
+
+      // This call may delete the BodyReader.
+      net::Error error = delegate_->OnDataRead(body.first(copy_size));
+      body_data_pipe->EndReadData(body.size());
+      // if (!weak_this) {
+      //   // This object was deleted, so nothing else to do.
+      //   return;
+      // }
+
+      body_data_pipe_ = std::move(body_data_pipe);
+
+      // Wait for Resume() on net::ERR_IO_PENDING.
+      if (error == net::ERR_IO_PENDING)
+        return;
+
+      if (error != net::OK)
+        pending_error_ = error;
+    }
+  }
+  void ClosePipe() {
+    // handle_watcher_.reset();
+    body_data_pipe_.reset();
   }
 
 private:
+  mojo::ScopedDataPipeConsumerHandle body_data_pipe_;
+  // std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
+
   Delegate* delegate_ = nullptr;
+
+  net::Error pending_error_ = net::OK;
+
+  const int64_t max_body_size_;
+  int64_t total_bytes_read_ = 0;
 };
 
 // BodyHandler implementation for consuming the response as a string.
@@ -64,11 +146,11 @@ public:
         body_as_string_callback_(std::move(body_as_string_callback)) {}
 
   // BodyHandler implementation:
-  void OnStartLoadingResponseBody() override {
+  void OnStartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body_data_pipe) override {
     body_ = std::string();
-    body_reader_ = std::make_unique<BodyReader>(this/*, max_body_size_,
+    body_reader_ = std::make_unique<BodyReader>(this, max_body_size_/*,
                                                 url_loader_created_from_*/);
-    body_reader_->Start(/*std::move(body_data_pipe)*/);
+    body_reader_->Start(std::move(body_data_pipe));
   }
   void NotifyConsumerOfCompletion(bool destroy_results) override {
     // body_reader_.reset();

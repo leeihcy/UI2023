@@ -18,7 +18,10 @@ shared_library("mojo") {
     "core/data_pipe_consumer_dispatcher.h",
     "core/handle_table.cpp",
     "core/handle_table.h",
-
+    "core/request_context.cpp",
+    "core/request_context.h",
+    "core/dispatcher.cpp",
+    "core/dispatcher.h",
     "core/ports/node.cpp",
     "core/ports/node.h",
 

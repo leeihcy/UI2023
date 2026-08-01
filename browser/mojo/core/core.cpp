@@ -1,9 +1,10 @@
 #include "mojo/core/core.h"
 
-#include "mojo/core/ports/port.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 #include "mojo/core/data_pipe_producer_dispatcher.h"
-#include "base/memory/unsafe_shared_memory_region.h"
+#include "mojo/core/ports/port.h"
+#include "mojo/core/request_context.h"
 
 namespace mojo {
 namespace core {
@@ -16,14 +17,11 @@ NodeController *Core::GetNodeController() {
   return node_controller_.get();
 }
 
+uint64_t MakePipeId() { return 0; }
 
-uint64_t MakePipeId() {
-  return 0;
-}
-
-MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
-                                MojoHandle* data_pipe_producer_handle,
-                                MojoHandle* data_pipe_consumer_handle) {
+MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions *options,
+                                MojoHandle *data_pipe_producer_handle,
+                                MojoHandle *data_pipe_consumer_handle) {
 
   // 创建共享内存
   base::subtle::PlatformSharedMemoryRegion ring_buffer_region =
@@ -33,12 +31,12 @@ MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
   auto writable_region_handle = ring_buffer_region.PassPlatformHandle();
 
   // “降级”为不安全模式??
-    base::UnsafeSharedMemoryRegion producer_region =
+  base::UnsafeSharedMemoryRegion producer_region =
       base::UnsafeSharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
               std::move(writable_region_handle),
               base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-              options->capacity_num_bytes/*, ring_buffer_region.GetGUID()*/));
+              options->capacity_num_bytes /*, ring_buffer_region.GetGUID()*/));
 
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
@@ -70,11 +68,88 @@ MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions* options,
   return MOJO_RESULT_OK;
 }
 
-
 MojoHandle Core::AddDispatcher(std::shared_ptr<Dispatcher> dispatcher) {
   // base::AutoLock lock(handles_->GetLock());
   return handles_->AddDispatcher(dispatcher);
 }
+std::shared_ptr<Dispatcher> Core::GetDispatcher(MojoHandle handle) {
+  // base::AutoLock lock(handles_->GetLock());
+  return handles_->GetDispatcher(handle);
+}
 
+MojoResult Core::ReadData(MojoHandle data_pipe_consumer_handle,
+                          const MojoReadDataOptions *options, void *elements,
+                          uint32_t *num_bytes) {
+  RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_consumer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  MojoReadDataOptions validated_options;
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+
+    constexpr MojoReadDataFlags kSupportedFlags =
+        MOJO_READ_DATA_FLAG_NONE | MOJO_READ_DATA_FLAG_ALL_OR_NONE |
+        MOJO_READ_DATA_FLAG_DISCARD | MOJO_READ_DATA_FLAG_QUERY |
+        MOJO_READ_DATA_FLAG_PEEK;
+    if (options->flags & ~kSupportedFlags) {
+      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+    validated_options.flags = options->flags;
+  } else {
+    validated_options.flags = MOJO_WRITE_DATA_FLAG_NONE;
+  }
+  return dispatcher->ReadData(validated_options, elements, num_bytes);
 }
+
+
+MojoResult Core::BeginReadData(MojoHandle data_pipe_consumer_handle,
+                               const MojoBeginReadDataOptions* options,
+                               const void** buffer,
+                               uint32_t* buffer_num_bytes) {
+  RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_consumer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    if (options->flags != MOJO_BEGIN_READ_DATA_FLAG_NONE) {
+      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+  }
+  return dispatcher->BeginReadData(buffer, buffer_num_bytes);
 }
+
+MojoResult Core::EndReadData(MojoHandle data_pipe_consumer_handle,
+                             uint32_t num_bytes_read,
+                             const MojoEndReadDataOptions* options) {
+  RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_consumer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    if (options->flags != MOJO_END_READ_DATA_FLAG_NONE) {
+      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+  }
+  return dispatcher->EndReadData(num_bytes_read);
+}
+
+
+} // namespace core
+} // namespace mojo

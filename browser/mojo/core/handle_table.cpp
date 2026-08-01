@@ -16,6 +16,11 @@ MojoHandle HandleTable::AddDispatcher(std::shared_ptr<Dispatcher> dispatcher) {
   return handle;
 }
 
+std::shared_ptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) {
+  const std::shared_ptr<Dispatcher>* dispatcher = entries_.GetDispatcher(handle);
+  return dispatcher == nullptr ? nullptr : *dispatcher;
+}
+
 MojoResult HandleTable::GetAndRemoveDispatcher(
     MojoHandle handle,
     std::shared_ptr<Dispatcher>* dispatcher) {
@@ -36,6 +41,20 @@ MojoResult HandleTable::GetAndRemoveDispatcher(
 
 bool HandleTable::EntriesAccessor::Add(const MojoHandle handle, Entry entry) {
   return handles_.emplace(handle, std::move(entry)).second;
+}
+
+const std::shared_ptr<Dispatcher>* HandleTable::EntriesAccessor::GetDispatcher(
+    const MojoHandle handle) {
+  if (last_read_handle_ != MOJO_HANDLE_INVALID && last_read_handle_ == handle) {
+    return &last_read_dispatcher_;
+  }
+  const auto iter = handles_.find(handle);
+  if (iter == handles_.end()) {
+    return nullptr;
+  }
+  last_read_handle_ = handle;
+  last_read_dispatcher_ = iter->second.dispatcher;
+  return &last_read_dispatcher_;
 }
 
 MojoResult HandleTable::EntriesAccessor::Remove(
