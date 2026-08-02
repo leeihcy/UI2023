@@ -2,6 +2,7 @@
 #define MOJO_CORE_DATA_PIPE_CONSUMER_DISPATCHER_H_
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port.h"
 #include "mojo/mojo_export.h"
@@ -34,19 +35,19 @@ public:
                              const ports::PortRef &control_port,
                              base::UnsafeSharedMemoryRegion shared_ring_buffer,
                              const MojoCreateDataPipeOptions &options,
-                             uint64_t pipe_id)    : options_(options),
-      node_controller_(node_controller),
-      control_port_(control_port),
-      pipe_id_(pipe_id),
-      // watchers_(this),
-      shared_ring_buffer_(std::move(shared_ring_buffer)) {}
+                             uint64_t pipe_id);
 
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
-
+  MojoResult ReadData(const MojoReadDataOptions& validated_options,
+                      void* elements,
+                      uint32_t* num_bytes) override;
+  MojoResult BeginReadData(const void** buffer,
+                           uint32_t* buffer_num_bytes) override;
+  MojoResult EndReadData(uint32_t num_bytes_read) override;
 private:
-  bool InitializeNoLock() { return true;}
+  bool InitializeNoLock();
   MojoResult CloseNoLock();
 
 private:
@@ -56,6 +57,20 @@ private:
   const uint64_t pipe_id_;
   
   base::UnsafeSharedMemoryRegion shared_ring_buffer_;
+  base::WritableSharedMemoryMapping ring_buffer_mapping_;
+
+  bool in_transit_ = false;
+  bool is_closed_ = false;
+  bool peer_closed_ = false;
+
+  bool in_two_phase_read_ = false;  
+  uint32_t two_phase_max_bytes_read_ = 0;
+
+  uint32_t read_offset_ = 0;
+  uint32_t bytes_available_ = 0;
+
+  // Indicates whether any new data is available since the last read attempt.
+  bool new_data_available_ = false;
 };
 
 } // namespace core

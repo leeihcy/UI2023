@@ -1,6 +1,7 @@
 #ifndef MOJO_CORE_DISPATCHER_H_
 #define MOJO_CORE_DISPATCHER_H_
 
+#include <assert.h>
 #include "mojo/mojo_export.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
@@ -55,13 +56,16 @@ public:
   // |MojoReadData()| documentation.
   virtual MojoResult ReadData(const MojoReadDataOptions &options,
                               void *elements, uint32_t *num_bytes) {
+    assert(false);
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   virtual MojoResult BeginReadData(const void **buffer,
                                    uint32_t *buffer_num_bytes) {
+    assert(false);
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   virtual MojoResult EndReadData(uint32_t num_bytes_read) {
+    assert(false);
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 

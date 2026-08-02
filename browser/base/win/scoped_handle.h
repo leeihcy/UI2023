@@ -30,7 +30,6 @@ class GenericScopedHandle {
   bool is_valid() const { return Traits::IsHandleValid(handle_); }
 
   GenericScopedHandle& operator=(GenericScopedHandle&& other) {
-    DCHECK_NE(this, &other);
     Set(other.release());
     return *this;
   }

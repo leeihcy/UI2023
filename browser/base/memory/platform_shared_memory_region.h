@@ -2,13 +2,27 @@
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
 #include "base/memory/platform_shared_memory_handle.h"
+#include "base/memory/shared_memory_mapper.h"
 #include <utility>
+#include <optional>
+#include <span>
 
 namespace base {
 namespace subtle {
 
 class PlatformSharedMemoryRegion {
 public:
+  // Default constructor initializes an invalid instance, i.e. an instance that
+  // doesn't wrap any valid platform handle.
+  PlatformSharedMemoryRegion() = default;
+
+  // Move operations are allowed.
+  PlatformSharedMemoryRegion(PlatformSharedMemoryRegion&&) = default;
+  PlatformSharedMemoryRegion& operator=(PlatformSharedMemoryRegion&&) = default;
+  PlatformSharedMemoryRegion(const PlatformSharedMemoryRegion&) = delete;
+  PlatformSharedMemoryRegion& operator=(const PlatformSharedMemoryRegion&) =
+      delete;
+
   enum class Mode {
     kReadOnly,  // ReadOnlySharedMemoryRegion
     kWritable,  // WritableSharedMemoryRegion
@@ -39,6 +53,7 @@ public:
   bool IsValid() const {
     return handle_.is_valid();
   }
+  size_t GetSize() const { return size_; }
 
   ScopedPlatformSharedMemoryHandle PassPlatformHandle() {
     return std::move(handle_);
@@ -52,11 +67,15 @@ public:
     return PlatformSharedMemoryRegion(std::move(handle), mode, size/*, guid*/);
   }
   PlatformSharedMemoryRegion Duplicate() const;
+  PlatformSharedMemoryHandle GetPlatformHandle() const;
+
+  std::optional<std::span<uint8_t>> MapAt(uint64_t offset,
+                                     size_t size,
+                                     SharedMemoryMapper* mapper) const;
 
  private:
   static PlatformSharedMemoryRegion Create(Mode mode, size_t size);
 
-  PlatformSharedMemoryRegion();
   PlatformSharedMemoryRegion(ScopedPlatformSharedMemoryHandle handle,
                              Mode mode,
                              size_t size/*,

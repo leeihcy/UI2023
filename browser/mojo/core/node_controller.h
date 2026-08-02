@@ -8,13 +8,21 @@
 namespace mojo {
 namespace core {
 
-class MOJO_EXPORT NodeController {
+class MOJO_EXPORT NodeController : public ports::NodeDelegate {
 public:
+  NodeController();
+
     // Creates a new shared buffer for use in the current process.
   base::WritableSharedMemoryRegion CreateSharedBuffer(size_t num_bytes);
 
   const ports::NodeName& name() const { return name_; }
   ports::Node* node() const { return node_.get(); }
+  
+  // ports::NodeDelegate:
+  void ForwardEvent(const ports::NodeName& node,
+                    ports::ScopedEvent event) override;
+  void BroadcastEvent(ports::ScopedEvent event) override;
+  void PortStatusChanged(const ports::PortRef& port) override;
 
 private:
   const ports::NodeName name_;

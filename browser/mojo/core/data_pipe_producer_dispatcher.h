@@ -2,6 +2,7 @@
 #define MOJO_CORE_DATA_PIPE_PRODUCER_DISPATCHER_H_
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "mojo/mojo_export.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -46,7 +47,7 @@ public:
   MojoResult Close() override;
 
 private:
-  bool InitializeNoLock() { return true; }
+  bool InitializeNoLock();
   MojoResult CloseNoLock() { return 0;} ;
 
 
@@ -55,9 +56,8 @@ private:
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
 
-  
   base::UnsafeSharedMemoryRegion shared_ring_buffer_;
-  // base::WritableSharedMemoryMapping ring_buffer_mapping_;
+  base::WritableSharedMemoryMapping ring_buffer_mapping_;
   
   uint32_t write_offset_ = 0;
   uint32_t available_capacity_;

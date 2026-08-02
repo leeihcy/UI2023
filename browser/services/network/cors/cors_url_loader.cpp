@@ -181,11 +181,13 @@ void CorsURLLoader::OnReceiveResponse(
         request_.credentials_mode,
 
         /*tainted_ ? url::Origin() :*/ *request_.request_initiator);
-    if (!result.has_value()) {
+    if (result) {
       HandleComplete(URLLoaderCompletionStatus(*result));
       return;
     }
   }
+  forwarding_client_->OnReceiveResponse(
+      std::move(response_head), std::move(body)/*, std::move(cached_metadata)*/);
 }
 
 /*

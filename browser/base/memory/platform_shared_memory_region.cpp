@@ -56,8 +56,6 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
 
 }
 
-PlatformSharedMemoryRegion::PlatformSharedMemoryRegion() = default;
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
@@ -127,6 +125,56 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
 
   return PlatformSharedMemoryRegion(win::ScopedHandle(duped_handle), mode_,
                                     size_/*, guid_*/);
+}
+
+
+
+std::optional<std::span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
+    uint64_t offset,
+    size_t size,
+    SharedMemoryMapper* mapper) const {
+  if (!IsValid()) {
+    return std::nullopt;
+  }
+
+  if (size == 0) {
+    return std::nullopt;
+  }
+
+  // size_t end_byte;
+  // if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
+  //   return std::nullopt;
+  // }
+
+  // if (!SharedMemorySecurityPolicy::AcquireReservationForMapping(size)) {
+  //   return std::nullopt;
+  // }
+
+  if (!mapper) {
+    mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
+
+  // The backing mapper expects offset to be aligned to
+  // `SysInfo::VMAllocationGranularity()`.
+  uint64_t aligned_offset = offset;
+  size_t adjustment_for_alignment =
+      static_cast<size_t>(offset - aligned_offset);
+
+  bool write_allowed = mode_ != Mode::kReadOnly;
+  auto result = mapper->Map(GetPlatformHandle(), write_allowed, aligned_offset,
+                            size + adjustment_for_alignment);
+
+  if (result.has_value()) {
+    if (offset != 0) {
+      // Undo the previous adjustment so the returned mapping respects the exact
+      // requested `offset` and `size`.
+      result = result->subspan(adjustment_for_alignment);
+    }
+  } else {
+    // SharedMemorySecurityPolicy::ReleaseReservationForMapping(size);
+  }
+
+  return result;
 }
 
 }

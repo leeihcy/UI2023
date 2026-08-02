@@ -29,10 +29,19 @@ shared_library("mojo") {
   ]
   
   sources += [
+    "../base/memory/platform_shared_memory_region_win.cpp",
     "../base/memory/platform_shared_memory_region.cpp",
     "../base/memory/platform_shared_memory_region.h",
     "../base/memory/writable_shared_memory_region.cpp",
     "../base/memory/writable_shared_memory_region.h",
+    "../base/memory/shared_memory_mapping.cpp",
+    "../base/memory/shared_memory_mapping.h",
+    "../base/memory/shared_memory_mapper.cpp",
+    "../base/memory/shared_memory_mapper.h",
+    "../base/memory/platform_shared_memory_mapper_win.cpp",
+    "../base/memory/platform_shared_memory_mapper.h",
+    "../base/memory/unsafe_shared_memory_region.cpp",
+    "../base/memory/unsafe_shared_memory_region.h",
   ]
 
   include_dirs = [

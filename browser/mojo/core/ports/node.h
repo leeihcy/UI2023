@@ -22,7 +22,7 @@ enum : int {
   ERROR_NOT_IMPLEMENTED = -100,
 };
 
-class NodeDelegate {
+class MOJO_EXPORT NodeDelegate {
  public:
   virtual ~NodeDelegate() = default;
 

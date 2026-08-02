@@ -7,7 +7,7 @@ namespace core {
 namespace ports {
 constexpr uint64_t kInitialSequenceNum = 1;
 
-void GenerateRandomPortName(PortName* name) {
+static void GenerateRandomPortName(PortName* name) {
   // 玩具版：直接用随机数填满两个64位字段
   // 在真实代码中绝对不要这样用！！
   

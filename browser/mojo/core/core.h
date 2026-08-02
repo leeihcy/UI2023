@@ -13,7 +13,7 @@ namespace core {
 
 class MOJO_EXPORT Core {
  public:
-  // Core();
+  Core();
   static Core* Get();
 
   NodeController* GetNodeController();

@@ -55,8 +55,7 @@ std::optional<CorsErrorStatus> CheckAccess(const GURL &response_url,
             mojom::CredentialsMode credentials_mode,
             const url::Origin &origin
         ) {
-  assert(false);
-
+#if 0
   if (allow_origin_header == kAsterisk) {
     // A wildcard Access-Control-Allow-Origin can not be used if credentials are
     // to be sent, even with Access-Control-Allow-Credentials set to true.
@@ -82,7 +81,7 @@ std::optional<CorsErrorStatus> CheckAccess(const GURL &response_url,
                           allow_credentials_header.value_or(std::string())*/);
     }
   }
-
+#endif
   return std::optional<CorsErrorStatus>();
 }
 

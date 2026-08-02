@@ -81,7 +81,7 @@ mojom::URLResponseHead* URLLoader::BuildResponseHead() const {
 }
 
 void URLLoader::StartReading() {
-  // Start reading...
+  SendResponseToClient();
   ReadMore();
 }
 
@@ -102,6 +102,14 @@ void URLLoader::ReadMore() {
   }
 }
 
+void URLLoader::ReadMoreAsync() {
+  URLLoader::ReadMore();
+  // url_read_state_ = URLReadState::kReadMoreTaskPosted;
+  // TaskRunner(url_request_->priority())
+  //     ->PostTask(FROM_HERE, base::BindOnce(&URLLoader::ReadMore,
+  //                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void URLLoader::DidRead(int num_bytes,
                         bool completed_synchronously,
                         bool into_slop_bucket) {
@@ -115,8 +123,7 @@ void URLLoader::DidRead(int num_bytes,
   }
 
   if (completed_synchronously) {
-    // ReadMoreAsync();
-    assert(false);
+    ReadMoreAsync();
   } else {
     ReadMore();
   }

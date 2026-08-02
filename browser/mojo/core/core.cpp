@@ -9,6 +9,10 @@
 namespace mojo {
 namespace core {
 
+Core::Core() {
+    handles_ = std::make_unique<HandleTable>();
+}
+
 NodeController *Core::GetNodeController() {
   // base::AutoLock lock(node_controller_lock_);
   if (!node_controller_) {
@@ -41,12 +45,13 @@ MojoResult Core::CreateDataPipe(const MojoCreateDataPipeOptions *options,
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
 
+  base::UnsafeSharedMemoryRegion consumer_region = producer_region.Duplicate();
+
   uint64_t pipe_id = MakePipeId();
   std::shared_ptr<Dispatcher> producer = DataPipeProducerDispatcher::Create(
       GetNodeController(), port0, std::move(producer_region), *options,
       pipe_id);
 
-  base::UnsafeSharedMemoryRegion consumer_region = producer_region.Duplicate();
   std::shared_ptr<Dispatcher> consumer = DataPipeConsumerDispatcher::Create(
       GetNodeController(), port1, std::move(consumer_region), *options,
       pipe_id);

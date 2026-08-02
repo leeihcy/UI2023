@@ -166,7 +166,7 @@ public:
 
   // BodyReader::Delegate implementation.
   net::Error OnDataRead(std::span<const uint8_t> data) override {
-    // body_->append(base::as_string_view(data));
+    body_->append((const char*)data.data());
     // ReportProgress(body_reader_->total_bytes_read());
     return net::OK;
   }
@@ -210,7 +210,7 @@ void SimpleURLLoader::OnReceiveResponse(
       ::network::mojom::URLResponseHead* head, 
       ::mojo::ScopedDataPipeConsumerHandle body/*, 
       std::optional<::mojo_base::BigBuffer> cached_metadata*/) {
-  assert(false);
+  body_handler_->OnStartLoadingResponseBody(std::move(body));
 }
 void SimpleURLLoader::OnComplete(const ::network::URLLoaderCompletionStatus& status) {
   // Wait to receive any pending data on the data pipe before reporting the

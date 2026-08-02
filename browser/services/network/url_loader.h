@@ -25,6 +25,7 @@ public:
 private:
   void StartReading();
   void ReadMore();
+  void ReadMoreAsync();
   void DidRead(int num_bytes, bool completed_synchronously,
                bool into_slop_bucket);
   void SendResponseToClient();
