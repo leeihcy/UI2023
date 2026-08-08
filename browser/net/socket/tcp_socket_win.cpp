@@ -345,7 +345,7 @@ void TCPSocketDefaultWin::DidSignalRead() {
     return;
   }
 
-  assert(rv != ERR_IO_PENDING);
+  base::Assert(rv != ERR_IO_PENDING);
   std::move(read_if_ready_callback_)(rv);
 }
 
@@ -398,7 +398,12 @@ int TCPSocketDefaultWin::Write(
 int TCPSocketDefaultWin::Read(IOBuffer* buf,
                               int buf_len,
                               CompletionOnceCallback callback) {
+
+  base::Log("TCPSocketDefaultWin::Read");
+  
   CoreImpl& core = GetCoreImpl();
+  base::Assert(!core.read_iobuffer_);
+
   // base::Unretained() is safe because RetryRead() won't be called when |this|
   // is gone.
   int rv = ReadIfReady(
@@ -406,7 +411,7 @@ int TCPSocketDefaultWin::Read(IOBuffer* buf,
       std::bind(&TCPSocketDefaultWin::RetryRead, this, std::placeholders::_1));
   if (rv != ERR_IO_PENDING)
     return rv;
-  // assert(core.read_iobuffer_ == nullptr);
+  // base::Assert(core.read_iobuffer_ == nullptr);
   read_callback_ = std::move(callback);
   core.read_iobuffer_ = buf;
   core.read_buffer_length_ = buf_len;
@@ -422,7 +427,7 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
     WSAEventSelect(socket_, core.read_event_, FD_READ | FD_CLOSE);
     core.non_blocking_reads_initialized_ = true;
   }
-
+  // 也可能一次性将header + Body全Read出来了
   int rv = recv(socket_, buf->data(), buf_len, 0);
   int os_error = WSAGetLastError();
   if (rv == SOCKET_ERROR) {
@@ -443,7 +448,7 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
 
 void TCPSocketDefaultWin::RetryRead(int rv) {
   CoreImpl& core = GetCoreImpl();
-  assert(core.read_iobuffer_);
+  base::Assert(core.read_iobuffer_);
 
   if (rv == OK) {
     // base::Unretained() is safe because RetryRead() won't be called when
@@ -455,6 +460,8 @@ void TCPSocketDefaultWin::RetryRead(int rv) {
       return;
   }
   core.read_iobuffer_ = nullptr;
+  base::Log("RetryRead core.read_iobuffer_ = nullptr");
+
   core.read_buffer_length_ = 0;
   std::move(read_callback_)(rv);
 }

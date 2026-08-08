@@ -1,6 +1,10 @@
 #include "net/http/http_stream_parser.h"
 
+#include "base/log.h"
 #include "net/socket/stream_socket.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
+#include "net/http/http_status_code.h"
 
 namespace net {
 
@@ -86,7 +90,7 @@ int HttpStreamParser::DoLoop(int result) {
         result = DoReadHeaders();
         break;
       case STATE_READ_HEADERS_COMPLETE:
-        // result = DoReadHeadersComplete(result);
+        result = DoReadHeadersComplete(result);
         break;
       case STATE_READ_BODY:
         // DCHECK_GE(result, 0);
@@ -151,6 +155,256 @@ int HttpStreamParser::DoReadHeaders() {
 
   return stream_socket_->Read(read_buf_, read_buf_->RemainingCapacity(),
                               io_callback_);
+}
+
+
+int HttpStreamParser::DoReadHeadersComplete(int result) {
+  // DoReadHeadersComplete is called with the result of Socket::Read, which is a
+  // (byte_count | error), and returns (error | OK).
+
+  result = HandleReadHeaderResult(result);
+  if (io_state_ == STATE_READ_HEADERS) {
+    return result;
+  }
+  
+  if (io_state_ == STATE_DONE || !response_->headers ||
+      response_->headers->response_code() / 100 != 1) {
+    response_ = nullptr;
+  }
+
+  return result;
+}
+
+int HttpStreamParser::HandleReadHeaderResult(int result) {
+  if (result == 0)
+    result = ERR_CONNECTION_CLOSED;
+
+  if (result == ERR_CONNECTION_CLOSED) {
+        // The connection closed without getting any more data.
+    if (read_buf_->offset() == 0) {
+      io_state_ = STATE_DONE;
+      // if (!connection_is_reused_)
+      //   return ERR_EMPTY_RESPONSE;
+      return result;
+    }
+
+    // Parse things as well as we can and let the caller decide what to do.
+    int end_offset;
+    if (response_header_start_offset_ != std::string::npos) {
+      io_state_ = STATE_READ_BODY_COMPLETE;
+      end_offset = read_buf_->offset();
+    } else {
+      end_offset = 0;
+    }
+    int rv = ParseResponseHeaders(end_offset);
+    if (rv < 0)
+      return rv;
+    return result;
+  }
+
+  if (result < 0) {
+    if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+      base::Assert(false);
+    }
+    io_state_ = STATE_DONE;
+    return result;
+  }
+
+  read_buf_->set_offset(read_buf_->offset() + result);
+  int end_of_header_offset = FindAndParseResponseHeaders(result);
+
+  // Note: -1 is special, it indicates we haven't found the end of headers.
+  // Anything less than -1 is a Error, so we bail out.
+  if (end_of_header_offset < -1)
+    return end_of_header_offset;
+
+   if (end_of_header_offset == -1) {
+    io_state_ = STATE_READ_HEADERS;
+    // Prevent growing the headers buffer indefinitely.
+    if (read_buf_->offset() >= kMaxHeaderBufSize) {
+      io_state_ = STATE_DONE;
+      return ERR_RESPONSE_HEADERS_TOO_BIG;
+    }
+  } else {
+
+    CalculateResponseBodySize();
+#if 0
+    // If the body is zero length, the caller may not call ReadResponseBody,
+    // which is where any extra data is copied to read_buf_, so we move the
+    // data here.
+    const auto end_of_header_offset_s =
+        static_cast<size_t>(end_of_header_offset);
+    if (response_body_length_ == 0) {
+      base::span<uint8_t> extra_bytes =
+          read_buf_->span_before_offset().subspan(end_of_header_offset_s);
+      if (!extra_bytes.empty()) {
+        read_buf_->everything().copy_prefix_from(extra_bytes);
+      }
+      read_buf_->SetCapacity(extra_bytes.size());
+      if (response_->headers->response_code() / 100 == 1) {
+        // After processing a 1xx response, the caller will ask for the next
+        // header, so reset state to support that. We don't completely ignore a
+        // 1xx response because it cannot be returned in reply to a CONNECT
+        // request so we return OK here, which lets the caller inspect the
+        // response and reject it in the event that we're setting up a CONNECT
+        // tunnel.
+        response_header_start_offset_ = std::string::npos;
+        response_body_length_ = -1;
+        // Record the timing of the 103 Early Hints response for the experiment
+        // (https://crbug.com/1093693).
+        if (response_->headers->response_code() == HTTP_EARLY_HINTS &&
+            first_early_hints_time_.is_null()) {
+          first_early_hints_time_ = current_response_start_time_;
+        }
+        // Now waiting for the second set of headers to be read.
+      } else {
+        // Only set keep-alive based on final set of headers.
+        response_is_keep_alive_ = response_->headers->IsKeepAlive();
+
+        io_state_ = STATE_DONE;
+      }
+      return OK;
+    }
+
+    // Only set keep-alive based on final set of headers.
+    response_is_keep_alive_ = response_->headers->IsKeepAlive();
+
+    // Note where the headers stop.
+    read_buf_unused_offset_ = end_of_header_offset_s;
+    // Now waiting for the body to be read.
+#endif
+  }
+
+}
+
+
+int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
+  size_t end_offset = std::string::npos;
+
+  // Look for the start of the status line, if it hasn't been found yet.
+  if (response_header_start_offset_ == std::string::npos) {
+    response_header_start_offset_ =
+        HttpUtil::LocateStartOfStatusLine(read_buf_->span_before_offset());
+  }
+
+  if (response_header_start_offset_ != std::string::npos) {
+    size_t lower_bound = read_buf_->offset() - new_bytes - 3;
+    size_t search_start = std::max(response_header_start_offset_, lower_bound);
+    end_offset = HttpUtil::LocateEndOfHeaders(read_buf_->span_before_offset(),
+                                              search_start);
+  } else if (read_buf_->offset() >= 8) {
+    // Enough data to decide that this is an HTTP/0.9 response.
+    // 8 bytes = (4 bytes of junk) + "http".length()
+    end_offset = 0;
+  }
+  if (end_offset == std::string::npos)
+    return -1;
+
+  int rv = ParseResponseHeaders(end_offset);
+  if (rv < 0)
+    return rv;
+  return (int)end_offset;
+}
+
+int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
+  std::shared_ptr<HttpResponseHeaders> headers;
+#if 0
+  if (response_header_start_offset_ != std::string::npos) {
+    received_bytes_ += base::ByteSize(end_offset);
+    headers = HttpResponseHeaders::TryToCreate(
+        base::as_string_view(read_buf_->everything().first(end_offset)));
+    if (!headers)
+      return ERR_INVALID_HTTP_RESPONSE;
+    has_seen_status_line_ = true;
+  } else {
+    // Enough data was read -- there is no status line, so this is HTTP/0.9, or
+    // the server is broken / doesn't speak HTTP.
+
+    if (has_seen_status_line_) {
+      // If we saw a status line previously, the server can speak HTTP/1.x so it
+      // is not reasonable to interpret the response as an HTTP/0.9 response.
+      return ERR_INVALID_HTTP_RESPONSE;
+    }
+
+    std::string_view scheme = url_.scheme();
+    if (url::DefaultPortForScheme(scheme) != url_.EffectiveIntPort()) {
+      // If the port is not the default for the scheme, assume it's not a real
+      // HTTP/0.9 response, and fail the request.
+
+      // Allow Shoutcast responses over HTTP, as it's somewhat common and relies
+      // on HTTP/0.9 on weird ports to work.
+      // See
+      // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
+      if (read_buf_->offset() < 3 || scheme != "http" ||
+          !base::EqualsCaseInsensitiveASCII(
+              base::as_string_view(read_buf_->everything().first(3u)), "icy")) {
+        return ERR_INVALID_HTTP_RESPONSE;
+      }
+    }
+
+    headers = base::MakeRefCounted<HttpResponseHeaders>(
+        std::string("HTTP/0.9 200 OK"));
+  }
+
+  // Check for multiple Content-Length headers when the response is not
+  // chunked-encoded.  If they exist, and have distinct values, it's a potential
+  // response smuggling attack.
+  if (!headers->IsChunkEncoded()) {
+    if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+                                                      "Content-Length"))
+      return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH;
+  }
+
+  // Check for multiple Content-Disposition or Location headers.  If they exist,
+  // it's also a potential response smuggling attack.
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+                                                    "Content-Disposition"))
+    return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION;
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers, "Location"))
+    return ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION;
+
+  response_->headers = headers;
+  if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
+    response_->connection_info = HttpConnectionInfo::kHTTP0_9;
+  } else if (headers->GetHttpVersion() == HttpVersion(1, 0)) {
+    response_->connection_info = HttpConnectionInfo::kHTTP1_0;
+  } else if (headers->GetHttpVersion() == HttpVersion(1, 1)) {
+    response_->connection_info = HttpConnectionInfo::kHTTP1_1;
+  }
+#endif
+  return OK;
+}
+
+void HttpStreamParser::CalculateResponseBodySize() {
+  if (response_->headers->response_code() / 100 == 1) {
+    response_body_length_ = 0;
+  } else {
+    switch (response_->headers->response_code()) {
+      case HTTP_NO_CONTENT:     // No Content
+      case HTTP_RESET_CONTENT:  // Reset Content
+      case HTTP_NOT_MODIFIED:   // Not Modified
+        response_body_length_ = 0;
+        break;
+    }
+  }
+
+  if (method_ == "HEAD") {
+    response_body_length_ = 0;
+  }
+
+  if (response_body_length_ == -1) {
+    // "Transfer-Encoding: chunked" trumps "Content-Length: N"
+    if (response_->headers->IsChunkEncoded()) {
+      // chunked_decoder_ = std::make_unique<HttpChunkedDecoder>();
+      base::Assert(false);
+    } else {
+      std::optional<int64_t> content_length =
+          response_->headers->GetContentLength();
+      response_body_length_ = content_length ? *content_length : -1;
+      // If response_body_length_ is still -1, then we have to wait
+      // for the server to close the connection.
+    }
+  }
 }
 
 int HttpStreamParser::ReadResponseBody(IOBuffer* buf,

@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <span>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -183,8 +184,8 @@ BASE_EXPORT bool HexStringToSpan(std::string_view input,
 
 }  // namespace base
 
-#if BUILDFLAG(IS_WIN)
-#include "base/strings/string_number_conversions_win.h"
-#endif
+// #if BUILDFLAG(IS_WIN)
+// #include "base/strings/string_number_conversions_win.h"
+// #endif
 
 #endif  // BASE_STRINGS_STRING_NUMBER_CONVERSIONS_H_

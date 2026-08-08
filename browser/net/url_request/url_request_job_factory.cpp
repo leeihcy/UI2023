@@ -2,7 +2,7 @@
 #include "net/url_request/url_request.h"
 #include "url/url_constants.h"
 #include "net/url_request/url_request_http_job.h"
-#include <assert.h>
+#include "base/log.h"
 
 namespace net {
 
@@ -60,7 +60,7 @@ URLRequestJobFactory::CreateJob(URLRequest *request) const {
 
   auto it = m_protocol_handler_map.find(request->url().GetScheme());
   if (it == m_protocol_handler_map.end()) {
-    assert(false);
+    base::Assert(false);
     // return std::make_unique<URLRequestErrorJob>(request,
     //                                             ERR_UNKNOWN_URL_SCHEME);
   }

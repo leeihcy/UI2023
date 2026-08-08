@@ -1,6 +1,6 @@
 #include "net/url_request/url_request_job.h"
 
-#include <assert.h>
+#include "base/log.h"
 #include "net/url_request/url_request.h"
 #include "net/base/net_errors.h"
 
@@ -57,7 +57,7 @@ void URLRequestJob::SourceStreamReadComplete(bool synchronous, int result) {
 
 void URLRequestJob::OnDone(int net_error, bool notify_done) {
   NotifyDone();
-  assert(false);
+  base::Assert(false);
 }
 
 void URLRequestJob::NotifyDone() {

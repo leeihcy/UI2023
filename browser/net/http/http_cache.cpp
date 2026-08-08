@@ -1,6 +1,6 @@
 #include "net/http/http_cache.h"
 
-#include <assert.h>
+#include "base/log.h"
 #include "base/check_op.h"
 #include "net/base/net_errors.h"
 
@@ -83,7 +83,7 @@ int HttpCache::Transaction::DoLoop(int result) {
         rv = DoNetworkRead();
         break;
     default:
-      //assert(false);
+      //base::Assert(false);
         break;
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
@@ -116,7 +116,7 @@ int HttpCache::Transaction::DoSendRequest() {
 }
 
 int HttpCache::Transaction::DoNetworkRead() {
-  assert(false);
+  base::Assert(false);
   return 0;
     // next_state_ = STATE_NETWORK_READ_COMPLETE;
     // return m_network_trans->Read(read_buf_.get(), read_buf_len_, io_callback_);

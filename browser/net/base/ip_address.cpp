@@ -198,7 +198,7 @@ bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
 
 void IPAddressBytes::Append(std::span<const uint8_t> data) {
   CHECK_LE(data.size(), static_cast<size_t>(16 - size_));
-  size_ += data.size();
+  size_ += (uint8_t)data.size();
   // std::span(*this).last(data.size()).copy_from(data);
   std::ranges::copy(data, std::span(*this).last(data.size()).begin());
 }
@@ -364,7 +364,7 @@ std::string IPAddress::ToString() const {
   // }
 
   // output.Complete();
-  assert(false);
+  base::Assert(false);
   //TODO:
   return str;
 }

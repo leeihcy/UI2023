@@ -1,6 +1,6 @@
 #include "net/http/http_basic_stream.h"
 
-#include <assert.h>
+#include "base/log.h"
 #include "net/http/http_util.h"
 
 namespace net {

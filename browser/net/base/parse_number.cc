@@ -133,8 +133,8 @@ bool ParseUint32(std::string_view input,
                  ParseIntFormat format,
                  uint32_t* output,
                  ParseIntError* optional_error) {
-  CHECK(format == ParseIntFormat::NON_NEGATIVE ||
-        format == ParseIntFormat::STRICT_NON_NEGATIVE);
+  // CHECK(format == ParseIntFormat::NON_NEGATIVE ||
+  //       format == ParseIntFormat::STRICT_NON_NEGATIVE);
   return ParseIntHelper(input, format, output, optional_error);
 }
 
@@ -142,8 +142,8 @@ bool ParseUint64(std::string_view input,
                  ParseIntFormat format,
                  uint64_t* output,
                  ParseIntError* optional_error) {
-  CHECK(format == ParseIntFormat::NON_NEGATIVE ||
-        format == ParseIntFormat::STRICT_NON_NEGATIVE);
+  // CHECK(format == ParseIntFormat::NON_NEGATIVE ||
+  //       format == ParseIntFormat::STRICT_NON_NEGATIVE);
   return ParseIntHelper(input, format, output, optional_error);
 }
 

@@ -8,6 +8,7 @@
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 #include "net/base/completion_once_callback.h"
+#include "net/http/http_response_info.h"
 
 namespace net {
 class StreamSocket;
@@ -52,15 +53,23 @@ private:
 
   int DoSendHeaders();
   int DoReadHeaders();
+  int DoReadHeadersComplete(int result);
   int DoReadBody();
   int DoReadBodyComplete(int result);
 
   // Handle callbacks.
   void OnIOComplete(int result);
 
+  int HandleReadHeaderResult(int result);
   bool IsResponseBodyComplete() const;
+  int FindAndParseResponseHeaders(int new_bytes);
+  int ParseResponseHeaders(size_t end_of_header_offset);
+  void CalculateResponseBodySize();
 
 private:
+  static const int kHeaderBufInitialSize = 4 * 1024;  // 4K
+  static const int kMaxHeaderBufSize = kHeaderBufInitialSize * 64;  // 256K
+
   // Next state of the request, when the current one completes.
   State io_state_ = STATE_NONE;
 
@@ -82,10 +91,18 @@ private:
   IOBuffer* user_read_buf_ = nullptr;
   size_t user_read_buf_len_ = 0;
 
-  // Offset of the first unused byte in |read_buf_|.  May be nonzero due to
-  // body data in the same packet as header data but is zero when reading
-  // headers.
+  int64_t response_body_length_ = -1;
+
+  // 指向第一个还没读的字节
   size_t read_buf_unused_offset_ = 0;
+
+  // 记录的是状态行 HTTP/1.1 200 OK 的起始位置。
+  size_t response_header_start_offset_ = std::string::npos;
+
+  HttpResponseInfo* response_ = nullptr;
+
+  // Helper if the data is chunked.
+  // std::unique_ptr<HttpChunkedDecoder> chunked_decoder_;
 
   // The callback to notify a user that their request or response is
   // complete or there was an error

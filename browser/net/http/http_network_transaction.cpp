@@ -50,7 +50,7 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   //   // stream used SSL for one or more of the layers.
   //   result = HandleSSLClientAuthError(result);
   } else {
-    assert(false);
+    base::Assert(false);
   }
 
   // At this point we are done with the stream_request_.
@@ -187,7 +187,7 @@ int HttpNetworkTransaction::DoSendRequest() {
 
 int HttpNetworkTransaction::DoSendRequestComplete(int result) {
   if (result < 0) {
-    assert(false);
+    base::Assert(false);
     // return HandleIOError(result);
   }
   next_state_ = STATE_READ_HEADERS;
@@ -206,12 +206,12 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
 
 int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
-    assert(false);
+    base::Assert(false);
   }
 
   if (result == ERR_HTTP_1_1_REQUIRED ||
       result == ERR_PROXY_HTTP_1_1_REQUIRED) {
-    assert(false);
+    base::Assert(false);
   }
 
   if (result < 0) {

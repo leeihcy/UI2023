@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <assert.h>
+#include "base/log.h"
 
 #include <algorithm>
 #include <array>

@@ -55,6 +55,7 @@ public:
   );
 
   SimpleURLLoader(std::unique_ptr<ResourceRequest> resource_request);
+  ~SimpleURLLoader() {}
 
   void DownloadToString(mojom::URLLoaderFactory *url_loader_factory,
                         BodyAsStringCallback body_as_string_callback,

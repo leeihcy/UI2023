@@ -28,7 +28,7 @@ int TransportClientSocketPool::RequestSocket(const GroupId& group_id, ClientSock
   if (group_it != group_map_.end()) {
     group = group_it->second;
 
-    assert(false); // TODO:
+    base::Assert(false); // TODO:
 #if 0
     // Try to reuse a socket.
     if (AssignIdleSocketToRequest(request, group))
@@ -82,7 +82,7 @@ void TransportClientSocketPool::Group::AddJob(std::unique_ptr<ConnectJob> job/*,
 
 void TransportClientSocketPool::Group::OnConnectJobComplete(int result,
                                                             ConnectJob* job) {
-  assert(ERR_IO_PENDING != result);
+  base::Assert(ERR_IO_PENDING != result);
   client_socket_pool_->OnConnectJobComplete(this, result, job);
 }
 
@@ -119,7 +119,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group *group, int result,
   request = owned_request.get();
   if (!request) {
     // TODO:
-    assert(false);
+    base::Assert(false);
     return;
   }
 

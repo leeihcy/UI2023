@@ -1,5 +1,5 @@
 #include "net/socket/transport_connect_job.h"
-#include <assert.h>
+#include "base/log.h"
 #include "net/socket/tcp_client_socket.h"
 
 namespace net {
@@ -38,7 +38,7 @@ void TransportConnectJob::DoResolveHost() {
 
 int TransportConnectJob::DoTransportConnect() {
   if (endpoint_results_.empty()) {
-    assert(false);
+    base::Assert(false);
   }
 
   std::vector<IPEndPoint> ipv4_addresses, ipv6_addresses;

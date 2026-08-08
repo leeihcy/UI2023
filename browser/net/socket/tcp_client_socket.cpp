@@ -1,6 +1,6 @@
 #include "net/socket/tcp_client_socket.h"
 
-#include <assert.h>
+#include "base/log.h"
 
 namespace net {
 
@@ -25,16 +25,16 @@ int TCPClientSocket::Connect(CompletionOnceCallback callback) {
 }
 
 void TCPClientSocket::Disconnect() {
-  assert(false);
+  base::Assert(false);
 }
 
 bool TCPClientSocket::IsConnected() const {
-  assert(false);
+  base::Assert(false);
   return false;
 }
 
 bool TCPClientSocket::IsConnectedAndIdle() const {
-  assert(false);
+  base::Assert(false);
   return false;
 }
   
@@ -116,9 +116,9 @@ int TCPClientSocket::DoConnectComplete(int result) { return 0; }
 //   	net.dll!net::TCPSocketWin::DidCompleteConnect	C++
 //
 void TCPClientSocket::DidCompleteConnect(int result) {
-  assert(next_connect_state_ == CONNECT_STATE_CONNECT_COMPLETE);
-  assert(result != ERR_IO_PENDING);
-  assert(connect_callback_);
+  base::Assert(next_connect_state_ == CONNECT_STATE_CONNECT_COMPLETE);
+  base::Assert(result != ERR_IO_PENDING);
+  base::Assert(!!connect_callback_);
 
   result = DoConnectLoop(result);
   if (result != ERR_IO_PENDING) {
