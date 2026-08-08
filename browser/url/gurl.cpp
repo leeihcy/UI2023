@@ -409,7 +409,10 @@ bool GURL::SchemeIsHTTPOrHTTPS() const {
 }
 
 std::string GURL::PathForRequest() const {
-  return path_;
+  // request-target 必须以一个斜杠 / 开头
+  std::string path = path_;
+  if (path.empty() || path[0] != '/') {
+    path.insert(0, "/");
+  }
+  return path;
 }
-
-

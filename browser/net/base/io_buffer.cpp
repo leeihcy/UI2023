@@ -165,5 +165,15 @@ GrowableIOBuffer::~GrowableIOBuffer() {
 
 // ---------------------------------------------------------
 
+WrappedIOBuffer::WrappedIOBuffer(std::span<const char> data)
+    : WrappedIOBuffer(std::span<const uint8_t>((const uint8_t *)data.data(),
+                                               data.size())) {}
+
+WrappedIOBuffer::WrappedIOBuffer(std::span<const uint8_t> data)
+    // SAFETY: const cast does not affect size.
+    : IOBuffer(
+          std::span(const_cast<uint8_t*>(data.data()), data.size())) {}
+
+WrappedIOBuffer::~WrappedIOBuffer() = default;
 
 }

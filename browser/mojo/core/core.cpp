@@ -95,17 +95,66 @@ std::shared_ptr<Dispatcher> Core::GetDispatcher(MojoHandle handle) {
 MojoResult Core::WriteData(MojoHandle data_pipe_producer_handle,
                            const void *elements, uint32_t *num_bytes,
                            const MojoWriteDataOptions *options) {
-  return MOJO_RESULT_INVALID_ARGUMENT;
+RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_producer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  MojoWriteDataOptions validated_options;
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+
+    constexpr MojoWriteDataFlags kSupportedFlags =
+        MOJO_WRITE_DATA_FLAG_NONE | MOJO_WRITE_DATA_FLAG_ALL_OR_NONE;
+    if (options->flags & ~kSupportedFlags) {
+      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+    validated_options.flags = options->flags;
+  } else {
+    validated_options.flags = MOJO_WRITE_DATA_FLAG_NONE;
+  }
+  return dispatcher->WriteData(elements, num_bytes, validated_options);
 }
 MojoResult Core::BeginWriteData(MojoHandle data_pipe_producer_handle,
                                 const MojoBeginWriteDataOptions *options,
                                 void **buffer, uint32_t *buffer_num_bytes) {
-  return MOJO_RESULT_INVALID_ARGUMENT;
+  RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_producer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  MojoBeginWriteDataFlags flags = MOJO_BEGIN_WRITE_DATA_FLAG_NONE;
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    flags = options->flags;
+  }
+  return dispatcher->BeginWriteData(buffer, buffer_num_bytes, flags);
 }
 MojoResult Core::EndWriteData(MojoHandle data_pipe_producer_handle,
                               uint32_t num_bytes_written,
                               const MojoEndWriteDataOptions *options) {
-  return MOJO_RESULT_INVALID_ARGUMENT;
+  RequestContext request_context;
+  std::shared_ptr<Dispatcher> dispatcher(
+      GetDispatcher(data_pipe_producer_handle));
+  if (!dispatcher) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    if (options->flags != MOJO_END_WRITE_DATA_FLAG_NONE) {
+      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+  }
+  return dispatcher->EndWriteData(num_bytes_written);
 }
 
 MojoResult Core::ReadData(MojoHandle data_pipe_consumer_handle,

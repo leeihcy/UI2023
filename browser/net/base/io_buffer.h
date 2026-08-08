@@ -208,6 +208,15 @@ class GrowableIOBuffer : public IOBuffer {
   int offset_ = 0;
 };
 
+class WrappedIOBuffer : public IOBuffer {
+ public:
+  explicit WrappedIOBuffer(std::span<const char> data);
+  explicit WrappedIOBuffer(std::span<const uint8_t> data);
+
+ protected:
+  ~WrappedIOBuffer() override;
+};
+
 }
 
 #endif

@@ -89,20 +89,41 @@ void URLLoader::StartReading() {
 void URLLoader::ReadMore() {
   const int size = 64 * 1024;
   if (!pending_write_) {
-    
-
-    pending_write_ = std::make_unique<net::GrowableIOBuffer>();
-    pending_write_->SetCapacity(size);
+    MojoResult result = NetToMojoPendingBuffer::BeginWrite(
+        &response_body_stream_, &pending_write_);
+    switch (result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_SHOULD_WAIT: {
+      assert(false);
+      break;
+    }
+      pending_write_buffer_size_ = pending_write_->size();
+      // pending_write_ = std::make_unique<net::GrowableIOBuffer>();
+      // pending_write_->SetCapacity(size);
+    }
   }
 
-  // URLRequest::Read
-  // url_read_state_ = URLReadState::kURLReadInProgress;
-  int bytes_read = url_request_->Read(pending_write_.get(), size);
+  auto buf = std::make_shared<NetToMojoIOBuffer>(
+      pending_write_, pending_write_buffer_offset_);
+  url_read_state_ = URLReadState::kURLReadInProgress;
+  int bytes_read = url_request_->Read(
+      buf.get(), static_cast<int>(pending_write_buffer_size_ -
+                                  pending_write_buffer_offset_));
   if (bytes_read != net::ERR_IO_PENDING) {
     DidRead(bytes_read, /*completed_synchronously=*/true,
             /*into_slop_bucket=*/false);
     // |this| may have been deleted.
   }
+
+  // // URLRequest::Read
+  // // url_read_state_ = URLReadState::kURLReadInProgress;
+  // int bytes_read = url_request_->Read(pending_write_.get(), size);
+  // if (bytes_read != net::ERR_IO_PENDING) {
+  //   DidRead(bytes_read, /*completed_synchronously=*/true,
+  //           /*into_slop_bucket=*/false);
+  //   // |this| may have been deleted.
+  // }
 }
 
 void URLLoader::ReadMoreAsync() {

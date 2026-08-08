@@ -32,4 +32,18 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
 }
 
 
+// --------------
+
+NetToMojoIOBuffer::NetToMojoIOBuffer(
+    std::shared_ptr<NetToMojoPendingBuffer> pending_buffer, size_t offset)
+    : net::WrappedIOBuffer(std::span((const char *)(pending_buffer->buffer()),
+                                     pending_buffer->size())
+                               .subspan(offset)),
+      pending_buffer_(std::move(pending_buffer)) {}
+
+NetToMojoIOBuffer::~NetToMojoIOBuffer() {
+  // Avoid dangling ptr should this destructor remove the last reference
+  // to `pending_buffer_`.
+  ClearSpan();
+}
 }
