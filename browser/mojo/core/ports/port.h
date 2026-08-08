@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include "mojo/core/ports/user_data.h"
 
 namespace mojo {
 namespace core {
@@ -51,6 +52,12 @@ public:
   // Next sequence number to send for all event messages.
   uint64_t next_control_sequence_num_to_send;
   uint64_t next_control_sequence_num_to_receive;
+
+  
+  // Arbitrary user data attached to the Port. In practice, Mojo uses this to
+  // stash an observer interface which can be notified about various Port state
+  // changes.
+  std::shared_ptr<UserData> user_data;
 };
 
 class PortRef {

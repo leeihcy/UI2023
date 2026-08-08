@@ -6,6 +6,16 @@
 #include "mojo/core/ports/port.h"
 #include "mojo/core/request_context.h"
 
+/*
+
+>	mojo_core_embedder_internal.dll!CreateNode	C++
+ 	mojo_core_embedder_internal.dll!mojo::core::InitializeIpczNodeForProcess	C++
+ 	mojo_core_embedder.dll!mojo::core::Init	C++
+ 	content.dll!content::InitializeMojoCore	C++
+ 	chrome.dll!ChromeMainDelegate::PostEarlyInitialization	C++
+
+*/
+
 namespace mojo {
 namespace core {
 
@@ -80,6 +90,22 @@ MojoHandle Core::AddDispatcher(std::shared_ptr<Dispatcher> dispatcher) {
 std::shared_ptr<Dispatcher> Core::GetDispatcher(MojoHandle handle) {
   // base::AutoLock lock(handles_->GetLock());
   return handles_->GetDispatcher(handle);
+}
+
+MojoResult Core::WriteData(MojoHandle data_pipe_producer_handle,
+                           const void *elements, uint32_t *num_bytes,
+                           const MojoWriteDataOptions *options) {
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+MojoResult Core::BeginWriteData(MojoHandle data_pipe_producer_handle,
+                                const MojoBeginWriteDataOptions *options,
+                                void **buffer, uint32_t *buffer_num_bytes) {
+  return MOJO_RESULT_INVALID_ARGUMENT;
+}
+MojoResult Core::EndWriteData(MojoHandle data_pipe_producer_handle,
+                              uint32_t num_bytes_written,
+                              const MojoEndWriteDataOptions *options) {
+  return MOJO_RESULT_INVALID_ARGUMENT;
 }
 
 MojoResult Core::ReadData(MojoHandle data_pipe_consumer_handle,

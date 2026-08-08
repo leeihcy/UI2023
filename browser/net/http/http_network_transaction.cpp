@@ -9,6 +9,10 @@ HttpNetworkTransaction::HttpNetworkTransaction(HttpNetworkSession *session)
                            std::placeholders::_1);
 }
 
+//
+// HttpNetworkTransaction::Start() 的语义是：
+// 建立连接 + 发送请求 + 接收并解析响应头
+//
 int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info, CompletionOnceCallback callback) {
   request_ = request_info;
 

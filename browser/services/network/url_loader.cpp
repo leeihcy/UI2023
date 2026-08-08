@@ -2,6 +2,7 @@
 #include "services/network/url_loader_factory.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/net_adapters.h"
 
 namespace network {
 
@@ -88,6 +89,8 @@ void URLLoader::StartReading() {
 void URLLoader::ReadMore() {
   const int size = 64 * 1024;
   if (!pending_write_) {
+    
+
     pending_write_ = std::make_unique<net::GrowableIOBuffer>();
     pending_write_->SetCapacity(size);
   }

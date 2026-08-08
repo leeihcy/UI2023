@@ -41,7 +41,20 @@ void NodeController::BroadcastEvent(ports::ScopedEvent event) {
 }
 
 void NodeController::PortStatusChanged(const ports::PortRef& port) {
+  std::shared_ptr<ports::UserData> user_data;
+  node_->GetUserData(port, &user_data);
+
+  PortObserver* observer = static_cast<PortObserver*>(user_data.get());
+  if (observer) {
+    observer->OnPortStatusChanged();
+  }
 }
+
+void NodeController::SetPortObserver(const ports::PortRef& port,
+                                     std::shared_ptr<PortObserver> observer) {
+  node_->SetUserData(port, std::move(observer));
+}
+
 
 }
 }

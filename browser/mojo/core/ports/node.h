@@ -6,6 +6,7 @@
 #include "mojo/mojo_export.h"
 #include "mojo/core/ports/port.h"
 #include "mojo/core/ports/event.h"
+#include "mojo/core/ports/user_data.h"
 
 namespace mojo {
 namespace core {
@@ -20,6 +21,16 @@ enum : int {
   ERROR_PORT_PEER_CLOSED = -14,
   ERROR_PORT_CANNOT_SEND_PEER = -15,
   ERROR_NOT_IMPLEMENTED = -100,
+};
+
+struct PortStatus {
+  bool has_messages;
+  bool receiving_messages;
+  bool peer_closed;
+  bool peer_remote;
+  size_t queued_message_count;
+  size_t queued_num_bytes;
+  size_t unacknowledged_message_count;
 };
 
 class MOJO_EXPORT NodeDelegate {
@@ -62,6 +73,12 @@ public:
   // Removes an entry from |peer_port_map_| corresponding to |local_port|'s peer
   // address, if valid.
   void RemoveFromPeerPortMap(const PortName& local_port_name, Port* local_port);
+
+    // User data associated with the port.
+  int SetUserData(const PortRef& port_ref, std::shared_ptr<UserData> user_data);
+  int GetUserData(const PortRef& port_ref, std::shared_ptr<UserData>* user_data);
+
+  int GetStatus(const PortRef& port_ref, PortStatus* port_status);
 
 private:
   const NodeName name_;

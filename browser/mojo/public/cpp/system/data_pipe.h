@@ -12,6 +12,24 @@
 namespace mojo {
 
 class DataPipeProducerHandle : public Handle {
+public:
+ MojoResult BeginWriteData(size_t write_size_hint,
+                            MojoBeginWriteDataFlags flags,
+                            std::span<uint8_t>& buffer) const {
+    MojoBeginWriteDataOptions options;
+    options.struct_size = sizeof(options);
+    options.flags = flags;
+
+    void* buffer_ptr = nullptr;
+    uint32_t buffer_num_bytes = (uint32_t)(write_size_hint);
+    MojoResult result =
+        MojoBeginWriteData(value(), &options, &buffer_ptr, &buffer_num_bytes);
+    if (result == MOJO_RESULT_OK) {
+      buffer = std::span(static_cast<uint8_t*>(buffer_ptr),
+                                         size_t{buffer_num_bytes});
+    }
+    return result;
+  }
 };
 
 class DataPipeConsumerHandle : public Handle {

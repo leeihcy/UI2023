@@ -17,26 +17,32 @@ struct MojoCreateDataPipeOptions {
   uint32_t capacity_num_bytes;
 };
 
-
-// Flags passed to |MojoWriteData()| via |MojoWriteDataOptions|. See values
-// defined below.
 typedef uint32_t MojoWriteDataFlags;
 
-// No flags. Default behavior.
 #define MOJO_WRITE_DATA_FLAG_NONE ((uint32_t)0)
-
-// Requires that all provided data must fit into the pipe's available capacity
-// in order for the write to succeed. Otherwise the write fails and no data is
-// written into the pipe.
 #define MOJO_WRITE_DATA_FLAG_ALL_OR_NONE ((uint32_t)1 << 0)
 
-// Options passed to |MojoWriteData()|.
 struct MojoWriteDataOptions {
-  // The size of this structure, used for versioning.
   uint32_t struct_size;
-
-  // See |MojoWriteDataFlags|.
   MojoWriteDataFlags flags;
+};
+
+typedef uint32_t MojoBeginWriteDataFlags;
+
+#define MOJO_BEGIN_WRITE_DATA_FLAG_NONE ((uint32_t)0)
+#define MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE ((uint32_t)1 << 0)
+
+struct MojoBeginWriteDataOptions {
+  uint32_t struct_size;
+  MojoBeginWriteDataFlags flags;
+};
+
+typedef uint32_t MojoEndWriteDataFlags;
+#define MOJO_END_WRITE_DATA_FLAG_NONE ((uint32_t)0)
+
+struct MojoEndWriteDataOptions {
+  uint32_t struct_size;
+  MojoEndWriteDataFlags flags;
 };
 
 // Flags passed to |MojoReadData()| via |MojoReadDataOptions|.
@@ -100,17 +106,17 @@ MOJO_EXPORT MojoResult MojoCreateDataPipe(const struct MojoCreateDataPipeOptions
                               MojoHandle *data_pipe_producer_handle,
                               MojoHandle *data_pipe_consumer_handle);
 
-// MojoResult MojoWriteData(MojoHandle data_pipe_producer_handle,
-//                          const void *elements, uint32_t *num_bytes,
-//                          const struct MojoWriteDataOptions *options);
+MOJO_EXPORT MojoResult MojoWriteData(MojoHandle data_pipe_producer_handle,
+                         const void *elements, uint32_t *num_bytes,
+                         const struct MojoWriteDataOptions *options);
 
-// MojoResult MojoBeginWriteData(MojoHandle data_pipe_producer_handle,
-//                               const struct MojoBeginWriteDataOptions *options,
-//                               void **buffer, uint32_t *buffer_num_bytes);
+MOJO_EXPORT MojoResult MojoBeginWriteData(MojoHandle data_pipe_producer_handle,
+                              const struct MojoBeginWriteDataOptions *options,
+                              void **buffer, uint32_t *buffer_num_bytes);
 
-// MojoResult MojoEndWriteData(MojoHandle data_pipe_producer_handle,
-//                             uint32_t num_bytes_written,
-//                             const struct MojoEndWriteDataOptions *options);
+MOJO_EXPORT MojoResult MojoEndWriteData(MojoHandle data_pipe_producer_handle,
+                            uint32_t num_bytes_written,
+                            const struct MojoEndWriteDataOptions *options);
 
 MOJO_EXPORT MojoResult MojoReadData(MojoHandle data_pipe_consumer_handle,
                         const struct MojoReadDataOptions *options,

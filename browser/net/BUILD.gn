@@ -151,6 +151,9 @@ shared_library("net") {
     "../services/network/public/cpp/cors/cors.cpp",
     "../services/network/public/cpp/cors/cors_error_status.h",
     "../services/network/public/cpp/cors/cors_error_status.cpp",
+
+    "../services/network/public/cpp/net_adapters.cpp",
+    "../services/network/public/cpp/net_adapters.h",
   ]
 
   include_dirs = [

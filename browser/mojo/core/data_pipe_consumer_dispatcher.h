@@ -7,6 +7,7 @@
 #include "mojo/core/ports/port.h"
 #include "mojo/mojo_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/core/node_controller.h"
 #include <memory>
 
 
@@ -37,6 +38,17 @@ public:
                              const MojoCreateDataPipeOptions &options,
                              uint64_t pipe_id);
 
+  class PortObserverThunk : public NodeController::PortObserver {
+  public:
+    explicit PortObserverThunk(
+        DataPipeConsumerDispatcher* dispatcher)
+        : dispatcher_(dispatcher) {}
+    ~PortObserverThunk() override { }
+  private:
+    void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
+    DataPipeConsumerDispatcher* dispatcher_;
+  };
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
@@ -50,9 +62,12 @@ private:
   bool InitializeNoLock();
   MojoResult CloseNoLock();
 
+  void OnPortStatusChanged();
+  void UpdateSignalsStateNoLock();
+
 private:
   const MojoCreateDataPipeOptions options_;
-  const NodeController* node_controller_;
+  NodeController* node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
   
@@ -62,6 +77,8 @@ private:
   bool in_transit_ = false;
   bool is_closed_ = false;
   bool peer_closed_ = false;
+  bool peer_remote_ = false;
+  bool transferred_ = false;
 
   bool in_two_phase_read_ = false;  
   uint32_t two_phase_max_bytes_read_ = 0;

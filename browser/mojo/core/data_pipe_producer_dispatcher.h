@@ -7,6 +7,7 @@
 #include "mojo/core/dispatcher.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/core/ports/port.h"
+#include "mojo/core/node_controller.h"
 #include <memory>
 
 namespace mojo {
@@ -42,19 +43,47 @@ public:
         shared_ring_buffer_(std::move(shared_ring_buffer)),
         available_capacity_(options_.capacity_num_bytes) {}
 
+  class PortObserverThunk : public NodeController::PortObserver {
+  public:
+    explicit PortObserverThunk(
+        DataPipeProducerDispatcher* dispatcher)
+        : dispatcher_(dispatcher) {}
+    ~PortObserverThunk() override { }
+  private:
+    void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
+    DataPipeProducerDispatcher* dispatcher_;
+  };
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
 
+  
+  MojoResult WriteData(const void* elements,
+                       uint32_t* num_bytes,
+                       const MojoWriteDataOptions& options) override;
+  MojoResult BeginWriteData(void** buffer,
+                            uint32_t* buffer_num_bytes,
+                            MojoBeginWriteDataFlags flags) override;
+  MojoResult EndWriteData(uint32_t num_bytes_written) override;
+
 private:
   bool InitializeNoLock();
   MojoResult CloseNoLock() { return 0;} ;
-
+  void OnPortStatusChanged();
+  void UpdateSignalsStateNoLock();
 
   const MojoCreateDataPipeOptions options_;
-  const NodeController* node_controller_;
+  NodeController* node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
+
+  bool in_transit_ = false;
+  bool is_closed_ = false;
+  bool peer_closed_ = false;
+  bool peer_remote_ = false;
+  bool transferred_ = false;
+  bool in_two_phase_write_ = false;
 
   base::UnsafeSharedMemoryRegion shared_ring_buffer_;
   base::WritableSharedMemoryMapping ring_buffer_mapping_;

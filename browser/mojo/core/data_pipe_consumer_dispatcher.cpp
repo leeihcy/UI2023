@@ -1,5 +1,7 @@
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 
+#include "mojo/core/node_controller.h"
+
 #ifdef min
 #undef min
 #endif
@@ -44,8 +46,8 @@ bool DataPipeConsumerDispatcher::InitializeNoLock() {
   }
 
   // base::AutoUnlock unlock(lock_);
-  // node_controller_->SetPortObserver(
-  //     control_port_, base::MakeRefCounted<PortObserverThunk>(this));
+  node_controller_->SetPortObserver(
+      control_port_, std::make_shared<PortObserverThunk>(this));
 
   return true;
 }
@@ -166,6 +168,17 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
   return MOJO_RESULT_OK;
 }
 
+/**
+>	mojo_core_embedder_internal.dll!mojo::core::DataPipeConsumerDispatcher::BeginReadData	C++
+ 	mojo_core_embedder_internal.dll!mojo::core::Core::BeginReadData	C++
+ 	mojo_core_embedder_internal.dll!MojoBeginReadDataImpl	C++
+ 	mojo_public_system.dll!MojoBeginReadData	C++
+ 	network_cpp.dll!mojo::DataPipeConsumerHandle::BeginReadData	C++
+ 	network_cpp.dll!network::`anonymous namespace'::BodyReader::ReadData	C++
+ 	network_cpp.dll!network::`anonymous namespace'::BodyReader::Start	C++
+ 	network_cpp.dll!network::`anonymous namespace'::SaveToStringBodyHandler::OnStartLoadingResponseBody	C++
+ 	network_cpp.dll!network::`anonymous namespace'::SimpleURLLoaderImpl::OnReceiveResponse	C++
+*/
 MojoResult
 DataPipeConsumerDispatcher::BeginReadData(const void **buffer,
                                           uint32_t *buffer_num_bytes) {
@@ -238,5 +251,81 @@ MojoResult DataPipeConsumerDispatcher::EndReadData(uint32_t num_bytes_read) {
 
   return rv;
 }
+
+
+void DataPipeConsumerDispatcher::OnPortStatusChanged() {
+  // base::AutoLock lock(lock_);
+
+  // We stop observing the control port as soon it's transferred, but this can
+  // race with events which are raised right before that happens. This is fine
+  // to ignore.
+  if (transferred_) {
+    return;
+  }
+
+  UpdateSignalsStateNoLock();
+}
+
+void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
+  // lock_.AssertAcquired();
+#if 0
+  const bool was_peer_closed = peer_closed_;
+  const bool was_peer_remote = peer_remote_;
+  size_t previous_bytes_available = bytes_available_;
+
+  ports::PortStatus port_status;
+  int rv = node_controller_->node()->GetStatus(control_port_, &port_status);
+  peer_remote_ = rv == ports::OK && port_status.peer_remote;
+  if (rv != ports::OK || !port_status.receiving_messages) {
+    peer_closed_ = true;
+  } else if (rv == ports::OK && port_status.has_messages && !in_transit_) {
+    std::unique_ptr<ports::UserMessageEvent> message_event;
+    do {
+      rv = node_controller_->node()->GetMessage(control_port_, &message_event,
+                                                nullptr);
+      if (rv != ports::OK) {
+        peer_closed_ = true;
+      }
+      if (message_event) {
+        auto* message = message_event->GetMessage<UserMessageImpl>();
+        if (message->user_payload_size() < sizeof(DataPipeControlMessage)) {
+          peer_closed_ = true;
+          break;
+        }
+
+        const DataPipeControlMessage* m =
+            static_cast<const DataPipeControlMessage*>(message->user_payload());
+
+        if (m->command != DataPipeCommand::DATA_WAS_WRITTEN) {
+          peer_closed_ = true;
+          break;
+        }
+
+        uint32_t new_bytes_available;
+        if (!base::CheckAdd(bytes_available_, m->num_bytes)
+                 .AssignIfValid(&new_bytes_available) ||
+            new_bytes_available > options_.capacity_num_bytes) {
+          peer_closed_ = true;
+          break;
+        }
+
+        bytes_available_ = new_bytes_available;
+      }
+    } while (message_event);
+  }
+
+  bool has_new_data = bytes_available_ != previous_bytes_available;
+  if (has_new_data) {
+    new_data_available_ = true;
+  }
+
+  if (peer_closed_ != was_peer_closed || has_new_data ||
+      peer_remote_ != was_peer_remote) {
+    watchers_.NotifyState(GetHandleSignalsStateNoLock());
+  }
+#endif  
+}
+
+
 } // namespace core
 } // namespace mojo

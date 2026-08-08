@@ -98,6 +98,17 @@ int URLRequestHttpJob::NotifyConnectedCallback(const TransportInfo& info) {
  	kernel32.dll!00007ffc7cade8d7()	未知
  	ntdll.dll!00007ffc7e3cc3fc()	未知
 */
+
+//
+// ✅ TCP 数据可能还没有全部收到
+// ✅ Response Body 可能还没有任何数据
+// ❌ 不是收到第一个字节就回调
+// ✅ 必须至少完成 HTTP Header 的解析
+//
+// Header 是怎么保证完整读取的？
+// ==> HttpStreamParser::ReadResponseHeaders()
+// Parser 会一直读取，直到发现：\r\n\r\n
+//
 void URLRequestHttpJob::OnStartCompleted(int result) {
   // NetworkDelegate* network_delegate = request()->network_delegate();
   // if (network_delegate) {

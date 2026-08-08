@@ -141,6 +141,57 @@ void Node::RemoveFromPeerPortMap(const PortName& local_port_name,
   }
 }
 
+
+int Node::SetUserData(const PortRef& port_ref,
+                      std::shared_ptr<UserData> user_data) {
+  // SinglePortLocker locker(&port_ref);
+  // auto* port = locker.port();
+  auto* port = port_ref.port();
+  if (port->state == Port::kClosed) {
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
+  port->user_data = std::move(user_data);
+
+  return OK;
+}
+
+int Node::GetUserData(const PortRef& port_ref,
+                      std::shared_ptr<UserData>* user_data) {
+  // SinglePortLocker locker(&port_ref);
+  // auto* port = locker.port();
+  auto* port = port_ref.port();
+  if (port->state == Port::kClosed) {
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
+  *user_data = port->user_data;
+
+  return OK;
+}
+
+int Node::GetStatus(const PortRef& port_ref, PortStatus* port_status) {
+  // SinglePortLocker locker(&port_ref);
+  // auto* port = locker.port();
+  auto* port = port_ref.port();
+  if (port->state != Port::kReceiving) {
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
+  // port_status->has_messages = port->message_queue.HasNextMessage();
+  // port_status->receiving_messages = CanAcceptMoreMessages(port);
+  // port_status->peer_closed = port->peer_closed;
+  // port_status->peer_remote = port->peer_node_name != name_;
+  // port_status->queued_message_count =
+  //     port->message_queue.queued_message_count();
+  // port_status->queued_num_bytes = port->message_queue.queued_num_bytes();
+  // port_status->unacknowledged_message_count =
+  //     port->next_sequence_num_to_send - port->last_sequence_num_acknowledged -
+  //     1;
+
+  return OK;
+}
+
 }  // namespace ports
 }  // namespace core
 }  // namespace mojo

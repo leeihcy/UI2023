@@ -1,11 +1,10 @@
 #ifndef MOJO_CORE_DISPATCHER_H_
 #define MOJO_CORE_DISPATCHER_H_
 
-#include <assert.h>
 #include "mojo/mojo_export.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
-
+#include <assert.h>
 
 namespace mojo {
 namespace core {
@@ -68,7 +67,21 @@ public:
     assert(false);
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
+  virtual MojoResult WriteData(const void *elements, uint32_t *num_bytes,
+                               const MojoWriteDataOptions &options) {
+    assert(false);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
+  virtual MojoResult BeginWriteData(void **buffer, uint32_t *buffer_num_bytes,
+                                    MojoBeginWriteDataFlags flags) {
+    assert(false);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  virtual MojoResult EndWriteData(uint32_t num_bytes_written) {
+    assert(false);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 };
 
 } // namespace core
