@@ -96,8 +96,20 @@ private:
   // 指向第一个还没读的字节
   size_t read_buf_unused_offset_ = 0;
 
+  // The amount of received data.  If connection is reused then intermediate
+  // value may be bigger than final.
+  int received_bytes_ = 0;
+
+  // The amount of sent data.
+  int sent_bytes_ = 0;
+
   // 记录的是状态行 HTTP/1.1 200 OK 的起始位置。
   size_t response_header_start_offset_ = std::string::npos;
+
+  // True if reading a keep-alive response. False if not, or if don't yet know.
+  bool response_is_keep_alive_ = false;
+  
+  bool has_seen_status_line_ = false;
 
   HttpResponseInfo* response_ = nullptr;
 

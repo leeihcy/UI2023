@@ -5,6 +5,10 @@
 #include <span>
 #include "url/gurl.h"
 
+// This is a macro to support extending this string literal at compile time.
+// Please excuse me polluting your global namespace!
+#define HTTP_LWS " \t"
+
 namespace net {
 
 class HttpResponseHeaders;
@@ -36,6 +40,14 @@ class HttpUtil {
   static size_t LocateEndOfAdditionalHeaders(std::span<const uint8_t> buf,
                                              size_t i = 0);
 
+  inline static bool IsLWS(char c) {
+    constexpr std::string_view kWhiteSpaceCharacters(HTTP_LWS);
+    // Clang performs this optimization automatically at -O3, but Android is
+    // compiled at -Oz, so we need to do it by hand.
+    static_assert(kWhiteSpaceCharacters == " \t");
+    return c == ' ' || c == '\t';
+  }
+  static std::string AssembleRawHeaders(std::string_view buf);
 };
 }
 

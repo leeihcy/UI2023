@@ -12,6 +12,10 @@ URLLoader::URLLoader(URLLoaderContext &context, const ResourceRequest &request,
   url_request_ =
       context.GetUrlRequestContext()->CreateRequest(request.url, this);
   ScheduleStart();
+
+  char text[128];
+  sprintf(text, "URLLoader::URLLoader url_loader_client_=%p", url_loader_client_);
+  base::Log(text);
 }
 
 void URLLoader::ScheduleStart() {

@@ -59,6 +59,10 @@ int HttpStreamParser::SendRequest(const std::string& request_line,
 int HttpStreamParser::DoLoop(int result) {
   do {
     State state = io_state_;
+
+    char text[128];
+    sprintf(text, "HttpStreamParser::DoLoop state=%d", state);
+    base::Log(text);
     io_state_ = STATE_NONE;
     switch (state) {
       case STATE_SEND_HEADERS:
@@ -69,6 +73,7 @@ int HttpStreamParser::DoLoop(int result) {
       case STATE_SEND_HEADERS_COMPLETE:
         // result = DoSendHeadersComplete(result);
         // DCHECK_NE(STATE_NONE, io_state_);
+        io_state_ = STATE_SEND_REQUEST_COMPLETE;
         break;
       case STATE_SEND_BODY:
         // DCHECK_EQ(OK, result);
@@ -150,6 +155,7 @@ int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
 }
 
 int HttpStreamParser::DoReadHeaders() {
+  io_state_ = STATE_READ_HEADERS_COMPLETE;
   if (read_buf_->RemainingCapacity() == 0)
     read_buf_->SetCapacity(read_buf_->capacity() + kHeaderBufInitialSize);
 
@@ -173,6 +179,12 @@ int HttpStreamParser::DoReadHeadersComplete(int result) {
   }
 
   return result;
+}
+
+static void copy_prefix_from(std::span<uint8_t> target, std::span<uint8_t> source, size_t n) {
+    // 确保不会越界
+    size_t copy_count = std::min({n, source.size(), target.size()});
+    std::copy(source.begin(), source.begin() + copy_count, target.begin());
 }
 
 int HttpStreamParser::HandleReadHeaderResult(int result) {
@@ -228,17 +240,18 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   } else {
 
     CalculateResponseBodySize();
-#if 0
+
     // If the body is zero length, the caller may not call ReadResponseBody,
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
     const auto end_of_header_offset_s =
         static_cast<size_t>(end_of_header_offset);
     if (response_body_length_ == 0) {
-      base::span<uint8_t> extra_bytes =
+      std::span<uint8_t> extra_bytes =
           read_buf_->span_before_offset().subspan(end_of_header_offset_s);
       if (!extra_bytes.empty()) {
-        read_buf_->everything().copy_prefix_from(extra_bytes);
+        // read_buf_->everything().copy_prefix_from(extra_bytes);
+        copy_prefix_from(read_buf_->everything(), extra_bytes, extra_bytes.size());
       }
       read_buf_->SetCapacity(extra_bytes.size());
       if (response_->headers->response_code() / 100 == 1) {
@@ -252,10 +265,10 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         response_body_length_ = -1;
         // Record the timing of the 103 Early Hints response for the experiment
         // (https://crbug.com/1093693).
-        if (response_->headers->response_code() == HTTP_EARLY_HINTS &&
-            first_early_hints_time_.is_null()) {
-          first_early_hints_time_ = current_response_start_time_;
-        }
+        // if (response_->headers->response_code() == HTTP_EARLY_HINTS &&
+        //     first_early_hints_time_.is_null()) {
+        //   first_early_hints_time_ = current_response_start_time_;
+        // }
         // Now waiting for the second set of headers to be read.
       } else {
         // Only set keep-alive based on final set of headers.
@@ -272,7 +285,6 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     // Note where the headers stop.
     read_buf_unused_offset_ = end_of_header_offset_s;
     // Now waiting for the body to be read.
-#endif
   }
 
 }
@@ -310,13 +322,15 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   std::shared_ptr<HttpResponseHeaders> headers;
 #if 0
   if (response_header_start_offset_ != std::string::npos) {
-    received_bytes_ += base::ByteSize(end_offset);
+    received_bytes_ += (end_offset);
     headers = HttpResponseHeaders::TryToCreate(
         base::as_string_view(read_buf_->everything().first(end_offset)));
     if (!headers)
       return ERR_INVALID_HTTP_RESPONSE;
     has_seen_status_line_ = true;
-  } else {
+  }
+
+   else {
     // Enough data was read -- there is no status line, so this is HTTP/0.9, or
     // the server is broken / doesn't speak HTTP.
 

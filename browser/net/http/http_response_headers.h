@@ -4,6 +4,7 @@
 #include <string>
 #include <optional>
 #include <functional>
+#include <memory>
 #include <vector>
 #include "net/http/http_version.h"
 
@@ -32,6 +33,10 @@ public:
 
 public:
   HttpResponseHeaders(HttpVersion version);
+  explicit HttpResponseHeaders(std::string_view raw_headers);
+
+  static std::shared_ptr<HttpResponseHeaders> TryToCreate(
+      std::string_view headers);
 
   std::optional<std::string_view> EnumerateHeader(size_t* iter,
                                                   std::string_view name) const;
@@ -46,6 +51,7 @@ public:
 
   // Returns true if the response is chunk-encoded.
   bool IsChunkEncoded() const;
+  bool IsKeepAlive() const;
 
   const std::string& raw_headers() const { return raw_headers_; }
   std::string_view subrange(size_t begin, size_t end) const;

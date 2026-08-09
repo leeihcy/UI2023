@@ -83,7 +83,7 @@ int HttpCache::Transaction::DoLoop(int result) {
         rv = DoNetworkRead();
         break;
     default:
-      //base::Assert(false);
+        base::Assert(false);
         break;
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);

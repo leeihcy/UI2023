@@ -42,13 +42,15 @@ private:
   uint32_t pending_write_buffer_size_ = 0;
   uint32_t pending_write_buffer_offset_ = 0;
 
+  mojom::URLLoaderClient* url_loader_client_ = nullptr;
+
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
   mojom::URLResponseHead* response_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
   mojo::ScopedDataPipeProducerHandle response_body_stream_;
 
-  mojom::URLLoaderClient *url_loader_client_ = nullptr;
+  
 
 
     // State checker between URLRequest::Read() and `response_body_stream_`.

@@ -2,6 +2,7 @@
 #include "services/network/url_loader_factory.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "url/origin.h"
+#include "base/log.h"
 #include <assert.h>
 
 namespace network {
@@ -63,7 +64,7 @@ CorsURLLoader::CorsURLLoader(const ResourceRequest &resource_request,
 }
 
 CorsURLLoader::~CorsURLLoader() {
-  int a= 0;
+  base::Log("~CorsURLLoader");
 }
 
 // 判断是否需要进行跨域检测

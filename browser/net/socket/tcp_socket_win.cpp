@@ -308,6 +308,7 @@ int MapConnectError(int os_error) {
 }
 
 void TCPSocketWin::DidCompleteConnect() {
+  base::Log("TCPSocketWin::DidCompleteConnect() ");
   int result;
 
   WSANETWORKEVENTS events;
@@ -323,11 +324,13 @@ void TCPSocketWin::DidCompleteConnect() {
   }
 
   // 清空connect_callback_，这样下次ReadDelegate::OnObjectSignaled时就能走Read逻辑
-  connect_callback_(result);
+  CompletionOnceCallback callback = connect_callback_;
   connect_callback_ = nullptr;
+  callback(result);
 }
 
 void TCPSocketDefaultWin::DidSignalRead() {
+  base::Log("TCPSocketWin::DidSignalRead() ");
   CoreImpl& core = GetCoreImpl();
 
   // FD_READ=1, FD_WRITE=2, FD_OOB=4, FD_ACCEPT=8, FD_CONNECT=16, FD_CLOSE=32
@@ -415,6 +418,8 @@ int TCPSocketDefaultWin::Read(IOBuffer* buf,
   read_callback_ = std::move(callback);
   core.read_iobuffer_ = buf;
   core.read_buffer_length_ = buf_len;
+
+  base::Log("TCPSocketDefaultWin::Read ERR_IO_PENDING");
   return ERR_IO_PENDING;
 }
 
@@ -447,6 +452,7 @@ int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
 
 
 void TCPSocketDefaultWin::RetryRead(int rv) {
+  base::Log("TCPSocketDefaultWin::RetryRead");
   CoreImpl& core = GetCoreImpl();
   base::Assert(core.read_iobuffer_);
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <Windows.h>
+#include <objbase.h>
 
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/network_service.h"
@@ -18,6 +19,9 @@ void CorsUrlLoaderTest() {
 }
 
 void SimpleUrlLoaderTest() {
+#if defined(OS_WIN)
+  ::CoInitialize(NULL);
+#endif
   mojo::core::InitializeCore();
 
   auto& network_service = network::NetworkService::GetInstance();

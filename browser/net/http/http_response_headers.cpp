@@ -3,15 +3,40 @@
 #include "base/log.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "net/http/http_util.h"
 
 #include <charconv>
 #include <string_view>
 #include <system_error>
 
+namespace {
+bool HasEmbeddedNulls(std::string_view str) {
+  return str.find('\0') != std::string::npos;
+}
+} // namespace
+
 namespace net {
 
 HttpResponseHeaders::HttpResponseHeaders(HttpVersion version) : http_version_(version) { 
 
+}
+
+HttpResponseHeaders::HttpResponseHeaders(std::string_view raw_input)
+    : response_code_(-1) {
+  base::Assert(0);
+  // Parse(raw_input);
+}
+
+std::shared_ptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
+    std::string_view headers) {
+  // Reject strings with nulls.
+  if (HasEmbeddedNulls(headers) ||
+      headers.size() > std::numeric_limits<int>::max()) {
+    return nullptr;
+  }
+
+  return std::make_shared<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(headers));
 }
 
 bool HttpResponseHeaders::IsChunkEncoded() const {
@@ -142,5 +167,43 @@ std::optional<int64_t> HttpResponseHeaders::GetContentLength() const {
   return std::nullopt;
 }
 
+
+// We accept the first value of "close" or "keep-alive" in a Connection or
+// Proxy-Connection header, in that order. Obeying "keep-alive" in HTTP/1.1 or
+// "close" in 1.0 is not strictly standards-compliant, but we'd like to
+// avoid looking at the Proxy-Connection header whenever it is reasonable to do
+// so.
+// TODO(ricea): Measure real-world usage of the "Proxy-Connection" header,
+// with a view to reducing support for it in order to make our Connection header
+// handling more RFC 7230 compliant.
+bool HttpResponseHeaders::IsKeepAlive() const {
+  // NOTE: It is perhaps risky to assume that a Proxy-Connection header is
+  // meaningful when we don't know that this response was from a proxy, but
+  // Mozilla also does this, so we'll do the same.
+  static const char* const kConnectionHeaders[] = {"connection",
+                                                   "proxy-connection"};
+  struct KeepAliveToken {
+    const char* const token;
+    bool keep_alive;
+  };
+  static const KeepAliveToken kKeepAliveTokens[] = {{"keep-alive", true},
+                                                    {"close", false}};
+
+  if (http_version_ < HttpVersion(1, 0))
+    return false;
+
+  for (const char* header : kConnectionHeaders) {
+    size_t iterator = 0;
+    std::optional<std::string_view> token;
+    while ((token = EnumerateHeader(&iterator, header))) {
+      for (const KeepAliveToken& keep_alive_token : kKeepAliveTokens) {
+        if (base::EqualsCaseInsensitiveASCII(*token, keep_alive_token.token)) {
+          return keep_alive_token.keep_alive;
+        }
+      }
+    }
+  }
+  return http_version_ != HttpVersion(1, 0);
+}
 
 } // namespace net

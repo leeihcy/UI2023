@@ -74,4 +74,68 @@ size_t HttpUtil::LocateEndOfHeaders(std::span<const uint8_t> buf, size_t i) {
 }
 
 
+// Helper used by AssembleRawHeaders, to skip past leading LWS.
+static std::string_view RemoveLeadingNonLWS(std::string_view str) {
+  for (size_t i = 0; i < str.size(); i++) {
+    if (!HttpUtil::IsLWS(str[i]))
+      return str.substr(i);
+  }
+  return std::string_view();  // Remove everything.
+}
+
+std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
+  std::string raw_headers;
+  raw_headers.reserve(input.size());
+#if 0
+  // Skip any leading slop, since the consumers of this output
+  // (HttpResponseHeaders) don't deal with it.
+  size_t status_begin_offset =
+      LocateStartOfStatusLine(base::as_byte_span(input));
+  if (status_begin_offset != std::string::npos)
+    input.remove_prefix(status_begin_offset);
+
+  // Copy the status line.
+  size_t status_line_end = FindStatusLineEnd(input);
+  raw_headers.append(input.data(), status_line_end);
+  input.remove_prefix(status_line_end);
+
+  // After the status line, every subsequent line is a header line segment.
+  // Should a segment start with LWS, it is a continuation of the previous
+  // line's field-value.
+
+  // TODO(ericroman): is this too permissive? (delimits on [\r\n]+)
+  base::StringViewTokenizer lines(input, "\r\n");
+
+  // This variable is true when the previous line was continuable.
+  bool prev_line_continuable = false;
+
+  while (lines.GetNext()) {
+    std::string_view line = lines.token();
+
+    if (prev_line_continuable && IsLWS(line[0])) {
+      // Join continuation; reduce the leading LWS to a single SP.
+      base::StrAppend(&raw_headers, {" ", RemoveLeadingNonLWS(line)});
+    } else {
+      // Terminate the previous line and copy the raw data to output.
+      base::StrAppend(&raw_headers, {"\n", line});
+
+      // Check if the current line can be continued.
+      prev_line_continuable = IsLineSegmentContinuable(line);
+    }
+  }
+
+  raw_headers.append("\n\n", 2);
+
+  // Use '\0' as the canonical line terminator. If the input already contained
+  // any embeded '\0' characters we will strip them first to avoid interpreting
+  // them as line breaks.
+  std::erase(raw_headers, '\0');
+
+  std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
+#else
+  raw_headers = input;
+#endif
+  return raw_headers;
+}
+
 } // namespace net

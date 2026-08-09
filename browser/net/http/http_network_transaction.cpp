@@ -108,7 +108,6 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   // if (connected_callback_) {
     
   // }
-  OnIOComplete(net::OK);
   return OK;
 }
 
