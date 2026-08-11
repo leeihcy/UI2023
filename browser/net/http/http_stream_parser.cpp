@@ -5,6 +5,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_connection_info.h"
 
 namespace net {
 
@@ -24,11 +25,12 @@ HttpStreamParser::HttpStreamParser(StreamSocket *stream_socket, const GURL &url,
 }
 
 int HttpStreamParser::SendRequest(const std::string& request_line,
-                  const HttpRequestHeaders& headers/*,
-                  const NetworkTrafficAnnotationTag& traffic_annotation,
-                  HttpResponseInfo* response*/,
+                  const HttpRequestHeaders& headers,
+                  // const NetworkTrafficAnnotationTag& traffic_annotation,
+                  HttpResponseInfo* response,
                   CompletionOnceCallback callback) {
 
+  response_ = response;
   // // Put the peer's IP address and port into the response.
   // IPEndPoint ip_endpoint;
   // int result = stream_socket_->GetPeerAddress(&ip_endpoint);
@@ -172,7 +174,14 @@ int HttpStreamParser::DoReadHeadersComplete(int result) {
   if (io_state_ == STATE_READ_HEADERS) {
     return result;
   }
-  
+
+  // If there will be no more header reads, clear the request and response
+  // pointers, as they're no longer needed, and in some cases the body may
+  // be read after the parent class destroyed the underlying objects (See
+  // HttpResponseBodyDrainer).
+  //
+  // This is the last header read if HttpStreamParser is done, no response
+  // headers were received, or if the response code is not in the 1xx range.
   if (io_state_ == STATE_DONE || !response_->headers ||
       response_->headers->response_code() / 100 != 1) {
     response_ = nullptr;
@@ -320,17 +329,17 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
 
 int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   std::shared_ptr<HttpResponseHeaders> headers;
-#if 0
+
   if (response_header_start_offset_ != std::string::npos) {
     received_bytes_ += (end_offset);
+
+    std::span<uint8_t> buf = read_buf_->everything().first(end_offset);
     headers = HttpResponseHeaders::TryToCreate(
-        base::as_string_view(read_buf_->everything().first(end_offset)));
+        std::string_view((char*)buf.data(), buf.size()));
     if (!headers)
       return ERR_INVALID_HTTP_RESPONSE;
     has_seen_status_line_ = true;
-  }
-
-   else {
+  } else {
     // Enough data was read -- there is no status line, so this is HTTP/0.9, or
     // the server is broken / doesn't speak HTTP.
 
@@ -341,41 +350,41 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
     }
 
     std::string_view scheme = url_.scheme();
-    if (url::DefaultPortForScheme(scheme) != url_.EffectiveIntPort()) {
-      // If the port is not the default for the scheme, assume it's not a real
-      // HTTP/0.9 response, and fail the request.
+    // if (url::DefaultPortForScheme(scheme) != url_.EffectiveIntPort()) {
+    //   // If the port is not the default for the scheme, assume it's not a real
+    //   // HTTP/0.9 response, and fail the request.
 
-      // Allow Shoutcast responses over HTTP, as it's somewhat common and relies
-      // on HTTP/0.9 on weird ports to work.
-      // See
-      // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
-      if (read_buf_->offset() < 3 || scheme != "http" ||
-          !base::EqualsCaseInsensitiveASCII(
-              base::as_string_view(read_buf_->everything().first(3u)), "icy")) {
-        return ERR_INVALID_HTTP_RESPONSE;
-      }
-    }
+    //   // Allow Shoutcast responses over HTTP, as it's somewhat common and relies
+    //   // on HTTP/0.9 on weird ports to work.
+    //   // See
+    //   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
+    //   if (read_buf_->offset() < 3 || scheme != "http" ||
+    //       !base::EqualsCaseInsensitiveASCII(
+    //           base::as_string_view(read_buf_->everything().first(3u)), "icy")) {
+    //     return ERR_INVALID_HTTP_RESPONSE;
+    //   }
+    // }
 
-    headers = base::MakeRefCounted<HttpResponseHeaders>(
+    headers = std::make_shared<HttpResponseHeaders>(
         std::string("HTTP/0.9 200 OK"));
   }
 
   // Check for multiple Content-Length headers when the response is not
   // chunked-encoded.  If they exist, and have distinct values, it's a potential
   // response smuggling attack.
-  if (!headers->IsChunkEncoded()) {
-    if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
-                                                      "Content-Length"))
-      return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH;
-  }
+  // if (!headers->IsChunkEncoded()) {
+  //   if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+  //                                                     "Content-Length"))
+  //     return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH;
+  // }
 
   // Check for multiple Content-Disposition or Location headers.  If they exist,
   // it's also a potential response smuggling attack.
-  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
-                                                    "Content-Disposition"))
-    return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION;
-  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers, "Location"))
-    return ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION;
+  // if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+  //                                                   "Content-Disposition"))
+  //   return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION;
+  // if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers, "Location"))
+  //   return ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION;
 
   response_->headers = headers;
   if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
@@ -385,7 +394,7 @@ int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   } else if (headers->GetHttpVersion() == HttpVersion(1, 1)) {
     response_->connection_info = HttpConnectionInfo::kHTTP1_1;
   }
-#endif
+
   return OK;
 }
 

@@ -61,7 +61,7 @@ int HttpCache::Transaction::DoLoop(int result) {
       rv = DoSendRequest();
       break;
     case STATE_SEND_REQUEST_COMPLETE:
-      next_state_ = STATE_SUCCESSFUL_SEND_REQUEST;
+      rv = DoSendRequestComplete(rv);
       break;
     case STATE_SUCCESSFUL_SEND_REQUEST:
         DCHECK_EQ(OK, rv);
@@ -69,8 +69,7 @@ int HttpCache::Transaction::DoLoop(int result) {
         next_state_ = STATE_FINISH_HEADERS;
         break;
     case STATE_FINISH_HEADERS:
-        //rv = DoFinishHeaders(rv);
-        next_state_ = STATE_FINISH_HEADERS_COMPLETE;
+        rv = DoFinishHeaders(rv);
         break;
     case STATE_FINISH_HEADERS_COMPLETE:
         // rv = DoFinishHeadersComplete(rv);
@@ -152,4 +151,31 @@ void HttpCache::Transaction::OnIOComplete(int result) {
    DoLoop(result);
 }
 
+// net.dll!net::HttpCache::Transaction::DoLoop 行 923	C++
+// net.dll!net::HttpCache::Transaction::OnIOComplete 行 4324	C++
+// ...
+// net.dll!net::HttpNetworkTransaction::DoCallback 行 1013	C++
+// net.dll!net::HttpNetworkTransaction::OnIOComplete 行 1019	C++
+// net.dll!net::HttpNetworkTransaction::OnStreamReady 行 899	C++
+// net.dll!net::HttpStreamFactory::JobController::OnStreamReady 行 361	C++
+// net.dll!net::HttpStreamFactory::Job::OnStreamReadyCallback 行 459	C++
+int HttpCache::Transaction::DoSendRequestComplete(int result) {
+  if (result == OK) {
+    next_state_ = STATE_SUCCESSFUL_SEND_REQUEST;
+    return OK;
+  }
+  next_state_ = STATE_FINISH_HEADERS;
+  return result;
+}
+
+int HttpCache::Transaction::DoFinishHeaders(int result) {
+  
+  if (/*!cache_.get() || !entry_ || */result != OK) {
+    next_state_ = (STATE_NONE);
+    return result;
+  }
+
+  next_state_ = (STATE_FINISH_HEADERS_COMPLETE);
+  return result;
+}
 }

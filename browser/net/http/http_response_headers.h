@@ -38,6 +38,11 @@ public:
   static std::shared_ptr<HttpResponseHeaders> TryToCreate(
       std::string_view headers);
 
+      
+  void Parse(std::string_view raw_input);
+  void ParseStatusLine(std::string_view line, bool has_headers);
+  static HttpVersion ParseVersion(std::string_view line);
+
   std::optional<std::string_view> EnumerateHeader(size_t* iter,
                                                   std::string_view name) const;
   size_t FindHeader(size_t from, std::string_view name) const;

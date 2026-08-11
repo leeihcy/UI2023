@@ -22,6 +22,8 @@ public:
   private:
     int DoLoop(int result);
     int DoSendRequest();
+    int DoSendRequestComplete(int result);
+    int DoFinishHeaders(int result);
     int DoNetworkRead();
     void OnIOComplete(int result);
   

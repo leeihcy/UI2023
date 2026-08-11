@@ -18,6 +18,16 @@ SharedMemoryMapping::~SharedMemoryMapping() {
   Unmap();
 }
 
+SharedMemoryMapping& SharedMemoryMapping::operator=(
+    SharedMemoryMapping&& mapping) noexcept {
+  Unmap();
+  mapped_span_ = std::exchange(mapping.mapped_span_, std::span<uint8_t>());
+  size_ = mapping.size_;
+  // guid_ = mapping.guid_;
+  mapper_ = mapping.mapper_;
+  return *this;
+}
+
 SharedMemoryMapping::SharedMemoryMapping(std::span<uint8_t> mapped_span,
                                          size_t size,
                                         //  const UnguessableToken& guid,
@@ -48,6 +58,7 @@ void SharedMemoryMapping::Unmap() {
       mapped_span_.size() +
       static_cast<size_t>(mapped_span_.data() - aligned_data);
   mapper->Unmap(std::span(aligned_data, adjusted_size));
+  mapped_span_ = {};
 }
 
 

@@ -18,7 +18,7 @@ public:
 
     // Move operations are allowed.
   SharedMemoryMapping(SharedMemoryMapping&& mapping) noexcept;
-  SharedMemoryMapping& operator=(SharedMemoryMapping&& mapping) noexcept = default;
+  SharedMemoryMapping& operator=(SharedMemoryMapping&& mapping) noexcept;
 
   SharedMemoryMapping(const SharedMemoryMapping&) = delete;
   SharedMemoryMapping& operator=(const SharedMemoryMapping&) = delete;

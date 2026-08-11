@@ -22,9 +22,9 @@ public:
   const std::string& method() { return method_; }
 
   int SendRequest(const std::string& request_line,
-                  const HttpRequestHeaders& headers/*,
-                  const NetworkTrafficAnnotationTag& traffic_annotation,
-                  HttpResponseInfo* response*/,
+                  const HttpRequestHeaders& headers,
+                  // const NetworkTrafficAnnotationTag& traffic_annotation,
+                  HttpResponseInfo* response,
                   CompletionOnceCallback callback);
 
   int ReadResponseHeaders(CompletionOnceCallback callback);

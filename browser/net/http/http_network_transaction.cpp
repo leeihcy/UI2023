@@ -181,7 +181,7 @@ int HttpNetworkTransaction::BuildRequestHeaders(
 int HttpNetworkTransaction::DoSendRequest() {
   next_state_ = STATE_SEND_REQUEST_COMPLETE;
   // stream_->SetRequestIdempotency(request_->idempotency);
-  return stream_->SendRequest(request_headers_/*, &response_*/, io_callback_);
+  return stream_->SendRequest(request_headers_, &response_, io_callback_);
 }
 
 int HttpNetworkTransaction::DoSendRequestComplete(int result) {
@@ -218,7 +218,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     return result;
   }
   if (response_headers_callback_)
-    response_headers_callback_(response_.headers);
+    response_headers_callback_(response_.headers.get());
 
   return 0;
 }

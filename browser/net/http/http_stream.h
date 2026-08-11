@@ -6,6 +6,7 @@
 
 namespace net {
 struct HttpRequestInfo;
+class HttpResponseInfo;
 class IOBuffer;
 
 class HttpStream {
@@ -16,8 +17,8 @@ public:
                                const NetLogWithSource& net_log,
                                CompletionOnceCallback callback*/) = 0;
 
-  virtual int SendRequest(const HttpRequestHeaders& headers/*,
-                  HttpResponseInfo* response*/,
+  virtual int SendRequest(const HttpRequestHeaders& headers,
+                  HttpResponseInfo* response,
                   CompletionOnceCallback callback) = 0;
   virtual int ReadResponseHeaders(CompletionOnceCallback callback) = 0;
   virtual int ReadResponseBody(IOBuffer* buf,

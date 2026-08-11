@@ -67,7 +67,7 @@ public:
 
   int AddPortWithName(const PortName& port_name, std::shared_ptr<Port> port);
 
-  void UpdatePortPeerAddress(const PortName &local_port_name, Port *local_port,
+  void UpdatePortPeerAddress(const PortName &local_port_name, std::shared_ptr<Port> local_port,
                              const NodeName &new_peer_node,
                              const PortName &new_peer_port);
   // Removes an entry from |peer_port_map_| corresponding to |local_port|'s peer

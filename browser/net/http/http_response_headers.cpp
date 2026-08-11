@@ -4,6 +4,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/http/http_util.h"
+#include "net/http/http_status_code.h"
 
 #include <charconv>
 #include <string_view>
@@ -23,9 +24,164 @@ HttpResponseHeaders::HttpResponseHeaders(HttpVersion version) : http_version_(ve
 
 HttpResponseHeaders::HttpResponseHeaders(std::string_view raw_input)
     : response_code_(-1) {
-  base::Assert(0);
-  // Parse(raw_input);
+  Parse(raw_input);
 }
+
+void HttpResponseHeaders::Parse(std::string_view raw_input) {
+  raw_headers_.reserve(raw_input.size());
+
+  size_t line_end = raw_input.find('\0');
+
+  bool has_headers =
+      (line_end != std::string::npos && (line_end + 1) != raw_input.size() &&
+       raw_input[line_end + 1] != '\0');
+  ParseStatusLine(raw_input.substr(0, line_end), has_headers);
+  raw_headers_.push_back('\0');  // Terminate status line with a null.
+
+   if (line_end == std::string::npos) {
+    raw_headers_.push_back('\0');  // Ensure the headers end with a double null.
+    return;
+  }
+}
+
+static bool startsWithIgnoreCase(const std::string_view& str, const std::string_view& prefix) {
+    if (str.size() < prefix.size()) return false;
+    for (size_t i = 0; i < prefix.size(); ++i) {
+        if (std::tolower(static_cast<unsigned char>(str[i])) != 
+            std::tolower(static_cast<unsigned char>(prefix[i]))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+namespace {
+  
+bool StringToInt64(std::string_view str, int64_t& value) {
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+    return ec == std::errc() && ptr == str.data() + str.size();
+}
+bool StringToInt(std::string_view str, int& value) {
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+    return ec == std::errc() && ptr == str.data() + str.size();
+}
+
+void RemoveLeadingSpaces(std::string_view* s) {
+  s->remove_prefix(std::min(s->find_first_not_of(' '), s->size()));
+}
+int ParseStatus(std::string_view status, std::string& append_to) {
+  // Skip whitespace. Tabs are not skipped, for backwards compatibility.
+  RemoveLeadingSpaces(&status);
+
+  auto first_non_digit = std::ranges::find_if(
+      status, [](char c) { return !base::IsAsciiDigit(c); });
+
+  if (first_non_digit == status.begin()) {
+    append_to.append(" 200");
+    return HTTP_OK;
+  }
+
+  append_to.push_back(' ');
+  append_to.append(status.begin(), first_non_digit);
+  int response_code = -1;
+  // For backwards compatibility, overlarge response codes are permitted.
+  // base::StringToInt will clamp the value to INT_MAX.
+  StringToInt(std::string_view(status.begin(), first_non_digit),
+                    response_code);
+
+  status.remove_prefix(first_non_digit - status.begin());
+
+  // Skip whitespace. Tabs are not skipped, as before.
+  RemoveLeadingSpaces(&status);
+
+  // Trim trailing whitespace. Tabs are not trimmed.
+  const size_t last_non_space_pos = status.find_last_not_of(' ');
+  if (last_non_space_pos != std::string_view::npos) {
+    status.remove_suffix(status.size() - last_non_space_pos - 1);
+  }
+
+  if (status.empty()) {
+    return response_code;
+  }
+
+  append_to.push_back(' ');
+  append_to.append(status);
+  return response_code;
+}
+
+}
+HttpVersion HttpResponseHeaders::ParseVersion(std::string_view line) {
+  size_t p = 0;
+
+  // RFC9112 Section 2.3:
+  // HTTP-version  = HTTP-name "/" DIGIT "." DIGIT
+  // HTTP-name     = %s"HTTP"
+
+  if (!startsWithIgnoreCase(line, "http")) {
+    return HttpVersion();
+  }
+
+  p += 4;
+
+  if (p >= line.size() || line[p] != '/') {
+    return HttpVersion();
+  }
+
+  size_t dot = line.find('.', p);
+  if (dot == std::string_view::npos || dot + 1 == line.size()) {
+    return HttpVersion();
+  }
+
+  ++p;  // from / to first digit.
+  ++dot;  // from . to second digit.
+
+  if (!(base::IsAsciiDigit(line[p]) && base::IsAsciiDigit(line[dot]))) {
+    return HttpVersion();
+  }
+
+  uint16_t major = line[p] - '0';
+  uint16_t minor = line[dot] - '0';
+
+  return HttpVersion(major, minor);
+}
+
+// Note: this implementation implicitly assumes that line_end points at a valid
+// sentinel character (such as '\0').
+void HttpResponseHeaders::ParseStatusLine(std::string_view line,
+                                          bool has_headers) {
+  // Extract the version number
+  HttpVersion parsed_http_version = ParseVersion(line);
+
+  // Clamp the version number to one of: {0.9, 1.0, 1.1, 2.0}
+  if (parsed_http_version == HttpVersion(0, 9) && !has_headers) {
+    http_version_ = HttpVersion(0, 9);
+    raw_headers_ = "HTTP/0.9";
+  } else if (parsed_http_version == HttpVersion(2, 0)) {
+    http_version_ = HttpVersion(2, 0);
+    raw_headers_ = "HTTP/2.0";
+  } else if (parsed_http_version >= HttpVersion(1, 1)) {
+    http_version_ = HttpVersion(1, 1);
+    raw_headers_ = "HTTP/1.1";
+  } else {
+    // Treat everything else like HTTP 1.0
+    http_version_ = HttpVersion(1, 0);
+    raw_headers_ = "HTTP/1.0";
+  }
+  if (parsed_http_version != http_version_) {
+  }
+
+  // TODO(eroman): this doesn't make sense if ParseVersion failed.
+  size_t space = line.find(' ');
+
+  if (space == std::string_view::npos) {
+    raw_headers_.append(" 200 OK");
+    response_code_ = HTTP_OK;
+    return;
+  }
+
+  response_code_ = ParseStatus(line.substr(space + 1), raw_headers_);
+}
+
 
 std::shared_ptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
     std::string_view headers) {
@@ -128,11 +284,6 @@ bool HttpResponseHeaders::EnumerateHeader(size_t* iter,
   }
   value->assign(*result);
   return true;
-}
-
-static bool StringToInt64(std::string_view str, int64_t& value) {
-    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
-    return ec == std::errc() && ptr == str.data() + str.size();
 }
 
 std::optional<int64_t> HttpResponseHeaders::GetInt64HeaderValue(

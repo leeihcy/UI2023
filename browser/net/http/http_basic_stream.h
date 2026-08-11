@@ -42,8 +42,8 @@ public:
                                const NetLogWithSource& net_log,
                                CompletionOnceCallback callback*/) override;
 
-  int SendRequest(const HttpRequestHeaders& headers/*,
-                  HttpResponseInfo* response*/,
+  int SendRequest(const HttpRequestHeaders& headers,
+                  HttpResponseInfo* response,
                   CompletionOnceCallback callbac) override;
 
   int ReadResponseHeaders(CompletionOnceCallback callback) override;

@@ -71,8 +71,8 @@ private:
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
   
-  base::UnsafeSharedMemoryRegion shared_ring_buffer_;
   base::WritableSharedMemoryMapping ring_buffer_mapping_;
+  base::UnsafeSharedMemoryRegion shared_ring_buffer_;
 
   bool in_transit_ = false;
   bool is_closed_ = false;
