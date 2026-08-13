@@ -24,6 +24,17 @@ shared_library("mojo") {
     "core/dispatcher.h",
     "core/ports/node.cpp",
     "core/ports/node.h",
+    "core/ports/event.cpp",
+    "core/ports/event.h",
+    "core/ports/user_message.cpp",
+    "core/ports/user_message.h",
+    "core/ports/message_queue.cpp",
+    "core/ports/message_queue.h",
+    
+    "core/data_pipe_control_message.cpp",
+    "core/data_pipe_control_message.h",
+    "core/user_message_impl.cpp",
+    "core/user_message_impl.h",
 
     "public/c/system/thunks.cpp",
   ]

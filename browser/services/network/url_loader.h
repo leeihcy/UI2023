@@ -12,6 +12,8 @@ namespace network {
 class URLLoaderContext;
 class ResourceRequest;
 
+// 负责协调 调用方韩文 和 network进程 之间的数据流通
+// URLRequest不负责跨进程，由URLLoader借助Mojo来完成。
 class URLLoader : public net::URLRequest::Delegate {
 public:
   URLLoader(URLLoaderContext &context, const ResourceRequest &request,
@@ -30,6 +32,7 @@ private:
   void DidRead(int num_bytes, bool completed_synchronously,
                bool into_slop_bucket);
   void SendResponseToClient();
+  void CompletePendingWrite(bool success);
   void NotifyCompleted(int error_code);
 
   void DeleteSelf();

@@ -80,6 +80,30 @@ public:
 
   int GetStatus(const PortRef& port_ref, PortStatus* port_status);
 
+  int SendUserMessage(const PortRef &port_ref,
+                      std::unique_ptr<UserMessageEvent> message);
+
+  int GetPort(const PortName& port_name, PortRef* port_ref);
+  int ClosePort(const PortRef& port_ref);
+  void ErasePort(const PortName& port_name);
+
+  int AcceptEvent(const NodeName& from_node, ScopedEvent event);
+  int PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
+                                  Port::State expected_port_state,
+                                  bool ignore_closed_peer,
+                                  UserMessageEvent* message,
+                                  NodeName* forward_to_node);
+private:
+  int AcceptEventInternal(const PortRef& port_ref,
+                              const NodeName& from_node,
+                              ScopedEvent event);
+  int SendUserMessageInternal(const PortRef& port_ref,
+                              std::unique_ptr<UserMessageEvent>* message);
+  int OnUserMessage(const PortRef& port_ref,
+                    const NodeName& from_node,
+                    std::unique_ptr<UserMessageEvent> message);
+  int AcceptPort(const PortName& port_name,
+                     const Event::PortDescriptor& port_descriptor);
 private:
   const NodeName name_;
   NodeDelegate* delegate_;

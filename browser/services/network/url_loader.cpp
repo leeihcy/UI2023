@@ -98,16 +98,17 @@ void URLLoader::ReadMore() {
     switch (result) {
     case MOJO_RESULT_OK:
       break;
-    case MOJO_RESULT_SHOULD_WAIT: {
+    case MOJO_RESULT_SHOULD_WAIT:
       assert(false);
       break;
     }
-      pending_write_buffer_size_ = pending_write_->size();
-      // pending_write_ = std::make_unique<net::GrowableIOBuffer>();
-      // pending_write_->SetCapacity(size);
-    }
+    pending_write_buffer_size_ = pending_write_->size();
+    // pending_write_ = std::make_unique<net::GrowableIOBuffer>();
+    // pending_write_->SetCapacity(size);
   }
 
+  // 之前已经读取到的部分Body Data会在HttpStreamParser::DoReadBody中补偿回来
+  
   auto buf = std::make_shared<NetToMojoIOBuffer>(
       pending_write_, pending_write_buffer_offset_);
   url_read_state_ = URLReadState::kURLReadInProgress;
@@ -141,6 +142,8 @@ void URLLoader::ReadMoreAsync() {
 void URLLoader::DidRead(int num_bytes,
                         bool completed_synchronously,
                         bool into_slop_bucket) {
+  bool complete_read = true;
+
   // SendResponseToClient();
   if (num_bytes <= 0) {
     if (!into_slop_bucket) {
@@ -150,6 +153,9 @@ void URLLoader::DidRead(int num_bytes,
     return;
   }
 
+  if (complete_read && !into_slop_bucket) {
+    CompletePendingWrite(true /* success */);
+  }
   if (completed_synchronously) {
     ReadMoreAsync();
   } else {
@@ -177,6 +183,16 @@ void URLLoader::SendResponseToClient() {
   url_loader_client_->OnReceiveResponse(
       response_, // response_->Clone(),  TODO:
       std::move(consumer_handle_) /*, std::nullopt*/);
+}
+
+void URLLoader::CompletePendingWrite(bool success) {
+  if (success && pending_write_) {
+    response_body_stream_ =
+        pending_write_->Complete(pending_write_buffer_offset_);
+  }
+  // total_written_bytes_ += base::ByteSize(pending_write_buffer_offset_);
+  pending_write_ = nullptr;
+  pending_write_buffer_offset_ = 0;
 }
 
 void URLLoader::NotifyCompleted(int error_code) {

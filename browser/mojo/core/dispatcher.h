@@ -5,6 +5,7 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
 #include <assert.h>
+#include <memory>
 
 namespace mojo {
 namespace core {
@@ -12,6 +13,15 @@ namespace core {
 // MojoHandle的实现类
 class MOJO_EXPORT Dispatcher {
 public:
+  struct DispatcherInTransit {
+    DispatcherInTransit() = default;
+    DispatcherInTransit(const DispatcherInTransit& other) = default;
+    ~DispatcherInTransit() = default;
+
+    std::shared_ptr<Dispatcher> dispatcher;
+    MojoHandle local_handle;
+  };
+
   enum class Type {
     UNKNOWN = 0,
     MESSAGE_PIPE,

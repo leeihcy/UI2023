@@ -139,19 +139,25 @@ void HttpStreamParser::OnIOComplete(int result) {
 }
 
 int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
+  // This function can be called with io_state_ == STATE_DONE if the
+  // connection is closed after seeing just a 1xx response code.
+  if (io_state_ == STATE_DONE)
+    return ERR_CONNECTION_CLOSED;
+
   int result = OK;
+  io_state_ = STATE_READ_HEADERS;
+
   if (read_buf_->offset() > 0) {
     // Simulate the state where the data was just read from the socket.
     result = read_buf_->offset();
     read_buf_->set_offset(0);
   }
-//   if (result > 0)
-//     io_state_ = STATE_READ_HEADERS_COMPLETE;
+  if (result > 0)
+    io_state_ = STATE_READ_HEADERS_COMPLETE;
 
-  result = DoReadHeaders();
-  if (result == ERR_IO_PENDING) {
-      callback_ = std::move(callback);
-  }
+  result = DoLoop(result);
+  if (result == ERR_IO_PENDING)
+    callback_ = std::move(callback);
 
   return result > 0 ? OK : result;
 }
@@ -309,7 +315,15 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
   }
 
   if (response_header_start_offset_ != std::string::npos) {
-    size_t lower_bound = read_buf_->offset() - new_bytes - 3;
+    // ClampedNumeric 确保结果不会下溢到负数（对于无符号类型会自动变为0）
+    size_t offset = read_buf_->offset();
+    size_t lower_bound;
+    if (offset <= new_bytes + 3) {
+        lower_bound = 0;
+    } else {
+        lower_bound = offset - new_bytes - 3;
+    }
+
     size_t search_start = std::max(response_header_start_offset_, lower_bound);
     end_offset = HttpUtil::LocateEndOfHeaders(read_buf_->span_before_offset(),
                                               search_start);

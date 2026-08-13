@@ -67,6 +67,7 @@ public:
                             MojoBeginWriteDataFlags flags) override;
   MojoResult EndWriteData(uint32_t num_bytes_written) override;
 
+  void NotifyWrite(uint32_t num_bytes);
 private:
   bool InitializeNoLock();
   MojoResult CloseNoLock() { return 0;} ;

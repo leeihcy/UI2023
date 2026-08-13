@@ -1,5 +1,6 @@
 #include "mojo/core/data_pipe_producer_dispatcher.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "mojo/core/data_pipe_control_message.h"
 
 #ifdef min
 #undef min
@@ -244,7 +245,7 @@ DataPipeProducerDispatcher::EndWriteData(uint32_t num_bytes_written) {
         (write_offset_ + num_bytes_written) % options_.capacity_num_bytes;
 
     // base::AutoUnlock unlock(lock_);
-    // NotifyWrite(num_bytes_written);
+    NotifyWrite(num_bytes_written);
   }
 
   in_two_phase_write_ = false;
@@ -255,6 +256,12 @@ DataPipeProducerDispatcher::EndWriteData(uint32_t num_bytes_written) {
 
   return rv;
 }
+
+void DataPipeProducerDispatcher::NotifyWrite(uint32_t num_bytes) {
+  SendDataPipeControlMessage(node_controller_, control_port_,
+                             DataPipeCommand::DATA_WAS_WRITTEN, num_bytes);
+}
+
 
 }
 }

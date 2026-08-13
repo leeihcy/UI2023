@@ -25,6 +25,7 @@ public:
   NetToMojoPendingBuffer(mojo::ScopedDataPipeProducerHandle handle,
                          std::span<char> buffer);
 
+  mojo::ScopedDataPipeProducerHandle Complete(uint32_t num_bytes);
   char* buffer() { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 

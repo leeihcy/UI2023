@@ -33,9 +33,12 @@ public:
   void BroadcastEvent(ports::ScopedEvent event) override;
   void PortStatusChanged(const ports::PortRef& port) override;
 
-    void SetPortObserver(const ports::PortRef& port,
+  void SetPortObserver(const ports::PortRef &port,
                        std::shared_ptr<PortObserver> observer);
 
+  // Sends a message on a port to its peer.
+  int SendUserMessage(const ports::PortRef &port_ref,
+                      std::unique_ptr<ports::UserMessageEvent> message);
 private:
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <memory>
 #include "mojo/core/ports/user_data.h"
+#include "mojo/core/ports/message_queue.h"
 #include "base/log.h"
 
 namespace mojo {
@@ -54,7 +55,8 @@ public:
   uint64_t next_control_sequence_num_to_send;
   uint64_t next_control_sequence_num_to_receive;
 
-  
+  MessageQueue message_queue;
+
   // Arbitrary user data attached to the Port. In practice, Mojo uses this to
   // stash an observer interface which can be notified about various Port state
   // changes.

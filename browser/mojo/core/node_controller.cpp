@@ -55,6 +55,11 @@ void NodeController::SetPortObserver(const ports::PortRef& port,
   node_->SetUserData(port, std::move(observer));
 }
 
+int NodeController::SendUserMessage(
+    const ports::PortRef& port,
+    std::unique_ptr<ports::UserMessageEvent> message) {
+  return node_->SendUserMessage(port, std::move(message));
+}
 
 }
 }

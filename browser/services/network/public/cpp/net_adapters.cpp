@@ -31,6 +31,13 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
   return MOJO_RESULT_OK;
 }
 
+mojo::ScopedDataPipeProducerHandle NetToMojoPendingBuffer::Complete(
+    uint32_t num_bytes) {
+  handle_->EndWriteData(num_bytes);
+  buffer_ = std::span<char>();
+  return std::move(handle_);
+}
+
 
 // --------------
 

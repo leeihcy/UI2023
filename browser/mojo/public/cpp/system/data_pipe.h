@@ -30,6 +30,15 @@ public:
     }
     return result;
   }
+   MojoResult EndWriteData(size_t num_bytes_written) const {
+    // if (!base::IsValueInRangeForNumericType<uint32_t>(num_bytes_written))
+    //     [[unlikely]] {
+    //   return MOJO_RESULT_INVALID_ARGUMENT;
+    // }
+    uint32_t num_bytes_written_u32 = (uint32_t)(num_bytes_written);
+    return MojoEndWriteData(value(), num_bytes_written_u32, nullptr);
+  }
+
 };
 
 class DataPipeConsumerHandle : public Handle {
