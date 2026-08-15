@@ -38,6 +38,12 @@ class UserMessageImpl : public ports::UserMessage {
   void *user_payload() { return user_payload_; }
 
   const void *user_payload() const { return user_payload_; }
+  size_t num_handles() const;
+
+  size_t user_payload_size() const {
+    // DCHECK(IsSerialized());
+    return user_payload_size_;
+  }
 
 private:
   ports::UserMessageEvent* const message_event_;

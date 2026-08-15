@@ -33,6 +33,15 @@ struct PortStatus {
   size_t unacknowledged_message_count;
 };
 
+struct PendingUpdatePreviousPeer {
+  NodeName receiver;
+  PortName port;
+  PortName from_port;
+  uint64_t sequence_num;
+  NodeName new_prev_node;
+  PortName new_prev_port;
+};
+
 class MOJO_EXPORT NodeDelegate {
  public:
   virtual ~NodeDelegate() = default;
@@ -93,6 +102,9 @@ public:
                                   bool ignore_closed_peer,
                                   UserMessageEvent* message,
                                   NodeName* forward_to_node);
+  int GetMessage1(const PortRef& port_ref,
+                 std::unique_ptr<UserMessageEvent>* message,
+                 MessageFilter* filter);
 private:
   int AcceptEventInternal(const PortRef& port_ref,
                               const NodeName& from_node,
@@ -104,6 +116,11 @@ private:
                     std::unique_ptr<UserMessageEvent> message);
   int AcceptPort(const PortName& port_name,
                      const Event::PortDescriptor& port_descriptor);
+  void ConvertToProxy(std::shared_ptr<Port> port,
+                      const NodeName& to_node_name,
+                      PortName* port_name,
+                      Event::PortDescriptor* port_descriptor,
+                      PendingUpdatePreviousPeer* pending_update);
 private:
   const NodeName name_;
   NodeDelegate* delegate_;

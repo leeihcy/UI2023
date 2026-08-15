@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "net/base/net_errors.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace network {
 
@@ -39,15 +40,14 @@ class BodyReader {
 
   void Start(mojo::ScopedDataPipeConsumerHandle body_data_pipe) {
     body_data_pipe_ = std::move(body_data_pipe);
-    // handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
-    //     FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-    //     base::SequencedTaskRunner::GetCurrentDefault());
-    // handle_watcher_->Watch(
-    //     body_data_pipe_.get(),
-    //     MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-    //     MOJO_WATCH_CONDITION_SATISFIED,
-    //     base::BindRepeating(&BodyReader::MojoReadyCallback,
-    //                         this));
+    handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+        mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+    handle_watcher_->Watch(
+        body_data_pipe_.get(),
+        MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+        MOJO_WATCH_CONDITION_SATISFIED,
+        std::bind(&BodyReader::MojoReadyCallback,
+                            this, std::placeholders::_1, std::placeholders::_2));
 
     ReadData();
   }
@@ -123,7 +123,7 @@ class BodyReader {
 
 private:
   mojo::ScopedDataPipeConsumerHandle body_data_pipe_;
-  // std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
+  std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
   Delegate* delegate_ = nullptr;
 

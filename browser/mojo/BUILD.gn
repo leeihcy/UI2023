@@ -30,6 +30,18 @@ shared_library("mojo") {
     "core/ports/user_message.h",
     "core/ports/message_queue.cpp",
     "core/ports/message_queue.h",
+    "core/node_channel.cpp",
+    "core/node_channel.h",
+    "core/platform_handle_in_transit.cpp",
+    "core/platform_handle_in_transit.h",
+    "core/channel.cpp",
+    "core/channel.h",
+    "core/watcher_set.cpp",
+    "core/watcher_set.h",
+    "core/watcher_dispatcher.cpp",
+    "core/watcher_dispatcher.h",
+    "core/watch.cpp",
+    "core/watch.h",
     
     "core/data_pipe_control_message.cpp",
     "core/data_pipe_control_message.h",
@@ -37,6 +49,10 @@ shared_library("mojo") {
     "core/user_message_impl.h",
 
     "public/c/system/thunks.cpp",
+    "public/cpp/platform/platform_handle.cpp",
+    "public/cpp/platform/platform_handle.h",
+    "public/cpp/system/simple_watcher.cpp",
+    "public/cpp/system/simple_watcher.h",
   ]
   
   sources += [

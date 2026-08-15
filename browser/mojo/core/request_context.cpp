@@ -38,5 +38,19 @@ bool RequestContext::IsCurrent() const {
 }
 
 
+void RequestContext::AddWatchNotifyFinalizer(std::shared_ptr<Watch> watch,
+                                             MojoResult result,
+                                             const HandleSignalsState& state) {
+  // DCHECK(IsCurrent());
+  // watch_notify_finalizers_.push_back(
+  //     WatchNotifyFinalizer(std::move(watch), result, state));
+}
+
+void RequestContext::AddWatchCancelFinalizer(std::shared_ptr<Watch> watch) {
+  // DCHECK(IsCurrent());
+  // watch_cancel_finalizers_.push_back(std::move(watch));
+}
+
+
 }
 }

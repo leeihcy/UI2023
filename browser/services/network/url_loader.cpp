@@ -144,6 +144,12 @@ void URLLoader::DidRead(int num_bytes,
                         bool into_slop_bucket) {
   bool complete_read = true;
 
+  if (num_bytes > 0) {
+      if (!into_slop_bucket) {
+          pending_write_buffer_offset_ += num_bytes;
+      }
+  }
+
   // SendResponseToClient();
   if (num_bytes <= 0) {
     if (!into_slop_bucket) {

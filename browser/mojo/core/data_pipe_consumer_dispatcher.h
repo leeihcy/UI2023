@@ -8,6 +8,7 @@
 #include "mojo/mojo_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/core/node_controller.h"
+#include "mojo/core/watcher_set.h"
 #include <memory>
 
 
@@ -65,12 +66,16 @@ private:
   void OnPortStatusChanged();
   void UpdateSignalsStateNoLock();
 
+  HandleSignalsState GetHandleSignalsStateNoLock() const;
+
 private:
   const MojoCreateDataPipeOptions options_;
   NodeController* node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
-  
+    
+  WatcherSet watchers_;
+
   base::WritableSharedMemoryMapping ring_buffer_mapping_;
   base::UnsafeSharedMemoryRegion shared_ring_buffer_;
 

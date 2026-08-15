@@ -19,15 +19,18 @@ class MOJO_EXPORT Event {
 public:
   enum Type : uint32_t {
     kUserMessage,
+    kUserMessageReadAck,
   };
 
   Event(Type type, const PortName &port_name, const PortName &from_port,
         uint64_t control_sequence_num)
       : type_(type), port_name_(port_name), from_port_(from_port),
         control_sequence_num_(control_sequence_num) {}
+  virtual ~Event() {}
 
   Type type() const { return type_; }
   const PortName& port_name() const { return port_name_; }
+  void set_port_name(const PortName& port_name) { port_name_ = port_name; }
 
   template <typename T>
   static std::unique_ptr<T> Cast(ScopedEvent* event) {
@@ -53,6 +56,17 @@ public:
   const PortName& from_port() const { return from_port_; }
   void set_from_port(const PortName& from_port) { from_port_ = from_port; }
 
+  uint64_t control_sequence_num() const { return control_sequence_num_; }
+  void set_control_sequence_num(uint64_t control_sequence_num) {
+    control_sequence_num_ = control_sequence_num;
+  }
+
+  size_t GetSerializedSize() const;
+  void Serialize(void* buffer) const;
+
+  virtual size_t GetSerializedDataSize() const = 0;
+  virtual void SerializeData(void* buffer) const = 0;
+
 private:
   const Type type_;
   PortName port_name_;
@@ -69,11 +83,11 @@ class UserMessageEvent : public Event {
     message_ = std::move(message);
   }
 
-  template <typename T> T *GetMessage() {
+  template <typename T> T *GetMessage1() {
     return static_cast<T *>(message_.get());
   }
 
-  template <typename T> const T *GetMessage() const {
+  template <typename T> const T *GetMessage1() const {
     return static_cast<const T *>(message_.get());
   }
 
@@ -86,12 +100,40 @@ class UserMessageEvent : public Event {
   void set_sequence_num(uint64_t sequence_num) { sequence_num_ = sequence_num; }
 
   size_t GetSizeIfSerialized() const;
+  size_t GetSerializedDataSize() const override;
+  void SerializeData(void* buffer) const override;
 
  private:
   uint64_t sequence_num_ = 0;
   std::vector<PortDescriptor> port_descriptors_;
   std::vector<PortName> ports_;
   std::unique_ptr<UserMessage> message_;
+};
+
+
+class UserMessageReadAckEvent : public Event {
+ public:
+  UserMessageReadAckEvent(const PortName& port_name,
+                          const PortName& from_port,
+                          uint64_t control_sequence_num,
+                          uint64_t sequence_num_acknowledged);
+  ~UserMessageReadAckEvent() override;
+
+  uint64_t sequence_num_acknowledged() const {
+    return sequence_num_acknowledged_;
+  }
+
+  static ScopedEvent Deserialize(const PortName& port_name,
+                                 const PortName& from_port,
+                                 uint64_t control_sequence_num,
+                                 const void* buffer,
+                                 size_t num_bytes);
+
+ private:
+  size_t GetSerializedDataSize() const override;
+  void SerializeData(void* buffer) const override;
+
+  uint64_t sequence_num_acknowledged_;
 };
 
 }  // namespace ports

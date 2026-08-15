@@ -1,10 +1,14 @@
 #ifndef MOJO_CORE_REQUEST_CONTEXT_H_
 #define MOJO_CORE_REQUEST_CONTEXT_H_
 
+#include <memory>
 #include "mojo/mojo_export.h"
+#include "mojo/public/c/system/types.h"
+#include "mojo/core/handle_signals_state.h"
 
 namespace mojo {
 namespace core {
+class Watch;
 
 class MOJO_EXPORT RequestContext {
 public:
@@ -28,8 +32,12 @@ public:
   static RequestContext* current();
 
   Source source() const { return source_; }
-  
- private:
+
+  void AddWatchNotifyFinalizer(std::shared_ptr<Watch> watch, MojoResult result,
+                               const HandleSignalsState &state);
+  void AddWatchCancelFinalizer(std::shared_ptr<Watch> watch);
+
+private:
   // Is this request context the current one?
   bool IsCurrent() const;
 

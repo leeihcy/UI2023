@@ -1,6 +1,7 @@
 #include "mojo/core/ports/node.h"
 
 #include <random>
+#include <queue>
 
 namespace mojo {
 namespace core {
@@ -173,7 +174,7 @@ int Node::SetUserData(const PortRef& port_ref,
     return ERROR_PORT_STATE_UNEXPECTED;
   }
 
-  // port->user_data = std::move(user_data);
+  port->user_data = std::move(user_data);
 
   return OK;
 }
@@ -187,7 +188,7 @@ int Node::GetUserData(const PortRef& port_ref,
     return ERROR_PORT_STATE_UNEXPECTED;
   }
 
-  // *user_data = port->user_data;
+  *user_data = port->user_data;
 
   return OK;
 }
@@ -214,6 +215,67 @@ int Node::GetStatus(const PortRef& port_ref, PortStatus* port_status) {
   return OK;
 }
 
+int Node::GetMessage1(const PortRef& port_ref,
+                     std::unique_ptr<UserMessageEvent>* message,
+                     MessageFilter* filter) {
+  *message = nullptr;
+
+  NodeName peer_node_name;
+  ScopedEvent ack_event;
+  {
+    // SinglePortLocker locker(&port_ref);
+    // auto* port = locker.port();
+    auto* port = port_ref.port();
+
+    // This could also be treated like the port being unknown since the
+    // embedder should no longer be referring to a port that has been sent.
+    if (port->state != Port::kReceiving) {
+      return ERROR_PORT_STATE_UNEXPECTED;
+    }
+
+    // Let the embedder get messages until there are no more before reporting
+    // that the peer closed its end.
+    if (!CanAcceptMoreMessages(port)) {
+      return ERROR_PORT_PEER_CLOSED;
+    }
+
+    port->message_queue.GetNextMessage(message, filter);
+    if (*message &&
+        (*message)->sequence_num() == port->sequence_num_to_acknowledge) {
+      peer_node_name = port->peer_node_name;
+      ack_event = std::make_unique<UserMessageReadAckEvent>(
+          port->peer_port_name, port_ref.name(),
+          port->next_control_sequence_num_to_send++,
+          port->sequence_num_to_acknowledge);
+    }
+    if (*message) {
+      // Message will be passed to the user, no need to block the queue.
+      port->message_queue.MessageProcessed();
+    }
+  }
+
+  if (ack_event) {
+    delegate_->ForwardEvent(peer_node_name, std::move(ack_event));
+  }
+
+  // Allow referenced ports to trigger PortStatusChanged calls.
+  if (*message) {
+    for (size_t i = 0; i < (*message)->num_ports(); ++i) {
+      PortRef new_port_ref;
+      int rv = GetPort((*message)->ports()[i], &new_port_ref);
+
+      // SinglePortLocker locker(&new_port_ref);
+      // DCHECK_EQ(locker.port()->state, Port::kReceiving);
+      new_port_ref.port()->message_queue.set_signalable(true);
+    }
+
+    // The user may retransmit this message from another port. We reset the
+    // sequence number so that the message will get a new one if that happens.
+    (*message)->set_sequence_num(0);
+  }
+
+  return OK;
+}
 
 int Node::SendUserMessage(const PortRef& port_ref,
                           std::unique_ptr<UserMessageEvent> message) {
@@ -282,6 +344,123 @@ int Node::PrepareToForwardUserMessage(const PortRef &forwarding_port_ref,
                                       bool ignore_closed_peer,
                                       UserMessageEvent *message,
                                       NodeName *forward_to_node) {
+  bool target_is_remote = false;
+  std::queue<PendingUpdatePreviousPeer> peer_update_events;
+
+  for (;;) {
+    NodeName target_node_name;
+    {
+      // SinglePortLocker locker(&forwarding_port_ref);
+      // target_node_name = locker.port()->peer_node_name;
+      target_node_name = forwarding_port_ref.port()->peer_node_name;
+    }
+
+    // NOTE: This may call out to arbitrary user code, so it's important to call
+    // it only while no port locks are held on the calling thread.
+    // if (target_node_name != name_) {
+    //   if (!message->NotifyWillBeRoutedExternally()) {
+    //     LOG(ERROR) << "NotifyWillBeRoutedExternally failed unexpectedly.";
+    //     return ERROR_PORT_STATE_UNEXPECTED;
+    //   }
+    // }
+
+    // Must be held because ConvertToProxy needs to update |peer_port_maps_|.
+    // PortLocker::AssertNoPortsLockedOnCurrentThread();
+    // base::AutoLock ports_locker(ports_lock_);
+
+    // Simultaneously lock the forwarding port as well as all attached ports.
+    std::vector<PortRef> attached_port_refs;
+    std::vector<const PortRef*> ports_to_lock;
+    attached_port_refs.resize(message->num_ports());
+    ports_to_lock.resize(message->num_ports() + 1);
+    ports_to_lock[0] = &forwarding_port_ref;
+    for (size_t i = 0; i < message->num_ports(); ++i) {
+      const PortName& attached_port_name = message->ports()[i];
+      auto iter = ports_.find(attached_port_name);
+      attached_port_refs[i] = PortRef(attached_port_name, iter->second);
+      ports_to_lock[i + 1] = &attached_port_refs[i];
+    }
+    
+    // PortLocker locker(ports_to_lock.data(), ports_to_lock.size());
+    // auto* forwarding_port = locker.GetPort(forwarding_port_ref);
+    auto* forwarding_port = forwarding_port_ref.port();
+
+    if (forwarding_port->peer_node_name != target_node_name) {
+      // The target node has already changed since we last held the lock.
+      if (target_node_name == name_) {
+        // If the target node was previously this local node, we need to restart
+        // the loop, since that means we may now route the message externally.
+        continue;
+      }
+
+      target_node_name = forwarding_port->peer_node_name;
+    }
+    target_is_remote = target_node_name != name_;
+
+    if (forwarding_port->state != expected_port_state) {
+      return ERROR_PORT_STATE_UNEXPECTED;
+    }
+    if (forwarding_port->peer_closed && !ignore_closed_peer) {
+      return ERROR_PORT_PEER_CLOSED;
+    }
+
+    // Messages may already have a sequence number if they're being forwarded by
+    // a proxy. Otherwise, use the next outgoing sequence number.
+    if (message->sequence_num() == 0) {
+      message->set_sequence_num(forwarding_port->next_sequence_num_to_send++);
+    }
+
+    if (message->num_ports() > 0) {
+      // Sanity check to make sure we can actually send all the attached ports.
+      // They must all be in the |kReceiving| state and must not be the sender's
+      // own peer.
+      for (size_t i = 0; i < message->num_ports(); ++i) {
+        // auto* attached_port = locker.GetPort(attached_port_refs[i]);
+        auto* attached_port = attached_port_refs[i].port();
+        int error = OK;
+        if (attached_port->state != Port::kReceiving) {
+          error = ERROR_PORT_STATE_UNEXPECTED;
+        } else if (attached_port_refs[i].name() ==
+                   forwarding_port->peer_port_name) {
+          error = ERROR_PORT_CANNOT_SEND_PEER;
+        }
+
+        if (error != OK) {
+          // Not going to send. Backpedal on the sequence number.
+          forwarding_port->next_sequence_num_to_send--;
+          return error;
+        }
+      }
+
+      if (target_is_remote) {
+        // We only bother to proxy and rewrite ports in the event if it's
+        // going to be routed to an external node. This substantially reduces
+        // the amount of port churn in the system, as many port-carrying
+        // events are routed at least 1 or 2 intra-node hops before (if ever)
+        // being routed externally.
+        Event::PortDescriptor* port_descriptors =
+            message->port_descriptors().data();
+        for (size_t i = 0; i < message->num_ports(); ++i) {
+          // auto* port = locker.GetPort(attached_port_refs[i]);
+          auto port = attached_port_refs[i].port_ptr();
+          PendingUpdatePreviousPeer update_event = {
+              .from_port = attached_port_refs[i].name()};
+          ConvertToProxy(port, target_node_name,
+                         message->ports().subspan(i).data(),
+                         (port_descriptors + i), &update_event);
+          peer_update_events.push(update_event);
+        }
+      }
+    }
+
+    *forward_to_node = target_node_name;
+    message->set_port_name(forwarding_port->peer_port_name);
+    message->set_from_port(forwarding_port_ref.name());
+    message->set_control_sequence_num(
+        forwarding_port->next_control_sequence_num_to_send++);
+    break;
+  }
+
   return OK;
 }
 
@@ -390,6 +569,53 @@ int Node::OnUserMessage(const PortRef& port_ref,
   return OK;
 }
 
+
+void Node::ConvertToProxy(std::shared_ptr<Port> port,
+                          const NodeName& to_node_name,
+                          PortName* port_name,
+                          Event::PortDescriptor* port_descriptor,
+                          PendingUpdatePreviousPeer* pending_update) {
+  // port->AssertLockAcquired();
+  PortName local_port_name = *port_name;
+
+  PortName new_port_name;
+  GenerateRandomPortName(&new_port_name);
+
+  pending_update->receiver = port->peer_node_name;
+  pending_update->port = port->peer_port_name;
+  pending_update->sequence_num = port->next_control_sequence_num_to_send++;
+  pending_update->new_prev_node = to_node_name;
+  pending_update->new_prev_port = new_port_name;
+
+  // Make sure we don't send messages to the new peer until after we know it
+  // exists. In the meantime, just buffer messages locally.
+  // DCHECK_EQ(port->state, Port::kReceiving);
+  port->state = Port::kBuffering;
+
+  // If we already know our peer is closed, we already know this proxy can
+  // be removed once it receives and forwards its last expected message.
+  if (port->peer_closed) {
+    port->remove_proxy_on_last_message = true;
+  }
+
+  *port_name = new_port_name;
+
+  port_descriptor->peer_node_name = port->peer_node_name;
+  port_descriptor->peer_port_name = port->peer_port_name;
+  port_descriptor->referring_node_name = name_;
+  port_descriptor->referring_port_name = local_port_name;
+  port_descriptor->next_sequence_num_to_send = port->next_sequence_num_to_send;
+  port_descriptor->next_sequence_num_to_receive =
+      port->message_queue.next_sequence_num();
+  port_descriptor->last_sequence_num_to_receive =
+      port->last_sequence_num_to_receive;
+  port_descriptor->peer_closed = port->peer_closed;
+  
+  memset(port_descriptor->padding, 0, sizeof(port_descriptor->padding));
+
+  // Configure the local port to point to the new port.
+  UpdatePortPeerAddress(local_port_name, port, to_node_name, new_port_name);
+}
 int Node::AcceptPort(const PortName& port_name,
                      const Event::PortDescriptor& port_descriptor) {
 #if 0

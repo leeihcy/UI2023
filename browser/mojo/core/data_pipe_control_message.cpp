@@ -25,7 +25,7 @@ void SendDataPipeControlMessage(NodeController* node_controller,
       sizeof(DataPipeControlMessage), nullptr, 0, &event);
 
   DataPipeControlMessage* data = static_cast<DataPipeControlMessage*>(
-      event->GetMessage<UserMessageImpl>()->user_payload());
+      event->GetMessage1<UserMessageImpl>()->user_payload());
   data->command = command;
   data->num_bytes = num_bytes;
 

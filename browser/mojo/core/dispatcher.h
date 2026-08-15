@@ -6,9 +6,21 @@
 #include "mojo/public/c/system/types.h"
 #include <assert.h>
 #include <memory>
+#include "mojo/public/c/system/trap.h"
 
 namespace mojo {
+  
+class PlatformHandle;
+
 namespace core {
+class WatcherDispatcher;
+
+namespace ports {
+class PortRef;
+class UserMessageEvent;
+struct PortName;
+}  // namespace ports
+
 
 // MojoHandle的实现类
 class MOJO_EXPORT Dispatcher {
@@ -36,7 +48,7 @@ public:
   };
 
   Dispatcher();
-  ~Dispatcher();
+  virtual ~Dispatcher();
   Dispatcher(const Dispatcher &) = delete;
   Dispatcher &operator=(const Dispatcher &) = delete;
 
@@ -44,13 +56,19 @@ public:
   virtual MojoResult Close() = 0;
 
   ///////////// Watcher API ////////////////////
-  // virtual MojoResult WatchDispatcher(scoped_refptr<Dispatcher> dispatcher,
-  //                                    MojoHandleSignals signals,
-  //                                    MojoTriggerCondition condition,
-  //                                    uintptr_t context);
-  // virtual MojoResult CancelWatch(uintptr_t context);
-  // virtual MojoResult Arm(uint32_t* num_blocking_events,
-  //                        MojoTrapEvent* blocking_events);
+  virtual MojoResult WatchDispatcher(std::shared_ptr<Dispatcher> dispatcher,
+                                     MojoHandleSignals signals,
+                                     MojoTriggerCondition condition,
+                                     uintptr_t context) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  virtual MojoResult CancelWatch(uintptr_t context) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  virtual MojoResult Arm(uint32_t *num_blocking_events,
+                         MojoTrapEvent *blocking_events) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
   ///////////// Message pipe API /////////////
   // virtual MojoResult WriteMessage(
@@ -90,6 +108,23 @@ public:
   }
   virtual MojoResult EndWriteData(uint32_t num_bytes_written) {
     assert(false);
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  virtual void StartSerialize(uint32_t *num_bytes, uint32_t *num_ports,
+                              uint32_t *num_platform_handles);
+  virtual bool EndSerialize(void *destination, ports::PortName *ports,
+                            PlatformHandle *handles);
+
+  virtual MojoResult
+  AddWatcherRef(const std::shared_ptr<WatcherDispatcher> &watcher,
+                uintptr_t context) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  // Removes a WatcherDispatcher reference from this dispatcher.
+  virtual MojoResult RemoveWatcherRef(WatcherDispatcher *watcher,
+                                      uintptr_t context) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 };

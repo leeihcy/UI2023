@@ -1,6 +1,8 @@
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
 
 #include "mojo/core/node_controller.h"
+#include "mojo/core/user_message_impl.h"
+#include "mojo/core/data_pipe_control_message.h"
 
 #ifdef min
 #undef min
@@ -20,7 +22,7 @@ namespace core {
       node_controller_(node_controller),
       control_port_(control_port),
       pipe_id_(pipe_id),
-      // watchers_(this),
+      watchers_(this),
       shared_ring_buffer_(std::move(shared_ring_buffer)) {}
 
 Dispatcher::Type DataPipeConsumerDispatcher::GetType() const {
@@ -268,7 +270,7 @@ void DataPipeConsumerDispatcher::OnPortStatusChanged() {
 
 void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
   // lock_.AssertAcquired();
-#if 0
+
   const bool was_peer_closed = peer_closed_;
   const bool was_peer_remote = peer_remote_;
   size_t previous_bytes_available = bytes_available_;
@@ -281,13 +283,13 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
   } else if (rv == ports::OK && port_status.has_messages && !in_transit_) {
     std::unique_ptr<ports::UserMessageEvent> message_event;
     do {
-      rv = node_controller_->node()->GetMessage(control_port_, &message_event,
+      rv = node_controller_->node()->GetMessage1(control_port_, &message_event,
                                                 nullptr);
       if (rv != ports::OK) {
         peer_closed_ = true;
       }
       if (message_event) {
-        auto* message = message_event->GetMessage<UserMessageImpl>();
+        auto* message = message_event->GetMessage1<UserMessageImpl>();
         if (message->user_payload_size() < sizeof(DataPipeControlMessage)) {
           peer_closed_ = true;
           break;
@@ -300,15 +302,7 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
           peer_closed_ = true;
           break;
         }
-
-        uint32_t new_bytes_available;
-        if (!base::CheckAdd(bytes_available_, m->num_bytes)
-                 .AssignIfValid(&new_bytes_available) ||
-            new_bytes_available > options_.capacity_num_bytes) {
-          peer_closed_ = true;
-          break;
-        }
-
+        uint32_t new_bytes_available = bytes_available_ + m->num_bytes;
         bytes_available_ = new_bytes_available;
       }
     } while (message_event);
@@ -323,9 +317,44 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
       peer_remote_ != was_peer_remote) {
     watchers_.NotifyState(GetHandleSignalsStateNoLock());
   }
-#endif  
 }
 
+
+HandleSignalsState DataPipeConsumerDispatcher::GetHandleSignalsStateNoLock()
+    const {
+  // lock_.AssertAcquired();
+
+  HandleSignalsState rv;
+  if (shared_ring_buffer_.IsValid() && bytes_available_) {
+    if (!in_two_phase_read_) {
+      rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+      if (new_data_available_) {
+        rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+      }
+    }
+    rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+  } else if (!peer_closed_ && shared_ring_buffer_.IsValid()) {
+    rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+  }
+
+  if (shared_ring_buffer_.IsValid()) {
+    if (new_data_available_ || !peer_closed_) {
+      rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+    }
+  }
+
+  if (peer_closed_) {
+    rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+  } else {
+    rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    if (peer_remote_) {
+      rv.satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    }
+  }
+  rv.satisfiable_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+
+  return rv;
+}
 
 } // namespace core
 } // namespace mojo
